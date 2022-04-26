@@ -17,16 +17,13 @@ class InitialWalkthroughPage extends StatefulWidget {
   final UserProfileBloc _registrationBloc;
   final AccountBloc _accountBloc;
 
-  const InitialWalkthroughPage(
-    this._registrationBloc, this._accountBloc    
-  );
+  const InitialWalkthroughPage(this._registrationBloc, this._accountBloc);
 
   @override
   State createState() => InitialWalkthroughPageState();
 }
 
-class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
-    with TickerProviderStateMixin {
+class InitialWalkthroughPageState extends State<InitialWalkthroughPage> with TickerProviderStateMixin, WidgetsBindingObserver {
   AnimationController? _controller;
   Animation<int>? _animation;
 
@@ -47,33 +44,21 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
       _controller!.dispose();
     }
   }
- 
-  void popToWalkthrough({required String error}) {
-    Navigator.popUntil(context, (route) {
-      return route.settings.name == "/intro";
-    });
-    SnackBar snackBar = SnackBar(
-      duration: const Duration(seconds: 3),
-      content: Text(error.toString()),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
 
   @override
-  void dispose() {        
+  void dispose() {
     _controller!.dispose();
     super.dispose();
   }
 
   void _proceedToRegister() async {
-    await widget._registrationBloc.registerForNotifications();    
+    await widget._registrationBloc.registerForNotifications();
     _registered = true;
     var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
-    var len = seed.length;
     var range = seed.getRange(0, 32);
     var list = Uint8List.fromList(range.toList());
     await widget._accountBloc.startNewNode(list);
-    Navigator.of(context).pop();
+    Navigator.of(context).pushReplacementNamed("/");
   }
 
   Future<bool> _onWillPop() async {
@@ -107,8 +92,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
                     child: AnimatedBuilder(
                       animation: _animation!,
                       builder: (BuildContext context, Widget? child) {
-                        String frame =
-                            _animation!.value.toString().padLeft(2, '0');
+                        String frame = _animation!.value.toString().padLeft(2, '0');
                         return Image.asset(
                           'src/animations/welcome/frame_${frame}_delay-0.04s.png',
                           gaplessPlayback: true,
@@ -191,7 +175,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
         return BetaWarningDialog();
       },
     ).then((approved) {
-      if (approved) {        
+      if (approved) {
         return _proceedToRegister();
       }
     });

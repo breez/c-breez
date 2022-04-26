@@ -36,10 +36,10 @@ class UserApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var accountBloc = context.read<AccountBloc>();
-    var invoiceBloc = context.read<InvoiceBloc>();
-    var userProfileBloc = context.read<UserProfileBloc>();
-    var lspBloc = context.read<LSPBloc>();
+    final accountBloc = context.read<AccountBloc>();
+    final invoiceBloc = context.read<InvoiceBloc>();
+    final userProfileBloc = context.read<UserProfileBloc>();
+    final lspBloc = context.read<LSPBloc>();
 
     return BlocBuilder<UserProfileBloc, UserProfileState>(
       builder: (context, state) {
@@ -49,9 +49,6 @@ class UserApp extends StatelessWidget {
           statusBarColor: Colors.transparent,
         ));
         return BlocBuilder<AccountBloc, AccountState>(builder: (context, accState) {
-          // if (accState.initial || true) {
-          //   return Container();
-          // }
           return MaterialApp(
             key: _appKey,
             //navigatorKey: _navigatorKey,
@@ -68,8 +65,7 @@ class UserApp extends StatelessWidget {
                 child: _withTheme(user, child!),
               );
             },
-            initialRoute: "/",//accState.id != null ? "/" : '/splash',
-            // ignore: missing_return
+            initialRoute: "/splash",
             onGenerateRoute: (RouteSettings settings) {
               switch (settings.name) {
                 case '/intro':
@@ -82,7 +78,7 @@ class UserApp extends StatelessWidget {
                   );
                 case '/splash':
                   return FadeInRoute(
-                    builder: (_) => SplashPage(user),
+                    builder: (_) => const SplashPage(),
                     settings: settings,
                   );
                 case '/':

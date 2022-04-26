@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'package:c_breez/models/user_profile.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SplashPage extends StatefulWidget {
-  final UserProfileSettings _user;
+class SplashPage extends StatefulWidget {  
 
-  const SplashPage(this._user);
+  const SplashPage();
 
   @override
   SplashPageState createState() {
@@ -18,26 +17,16 @@ class SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    checkIfFirstRun();
-  }
-
-  Future checkIfFirstRun() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool _isFirstRun = (prefs.getBool('isFirstRun') ?? true);
-    if (widget._user.registered == false ||
-        _isFirstRun) {
-      prefs.setBool('isFirstRun', false);
-      _startTime();
+    var accBloc = context.read<AccountBloc>();
+    if (accBloc.state.initial) {
+      Timer(const Duration(milliseconds: 3600), () {
+        Navigator.of(context).pushReplacementNamed('/intro');
+      });
     } else {
-      prefs.setBool('isFirstRun', true);
-      Navigator.of(context).pushReplacementNamed('/');
+      Timer(const Duration(milliseconds: 1000), () {
+        Navigator.of(context).pushReplacementNamed('/');
+      });      
     }
-  }
-
-  _startTime() async {
-    return Timer(const Duration(milliseconds: 3600), () {
-      Navigator.of(context).pushReplacementNamed('/intro');
-    });
   }
 
   @override

@@ -37,7 +37,7 @@ class PaymentFilterModel {
       : this([
           PaymentType.SENT,
           PaymentType.RECEIVED,
-        ], DateTime(0), DateTime(2100), initial: true);
+        ], null, null, initial: true);
 
   PaymentFilterModel copyWith({List<PaymentType>? filter, DateTime? startDate, DateTime? endDate}) {
     return PaymentFilterModel(filter ?? paymentType, startDate ?? this.startDate, endDate ?? this.endDate);
@@ -46,10 +46,14 @@ class PaymentFilterModel {
   factory PaymentFilterModel.fromJson(Map<String, dynamic> json) {
     var paymentType = (json["paymentType"] ?? <int>[]) as List<dynamic>;
     return PaymentFilterModel(
-      paymentType.map((e) {
-        return PaymentType.values[e];
-      }).cast<PaymentType>().toList(), 
-      json["startDate"],json["endDate"]);    
+        paymentType
+            .map((e) {
+              return PaymentType.values[e];
+            })
+            .cast<PaymentType>()
+            .toList(),
+        json["startDate"],
+        json["endDate"]);
   }
 
   Map<String, dynamic> toJson() {

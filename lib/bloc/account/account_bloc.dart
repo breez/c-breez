@@ -12,15 +12,15 @@ import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:drift/drift.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 import './account_state.dart';
 
 const MAX_PAYMENT_AMOUNT = 4294967;
 
-class AccountBloc extends Cubit<AccountState> {
+class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY = "payment_filter_settings";
   static const String ACCOUNT_KEY = "account_key";
   static const String ACCOUNT_CREDS_KEY = "account_creds_key";
@@ -34,16 +34,17 @@ class AccountBloc extends Cubit<AccountState> {
   AccountBloc(this._breezLib, this._appStorage, this._keyChain) : super(AccountState.initial()) {
     _watchAccountChanges().listen((acc) {
       emit(acc);
-    });    
-    _keyChain.read(ACCOUNT_CREDS_KEY).then((credsHEX) {
-      if (credsHEX != null) {
-        log.info("found account credentials");        
-        var creds = HEX.decode(credsHEX);
-        var c = String.fromCharCodes(creds);        
-        _breezLib.initWithCredentials(creds);
-        _startNode();
-      }
     });
+    if (!state.initial) {
+      _keyChain.read(ACCOUNT_CREDS_KEY).then((credsHEX) {
+        if (credsHEX != null) {
+          log.info("found account credentials");
+          var creds = HEX.decode(credsHEX);
+          _breezLib.initWithCredentials(creds);
+          _startNode();
+        }
+      });
+    }
   }
 
   Future exportKeyFiles(Directory destDir) async {
@@ -61,9 +62,10 @@ class AccountBloc extends Cubit<AccountState> {
     if (started) {
       throw Exception("Node already started");
     }
-    var creds = await _breezLib.register(seed, email: email, network: network);    
+    var creds = await _breezLib.register(seed, email: email, network: network);
     log.info("node registered succesfully");
     await _keyChain.write(ACCOUNT_CREDS_KEY, HEX.encode(creds));
+    emit(state.copyWith(initial: false));
     await _startNode();
     log.info("new node started");
     return creds;
@@ -144,13 +146,17 @@ class AccountBloc extends Cubit<AccountState> {
   }
 
   Future<Invoice> addInvoice(
-      {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {    
+      {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
     var invoice = await _breezLib.addInvoice(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
     await syncStateWithNode();
-    return Invoice(amount: invoice.amountSats, bolt11: invoice.bolt11, description: invoice.description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
+    return Invoice(
+        amount: invoice.amountSats,
+        bolt11: invoice.bolt11,
+        description: invoice.description,
+        expiry: expiry ?? Int64(defaultInvoiceExpiry));
   }
 
-  Stream<AccountState> _watchAccountChanges() {    
+  Stream<AccountState> _watchAccountChanges() {
     return Rx.combineLatest6<List<PaymentInfo>, PaymentFilterModel, db.NodeInfo?, List<db.OffChainFund>, List<db.OnChainFund>,
             List<db.PeerWithChannels>, AccountState>(
         _paymentsStream(),
@@ -201,8 +207,7 @@ class AccountBloc extends Cubit<AccountState> {
     }
 
     if (nodeInfo == null) {
-      var s =  state.copyWith(initial: false);
-      return s;
+      return state;
     }
     return AccountState(
       initial: false,
@@ -230,31 +235,31 @@ class AccountBloc extends Cubit<AccountState> {
 
   Stream<List<PaymentInfo>> _paymentsStream() {
     var outgoingPaymentsStream = _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {
-      var bolt11 = Bolt11.fromPaymentRequest(p.bolt11);
-      return PaymentInfo(
-        type: PaymentType.SENT,
-        amountMsat: Int64(p.amount),
-        destination: p.destination,
-        shortTitle: bolt11.description,
-        fee: Int64(p.feeMsat),
-        creationTimestamp: Int64(p.createdAt),
-        pending: p.pending,
-        keySend: p.isKeySend,
-        paymentHash: p.paymentHash);
-    }));
+          var bolt11 = Bolt11.fromPaymentRequest(p.bolt11);
+          return PaymentInfo(
+              type: PaymentType.SENT,
+              amountMsat: Int64(p.amount),
+              destination: p.destination,
+              shortTitle: bolt11.description,
+              fee: Int64(p.feeMsat),
+              creationTimestamp: Int64(p.createdAt),
+              pending: p.pending,
+              keySend: p.isKeySend,
+              paymentHash: p.paymentHash);
+        }));
 
-    var incomingPaymentsStream = _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice){ 
-      var bolt11 = Bolt11.fromPaymentRequest(invoice.bolt11);
-      return PaymentInfo(
-        type: PaymentType.RECEIVED,
-        amountMsat: Int64(invoice.amountMsat),
-        fee: Int64.ZERO,      
-        destination: state.id!,
-        shortTitle: bolt11.description,
-        creationTimestamp: Int64(invoice.paymentTime),
-        pending: false,
-        keySend: false,
-        paymentHash: invoice.paymentHash);
+    var incomingPaymentsStream = _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {
+          var bolt11 = Bolt11.fromPaymentRequest(invoice.bolt11);
+          return PaymentInfo(
+              type: PaymentType.RECEIVED,
+              amountMsat: Int64(invoice.amountMsat),
+              fee: Int64.ZERO,
+              destination: state.id!,
+              shortTitle: bolt11.description,
+              creationTimestamp: Int64(invoice.paymentTime),
+              pending: false,
+              keySend: false,
+              paymentHash: invoice.paymentHash);
         }));
 
     return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream])
@@ -269,7 +274,7 @@ class AccountBloc extends Cubit<AccountState> {
 
   Future _syncPeers() async {
     log.info("_syncPeers started");
-    var peers = (await _breezLib.listPeers()).map((p) => p.toDbPeer()).toList();      
+    var peers = (await _breezLib.listPeers()).map((p) => p.toDbPeer()).toList();
     await _appStorage.setPeers(peers);
     log.info("_syncPeers finished");
   }
@@ -295,21 +300,29 @@ class AccountBloc extends Cubit<AccountState> {
     await _appStorage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
     log.info("_syncSettledInvoices finished");
   }
+
+  @override
+  AccountState? fromJson(Map<String, dynamic> json) {
+    return AccountState.fromJson(json);
+  }
+
+  @override
+  Map<String, dynamic>? toJson(AccountState state) {
+    return state.toJson();
+  }
 }
 
-List<PaymentInfo> _filterPayments(List<PaymentInfo> paymentsList, PaymentFilterModel filter) {  
-  return paymentsList
-      .where((p){
-        if (!filter.paymentType.contains(p.type)) {
-          return false;
-        }
-        if (filter.startDate != null && p.creationTimestamp.toInt() * 1000 < filter.startDate!.millisecondsSinceEpoch) {
-          return false;
-        }
-        if (filter.endDate != null && p.creationTimestamp.toInt() * 1000 > filter.endDate!.millisecondsSinceEpoch) {
-          return false;
-        }
-        return true;
-      })
-      .toList();
+List<PaymentInfo> _filterPayments(List<PaymentInfo> paymentsList, PaymentFilterModel filter) {
+  return paymentsList.where((p) {
+    if (!filter.paymentType.contains(p.type)) {
+      return false;
+    }
+    if (filter.startDate != null && p.creationTimestamp.toInt() * 1000 < filter.startDate!.millisecondsSinceEpoch) {
+      return false;
+    }
+    if (filter.endDate != null && p.creationTimestamp.toInt() * 1000 > filter.endDate!.millisecondsSinceEpoch) {
+      return false;
+    }
+    return true;
+  }).toList();
 }

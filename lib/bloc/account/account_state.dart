@@ -55,8 +55,7 @@ class AccountState {
             initial: true);
 
   AccountState copyWith(
-      {
-        String? id,
+      {String? id,
       PaymentsState? payments,
       bool? initial,
       Int64? blockheight,
@@ -66,7 +65,7 @@ class AccountState {
       Int64? maxAllowedToPay,
       Int64? maxAllowedToReceive,
       Int64? maxPaymentAmount,
-      Int64? maxChanReserve,      
+      Int64? maxChanReserve,
       List<String>? connectedPeers,
       Int64? maxInboundLiquidity,
       Int64? onChainFeeRate}) {
@@ -88,6 +87,41 @@ class AccountState {
   }
 
   Int64 get reserveAmount => balance - maxAllowedToPay;
+
+  Map<String, dynamic>? toJson() {
+    return {
+      "id": id,
+      "initial": initial,
+      "blockheight": blockheight.toInt(),
+      "balance": balance.toInt(),
+      "walletBalance": walletBalance.toInt(),
+      "status": status.index,
+      "maxAllowedToPay": maxAllowedToPay.toInt(),
+      "maxAllowedToReceive": maxAllowedToReceive.toInt(),
+      "maxPaymentAmount": maxPaymentAmount.toInt(),
+      "maxChanReserve": maxChanReserve.toInt(),
+      "maxInboundLiquidity": maxInboundLiquidity.toInt(),
+      "onChainFeeRate": onChainFeeRate.toInt(),
+    };
+  }
+
+  factory AccountState.fromJson(Map<String, dynamic> json) {
+    return AccountState(
+        payments: PaymentsState.initial(),
+        id: json["id"],
+        initial: json["initial"],
+        blockheight: Int64(json["blockheight"]),
+        balance: Int64(json["balance"]),
+        walletBalance: Int64(json["walletBalance"]),
+        status: json["status"] != null ? AccountStatus.values[json["status"]] : AccountStatus.DISCONNECTED,
+        maxAllowedToPay: Int64(json["maxAllowedToPay"]),
+        maxAllowedToReceive: Int64(json["maxAllowedToReceive"]),
+        maxPaymentAmount: Int64(json["maxPaymentAmount"]),
+        maxChanReserve: Int64(json["maxChanReserve"]),
+        connectedPeers: <String>[],
+        maxInboundLiquidity: Int64(json["maxInboundLiquidity"] ?? 0),
+        onChainFeeRate: Int64(json["onChainFeeRate"]));
+  }
 }
 
 class PaymentsState {

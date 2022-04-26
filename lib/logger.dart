@@ -33,7 +33,7 @@ class BreezLogger {
       debugPrint("${record.level}: ${record.message}");
     });
     // Log flutter errors
-    FlutterError.onError = (FlutterErrorDetails details) {      
+    FlutterError.onError = (FlutterErrorDetails details) {
       FlutterError.presentError(details);
       final stack = details.stack?.toString() ?? "NoStack";
       final name = details.context?.name ?? "FlutterError";

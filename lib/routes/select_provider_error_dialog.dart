@@ -3,8 +3,7 @@ import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-void showProviderErrorDialog(
-    BuildContext context, Function() onSelect) {
+void showProviderErrorDialog(BuildContext context, Function() onSelect) {
   String message = "In order to activate Breez, please ";
   message =
       "There was an error connecting to the selected provider. " + message;

@@ -11,12 +11,12 @@ import 'flushbar.dart';
 
 class EnterPaymentInfoDialog extends StatefulWidget {
   final BuildContext context;
-  final InvoiceBloc invoiceBloc;  
+  final InvoiceBloc invoiceBloc;
   final GlobalKey firstPaymentItemKey;
 
   const EnterPaymentInfoDialog(
     this.context,
-    this.invoiceBloc,    
+    this.invoiceBloc,
     this.firstPaymentItemKey,
   );
 
@@ -171,7 +171,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
               ),
             ));
             return;
-            
+
             widget.invoiceBloc.addIncomingInvoice(_paymentInfoController.text);
           }
         }),

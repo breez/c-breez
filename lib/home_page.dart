@@ -67,8 +67,14 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
     WidgetsBinding.instance!.addObserver(this);
 
     widget.accountBloc.stream.listen((acc) {
-      var activeAccountRoutes = ["/connect_to_pay", "/pay_invoice", "/create_invoice"];
-      Function addOrRemove = acc.status == AccountStatus.CONNECTED ? _hiddenRoutes.remove : _hiddenRoutes.add;
+      var activeAccountRoutes = [
+        "/connect_to_pay",
+        "/pay_invoice",
+        "/create_invoice"
+      ];
+      Function addOrRemove = acc.status == AccountStatus.CONNECTED
+          ? _hiddenRoutes.remove
+          : _hiddenRoutes.add;
       setState(() {
         for (var r in activeAccountRoutes) {
           addOrRemove(r);
@@ -80,7 +86,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   void _initListens(BuildContext context) {
     if (_listensInit) return;
     _listensInit = true;
-    _registerNotificationHandlers(context);    
+    _registerNotificationHandlers(context);
   }
 
   @override
@@ -92,7 +98,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    _initListens(context);    
+    _initListens(context);
     final texts = AppLocalizations.of(context)!;
 
     return WillPopScope(
@@ -146,12 +152,12 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           key: _scaffoldKey,
-          appBar: AppBar(            
+          appBar: AppBar(
             centerTitle: false,
             actions: [
               Padding(
                 padding: const EdgeInsets.all(14.0),
-                child: AccountRequiredActionsIndicator(                  
+                child: AccountRequiredActionsIndicator(
                   widget.lspBloc,
                 ),
               ),
@@ -192,7 +198,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
           ),
           bottomNavigationBar: BottomActionsBar(account, firstPaymentItemKey),
           floatingActionButton: QrActionButton(account, firstPaymentItemKey),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
           body: widget._screenBuilders[_activeScreen] ??
               _homePage(
                 context,
@@ -212,7 +219,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
   ) {
     return NavigationDrawer(
       true,
-      [        
+      [
         DrawerItemConfigGroup(
           _filterItems(_drawerConfigToFilter(context, user, texts)),
           groupTitle: texts.home_drawer_item_title_preferences,
@@ -288,7 +295,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
 
   void _registerNotificationHandlers(BuildContext context) {
     InvoiceNotificationsHandler(
-      context,      
+      context,
       widget.accountBloc,
       widget.invoiceBloc,
       firstPaymentItemKey,

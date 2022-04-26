@@ -12,13 +12,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class PaymentFilterSliver extends StatefulWidget {
   final ScrollController _controller;
   final double _minSize;
-  final double _maxSize;  
+  final double _maxSize;
   final PaymentsState _paymentsModel;
 
   const PaymentFilterSliver(
     this._controller,
     this._minSize,
-    this._maxSize,    
+    this._maxSize,
     this._paymentsModel,
   );
 
@@ -28,7 +28,7 @@ class PaymentFilterSliver extends StatefulWidget {
   }
 }
 
-class PaymentFilterSliverState extends State<PaymentFilterSliver> {  
+class PaymentFilterSliverState extends State<PaymentFilterSliver> {
   @override
   void initState() {
     super.initState();
@@ -51,7 +51,8 @@ class PaymentFilterSliverState extends State<PaymentFilterSliver> {
     final filter = widget._paymentsModel.filter;
     final paymentType = filter.paymentType;
 
-    bool _hasNoTypeFilter = (paymentType.contains(PaymentType.SENT) && paymentType.contains(PaymentType.RECEIVED));
+    bool _hasNoTypeFilter = (paymentType.contains(PaymentType.SENT) &&
+        paymentType.contains(PaymentType.RECEIVED));
     bool _hasNoDateFilter = (filter.endDate == null);
     bool _hasNoFilter = _hasNoTypeFilter && _hasNoDateFilter;
 
@@ -67,7 +68,9 @@ class PaymentFilterSliverState extends State<PaymentFilterSliver> {
         builder: (context, shrinkedHeight, overlapContent) {
           return AnimatedOpacity(
             duration: const Duration(milliseconds: 100),
-            opacity: !_hasNoFilter ? 1.0 : (scrollOffset - widget._maxSize / 2).clamp(0.0, 1.0),
+            opacity: !_hasNoFilter
+                ? 1.0
+                : (scrollOffset - widget._maxSize / 2).clamp(0.0, 1.0),
             child: Container(
               color: theme.customData[theme.themeId]!.dashboardBgColor,
               child: Padding(
@@ -156,10 +159,14 @@ class PaymentsFilterState extends State<PaymentsFilter> {
             ? showDialog(
                 useRootNavigator: false,
                 context: context,
-                builder: (_) => CalendarDialog(widget._paymentsModel.firstDate!),
+                builder: (_) =>
+                    CalendarDialog(widget._paymentsModel.firstDate!),
               ).then((result) {
-                widget._accountBloc.changePaymentFilter(widget._accountBloc.state.payments.filter
-                    .copyWith(filter: _getFilterType(_filter), startDate: result[0], endDate: result[1]));
+                widget._accountBloc.changePaymentFilter(
+                    widget._accountBloc.state.payments.filter.copyWith(
+                        filter: _getFilterType(_filter),
+                        startDate: result[0],
+                        endDate: result[1]));
               })
             : ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -206,7 +213,8 @@ class PaymentsFilterState extends State<PaymentsFilter> {
               setState(() {
                 _filter = value?.toString();
               });
-              widget._accountBloc.changePaymentFilter(widget._accountBloc.state.payments.filter.copyWith(
+              widget._accountBloc.changePaymentFilter(
+                  widget._accountBloc.state.payments.filter.copyWith(
                 filter: _getFilterType(_filter),
               ));
             },
@@ -242,7 +250,9 @@ class PaymentsFilterState extends State<PaymentsFilter> {
       child: IconButton(
         icon: Icon(
           Icons.more_vert,
-          color: theme.themeId == "BLUE" ? themeData.accentTextTheme.subtitle2!.color!.withOpacity(0.25) : themeData.disabledColor,
+          color: theme.themeId == "BLUE"
+              ? themeData.accentTextTheme.subtitle2!.color!.withOpacity(0.25)
+              : themeData.disabledColor,
           size: 24.0,
         ),
         onPressed: null,

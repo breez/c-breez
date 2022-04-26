@@ -14,7 +14,8 @@ class NodesDao extends DatabaseAccessor<AppDatabase> with _$NodesDaoMixin {
   Future setNodeInfo(NodeInfo nodeInfo) async {
     return transaction(() async {
       await nodes.insertOnConflictUpdate(nodeInfo.node);
-      await nodeAddresses.deleteWhere((tbl) => tbl.nodeId.equals(nodeInfo.node.nodeID));
+      await nodeAddresses
+          .deleteWhere((tbl) => tbl.nodeId.equals(nodeInfo.node.nodeID));
       await batch((batch) {
         return batch.insertAll(nodeAddresses, nodeInfo.addresses);
       });
@@ -22,24 +23,23 @@ class NodesDao extends DatabaseAccessor<AppDatabase> with _$NodesDaoMixin {
   }
 
   Stream<NodeInfo?> watchNodeInfo() {
-    return select(nodes).watch().asyncMap((nodes) async { 
+    return select(nodes).watch().asyncMap((nodes) async {
       if (nodes.isEmpty) {
         return null;
       }
       var node = nodes[0];
-      var q = select(nodeAddresses)..where((addr) => addr.nodeId.equals(node.nodeID));
-      var addresses = await q.get();      
+      var q = select(nodeAddresses)
+        ..where((addr) => addr.nodeId.equals(node.nodeID));
+      var addresses = await q.get();
       return NodeInfo(
-        Node(
-          network: node.network,
-          nodeID: node.nodeID,
-          nodeAlias: node.nodeAlias,
-          numPeers: node.numPeers,
-          version: node.version,
-          blockheight: node.blockheight
-        ),
-        addresses
-      );
-    });    
+          Node(
+              network: node.network,
+              nodeID: node.nodeID,
+              nodeAlias: node.nodeAlias,
+              numPeers: node.numPeers,
+              version: node.version,
+              blockheight: node.blockheight),
+          addresses);
+    });
   }
 }

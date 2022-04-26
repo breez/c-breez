@@ -39,7 +39,7 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
   @override
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
-    final themeData = Theme.of(context);    
+    final themeData = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +51,9 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
           texts.pos_password_admin_title,
           style: themeData.appBarTheme.textTheme!.headline6,
         ),
-        elevation: 0.0, toolbarTextStyle: themeData.appBarTheme.textTheme!.bodyText2, titleTextStyle: themeData.appBarTheme.textTheme!.headline6,
+        elevation: 0.0,
+        toolbarTextStyle: themeData.appBarTheme.textTheme!.bodyText2,
+        titleTextStyle: themeData.appBarTheme.textTheme!.headline6,
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -128,7 +130,9 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
         text: widget.submitAction,
         onPressed: () async {
           if (_formKey.currentState?.validate() == true) {
-            await context.read<UserProfileBloc>().setAdminPassword(_passwordController.text);            
+            await context
+                .read<UserProfileBloc>()
+                .setAdminPassword(_passwordController.text);
             Navigator.of(context).pop();
           }
         },

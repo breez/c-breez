@@ -1,4 +1,3 @@
-
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
@@ -13,10 +12,10 @@ import 'package:flutter_svg/svg.dart';
 import 'lsp/select_lsp_page.dart';
 import 'select_provider_error_dialog.dart';
 
-class AccountRequiredActionsIndicator extends StatefulWidget {  
+class AccountRequiredActionsIndicator extends StatefulWidget {
   final LSPBloc lspBloc;
 
-  const AccountRequiredActionsIndicator(    
+  const AccountRequiredActionsIndicator(
     this.lspBloc,
   );
 
@@ -26,7 +25,8 @@ class AccountRequiredActionsIndicator extends StatefulWidget {
   }
 }
 
-class AccountRequiredActionsIndicatorState extends State<AccountRequiredActionsIndicator> {  
+class AccountRequiredActionsIndicatorState
+    extends State<AccountRequiredActionsIndicator> {
   bool showingBackupDialog = false;
 
   @override
@@ -51,7 +51,6 @@ class AccountRequiredActionsIndicatorState extends State<AccountRequiredActionsI
     LSPState lspStatus,
     AccountState accountModel,
   ) {
-
     final navigatorState = Navigator.of(context);
 
     List<Widget> warnings = [];
@@ -104,7 +103,8 @@ class WarningAction extends StatefulWidget {
   }
 }
 
-class WarningActionState extends State<WarningAction> with SingleTickerProviderStateMixin {
+class WarningActionState extends State<WarningAction>
+    with SingleTickerProviderStateMixin {
   Animation<double>? _animation;
   AnimationController? _animationController;
 

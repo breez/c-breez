@@ -10,7 +10,11 @@ class CircularProgress extends StatelessWidget {
   final Color color;
 
   const CircularProgress(
-      {Key? key, required this.value, required this.title, required this.size, required this.color})
+      {Key? key,
+      required this.value,
+      required this.title,
+      required this.size,
+      required this.color})
       : super(key: key);
 
   @override

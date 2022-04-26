@@ -59,9 +59,9 @@ class QRScanState extends State<QRScan> {
               ),
               onPressed: () async {
                 final _picker = ImagePicker();
-                PickedFile? pickedFile =
-                    await _picker.getImage(source: ImageSource.gallery).catchError((err) {
-                });
+                PickedFile? pickedFile = await _picker
+                    .getImage(source: ImageSource.gallery)
+                    .catchError((err) {});
                 final File file = File(pickedFile!.path);
                 try {
                   if (file == null) {
@@ -82,7 +82,8 @@ class QRScanState extends State<QRScan> {
                 ? Center(
                     child: Container(
                       decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12.0)),
                           border:
                               Border.all(color: Colors.white.withOpacity(0.8))),
                       child: TextButton(

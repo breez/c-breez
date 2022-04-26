@@ -10,7 +10,8 @@ BTCAddressInfo parseBTCAddress(String scannedString) {
     address = uri.path;
     if (uri.queryParameters["amount"] != null) {
       double? btcAmount = double.tryParse(uri.queryParameters["amount"] ?? "");
-      satAmount = btcAmount != null ? BitcoinCurrency.BTC.toSats(btcAmount) : null;
+      satAmount =
+          btcAmount != null ? BitcoinCurrency.BTC.toSats(btcAmount) : null;
     }
   }
   return BTCAddressInfo(address, satAmount: satAmount);

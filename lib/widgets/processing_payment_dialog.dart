@@ -50,34 +50,35 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
 
   final bool _isInit = false;
 
-  @override void initState() {    
+  @override
+  void initState() {
     super.initState();
     _payAncClose();
-          _currentRoute = ModalRoute.of(context);
-          controller = AnimationController(
-            vsync: this,
-            duration: const Duration(milliseconds: 500),
-          );
-          colorAnimation = ColorTween(
-            begin: Theme.of(context).canvasColor,
-            end: Theme.of(context).backgroundColor,
-          ).animate(controller!)
-            ..addListener(() {
-              setState(() {});
-            });
-          borderAnimation = Tween<double>(begin: 0.0, end: 12.0)
-              .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
-          opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
-              .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
-          controller!.value = 1.0;
-          controller!.addStatusListener((status) {
-            if (status == AnimationStatus.dismissed) {
-              if (widget.popOnCompletion) {
-                Navigator.of(context).removeRoute(_currentRoute!);
-              }
-              widget._onStateChange(PaymentRequestState.PAYMENT_COMPLETED);
-            }
-          });
+    _currentRoute = ModalRoute.of(context);
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    colorAnimation = ColorTween(
+      begin: Theme.of(context).canvasColor,
+      end: Theme.of(context).backgroundColor,
+    ).animate(controller!)
+      ..addListener(() {
+        setState(() {});
+      });
+    borderAnimation = Tween<double>(begin: 0.0, end: 12.0)
+        .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
+    opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
+    controller!.value = 1.0;
+    controller!.addStatusListener((status) {
+      if (status == AnimationStatus.dismissed) {
+        if (widget.popOnCompletion) {
+          Navigator.of(context).removeRoute(_currentRoute!);
+        }
+        widget._onStateChange(PaymentRequestState.PAYMENT_COMPLETED);
+      }
+    });
   }
 
   _closeDialog() {
@@ -93,7 +94,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
         Navigator.of(context).removeRoute(_currentRoute!);
       }
       widget._onStateChange(PaymentRequestState.PAYMENT_COMPLETED);
-    });   
+    });
   }
 
   void _animateClose() {
@@ -112,7 +113,8 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
     final safeArea = queryData.size.height - statusBarHeight;
     // We subtract dialog size from safe area and divide by half because the dialog
     // is at the center of the screen (distances to top and bottom are equal).
-    RenderBox? box = _dialogKey!.currentContext!.findRenderObject() as RenderBox;    
+    RenderBox? box =
+        _dialogKey!.currentContext!.findRenderObject() as RenderBox;
     startHeight = box.size.height;
     double yMargin = (safeArea - box.size.height) / 2;
 
@@ -133,7 +135,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   }
 
   @override
-  void dispose() {    
+  void dispose() {
     controller?.dispose();
     super.dispose();
   }
@@ -141,8 +143,8 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   @override
   Widget build(BuildContext context) {
     return _animating!
-          ? _createAnimatedContent(context)
-          : _createContentDialog(context);    
+        ? _createAnimatedContent(context)
+        : _createContentDialog(context);
   }
 
   List<Widget> _buildProcessingPaymentDialog(BuildContext context) {

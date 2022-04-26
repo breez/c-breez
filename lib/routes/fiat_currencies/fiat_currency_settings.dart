@@ -1,4 +1,3 @@
-
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
@@ -39,8 +38,9 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     final texts = AppLocalizations.of(context)!;
 
     return BlocBuilder<CurrencyBoc, CurrencyState>(
-      buildWhen: (s1, s2) => !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),      
-      builder: (context, currencyState) {        
+      buildWhen: (s1, s2) =>
+          !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
+      builder: (context, currencyState) {
         if (currencyState.fiatCurrenciesData.isEmpty ||
             currencyState.fiatCurrency == null) {
           return const Loader();
@@ -55,7 +55,8 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
               texts.fiat_currencies_title,
               style: themeData.appBarTheme.titleTextStyle,
             ),
-            elevation: 0.0, toolbarTextStyle: themeData.appBarTheme.toolbarTextStyle, 
+            elevation: 0.0,
+            toolbarTextStyle: themeData.appBarTheme.toolbarTextStyle,
             titleTextStyle: themeData.appBarTheme.titleTextStyle,
           ),
           body: DragAndDropLists(
@@ -110,7 +111,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     final texts = AppLocalizations.of(context)!;
     final themeData = Theme.of(context);
 
-    final currencyData = currencyState.fiatCurrenciesData[index];    
+    final currencyData = currencyState.fiatCurrenciesData[index];
     final prefCurrencies = currencyState.preferredCurrencies.toList();
 
     return CheckboxListTile(
@@ -187,7 +188,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     BuildContext context,
     CurrencyState currencyState,
     List<String> preferredFiatCurrencies,
-  ) {    
-    context.read<CurrencyBoc>().setPreferredCurrencies(preferredFiatCurrencies);   
+  ) {
+    context.read<CurrencyBoc>().setPreferredCurrencies(preferredFiatCurrencies);
   }
 }

@@ -12,7 +12,7 @@ import 'package:c_breez/utils/lnurl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
-class InvoiceBloc extends Cubit<InvoiceState> {  
+class InvoiceBloc extends Cubit<InvoiceState> {
   final LightningLinksService _lightningLinks;
   final Device _device;
 
@@ -27,10 +27,12 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   }
 
   Stream<Invoice> _watchIncomingInvoices() {
-    return Rx.merge([      
+    return Rx.merge([
       _decodeInvoiceController.stream,
       _lightningLinks.linksNotifications,
-      _device.distinctClipboardStream.where((s) => s.toLowerCase().startsWith("ln") || s.toLowerCase().startsWith("lightning:"))
+      _device.distinctClipboardStream.where((s) =>
+          s.toLowerCase().startsWith("ln") ||
+          s.toLowerCase().startsWith("lightning:"))
     ])
         .map((s) {
           String lower = s.toLowerCase();
@@ -45,17 +47,23 @@ class InvoiceBloc extends Cubit<InvoiceState> {
         .where((s) => !s.toLowerCase().startsWith("lnurl"))
         .map((bolt11) {
           var bolt = Bolt11.fromPaymentRequest(bolt11);
-          return Invoice(bolt11: bolt11, description: bolt.description, amount: bolt.amount, expiry: bolt.expiry);          
+          return Invoice(
+              bolt11: bolt11,
+              description: bolt.description,
+              amount: bolt.amount,
+              expiry: bolt.expiry);
         });
   }
 
-  Stream<DecodedClipboardData> get decodedClipboardStream => _device.rawClipboardStream.map((clipboardData) {
+  Stream<DecodedClipboardData> get decodedClipboardStream =>
+      _device.rawClipboardStream.map((clipboardData) {
         if (clipboardData.isEmpty) {
           return DecodedClipboardData.unrecognized();
         }
         var nodeID = parseNodeId(clipboardData);
         if (nodeID != null) {
-          return DecodedClipboardData(data: nodeID, type: ClipboardDataType.nodeID);
+          return DecodedClipboardData(
+              data: nodeID, type: ClipboardDataType.nodeID);
         }
         String normalized = clipboardData.toLowerCase();
         if (normalized.startsWith("lightning:")) {
@@ -63,15 +71,18 @@ class InvoiceBloc extends Cubit<InvoiceState> {
         }
 
         if (normalized.startsWith("lnurl")) {
-          return DecodedClipboardData(data: clipboardData, type: ClipboardDataType.lnurl);
+          return DecodedClipboardData(
+              data: clipboardData, type: ClipboardDataType.lnurl);
         }
 
         if (isLightningAddress(normalized)) {
-          return DecodedClipboardData(data: normalized, type: ClipboardDataType.lightningAddress);
+          return DecodedClipboardData(
+              data: normalized, type: ClipboardDataType.lightningAddress);
         }
 
         if (normalized.startsWith("ln")) {
-          return DecodedClipboardData(data: normalized, type: ClipboardDataType.payamentRequest);
+          return DecodedClipboardData(
+              data: normalized, type: ClipboardDataType.payamentRequest);
         }
         return DecodedClipboardData.unrecognized();
       });

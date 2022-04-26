@@ -436,7 +436,7 @@ class _DropdownRoutePage<T> extends StatelessWidget {
       padding: padding.resolve(textDirection),
     );
 
- menu = Theme(data: theme, child: menu);
+    menu = Theme(data: theme, child: menu);
 
     return MediaQuery.removePadding(
       context: context,
@@ -817,7 +817,7 @@ class _BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>>
   Color get _iconColor {
     // These colors are not defined in the Material Design spec.
     if (_enabled) {
-      if (widget.iconEnabledColor != null) return widget.iconEnabledColor!; 
+      if (widget.iconEnabledColor != null) return widget.iconEnabledColor!;
 
       switch (Theme.of(context).brightness) {
         case Brightness.light:
@@ -837,11 +837,10 @@ class _BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>>
     }
   }
 
-  bool get _enabled =>
-      widget.items.isNotEmpty;
+  bool get _enabled => widget.items.isNotEmpty;
 
   Orientation _getOrientation(BuildContext context) {
-    Orientation result = MediaQuery.of(context).orientation;    
+    Orientation result = MediaQuery.of(context).orientation;
     return result;
   }
 
@@ -879,7 +878,8 @@ class _BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>>
     if (widget.hint != null || (!_enabled)) {
       final Widget emplacedHint = _enabled
           ? widget.hint!
-          : DropdownMenuItem<Widget>(child: widget.disabledHint ?? widget.hint!);
+          : DropdownMenuItem<Widget>(
+              child: widget.disabledHint ?? widget.hint!);
       hintIndex = items.length;
       items.add(DefaultTextStyle(
         style: _textStyle.copyWith(color: Theme.of(context).hintColor),
@@ -1057,7 +1057,8 @@ class DropdownButtonFormField<T> extends FormField<T> {
 
 class _DropdownButtonFormFieldState<T> extends FormFieldState<T> {
   @override
-  DropdownButtonFormField<T> get widget => super.widget as DropdownButtonFormField<T>;
+  DropdownButtonFormField<T> get widget =>
+      super.widget as DropdownButtonFormField<T>;
 
   @override
   void didChange(T? value) {

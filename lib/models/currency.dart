@@ -11,7 +11,7 @@ class BitcoinCurrency extends Object {
 
   const BitcoinCurrency._internal(this.tickerSymbol);
 
-  factory BitcoinCurrency.fromTickerSymbol(String tickerSymbol) { 
+  factory BitcoinCurrency.fromTickerSymbol(String tickerSymbol) {
     return currencies.firstWhere(
         (c) => c.tickerSymbol.toUpperCase() == tickerSymbol.toUpperCase());
   }
@@ -29,7 +29,8 @@ class BitcoinCurrency extends Object {
           removeTrailingZeros: removeTrailingZeros,
           userInput: userInput);
 
-  Int64 parse(String amountStr) => BitcoinCurrencyFormatter().parse(amountStr, this);
+  Int64 parse(String amountStr) =>
+      BitcoinCurrencyFormatter().parse(amountStr, this);
 
   int parseToInt(
     String amountStr, {
@@ -44,7 +45,8 @@ class BitcoinCurrency extends Object {
     return value;
   }
 
-  Int64 toSats(double amount) => BitcoinCurrencyFormatter().toSats(amount, this);
+  Int64 toSats(double amount) =>
+      BitcoinCurrencyFormatter().toSats(amount, this);
 
   String get displayName =>
       tickerSymbol.toLowerCase() == "sat" ? "sats" : tickerSymbol;
@@ -74,7 +76,6 @@ class BitcoinCurrency extends Object {
   double get satConversionRate => this == SAT ? 1.0 : 100000000;
 }
 
-
 class FiatCurrency {
   String name;
   Map<String, String> localizedName;
@@ -98,7 +99,7 @@ class FiatCurrency {
   });
 
   FiatCurrency localeAware(String langualgeTag, String languageCode) {
-    if (localeOverrides.isEmpty) return this;    
+    if (localeOverrides.isEmpty) return this;
     if (localeOverrides.containsKey(langualgeTag)) {
       return localeOverrides[langualgeTag]!;
     }

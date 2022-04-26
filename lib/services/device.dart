@@ -6,8 +6,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Device {  
-
+class Device {
   final _distinctClipboardController = BehaviorSubject<String>();
   Stream get distinctClipboardStream => _distinctClipboardController.stream;
 
@@ -23,7 +22,7 @@ class Device {
       _lastClipping =
           preferences.getString(LAST_CLIPPING_PREFERENCES_KEY) ?? "";
       fetchClipboard(preferences);
-    });    
+    });
   }
 
   Future setClipboardText(String text) async {

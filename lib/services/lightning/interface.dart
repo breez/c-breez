@@ -5,7 +5,8 @@ import 'package:c_breez/services/lightning/models.dart';
 import 'package:fixnum/fixnum.dart';
 
 abstract class LightningService {
-  Future<List<int>> register(Uint8List seed, {String network = "bitcoin", String email});
+  Future<List<int>> register(Uint8List seed,
+      {String network = "bitcoin", String email});
 
   Future<List<int>> recover(Uint8List seed);
 
@@ -31,10 +32,13 @@ abstract class LightningService {
 
   Future connectPeer(String nodeID, String address);
 
-  Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, Int64 amount, String description,
+  Future<OutgoingLightningPayment> sendSpontaneousPayment(
+      String destNode, Int64 amount, String description,
       {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv});
 
-  Future<OutgoingLightningPayment> sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64 amount});
+  Future<OutgoingLightningPayment> sendPaymentForRequest(
+      String blankInvoicePaymentRequest,
+      {Int64 amount});
 
   Future<List<OutgoingLightningPayment>> getPayments();
 

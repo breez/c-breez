@@ -23,7 +23,8 @@ class InitialWalkthroughPage extends StatefulWidget {
   State createState() => InitialWalkthroughPageState();
 }
 
-class InitialWalkthroughPageState extends State<InitialWalkthroughPage> with TickerProviderStateMixin, WidgetsBindingObserver {
+class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   AnimationController? _controller;
   Animation<int>? _animation;
 
@@ -92,7 +93,8 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage> with Tic
                     child: AnimatedBuilder(
                       animation: _animation!,
                       builder: (BuildContext context, Widget? child) {
-                        String frame = _animation!.value.toString().padLeft(2, '0');
+                        String frame =
+                            _animation!.value.toString().padLeft(2, '0');
                         return Image.asset(
                           'src/animations/welcome/frame_${frame}_delay-0.04s.png',
                           gaplessPlayback: true,

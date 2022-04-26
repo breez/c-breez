@@ -32,15 +32,18 @@ class NodeCredentials {
   final String deviceCert;
   final String deviceKey;
 
-  NodeCredentials(this.caCert, this.deviceCert, this.deviceKey, this.nodeId, this.nodePrivateKey, this.secret);
+  NodeCredentials(this.caCert, this.deviceCert, this.deviceKey, this.nodeId,
+      this.nodePrivateKey, this.secret);
 
   factory NodeCredentials.fromBuffer(List<int> buffer) {
     List<String> parts = String.fromCharCodes(buffer).split("***");
-    return NodeCredentials(parts[0], parts[1], parts[2], HEX.decode(parts[3]), HEX.decode(parts[4]), HEX.decode(parts[5]));
+    return NodeCredentials(parts[0], parts[1], parts[2], HEX.decode(parts[3]),
+        HEX.decode(parts[4]), HEX.decode(parts[5]));
   }
 
   List<int> writeBuffer() {
-    return "$caCert***$deviceCert***$deviceKey***${HEX.encode(nodeId ?? [])}***${HEX.encode(nodePrivateKey ?? [])}***${HEX.encode(secret ?? [])}".codeUnits;
+    return "$caCert***$deviceCert***$deviceKey***${HEX.encode(nodeId ?? [])}***${HEX.encode(nodePrivateKey ?? [])}***${HEX.encode(secret ?? [])}"
+        .codeUnits;
   }
 }
 
@@ -86,7 +89,11 @@ class ListFundsOutput {
   final String address;
   final OutputStatus status;
 
-  ListFundsOutput({required this.outpoint, required this.amount, required this.address, required this.status});
+  ListFundsOutput(
+      {required this.outpoint,
+      required this.amount,
+      required this.address,
+      required this.status});
 }
 
 class ListFundsChannel {
@@ -137,7 +144,7 @@ class Htlc {
 enum ChannelState { PENDING_OPEN, OPEN, PENDING_CLOSED, CLOSED }
 
 class Channel {
-  final ChannelState state;  
+  final ChannelState state;
   final String shortChannelId;
   final int direction;
   final String channelId;
@@ -154,7 +161,7 @@ class Channel {
   final List<Htlc> htlcs;
 
   Channel(
-      {required this.state,      
+      {required this.state,
       required this.shortChannelId,
       required this.direction,
       required this.channelId,
@@ -178,7 +185,12 @@ class Peer {
   final String features;
   final List<Channel> channels;
 
-  Peer({required this.id, required this.connected, required this.addresses, required this.features, required this.channels});
+  Peer(
+      {required this.id,
+      required this.connected,
+      required this.addresses,
+      required this.features,
+      required this.channels});
 }
 
 enum InvoiceStatus { PAID, UNPAID, EXPIRED }

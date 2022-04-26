@@ -140,7 +140,8 @@ class _CalendarDialogState extends State<CalendarDialog> {
     if (difference.inDays < 0) {
       setState(() {
         isStartBtn ? _startDate = selectedDate : _endDate = selectedDate;
-        _startDateController.text = BreezDateUtils.formatYearMonthDay(_startDate);
+        _startDateController.text =
+            BreezDateUtils.formatYearMonthDay(_startDate);
         _endDateController.text = BreezDateUtils.formatYearMonthDay(_endDate);
       });
     } else {
@@ -150,7 +151,8 @@ class _CalendarDialogState extends State<CalendarDialog> {
         } else {
           _endDate = selectedDate;
         }
-        _startDateController.text = BreezDateUtils.formatYearMonthDay(_startDate);
+        _startDateController.text =
+            BreezDateUtils.formatYearMonthDay(_startDate);
         _endDateController.text = BreezDateUtils.formatYearMonthDay(_endDate);
       });
     }

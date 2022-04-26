@@ -22,7 +22,7 @@ class _StatusTextState extends State<StatusText> {
   @override
   Widget build(BuildContext context) {
     if (widget.message != null) {
-     return LoadingAnimatedText(widget.message!);
+      return LoadingAnimatedText(widget.message!);
     }
 
     if (widget.account.status == AccountStatus.CONNECTING) {
@@ -59,8 +59,8 @@ class _StatusTextState extends State<StatusText> {
     }
 
     return Text("Breez is opening a secure connection",
-            style: Theme.of(context).accentTextTheme.bodyText2,
-            textAlign: TextAlign.center);
+        style: Theme.of(context).accentTextTheme.bodyText2,
+        textAlign: TextAlign.center);
   }
 }
 

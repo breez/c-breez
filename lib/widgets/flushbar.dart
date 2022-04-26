@@ -15,7 +15,7 @@ Flushbar showFlushbar(
 }) {
   final themeData = Theme.of(context);
   final texts = AppLocalizations.of(context)!;
-  
+
   Flushbar? flush;
   flush = Flushbar(
     flushbarPosition: position,

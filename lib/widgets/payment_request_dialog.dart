@@ -66,7 +66,7 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
     if (_state == PaymentRequestState.PROCESSING_PAYMENT) {
       return false;
     }
-  
+
     widget.accountBloc.cancelPayment(widget.invoice.bolt11);
     return true;
   }
@@ -75,7 +75,8 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
     const double minHeight = 220;
     if (_state == PaymentRequestState.PROCESSING_PAYMENT) {
       return ProcessingPaymentDialog(widget.context, () {
-        return widget.accountBloc.sendPayment(widget.invoice.bolt11, _amountToPay!);        
+        return widget.accountBloc
+            .sendPayment(widget.invoice.bolt11, _amountToPay!);
       }, widget.accountBloc, widget.firstPaymentItemKey, _onStateChange,
           minHeight);
     } else if (_state == PaymentRequestState.WAITING_FOR_CONFIRMATION) {
@@ -100,8 +101,8 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
           () => _onStateChange(PaymentRequestState.USER_CANCELLED),
           () => _onStateChange(PaymentRequestState.WAITING_FOR_CONFIRMATION),
           (bolt11, amount) {
-          _bolt11 = bolt11;
-          _amountToPay = amount;
+        _bolt11 = bolt11;
+        _amountToPay = amount;
         _onStateChange(PaymentRequestState.PROCESSING_PAYMENT);
       }, (map) => _setAmountToPay(map), minHeight);
     }
@@ -115,7 +116,7 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
     }
     if (state == PaymentRequestState.USER_CANCELLED) {
       Navigator.of(context).removeRoute(_currentRoute!);
-      widget.accountBloc.cancelPayment(widget.invoice.bolt11);      
+      widget.accountBloc.cancelPayment(widget.invoice.bolt11);
       widget.onComplete();
       return;
     }

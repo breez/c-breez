@@ -107,10 +107,12 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           List<Widget> children = [];
           _addIfNotNull(children, _buildPayeeNameWidget(context));
           _addIfNotNull(children, _buildRequestPayTextWidget(context));
-          _addIfNotNull(children, _buildAmountWidget(context, account, currencyState));
+          _addIfNotNull(
+              children, _buildAmountWidget(context, account, currencyState));
           _addIfNotNull(children, _buildDescriptionWidget(context));
           _addIfNotNull(children, _buildErrorMessage(context, currencyState));
-          _addIfNotNull(children, _buildActions(context, currencyState, account));
+          _addIfNotNull(
+              children, _buildActions(context, currencyState, account));
 
           return Container(
             padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 16.0),
@@ -137,7 +139,10 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         ? null
         : Text(
             widget.invoice.payeeName,
-            style: Theme.of(context).primaryTextTheme.headline4!.copyWith(fontSize: 16),
+            style: Theme.of(context)
+                .primaryTextTheme
+                .headline4!
+                .copyWith(fontSize: 16),
             textAlign: TextAlign.center,
           );
   }
@@ -148,13 +153,16 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     final payeeName = widget.invoice.payeeName;
 
     return Text(
-      payeeName.isEmpty ? texts.payment_request_dialog_requested : texts.payment_request_dialog_requesting,
+      payeeName.isEmpty
+          ? texts.payment_request_dialog_requested
+          : texts.payment_request_dialog_requesting,
       style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
       textAlign: TextAlign.center,
     );
   }
 
-  Widget _buildAmountWidget(BuildContext context, AccountState account, CurrencyState currencyState) {
+  Widget _buildAmountWidget(
+      BuildContext context, AccountState account, CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
@@ -171,7 +179,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
             primary: themeData.textTheme.button!.color!,
           ),
           primaryColor: themeData.textTheme.button!.color!,
-          errorColor: theme.themeId == "BLUE" ? Colors.red : themeData.errorColor,
+          errorColor:
+              theme.themeId == "BLUE" ? Colors.red : themeData.errorColor,
         ),
         child: Form(
           autovalidateMode: AutovalidateMode.always,
@@ -183,13 +192,17 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
               child: AmountFormField(
                 context: context,
                 texts: texts,
-                bitcoinCurrency: BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker),
+                bitcoinCurrency: BitcoinCurrency.fromTickerSymbol(
+                    currencyState.bitcoinTicker),
                 iconColor: themeData.primaryIconTheme.color,
                 focusNode: _amountFocusNode,
                 controller: _invoiceAmountController,
-                validatorFn:
-                    PaymentValidator(context.read<AccountBloc>().validatePayment, currencyState.bitcoinCurrency).validateOutgoing,
-                style: themeData.dialogTheme.contentTextStyle!.copyWith(height: 1.0),
+                validatorFn: PaymentValidator(
+                        context.read<AccountBloc>().validatePayment,
+                        currencyState.bitcoinCurrency)
+                    .validateOutgoing,
+                style: themeData.dialogTheme.contentTextStyle!
+                    .copyWith(height: 1.0),
               ),
             ),
           ),
@@ -199,8 +212,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
 
     FiatConversion? fiatConversion;
     if (currencyState.fiatEnabled) {
-      fiatConversion =
-        FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+      fiatConversion = FiatConversion(
+          currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     }
     return GestureDetector(
       child: ConstrainedBox(
@@ -210,7 +223,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         child: Text(
           _showFiatCurrency && fiatConversion != null
               ? fiatConversion.format(widget.invoice.amount)
-              : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker).format(widget.invoice.amount),
+              : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
+                  .format(widget.invoice.amount),
           style: themeData.primaryTextTheme.headline5,
           textAlign: TextAlign.center,
         ),
@@ -246,8 +260,12 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
                 child: SingleChildScrollView(
                   child: AutoSizeText(
                     description,
-                    style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
-                    textAlign: description.length > 40 && !description.contains("\n") ? TextAlign.start : TextAlign.center,
+                    style: themeData.primaryTextTheme.headline3!
+                        .copyWith(fontSize: 16),
+                    textAlign:
+                        description.length > 40 && !description.contains("\n")
+                            ? TextAlign.start
+                            : TextAlign.center,
                   ),
                 ),
               ),
@@ -255,9 +273,12 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           );
   }
 
-  Widget? _buildErrorMessage(BuildContext context, CurrencyState currencyState) {
-    final validationError =
-        PaymentValidator(context.read<AccountBloc>().validatePayment, currencyState.bitcoinCurrency).validateOutgoing(
+  Widget? _buildErrorMessage(
+      BuildContext context, CurrencyState currencyState) {
+    final validationError = PaymentValidator(
+            context.read<AccountBloc>().validatePayment,
+            currencyState.bitcoinCurrency)
+        .validateOutgoing(
       amountToPay(currencyState),
     );
     if (widget.invoice.amount == 0) {
@@ -280,7 +301,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     );
   }
 
-  Widget _buildActions(BuildContext context, CurrencyState currency, AccountState accState) {
+  Widget _buildActions(
+      BuildContext context, CurrencyState currency, AccountState accState) {
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
@@ -302,7 +324,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
             if (widget.invoice.amount == 0) {
               _amountToPayMap["_amountToPay"] = toPay;
               _amountToPayMap["_amountToPayStr"] =
-                  BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker).format(amountToPay(currency));
+                  BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker)
+                      .format(amountToPay(currency));
               widget._setAmountToPay(_amountToPayMap);
               widget._onWaitingConfirmation();
             } else {
@@ -339,7 +362,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     Int64 amount = widget.invoice.amount;
     if (amount == 0) {
       try {
-        amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker).parse(_invoiceAmountController.text);
+        amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker)
+            .parse(_invoiceAmountController.text);
       } catch (e) {}
     }
     return amount;

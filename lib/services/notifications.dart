@@ -10,7 +10,7 @@ abstract class Notifications {
 }
 
 class FirebaseNotifications implements Notifications {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;  
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   final StreamController<Map<dynamic, dynamic>> _notificationController =
       BehaviorSubject<Map<dynamic, dynamic>>();
@@ -18,7 +18,7 @@ class FirebaseNotifications implements Notifications {
   Stream<Map<dynamic, dynamic>> get notifications =>
       _notificationController.stream;
 
-  FirebaseNotifications() {    
+  FirebaseNotifications() {
     FirebaseMessaging.onMessage.listen(_onMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(_onResume);
   }
@@ -43,9 +43,10 @@ class FirebaseNotifications implements Notifications {
 
   @override
   Future<String?> getToken() async {
-    NotificationSettings firebaseNotificationSettings = await _firebaseMessaging.requestPermission(
-        sound: true, badge: true, alert: true);
-    if(firebaseNotificationSettings.authorizationStatus == AuthorizationStatus.authorized){
+    NotificationSettings firebaseNotificationSettings = await _firebaseMessaging
+        .requestPermission(sound: true, badge: true, alert: true);
+    if (firebaseNotificationSettings.authorizationStatus ==
+        AuthorizationStatus.authorized) {
       return _firebaseMessaging.getToken();
     } else {
       return null;

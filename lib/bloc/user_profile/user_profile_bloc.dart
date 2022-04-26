@@ -11,14 +11,16 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
   final BreezServer _breezServer;
   final Notifications _notifications;
 
-  UserProfileBloc(this._breezServer, this._notifications) : super(UserProfileState.initial());
+  UserProfileBloc(this._breezServer, this._notifications)
+      : super(UserProfileState.initial());
 
   Future registerForNotifications() async {
     String? token = await _notifications.getToken();
     if (token != null) {
       var userID = await _breezServer.registerDevice(token, token);
       emit(state.copyWith(
-          profileSettings: state.profileSettings.copyWith(token: token, userID: userID, registrationRequested: true)));
+          profileSettings: state.profileSettings.copyWith(
+              token: token, userID: userID, registrationRequested: true)));
     }
   }
 
@@ -46,7 +48,8 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
         color: color ?? profile.color,
         animal: animal ?? profile.animal,
         themeId: themeId ?? profile.themeId,
-        registrationRequested: registrationRequested ?? profile.registrationRequested,
+        registrationRequested:
+            registrationRequested ?? profile.registrationRequested,
         hideBalance: hideBalance ?? profile.hideBalance);
     emit(state.copyWith(profileSettings: profile));
   }
@@ -61,7 +64,8 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
 
   @override
   UserProfileState fromJson(Map<String, dynamic> json) {
-    return UserProfileState(profileSettings: UserProfileSettings.fromJson(json));
+    return UserProfileState(
+        profileSettings: UserProfileSettings.fromJson(json));
   }
 
   @override

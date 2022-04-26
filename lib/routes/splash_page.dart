@@ -3,8 +3,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SplashPage extends StatefulWidget {  
-
+class SplashPage extends StatefulWidget {
   const SplashPage();
 
   @override
@@ -25,7 +24,7 @@ class SplashPageState extends State<SplashPage> {
     } else {
       Timer(const Duration(milliseconds: 1000), () {
         Navigator.of(context).pushReplacementNamed('/');
-      });      
+      });
     }
   }
 

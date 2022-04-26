@@ -113,7 +113,9 @@ class AccountState {
         blockheight: Int64(json["blockheight"]),
         balance: Int64(json["balance"]),
         walletBalance: Int64(json["walletBalance"]),
-        status: json["status"] != null ? AccountStatus.values[json["status"]] : AccountStatus.DISCONNECTED,
+        status: json["status"] != null
+            ? AccountStatus.values[json["status"]]
+            : AccountStatus.DISCONNECTED,
         maxAllowedToPay: Int64(json["maxAllowedToPay"]),
         maxAllowedToReceive: Int64(json["maxAllowedToReceive"]),
         maxPaymentAmount: Int64(json["maxPaymentAmount"]),
@@ -130,13 +132,22 @@ class PaymentsState {
   final PaymentFilterModel filter;
   final DateTime? firstDate;
 
-  PaymentsState(this.nonFilteredItems, this.paymentsList, this.filter, [this.firstDate]);
+  PaymentsState(this.nonFilteredItems, this.paymentsList, this.filter,
+      [this.firstDate]);
 
-  PaymentsState.initial() : this(<PaymentInfo>[], <PaymentInfo>[], PaymentFilterModel.initial(), DateTime(DateTime.now().year));
+  PaymentsState.initial()
+      : this(<PaymentInfo>[], <PaymentInfo>[], PaymentFilterModel.initial(),
+            DateTime(DateTime.now().year));
 
   PaymentsState copyWith(
-      {List<PaymentInfo>? nonFilteredItems, List<PaymentInfo>? paymentsList, PaymentFilterModel? filter, DateTime? firstDate}) {
-    return PaymentsState(nonFilteredItems ?? this.nonFilteredItems, paymentsList ?? this.paymentsList, filter ?? this.filter,
+      {List<PaymentInfo>? nonFilteredItems,
+      List<PaymentInfo>? paymentsList,
+      PaymentFilterModel? filter,
+      DateTime? firstDate}) {
+    return PaymentsState(
+        nonFilteredItems ?? this.nonFilteredItems,
+        paymentsList ?? this.paymentsList,
+        filter ?? this.filter,
         firstDate ?? this.firstDate);
   }
 }

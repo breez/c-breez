@@ -22,7 +22,7 @@ WillPopCallback willPopCallback(
       if (ok == true && immediateExit) {
         exit(0);
       }
-      return ok==true;
+      return ok == true;
     });
   };
 }

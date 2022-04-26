@@ -21,7 +21,8 @@ import './account_state.dart';
 const MAX_PAYMENT_AMOUNT = 4294967;
 
 class AccountBloc extends Cubit<AccountState> with HydratedMixin {
-  static const String PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY = "payment_filter_settings";
+  static const String PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY =
+      "payment_filter_settings";
   static const String ACCOUNT_KEY = "account_key";
   static const String ACCOUNT_CREDS_KEY = "account_creds_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
@@ -31,7 +32,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   final KeyChain _keyChain;
   bool started = false;
 
-  AccountBloc(this._breezLib, this._appStorage, this._keyChain) : super(AccountState.initial()) {
+  AccountBloc(this._breezLib, this._appStorage, this._keyChain)
+      : super(AccountState.initial()) {
     _watchAccountChanges().listen((acc) {
       emit(acc);
     });
@@ -50,7 +52,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future exportKeyFiles(Directory destDir) async {
     var keys = await _breezLib.exportKeys();
     for (var k in keys) {
-      File(p.join(destDir.path, k.name)).writeAsBytesSync(k.content, flush: true);
+      File(p.join(destDir.path, k.name))
+          .writeAsBytesSync(k.content, flush: true);
     }
   }
 
@@ -58,7 +61,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _breezLib.initWithCredentials(creds);
   }
 
-  Future<List<int>> startNewNode(Uint8List seed, {String network = "bitcoin", String email = ""}) async {
+  Future<List<int>> startNewNode(Uint8List seed,
+      {String network = "bitcoin", String email = ""}) async {
     if (started) {
       throw Exception("Node already started");
     }
@@ -104,7 +108,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     throw Exception("not implemented");
   }
 
-  Future sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
+  Future sendSpontaneousPayment(
+      String nodeID, String description, Int64 amountSat) async {
     await _breezLib.sendSpontaneousPayment(nodeID, amountSat, description);
     await syncStateWithNode();
   }
@@ -142,12 +147,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void changePaymentFilter(PaymentFilterModel filter) {
-    _appStorage.updateSettings(PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY, json.encode(filter.toJson()));
+    _appStorage.updateSettings(
+        PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY, json.encode(filter.toJson()));
   }
 
   Future<Invoice> addInvoice(
-      {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
-    var invoice = await _breezLib.addInvoice(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
+      {String payeeName = "",
+      String description = "",
+      String logo = "",
+      required Int64 amount,
+      Int64? expiry}) async {
+    var invoice = await _breezLib.addInvoice(amount,
+        description: description,
+        expiry: expiry ?? Int64(defaultInvoiceExpiry));
     await syncStateWithNode();
     return Invoice(
         amount: invoice.amountSats,
@@ -157,23 +169,40 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Stream<AccountState> _watchAccountChanges() {
-    return Rx.combineLatest6<List<PaymentInfo>, PaymentFilterModel, db.NodeInfo?, List<db.OffChainFund>, List<db.OnChainFund>,
-            List<db.PeerWithChannels>, AccountState>(
+    return Rx.combineLatest6<
+            List<PaymentInfo>,
+            PaymentFilterModel,
+            db.NodeInfo?,
+            List<db.OffChainFund>,
+            List<db.OnChainFund>,
+            List<db.PeerWithChannels>,
+            AccountState>(
         _paymentsStream(),
         _paymentsFilterStream(),
         _appStorage.watchNodeInfo(),
         _appStorage.watchOffchainFunds(),
         _appStorage.watchOnchainFunds(),
-        _appStorage.watchPeers(), (payments, paymentsFilter, nodeInfo, offChainFunds, onChainFunds, peers) {
-      return _assembleAccountState(payments, paymentsFilter, nodeInfo, offChainFunds, onChainFunds, peers);
+        _appStorage.watchPeers(), (payments, paymentsFilter, nodeInfo,
+            offChainFunds, onChainFunds, peers) {
+      return _assembleAccountState(payments, paymentsFilter, nodeInfo,
+          offChainFunds, onChainFunds, peers);
     });
   }
 
-  AccountState _assembleAccountState(List<PaymentInfo> payments, PaymentFilterModel paymentsFilter, db.NodeInfo? nodeInfo,
-      List<db.OffChainFund> offChainFunds, List<db.OnChainFund> onChainFunds, List<db.PeerWithChannels> peers) {
-    var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat) ~/ 1000;
+  AccountState _assembleAccountState(
+      List<PaymentInfo> payments,
+      PaymentFilterModel paymentsFilter,
+      db.NodeInfo? nodeInfo,
+      List<db.OffChainFund> offChainFunds,
+      List<db.OnChainFund> onChainFunds,
+      List<db.PeerWithChannels> peers) {
+    var channelsBalance = offChainFunds.fold<Int64>(
+            Int64(0), (balance, element) => balance + element.ourAmountMsat) ~/
+        1000;
 
-    var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsat) ~/ 1000;
+    var walletBalance = onChainFunds.fold<Int64>(
+            Int64(0), (balance, element) => balance + element.amountMsat) ~/
+        1000;
 
     var channels = List<db.Channel>.empty(growable: true);
     List<String> peersList = List<String>.empty(growable: true);
@@ -181,9 +210,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       peersList.add(p.peer.peerId);
       channels.addAll(p.channels);
     }
-    bool hasActive = channels.any((c) => c.channelState == db.ChannelState.OPEN.index);
-    bool hasPendingOpen = channels.any((c) => c.channelState == db.ChannelState.PENDING_OPEN.index);
-    bool hasPendingClose = channels.any((c) => c.channelState == db.ChannelState.PENDING_CLOSED.index);
+    bool hasActive =
+        channels.any((c) => c.channelState == db.ChannelState.OPEN.index);
+    bool hasPendingOpen = channels
+        .any((c) => c.channelState == db.ChannelState.PENDING_OPEN.index);
+    bool hasPendingClose = channels
+        .any((c) => c.channelState == db.ChannelState.PENDING_CLOSED.index);
 
     AccountStatus accStatus = AccountStatus.DISCONNECTED;
     if (hasActive) {
@@ -223,52 +255,60 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       connectedPeers: peersList,
       onChainFeeRate: Int64(0),
       maxInboundLiquidity: maxReceivableSingleChannel,
-      payments: PaymentsState(payments, _filterPayments(payments, paymentsFilter), paymentsFilter, null),
+      payments: PaymentsState(payments,
+          _filterPayments(payments, paymentsFilter), paymentsFilter, null),
     );
   }
 
   Stream<PaymentFilterModel> _paymentsFilterStream() {
     return _appStorage
         .watchSetting(PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY)
-        .map((filter) => filter == null ? PaymentFilterModel.initial() : PaymentFilterModel.fromJson(json.decode(filter.value)));
+        .map((filter) => filter == null
+            ? PaymentFilterModel.initial()
+            : PaymentFilterModel.fromJson(json.decode(filter.value)));
   }
 
   Stream<List<PaymentInfo>> _paymentsStream() {
-    var outgoingPaymentsStream = _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {
-          var bolt11 = Bolt11.fromPaymentRequest(p.bolt11);
-          return PaymentInfo(
-              type: PaymentType.SENT,
-              amountMsat: Int64(p.amount),
-              destination: p.destination,
-              shortTitle: bolt11.description,
-              fee: Int64(p.feeMsat),
-              creationTimestamp: Int64(p.createdAt),
-              pending: p.pending,
-              keySend: p.isKeySend,
-              paymentHash: p.paymentHash);
-        }));
+    var outgoingPaymentsStream =
+        _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {
+              var bolt11 = Bolt11.fromPaymentRequest(p.bolt11);
+              return PaymentInfo(
+                  type: PaymentType.SENT,
+                  amountMsat: Int64(p.amount),
+                  destination: p.destination,
+                  shortTitle: bolt11.description,
+                  fee: Int64(p.feeMsat),
+                  creationTimestamp: Int64(p.createdAt),
+                  pending: p.pending,
+                  keySend: p.isKeySend,
+                  paymentHash: p.paymentHash);
+            }));
 
-    var incomingPaymentsStream = _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {
-          var bolt11 = Bolt11.fromPaymentRequest(invoice.bolt11);
-          return PaymentInfo(
-              type: PaymentType.RECEIVED,
-              amountMsat: Int64(invoice.amountMsat),
-              fee: Int64.ZERO,
-              destination: state.id!,
-              shortTitle: bolt11.description,
-              creationTimestamp: Int64(invoice.paymentTime),
-              pending: false,
-              keySend: false,
-              paymentHash: invoice.paymentHash);
-        }));
+    var incomingPaymentsStream =
+        _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {
+              var bolt11 = Bolt11.fromPaymentRequest(invoice.bolt11);
+              return PaymentInfo(
+                  type: PaymentType.RECEIVED,
+                  amountMsat: Int64(invoice.amountMsat),
+                  fee: Int64.ZERO,
+                  destination: state.id!,
+                  shortTitle: bolt11.description,
+                  creationTimestamp: Int64(invoice.paymentTime),
+                  pending: false,
+                  keySend: false,
+                  paymentHash: invoice.paymentHash);
+            }));
 
-    return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream])
-        .map((payments) => payments.toList()..sort((p1, p2) => (p1.creationTimestamp - p2.creationTimestamp).toInt()));
+    return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream]).map(
+        (payments) => payments.toList()
+          ..sort((p1, p2) =>
+              (p1.creationTimestamp - p2.creationTimestamp).toInt()));
   }
 
   Future _syncNodeInfo() async {
     log.info("_syncNodeInfo started");
-    await _appStorage.setNodeInfo((await _breezLib.getNodeInfo()).toDbNodeInfo());
+    await _appStorage
+        .setNodeInfo((await _breezLib.getNodeInfo()).toDbNodeInfo());
     log.info("_syncNodeInfo finished");
   }
 
@@ -282,22 +322,26 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future _syncFunds() async {
     log.info("_syncFunds started");
     var funds = await _breezLib.listFunds();
-    await _appStorage.setOffchainFunds(funds.channelFunds.map((f) => f.toDbOffchainFund()).toList());
-    await _appStorage.setOnchainFunds(funds.onchainFunds.map((f) => f.toDbOnchainFund()).toList());
+    await _appStorage.setOffchainFunds(
+        funds.channelFunds.map((f) => f.toDbOffchainFund()).toList());
+    await _appStorage.setOnchainFunds(
+        funds.onchainFunds.map((f) => f.toDbOnchainFund()).toList());
     log.info("_syncFunds finished");
   }
 
   Future _syncOutgoingPayments() async {
     log.info("_syncOutgoingPayments");
     var outgoingPayments = await _breezLib.getPayments();
-    await _appStorage.addOutgoingPayments(outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
+    await _appStorage.addOutgoingPayments(
+        outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
     log.info("_syncOutgoingPayments finished");
   }
 
   Future _syncSettledInvoices() async {
     log.info("_syncSettledInvoices started");
     var invoices = await _breezLib.getInvoices();
-    await _appStorage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
+    await _appStorage
+        .addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
     log.info("_syncSettledInvoices finished");
   }
 
@@ -312,15 +356,20 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 }
 
-List<PaymentInfo> _filterPayments(List<PaymentInfo> paymentsList, PaymentFilterModel filter) {
+List<PaymentInfo> _filterPayments(
+    List<PaymentInfo> paymentsList, PaymentFilterModel filter) {
   return paymentsList.where((p) {
     if (!filter.paymentType.contains(p.type)) {
       return false;
     }
-    if (filter.startDate != null && p.creationTimestamp.toInt() * 1000 < filter.startDate!.millisecondsSinceEpoch) {
+    if (filter.startDate != null &&
+        p.creationTimestamp.toInt() * 1000 <
+            filter.startDate!.millisecondsSinceEpoch) {
       return false;
     }
-    if (filter.endDate != null && p.creationTimestamp.toInt() * 1000 > filter.endDate!.millisecondsSinceEpoch) {
+    if (filter.endDate != null &&
+        p.creationTimestamp.toInt() * 1000 >
+            filter.endDate!.millisecondsSinceEpoch) {
       return false;
     }
     return true;

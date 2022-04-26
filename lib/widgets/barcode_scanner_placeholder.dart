@@ -35,7 +35,9 @@ class BarcodeScannerPlaceholder extends StatelessWidget {
           leading: backBtn.BackButton(
             onPressed: () => Navigator.of(context).pop(),
           ),
-          elevation: 0.0, toolbarTextStyle: themeData.appBarTheme.textTheme!.bodyText2, titleTextStyle: themeData.appBarTheme.textTheme!.headline6,
+          elevation: 0.0,
+          toolbarTextStyle: themeData.appBarTheme.textTheme!.bodyText2,
+          titleTextStyle: themeData.appBarTheme.textTheme!.headline6,
         ),
         backgroundColor: Colors.black,
         body: Padding(

@@ -6,7 +6,7 @@ import 'package:c_breez/widgets/payment_request_dialog.dart' as paymentRequest;
 import 'package:flutter/material.dart';
 
 class InvoiceNotificationsHandler {
-  final BuildContext _context;  
+  final BuildContext _context;
   final AccountBloc _accountBloc;
   final InvoiceBloc _invoiceBloc;
   final GlobalKey firstPaymentItemKey;
@@ -16,8 +16,13 @@ class InvoiceNotificationsHandler {
   ModalRoute? _loaderRoute;
   bool _handlingRequest = false;
 
-  InvoiceNotificationsHandler(this._context, this._accountBloc, this._invoiceBloc,
-      this.firstPaymentItemKey, this.scrollController, this.scaffoldController) {
+  InvoiceNotificationsHandler(
+      this._context,
+      this._accountBloc,
+      this._invoiceBloc,
+      this.firstPaymentItemKey,
+      this.scrollController,
+      this.scaffoldController) {
     _listenPaymentRequests();
   }
 
@@ -28,13 +33,17 @@ class InvoiceNotificationsHandler {
       }
       _handlingRequest = true;
       showDialog(
-            useRootNavigator: false,
-            context: _context,
-            barrierDismissible: false,
-            builder: (_) => paymentRequest.PaymentRequestDialog(
-                    _context, _accountBloc, invoiceState.invoice!, firstPaymentItemKey, scrollController, () {
-                  _handlingRequest = false;
-                }));
+          useRootNavigator: false,
+          context: _context,
+          barrierDismissible: false,
+          builder: (_) => paymentRequest.PaymentRequestDialog(
+                  _context,
+                  _accountBloc,
+                  invoiceState.invoice!,
+                  firstPaymentItemKey,
+                  scrollController, () {
+                _handlingRequest = false;
+              }));
     }).onError((error) {
       _setLoading(false);
       showFlushbar(_context, message: error.toString());

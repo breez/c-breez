@@ -17,21 +17,26 @@ class InvoiceBottomSheet extends StatefulWidget {
   final UserProfileBloc userProfileBloc;
   final GlobalKey firstPaymentItemKey;
 
-  const InvoiceBottomSheet(this.invoiceBloc, this.isSmallView, this.userProfileBloc, this.firstPaymentItemKey);
+  const InvoiceBottomSheet(this.invoiceBloc, this.isSmallView,
+      this.userProfileBloc, this.firstPaymentItemKey);
 
   @override
   State createState() => InvoiceBottomSheetState();
 }
 
-class InvoiceBottomSheetState extends State<InvoiceBottomSheet> with TickerProviderStateMixin {
+class InvoiceBottomSheetState extends State<InvoiceBottomSheet>
+    with TickerProviderStateMixin {
   final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
   bool isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userState) {
+    return BlocBuilder<UserProfileBloc, UserProfileState>(
+        builder: (context, userState) {
       return AnimatedContainer(
-          transform: isExpanded ? Matrix4.translationValues(0, 0, 0) : Matrix4.translationValues(0, 112.0, 0),
+          transform: isExpanded
+              ? Matrix4.translationValues(0, 0, 0)
+              : Matrix4.translationValues(0, 112.0, 0),
           duration: const Duration(milliseconds: 150),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -44,7 +49,8 @@ class InvoiceBottomSheetState extends State<InvoiceBottomSheet> with TickerProvi
                   });
                 }, userState.profileSettings.themeId, isFirst: true),
                 _buildInvoiceMenuItem("PAY", "src/icon/qr_scan.png", () async {
-                  String? decodedQr = await Navigator.pushNamed<String>(context, "/qr_scan");
+                  String? decodedQr =
+                      await Navigator.pushNamed<String>(context, "/qr_scan");
                   if (decodedQr == null) {
                     return;
                   }
@@ -57,17 +63,23 @@ class InvoiceBottomSheetState extends State<InvoiceBottomSheet> with TickerProvi
                     widget.invoiceBloc.addIncomingInvoice(decodedQr);
                   } else {
                     Navigator.of(context).push(FadeInRoute(
-                      builder: (_) => SpontaneousPaymentPage(nodeID, widget.firstPaymentItemKey),
+                      builder: (_) => SpontaneousPaymentPage(
+                          nodeID, widget.firstPaymentItemKey),
                     ));
                   }
                 }, userState.profileSettings.themeId),
-                _buildInvoiceMenuItem("RECEIVE", "src/icon/paste.png", () => Navigator.of(context).pushNamed('/create_invoice'),
+                _buildInvoiceMenuItem(
+                    "RECEIVE",
+                    "src/icon/paste.png",
+                    () => Navigator.of(context).pushNamed('/create_invoice'),
                     userState.profileSettings.themeId),
               ]));
     });
   }
 
-  Widget _buildInvoiceMenuItem(String title, String iconPath, Function()? function, String themeId, {bool isFirst = false}) {
+  Widget _buildInvoiceMenuItem(
+      String title, String iconPath, Function()? function, String themeId,
+      {bool isFirst = false}) {
     return AnimatedContainer(
       width: widget.isSmallView ? 56.0 : 126.0,
       height: isFirst ? 50.0 : 56.0,
@@ -83,8 +95,12 @@ class InvoiceBottomSheetState extends State<InvoiceBottomSheet> with TickerProvi
                   : Theme.of(context).backgroundColor,
           padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
           shape: isFirst
-              ? const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0)))
-              : const RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0))),
+              ? const RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.only(topLeft: Radius.circular(20.0)))
+              : const RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.only(topLeft: Radius.circular(20.0))),
           // Border(
           // top: BorderSide(
           //     color: Theme.of(context).dividerColor.withOpacity(0.12),

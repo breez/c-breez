@@ -7,9 +7,9 @@ class SatAmountFormFieldFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue,
-      TextEditingValue newValue,
-      ) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final raw = newValue.text.replaceAll(_pattern, '');
     if (raw.isEmpty) {
       return newValue.copyWith(

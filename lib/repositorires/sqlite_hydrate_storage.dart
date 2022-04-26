@@ -10,7 +10,7 @@ class SqliteHydrateStorage implements Storage {
   SqliteHydrateStorage(this._storage);
 
   Future readAll() {
-     return _storage.readAllSettings().then((s) {
+    return _storage.readAllSettings().then((s) {
       _allSettings = <String, dynamic>{};
       for (var s in s) {
         _allSettings[s.key] = s.value;
@@ -19,7 +19,7 @@ class SqliteHydrateStorage implements Storage {
   }
 
   @override
-  dynamic read(String key) {    
+  dynamic read(String key) {
     var value = _allSettings[key];
     if (value == null) {
       return value;
@@ -29,7 +29,7 @@ class SqliteHydrateStorage implements Storage {
   }
 
   @override
-  Future<void> write(String key, dynamic value) async { 
+  Future<void> write(String key, dynamic value) async {
     var toWrite = jsonEncode(value);
     await _storage.updateSettings(key, toWrite).then((_) => readAll());
   }

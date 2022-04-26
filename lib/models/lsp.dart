@@ -15,13 +15,12 @@ class LSPInfo {
   final int channelMinimumFeeMsat;
 
   LSPInfo(
-      {
-        required this.lspID,
+      {required this.lspID,
       required this.name,
       this.widgetURL,
       required this.pubKey,
       required this.host,
-      this.frozen=false,
+      this.frozen = false,
       required this.minHtlcMsat,
       required this.targetConf,
       required this.timeLockDelta,

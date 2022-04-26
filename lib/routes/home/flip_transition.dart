@@ -8,7 +8,8 @@ class FlipTransition extends StatefulWidget {
   final Widget secondChild;
   final double radius;
 
-  const FlipTransition(this.firstChild, this.secondChild, {required this.radius});
+  const FlipTransition(this.firstChild, this.secondChild,
+      {required this.radius});
 
   @override
   State<StatefulWidget> createState() {
@@ -56,7 +57,8 @@ class FlipTransitionState extends State<FlipTransition>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(widget.radius),
             child: Transform(
-              transform: Matrix4.identity()..rotateY(pi * _flipAnimation!.value),
+              transform: Matrix4.identity()
+                ..rotateY(pi * _flipAnimation!.value),
               alignment: Alignment.center,
               child: _flipAnimationController!.value >= 0.4
                   ? widget.secondChild

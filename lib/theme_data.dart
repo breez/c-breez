@@ -13,7 +13,7 @@ class CustomData {
   Color navigationDrawerBgColor;
 
   CustomData(
-      { required this.loaderColorBlendMode,
+      {required this.loaderColorBlendMode,
       required this.loaderAssetPath,
       required this.pendingTextColor,
       required this.dashboardBgColor,
@@ -49,10 +49,10 @@ final Map<String, CustomData> customData = {
   "DARK": darkThemeCustomData
 };
 
-final toolbarTextStyle =  const TextTheme(
-      headline6:
-          TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
-    ).bodyText2;
+final toolbarTextStyle = const TextTheme(
+  headline6:
+      TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
+).bodyText2;
 
 final ThemeData blueTheme = ThemeData(
   brightness: Brightness.dark,
@@ -71,8 +71,8 @@ final ThemeData blueTheme = ThemeData(
       color: Colors.white,
     ),
     color: Colors.transparent,
-    actionsIconTheme: IconThemeData(color: Color.fromRGBO(0, 120, 253, 1.0)), 
-    //toolbarTextStyle: toolbarTextStyle, 
+    actionsIconTheme: IconThemeData(color: Color.fromRGBO(0, 120, 253, 1.0)),
+    //toolbarTextStyle: toolbarTextStyle,
     // titleTextStyle: TextTheme(
     //   headline6:
     //       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
@@ -151,7 +151,7 @@ final ThemeData blueTheme = ThemeData(
   elevatedButtonTheme: const ElevatedButtonThemeData(),
   radioTheme: RadioThemeData(
     fillColor: MaterialStateProperty.resolveWith(
-          (states) {
+      (states) {
         if (states.contains(MaterialState.selected)) {
           return const Color(0xFF0085fb);
         } else {
@@ -267,9 +267,10 @@ final VendorTheme bitrefill = VendorTheme(
     iconFgColor: const Color.fromRGBO(68, 155, 247, 1.0),
     iconBgColor: const Color(0xFFffffff),
     textColor: const Color.fromRGBO(47, 47, 47, 1.0));
-final VendorTheme lnpizza =
-    VendorTheme(iconBgColor: const Color(0xFF000000), iconFgColor: const Color(0xFFf8e71c));
-final VendorTheme fixedfloat = VendorTheme(iconBgColor: const Color(0xFF0B4E7B));
+final VendorTheme lnpizza = VendorTheme(
+    iconBgColor: const Color(0xFF000000), iconFgColor: const Color(0xFFf8e71c));
+final VendorTheme fixedfloat =
+    VendorTheme(iconBgColor: const Color(0xFF0B4E7B));
 final VendorTheme lnmarkets = VendorTheme(
   iconBgColor: const Color(0xFF0a157a),
   textColor: const Color(0xFFe2ded5),

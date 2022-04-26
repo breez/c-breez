@@ -31,10 +31,10 @@ class DeepLinksService {
 
     _dynamicLinks!.onLink.listen((data) {
       publishLink(data);
-    }).onError( (err) {
+    }).onError((err) {
       log.severe("Failed to fetch dynamic link " + err.toString());
       return Future.value(null);
-    });  
+    });
   }
 
   SessionLinkModel parseSessionInviteLink(String link) {
@@ -47,8 +47,7 @@ class DeepLinksService {
         link: Uri.parse('https://breez.technology?${link.toLinkQuery()}'),
         androidParameters:
             const AndroidParameters(packageName: "com.cBreez.client"),
-        iosParameters:
-            const IOSParameters(bundleId: "com.cBreez.client"));
+        iosParameters: const IOSParameters(bundleId: "com.cBreez.client"));
     final ShortDynamicLink shortLink =
         await _dynamicLinks!.buildShortLink(parameters);
 

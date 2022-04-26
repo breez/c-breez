@@ -85,7 +85,8 @@ Should this happen, Breez will generate an on-chain address and sweep your funds
 }
 
 class _LinkTextSpan extends TextSpan {
-  _LinkTextSpan({required TextStyle style, required String url, required String text})
+  _LinkTextSpan(
+      {required TextStyle style, required String url, required String text})
       : super(
             style: style,
             text: text ?? url,

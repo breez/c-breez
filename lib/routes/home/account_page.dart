@@ -37,14 +37,18 @@ class AccountPage extends StatefulWidget {
   }
 }
 
-class AccountPageState extends State<AccountPage> with SingleTickerProviderStateMixin {
-  final List<String> currencyList = BitcoinCurrency.currencies.map((c) => c.tickerSymbol).toList();
+class AccountPageState extends State<AccountPage>
+    with SingleTickerProviderStateMixin {
+  final List<String> currencyList =
+      BitcoinCurrency.currencies.map((c) => c.tickerSymbol).toList();
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LSPBloc, LSPState>(builder: (context, lspState) {
-      return BlocBuilder<AccountBloc, AccountState>(builder: (context, account) {
-        return BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userModel) {
+      return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, account) {
+        return BlocBuilder<UserProfileBloc, UserProfileState>(
+            builder: (context, userModel) {
           return Container(
             color: theme.customData[theme.themeId]!.dashboardBgColor,
             child: _buildBalanceAndPayments(
@@ -64,13 +68,21 @@ class AccountPageState extends State<AccountPage> with SingleTickerProviderState
     LSPState lspState,
     AccountState account,
     UserProfileState userModel,
-  ) {    
-    double listHeightSpace = MediaQuery.of(context).size.height - DASHBOARD_MIN_HEIGHT - kToolbarHeight - FILTER_MAX_SIZE - 25.0;
+  ) {
+    double listHeightSpace = MediaQuery.of(context).size.height -
+        DASHBOARD_MIN_HEIGHT -
+        kToolbarHeight -
+        FILTER_MAX_SIZE -
+        25.0;
     double dateFilterSpace =
         account.payments.filter.endDate != null ? 0.65 : 0.0;
     double bottomPlaceholderSpace = account.payments.paymentsList.isEmpty
         ? 0.0
-        : (listHeightSpace - (PAYMENT_LIST_ITEM_HEIGHT + 8) * (account.payments.paymentsList.length + 1 + dateFilterSpace))
+        : (listHeightSpace -
+                (PAYMENT_LIST_ITEM_HEIGHT + 8) *
+                    (account.payments.paymentsList.length +
+                        1 +
+                        dateFilterSpace))
             .clamp(0.0, listHeightSpace);
 
     String message = "";
@@ -78,15 +90,19 @@ class AccountPageState extends State<AccountPage> with SingleTickerProviderState
 
     List<Widget> slivers = <Widget>[];
     slivers.add(SliverPersistentHeader(
-        floating: false, delegate: WalletDashboardHeaderDelegate(), pinned: true));
+        floating: false,
+        delegate: WalletDashboardHeaderDelegate(),
+        pinned: true));
     if (account.payments.nonFilteredItems.isNotEmpty) {
-      slivers.add(PaymentFilterSliver(widget.scrollController, FILTER_MIN_SIZE, FILTER_MAX_SIZE, account.payments));
+      slivers.add(PaymentFilterSliver(widget.scrollController, FILTER_MIN_SIZE,
+          FILTER_MAX_SIZE, account.payments));
     }
     slivers.add(SliverPadding(
       padding: const EdgeInsets.only(left: 8, right: 8),
       sliver: SliverPersistentHeader(
         pinned: true,
-        delegate: FixedSliverDelegate(FILTER_MAX_SIZE / 1.2, builder: (context, shrinkedHeight, overlapContent) {
+        delegate: FixedSliverDelegate(FILTER_MAX_SIZE / 1.2,
+            builder: (context, shrinkedHeight, overlapContent) {
           return Container(
             padding: const EdgeInsets.only(bottom: 8),
             height: FILTER_MAX_SIZE / 1.2,
@@ -105,11 +121,14 @@ class AccountPageState extends State<AccountPage> with SingleTickerProviderState
         widget.firstPaymentItemKey,
         widget.scrollController,
       ));
-      slivers
-          .add(SliverPersistentHeader(pinned: true, delegate: FixedSliverDelegate(bottomPlaceholderSpace, child: Container())));
+      slivers.add(SliverPersistentHeader(
+          pinned: true,
+          delegate:
+              FixedSliverDelegate(bottomPlaceholderSpace, child: Container())));
     } else if (showMessage) {
       slivers.add(SliverPersistentHeader(
-          delegate: FixedSliverDelegate(250.0, builder: (context, shrinkedHeight, overlapContent) {
+          delegate: FixedSliverDelegate(250.0,
+              builder: (context, shrinkedHeight, overlapContent) {
         if (lspState.selectionRequired == true) {
           return const Padding(
             padding: EdgeInsets.only(top: 120.0),
@@ -131,7 +150,9 @@ class AccountPageState extends State<AccountPage> with SingleTickerProviderState
       key: const Key("account_sliver"),
       fit: StackFit.expand,
       children: [
-        account.payments.nonFilteredItems.isEmpty ? CustomPaint(painter: BubblePainter(context)) : const SizedBox(),
+        account.payments.nonFilteredItems.isEmpty
+            ? CustomPaint(painter: BubblePainter(context))
+            : const SizedBox(),
         CustomScrollView(controller: widget.scrollController, slivers: slivers),
       ],
     );
@@ -154,8 +175,12 @@ class AccountPageState extends State<AccountPage> with SingleTickerProviderState
               padding: const EdgeInsets.only(top: 8, left: 16.0, bottom: 8),
               child: Chip(
                   backgroundColor: Theme.of(context).bottomAppBarColor,
-                  label: Text(BreezDateUtils.formatFilterDateRange(filter.startDate!, filter.endDate!)),
-                  onDeleted: () => context.read<AccountBloc>().changePaymentFilter(PaymentFilterModel(filter.paymentType, null, null))),
+                  label: Text(BreezDateUtils.formatFilterDateRange(
+                      filter.startDate!, filter.endDate!)),
+                  onDeleted: () => context
+                      .read<AccountBloc>()
+                      .changePaymentFilter(
+                          PaymentFilterModel(filter.paymentType, null, null))),
             ),
           ],
         ),
@@ -172,30 +197,50 @@ class BubblePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var bubblePaint = Paint()
-      ..color = theme.themeId == "BLUE" ? const Color(0xFF0085fb).withOpacity(0.1) : const Color(0xff4D88EC).withOpacity(0.1)
+      ..color = theme.themeId == "BLUE"
+          ? const Color(0xFF0085fb).withOpacity(0.1)
+          : const Color(0xff4D88EC).withOpacity(0.1)
       ..style = PaintingStyle.fill;
     double bubbleRadius = 12;
     double height = (MediaQuery.of(context).size.height - kToolbarHeight);
-    canvas.drawCircle(Offset(MediaQuery.of(context).size.width / 2, height * 0.36), bubbleRadius, bubblePaint);
-    canvas.drawCircle(Offset(MediaQuery.of(context).size.width * 0.39, height * 0.59), bubbleRadius * 1.5, bubblePaint);
-    canvas.drawCircle(Offset(MediaQuery.of(context).size.width * 0.65, height * 0.71), bubbleRadius * 1.25, bubblePaint);
-    canvas.drawCircle(Offset(MediaQuery.of(context).size.width / 2, height * 0.80), bubbleRadius * 0.75, bubblePaint);
+    canvas.drawCircle(
+        Offset(MediaQuery.of(context).size.width / 2, height * 0.36),
+        bubbleRadius,
+        bubblePaint);
+    canvas.drawCircle(
+        Offset(MediaQuery.of(context).size.width * 0.39, height * 0.59),
+        bubbleRadius * 1.5,
+        bubblePaint);
+    canvas.drawCircle(
+        Offset(MediaQuery.of(context).size.width * 0.65, height * 0.71),
+        bubbleRadius * 1.25,
+        bubblePaint);
+    canvas.drawCircle(
+        Offset(MediaQuery.of(context).size.width / 2, height * 0.80),
+        bubbleRadius * 0.75,
+        bubblePaint);
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
-class WalletDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {  
+class WalletDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
   WalletDashboardHeaderDelegate();
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return BlocBuilder<CurrencyBoc, CurrencyState>(builder: (context, currencyState) {
-      return BlocBuilder<UserProfileBloc, UserProfileState>(builder: (settingCtx, userState) {
-        return BlocBuilder<AccountBloc, AccountState>(builder: (context, accountState) {
-          double height = (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
-          double heightFactor = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return BlocBuilder<CurrencyBoc, CurrencyState>(
+        builder: (context, currencyState) {
+      return BlocBuilder<UserProfileBloc, UserProfileState>(
+          builder: (settingCtx, userState) {
+        return BlocBuilder<AccountBloc, AccountState>(
+            builder: (context, accountState) {
+          double height =
+              (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
+          double heightFactor =
+              (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
 
           return Stack(clipBehavior: Clip.none, children: <Widget>[
             WalletDashboard(
@@ -206,7 +251,9 @@ class WalletDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
               heightFactor,
               context.read<CurrencyBoc>().setBitcoinTicker,
               context.read<CurrencyBoc>().setFiatShortName,
-              (hideBalance) => context.read<UserProfileBloc>().updateProfile(hideBalance: true),
+              (hideBalance) => context
+                  .read<UserProfileBloc>()
+                  .updateProfile(hideBalance: true),
             )
           ]);
         });
@@ -238,8 +285,11 @@ class NoLSPWidget extends StatelessWidget {
         height: 24.0,
         child: OutlinedButton(
             style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
-              side: BorderSide(color: Theme.of(context).textTheme.button!.color!, style: BorderStyle.solid),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6.0)),
+              side: BorderSide(
+                  color: Theme.of(context).textTheme.button!.color!,
+                  style: BorderStyle.solid),
             ),
             child: Text("SELECT...",
                 style: TextStyle(
@@ -252,14 +302,22 @@ class NoLSPWidget extends StatelessWidget {
       )
     ];
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: const <Widget>[Text("In order to activate Breez, please select a provider:")],
-      ),
-      const SizedBox(height: 24),
-      Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.max, children: buttons)
-    ]);
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: const <Widget>[
+              Text("In order to activate Breez, please select a provider:")
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: buttons)
+        ]);
   }
 }

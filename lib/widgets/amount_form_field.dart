@@ -51,7 +51,9 @@ class AmountFormField extends TextFormField {
                 ? null
                 : IconButton(
                     icon: Image.asset(
-                      (fiatConversion?.currencyData != null) ? fiatConversion!.logoPath : "src/icon/btc_convert.png",
+                      (fiatConversion?.currencyData != null)
+                          ? fiatConversion!.logoPath
+                          : "src/icon/btc_convert.png",
                       color: iconColor ?? theme.BreezColors.white[500],
                     ),
                     padding: const EdgeInsets.only(top: 21.0),
@@ -61,7 +63,9 @@ class AmountFormField extends TextFormField {
                       context: context,
                       builder: (_) => CurrencyConverterDialog(
                         context.read<CurrencyBoc>(),
-                        returnFN ?? (value) => controller!.text = bitcoinCurrency.format(
+                        returnFN ??
+                            (value) =>
+                                controller!.text = bitcoinCurrency.format(
                                   bitcoinCurrency.parse(value),
                                   includeCurrencySymbol: false,
                                   includeDisplayName: false,

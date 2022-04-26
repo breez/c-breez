@@ -88,7 +88,8 @@ class AvatarPicker extends StatelessWidget {
             BlendMode.srcATop,
           ),
           image: imagePath == null
-              ? const ExactAssetImage("src/images/avatarbg.png") as ImageProvider<Object>
+              ? const ExactAssetImage("src/images/avatarbg.png")
+                  as ImageProvider<Object>
               : FileImage(File(imagePath!)),
           fit: BoxFit.cover,
         ),
@@ -103,14 +104,16 @@ class AvatarPicker extends StatelessWidget {
       log.severe(err.toString());
     });
     final File file = File(pickedFile!.path);
-    return ImageCropper().cropImage(
-      sourcePath: file.path,
-      cropStyle: CropStyle.circle,
-      aspectRatio: const CropAspectRatio(
-        ratioX: 1.0,
-        ratioY: 1.0,
-      ),
-    ).then((file) => _readFile(context, file!));
+    return ImageCropper()
+        .cropImage(
+          sourcePath: file.path,
+          cropStyle: CropStyle.circle,
+          aspectRatio: const CropAspectRatio(
+            ratioX: 1.0,
+            ratioY: 1.0,
+          ),
+        )
+        .then((file) => _readFile(context, file!));
   }
 
   void _readFile(BuildContext context, File? file) {

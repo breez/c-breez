@@ -21,7 +21,7 @@ class QrActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    InvoiceBloc invoiceBloc = context.read<InvoiceBloc>();    
+    InvoiceBloc invoiceBloc = context.read<InvoiceBloc>();
 
     return Padding(
       padding: const EdgeInsets.only(top: 32.0),
@@ -36,7 +36,7 @@ class QrActionButton extends StatelessWidget {
               showFlushbar(context, message: "QR code wasn't detected.");
               return;
             }
-            String lower = scannedString!.toLowerCase();              
+            String lower = scannedString!.toLowerCase();
 
             // bip 121
             String? lnInvoice = extractBolt11FromBip21(lower);
@@ -50,7 +50,7 @@ class QrActionButton extends StatelessWidget {
 
             // bitcoin
             BTCAddressInfo btcInvoice = parseBTCAddress(scannedString);
-           
+
             var nodeID = parseNodeId(scannedString);
             if (nodeID != null) {
               Navigator.of(context).push(FadeInRoute(
@@ -91,7 +91,6 @@ class QrActionButton extends StatelessWidget {
     );
   }
 
-  
   void _handleWebAddress(BuildContext context, String url) {
     var dialogTheme = Theme.of(context).dialogTheme;
     var size = MediaQuery.of(context).size;
@@ -148,8 +147,11 @@ class QrActionButton extends StatelessWidget {
                   (Set<MaterialState> states) {
                     if (states.contains(MaterialState.pressed)) {
                       return Colors.transparent;
-                    }                    
-                    return Theme.of(context).textTheme.button!.color!; // Defer to the widget's default.
+                    }
+                    return Theme.of(context)
+                        .textTheme
+                        .button!
+                        .color!; // Defer to the widget's default.
                   },
                 ),
               ),
@@ -166,7 +168,10 @@ class QrActionButton extends StatelessWidget {
                     if (states.contains(MaterialState.pressed)) {
                       return Colors.transparent;
                     }
-                    return Theme.of(context).textTheme.button!.color!; // Defer to the widget's default.
+                    return Theme.of(context)
+                        .textTheme
+                        .button!
+                        .color!; // Defer to the widget's default.
                   },
                 ),
               ),

@@ -64,7 +64,8 @@ class OnChainFunds extends Table {
 }
 
 class OffChainFunds extends Table {
-  TextColumn get peerId => text().withLength(min: 66, max: 66).references(Nodes, #nodeID)();
+  TextColumn get peerId =>
+      text().withLength(min: 66, max: 66).references(Nodes, #nodeID)();
   BoolColumn get connected => boolean()();
   IntColumn get shortChannelId => integer()();
   IntColumn get ourAmountMsat => integer()();
@@ -85,7 +86,7 @@ class Htlcs extends Table {
 }
 
 class Channels extends Table {
-  IntColumn get channelState => integer()();  
+  IntColumn get channelState => integer()();
   IntColumn get shortChannelId => integer()();
   IntColumn get direction => integer()();
   TextColumn get channelId => text()();
@@ -99,7 +100,8 @@ class Channels extends Table {
   IntColumn get receivableMsat => integer()();
   IntColumn get theirToSelfDelay => integer()();
   IntColumn get ourToSelfDelay => integer()();
-  TextColumn get peerId => text().withLength(min: 66, max: 66).references(Peers, #peerId)();
+  TextColumn get peerId =>
+      text().withLength(min: 66, max: 66).references(Peers, #peerId)();
 }
 
 class PeerWithChannels {
@@ -246,6 +248,7 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   Future<Setting> readSettings(String key) {
     return settingsDao.readSettings(key);
   }
+
   @override
   Future<List<Setting>> readAllSettings() {
     return settingsDao.readAllSettings();

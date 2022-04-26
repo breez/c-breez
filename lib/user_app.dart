@@ -31,7 +31,8 @@ Widget _withTheme(UserProfileSettings user, Widget child) {
 // ignore: must_be_immutable
 class UserApp extends StatelessWidget {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
-  final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _homeNavigatorKey =
+      GlobalKey<NavigatorState>();
   final GlobalKey _appKey = GlobalKey();
 
   @override
@@ -48,7 +49,8 @@ class UserApp extends StatelessWidget {
         SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
         ));
-        return BlocBuilder<AccountBloc, AccountState>(builder: (context, accState) {
+        return BlocBuilder<AccountBloc, AccountState>(
+            builder: (context, accState) {
           return MaterialApp(
             key: _appKey,
             //navigatorKey: _navigatorKey,
@@ -60,7 +62,9 @@ class UserApp extends StatelessWidget {
               final MediaQueryData data = MediaQuery.of(context);
               return MediaQuery(
                 data: data.copyWith(
-                  textScaleFactor: (data.textScaleFactor >= 1.3) ? 1.3 : data.textScaleFactor,
+                  textScaleFactor: (data.textScaleFactor >= 1.3)
+                      ? 1.3
+                      : data.textScaleFactor,
                 ),
                 child: _withTheme(user, child!),
               );

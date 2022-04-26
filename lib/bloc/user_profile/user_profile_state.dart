@@ -1,5 +1,3 @@
-
-
 import 'package:c_breez/models/user_profile.dart';
 
 class UserProfileState {
@@ -7,9 +5,11 @@ class UserProfileState {
 
   UserProfileState({required this.profileSettings});
 
-  UserProfileState.initial(): this(profileSettings: UserProfileSettings.initial());
+  UserProfileState.initial()
+      : this(profileSettings: UserProfileSettings.initial());
 
   UserProfileState copyWith({UserProfileSettings? profileSettings}) {
-    return UserProfileState(profileSettings: profileSettings ?? this.profileSettings);
+    return UserProfileState(
+        profileSettings: profileSettings ?? this.profileSettings);
   }
 }

@@ -10,9 +10,8 @@ class PaymentItemAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_shouldShowLeadingIcon) {      
-      IconData icon = [PaymentType.RECEIVED]
-                  .contains(paymentItem.type)
+    if (_shouldShowLeadingIcon) {
+      IconData icon = [PaymentType.RECEIVED].contains(paymentItem.type)
           ? Icons.add_rounded
           : Icons.remove_rounded;
       Widget child = Icon(icon, color: const Color(0xb3303234));
@@ -26,6 +25,5 @@ class PaymentItemAvatar extends StatelessWidget {
     }
   }
 
-  bool get _shouldShowLeadingIcon =>
-      paymentItem.keySend;
+  bool get _shouldShowLeadingIcon => paymentItem.keySend;
 }

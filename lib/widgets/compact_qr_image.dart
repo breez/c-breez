@@ -48,7 +48,8 @@ class CompactQRImage extends StatelessWidget {
   final String data;
   final double? size;
 
-  const CompactQRImage({Key? key, required this.data, this.size}) : super(key: key);
+  const CompactQRImage({Key? key, required this.data, this.size})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

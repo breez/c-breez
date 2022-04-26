@@ -1,4 +1,3 @@
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
@@ -29,205 +28,206 @@ Future<void> showPaymentDetailsDialog(
   AlertDialog _paymentDetailsDialog = AlertDialog(
     titlePadding: EdgeInsets.zero,
     title: Stack(
-          children: <Widget>[
-            Container(
-              decoration: ShapeDecoration(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(12.0),
-                  ),
-                ),
-                color: theme.themeId == "BLUE"
-                    ? themeData.primaryColorDark
-                    : themeData.canvasColor,
-              ),
-              height: 64.0,
-              width: mediaQuery.size.width,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 32.0),
-              child: Center(
-                child: PaymentItemAvatar(
-                  paymentInfo,
-                  radius: 32.0,
-                ),
+      children: <Widget>[
+        Container(
+          decoration: ShapeDecoration(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(12.0),
               ),
             ),
-          ],
-        ),          
+            color: theme.themeId == "BLUE"
+                ? themeData.primaryColorDark
+                : themeData.canvasColor,
+          ),
+          height: 64.0,
+          width: mediaQuery.size.width,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 32.0),
+          child: Center(
+            child: PaymentItemAvatar(
+              paymentInfo,
+              radius: 32.0,
+            ),
+          ),
+        ),
+      ],
+    ),
     contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
     content: SingleChildScrollView(
-      child: BlocBuilder<CurrencyBoc, CurrencyState>(      
-      builder: (context, currencyState) {
-          return SizedBox(
-            width: mediaQuery.size.width,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                paymentInfo.longTitle.isEmpty
-                    ? Container()
-                    : Padding(
-                        padding: EdgeInsets.only(
-                          left: 16.0,
-                          right: 16.0,
-                          bottom: (paymentInfo.description.isEmpty)
-                              ? 16
-                              : 8,
+      child: BlocBuilder<CurrencyBoc, CurrencyState>(
+          builder: (context, currencyState) {
+        return SizedBox(
+          width: mediaQuery.size.width,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              paymentInfo.longTitle.isEmpty
+                  ? Container()
+                  : Padding(
+                      padding: EdgeInsets.only(
+                        left: 16.0,
+                        right: 16.0,
+                        bottom: (paymentInfo.description.isEmpty) ? 16 : 8,
+                      ),
+                      child: AutoSizeText(
+                        paymentInfo.longTitle.replaceAll("\n", " "),
+                        style: themeData.primaryTextTheme.headline5,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+              paymentInfo.description.isEmpty
+                  ? Container()
+                  : Padding(
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                      child: Container(
+                        constraints: const BoxConstraints(
+                          maxHeight: 54,
+                          minWidth: double.infinity,
                         ),
-                        child: AutoSizeText(
-                          paymentInfo.longTitle.replaceAll("\n", " "),
-                          style: themeData.primaryTextTheme.headline5,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
+                        child: Scrollbar(
+                          child: SingleChildScrollView(
+                            child: AutoSizeText(
+                              paymentInfo.description,
+                              style: themeData.primaryTextTheme.headline4,
+                              textAlign: paymentInfo.description.length > 40 &&
+                                      !paymentInfo.description.contains("\n")
+                                  ? TextAlign.start
+                                  : TextAlign.center,
+                            ),
+                          ),
                         ),
                       ),
-                paymentInfo.description.isEmpty
-                    ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                        child: Container(
-                          constraints: const BoxConstraints(
-                            maxHeight: 54,
-                            minWidth: double.infinity,
+                    ),
+              paymentInfo.amountSat == null
+                  ? Container()
+                  : Container(
+                      height: 36.0,
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: AutoSizeText(
+                              texts.payment_details_dialog_amount_title,
+                              style: themeData.primaryTextTheme.headline4,
+                              textAlign: TextAlign.left,
+                              maxLines: 1,
+                              group: _labelGroup,
+                            ),
                           ),
-                          child: Scrollbar(
+                          Expanded(
                             child: SingleChildScrollView(
-                              child: AutoSizeText(
-                                paymentInfo.description,
-                                style: themeData.primaryTextTheme.headline4,
-                                textAlign: paymentInfo.description.length > 40 &&
-                                        !paymentInfo.description.contains("\n")
-                                    ? TextAlign.start
-                                    : TextAlign.center,
+                              scrollDirection: Axis.horizontal,
+                              reverse: true,
+                              child: _amountText(
+                                BitcoinCurrency.fromTickerSymbol(
+                                    currencyState.bitcoinTicker),
+                                paymentInfo,
+                                texts,
+                                themeData,
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                paymentInfo.amountSat == null
-                    ? Container()
-                    : Container(
-                        height: 36.0,
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
+                    ),
+              paymentInfo.creationTimestamp == null
+                  ? Container()
+                  : Container(
+                      height: 36.0,
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: AutoSizeText(
+                              texts.payment_details_dialog_date_and_time,
+                              style: themeData.primaryTextTheme.headline4,
+                              textAlign: TextAlign.left,
+                              maxLines: 1,
+                              group: _labelGroup,
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              reverse: true,
+                              padding: const EdgeInsets.only(left: 8.0),
                               child: AutoSizeText(
-                                texts.payment_details_dialog_amount_title,
-                                style: themeData.primaryTextTheme.headline4,
-                                textAlign: TextAlign.left,
-                                maxLines: 1,
-                                group: _labelGroup,
-                              ),
-                            ),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                reverse: true,
-                                child: _amountText(
-                                  BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker),
-                                  paymentInfo,
-                                  texts,
-                                  themeData,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                paymentInfo.creationTimestamp == null
-                    ? Container()
-                    : Container(
-                        height: 36.0,
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: AutoSizeText(
-                                texts.payment_details_dialog_date_and_time,
-                                style: themeData.primaryTextTheme.headline4,
-                                textAlign: TextAlign.left,
-                                maxLines: 1,
-                                group: _labelGroup,
-                              ),
-                            ),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                reverse: true,
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: AutoSizeText(
-                                  BreezDateUtils.formatYearMonthDayHourMinute(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                      paymentInfo.creationTimestamp.toInt() * 1000,
-                                    ),
+                                BreezDateUtils.formatYearMonthDayHourMinute(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                    paymentInfo.creationTimestamp.toInt() *
+                                        1000,
                                   ),
-                                  style: themeData.primaryTextTheme.headline3,
-                                  textAlign: TextAlign.right,
-                                  maxLines: 1,
-                                  group: _valueGroup,
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                !paymentInfo.pending
-                    ? Container()
-                    : Container(
-                        height: 36.0,
-                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: AutoSizeText(
-                                texts.payment_details_dialog_expiration,
-                                style: themeData.primaryTextTheme.headline4,
-                                textAlign: TextAlign.left,
+                                style: themeData.primaryTextTheme.headline3,
+                                textAlign: TextAlign.right,
                                 maxLines: 1,
-                                group: _labelGroup,
+                                group: _valueGroup,
                               ),
                             ),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                reverse: true,
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: AutoSizeText(
-                                  BreezDateUtils.formatYearMonthDayHourMinute(
-                                    DateTime.fromMillisecondsSinceEpoch(
-                                      paymentInfo.pendingExpirationTimestamp!
-                                              .toInt() *
-                                          1000,
-                                    ),
+                          ),
+                        ],
+                      ),
+                    ),
+              !paymentInfo.pending
+                  ? Container()
+                  : Container(
+                      height: 36.0,
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: AutoSizeText(
+                              texts.payment_details_dialog_expiration,
+                              style: themeData.primaryTextTheme.headline4,
+                              textAlign: TextAlign.left,
+                              maxLines: 1,
+                              group: _labelGroup,
+                            ),
+                          ),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              reverse: true,
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: AutoSizeText(
+                                BreezDateUtils.formatYearMonthDayHourMinute(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                    paymentInfo.pendingExpirationTimestamp!
+                                            .toInt() *
+                                        1000,
                                   ),
-                                  style: themeData.primaryTextTheme.headline3,
-                                  textAlign: TextAlign.right,
-                                  maxLines: 1,
-                                  group: _valueGroup,
                                 ),
+                                style: themeData.primaryTextTheme.headline3,
+                                textAlign: TextAlign.right,
+                                maxLines: 1,
+                                group: _valueGroup,
                               ),
                             ),
-                          ],
-                        ),
-                      ),            
-                ..._getPaymentInfoDetails(
-                  paymentInfo,
-                  texts,
-                ),
-              ],
-            ),
-          );
-        }
-      ),
+                          ),
+                        ],
+                      ),
+                    ),
+              ..._getPaymentInfoDetails(
+                paymentInfo,
+                texts,
+              ),
+            ],
+          ),
+        );
+      }),
     ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
@@ -265,7 +265,7 @@ Widget _amountText(
 List<Widget> _getPaymentInfoDetails(
   PaymentInfo paymentInfo,
   AppLocalizations texts,
-) {  
+) {
   return _getSinglePaymentInfoDetails(paymentInfo, texts);
 }
 
@@ -285,7 +285,7 @@ List<Widget> _getSinglePaymentInfoDetails(
         : ShareablePaymentRow(
             title: texts.payment_details_dialog_single_info_node_id,
             sharedValue: paymentInfo.destination,
-          ),    
+          ),
   });
 }
 

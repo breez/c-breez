@@ -64,7 +64,8 @@ class NavigationDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
-    return BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userSettings) {
+    return BlocBuilder<UserProfileBloc, UserProfileState>(
+        builder: (context, userSettings) {
       List<Widget> children = [
         _breezDrawerHeader(context, userSettings.profileSettings, _avatar),
         const Padding(padding: EdgeInsets.only(top: 16)),
@@ -116,12 +117,16 @@ class NavigationDrawer extends StatelessWidget {
                 subTile: true,
               ))
           .toList();
-      groupItems = [_ExpansionTile(
+      groupItems = [
+        _ExpansionTile(
           items: groupItems,
           title: group.groupTitle ?? "",
-          icon: group.groupAssetImage == null ? null : AssetImage(group.groupAssetImage!),
+          icon: group.groupAssetImage == null
+              ? null
+              : AssetImage(group.groupAssetImage!),
           controller: _scrollController,
-        )];
+        )
+      ];
     }
 
     if (groupItems.isNotEmpty && withDivider && index != 0) {
@@ -130,43 +135,44 @@ class NavigationDrawer extends StatelessWidget {
     return groupItems;
   }
 
-  Widget _breezDrawerHeader(BuildContext context, UserProfileSettings user, bool drawAvatar) {
-  return Container(
-    color: theme.customData[theme.themeId]!.navigationDrawerHeaderBgColor,
-    child: BreezDrawerHeader(
-      padding: const EdgeInsets.only(left: 16.0),
-      child: _buildDrawerHeaderContent(user, context, drawAvatar),
-    ),
-  );
-}
-
-Widget _buildDrawerHeaderContent(
-  UserProfileSettings user,
-  BuildContext context,
-  bool drawAvatar,
-) {
-  List<Widget> drawerHeaderContent = [];
-  drawerHeaderContent.add(_buildThemeSwitch(context, user));
-  if (drawAvatar) {
-    drawerHeaderContent
-      ..add(_buildAvatarButton(user))
-      ..add(_buildBottomRow(user, context));
+  Widget _breezDrawerHeader(
+      BuildContext context, UserProfileSettings user, bool drawAvatar) {
+    return Container(
+      color: theme.customData[theme.themeId]!.navigationDrawerHeaderBgColor,
+      child: BreezDrawerHeader(
+        padding: const EdgeInsets.only(left: 16.0),
+        child: _buildDrawerHeaderContent(user, context, drawAvatar),
+      ),
+    );
   }
-  return GestureDetector(
-    onTap: drawAvatar
-        ? () {
-            showDialog<bool>(
-              useRootNavigator: false,
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => breezAvatarDialog(context.read<UserProfileBloc>()),
-            );
-          }
-        : null,
-    child: Column(children: drawerHeaderContent),
-  );
-}
 
+  Widget _buildDrawerHeaderContent(
+    UserProfileSettings user,
+    BuildContext context,
+    bool drawAvatar,
+  ) {
+    List<Widget> drawerHeaderContent = [];
+    drawerHeaderContent.add(_buildThemeSwitch(context, user));
+    if (drawAvatar) {
+      drawerHeaderContent
+        ..add(_buildAvatarButton(user))
+        ..add(_buildBottomRow(user, context));
+    }
+    return GestureDetector(
+      onTap: drawAvatar
+          ? () {
+              showDialog<bool>(
+                useRootNavigator: false,
+                context: context,
+                barrierDismissible: false,
+                builder: (context) =>
+                    breezAvatarDialog(context.read<UserProfileBloc>()),
+              );
+            }
+          : null,
+      child: Column(children: drawerHeaderContent),
+    );
+  }
 }
 
 class _ListDivider extends StatelessWidget {
@@ -179,19 +185,13 @@ class _ListDivider extends StatelessWidget {
   }
 }
 
-
 GestureDetector _buildThemeSwitch(
   BuildContext context,
   UserProfileSettings user,
 ) {
-
-  
-
   return GestureDetector(
-    onTap: () => _changeTheme(
-      user.themeId == "BLUE" ? "DARK" : "BLUE",
-      context.read<UserProfileBloc>()      
-    ),
+    onTap: () => _changeTheme(user.themeId == "BLUE" ? "DARK" : "BLUE",
+        context.read<UserProfileBloc>()),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -238,7 +238,7 @@ GestureDetector _buildThemeSwitch(
 
 Future _changeTheme(
   String themeId,
-  UserProfileBloc userProfileBloc,  
+  UserProfileBloc userProfileBloc,
 ) async {
   userProfileBloc.updateProfile(themeId: themeId);
 }
@@ -301,7 +301,9 @@ Widget _actionTile(
       decoration: subTile != null
           ? null
           : BoxDecoration(
-              color: action.isSelected ? themeData.primaryColorLight : Colors.transparent,
+              color: action.isSelected
+                  ? themeData.primaryColorLight
+                  : Colors.transparent,
               borderRadius: const BorderRadius.horizontal(
                 right: Radius.circular(32),
               ),
@@ -316,7 +318,9 @@ Widget _actionTile(
                 ),
               ),
         leading: Padding(
-          padding: subTile != null ? const EdgeInsets.only(left: 28.0) : const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: subTile != null
+              ? const EdgeInsets.only(left: 28.0)
+              : const EdgeInsets.symmetric(horizontal: 8.0),
           child: ImageIcon(
             AssetImage(action.icon),
             size: 26.0,

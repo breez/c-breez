@@ -60,7 +60,7 @@ class BottomActionsBar extends StatelessWidget {
   Future _showSendOptions(BuildContext context) async {
     final texts = AppLocalizations.of(context)!;
     InvoiceBloc invoiceBloc = context.read<InvoiceBloc>();
-    AccountBloc accBloc = context.read<AccountBloc>();    
+    AccountBloc accBloc = context.read<AccountBloc>();
 
     await showModalBottomSheet(
         context: context,
@@ -83,12 +83,13 @@ class BottomActionsBar extends StatelessWidget {
                       ),
                       onTap: () async {
                         Navigator.of(context).pop();
-                        DecodedClipboardData? clipboardData =
-                            snapshot.data;
+                        DecodedClipboardData? clipboardData = snapshot.data;
                         if (clipboardData != null) {
-                          if (clipboardData.type == ClipboardDataType.payamentRequest) {
-                            invoiceBloc.addIncomingInvoice(clipboardData.data!); 
-                          } else if (clipboardData.type == ClipboardDataType.nodeID) {
+                          if (clipboardData.type ==
+                              ClipboardDataType.payamentRequest) {
+                            invoiceBloc.addIncomingInvoice(clipboardData.data!);
+                          } else if (clipboardData.type ==
+                              ClipboardDataType.nodeID) {
                             Navigator.of(context).push(FadeInRoute(
                               builder: (_) => SpontaneousPaymentPage(
                                   clipboardData.data!, firstPaymentItemKey),
@@ -99,8 +100,8 @@ class BottomActionsBar extends StatelessWidget {
                               useRootNavigator: false,
                               context: context,
                               barrierDismissible: false,
-                              builder: (_) => EnterPaymentInfoDialog(context,
-                                  invoiceBloc, firstPaymentItemKey));
+                              builder: (_) => EnterPaymentInfoDialog(
+                                  context, invoiceBloc, firstPaymentItemKey));
                         }
                       },
                     ),
@@ -139,7 +140,7 @@ class BottomActionsBar extends StatelessWidget {
                         onTap: () {
                           Navigator.of(context).pop();
                           Navigator.of(context).pushNamed("/withdraw_funds");
-                        }),                    
+                        }),
                     const SizedBox(height: 8.0)
                   ],
                 );
@@ -188,7 +189,8 @@ class _ActionImage extends StatelessWidget {
   final String iconAssetPath;
   final bool enabled;
 
-  const _ActionImage({Key? key,required this.iconAssetPath, this.enabled = true})
+  const _ActionImage(
+      {Key? key, required this.iconAssetPath, this.enabled = true})
       : super(key: key);
 
   @override
@@ -204,55 +206,53 @@ class _ActionImage extends StatelessWidget {
 }
 
 Future showReceiveOptions(BuildContext parentContext, AccountState account) {
-  final texts = AppLocalizations.of(parentContext)!;  
+  final texts = AppLocalizations.of(parentContext)!;
 
   return showModalBottomSheet(
     context: parentContext,
     builder: (ctx) {
       return withBreezTheme(
         parentContext,
-        BlocBuilder<CurrencyBoc, CurrencyState>(          
-          builder: (context, currencyState) {            
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const SizedBox(height: 8.0),
-                    ListTile(
-                        enabled: true,
-                        leading: const _ActionImage(
-                          iconAssetPath: "src/icon/paste.png",
-                          enabled: true,
-                        ),
-                        title: Text(
-                          texts.bottom_action_bar_receive_invoice,
-                          style: theme.bottomSheetTextStyle,
-                        ),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pushNamed("/create_invoice");
-                        }),                    
-                    account.maxChanReserve == 0
-                        ? const SizedBox(height: 8.0)
-                        : WarningBox(
-                            boxPadding: const EdgeInsets.all(16),
-                            contentPadding: const EdgeInsets.all(8),
-                            child: AutoSizeText(
-                              texts.bottom_action_bar_warning_balance_title(
-                                currencyState.bitcoinCurrency.format(
-                                  account.maxChanReserve,
-                                  removeTrailingZeros: true,
-                                ),
-                              ),
-                              maxFontSize: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1!
-                                  .fontSize!,
-                              style: Theme.of(context).textTheme.headline6,
-                              textAlign: TextAlign.center,
+        BlocBuilder<CurrencyBoc, CurrencyState>(
+          builder: (context, currencyState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const SizedBox(height: 8.0),
+                ListTile(
+                    enabled: true,
+                    leading: const _ActionImage(
+                      iconAssetPath: "src/icon/paste.png",
+                      enabled: true,
+                    ),
+                    title: Text(
+                      texts.bottom_action_bar_receive_invoice,
+                      style: theme.bottomSheetTextStyle,
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed("/create_invoice");
+                    }),
+                account.maxChanReserve == 0
+                    ? const SizedBox(height: 8.0)
+                    : WarningBox(
+                        boxPadding: const EdgeInsets.all(16),
+                        contentPadding: const EdgeInsets.all(8),
+                        child: AutoSizeText(
+                          texts.bottom_action_bar_warning_balance_title(
+                            currencyState.bitcoinCurrency.format(
+                              account.maxChanReserve,
+                              removeTrailingZeros: true,
                             ),
                           ),
-                  ],
-                );              
+                          maxFontSize:
+                              Theme.of(context).textTheme.subtitle1!.fontSize!,
+                          style: Theme.of(context).textTheme.headline6,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+              ],
+            );
           },
         ),
       );

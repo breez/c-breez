@@ -47,7 +47,8 @@ class SelectLSPPageState extends State<SelectLSPPage> {
           IconButton(
               onPressed: () => Navigator.pop(context),
               // Color needs to be changed
-              icon: Icon(Icons.close, color: Theme.of(context).appBarTheme.iconTheme!.color))
+              icon: Icon(Icons.close,
+                  color: Theme.of(context).appBarTheme.iconTheme!.color))
         ],
         toolbarTextStyle: Theme.of(context).appBarTheme.textTheme?.bodyText2,
         titleTextStyle: Theme.of(context).appBarTheme.textTheme?.headline6,
@@ -60,7 +61,8 @@ class SelectLSPPageState extends State<SelectLSPPage> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: const <Widget>[
-                Text("There was an error fetching lightning providers. Please check your internet connection and try again.",
+                Text(
+                    "There was an error fetching lightning providers. Please check your internet connection and try again.",
                     textAlign: TextAlign.center),
               ],
             ),
@@ -94,9 +96,12 @@ class SelectLSPPageState extends State<SelectLSPPage> {
                     itemCount: lsps.length,
                     itemBuilder: (BuildContext context, int index) {
                       return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 0.0),
                         selected: _selectedLSP?.lspID == lsps[index].lspID,
-                        trailing: _selectedLSP?.lspID == lsps[index].lspID ? const Icon(Icons.check) : null,
+                        trailing: _selectedLSP?.lspID == lsps[index].lspID
+                            ? const Icon(Icons.check)
+                            : null,
                         title: Text(
                           lsps[index].name,
                         ),

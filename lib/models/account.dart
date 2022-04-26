@@ -8,7 +8,12 @@ class Invoice {
   final Int64 expiry;
   final Int64 lspFee;
 
-  Invoice({required this.bolt11, this.description = "", required this.amount, required this.expiry, this.lspFee = Int64.ZERO});
+  Invoice(
+      {required this.bolt11,
+      this.description = "",
+      required this.amount,
+      required this.expiry,
+      this.lspFee = Int64.ZERO});
 
   String get payeeName => "";
   String get payerName => "";
@@ -31,7 +36,8 @@ class PaymentFilterModel {
   final DateTime? endDate;
   final bool initial;
 
-  PaymentFilterModel(this.paymentType, this.startDate, this.endDate, {this.initial = false});
+  PaymentFilterModel(this.paymentType, this.startDate, this.endDate,
+      {this.initial = false});
 
   PaymentFilterModel.initial()
       : this([
@@ -39,8 +45,10 @@ class PaymentFilterModel {
           PaymentType.RECEIVED,
         ], null, null, initial: true);
 
-  PaymentFilterModel copyWith({List<PaymentType>? filter, DateTime? startDate, DateTime? endDate}) {
-    return PaymentFilterModel(filter ?? paymentType, startDate ?? this.startDate, endDate ?? this.endDate);
+  PaymentFilterModel copyWith(
+      {List<PaymentType>? filter, DateTime? startDate, DateTime? endDate}) {
+    return PaymentFilterModel(filter ?? paymentType,
+        startDate ?? this.startDate, endDate ?? this.endDate);
   }
 
   factory PaymentFilterModel.fromJson(Map<String, dynamic> json) {
@@ -57,7 +65,11 @@ class PaymentFilterModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {"paymentType": paymentType.map((e) => e.index).toList(), "startDate": startDate, "endDate": endDate};
+    return {
+      "paymentType": paymentType.map((e) => e.index).toList(),
+      "startDate": startDate,
+      "endDate": endDate
+    };
   }
 }
 

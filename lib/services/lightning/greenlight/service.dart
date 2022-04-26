@@ -21,14 +21,16 @@ class GreenlightService implements LightningService {
   final Completer _readyCompleter = Completer();
 
   GreenlightService() {
-    final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null, null);
-    var grpcChannel = _createNodeChannel(schedulerCredentials, "https://scheduler.gl.blckstrm.com:2601");
+    final NodeCredentials schedulerCredentials =
+        NodeCredentials(caCert, nobodyCert, nobodyKey, null, null, null);
+    var grpcChannel = _createNodeChannel(
+        schedulerCredentials, "https://scheduler.gl.blckstrm.com:2601");
     _schedulerClient = scheduler.SchedulerClient(grpcChannel);
   }
 
   @override
   Future initWithCredentials(List<int> credentials) async {
-    _nodeCredentials = NodeCredentials.fromBuffer(credentials);    
+    _nodeCredentials = NodeCredentials.fromBuffer(credentials);
   }
 
   @override
@@ -43,11 +45,13 @@ class GreenlightService implements LightningService {
 
   @override
   Future startNode() async {
-    var res = await _schedulerClient!.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
+    var res = await _schedulerClient!
+        .schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
     var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
-    _nodeClient = greenlight.NodeClient(nodeChannel, interceptors: [NodeInterceptor(_nodeCredentials!.deviceKey)]);
+    _nodeClient = greenlight.NodeClient(nodeChannel,
+        interceptors: [NodeInterceptor(_nodeCredentials!.deviceKey)]);
     _readyCompleter.complete(true);
-     log.info("node started! " + HEX.encode(res.nodeId));
+    log.info("node started! " + HEX.encode(res.nodeId));
     _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
       log.info(value.line);
     });
@@ -56,7 +60,7 @@ class GreenlightService implements LightningService {
     //   print("hsmd: ${value.context.dbid}");
     // });
   }
-  
+
   @override
   Future waitReady() {
     return _readyCompleter.future;
@@ -64,51 +68,76 @@ class GreenlightService implements LightningService {
 
   @override
   Stream<IncomingLightningPayment> incomingPaymentsStream() {
-    return _nodeClient!.streamIncoming(greenlight.StreamIncomingFilter()).map((p) => IncomingLightningPayment(
-        label: p.offchain.label,
-        preimage: HEX.encode(p.offchain.preimage),
-        amountSat: amountToSats(p.offchain.amount),
-        paymentHash: HEX.encode(p.offchain.paymentHash),
-        bolt11: p.offchain.bolt11,
-        extratlvs: p.offchain.extratlvs.map((t) => TlvField(type: t.type.toInt(), value: HEX.encode(t.value))).toList()));
+    return _nodeClient!.streamIncoming(greenlight.StreamIncomingFilter()).map(
+        (p) => IncomingLightningPayment(
+            label: p.offchain.label,
+            preimage: HEX.encode(p.offchain.preimage),
+            amountSat: amountToSats(p.offchain.amount),
+            paymentHash: HEX.encode(p.offchain.paymentHash),
+            bolt11: p.offchain.bolt11,
+            extratlvs: p.offchain.extratlvs
+                .map((t) =>
+                    TlvField(type: t.type.toInt(), value: HEX.encode(t.value)))
+                .toList()));
   }
 
   @override
   Future<List<int>> recover(Uint8List seed) async {
     var hsmdCreds = await hsmdInit(seed);
-    var challengeResponse = await _schedulerClient!
-        .getChallenge(scheduler.ChallengeRequest(nodeId: hsmdCreds.nodeId, scope: scheduler.ChallengeScope.RECOVER));
-    var sig = await _signChallenge(hsmdCreds.nodePrivateKey, challengeResponse.challenge, scheduler.ChallengeScope.REGISTER);
-    var recoverResponse = await _schedulerClient!
-        .recover(scheduler.RecoveryRequest(challenge: challengeResponse.challenge, nodeId: hsmdCreds.nodeId, signature: sig));
+    var challengeResponse = await _schedulerClient!.getChallenge(
+        scheduler.ChallengeRequest(
+            nodeId: hsmdCreds.nodeId, scope: scheduler.ChallengeScope.RECOVER));
+    var sig = await _signChallenge(hsmdCreds.nodePrivateKey,
+        challengeResponse.challenge, scheduler.ChallengeScope.REGISTER);
+    var recoverResponse = await _schedulerClient!.recover(
+        scheduler.RecoveryRequest(
+            challenge: challengeResponse.challenge,
+            nodeId: hsmdCreds.nodeId,
+            signature: sig));
     _nodeCredentials = NodeCredentials(
-        caCert, recoverResponse.deviceCert, recoverResponse.deviceKey, hsmdCreds.nodeId, hsmdCreds.nodePrivateKey, hsmdCreds.secret);
+        caCert,
+        recoverResponse.deviceCert,
+        recoverResponse.deviceKey,
+        hsmdCreds.nodeId,
+        hsmdCreds.nodePrivateKey,
+        hsmdCreds.secret);
     var creds = _nodeCredentials!.writeBuffer();
     await initWithCredentials(creds);
     return creds;
   }
 
   @override
-  Future<List<int>> register(Uint8List seed, {String network = "bitcoin", String? email}) async {
+  Future<List<int>> register(Uint8List seed,
+      {String network = "bitcoin", String? email}) async {
     var hsmdCreds = await hsmdInit(seed);
-    var challengeResponse = await _schedulerClient!
-        .getChallenge(scheduler.ChallengeRequest(nodeId: hsmdCreds.nodeId, scope: scheduler.ChallengeScope.REGISTER));    
-    var sig = await _signChallenge(hsmdCreds.nodePrivateKey, challengeResponse.challenge, scheduler.ChallengeScope.REGISTER);
-    var registration = await _schedulerClient!.register(scheduler.RegistrationRequest(
-        network: network,
-        nodeId: hsmdCreds.nodeId,
-        initMsg: hsmdCreds.init,        
-        signature: sig,
-        signerProto: "v0.10.1",
-        challenge: challengeResponse.challenge));
-    _nodeCredentials =
-        NodeCredentials(caCert, registration.deviceCert, registration.deviceKey, hsmdCreds.nodeId, hsmdCreds.nodePrivateKey, hsmdCreds.secret);
+    var challengeResponse = await _schedulerClient!.getChallenge(
+        scheduler.ChallengeRequest(
+            nodeId: hsmdCreds.nodeId,
+            scope: scheduler.ChallengeScope.REGISTER));
+    var sig = await _signChallenge(hsmdCreds.nodePrivateKey,
+        challengeResponse.challenge, scheduler.ChallengeScope.REGISTER);
+    var registration = await _schedulerClient!.register(
+        scheduler.RegistrationRequest(
+            network: network,
+            nodeId: hsmdCreds.nodeId,
+            initMsg: hsmdCreds.init,
+            signature: sig,
+            signerProto: "v0.10.1",
+            challenge: challengeResponse.challenge));
+    _nodeCredentials = NodeCredentials(
+        caCert,
+        registration.deviceCert,
+        registration.deviceKey,
+        hsmdCreds.nodeId,
+        hsmdCreds.nodePrivateKey,
+        hsmdCreds.secret);
     var creds = _nodeCredentials!.writeBuffer();
     await initWithCredentials(creds);
     return creds;
   }
 
-  Future<List<int>> _signChallenge(List<int> privateKey, List<int> challenge, scheduler.ChallengeScope scope) async {    
+  Future<List<int>> _signChallenge(List<int> privateKey, List<int> challenge,
+      scheduler.ChallengeScope scope) async {
     var s = "Lightning Signed Message:";
     var chal = List<int>.empty(growable: true)
       ..addAll(s.codeUnits)
@@ -119,9 +148,14 @@ class GreenlightService implements LightningService {
 
   @override
   Future<Invoice> addInvoice(Int64 amount,
-      {String? payeeName, String? payeeImageURL, String? payerName, String? payerImageURL, String? description, Int64? expiry}) async {
-    var invoice = await _nodeClient!
-        .createInvoice(greenlight.InvoiceRequest(amount: greenlight.Amount(satoshi: amount), description: description));
+      {String? payeeName,
+      String? payeeImageURL,
+      String? payerName,
+      String? payerImageURL,
+      String? description,
+      Int64? expiry}) async {
+    var invoice = await _nodeClient!.createInvoice(greenlight.InvoiceRequest(
+        amount: greenlight.Amount(satoshi: amount), description: description));
     return Invoice(
         label: invoice.label,
         amountSats: amountToSats(invoice.amount),
@@ -175,7 +209,7 @@ class GreenlightService implements LightningService {
   }
 
   @override
-  Future<List<Peer>> listPeers() async {    
+  Future<List<Peer>> listPeers() async {
     var peers = await _nodeClient!.listPeers(greenlight.ListPeersRequest());
     return peers.peers.map((e) {
       return Peer(
@@ -188,8 +222,9 @@ class GreenlightService implements LightningService {
   }
 
   @override
-  Future connectPeer(String nodeID, String address) async {    
-    await _nodeClient!.connectPeer(greenlight.ConnectRequest(nodeId: nodeID, addr: address));    
+  Future connectPeer(String nodeID, String address) async {
+    await _nodeClient!
+        .connectPeer(greenlight.ConnectRequest(nodeId: nodeID, addr: address));
   }
 
   @override
@@ -199,7 +234,8 @@ class GreenlightService implements LightningService {
 
   @override
   Future<List<OutgoingLightningPayment>> getPayments() async {
-    var payments = await _nodeClient!.listPayments(greenlight.ListPaymentsRequest());
+    var payments =
+        await _nodeClient!.listPayments(greenlight.ListPaymentsRequest());
     var paymentsList = payments.payments.map((p) {
       var sentSats = amountToSats(p.amountSent);
       var requestedSats = amountToSats(p.amount);
@@ -222,7 +258,8 @@ class GreenlightService implements LightningService {
 
   @override
   Future<List<Invoice>> getInvoices() async {
-    var invoices = await _nodeClient!.listInvoices(greenlight.ListInvoicesRequest());
+    var invoices =
+        await _nodeClient!.listInvoices(greenlight.ListInvoicesRequest());
     return invoices.invoices.map((p) {
       return Invoice(
           label: p.label,
@@ -257,13 +294,16 @@ class GreenlightService implements LightningService {
   }
 
   @override
-  Future<OutgoingLightningPayment> sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) {
+  Future<OutgoingLightningPayment> sendPaymentForRequest(
+      String blankInvoicePaymentRequest,
+      {Int64? amount}) {
     // TODO: implement sendPaymentForRequest
     throw UnimplementedError();
   }
 
   @override
-  Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, Int64 amount, String description,
+  Future<OutgoingLightningPayment> sendSpontaneousPayment(
+      String destNode, Int64 amount, String description,
       {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) {
     // TODO: implement sendSpontaneousPayment
     throw UnimplementedError();
@@ -275,16 +315,19 @@ class GreenlightService implements LightningService {
     throw UnimplementedError();
   }
 
-  ClientChannel _createNodeChannel(NodeCredentials credentials, String grpcUri) {
-    var uri = Uri.parse(grpcUri);    
+  ClientChannel _createNodeChannel(
+      NodeCredentials credentials, String grpcUri) {
+    var uri = Uri.parse(grpcUri);
     return ClientChannel(uri.host,
         port: uri.port,
         options: ChannelOptions(
             connectionTimeout: const Duration(seconds: 90),
             credentials: ClientCertificateChannelCredentials(
                 trustedRoots: Uint8List.fromList(utf8.encode(caCert)),
-                certificateChain: Uint8List.fromList(utf8.encode(credentials.deviceCert)),
-                privateKey: Uint8List.fromList(utf8.encode(credentials.deviceKey)),
+                certificateChain:
+                    Uint8List.fromList(utf8.encode(credentials.deviceCert)),
+                privateKey:
+                    Uint8List.fromList(utf8.encode(credentials.deviceKey)),
                 authority: 'localhost',
                 onBadCertificate: allowBadCertificates)));
   }
@@ -324,16 +367,25 @@ Channel _convertChannel(greenlight.Channel c) {
   if (c.state == "CHANNELD_NORMAL") {
     chanState = ChannelState.OPEN;
   }
-  if (["CHANNELD_AWAITING_LOCKIN", "DUALOPEND_OPEN_INIT", "DUALOPEND_AWAITING_LOCKIN"].contains(c.state)) {
+  if ([
+    "CHANNELD_AWAITING_LOCKIN",
+    "DUALOPEND_OPEN_INIT",
+    "DUALOPEND_AWAITING_LOCKIN"
+  ].contains(c.state)) {
     chanState = ChannelState.PENDING_OPEN;
   }
-  if (["CHANNELD_NORMAL", "CHANNELD_AWAITING_LOCKIN", "DUALOPEND_OPEN_INIT", "DUALOPEND_AWAITING_LOCKIN"].contains(c.state)) {
+  if ([
+    "CHANNELD_NORMAL",
+    "CHANNELD_AWAITING_LOCKIN",
+    "DUALOPEND_OPEN_INIT",
+    "DUALOPEND_AWAITING_LOCKIN"
+  ].contains(c.state)) {
     chanState = ChannelState.PENDING_CLOSED;
   }
 
   return Channel(
       state: chanState,
-      channelId: c.channelId,      
+      channelId: c.channelId,
       direction: c.direction,
       shortChannelId: c.shortChannelId,
       fundingTxid: c.fundingTxid,
@@ -346,14 +398,16 @@ Channel _convertChannel(greenlight.Channel c) {
       receivable: c.receivable,
       theirToSelfDelay: c.theirToSelfDelay,
       ourToSelfDelay: c.ourToSelfDelay,
-      htlcs: c.htlcs.map((h) => Htlc(
-          direction: h.direction,
-          id: h.id,
-          amountMsat: _amountStringtoMsats(h.amount),
-          expiry: h.expiry.toInt(),
-          paymentHash: h.paymentHash,
-          state: h.state,
-          localTrimmed: h.localTrimmed)).toList());
+      htlcs: c.htlcs
+          .map((h) => Htlc(
+              direction: h.direction,
+              id: h.id,
+              amountMsat: _amountStringtoMsats(h.amount),
+              expiry: h.expiry.toInt(),
+              paymentHash: h.paymentHash,
+              state: h.state,
+              localTrimmed: h.localTrimmed))
+          .toList());
 }
 
 class ClientCertificateChannelCredentials extends ChannelCredentials {
@@ -366,7 +420,10 @@ class ClientCertificateChannelCredentials extends ChannelCredentials {
     required this.privateKey,
     required String authority,
     required BadCertificateHandler onBadCertificate,
-  }) : super.secure(certificates: trustedRoots, authority: authority, onBadCertificate: onBadCertificate);
+  }) : super.secure(
+            certificates: trustedRoots,
+            authority: authority,
+            onBadCertificate: onBadCertificate);
 
   @override
   SecurityContext get securityContext {

@@ -26,7 +26,10 @@ class Loader extends StatelessWidget {
 }
 
 TransparentPageRoute createLoaderRoute(BuildContext context,
-    {String message="", double opacity = 0.5, Future? action, Function? onClose}) {
+    {String message = "",
+    double opacity = 0.5,
+    Future? action,
+    Function? onClose}) {
   return TransparentPageRoute((context) {
     return TransparentRouteLoader(
         message: message, opacity: opacity, action: action, onClose: onClose);
@@ -70,10 +73,7 @@ class FullScreenLoader extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Loader(
-                        value: value,
-                        label: message,
-                        color: progressColor),
+                    Loader(value: value, label: message, color: progressColor),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: message != null
@@ -110,7 +110,11 @@ class TransparentRouteLoader extends StatefulWidget {
   final Function? onClose;
 
   const TransparentRouteLoader(
-      {Key? key,required this.message, this.opacity = 0.5, this.action, this.onClose})
+      {Key? key,
+      required this.message,
+      this.opacity = 0.5,
+      this.action,
+      this.onClose})
       : super(key: key);
 
   @override

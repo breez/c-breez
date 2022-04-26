@@ -11,7 +11,8 @@ import 'package:share_extend/share_extend.dart';
 bool allowRebroadcastRefunds = false;
 
 class Choice {
-  const Choice({required this.title, required this.icon, required this.function});
+  const Choice(
+      {required this.title, required this.icon, required this.function});
 
   final String title;
   final IconData icon;
@@ -41,7 +42,8 @@ class DevelopersView extends StatelessWidget {
                 return _getChoices().map((Choice choice) {
                   return PopupMenuItem<Choice>(
                     value: choice,
-                    child: Text(choice.title, style: Theme.of(context).textTheme.button),
+                    child: Text(choice.title,
+                        style: Theme.of(context).textTheme.button),
                   );
                 }).toList();
               },
@@ -57,14 +59,17 @@ class DevelopersView extends StatelessWidget {
 
   List<Choice> _getChoices() {
     return [
-      Choice(title: 'Export Keys', icon: Icons.phone_android, function: _exportKeys),      
+      Choice(
+          title: 'Export Keys',
+          icon: Icons.phone_android,
+          function: _exportKeys),
     ];
   }
 
-  void _exportKeys(BuildContext context) async {    
+  void _exportKeys(BuildContext context) async {
     var accBloc = context.read<AccountBloc>();
     Directory tempDir = await getTemporaryDirectory();
-    var keysDir = tempDir.createTempSync("keys");    
+    var keysDir = tempDir.createTempSync("keys");
     await accBloc.exportKeyFiles(keysDir);
 
     var encoder = ZipFileEncoder();

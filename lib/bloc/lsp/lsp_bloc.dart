@@ -14,9 +14,15 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
   final BreezServer _breezServer;
   String? nodeID;
 
-  LSPBloc(this._appStorage, this._lnService, this._breezServer) : super(LSPState.initial()) {
+  LSPBloc(this._appStorage, this._lnService, this._breezServer)
+      : super(LSPState.initial()) {
     emit(LSPState.initial());
-    _appStorage.watchNodeInfo().where((node) => node != null).map((node) => node!.node.nodeID).distinct().listen((nodeID) {
+    _appStorage
+        .watchNodeInfo()
+        .where((node) => node != null)
+        .map((node) => node!.node.nodeID)
+        .distinct()
+        .listen((nodeID) {
       this.nodeID = nodeID;
       watchLSPState();
       fetchLSPList();
@@ -40,7 +46,8 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
 
   Future connectLSP(String lspID) async {
     var lsp = state.availableLSPs.firstWhere((l) => l.lspID == lspID);
-    emit(state.copyWith(connectionStatus: LSPConnectionStatus.inProgress, selectedLSP: lspID));
+    emit(state.copyWith(
+        connectionStatus: LSPConnectionStatus.inProgress, selectedLSP: lspID));
     try {
       await _lnService.waitReady();
       await retry(() async {
@@ -49,13 +56,17 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
       }, tryLimit: 3, interval: const Duration(seconds: 2));
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.active));
     } catch (e) {
-      emit(LSPState.initial().copyWith(initial: false, availableLSPs: state.availableLSPs, connectionStatus: LSPConnectionStatus.notSelected, lastConnectionError: e.toString()));
+      emit(LSPState.initial().copyWith(
+          initial: false,
+          availableLSPs: state.availableLSPs,
+          connectionStatus: LSPConnectionStatus.notSelected,
+          lastConnectionError: e.toString()));
     }
   }
 
   Future<String> waitCurrentNodeID() async {
-    var nodeInfo =
-        await _appStorage.watchNodeInfo().firstWhere((nodeInfo) => nodeInfo != null && nodeInfo.node.nodeID.isNotEmpty);
+    var nodeInfo = await _appStorage.watchNodeInfo().firstWhere(
+        (nodeInfo) => nodeInfo != null && nodeInfo.node.nodeID.isNotEmpty);
     return nodeInfo!.node.nodeID;
   }
 
@@ -65,13 +76,14 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
         return;
       }
       var state = this.state;
-      var lspIndex = state.availableLSPs.indexWhere((l) => l.lspID == state.selectedLSP);
+      var lspIndex =
+          state.availableLSPs.indexWhere((l) => l.lspID == state.selectedLSP);
       if (state.selectedLSP != null) {
         // if the selected lsp is no longer in server list emit not active.
         if (lspIndex < 0) {
-          emit(this
-              .state
-              .copyWith(connectionStatus: LSPConnectionStatus.notActive, lastConnectionError: "selected lsp not in list"));
+          emit(this.state.copyWith(
+              connectionStatus: LSPConnectionStatus.notActive,
+              lastConnectionError: "selected lsp not in list"));
         }
 
         var lsp = state.availableLSPs[lspIndex];
@@ -79,7 +91,9 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
 
         // if we don't have the lsp in one of our peers then emit not active.
         if (lspPeers.isEmpty || lspPeers[0].channels.isEmpty) {
-          emit(this.state.copyWith(connectionStatus: LSPConnectionStatus.notActive, lastConnectionError: null));
+          emit(this.state.copyWith(
+              connectionStatus: LSPConnectionStatus.notActive,
+              lastConnectionError: null));
         }
       }
     });

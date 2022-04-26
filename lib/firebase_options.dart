@@ -55,8 +55,10 @@ class DefaultFirebaseOptions {
     projectId: 'breez-technology',
     databaseURL: 'https://breez-technology.firebaseio.com',
     storageBucket: 'breez-technology.appspot.com',
-    androidClientId: '463327817067-18vj3qv2bqh0k2ql9b55fbpkih59ld84.apps.googleusercontent.com',
-    iosClientId: '463327817067-abe9qr1ls86ua9n6jvgs5eofcjadfsoq.apps.googleusercontent.com',
+    androidClientId:
+        '463327817067-18vj3qv2bqh0k2ql9b55fbpkih59ld84.apps.googleusercontent.com',
+    iosClientId:
+        '463327817067-abe9qr1ls86ua9n6jvgs5eofcjadfsoq.apps.googleusercontent.com',
     iosBundleId: 'com.cBreez.client',
   );
 }

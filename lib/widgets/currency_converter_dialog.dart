@@ -65,25 +65,25 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
     final themeData = Theme.of(context);
     _colorAnimation = ColorTween(
-        // change to white according to theme
-        begin: themeData.primaryTextTheme.headline4!.color,
-        end: themeData.primaryTextTheme.button!.color,
-      ).animate(_controller!)
-        ..addListener(() {
-          setState(() {});
-        });
+      // change to white according to theme
+      begin: themeData.primaryTextTheme.headline4!.color,
+      end: themeData.primaryTextTheme.button!.color,
+    ).animate(_controller!)
+      ..addListener(() {
+        setState(() {});
+      });
 
     widget._currecyBloc.fetchExchangeRates().then((value) {
       final texts = AppLocalizations.of(context)!;
       if (mounted) {
-          setState(() {
-            Navigator.pop(context);
-            showFlushbar(
-              context,
-              message: texts.currency_converter_dialog_error_exchange_rate,
-            );
-          });
-        }
+        setState(() {
+          Navigator.pop(context);
+          showFlushbar(
+            context,
+            message: texts.currency_converter_dialog_error_exchange_rate,
+          );
+        });
+      }
     });
   }
 
@@ -98,10 +98,10 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
-    return BlocBuilder<CurrencyBoc, CurrencyState>(      
-      builder: (context, currencyState) {        
-
-        if (currencyState.preferredCurrencies.isEmpty || !currencyState.fiatEnabled) {
+    return BlocBuilder<CurrencyBoc, CurrencyState>(
+      builder: (context, currencyState) {
+        if (currencyState.preferredCurrencies.isEmpty ||
+            !currencyState.fiatEnabled) {
           return const Loader();
         }
 
@@ -129,8 +129,9 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
-    final items =currencyState.preferredCurrencies.map((value) {
-      var fiatCurrencyData = currencyState.fiatCurrenciesData.firstWhere((c) => c.shortName == value);
+    final items = currencyState.preferredCurrencies.map((value) {
+      var fiatCurrencyData = currencyState.fiatCurrenciesData
+          .firstWhere((c) => c.shortName == value);
       return DropdownMenuItem<String>(
         value: fiatCurrencyData.shortName,
         child: Material(
@@ -179,7 +180,8 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
                 child: BreezDropdownButton(
                   onChanged: (value) => _selectFiatCurrency(value!.toString()),
                   value: currencyState.fiatShortName,
-                  iconEnabledColor: themeData.dialogTheme.titleTextStyle!.color!,
+                  iconEnabledColor:
+                      themeData.dialogTheme.titleTextStyle!.color!,
                   style: themeData.dialogTheme.titleTextStyle!,
                   items: items.toList(),
                 ),
@@ -193,7 +195,8 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   Widget _dialogContent(BuildContext context, CurrencyState currencyState) {
     final themeData = Theme.of(context);
-    var fiatConversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+    var fiatConversion = FiatConversion(
+        currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
 
     final int? fractionSize = currencyState.fiatCurrency!.fractionSize;
     final isBlue = theme.themeId == "BLUE";
@@ -268,7 +271,8 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     );
   }
 
-  List<Widget> _buildActions(BuildContext context, CurrencyState currencyState) {
+  List<Widget> _buildActions(
+      BuildContext context, CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
@@ -331,7 +335,8 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   }
 
   Int64 _convertedSatoshies(CurrencyState currencyState) {
-    var fiatConversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+    var fiatConversion = FiatConversion(
+        currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     return _fiatAmountController.text.isNotEmpty
         ? fiatConversion.fiatToSat(
             double.parse(_fiatAmountController.text),
@@ -346,7 +351,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
-    // Empty string widget is returned so that the dialogs height is not changed when the exchange rate is shown        
+    // Empty string widget is returned so that the dialogs height is not changed when the exchange rate is shown
     return _exchangeRate == null
         ? Text(
             "",
@@ -367,6 +372,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   }
 
   void _selectFiatCurrency(String shortName) {
-    widget._currecyBloc.setFiatShortName(shortName);    
+    widget._currecyBloc.setFiatShortName(shortName);
   }
 }

@@ -72,98 +72,103 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
     return Scaffold(
       bottomNavigationBar: Padding(
-              padding: const EdgeInsets.only(top: 24.0),
-              child: SingleButtonBottomBar(
-                stickToBottom: true,
-                text: "PAY",
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _sendPayment(accountBloc, currencyBloc);
-                  }
-                },
-              ),
-            ),          
+        padding: const EdgeInsets.only(top: 24.0),
+        child: SingleButtonBottomBar(
+          stickToBottom: true,
+          text: "PAY",
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _sendPayment(accountBloc, currencyBloc);
+            }
+          },
+        ),
+      ),
       appBar: AppBar(
         iconTheme: Theme.of(context).appBarTheme.iconTheme,
         backgroundColor: Theme.of(context).canvasColor,
         leading: const backBtn.BackButton(),
         title: Text(_title,
             style: Theme.of(context).appBarTheme.textTheme!.headline6),
-        elevation: 0.0, toolbarTextStyle: Theme.of(context).appBarTheme.textTheme!.bodyText2, titleTextStyle: Theme.of(context).appBarTheme.textTheme!.headline6,
+        elevation: 0.0,
+        toolbarTextStyle: Theme.of(context).appBarTheme.textTheme!.bodyText2,
+        titleTextStyle: Theme.of(context).appBarTheme.textTheme!.headline6,
       ),
-      body: BlocBuilder<CurrencyBoc, CurrencyState>(        
-        builder: (context, currencyState) {
-          return BlocBuilder<AccountBloc, AccountState>(        
-            builder: (context, acc) {   
-              AccountBloc accBloc = context.read<AccountBloc>();       
-              return Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16.0, right: 16.0, bottom: 40.0, top: 24.0),
-                  child: ListView(
-                    children: <Widget>[
-                      _buildNodeIdDescription(),
-                      TextFormField(
-                        controller: _descriptionController,
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.done,
-                        maxLines: null,
-                        maxLength: 90,
-                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                        decoration: const InputDecoration(
-                          labelText: "Tip Message (optional)",
-                        ),
-                        style: theme.FieldTextStyle.textStyle,
+      body: BlocBuilder<CurrencyBoc, CurrencyState>(
+          builder: (context, currencyState) {
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, acc) {
+            AccountBloc accBloc = context.read<AccountBloc>();
+            return Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 16.0, right: 16.0, bottom: 40.0, top: 24.0),
+                child: ListView(
+                  children: <Widget>[
+                    _buildNodeIdDescription(),
+                    TextFormField(
+                      controller: _descriptionController,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.done,
+                      maxLines: null,
+                      maxLength: 90,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                      decoration: const InputDecoration(
+                        labelText: "Tip Message (optional)",
                       ),
-                      AmountFormField(
-                          context: context,
-                          bitcoinCurrency: currencyState.bitcoinCurrency,
-                          texts: texts,
-                          fiatConversion: currencyState.fiatEnabled ? FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!) : null,
-                          focusNode: _amountFocusNode,
-                          controller: _amountController,
-                          validatorFn: PaymentValidator(accBloc.validatePayment, currencyState.bitcoinCurrency).validateOutgoing,
-                          style: theme.FieldTextStyle.textStyle),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 48,
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: _buildPayableBTC(currencyState, acc),
-                      ),
-                      BlocBuilder<AccountBloc, AccountState>(                      
-                          builder: (BuildContext context,
-                              AccountState acc) {                  
-                            String? message;
-                            if (acc.status == AccountStatus.CONNECTING) {
-                              message =
-                                  'You will be able to receive payments after Breez is finished opening a secure channel with our server. This usually takes ~10 minutes to be completed. Please try again in a couple of minutes.';
-                            }
-      
-                            if (message != null) {
-                              return Container(
-                                  padding: const EdgeInsets.only(
-                                      top: 50.0, left: 30.0, right: 30.0),
-                                  child: Column(children: <Widget>[
-                                    Text(
-                                      message,
-                                      textAlign: TextAlign.center,
-                                      style: theme.warningStyle.copyWith(
-                                          color: Theme.of(context).errorColor),
-                                    ),
-                                  ]));
-                            } else {
-                              return const SizedBox();
-                            }
-                          })
-                    ],
-                  ),
+                      style: theme.FieldTextStyle.textStyle,
+                    ),
+                    AmountFormField(
+                        context: context,
+                        bitcoinCurrency: currencyState.bitcoinCurrency,
+                        texts: texts,
+                        fiatConversion: currencyState.fiatEnabled
+                            ? FiatConversion(currencyState.fiatCurrency!,
+                                currencyState.fiatExchangeRate!)
+                            : null,
+                        focusNode: _amountFocusNode,
+                        controller: _amountController,
+                        validatorFn: PaymentValidator(accBloc.validatePayment,
+                                currencyState.bitcoinCurrency)
+                            .validateOutgoing,
+                        style: theme.FieldTextStyle.textStyle),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 48,
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: _buildPayableBTC(currencyState, acc),
+                    ),
+                    BlocBuilder<AccountBloc, AccountState>(
+                        builder: (BuildContext context, AccountState acc) {
+                      String? message;
+                      if (acc.status == AccountStatus.CONNECTING) {
+                        message =
+                            'You will be able to receive payments after Breez is finished opening a secure channel with our server. This usually takes ~10 minutes to be completed. Please try again in a couple of minutes.';
+                      }
+
+                      if (message != null) {
+                        return Container(
+                            padding: const EdgeInsets.only(
+                                top: 50.0, left: 30.0, right: 30.0),
+                            child: Column(children: <Widget>[
+                              Text(
+                                message,
+                                textAlign: TextAlign.center,
+                                style: theme.warningStyle.copyWith(
+                                    color: Theme.of(context).errorColor),
+                              ),
+                            ]));
+                      } else {
+                        return const SizedBox();
+                      }
+                    })
+                  ],
                 ),
-              );
-            },
-          );
-        }
-      ),
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 
@@ -175,10 +180,9 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
         maxLines: 1,
         minFontSize: MinFontSize(context).minFontSize,
       ),
-      onTap: () => _amountController.text = currencyState.bitcoinCurrency.format(
-          acc.maxAllowedToPay,
-          includeDisplayName: false,
-          userInput: true),
+      onTap: () => _amountController.text = currencyState.bitcoinCurrency
+          .format(acc.maxAllowedToPay,
+              includeDisplayName: false, userInput: true),
     );
   }
 
@@ -201,7 +205,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
             "Are you sure you want to ${bitcoinCurrency.format(amount)} to this node?\n\n${widget.nodeID}"),
         okText: "PAY",
         cancelText: "CANCEL");
-    if (ok == true) {      
+    if (ok == true) {
       try {
         Future sendFuture = Future.value(null);
         showDialog(
@@ -211,9 +215,11 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
             builder: (_) => ProcessingPaymentDialog(
                   context,
                   () {
-                    var sendPayment = Future.delayed(const Duration(seconds: 1), () {
+                    var sendPayment =
+                        Future.delayed(const Duration(seconds: 1), () {
                       // accBloc.userActionsSink.add(sendAction);
-                      sendFuture = accBloc.sendSpontaneousPayment(widget.nodeID!, tipMessage, amount);
+                      sendFuture = accBloc.sendSpontaneousPayment(
+                          widget.nodeID!, tipMessage, amount);
                       return sendFuture;
                     });
 
@@ -229,12 +235,12 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
         await sendFuture;
       } catch (err) {
         promptError(
-              context,
-              "Payment Error",
-              Text(
-                err.toString(),
-                style: Theme.of(context).dialogTheme.contentTextStyle,
-              ));
+            context,
+            "Payment Error",
+            Text(
+              err.toString(),
+              style: Theme.of(context).dialogTheme.contentTextStyle,
+            ));
       }
     }
   }

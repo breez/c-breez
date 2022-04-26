@@ -17,15 +17,14 @@ class BreezAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color avatarBgColor =
-        backgroundColor ?? theme.sessionAvatarBackgroundColor;
+    Color avatarBgColor = backgroundColor ?? theme.sessionAvatarBackgroundColor;
 
     if ((avatarURL ?? "").isNotEmpty) {
       if (avatarURL!.startsWith("breez://profile_image?")) {
         var queryParams = Uri.parse(avatarURL!).queryParameters;
         return _GeneratedAvatar(
             radius, queryParams["animal"], queryParams["color"], avatarBgColor);
-      }      
+      }
 
       if (Uri.tryParse(avatarURL!)?.scheme.startsWith("http") ?? false) {
         return _NetworkImageAvatar(avatarURL!, radius);
@@ -69,7 +68,8 @@ class _GeneratedAvatar extends StatelessWidget {
   final String? color;
   final Color backgroundColor;
 
-  const _GeneratedAvatar(this.radius, this.animal, this.color, this.backgroundColor);
+  const _GeneratedAvatar(
+      this.radius, this.animal, this.color, this.backgroundColor);
 
   @override
   Widget build(BuildContext context) {
@@ -135,13 +135,13 @@ class _DataImageAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      final uri = UriData.parse(avatarURL);
-      final _bytes = uri.contentAsBytes();
+    final uri = UriData.parse(avatarURL);
+    final _bytes = uri.contentAsBytes();
     return CircleAvatar(
-        backgroundColor: theme.sessionAvatarBackgroundColor,
+      backgroundColor: theme.sessionAvatarBackgroundColor,
       radius: radius,
       child: ClipOval(
-        child: Image.memory(_bytes) ,
+        child: Image.memory(_bytes),
       ),
     );
   }

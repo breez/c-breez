@@ -1,5 +1,5 @@
 class UserProfileSettings {
-  final String? userID;  
+  final String? userID;
   final String? name;
   final String? color;
   final String? animal;
@@ -7,9 +7,9 @@ class UserProfileSettings {
   final String token;
   final String themeId;
   final bool registrationRequested;
-  final bool hideBalance;  
+  final bool hideBalance;
 
-  UserProfileSettings._({    
+  UserProfileSettings._({
     this.userID,
     this.name,
     this.color,
@@ -43,7 +43,8 @@ class UserProfileSettings {
       image: image ?? this.image,
       token: token ?? this.token,
       themeId: themeId ?? this.themeId,
-      registrationRequested: registrationRequested ?? this.registrationRequested,
+      registrationRequested:
+          registrationRequested ?? this.registrationRequested,
       hideBalance: hideBalance ?? this.hideBalance,
     );
   }
@@ -52,7 +53,11 @@ class UserProfileSettings {
     return userID != null;
   }
 
-  String? get avatarURL => image ?? (animal != null && color != null ? 'breez://profile_image?animal=$animal&color=$color' : null);
+  String? get avatarURL =>
+      image ??
+      (animal != null && color != null
+          ? 'breez://profile_image?animal=$animal&color=$color'
+          : null);
 
   UserProfileSettings.fromJson(Map<String, dynamic> json)
       : userID = json['userID'],
@@ -62,7 +67,8 @@ class UserProfileSettings {
         animal = json['animal'],
         image = json['image'],
         themeId = json['themeId'] ?? "BLUE",
-        registrationRequested = json['registrationRequested'] ?? json['token'] != null,
+        registrationRequested =
+            json['registrationRequested'] ?? json['token'] != null,
         hideBalance = json['hideBalance'] ?? false;
 
   Map<String, dynamic> toJson() => {

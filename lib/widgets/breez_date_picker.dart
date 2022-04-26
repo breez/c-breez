@@ -52,7 +52,7 @@ class _DatePickerHeader extends StatelessWidget {
     required this.mode,
     required this.onModeChanged,
     required this.orientation,
-  })  : super(key: key);
+  }) : super(key: key);
 
   final DateTime selectedDate;
   final DatePickerMode mode;
@@ -873,7 +873,8 @@ class _YearPickerState extends State<YearPicker> {
       itemBuilder: (BuildContext context, int index) {
         final year = widget.firstDate.year + index;
         final isSelected = year == widget.selectedDate.year;
-        final itemStyle = isSelected ? const TextStyle(color: Colors.black87) : style;
+        final itemStyle =
+            isSelected ? const TextStyle(color: Colors.black87) : style;
         return InkWell(
           key: ValueKey<int>(year),
           onTap: () {
@@ -1112,7 +1113,7 @@ class _DatePickerDialogState extends State<_DatePickerDialog> {
                   ],
                 ),
               );
-          }          
+          }
         },
       ),
     );

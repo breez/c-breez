@@ -18,8 +18,15 @@ class WalletDashboard extends StatefulWidget {
   final Function(String fiatShortName) _onFiatCurrencyChange;
   final Function(bool hideBalance) _onPrivacyChange;
 
-  const WalletDashboard(this._userModel, this._accountState, this._currencyState, this._height, this._offsetFactor,
-      this._onCurrencyChange, this._onFiatCurrencyChange, this._onPrivacyChange);
+  const WalletDashboard(
+      this._userModel,
+      this._accountState,
+      this._currencyState,
+      this._height,
+      this._offsetFactor,
+      this._onCurrencyChange,
+      this._onFiatCurrencyChange,
+      this._onPrivacyChange);
 
   @override
   State<StatefulWidget> createState() {
@@ -33,10 +40,15 @@ class WalletDashboardState extends State<WalletDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    double startHeaderSize = Theme.of(context).accentTextTheme.headline4!.fontSize!;
-    double endHeaderFontSize = Theme.of(context).accentTextTheme.headline4!.fontSize! - 8.0;
+    double startHeaderSize =
+        Theme.of(context).accentTextTheme.headline4!.fontSize!;
+    double endHeaderFontSize =
+        Theme.of(context).accentTextTheme.headline4!.fontSize! - 8.0;
 
-    FiatConversion? fiatConversion = widget._currencyState.fiatEnabled ? FiatConversion(widget._currencyState.fiatCurrency!, widget._currencyState.fiatExchangeRate!) : null;    
+    FiatConversion? fiatConversion = widget._currencyState.fiatEnabled
+        ? FiatConversion(widget._currencyState.fiatCurrency!,
+            widget._currencyState.fiatExchangeRate!)
+        : null;
     return GestureDetector(
       child: Stack(
         alignment: AlignmentDirectional.topCenter,
@@ -52,10 +64,18 @@ class WalletDashboardState extends State<WalletDashboard> {
             child: Center(
               child: TextButton(
                   style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                      if (states.contains(MaterialState.focused)) return theme.customData[theme.themeId]!.paymentListBgColor;
-                      if (states.contains(MaterialState.hovered)) return theme.customData[theme.themeId]!.paymentListBgColor;
-                      return Theme.of(context).textTheme.button!.color!; // Defer to the widget's default.
+                    overlayColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.focused))
+                        return theme
+                            .customData[theme.themeId]!.paymentListBgColor;
+                      if (states.contains(MaterialState.hovered))
+                        return theme
+                            .customData[theme.themeId]!.paymentListBgColor;
+                      return Theme.of(context)
+                          .textTheme
+                          .button!
+                          .color!; // Defer to the widget's default.
                     }),
                   ),
                   onPressed: () {
@@ -63,35 +83,66 @@ class WalletDashboardState extends State<WalletDashboard> {
                       widget._onPrivacyChange(false);
                       return;
                     }
-                    var nextCurrencyIndex = (BitcoinCurrency.currencies.indexOf(widget._currencyState.bitcoinCurrency) + 1) %
+                    var nextCurrencyIndex = (BitcoinCurrency.currencies.indexOf(
+                                widget._currencyState.bitcoinCurrency) +
+                            1) %
                         BitcoinCurrency.currencies.length;
                     if (nextCurrencyIndex == 1) {
                       widget._onPrivacyChange(true);
                     }
-                    widget._onCurrencyChange(BitcoinCurrency.currencies[nextCurrencyIndex].tickerSymbol);
+                    widget._onCurrencyChange(BitcoinCurrency
+                        .currencies[nextCurrencyIndex].tickerSymbol);
                   },
                   child: widget._userModel.hideBalance
                       ? Text("******",
                           style: Theme.of(context)
                               .accentTextTheme
                               .headline4!
-                              .copyWith(fontSize: startHeaderSize - (startHeaderSize - endHeaderFontSize) * widget._offsetFactor))
-                      : (widget._offsetFactor > 0.8 && _showFiatCurrency && fiatConversion != null)
-                          ? Text(fiatConversion.format(widget._accountState.balance),
-                              style: Theme.of(context).accentTextTheme.headline4!.copyWith(
-                                  fontSize: startHeaderSize - (startHeaderSize - endHeaderFontSize) * widget._offsetFactor))
+                              .copyWith(
+                                  fontSize: startHeaderSize -
+                                      (startHeaderSize - endHeaderFontSize) *
+                                          widget._offsetFactor))
+                      : (widget._offsetFactor > 0.8 &&
+                              _showFiatCurrency &&
+                              fiatConversion != null)
+                          ? Text(
+                              fiatConversion
+                                  .format(widget._accountState.balance),
+                              style: Theme.of(context)
+                                  .accentTextTheme
+                                  .headline4!
+                                  .copyWith(
+                                      fontSize: startHeaderSize -
+                                          (startHeaderSize -
+                                                  endHeaderFontSize) *
+                                              widget._offsetFactor))
                           : RichText(
                               text: TextSpan(
-                                  style: Theme.of(context).accentTextTheme.headline4!.copyWith(
-                                      fontSize: startHeaderSize - (startHeaderSize - endHeaderFontSize) * widget._offsetFactor),
+                                  style: Theme.of(context)
+                                      .accentTextTheme
+                                      .headline4!
+                                      .copyWith(
+                                          fontSize: startHeaderSize -
+                                              (startHeaderSize -
+                                                      endHeaderFontSize) *
+                                                  widget._offsetFactor),
                                   text: widget._currencyState.bitcoinCurrency
-                                      .format(widget._accountState.balance, removeTrailingZeros: true, includeDisplayName: false),
+                                      .format(widget._accountState.balance,
+                                          removeTrailingZeros: true,
+                                          includeDisplayName: false),
                                   children: <TextSpan>[
                                     TextSpan(
-                                      text: " " + widget._currencyState.bitcoinCurrency.displayName,
-                                      style: Theme.of(context).accentTextTheme.headline4!.copyWith(
-                                          fontSize: startHeaderSize * 0.6 -
-                                              (startHeaderSize * 0.6 - endHeaderFontSize) * widget._offsetFactor),
+                                      text: " " +
+                                          widget._currencyState.bitcoinCurrency
+                                              .displayName,
+                                      style: Theme.of(context)
+                                          .accentTextTheme
+                                          .headline4!
+                                          .copyWith(
+                                              fontSize: startHeaderSize * 0.6 -
+                                                  (startHeaderSize * 0.6 -
+                                                          endHeaderFontSize) *
+                                                      widget._offsetFactor),
                                     ),
                                   ]),
                             )),
@@ -100,31 +151,51 @@ class WalletDashboardState extends State<WalletDashboard> {
           Positioned(
             top: 100 - BALANCE_OFFSET_TRANSITION * widget._offsetFactor,
             child: Center(
-              child: widget._currencyState.fiatEnabled && isAboveMinAmount(widget._currencyState.fiatCurrency!,
+              child: widget._currencyState.fiatEnabled &&
+                      isAboveMinAmount(widget._currencyState.fiatCurrency!,
                           widget._currencyState.fiatExchangeRate!) &&
                       !widget._userModel.hideBalance
                   ? TextButton(
                       style: ButtonStyle(
-                        overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-                          if (states.contains(MaterialState.focused)) return theme.customData[theme.themeId]!.paymentListBgColor;
-                          if (states.contains(MaterialState.hovered)) return theme.customData[theme.themeId]!.paymentListBgColor;
-                          return Theme.of(context).textTheme.button!.color!; // Defer to the widget's default.
+                        overlayColor: MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.focused))
+                            return theme
+                                .customData[theme.themeId]!.paymentListBgColor;
+                          if (states.contains(MaterialState.hovered))
+                            return theme
+                                .customData[theme.themeId]!.paymentListBgColor;
+                          return Theme.of(context)
+                              .textTheme
+                              .button!
+                              .color!; // Defer to the widget's default.
                         }),
                       ),
                       onPressed: () {
-                        FiatConversion? newFiatConversion = nextValidFiatConversion();
+                        FiatConversion? newFiatConversion =
+                            nextValidFiatConversion();
                         if (newFiatConversion != null) {
-                          widget._onFiatCurrencyChange(newFiatConversion.currencyData.shortName);
+                          widget._onFiatCurrencyChange(
+                              newFiatConversion.currencyData.shortName);
                         }
                       },
-                      child: fiatConversion != null ? Text(fiatConversion.format(widget._accountState.balance),
-                          style: Theme.of(context).accentTextTheme.subtitle1!.copyWith(
-                              color: Theme.of(context)
+                      child: fiatConversion != null
+                          ? Text(
+                              fiatConversion
+                                  .format(widget._accountState.balance),
+                              style: Theme.of(context)
                                   .accentTextTheme
                                   .subtitle1!
-                                  .color!
-                                  .withOpacity(pow(1.00 - widget._offsetFactor, 2).toDouble()))) : Container()
-                    )
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .accentTextTheme
+                                          .subtitle1!
+                                          .color!
+                                          .withOpacity(pow(
+                                                  1.00 - widget._offsetFactor,
+                                                  2)
+                                              .toDouble())))
+                          : Container())
                   : const SizedBox(),
             ),
           ),
@@ -145,14 +216,16 @@ class WalletDashboardState extends State<WalletDashboard> {
   }
 
   FiatConversion? nextValidFiatConversion() {
-    var currentIndex = widget._currencyState.preferredCurrencies.indexOf(widget._currencyState.fiatShortName);
+    var currentIndex = widget._currencyState.preferredCurrencies
+        .indexOf(widget._currencyState.fiatShortName);
     for (var i = 1; i < widget._currencyState.preferredCurrencies.length; i++) {
-      var nextIndex = (i + currentIndex) % widget._currencyState.preferredCurrencies.length;
+      var nextIndex =
+          (i + currentIndex) % widget._currencyState.preferredCurrencies.length;
       var nextFiat = widget._currencyState.preferredCurrencies[nextIndex];
       var nextFiatObj = widget._currencyState.fiatByShortName(nextFiat);
-      var nextFiatCurrency =  widget._currencyState.exchangeRates[nextFiat];
+      var nextFiatCurrency = widget._currencyState.exchangeRates[nextFiat];
       if (nextFiatObj != null && nextFiatCurrency != null) {
-        if (isAboveMinAmount(nextFiatObj,nextFiatCurrency)) {
+        if (isAboveMinAmount(nextFiatObj, nextFiatCurrency)) {
           return FiatConversion(nextFiatObj, nextFiatCurrency);
         }
       }

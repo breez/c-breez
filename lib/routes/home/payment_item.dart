@@ -127,21 +127,20 @@ class PaymentItem extends StatelessWidget {
                 ),
                 trailing: SizedBox(
                   height: 44,
-                  child: BlocBuilder<CurrencyBoc, CurrencyState>(                    
-                    builder: (context, currencyState) {
-                      return Column(
-                        mainAxisAlignment:
-                            _paymentInfo.fee == 0 || _paymentInfo.pending
-                                ? MainAxisAlignment.center
-                                : MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          _paymentAmount(context, currencyState),
-                          _paymentFee(context, currencyState),
-                        ],
-                      );
-                    }
-                  ),
+                  child: BlocBuilder<CurrencyBoc, CurrencyState>(
+                      builder: (context, currencyState) {
+                    return Column(
+                      mainAxisAlignment:
+                          _paymentInfo.fee == 0 || _paymentInfo.pending
+                              ? MainAxisAlignment.center
+                              : MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        _paymentAmount(context, currencyState),
+                        _paymentFee(context, currencyState),
+                      ],
+                    );
+                  }),
                 ),
                 onTap: () => _showDetail(context),
               ),
@@ -164,8 +163,12 @@ class PaymentItem extends StatelessWidget {
       opacity: (_scrollController.offset -
                   (DASHBOARD_MAX_HEIGHT - DASHBOARD_MIN_HEIGHT) -
                   ((PAYMENT_LIST_ITEM_HEIGHT + BOTTOM_PADDING) *
-                          (_itemIndex + 1) - FILTER_MAX_SIZE +
-                      AVATAR_DIAMETER / 2) > 0) ? 0.0 : 1.0,
+                          (_itemIndex + 1) -
+                      FILTER_MAX_SIZE +
+                      AVATAR_DIAMETER / 2) >
+              0)
+          ? 0.0
+          : 1.0,
       child: Text(
         _hideBalance ? "******" : (negative ? "- " : "+ ") + amount,
         style: Theme.of(context).accentTextTheme.headline6,

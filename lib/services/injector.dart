@@ -22,16 +22,16 @@ class ServiceInjector {
 
   BreezServer? _breezServer;
   FirebaseNotifications? _notifications;
-  LightningService? _lightningService;  
+  LightningService? _lightningService;
   DeepLinksService? _deepLinksService;
   LightningLinksService? _lightningLinksService;
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences =
-      SharedPreferences.getInstance();  
-  BackgroundTaskService? _backgroundTaskService;  
+      SharedPreferences.getInstance();
+  BackgroundTaskService? _backgroundTaskService;
   LocalAuthenticationService? _localAuthService;
   AppStorage? _appStorage;
-  KeyChain? _keychain;  
+  KeyChain? _keychain;
   Client? _client;
 
   factory ServiceInjector() {

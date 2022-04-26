@@ -16,7 +16,7 @@ void checkVersionDialog(
 
   userProfileBloc.checkVersion().catchError((err) {
     if (err.contains('connection error')) {
-      showNoConnectionDialog(context).then((retry) {        
+      showNoConnectionDialog(context).then((retry) {
         if (retry == true) {
           Future.delayed(const Duration(seconds: 1), () {
             checkVersionDialog(context, userProfileBloc);

@@ -1,0 +1,195 @@
+name: c_breez
+description: A new Flutter project.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.16.2 <3.0.0"
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  drift: ^1.4.0
+  flutter_bloc: ^8.0.1
+  hydrated_bloc: ^8.0.0
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+  fixnum: ^1.0.0
+  hex: ^0.2.0
+  rxdart: ^0.27.3
+  intl: ^0.17.0
+  url_launcher: ^6.0.20  
+  duration: ^3.0.11
+  bolt11_decoder: ^1.0.1
+  path_provider: ^2.0.9
+  auto_size_text: ^3.0.0
+  share_extend: ^2.0.0
+  drag_and_drop_lists: ^0.3.2+2
+  extended_image: ^6.0.2+1
+  flutter_svg: ^1.0.3
+  validators: ^3.0.0
+  bip39: ^1.0.6
+  image_picker: ^0.7.2+1
+  qr_code_scanner: ^0.4.0  
+  shared_preferences: ^2.0.13
+  protobuf: ^2.0.1
+  grpc: ^3.0.2
+  ini: ^2.1.0
+  cryptography: ^2.0.5
+  pointycastle: ^3.5.2
+  bip32: ^2.0.0
+  basic_utils: ^4.2.0
+  firebase_dynamic_links: ^4.1.2
+  package_info_plus: ^1.4.2
+  flutter_secure_storage: ^5.0.2
+  uni_links: ^0.5.1
+  local_auth: ^1.1.11  
+  firebase_messaging: ^11.2.12
+  timeago: ^3.2.2
+  email_validator: ^2.0.1
+  image_cropper: ^1.5.1
+  image: ^3.1.3
+  app_settings: ^4.1.5
+  qr_flutter: ^4.0.0
+  simple_animations: ^4.0.1
+  scan: ^1.6.0
+  another_flushbar: ^1.10.28
+  archive: ^3.1.9
+  greenlight:
+    path: ./packages/greenlight
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  drift_dev: ^1.5.2
+  build_runner: ^2.1.8
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^1.0.0
+  mockito: ^5.0.17
+  sqflite_common_ffi: ^2.1.0+2
+  test: any
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+  generate: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:    
+    - src/json/
+    - src/images/
+    - src/icon/
+    - src/icon/animals/
+    - src/icon/vendors/
+    - src/animations/welcome/
+    - conf/breez.conf
+    - assets/images/
+    - assets/icons/
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: IBMPlexSans
+      fonts:
+        - asset: fonts/IBMPlexSans-Thin.otf
+          weight: 100
+        - asset: fonts/IBMPlexSans-ThinItalic.otf
+          weight: 100
+          style: italic
+        - asset: fonts/IBMPlexSans-ExtraLight.otf
+          weight: 200
+        - asset: fonts/IBMPlexSans-ExtraLightItalic.otf
+          weight: 200
+          style: italic
+        - asset: fonts/IBMPlexSans-Light.otf
+          weight: 300
+        - asset: fonts/IBMPlexSans-LightItalic.otf
+          weight: 300
+          style: italic
+        - asset: fonts/IBMPlexSans-Regular.otf
+          weight: 400
+        - asset: fonts/IBMPlexSans-Italic.otf
+          weight: 400
+          style: italic
+        - asset: fonts/IBMPlexSans-Medium.otf
+          weight: 500
+        - asset: fonts/IBMPlexSans-MediumItalic.otf
+          weight: 500
+          style: italic
+        - asset: fonts/IBMPlexSans-SemiBold.otf
+          weight: 600
+        - asset: fonts/IBMPlexSans-SemiBoldItalic.otf
+          weight: 600
+          style: italic
+        - asset: fonts/IBMPlexSans-Bold.otf
+          weight: 700
+        - asset: fonts/IBMPlexSans-BoldItalic.otf
+          weight: 700
+          style: italic
+    - family: icomoon
+      fonts:
+        - asset: fonts/icomoon.ttf
+    - family: animals
+      fonts:
+        - asset: fonts/animals.ttf
+    - family: Breez Logo
+      fonts:
+        - asset: fonts/breezlogo.ttf
+    - family: ComfortaaBold
+      fonts:
+        - asset: fonts/Comfortaa-Bold.ttf
+    - family: IBMPlexSansRegular
+      fonts:
+        - asset: fonts/IBMPlexSans-Regular.ttf
+    - family: HacenTunisia
+      fonts:
+        - asset: fonts/Hacen-Tunisia.ttf
+    - family: SAT
+      fonts:
+        - asset: fonts/sat.otf
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages

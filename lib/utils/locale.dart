@@ -1,0 +1,36 @@
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations_en.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations_es.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations_fi.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations_pt.dart';
+
+Locale getSystemLocale() {
+  final localeName = Platform.localeName;
+  if (localeName.contains("_")) {
+    final pieces = localeName.split("_");
+    return Locale(pieces[0], pieces[1]);
+  } else {
+    return Locale(localeName);
+  }
+}
+
+/// prefer the traditional AppLocalizations.of(context) instead of this method.
+/// The only reason to add this method is the lack of official method to access
+/// an AppLocalizations object without a BuildContext object
+AppLocalizations getSystemAppLocalizations() {
+  switch (getSystemLocale().languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fi':
+      return AppLocalizationsFi();
+    case 'pt':
+      return AppLocalizationsPt();
+    default:
+      return AppLocalizationsEn();
+  }
+}

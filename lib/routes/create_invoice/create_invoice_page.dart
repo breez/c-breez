@@ -85,7 +85,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       appBar: AppBar(
         iconTheme: themeData.appBarTheme.iconTheme,
         backgroundColor: themeData.canvasColor,
-        leading: backBtn.BackButton(),
+        leading: const backBtn.BackButton(),
         actions: const [],
         title: Text(
           texts.invoice_title,

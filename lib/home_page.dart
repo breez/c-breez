@@ -27,7 +27,6 @@ import 'routes/home/account_page.dart';
 
 final GlobalKey firstPaymentItemKey = GlobalKey();
 final ScrollController scrollController = ScrollController();
-final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class Home extends StatefulWidget {
   final AccountBloc accountBloc;
@@ -56,6 +55,7 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> with WidgetsBindingObserver {
   final GlobalKey podcastMenuItemKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _activeScreen = "breezHome";
   final Set _hiddenRoutes = <String>{};
   StreamSubscription<String>? _accountNotificationsSubscription;

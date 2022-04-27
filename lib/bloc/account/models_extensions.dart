@@ -29,17 +29,17 @@ extension PeerAdapter on Peer {
         channels
             .map((c) => db.Channel(
                   channelState: c.state.index,
-                  shortChannelId: int.parse(c.shortChannelId),
+                  shortChannelId: c.shortChannelId,
                   direction: c.direction,
                   channelId: c.channelId,
                   fundingTxid: c.fundingTxid,
                   closeToAddr: c.closeToAddr,
                   closeTo: c.closeTo,
                   private: c.private,
-                  totalMsat: int.parse(c.total),
-                  dustLimitMsat: int.parse(c.dustLimit),
-                  spendableMsat: int.parse(c.spendable),
-                  receivableMsat: int.parse(c.receivable),
+                  totalMsat: _amountStringToMsat(c.total),
+                  dustLimitMsat: _amountStringToMsat(c.dustLimit),
+                  spendableMsat: _amountStringToMsat(c.spendable),
+                  receivableMsat: _amountStringToMsat(c.receivable),
                   theirToSelfDelay: c.theirToSelfDelay,
                   ourToSelfDelay: c.ourToSelfDelay,
                   peerId: id,
@@ -105,4 +105,18 @@ extension InvoiceAdapter on Invoice {
       paymentHash: paymentHash,
     );
   }
+}
+
+int _amountStringToMsat(String amount) {
+  if (amount.endsWith("msat")) {
+    return int.parse(amount.replaceAll("msat", ""));
+  }
+  if (amount.endsWith("sat")) {
+    return int.parse(amount.replaceAll("sat", "")) * 1000;
+  }
+  if (amount.isEmpty) {
+    return 0;
+  }
+
+  throw Exception("unknown amount $amount");
 }

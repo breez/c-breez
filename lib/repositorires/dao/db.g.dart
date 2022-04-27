@@ -2450,7 +2450,7 @@ class $PeersTable extends Peers with TableInfo<$PeersTable, Peer> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  Set<GeneratedColumn> get $primaryKey => {peerId};
   @override
   Peer map(Map<String, dynamic> data, {String? tablePrefix}) {
     return Peer.fromData(data,
@@ -2465,7 +2465,7 @@ class $PeersTable extends Peers with TableInfo<$PeersTable, Peer> {
 
 class Channel extends DataClass implements Insertable<Channel> {
   final int channelState;
-  final int shortChannelId;
+  final String? shortChannelId;
   final int direction;
   final String channelId;
   final String fundingTxid;
@@ -2481,7 +2481,7 @@ class Channel extends DataClass implements Insertable<Channel> {
   final String peerId;
   Channel(
       {required this.channelState,
-      required this.shortChannelId,
+      this.shortChannelId,
       required this.direction,
       required this.channelId,
       required this.fundingTxid,
@@ -2500,8 +2500,8 @@ class Channel extends DataClass implements Insertable<Channel> {
     return Channel(
       channelState: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}channel_state'])!,
-      shortChannelId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}short_channel_id'])!,
+      shortChannelId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}short_channel_id']),
       direction: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}direction'])!,
       channelId: const StringType()
@@ -2534,7 +2534,9 @@ class Channel extends DataClass implements Insertable<Channel> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['channel_state'] = Variable<int>(channelState);
-    map['short_channel_id'] = Variable<int>(shortChannelId);
+    if (!nullToAbsent || shortChannelId != null) {
+      map['short_channel_id'] = Variable<String?>(shortChannelId);
+    }
     map['direction'] = Variable<int>(direction);
     map['channel_id'] = Variable<String>(channelId);
     map['funding_txid'] = Variable<String>(fundingTxid);
@@ -2554,7 +2556,9 @@ class Channel extends DataClass implements Insertable<Channel> {
   ChannelsCompanion toCompanion(bool nullToAbsent) {
     return ChannelsCompanion(
       channelState: Value(channelState),
-      shortChannelId: Value(shortChannelId),
+      shortChannelId: shortChannelId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shortChannelId),
       direction: Value(direction),
       channelId: Value(channelId),
       fundingTxid: Value(fundingTxid),
@@ -2576,7 +2580,7 @@ class Channel extends DataClass implements Insertable<Channel> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Channel(
       channelState: serializer.fromJson<int>(json['channelState']),
-      shortChannelId: serializer.fromJson<int>(json['shortChannelId']),
+      shortChannelId: serializer.fromJson<String?>(json['shortChannelId']),
       direction: serializer.fromJson<int>(json['direction']),
       channelId: serializer.fromJson<String>(json['channelId']),
       fundingTxid: serializer.fromJson<String>(json['fundingTxid']),
@@ -2597,7 +2601,7 @@ class Channel extends DataClass implements Insertable<Channel> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'channelState': serializer.toJson<int>(channelState),
-      'shortChannelId': serializer.toJson<int>(shortChannelId),
+      'shortChannelId': serializer.toJson<String?>(shortChannelId),
       'direction': serializer.toJson<int>(direction),
       'channelId': serializer.toJson<String>(channelId),
       'fundingTxid': serializer.toJson<String>(fundingTxid),
@@ -2616,7 +2620,7 @@ class Channel extends DataClass implements Insertable<Channel> {
 
   Channel copyWith(
           {int? channelState,
-          int? shortChannelId,
+          String? shortChannelId,
           int? direction,
           String? channelId,
           String? fundingTxid,
@@ -2709,7 +2713,7 @@ class Channel extends DataClass implements Insertable<Channel> {
 
 class ChannelsCompanion extends UpdateCompanion<Channel> {
   final Value<int> channelState;
-  final Value<int> shortChannelId;
+  final Value<String?> shortChannelId;
   final Value<int> direction;
   final Value<String> channelId;
   final Value<String> fundingTxid;
@@ -2742,7 +2746,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
   });
   ChannelsCompanion.insert({
     required int channelState,
-    required int shortChannelId,
+    this.shortChannelId = const Value.absent(),
     required int direction,
     required String channelId,
     required String fundingTxid,
@@ -2757,7 +2761,6 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     required int ourToSelfDelay,
     required String peerId,
   })  : channelState = Value(channelState),
-        shortChannelId = Value(shortChannelId),
         direction = Value(direction),
         channelId = Value(channelId),
         fundingTxid = Value(fundingTxid),
@@ -2773,7 +2776,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
         peerId = Value(peerId);
   static Insertable<Channel> custom({
     Expression<int>? channelState,
-    Expression<int>? shortChannelId,
+    Expression<String?>? shortChannelId,
     Expression<int>? direction,
     Expression<String>? channelId,
     Expression<String>? fundingTxid,
@@ -2809,7 +2812,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
 
   ChannelsCompanion copyWith(
       {Value<int>? channelState,
-      Value<int>? shortChannelId,
+      Value<String?>? shortChannelId,
       Value<int>? direction,
       Value<String>? channelId,
       Value<String>? fundingTxid,
@@ -2849,7 +2852,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       map['channel_state'] = Variable<int>(channelState.value);
     }
     if (shortChannelId.present) {
-      map['short_channel_id'] = Variable<int>(shortChannelId.value);
+      map['short_channel_id'] = Variable<String?>(shortChannelId.value);
     }
     if (direction.present) {
       map['direction'] = Variable<int>(direction.value);
@@ -2930,9 +2933,9 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
   final VerificationMeta _shortChannelIdMeta =
       const VerificationMeta('shortChannelId');
   @override
-  late final GeneratedColumn<int?> shortChannelId = GeneratedColumn<int?>(
-      'short_channel_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<String?> shortChannelId = GeneratedColumn<String?>(
+      'short_channel_id', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _directionMeta = const VerificationMeta('direction');
   @override
   late final GeneratedColumn<int?> direction = GeneratedColumn<int?>(
@@ -3051,8 +3054,6 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
           _shortChannelIdMeta,
           shortChannelId.isAcceptableOrUnknown(
               data['short_channel_id']!, _shortChannelIdMeta));
-    } else if (isInserting) {
-      context.missing(_shortChannelIdMeta);
     }
     if (data.containsKey('direction')) {
       context.handle(_directionMeta,

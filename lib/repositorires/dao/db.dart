@@ -87,7 +87,7 @@ class Htlcs extends Table {
 
 class Channels extends Table {
   IntColumn get channelState => integer()();
-  IntColumn get shortChannelId => integer()();
+  TextColumn get shortChannelId => text().nullable()();
   IntColumn get direction => integer()();
   TextColumn get channelId => text()();
   TextColumn get fundingTxid => text()();
@@ -115,6 +115,8 @@ class Peers extends Table {
   TextColumn get peerId => text().withLength(min: 66, max: 66)();
   BoolColumn get connected => boolean()();
   TextColumn get features => text()();
+  @override
+  Set<Column> get primaryKey => {peerId};
 }
 
 class Invoices extends Table {
@@ -172,7 +174,25 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.alterTable(TableMigration(peers));
+          await m.alterTable(TableMigration(channels));
+        }
+        if (from < 3) {
+          await m.alterTable(TableMigration(channels));
+        }
+      },
+    );
+  }
 
   @override
   Future setNodeInfo(NodeInfo nodeInfo) {

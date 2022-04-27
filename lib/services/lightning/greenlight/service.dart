@@ -374,14 +374,6 @@ Channel _convertChannel(greenlight.Channel c) {
   ].contains(c.state)) {
     chanState = ChannelState.PENDING_OPEN;
   }
-  if ([
-    "CHANNELD_NORMAL",
-    "CHANNELD_AWAITING_LOCKIN",
-    "DUALOPEND_OPEN_INIT",
-    "DUALOPEND_AWAITING_LOCKIN"
-  ].contains(c.state)) {
-    chanState = ChannelState.PENDING_CLOSED;
-  }
 
   return Channel(
       state: chanState,

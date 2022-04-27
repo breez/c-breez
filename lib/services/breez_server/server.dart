@@ -13,6 +13,7 @@ import 'package:c_breez/services/breez_server/models.dart' as serverModels;
 //protoc --dart_out=grpc:lib/services/breez_server/generated/ -Ilib/services/breez_server/protobuf/ lib/services/breez_server/protobuf/breez.proto
 class BreezServer {
   CallOptions? _defaultCallOptions;
+  String? _openChannelToken;
 
   ClientChannel? _channel;
 
@@ -25,6 +26,7 @@ class BreezServer {
       metadata["authorization"] = "Bearer $lspToken";
       _defaultCallOptions =
           CallOptions(timeout: const Duration(seconds: 20), metadata: metadata);
+      _openChannelToken = config.get("Application Options", "openchanneltoken");
     }
     return _defaultCallOptions!;
   }
@@ -135,10 +137,13 @@ class BreezServer {
 
   Future openLSPChannel(String lspID, String pubkey) async {
     var channel = await _ensureValidChannel();
+    var callOptions = await defaultCallOptions;
+    callOptions = callOptions.mergedWith(
+        CallOptions(metadata: {"authorization": "Bearer $_openChannelToken"}));
     var channelClient =
-        ChannelOpenerClient(channel, options: await defaultCallOptions);
+        PublicChannelOpenerClient(channel, options: callOptions);
     await channelClient
-        .openLSPChannel(OpenLSPChannelRequest(lspId: lspID, pubkey: pubkey));
+        .openPublicChannel(OpenPublicChannelRequest(pubkey: pubkey));
   }
 
   Future<ClientChannel> _ensureValidChannel() async {

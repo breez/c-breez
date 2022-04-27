@@ -53,8 +53,7 @@ Future<HSMDCreds> hsmdInit(Uint8List secret) async {
   var nodeidPublic = ECPublicKey(
       curve.G * decodeBigIntWithSign(1, nodeidPrivateKeyBytes), curve);
 
-  var initHex = 
-      111.toRadixString(16).padLeft(4, '0') +
+  var initHex = 111.toRadixString(16).padLeft(4, '0') +
       hex.encode(nodeidPublic.Q!.getEncoded(true)) +
       secretBip32.network.bip32.public.toRadixString(16).padLeft(8, '0') +
       secretBip32.depth.toRadixString(16).padLeft(2, '0') +
@@ -67,8 +66,9 @@ Future<HSMDCreds> hsmdInit(Uint8List secret) async {
           .Q!
           .x!
           .toBigInteger()!));
-  
-  return HSMDCreds(nodeidPublic.Q!.getEncoded(true), nodeidPrivateKeyBytes, HEX.decode(initHex), secret);
+
+  return HSMDCreds(nodeidPublic.Q!.getEncoded(true), nodeidPrivateKeyBytes,
+      HEX.decode(initHex), secret);
 }
 
 Uint8List eccSign(Uint8List privateKey, Uint8List hash) {
@@ -76,7 +76,8 @@ Uint8List eccSign(Uint8List privateKey, Uint8List hash) {
 }
 
 Uint8List doubleHash(List<int> chal) {
-  return Uint8List.fromList(crypto.sha256.convert(crypto.sha256.convert(chal).bytes).bytes);
+  return Uint8List.fromList(
+      crypto.sha256.convert(crypto.sha256.convert(chal).bytes).bytes);
 }
 
 class HSMDCreds {

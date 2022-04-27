@@ -19,10 +19,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/src/mixin/handler_mixin.dart';
 
-
 class KeychainMoc extends Mock implements KeyChain {
-  final _storage = <String,String>{};
-     @override
+  final _storage = <String, String>{};
+  @override
   Future<String> read(String key) {
     return Future.value(_storage[key]);
   }
@@ -80,9 +79,7 @@ class NotificationsMock extends Mock implements Notifications {
       BehaviorSubject<Map<String, dynamic>>().stream;
 }
 
-class DeviceMock extends Mock implements Device {
-    
-}
+class DeviceMock extends Mock implements Device {}
 
 class FirebaseNotificationsMock extends Mock implements FirebaseNotifications {
   @override

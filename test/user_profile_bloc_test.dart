@@ -5,19 +5,17 @@ import 'mocks.dart';
 
 void main() {
   group('breez_user_model_tests', () {
-    InjectorMock _injector = InjectorMock();   
+    InjectorMock _injector = InjectorMock();
     UserProfileBloc _userProfileBloc;
 
     setUp(() async {
       ServiceInjector.configure(_injector);
-      _userProfileBloc = UserProfileBloc(_injector.breezServer, _injector.notifications);
+      _userProfileBloc =
+          UserProfileBloc(_injector.breezServer, _injector.notifications);
     });
 
-    test("should return empty user when not registered", () async {      
-      
-    });
+    test("should return empty user when not registered", () async {});
 
-    test("shoud return registered user", () async{      
-    });    
+    test("shoud return registered user", () async {});
   });
 }

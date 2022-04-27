@@ -10,17 +10,25 @@ import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class ChallengeScope extends $pb.ProtobufEnum {
-  static const ChallengeScope REGISTER = ChallengeScope._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'REGISTER');
-  static const ChallengeScope RECOVER = ChallengeScope._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'RECOVER');
+  static const ChallengeScope REGISTER = ChallengeScope._(
+      0,
+      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+          ? ''
+          : 'REGISTER');
+  static const ChallengeScope RECOVER = ChallengeScope._(
+      1,
+      const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+          ? ''
+          : 'RECOVER');
 
-  static const $core.List<ChallengeScope> values = <ChallengeScope> [
+  static const $core.List<ChallengeScope> values = <ChallengeScope>[
     REGISTER,
     RECOVER,
   ];
 
-  static final $core.Map<$core.int, ChallengeScope> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static final $core.Map<$core.int, ChallengeScope> _byValue =
+      $pb.ProtobufEnum.initByValue(values);
   static ChallengeScope? valueOf($core.int value) => _byValue[value];
 
   const ChallengeScope._($core.int v, $core.String n) : super(v, n);
 }
-

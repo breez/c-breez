@@ -15,9 +15,8 @@ class NodeInterceptor extends ClientInterceptor {
   }
 
   @override
-  ResponseFuture<R> interceptUnary<Q, R>(
-      ClientMethod<Q, R> method, Q request, CallOptions options, ClientUnaryInvoker<Q, R> invoker) {
-        
+  ResponseFuture<R> interceptUnary<Q, R>(ClientMethod<Q, R> method, Q request,
+      CallOptions options, ClientUnaryInvoker<Q, R> invoker) {
     // var body = frame(method.requestSerializer(request));
     // //var body = method.requestSerializer(request);
     // var signature = sign(frame(body), _privKey);
@@ -31,12 +30,12 @@ class NodeInterceptor extends ClientInterceptor {
 
     // var glauthpubkey = publicKey;
     // var glauthsig = signature;
-    
+
     // var newOptions = options.mergedWith(CallOptions(metadata: {"glauthpubkey": glauthpubkey, "glauthsig": glauthsig}));
     return invoker(method, request, options);
   }
 
-  ECPrivateKey getPrivate(String pemContent) {    
+  ECPrivateKey getPrivate(String pemContent) {
     var privateKey = CryptoUtils.ecPrivateKeyFromPem(pemContent);
     return privateKey;
   }
@@ -50,8 +49,10 @@ class NodeInterceptor extends ClientInterceptor {
   String publicBase64(ECPublicKey ecPublicKey) {
     Uint8List buffer = Uint8List(65);
     buffer[0] = 4;
-    buffer.setRange(1, 33, encodeBigIntAsUnsigned(ecPublicKey.Q!.x!.toBigInteger()!));
-    buffer.setRange(33, 65, encodeBigIntAsUnsigned(ecPublicKey.Q!.y!.toBigInteger()!));
+    buffer.setRange(
+        1, 33, encodeBigIntAsUnsigned(ecPublicKey.Q!.x!.toBigInteger()!));
+    buffer.setRange(
+        33, 65, encodeBigIntAsUnsigned(ecPublicKey.Q!.y!.toBigInteger()!));
     //print(buffer);
     return base64Encode(buffer);
   }
@@ -60,8 +61,12 @@ class NodeInterceptor extends ClientInterceptor {
     var signer = Signer('SHA-256/ECDSA') as ECDSASigner;
     SecureRandom random = SecureRandom('Fortuna');
     final _sGen = Random.secure();
-    random.seed(KeyParameter(Uint8List.fromList(List.generate(32, (_) => _sGen.nextInt(255)))));
-    signer.init(true, ParametersWithRandom(PrivateKeyParameter<ECPrivateKey>(privateKey), random));
+    random.seed(KeyParameter(
+        Uint8List.fromList(List.generate(32, (_) => _sGen.nextInt(255)))));
+    signer.init(
+        true,
+        ParametersWithRandom(
+            PrivateKeyParameter<ECPrivateKey>(privateKey), random));
     var toSign = Uint8List.fromList(message);
     var signature = signer.generateSignature(toSign) as ECSignature;
     //print(signature.r);

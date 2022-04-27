@@ -16,7 +16,6 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
 
   LSPBloc(this._appStorage, this._lnService, this._breezServer)
       : super(LSPState.initial()) {
-    emit(LSPState.initial());
     _appStorage
         .watchNodeInfo()
         .where((node) => node != null)
@@ -87,12 +86,18 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
         }
 
         var lsp = state.availableLSPs[lspIndex];
-        var lspPeers = peers.where((p) => p.peer.peerId == lsp.lspID).toList();
+        var lspPeers = peers.where((p) => p.peer.peerId == lsp.pubKey).toList();
 
         // if we don't have the lsp in one of our peers then emit not active.
         if (lspPeers.isEmpty || lspPeers[0].channels.isEmpty) {
           emit(this.state.copyWith(
               connectionStatus: LSPConnectionStatus.notActive,
+              lastConnectionError: null));
+        }
+        if (this.state.lastConnectionError != null ||
+            state.connectionStatus != LSPConnectionStatus.active) {
+          emit(this.state.copyWith(
+              connectionStatus: LSPConnectionStatus.active,
               lastConnectionError: null));
         }
       }

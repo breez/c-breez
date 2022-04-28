@@ -36,10 +36,10 @@ extension PeerAdapter on Peer {
                   closeToAddr: c.closeToAddr,
                   closeTo: c.closeTo,
                   private: c.private,
-                  totalMsat: _amountStringToMsat(c.total),
-                  dustLimitMsat: _amountStringToMsat(c.dustLimit),
-                  spendableMsat: _amountStringToMsat(c.spendable),
-                  receivableMsat: _amountStringToMsat(c.receivable),
+                  totalMsat: c.total,
+                  dustLimitMsat: c.dustLimit,
+                  spendableMsat: c.spendable,
+                  receivableMsat: c.receivable,
                   theirToSelfDelay: c.theirToSelfDelay,
                   ourToSelfDelay: c.ourToSelfDelay,
                   peerId: id,
@@ -105,18 +105,4 @@ extension InvoiceAdapter on Invoice {
       paymentHash: paymentHash,
     );
   }
-}
-
-int _amountStringToMsat(String amount) {
-  if (amount.endsWith("msat")) {
-    return int.parse(amount.replaceAll("msat", ""));
-  }
-  if (amount.endsWith("sat")) {
-    return int.parse(amount.replaceAll("sat", "")) * 1000;
-  }
-  if (amount.isEmpty) {
-    return 0;
-  }
-
-  throw Exception("unknown amount $amount");
 }

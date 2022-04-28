@@ -152,10 +152,10 @@ class Channel {
   final String closeToAddr;
   final String closeTo;
   final bool private;
-  final String total;
-  final String dustLimit;
-  final String spendable;
-  final String receivable;
+  final int total;
+  final int dustLimit;
+  final int spendable;
+  final int receivable;
   final int theirToSelfDelay;
   final int ourToSelfDelay;
   final List<Htlc> htlcs;

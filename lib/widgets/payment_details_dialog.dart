@@ -3,7 +3,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/routes/home/payment_item_avatar.dart';
+import 'package:c_breez/widgets/payment_item_avatar.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme_data.dart' as theme;
 import 'package:c_breez/utils/date.dart';

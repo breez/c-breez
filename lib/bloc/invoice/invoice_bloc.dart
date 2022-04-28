@@ -9,6 +9,7 @@ import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/bip21.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/utils/lnurl.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -46,12 +47,14 @@ class InvoiceBloc extends Cubit<InvoiceState> {
         })
         .where((s) => !s.toLowerCase().startsWith("lnurl"))
         .map((bolt11) {
-          var bolt = Bolt11.fromPaymentRequest(bolt11);
-          return Invoice(
+          var bolt = Bolt11.fromPaymentRequest(bolt11);          
+          var invoice = Invoice(
               bolt11: bolt11,
               description: bolt.description,
               amount: bolt.amount,
-              expiry: bolt.expiry);
+              expiry: Int64(bolt.expiry));
+
+          return invoice;
         });
   }
 

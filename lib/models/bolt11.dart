@@ -14,9 +14,9 @@ class Bolt11 {
 
   String get description => _tagValue("description") ?? "";
 
-  String get paymentHash => _tagValue("payment_hash");
+  String get paymentHash => _tagValue("payment_hash");  
 
-  Int64 get expiry => _tagValue("expiry");
+  int get expiry => _tagValue("expiry");
 
   dynamic _tagValue(String tag) {
     var tagIndex = payreq.tags.indexWhere((f) => f.type == tag);

@@ -98,7 +98,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           builder: (context, acc) {
             return BlocBuilder<LSPBloc, LSPState>(
               builder: (context, lspState) {
-                String validatePayment(Int64 amount) {
+                String? validatePayment(Int64 amount) {
                   if (lspState.currentLSP != null) {
                     final channelMinimumFee = Int64(
                       lspState.currentLSP!.channelMinimumFeeMsat ~/ 1000,

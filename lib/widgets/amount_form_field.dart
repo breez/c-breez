@@ -13,7 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AmountFormField extends TextFormField {
   final FiatConversion? fiatConversion;
   final BitcoinCurrency bitcoinCurrency;
-  final String Function(Int64 amount) validatorFn;
+  final String? Function(Int64 amount) validatorFn;
   final AppLocalizations texts;
 
   AmountFormField({
@@ -88,7 +88,7 @@ class AmountFormField extends TextFormField {
         );
 
   @override
-  FormFieldValidator<String> get validator {
+  FormFieldValidator<String?> get validator {
     return (value) {
       if (value!.isEmpty) {
         return texts.amount_form_insert_hint(
@@ -100,9 +100,7 @@ class AmountFormField extends TextFormField {
         if (intAmount <= 0) {
           return texts.amount_form_error_invalid_amount;
         }
-        String msg;
-        msg = validatorFn(intAmount);
-        return msg;
+        return validatorFn(intAmount);
       } catch (err) {
         return texts.amount_form_error_invalid_amount;
       }

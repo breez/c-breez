@@ -290,7 +290,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
       child: AutoSizeText(
-        validationError,
+        validationError ?? "",
         maxLines: 3,
         textAlign: TextAlign.center,
         style: themeData.primaryTextTheme.headline3!.copyWith(

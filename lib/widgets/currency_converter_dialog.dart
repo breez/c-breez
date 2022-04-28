@@ -16,7 +16,7 @@ import 'flushbar.dart';
 
 class CurrencyConverterDialog extends StatefulWidget {
   final Function(String string) _onConvert;
-  final String Function(Int64 amount) validatorFn;
+  final String? Function(Int64 amount) validatorFn;
   final CurrencyBoc _currecyBloc;
 
   const CurrencyConverterDialog(
@@ -63,17 +63,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
       }
     });
 
-    final themeData = Theme.of(context);
-    _colorAnimation = ColorTween(
-      // change to white according to theme
-      begin: themeData.primaryTextTheme.headline4!.color,
-      end: themeData.primaryTextTheme.button!.color,
-    ).animate(_controller!)
-      ..addListener(() {
-        setState(() {});
-      });
-
-    widget._currecyBloc.fetchExchangeRates().then((value) {
+    widget._currecyBloc.fetchExchangeRates().catchError((value) {
       final texts = AppLocalizations.of(context)!;
       if (mounted) {
         setState(() {
@@ -247,8 +237,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             onEditingComplete: () => _fiatAmountFocusNode.unfocus(),
             controller: _fiatAmountController,
             validator: (_) {
-              return widget.validatorFn(_convertedSatoshies(currencyState));
-              return null;
+              return widget.validatorFn(_convertedSatoshies(currencyState));              
             },
             style: themeData.dialogTheme.contentTextStyle,
           ),
@@ -365,9 +354,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
               ),
               fiatConversion.currencyData.shortName,
             ),
-            style: themeData.primaryTextTheme.subtitle2!.copyWith(
-              color: _colorAnimation!.value,
-            ),
+            style: themeData.primaryTextTheme.subtitle2!
           );
   }
 

@@ -8,15 +8,15 @@ class PaymentValidator {
 
   PaymentValidator(this._validatePayment, this._currency);
 
-  String validateIncoming(Int64 amount) {
+  String? validateIncoming(Int64 amount) {
     return _validate(amount, false);
   }
 
-  String validateOutgoing(Int64 amount) {
+  String? validateOutgoing(Int64 amount) {
     return _validate(amount, true);
   }
 
-  String _validate(Int64 amount, bool outgoing) {
+  String? _validate(Int64 amount, bool outgoing) {
     try {
       _validatePayment(amount, outgoing);
     } on PaymentExceededLimitError catch (e) {
@@ -27,6 +27,6 @@ class PaymentValidator {
       return "Insufficient local balance";
     }
 
-    return "";
+    return null;
   }
 }

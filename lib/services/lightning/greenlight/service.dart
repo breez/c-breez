@@ -18,7 +18,7 @@ class GreenlightService implements LightningService {
   NodeCredentials? _nodeCredentials;
   greenlight.NodeClient? _nodeClient;
   scheduler.SchedulerClient? _schedulerClient;
-  Completer _readyCompleter = Completer();
+  final Completer _readyCompleter = Completer();
 
   GreenlightService() {
     final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null, null);
@@ -43,18 +43,14 @@ class GreenlightService implements LightningService {
 
   @override
   Future startNode() async {
-    var res = await _schedulerClient!.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
-    var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
-    _nodeClient = greenlight.NodeClient(nodeChannel, interceptors: [NodeInterceptor(_nodeCredentials!.deviceKey)]);
+    var res = await schedule();
     _readyCompleter.complete(true);
     log.info("node started! " + HEX.encode(res.nodeId));
 
     _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
       log.info(value.line);
     }, onDone: () {
-      log.info("streaming logs finished");
-      _readyCompleter = Completer();
-      startNode();
+      log.info("streaming logs finished");      
     }, onError: (err) {
       log.severe("streaming logs finished with error $err");
     });
@@ -62,6 +58,13 @@ class GreenlightService implements LightningService {
     // _nodeClient!.streamHsmRequests(greenlight.Empty()).listen((value) {
     //   print("hsmd: ${value.context.dbid}");
     // });
+  }
+
+  Future<scheduler.NodeInfoResponse> schedule() async {
+    var res = await _schedulerClient!.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
+    var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
+    _nodeClient = greenlight.NodeClient(nodeChannel, interceptors: [NodeInterceptor(_nodeCredentials!.deviceKey)]);
+    return res;
   }
 
   @override
@@ -132,6 +135,7 @@ class GreenlightService implements LightningService {
       String? payerImageURL,
       String? description,
       Int64? expiry}) async {
+    await schedule();
     var invoice = await _nodeClient!.createInvoice(
         greenlight.InvoiceRequest(label: "breez-${DateTime.now().millisecondsSinceEpoch}", amount: greenlight.Amount(satoshi: amount), description: description));
     return Invoice(
@@ -201,6 +205,7 @@ class GreenlightService implements LightningService {
 
   @override
   Future connectPeer(String nodeID, String address) async {
+    await schedule();
     await _nodeClient!.connectPeer(greenlight.ConnectRequest(nodeId: nodeID, addr: address));
   }
 

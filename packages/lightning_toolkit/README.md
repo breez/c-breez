@@ -1,15 +1,34 @@
 # lightning_toolkit
 
-A new flutter plugin project.
+A flutter plugin project that wraps a rust library and expose its interface using ffi
 
-## Getting Started
+## Build
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+On the rust folder:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+make init
+make all
+```
 
+Generated artifacts:
+
+* Android libraries
+ >* androi/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
+ >* androi/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
+ >* androi/src/main/jniLibs/x86/liblightning_toolkit.so
+ >* androi/src/main/jniLibs/x86_64/liblightning_toolkit.so
+* iOS library
+ >* ios/liblightning_toolkit.a
+* Bindings header
+ >* target/bindings.h
+
+Now that the bindings is generated and the native libraries are built we can generate the dart interface.
+This requires an installation of llvm, change the path to our local llvm in the fficonfig.yaml file and then run:
+
+```
+dart run ffigen . --config=fficonfig.yaml
+```
+
+The rust interface is now exposed in lib/bindings.dart
+To expose a new function from the plugin a corresponding function needed to be added to the lib/lightning_toolkit.dart

@@ -1,8 +1,8 @@
 output: lib/bindings.dart
-llvm-path:
-  - '/Users/roeierez/Downloads/llvmi86/lib/libclang.dylib'  
 headers:
   entry-points:
   - rust/target/bindings.h
 name: LightningToolkitBindings
 description: Dart bindings to call lightning toolkit functions
+llvm-path:
+  - '/usr/local/opt/llvm/lib/libclang.dylib'

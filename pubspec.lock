@@ -658,6 +658,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.4.0"
+  lightning_toolkit:
+    dependency: "direct main"
+    description:
+      path: "packages/lightning_toolkit"
+      relative: true
+    source: path
+    version: "0.0.1"
   lints:
     dependency: transitive
     description:

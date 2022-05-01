@@ -81,6 +81,8 @@ dependencies:
   archive: ^3.1.9
   greenlight:
     path: ./packages/greenlight
+  lightning_toolkit:
+    path: ./packages/lightning_toolkit
 
 dev_dependencies:
   flutter_test:

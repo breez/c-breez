@@ -74,6 +74,8 @@ PODS:
     - TOCropViewController (~> 2.6.1)
   - image_picker (0.0.1):
     - Flutter
+  - lightning_toolkit (0.0.1):
+    - Flutter
   - local_auth (0.0.1):
     - Flutter
   - MTBBarcodeScanner (5.0.11)
@@ -111,6 +113,7 @@ DEPENDENCIES:
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
+  - lightning_toolkit (from `.symlinks/plugins/lightning_toolkit/ios`)
   - local_auth (from `.symlinks/plugins/local_auth/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
@@ -153,6 +156,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_cropper/ios"
   image_picker:
     :path: ".symlinks/plugins/image_picker/ios"
+  lightning_toolkit:
+    :path: ".symlinks/plugins/lightning_toolkit/ios"
   local_auth:
     :path: ".symlinks/plugins/local_auth/ios"
   package_info_plus:
@@ -189,6 +194,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   image_cropper: 60c2789d1f1a78c873235d4319ca0c34a69f2d98
   image_picker: 50e7c7ff960e5f58faa4d1f4af84a771c671bc4a
+  lightning_toolkit: 8c6f0356e3734e3c4678b83ef95d64af3210d710
   local_auth: 1740f55d7af0a2e2a8684ce225fe79d8931e808c
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96

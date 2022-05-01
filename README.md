@@ -6,4 +6,25 @@ For more details, please check out [this medium post](https://medium.com/breez-t
 
 ## Build
 
+### Build the lightning_tookit plugin
+
+c-Breez depends on lightning_toolkit plugin that exposes a set of API functions written in rust.
+If you didn't add any rust code then you can skip this step, otherwise please refer to the plugin [README](https://github.com/breez/c-breez/blob/main/packages/lightning_toolkit/README.md)
+
+### Android
+
+```
+flutter build apk
+```
+
+### iOS
+
+```
+flutter build ios
+```
+
 ## Run
+
+```
+flutter run
+```

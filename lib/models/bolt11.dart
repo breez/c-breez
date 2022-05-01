@@ -14,7 +14,9 @@ class Bolt11 {
 
   String get description => _tagValue("description") ?? "";
 
-  String get paymentHash => _tagValue("payment_hash");  
+  String get paymentHash => _tagValue("payment_hash");
+
+  String get payeePubkey => _tagValue("payee_pubkey");
 
   int get expiry => _tagValue("expiry");
 

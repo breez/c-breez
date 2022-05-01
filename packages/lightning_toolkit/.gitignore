@@ -27,4 +27,4 @@
 .dart_tool/
 .packages
 build/
-fficonfig.yaml
+/fficonfig.yaml

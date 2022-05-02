@@ -89,29 +89,30 @@ android: target/aarch64-linux-android/release/liblightning_toolkit.so target/arm
 target/aarch64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	CC_aarch64_linux_android=$(ANDROID_AARCH64_LINKER) \
 	CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$(ANDROID_AARCH64_LINKER) \
-		cargo build --target aarch64-linux-android --release ;\
-		cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/jniLibs/arm64-v8a/liblightning_toolkit.so ;\
+	cargo build --target aarch64-linux-android --release
+	cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
 target/armv7-linux-androideabi/release/liblightning_toolkit.so: $(SOURCES) ndk-home
+	@echo "[Start] $@"
 	CC_armv7_linux_androideabi=$(ANDROID_ARMV7_LINKER) \
 	CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER=$(ANDROID_ARMV7_LINKER) \
-		cargo build --target armv7-linux-androideabi --release ;\
-		cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/jniLibs/armeabi-v7a/liblightning_toolkit.so ;\
+		cargo build --target armv7-linux-androideabi --release
+		cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
 target/i686-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	CC_i686_linux_android=$(ANDROID_I686_LINKER) \
 	CARGO_TARGET_I686_LINUX_ANDROID_LINKER=$(ANDROID_I686_LINKER) \
-		cargo  build --target i686-linux-android --release ;\
-		cp target/i686-linux-android/release/liblightning_toolkit.so ../android/jniLibs/x86/liblightning_toolkit.so ;\
+		cargo  build --target i686-linux-android --release
+		cp target/i686-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
 target/x86_64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	CC_x86_64_linux_android=$(ANDROID_X86_64_LINKER) \
 	CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER=$(ANDROID_X86_64_LINKER) \
-		cargo build --target x86_64-linux-android --release ;\
-		cp target/x86_64-linux-android/release/liblightning_toolkit.so ../android/jniLibs/x86_64/liblightning_toolkit.so ;\
+		cargo build --target x86_64-linux-android --release
+		cp target/x86_64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86_64/liblightning_toolkit.so
 	@echo "[DONE] $@"
 		
 .PHONY: ndk-home

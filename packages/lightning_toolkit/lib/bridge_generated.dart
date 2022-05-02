@@ -12,7 +12,23 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'dart:ffi' as ffi;
 
 abstract class LightningToolkit {
-  Future<String> test({dynamic hint});
+  Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
+}
+
+class LNInvoice {
+  final String payeePubkey;
+  final String description;
+  final int? amount;
+  final int timestamp;
+  final int expiry;
+
+  LNInvoice({
+    required this.payeePubkey,
+    required this.description,
+    this.amount,
+    required this.timestamp,
+    required this.expiry,
+  });
 }
 
 class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
@@ -22,18 +38,33 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
 
   LightningToolkitImpl.raw(LightningToolkitWire inner) : super(inner);
 
-  Future<String> test({dynamic hint}) => executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_test(port_),
-        parseSuccessData: _wire2api_String,
+  Future<LNInvoice> parseInvoice({required String invoice, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            inner.wire_parse_invoice(port_, _api2wire_String(invoice)),
+        parseSuccessData: _wire2api_ln_invoice,
         constMeta: const FlutterRustBridgeTaskConstMeta(
-          debugName: "test",
-          argNames: [],
+          debugName: "parse_invoice",
+          argNames: ["invoice"],
         ),
-        argValues: [],
+        argValues: [invoice],
         hint: hint,
       ));
 
   // Section: api2wire
+  ffi.Pointer<wire_uint_8_list> _api2wire_String(String raw) {
+    return _api2wire_uint_8_list(utf8.encoder.convert(raw));
+  }
+
+  int _api2wire_u8(int raw) {
+    return raw;
+  }
+
+  ffi.Pointer<wire_uint_8_list> _api2wire_uint_8_list(Uint8List raw) {
+    final ans = inner.new_uint_8_list(raw.length);
+    ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
+    return ans;
+  }
 
   // Section: api_fill_to_wire
 
@@ -42,6 +73,31 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
 // Section: wire2api
 String _wire2api_String(dynamic raw) {
   return raw as String;
+}
+
+int _wire2api_box_autoadd_u64(dynamic raw) {
+  return raw as int;
+}
+
+LNInvoice _wire2api_ln_invoice(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 5)
+    throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+  return LNInvoice(
+    payeePubkey: _wire2api_String(arr[0]),
+    description: _wire2api_String(arr[1]),
+    amount: _wire2api_opt_box_autoadd_u64(arr[2]),
+    timestamp: _wire2api_u64(arr[3]),
+    expiry: _wire2api_u64(arr[4]),
+  );
+}
+
+int? _wire2api_opt_box_autoadd_u64(dynamic raw) {
+  return raw == null ? null : _wire2api_box_autoadd_u64(raw);
+}
+
+int _wire2api_u64(dynamic raw) {
+  return raw as int;
 }
 
 int _wire2api_u8(dynamic raw) {
@@ -74,17 +130,37 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           lookup)
       : _lookup = lookup;
 
-  void wire_test(
+  void wire_parse_invoice(
     int port_,
+    ffi.Pointer<wire_uint_8_list> invoice,
   ) {
-    return _wire_test(
+    return _wire_parse_invoice(
       port_,
+      invoice,
     );
   }
 
-  late final _wire_testPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_test');
-  late final _wire_test = _wire_testPtr.asFunction<void Function(int)>();
+  late final _wire_parse_invoicePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_parse_invoice');
+  late final _wire_parse_invoice = _wire_parse_invoicePtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  ffi.Pointer<wire_uint_8_list> new_uint_8_list(
+    int len,
+  ) {
+    return _new_uint_8_list(
+      len,
+    );
+  }
+
+  late final _new_uint_8_listPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_uint_8_list> Function(
+              ffi.Int32)>>('new_uint_8_list');
+  late final _new_uint_8_list = _new_uint_8_listPtr
+      .asFunction<ffi.Pointer<wire_uint_8_list> Function(int)>();
 
   void free_WireSyncReturnStruct(
     WireSyncReturnStruct val,
@@ -113,6 +189,13 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           'store_dart_post_cobject');
   late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
       .asFunction<void Function(DartPostCObjectFnType)>();
+}
+
+class wire_uint_8_list extends ffi.Struct {
+  external ffi.Pointer<ffi.Uint8> ptr;
+
+  @ffi.Int32()
+  external int len;
 }
 
 typedef DartPostCObjectFnType = ffi.Pointer<

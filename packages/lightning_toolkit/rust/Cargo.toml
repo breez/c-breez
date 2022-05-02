@@ -9,3 +9,6 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 flutter_rust_bridge = "1"
+lightning-invoice = "0.14.0"
+anyhow = { version = "1.0.57", features = ["backtrace"] }
+hex = "*"

@@ -438,6 +438,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  flutter_rust_bridge:
+    dependency: transitive
+    description:
+      name: flutter_rust_bridge
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.28.1"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -497,6 +504,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  freezed_annotation:
+    dependency: transitive
+    description:
+      name: freezed_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   frontend_server_client:
     dependency: transitive
     description:

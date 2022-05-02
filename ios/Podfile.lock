@@ -194,7 +194,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   image_cropper: 60c2789d1f1a78c873235d4319ca0c34a69f2d98
   image_picker: 50e7c7ff960e5f58faa4d1f4af84a771c671bc4a
-  lightning_toolkit: 8c6f0356e3734e3c4678b83ef95d64af3210d710
+  lightning_toolkit: d03fddc1fd85cf1a12c2c99e909212f832a6b88f
   local_auth: 1740f55d7af0a2e2a8684ce225fe79d8931e808c
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96

@@ -15,6 +15,8 @@ use flutter_rust_bridge::*;
 
 // Section: imports
 
+use crate::invoice::LNInvoice;
+
 // Section: wire functions
 
 #[no_mangle]

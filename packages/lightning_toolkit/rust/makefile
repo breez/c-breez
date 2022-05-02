@@ -60,8 +60,8 @@ iossimulator: target/aarch64-apple-ios-sim/release/liblightning_toolkit.a
 
 target/aarch64-apple-ios-sim/release/liblightning_toolkit.a: $(SOURCES) ndk-home
 	@if [ $$(uname) == "Darwin" ] ; then \
-		cargo lipo ; \
-		cp target/universal/debug/liblightning_toolkit.a ../ios/liblightning_toolkit.a ; \
+		cargo lipo --targets aarch64-apple-ios-sim; \
+		cp target/aarch64-apple-ios-sim/debug/liblightning_toolkit.a ../ios/liblightning_toolkit.a ; \
 		else echo "Skipping iOS compilation on $$(uname)" ; \
 	fi
 	@echo "[DONE] $@"

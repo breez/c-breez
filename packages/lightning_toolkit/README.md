@@ -24,11 +24,13 @@ Generated artifacts:
  >* target/bindings.h
 
 Now that the bindings is generated and the native libraries are built we can generate the dart interface.
-This requires an installation of llvm, change the path to our local llvm in the fficonfig.yaml file and then run:
+We are using [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) to generate the rust and dart bindings, please refer to the documentation for [prerequisites](http://cjycode.com/flutter_rust_bridge/integrate/deps.html)
+This requires an installation of llvm then from the root folder, run the following:
 
 ```
-dart run ffigen . --config=fficonfig.yaml
+flutter_rust_bridge_codegen -r rust/src/api.rs -d lib/bridge_generated.dart -c ios/Classes/bridge_generated.h --llvm-path=<path to llvm>
 ```
 
-The rust interface is now exposed in lib/bindings.dart
-To expose a new function from the plugin a corresponding function needed to be added to the lib/lightning_toolkit.dart
+
+
+The rust interface is now exposed in lib/lightning_toolkit.dart

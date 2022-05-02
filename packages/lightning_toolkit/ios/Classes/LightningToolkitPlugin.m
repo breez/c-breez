@@ -1,4 +1,5 @@
 #import "LightningToolkitPlugin.h"
+#import "bridge_generated.h"
 #if __has_include(<lightning_toolkit/lightning_toolkit-Swift.h>)
 #import <lightning_toolkit/lightning_toolkit-Swift.h>
 #else
@@ -11,5 +12,6 @@
 @implementation LightningToolkitPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   [SwiftLightningToolkitPlugin registerWithRegistrar:registrar];
+  dummy_method_to_enforce_bundling();
 }
 @end

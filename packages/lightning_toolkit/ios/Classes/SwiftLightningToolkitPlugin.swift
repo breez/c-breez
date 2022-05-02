@@ -1,3 +1,4 @@
+
 import Flutter
 import UIKit
 
@@ -13,8 +14,8 @@ public class SwiftLightningToolkitPlugin: NSObject, FlutterPlugin {
   }
 
   public func dummyMethodToEnforceBundling() {
-    test("...");    
+    dummy_method_to_enforce_bundling();
     // ...
     // This code will force the bundler to use these functions, but will never be called
-  }
+  }  
 }

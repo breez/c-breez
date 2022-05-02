@@ -41,8 +41,8 @@ init:
 # # RECIPES
 # ##############################################################################
 
-## all: Compile iOS, Android and bindings targets
-all: ios macos android bindings
+## all: Compile iOS, Android
+all: ios macos android
 
 ## ios: Compile the iOS universal library
 ios: target/universal/release/liblightning_toolkit.a
@@ -50,7 +50,7 @@ ios: target/universal/release/liblightning_toolkit.a
 target/universal/release/liblightning_toolkit.a: $(SOURCES) ndk-home
 	@if [ $$(uname) == "Darwin" ] ; then \
 		cargo lipo --release ; \
-		cp target/aarch64-apple-ios/release/liblightning_toolkit.a ../ios/liblightning_toolkit.a ; \
+		cp target/universal/release/liblightning_toolkit.a ../ios/liblightning_toolkit.a ; \
 		else echo "Skipping iOS compilation on $$(uname)" ; \
 	fi
 	@echo "[DONE] $@"
@@ -60,8 +60,8 @@ iossimulator: target/aarch64-apple-ios-sim/release/liblightning_toolkit.a
 
 target/aarch64-apple-ios-sim/release/liblightning_toolkit.a: $(SOURCES) ndk-home
 	@if [ $$(uname) == "Darwin" ] ; then \
-		cargo lipo --release ; \
-		cp target/aarch64-apple-ios-sim/release/liblightning_toolkit.a ../ios/liblightning_toolkit.a ; \
+		cargo lipo ; \
+		cp target/universal/debug/liblightning_toolkit.a ../ios/liblightning_toolkit.a ; \
 		else echo "Skipping iOS compilation on $$(uname)" ; \
 	fi
 	@echo "[DONE] $@"
@@ -121,13 +121,6 @@ ndk-home:
 		echo "Error: Please, set the ANDROID_NDK_HOME env variable to point to your NDK folder" ; \
 		exit 1 ; \
 	fi
-
-## bindings: Generate the .h file for iOS
-bindings: target/bindings.h
-
-target/bindings.h: $(SOURCES)
-	cbindgen $^ -c cbindgen.toml | grep -v \#include | uniq > $@
-	@echo "[DONE] $@"
 
 ## :
 

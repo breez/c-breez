@@ -222,9 +222,9 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         ),
         child: Text(
           _showFiatCurrency && fiatConversion != null
-              ? fiatConversion.format(widget.invoice.amount)
+              ? fiatConversion.format(Int64(widget.invoice.amount))
               : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                  .format(widget.invoice.amount),
+                  .format(Int64(widget.invoice.amount)),
           style: themeData.primaryTextTheme.headline5,
           textAlign: TextAlign.center,
         ),
@@ -359,7 +359,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   }
 
   Int64 amountToPay(CurrencyState acc) {
-    Int64 amount = widget.invoice.amount;
+    Int64 amount = Int64(widget.invoice.amount);
     if (amount == 0) {
       try {
         amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker)

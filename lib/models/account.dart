@@ -4,16 +4,16 @@ import 'package:hex/hex.dart';
 class Invoice {
   final String bolt11;
   final String description;
-  final Int64 amount;
-  final Int64 expiry;
-  final Int64 lspFee;
+  final int amount;
+  final int expiry;
+  final int lspFee;
 
   Invoice(
       {required this.bolt11,
       this.description = "",
       required this.amount,
       required this.expiry,
-      this.lspFee = Int64.ZERO});
+      this.lspFee = 0});
 
   String get payeeName => "";
   String get payerName => "";

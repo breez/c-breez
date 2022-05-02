@@ -10,6 +10,7 @@ import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/widgets/compact_qr_image.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/warning_box.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_extend/share_extend.dart';
@@ -196,10 +197,10 @@ class QrCodeDialogState extends State<QrCodeDialog>
           currencyState.fiatExchangeRate != null) {
         FiatConversion conversion = FiatConversion(
             currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
-        conversionText = " (${conversion.format(lspFee)})";
+        conversionText = " (${conversion.format(Int64(lspFee))})";
       }
       _message =
-          "A setup fee of ${BitcoinCurrency.SAT.format(lspFee)}$conversionText is applied to this invoice. ";
+          "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
     }
     _message += "Keep Breez open until the payment is completed.";
 

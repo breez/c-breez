@@ -2,24 +2,26 @@ import 'dart:async';
 
 import 'package:c_breez/bloc/invoice/invoice_state.dart';
 import 'package:c_breez/models/account.dart';
-import 'package:c_breez/models/bolt11.dart';
 import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/repositorires/app_storage.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/bip21.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/utils/lnurl.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lightning_toolkit/lightning_toolkit.dart';
 import 'package:rxdart/rxdart.dart';
 
 class InvoiceBloc extends Cubit<InvoiceState> {
   final LightningLinksService _lightningLinks;
   final Device _device;
+  final lightningToolkit = getLightningToolkit();
+  final AppStorage _appStorage;  
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InvoiceBloc(this._lightningLinks, this._device) : super(InvoiceState(null)) {
+  InvoiceBloc(this._lightningLinks, this._device, this._appStorage) : super(InvoiceState(null)) {
     _watchIncomingInvoices().listen((invoice) => emit(InvoiceState(invoice)));
   }
 
@@ -27,7 +29,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
     _decodeInvoiceController.add(bolt11);
   }
 
-  Stream<Invoice> _watchIncomingInvoices() {
+  Stream<Invoice?> _watchIncomingInvoices() {
     return Rx.merge([
       _decodeInvoiceController.stream,
       _lightningLinks.linksNotifications,
@@ -46,16 +48,20 @@ class InvoiceBloc extends Cubit<InvoiceState> {
           return bolt11 ?? s;
         })
         .where((s) => !s.toLowerCase().startsWith("lnurl"))
-        .map((bolt11) {
-          var bolt = Bolt11.fromPaymentRequest(bolt11);          
+        .asyncMap((bolt11) async {
+          var lnInvoice = await lightningToolkit.parseInvoice(invoice: bolt11);
+          var nodeInfo = await _appStorage.watchNodeInfo().first;
+          if (nodeInfo == null || nodeInfo.node.nodeID == lnInvoice.payeePubkey) {
+            return null;
+          }          
           var invoice = Invoice(
               bolt11: bolt11,
-              description: bolt.description,
-              amount: bolt.amount,
-              expiry: Int64(bolt.expiry));
+              description: lnInvoice.description,
+              amount: lnInvoice.amount ?? 0,
+              expiry: lnInvoice.expiry);
 
           return invoice;
-        });
+        }).where((invoice) => invoice != null);
   }
 
   Stream<DecodedClipboardData> get decodedClipboardStream =>

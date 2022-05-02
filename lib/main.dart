@@ -37,7 +37,7 @@ void main() async {
     var injector = ServiceInjector();
     var appDir = await getApplicationDocumentsDirectory();
     final storage = await HydratedStorage.build(
-        storageDirectory: Directory(p.join(appDir.path, "bloc_storge")));
+        storageDirectory: Directory(p.join(appDir.path, "bloc_storge")));    
     HydratedBlocOverrides.runZoned(
         () => runApp(MultiBlocProvider(
               providers: [
@@ -53,7 +53,7 @@ void main() async {
                 ),
                 BlocProvider<InvoiceBloc>(
                   create: (BuildContext context) =>
-                      InvoiceBloc(injector.lightningLinks, injector.device),
+                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage),
                 ),
                 BlocProvider<UserProfileBloc>(
                   create: (BuildContext context) => UserProfileBloc(

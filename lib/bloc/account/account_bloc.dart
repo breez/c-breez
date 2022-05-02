@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:c_breez/bloc/account/models_extensions.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/account.dart';
-import 'package:c_breez/models/bolt11.dart';
 import 'package:c_breez/repositorires/dao/db.dart' as db;
 import 'package:c_breez/repositorires/app_storage.dart';
 import 'package:c_breez/services/keychain.dart';
@@ -14,6 +13,7 @@ import 'package:drift/drift.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:lightning_toolkit/lightning_toolkit.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 import './account_state.dart';
@@ -27,6 +27,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String ACCOUNT_CREDS_KEY = "account_creds_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
+  final lightningToolkit = getLightningToolkit();
   final AppStorage _appStorage;
   final LightningService _breezLib;
   final KeyChain _keyChain;
@@ -162,10 +163,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         expiry: expiry ?? Int64(defaultInvoiceExpiry));
     await syncStateWithNode();
     return Invoice(
-        amount: invoice.amountSats,
+        amount: invoice.amountSats.toInt(),
         bolt11: invoice.bolt11,
         description: invoice.description,
-        expiry: expiry ?? Int64(defaultInvoiceExpiry));
+        expiry: expiry?.toInt() ?? defaultInvoiceExpiry);
   }
 
   Stream<AccountState> _watchAccountChanges() {
@@ -270,13 +271,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Stream<List<PaymentInfo>> _paymentsStream() {
     var outgoingPaymentsStream =
-        _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {
-              var bolt11 = Bolt11.fromPaymentRequest(p.bolt11);
+        _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {                                      
               return PaymentInfo(
                   type: PaymentType.SENT,
                   amountMsat: Int64(p.amount),
                   destination: p.destination,
-                  shortTitle: bolt11.description,
+                  shortTitle: "",
                   fee: Int64(p.feeMsat),
                   creationTimestamp: Int64(p.createdAt),
                   pending: p.pending,
@@ -285,14 +285,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
             }));
 
     var incomingPaymentsStream =
-        _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {
-              var bolt11 = Bolt11.fromPaymentRequest(invoice.bolt11);
+        _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {              
               return PaymentInfo(
                   type: PaymentType.RECEIVED,
                   amountMsat: Int64(invoice.amountMsat),
                   fee: Int64.ZERO,
                   destination: state.id!,
-                  shortTitle: bolt11.description,
+                  shortTitle: "",
                   creationTimestamp: Int64(invoice.paymentTime),
                   pending: false,
                   keySend: false,

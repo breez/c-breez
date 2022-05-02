@@ -13,18 +13,13 @@ pub struct LNInvoice {
 
 // parse_invoice parse a bolt11 payment request and returns a structure contains the parsed fields.
 pub fn _parse_invoice(invoice: String) -> Result<LNInvoice> {
- let signed = invoice
-  .parse::<SignedRawInvoice>()
-  .expect("Missing attribute");
- let invoice = Invoice::from_signed(signed).expect("Missing attribute");
+ let signed = invoice.parse::<SignedRawInvoice>()?;
+ let invoice = Invoice::from_signed(signed)?;
 
- let since_the_epoch = invoice
-  .timestamp()
-  .duration_since(UNIX_EPOCH)
-  .expect("Missing attribute");
+ let since_the_epoch = invoice.timestamp().duration_since(UNIX_EPOCH)?;
 
  // make sure signature is valid
- invoice.check_signature().expect("wrong signature");
+ invoice.check_signature()?;
 
  // Try to take payee pubkey from the tagged fields, if doesn't exist recover it from the signature
  let payee_pubkey: String = match invoice.payee_pub_key() {

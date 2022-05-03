@@ -13,6 +13,9 @@ import 'dart:ffi' as ffi;
 
 abstract class LightningToolkit {
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
+
+  Future<String> hsmdHandle(
+      {required String hexsecret, required String hexmessage, dynamic hint});
 }
 
 class LNInvoice {
@@ -48,6 +51,22 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
           argNames: ["invoice"],
         ),
         argValues: [invoice],
+        hint: hint,
+      ));
+
+  Future<String> hsmdHandle(
+          {required String hexsecret,
+          required String hexmessage,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_hsmd_handle(
+            port_, _api2wire_String(hexsecret), _api2wire_String(hexmessage)),
+        parseSuccessData: _wire2api_String,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "hsmd_handle",
+          argNames: ["hexsecret", "hexmessage"],
+        ),
+        argValues: [hexsecret, hexmessage],
         hint: hint,
       ));
 
@@ -146,6 +165,26 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_parse_invoice');
   late final _wire_parse_invoice = _wire_parse_invoicePtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_hsmd_handle(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> hexsecret,
+    ffi.Pointer<wire_uint_8_list> hexmessage,
+  ) {
+    return _wire_hsmd_handle(
+      port_,
+      hexsecret,
+      hexmessage,
+    );
+  }
+
+  late final _wire_hsmd_handlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_hsmd_handle');
+  late final _wire_hsmd_handle = _wire_hsmd_handlePtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list(
     int len,

@@ -1,0 +1,22 @@
+[package]
+name = "vls-protocol-signer"
+version = "0.1.0"
+authors = ["Devrandom <c1.devrandom@niftybox.net>"]
+edition = "2018"
+
+[features]
+default = ["std"]
+std = ["secp256k1/rand-std", "vls-protocol/std"]
+
+[dependencies]
+vls-protocol = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
+secp256k1 = { version = "0.20", default_features = false, features = ["rand"] }
+log = { version = "0.4", default_features = false }
+serde = { version = "1.0", default_features = false }
+bit-vec = { version = "0.6", default_features = false }
+
+[dependencies.lightning-signer-core]
+git = "https://gitlab.com/lightning-signer/validating-lightning-signer.git"
+branch = "main"
+default_features = false
+features = ["no-std"]

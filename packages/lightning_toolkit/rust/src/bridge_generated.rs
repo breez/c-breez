@@ -34,6 +34,26 @@ pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list)
     )
 }
 
+#[no_mangle]
+pub extern "C" fn wire_hsmd_handle(
+    port_: i64,
+    hexsecret: *mut wire_uint_8_list,
+    hexmessage: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "hsmd_handle",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_hexsecret = hexsecret.wire2api();
+            let api_hexmessage = hexmessage.wire2api();
+            move |task_callback| Ok(hsmd_handle(api_hexsecret, api_hexmessage))
+        },
+    )
+}
+
 // Section: wire structs
 
 #[repr(C)]

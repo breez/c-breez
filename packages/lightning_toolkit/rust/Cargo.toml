@@ -11,4 +11,7 @@ crate-type = ["staticlib", "cdylib"]
 flutter_rust_bridge = "1"
 lightning-invoice = "0.14.0"
 anyhow = { version = "1.0.57", features = ["backtrace"] }
-hex = "*"
+hex = "0.4.3"
+secp256k1 = "0.20.3"
+base64 = "0.13.0"
+lightning = "0.0.106"

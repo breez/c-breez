@@ -16,6 +16,8 @@ use flutter_rust_bridge::*;
 // Section: imports
 
 use crate::invoice::LNInvoice;
+use crate::invoice::RouteHint;
+use crate::invoice::RouteHintHop;
 
 // Section: wire functions
 
@@ -34,7 +36,61 @@ pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list)
     )
 }
 
+#[no_mangle]
+pub extern "C" fn wire_add_routing_hints(
+    port_: i64,
+    invoice: *mut wire_uint_8_list,
+    hints: *mut wire_list_route_hint,
+    private_key: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "add_routing_hints",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_invoice = invoice.wire2api();
+            let api_hints = hints.wire2api();
+            let api_private_key = private_key.wire2api();
+            move |task_callback| add_routing_hints(api_invoice, api_hints, api_private_key)
+        },
+    )
+}
+
 // Section: wire structs
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_list_route_hint {
+    ptr: *mut wire_RouteHint,
+    len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_list_route_hint_hop {
+    ptr: *mut wire_RouteHintHop,
+    len: i32,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_RouteHint {
+    field0: *mut wire_list_route_hint_hop,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_RouteHintHop {
+    src_node_id: *mut wire_uint_8_list,
+    short_channel_id: u64,
+    fees_base_msat: u32,
+    fees_proportional_millionths: u32,
+    cltv_expiry_delta: u64,
+    htlc_minimum_msat: *mut u64,
+    htlc_maximum_msat: *mut u64,
+}
 
 #[repr(C)]
 #[derive(Clone)]
@@ -48,6 +104,29 @@ pub struct wire_uint_8_list {
 // Section: static checks
 
 // Section: allocate functions
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_u64(value: u64) -> *mut u64 {
+    support::new_leak_box_ptr(value)
+}
+
+#[no_mangle]
+pub extern "C" fn new_list_route_hint(len: i32) -> *mut wire_list_route_hint {
+    let wrap = wire_list_route_hint {
+        ptr: support::new_leak_vec_ptr(<wire_RouteHint>::new_with_null_ptr(), len),
+        len,
+    };
+    support::new_leak_box_ptr(wrap)
+}
+
+#[no_mangle]
+pub extern "C" fn new_list_route_hint_hop(len: i32) -> *mut wire_list_route_hint_hop {
+    let wrap = wire_list_route_hint_hop {
+        ptr: support::new_leak_vec_ptr(<wire_RouteHintHop>::new_with_null_ptr(), len),
+        len,
+    };
+    support::new_leak_box_ptr(wrap)
+}
 
 #[no_mangle]
 pub extern "C" fn new_uint_8_list(len: i32) -> *mut wire_uint_8_list {
@@ -84,6 +163,64 @@ impl Wire2Api<String> for *mut wire_uint_8_list {
     }
 }
 
+impl Wire2Api<u64> for *mut u64 {
+    fn wire2api(self) -> u64 {
+        unsafe { *support::box_from_leak_ptr(self) }
+    }
+}
+
+impl Wire2Api<Vec<RouteHint>> for *mut wire_list_route_hint {
+    fn wire2api(self) -> Vec<RouteHint> {
+        let vec = unsafe {
+            let wrap = support::box_from_leak_ptr(self);
+            support::vec_from_leak_ptr(wrap.ptr, wrap.len)
+        };
+        vec.into_iter().map(Wire2Api::wire2api).collect()
+    }
+}
+
+impl Wire2Api<Vec<RouteHintHop>> for *mut wire_list_route_hint_hop {
+    fn wire2api(self) -> Vec<RouteHintHop> {
+        let vec = unsafe {
+            let wrap = support::box_from_leak_ptr(self);
+            support::vec_from_leak_ptr(wrap.ptr, wrap.len)
+        };
+        vec.into_iter().map(Wire2Api::wire2api).collect()
+    }
+}
+
+impl Wire2Api<RouteHint> for wire_RouteHint {
+    fn wire2api(self) -> RouteHint {
+        RouteHint(self.field0.wire2api())
+    }
+}
+
+impl Wire2Api<RouteHintHop> for wire_RouteHintHop {
+    fn wire2api(self) -> RouteHintHop {
+        RouteHintHop {
+            src_node_id: self.src_node_id.wire2api(),
+            short_channel_id: self.short_channel_id.wire2api(),
+            fees_base_msat: self.fees_base_msat.wire2api(),
+            fees_proportional_millionths: self.fees_proportional_millionths.wire2api(),
+            cltv_expiry_delta: self.cltv_expiry_delta.wire2api(),
+            htlc_minimum_msat: self.htlc_minimum_msat.wire2api(),
+            htlc_maximum_msat: self.htlc_maximum_msat.wire2api(),
+        }
+    }
+}
+
+impl Wire2Api<u32> for u32 {
+    fn wire2api(self) -> u32 {
+        self
+    }
+}
+
+impl Wire2Api<u64> for u64 {
+    fn wire2api(self) -> u64 {
+        self
+    }
+}
+
 impl Wire2Api<u8> for u8 {
     fn wire2api(self) -> u8 {
         self
@@ -111,21 +248,68 @@ impl<T> NewWithNullPtr for *mut T {
     }
 }
 
+impl NewWithNullPtr for wire_RouteHint {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            field0: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_RouteHintHop {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            src_node_id: core::ptr::null_mut(),
+            short_channel_id: Default::default(),
+            fees_base_msat: Default::default(),
+            fees_proportional_millionths: Default::default(),
+            cltv_expiry_delta: Default::default(),
+            htlc_minimum_msat: core::ptr::null_mut(),
+            htlc_maximum_msat: core::ptr::null_mut(),
+        }
+    }
+}
+
 // Section: impl IntoDart
 
 impl support::IntoDart for LNInvoice {
     fn into_dart(self) -> support::DartCObject {
         vec![
             self.payee_pubkey.into_dart(),
+            self.payment_hash.into_dart(),
             self.description.into_dart(),
             self.amount.into_dart(),
             self.timestamp.into_dart(),
             self.expiry.into_dart(),
+            self.routing_hints.into_dart(),
         ]
         .into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for LNInvoice {}
+
+impl support::IntoDart for RouteHint {
+    fn into_dart(self) -> support::DartCObject {
+        vec![self.0.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for RouteHint {}
+
+impl support::IntoDart for RouteHintHop {
+    fn into_dart(self) -> support::DartCObject {
+        vec![
+            self.src_node_id.into_dart(),
+            self.short_channel_id.into_dart(),
+            self.fees_base_msat.into_dart(),
+            self.fees_proportional_millionths.into_dart(),
+            self.cltv_expiry_delta.into_dart(),
+            self.htlc_minimum_msat.into_dart(),
+            self.htlc_maximum_msat.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for RouteHintHop {}
 
 // Section: executor
 

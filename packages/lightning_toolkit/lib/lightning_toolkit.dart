@@ -1,7 +1,5 @@
-
 import 'dart:ffi';
 import 'dart:io';
-
 import 'package:lightning_toolkit/bridge_generated.dart';
 
 LightningToolkit? _lightningToolkit;

@@ -5,6 +5,7 @@ import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/repositorires/app_storage.dart';
 import 'package:c_breez/services/device.dart';
+import 'package:c_breez/services/lightning/interface.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/bip21.dart';
 import 'package:c_breez/utils/node_id.dart';
@@ -18,15 +19,20 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   final Device _device;
   final lightningToolkit = getLightningToolkit();
   final AppStorage _appStorage;  
+  final LightningService _lightningService;
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InvoiceBloc(this._lightningLinks, this._device, this._appStorage) : super(InvoiceState(null)) {
+  InvoiceBloc(this._lightningLinks, this._device, this._appStorage, this._lightningService) : super(InvoiceState(null)) {
     _watchIncomingInvoices().listen((invoice) => emit(InvoiceState(invoice)));
   }
 
   void addIncomingInvoice(String bolt11) {
     _decodeInvoiceController.add(bolt11);
+  }
+
+  Future trackPayment(String paymentHash) {
+    return _lightningService.incomingPaymentsStream().where((p) => p.paymentHash == paymentHash).first;
   }
 
   Stream<Invoice?> _watchIncomingInvoices() {
@@ -56,6 +62,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
           }          
           var invoice = Invoice(
               bolt11: bolt11,
+              paymentHash: lnInvoice.paymentHash,
               description: lnInvoice.description,
               amount: lnInvoice.amount ?? 0,
               expiry: lnInvoice.expiry);

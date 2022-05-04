@@ -10,7 +10,7 @@ abstract class LightningService {
 
   Future<List<int>> recover(Uint8List seed);
 
-  Future initWithCredentials(List<int> credentials);
+  List<int> initWithCredentials(List<int> credentials);
 
   Future<List<FileData>> exportKeys();
 

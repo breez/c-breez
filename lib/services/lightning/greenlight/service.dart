@@ -27,8 +27,9 @@ class GreenlightService implements LightningService {
   }
 
   @override
-  Future initWithCredentials(List<int> credentials) async {
-    _nodeCredentials = NodeCredentials.fromBuffer(credentials);
+  List<int> initWithCredentials(List<int> credentials) {
+    _nodeCredentials = NodeCredentials.fromBuffer(credentials);    
+    return _nodeCredentials!.nodePrivateKey!;
   }
 
   @override
@@ -94,7 +95,7 @@ class GreenlightService implements LightningService {
     _nodeCredentials = NodeCredentials(caCert, recoverResponse.deviceCert, recoverResponse.deviceKey, hsmdCreds.nodeId,
         hsmdCreds.nodePrivateKey, hsmdCreds.secret);
     var creds = _nodeCredentials!.writeBuffer();
-    await initWithCredentials(creds);
+    initWithCredentials(creds);
     return creds;
   }
 
@@ -114,7 +115,7 @@ class GreenlightService implements LightningService {
     _nodeCredentials = NodeCredentials(
         caCert, registration.deviceCert, registration.deviceKey, hsmdCreds.nodeId, hsmdCreds.nodePrivateKey, hsmdCreds.secret);
     var creds = _nodeCredentials!.writeBuffer();
-    await initWithCredentials(creds);
+    initWithCredentials(creds);
     return creds;
   }
 
@@ -314,7 +315,7 @@ Int64 amountToSats(greenlight.Amount amount) {
   } else if (amount.hasBitcoin()) {
     sats = amount.bitcoin * 100000000;
   } else {
-    sats = amount.bitcoin ~/ 1000;
+    sats = amount.millisatoshi ~/ 1000;
   }
   return sats;
 }
@@ -337,6 +338,8 @@ InvoiceStatus _convertInvoiceStatus(greenlight.InvoiceStatus s) {
   switch (s) {
     case greenlight.InvoiceStatus.EXPIRED:
       return InvoiceStatus.EXPIRED;
+    case greenlight.InvoiceStatus.PAID:
+      return InvoiceStatus.PAID;
     default:
       return InvoiceStatus.UNPAID;
   }

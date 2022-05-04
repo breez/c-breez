@@ -41,19 +41,21 @@ void main() async {
     HydratedBlocOverrides.runZoned(
         () => runApp(MultiBlocProvider(
               providers: [
-                BlocProvider<AccountBloc>(
-                  create: (BuildContext context) => AccountBloc(
-                      injector.breezBridge,
-                      injector.appStorage,
-                      injector.keychain),
-                ),
                 BlocProvider<LSPBloc>(
                   create: (BuildContext context) => LSPBloc(injector.appStorage,
                       injector.breezBridge, injector.breezServer),
                 ),
+                BlocProvider<AccountBloc>(
+                  create: (BuildContext context) => AccountBloc(
+                      injector.breezBridge,
+                      injector.appStorage,
+                      injector.keychain,                      
+                      context.read<LSPBloc>(),
+                      ),
+                ),                
                 BlocProvider<InvoiceBloc>(
                   create: (BuildContext context) =>
-                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage),
+                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage, injector.breezBridge),
                 ),
                 BlocProvider<UserProfileBloc>(
                   create: (BuildContext context) => UserProfileBloc(

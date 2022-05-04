@@ -5,10 +5,21 @@ SOURCES=$(sort $(wildcard ./src/*.rs ./src/**/*.rs))
 OS_NAME=$(shell uname | tr '[:upper:]' '[:lower:]')
 PATH := $(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin:$(PATH)
 
-ANDROID_AARCH64_LINKER=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/aarch64-linux-android29-clang
-ANDROID_ARMV7_LINKER=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/armv7a-linux-androideabi29-clang
-ANDROID_I686_LINKER=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/i686-linux-android29-clang
-ANDROID_X86_64_LINKER=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/x86_64-linux-android29-clang
+ANDROID_AARCH64_CC=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/aarch64-linux-android29-clang
+ANDROID_AARCH64_CXX=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/aarch64-linux-android29-clang++
+ANDROID_AARCH64_AR=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/aarch64-linux-android-ar
+
+ANDROID_ARMV7_CC=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/armv7a-linux-androideabi29-clang
+ANDROID_ARMV7_CXX=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/armv7a-linux-androideabi29-clang++
+ANDROID_ARMV7_AR=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/arm-linux-androideabi-ar
+
+ANDROID_I686_CC=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/i686-linux-android29-clang
+ANDROID_I686_CXX=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/i686-linux-android29-clang++
+ANDROID_I686_AR=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/i686-linux-android-ar
+
+ANDROID_X86_64_CC=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/x86_64-linux-android29-clang
+ANDROID_X86_64_CXX=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/x86_64-linux-android29-clang++
+ANDROID_X86_64_AR=$(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/bin/x86_64-linux-android-ar
 
 SHELL := /bin/bash
 
@@ -87,32 +98,44 @@ target/aarch64-apple-darwin/release/liblightning_toolkit.dylib: $(SOURCES)
 android: target/aarch64-linux-android/release/liblightning_toolkit.so target/armv7-linux-androideabi/release/liblightning_toolkit.so target/i686-linux-android/release/liblightning_toolkit.so target/x86_64-linux-android/release/liblightning_toolkit.so
 
 target/aarch64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
-	CC_aarch64_linux_android=$(ANDROID_AARCH64_LINKER) \
-	CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$(ANDROID_AARCH64_LINKER) \
-	cargo build --target aarch64-linux-android --release
+	CC_aarch64_linux_android=$(ANDROID_AARCH64_CC) \
+	CXX_aarch64_linux_android=$(ANDROID_AARCH64_CXX) \
+	AR_aarch64_linux_android=$(ANDROID_AARCH64_AR) \
+	CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$(ANDROID_AARCH64_CC) \
+		cargo build --target aarch64-linux-android --release
+	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/libc++_shared.so ../android/src/main/jniLibs/arm64-v8a/
 	cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
 target/armv7-linux-androideabi/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	@echo "[Start] $@"
-	CC_armv7_linux_androideabi=$(ANDROID_ARMV7_LINKER) \
-	CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER=$(ANDROID_ARMV7_LINKER) \
+	CC_armv7_linux_androideabi=$(ANDROID_ARMV7_CC) \
+	CXX_armv7_linux_androideabi=$(ANDROID_ARMV7_CXX) \
+	AR_armv7_linux_androideabi=$(ANDROID_ARMV7_AR) \
+	CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER=$(ANDROID_ARMV7_CC) \
 		cargo build --target armv7-linux-androideabi --release
-		cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
+	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so ../android/src/main/jniLibs/armeabi-v7a/
+	cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
 target/i686-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
-	CC_i686_linux_android=$(ANDROID_I686_LINKER) \
-	CARGO_TARGET_I686_LINUX_ANDROID_LINKER=$(ANDROID_I686_LINKER) \
+	CC_i686_linux_android=$(ANDROID_I686_CC) \
+	CXX_i686_linux_android=$(ANDROID_I686_CXX) \
+	AR_i686_linux_android=$(ANDROID_I686_AR) \
+	CARGO_TARGET_I686_LINUX_ANDROID_LINKER=$(ANDROID_I686_CC) \
 		cargo  build --target i686-linux-android --release
-		cp target/i686-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86/liblightning_toolkit.so
+	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/x86/libc++_shared.so ../android/src/main/jniLibs/x86/
+	cp target/i686-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
 target/x86_64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
-	CC_x86_64_linux_android=$(ANDROID_X86_64_LINKER) \
-	CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER=$(ANDROID_X86_64_LINKER) \
+	CC_x86_64_linux_android=$(ANDROID_X86_64_CC) \
+	CXX_x86_64_linux_android=$(ANDROID_X86_64_CXX) \
+	AR_x86_64_linux_android=$(ANDROID_X86_64_AR) \
+	CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER=$(ANDROID_X86_64_CC) \
 		cargo build --target x86_64-linux-android --release
-		cp target/x86_64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86_64/liblightning_toolkit.so
+	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/x86_64/libc++_shared.so ../android/src/main/jniLibs/x86_64/
+	cp target/x86_64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86_64/liblightning_toolkit.so
 	@echo "[DONE] $@"
 		
 .PHONY: ndk-home

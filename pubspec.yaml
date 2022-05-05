@@ -31,7 +31,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  drift: ^1.4.0
+  drift: ^1.5.0
   flutter_bloc: ^8.0.1
   hydrated_bloc: ^8.0.0
 
@@ -78,7 +78,8 @@ dependencies:
   simple_animations: ^4.0.1
   scan: ^1.6.0
   another_flushbar: ^1.10.28
-  archive: ^3.1.9
+  archive: ^3.1.9  
+  sqlite3_flutter_libs: ^0.5.6
   greenlight:
     path: ./packages/greenlight
   lightning_toolkit:

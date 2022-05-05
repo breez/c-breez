@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/widgets/currency_converter_dialog.dart';
 import 'package:c_breez/widgets/sat_amount_form_field_formatter.dart';

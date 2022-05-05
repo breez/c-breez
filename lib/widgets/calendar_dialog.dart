@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/widgets/breez_date_picker.dart';
 import 'package:flutter/material.dart';

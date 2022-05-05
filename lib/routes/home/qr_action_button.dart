@@ -1,7 +1,7 @@
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/bip21.dart';
 import 'package:c_breez/utils/btc_address.dart';
 import 'package:c_breez/utils/node_id.dart';

@@ -5,7 +5,7 @@ import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/home/payment_item_avatar.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

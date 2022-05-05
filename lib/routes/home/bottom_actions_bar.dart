@@ -9,7 +9,7 @@ import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/home/theme.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/enter_payment_info_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/warning_box.dart';

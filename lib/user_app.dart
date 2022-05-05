@@ -19,7 +19,7 @@ import 'routes/create_invoice/create_invoice_page.dart';
 import 'routes/initial_walkthrough.dart';
 import 'routes/lsp/select_lsp_page.dart';
 import 'routes/splash_page.dart';
-import 'theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 //final routeObserver = RouteObserver();

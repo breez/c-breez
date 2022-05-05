@@ -4,7 +4,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/models/user_profile.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:flutter/material.dart';
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:c_breez/bloc/account/models_extensions.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/repositorires/dao/db.dart' as db;
@@ -13,75 +14,93 @@ import 'package:drift/drift.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:lightning_toolkit/lightning_toolkit.dart';
+import 'package:lightning_toolkit/impl.dart' as lntoolkit;
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 import './account_state.dart';
+import 'account_state_assembler.dart';
 
-const MAX_PAYMENT_AMOUNT = 4294967;
+const maxPaymentAmount = 4294967;
 
+// AccountBloc is the business logic unit that is responsible to communicating with the lightning service
+// and reflect the node state. It is responsible for:
+// 1. Synchronizing with the node state.
+// 2. Abstracting actions exposed by the lightning service.
+// 3. Managing user keys.
 class AccountBloc extends Cubit<AccountState> with HydratedMixin {
-  static const String PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY =
-      "payment_filter_settings";
-  static const String ACCOUNT_KEY = "account_key";
-  static const String ACCOUNT_CREDS_KEY = "account_creds_key";
+  static const String paymentFilterSettingsKey = "payment_filter_settings";
+  static const String accountCredsKey = "account_creds_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
-  final lightningToolkit = getLightningToolkit();
+  final _lightningToolkit = lntoolkit.getLightningToolkit();
   final AppStorage _appStorage;
-  final LightningService _breezLib;
+  final LightningService _breezLib;  
   final KeyChain _keyChain;
+  final LSPBloc _lspBloc;
   bool started = false;
+  List<int>? _nodePrivateKey;
 
-  AccountBloc(this._breezLib, this._appStorage, this._keyChain)
+  AccountBloc(this._breezLib, this._appStorage, this._keyChain, this._lspBloc)
       : super(AccountState.initial()) {
+
+    // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
     });
+
+    // sync node info on incoming payments
+    _breezLib.waitReady().then((value) {
+      _breezLib.incomingPaymentsStream().listen((event) {
+        syncStateWithNode();
+      });
+    });
+
     if (!state.initial) {
-      _keyChain.read(ACCOUNT_CREDS_KEY).then((credsHEX) {
+      _keyChain.read(accountCredsKey).then((credsHEX) {
         if (credsHEX != null) {
-          log.info("found account credentials");
           var creds = HEX.decode(credsHEX);
-          _breezLib.initWithCredentials(creds);
+          log.info("found account credentials: ${String.fromCharCodes(creds)}");
+          _nodePrivateKey = _breezLib.initWithCredentials(creds);
           _startNode();
         }
       });
     }
   }
 
+  // Export the user keys to a file
   Future exportKeyFiles(Directory destDir) async {
     var keys = await _breezLib.exportKeys();
     for (var k in keys) {
-      File(p.join(destDir.path, k.name))
-          .writeAsBytesSync(k.content, flush: true);
+      File(p.join(destDir.path, k.name)).writeAsBytesSync(k.content, flush: true);
     }
   }
 
+  // initiWithCredentials initialized the lightning service with credentials that identify the node.
   void initiWithCredentials(List<int> creds) {
     _breezLib.initWithCredentials(creds);
   }
 
-  Future<List<int>> startNewNode(Uint8List seed,
-      {String network = "bitcoin", String email = ""}) async {
+  // startNewNode register a new node and start it
+  Future<List<int>> startNewNode(Uint8List seed, {String network = "bitcoin", String email = ""}) async {
     if (started) {
       throw Exception("Node already started");
     }
     var creds = await _breezLib.register(seed, email: email, network: network);
     log.info("node registered succesfully");
-    await _keyChain.write(ACCOUNT_CREDS_KEY, HEX.encode(creds));
+    await _keyChain.write(accountCredsKey, HEX.encode(creds));
     emit(state.copyWith(initial: false));
     await _startNode();
     log.info("new node started");
     return creds;
   }
 
+  // recoverNode recovers a node from seed
   Future<List<int>> recoverNode(Uint8List seed) async {
     if (started) {
       throw Exception("Node already started");
     }
     var creds = await _breezLib.recover(seed);
-    await _keyChain.write(ACCOUNT_CREDS_KEY, HEX.encode(creds));
+    await _keyChain.write(accountCredsKey, HEX.encode(creds));
     await _startNode();
     return creds;
   }
@@ -92,6 +111,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     started = true;
   }
 
+  // syncStateWithNode synchronized the node state with the local state.
+  // This is required to assemble the account state (e.g liquidity, connected, etc...)
   Future syncStateWithNode() async {
     await _syncNodeInfo();
     await _syncPeers();
@@ -109,8 +130,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     throw Exception("not implemented");
   }
 
-  Future sendSpontaneousPayment(
-      String nodeID, String description, Int64 amountSat) async {
+  Future sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
     await _breezLib.sendSpontaneousPayment(nodeID, amountSat, description);
     await syncStateWithNode();
   }
@@ -129,6 +149,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     throw Exception("not implemented");
   }
 
+  // validatePayment is used to validate that outgoing/incoming payments meet the liquidity
+  // constraints.
   void validatePayment(Int64 amount, bool outgoing) {
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
@@ -148,166 +170,110 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void changePaymentFilter(PaymentFilterModel filter) {
-    _appStorage.updateSettings(
-        PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY, json.encode(filter.toJson()));
+    _appStorage.updateSettings(paymentFilterSettingsKey, json.encode(filter.toJson()));
   }
 
   Future<Invoice> addInvoice(
-      {String payeeName = "",
-      String description = "",
-      String logo = "",
-      required Int64 amount,
-      Int64? expiry}) async {
-    var invoice = await _breezLib.addInvoice(amount,
-        description: description,
-        expiry: expiry ?? Int64(defaultInvoiceExpiry));
-    await syncStateWithNode();
+      {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
+    var invoice = await _breezLib.addInvoice(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));    
+    var currentLSP = _lspBloc.state.currentLSP;
+    if (currentLSP == null) {
+      throw Exception("LSP is not available");
+    }
+
+    // parse the lsp short channel id
+    var peers = await _appStorage.watchPeers().first;
+    int shortChannelId = 0;
+    for (var p in peers) {
+      if (p.peer.peerId == currentLSP.pubKey && p.channels.first.shortChannelId != null) {        
+        shortChannelId = _parseShortChannelID(p.channels.first.shortChannelId!);
+        break;
+      }
+    }
+
+    // create lsp routing hints
+    var lspHop = lntoolkit.RouteHintHop(
+      srcNodeId: currentLSP.pubKey,
+      shortChannelId: shortChannelId,
+      feesBaseMsat: currentLSP.baseFeeMsat,
+      feesProportionalMillionths: 0,
+      cltvExpiryDelta: 40,
+      htlcMinimumMsat: currentLSP.minHtlcMsat,
+      htlcMaximumMsat: 1000000000,
+    );
+
+    // inject routing hints and sign the new invoice
+    var routingHints = lntoolkit.RouteHint(field0: List.from([lspHop]));
+    final bolt11 = await _lightningToolkit.addRoutingHints(
+        invoice: invoice.bolt11, hints: [routingHints], privateKey: Uint8List.fromList(_nodePrivateKey!));
+
+    syncStateWithNode();
+
     return Invoice(
+        paymentHash: invoice.paymentHash,
         amount: invoice.amountSats.toInt(),
-        bolt11: invoice.bolt11,
+        bolt11: bolt11,
         description: invoice.description,
         expiry: expiry?.toInt() ?? defaultInvoiceExpiry);
   }
 
+  // _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   Stream<AccountState> _watchAccountChanges() {
-    return Rx.combineLatest6<
-            List<PaymentInfo>,
-            PaymentFilterModel,
-            db.NodeInfo?,
-            List<db.OffChainFund>,
-            List<db.OnChainFund>,
-            List<db.PeerWithChannels>,
-            AccountState>(
+    return Rx.combineLatest6<List<PaymentInfo>, PaymentFilterModel, db.NodeInfo?, List<db.OffChainFund>, List<db.OnChainFund>,
+            List<db.PeerWithChannels>, AccountState>(
         _paymentsStream(),
         _paymentsFilterStream(),
         _appStorage.watchNodeInfo(),
         _appStorage.watchOffchainFunds(),
         _appStorage.watchOnchainFunds(),
-        _appStorage.watchPeers(), (payments, paymentsFilter, nodeInfo,
-            offChainFunds, onChainFunds, peers) {
-      return _assembleAccountState(payments, paymentsFilter, nodeInfo,
-          offChainFunds, onChainFunds, peers);
+        _appStorage.watchPeers(), (payments, paymentsFilter, nodeInfo, offChainFunds, onChainFunds, peers) {
+      return assembleAccountState(payments, paymentsFilter, nodeInfo, offChainFunds, onChainFunds, peers) ?? state;
     });
-  }
-
-  AccountState _assembleAccountState(
-      List<PaymentInfo> payments,
-      PaymentFilterModel paymentsFilter,
-      db.NodeInfo? nodeInfo,
-      List<db.OffChainFund> offChainFunds,
-      List<db.OnChainFund> onChainFunds,
-      List<db.PeerWithChannels> peers) {
-    var channelsBalance = offChainFunds.fold<Int64>(
-            Int64(0), (balance, element) => balance + element.ourAmountMsat) ~/
-        1000;
-
-    var walletBalance = onChainFunds.fold<Int64>(
-            Int64(0), (balance, element) => balance + element.amountMsat) ~/
-        1000;
-
-    var channels = List<db.Channel>.empty(growable: true);
-    List<String> peersList = List<String>.empty(growable: true);
-    for (var p in peers) {
-      peersList.add(p.peer.peerId);
-      channels.addAll(p.channels);
-    }
-    bool hasActive =
-        channels.any((c) => c.channelState == db.ChannelState.OPEN.index);
-    bool hasPendingOpen = channels
-        .any((c) => c.channelState == db.ChannelState.PENDING_OPEN.index);
-    bool hasPendingClose = channels
-        .any((c) => c.channelState == db.ChannelState.PENDING_CLOSED.index);
-
-    AccountStatus accStatus = AccountStatus.DISCONNECTED;
-    if (hasActive) {
-      accStatus = AccountStatus.CONNECTED;
-    } else if (hasPendingOpen) {
-      accStatus = AccountStatus.CONNECTING;
-    } else if (hasPendingClose) {
-      accStatus = AccountStatus.DISCONNECTION;
-    }
-
-    Int64 maxPayable = Int64(0);
-    Int64 maxReceivable = Int64(0);
-    Int64 maxReceivableSingleChannel = Int64(0);
-    for (var c in channels) {
-      maxPayable += c.spendableMsat ~/ 1000;
-      Int64 channelReceivable = Int64(c.receivableMsat ~/ 1000);
-      if (channelReceivable > maxReceivableSingleChannel) {
-        maxReceivableSingleChannel = channelReceivable;
-      }
-      maxReceivable += channelReceivable;
-    }
-
-    if (nodeInfo == null) {
-      return state;
-    }
-    return AccountState(
-      initial: false,
-      blockheight: Int64(nodeInfo.node.blockheight),
-      id: nodeInfo.node.nodeID,
-      balance: channelsBalance,
-      walletBalance: walletBalance,
-      status: accStatus,
-      maxAllowedToPay: maxPayable,
-      maxAllowedToReceive: maxReceivable,
-      maxPaymentAmount: Int64(MAX_PAYMENT_AMOUNT),
-      maxChanReserve: channelsBalance - maxPayable,
-      connectedPeers: peersList,
-      onChainFeeRate: Int64(0),
-      maxInboundLiquidity: maxReceivableSingleChannel,
-      payments: PaymentsState(payments,
-          _filterPayments(payments, paymentsFilter), paymentsFilter, null),
-    );
   }
 
   Stream<PaymentFilterModel> _paymentsFilterStream() {
     return _appStorage
-        .watchSetting(PAYMENT_FILTER_SETTINGS_PREFERENCES_KEY)
-        .map((filter) => filter == null
-            ? PaymentFilterModel.initial()
-            : PaymentFilterModel.fromJson(json.decode(filter.value)));
+        .watchSetting(paymentFilterSettingsKey)
+        .map((filter) => filter == null ? PaymentFilterModel.initial() : PaymentFilterModel.fromJson(json.decode(filter.value)));
   }
 
+  // _paymentsStream subscribes to local storage changes and exposes a stream of both incoming and outgoing payments.
   Stream<List<PaymentInfo>> _paymentsStream() {
-    var outgoingPaymentsStream =
-        _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {                                      
-              return PaymentInfo(
-                  type: PaymentType.SENT,
-                  amountMsat: Int64(p.amount),
-                  destination: p.destination,
-                  shortTitle: "",
-                  fee: Int64(p.feeMsat),
-                  creationTimestamp: Int64(p.createdAt),
-                  pending: p.pending,
-                  keySend: p.isKeySend,
-                  paymentHash: p.paymentHash);
-            }));
+    // outgoing payments stream
+    var outgoingPaymentsStream = _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {
+          return PaymentInfo(
+              type: PaymentType.SENT,
+              amountMsat: Int64(p.amount),
+              destination: p.destination,
+              shortTitle: "",
+              fee: Int64(p.feeMsat),
+              creationTimestamp: Int64(p.createdAt),
+              pending: p.pending,
+              keySend: p.isKeySend,
+              paymentHash: p.paymentHash);
+        }));
 
-    var incomingPaymentsStream =
-        _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {              
-              return PaymentInfo(
-                  type: PaymentType.RECEIVED,
-                  amountMsat: Int64(invoice.amountMsat),
-                  fee: Int64.ZERO,
-                  destination: state.id!,
-                  shortTitle: "",
-                  creationTimestamp: Int64(invoice.paymentTime),
-                  pending: false,
-                  keySend: false,
-                  paymentHash: invoice.paymentHash);
-            }));
+    // incoming payments stream (settled invoices)
+    var incomingPaymentsStream = _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {
+          return PaymentInfo(
+              type: PaymentType.RECEIVED,
+              amountMsat: Int64(invoice.amountMsat),
+              fee: Int64.ZERO,
+              destination: state.id!,
+              shortTitle: "",
+              creationTimestamp: Int64(invoice.paymentTime),
+              pending: false,
+              keySend: false,
+              paymentHash: invoice.paymentHash);
+        }));
 
-    return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream]).map(
-        (payments) => payments.toList()
-          ..sort((p1, p2) =>
-              (p1.creationTimestamp - p2.creationTimestamp).toInt()));
+    return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream])
+        .map((payments) => payments.toList()..sort((p1, p2) => (p2.creationTimestamp - p1.creationTimestamp).toInt()));
   }
 
   Future _syncNodeInfo() async {
     log.info("_syncNodeInfo started");
-    await _appStorage
-        .setNodeInfo((await _breezLib.getNodeInfo()).toDbNodeInfo());
+    await _appStorage.setNodeInfo((await _breezLib.getNodeInfo()).toDbNodeInfo());
     log.info("_syncNodeInfo finished");
   }
 
@@ -321,26 +287,22 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future _syncFunds() async {
     log.info("_syncFunds started");
     var funds = await _breezLib.listFunds();
-    await _appStorage.setOffchainFunds(
-        funds.channelFunds.map((f) => f.toDbOffchainFund()).toList());
-    await _appStorage.setOnchainFunds(
-        funds.onchainFunds.map((f) => f.toDbOnchainFund()).toList());
+    await _appStorage.setOffchainFunds(funds.channelFunds.map((f) => f.toDbOffchainFund()).toList());
+    await _appStorage.setOnchainFunds(funds.onchainFunds.map((f) => f.toDbOnchainFund()).toList());
     log.info("_syncFunds finished");
   }
 
   Future _syncOutgoingPayments() async {
     log.info("_syncOutgoingPayments");
     var outgoingPayments = await _breezLib.getPayments();
-    await _appStorage.addOutgoingPayments(
-        outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
+    await _appStorage.addOutgoingPayments(outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
     log.info("_syncOutgoingPayments finished");
   }
 
   Future _syncSettledInvoices() async {
     log.info("_syncSettledInvoices started");
     var invoices = await _breezLib.getInvoices();
-    await _appStorage
-        .addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
+    await _appStorage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
     log.info("_syncSettledInvoices finished");
   }
 
@@ -355,22 +317,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 }
 
-List<PaymentInfo> _filterPayments(
-    List<PaymentInfo> paymentsList, PaymentFilterModel filter) {
-  return paymentsList.where((p) {
-    if (!filter.paymentType.contains(p.type)) {
-      return false;
-    }
-    if (filter.startDate != null &&
-        p.creationTimestamp.toInt() * 1000 <
-            filter.startDate!.millisecondsSinceEpoch) {
-      return false;
-    }
-    if (filter.endDate != null &&
-        p.creationTimestamp.toInt() * 1000 >
-            filter.endDate!.millisecondsSinceEpoch) {
-      return false;
-    }
-    return true;
-  }).toList();
+int _parseShortChannelID(String idStr) {
+  var parts = idStr.split("x");
+  if (parts.length != 3) {
+    return 0;
+  }
+  var blockNum = int.parse(parts[0]);
+  var txNum = int.parse(parts[1]);
+  var txOut = int.parse(parts[2]);
+  return ((blockNum & 0xFFFFFF) << 40 | (txNum & 0xFFFFFF) << 16 | (txOut & 0xFFFF));
 }

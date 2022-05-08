@@ -25,9 +25,6 @@ import 'handlers/received_invoice_notification.dart';
 import 'routes/account_required_actions.dart';
 import 'routes/home/account_page.dart';
 
-final GlobalKey firstPaymentItemKey = GlobalKey();
-final ScrollController scrollController = ScrollController();
-
 class Home extends StatefulWidget {
   final AccountBloc accountBloc;
   final InvoiceBloc invoiceBloc;
@@ -56,6 +53,8 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> with WidgetsBindingObserver {
   final GlobalKey podcastMenuItemKey = GlobalKey();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey firstPaymentItemKey = GlobalKey();
+  final ScrollController scrollController = ScrollController();
   String _activeScreen = "breezHome";
   final Set _hiddenRoutes = <String>{};
   StreamSubscription<String>? _accountNotificationsSubscription;

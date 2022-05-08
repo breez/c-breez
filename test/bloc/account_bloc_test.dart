@@ -1,6 +1,7 @@
-@Timeout(Duration(seconds: 400))
+
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bip39/bip39.dart' as bip39;
@@ -15,8 +16,9 @@ void main() {
   group('account', () {
     test('recover node', () async {
       var injector = InjectorMock();
+      var lspBloc = LSPBloc(injector.appStorage, injector.breezBridge, injector.breezServer);
       AccountBloc accBloc = AccountBloc(
-          injector.breezBridge, injector.appStorage, injector.keychain);
+          injector.breezBridge, injector.appStorage, injector.keychain, lspBloc);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 

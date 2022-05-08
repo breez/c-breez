@@ -14,23 +14,76 @@ import 'dart:ffi' as ffi;
 abstract class LightningToolkit {
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
+  Future<String> addRoutingHints(
+      {required String invoice,
+      required List<RouteHint> hints,
+      required Uint8List privateKey,
+      dynamic hint});
+
   Future<String> hsmdHandle(
-      {required String hexsecret, required String hexmessage, dynamic hint});
+      {required String hexsecret,
+      required String hexmessage,
+      String? nodeId,
+      required int dbId,
+      dynamic hint});
 }
 
 class LNInvoice {
   final String payeePubkey;
+  final String paymentHash;
   final String description;
   final int? amount;
   final int timestamp;
   final int expiry;
+  final List<RouteHint> routingHints;
 
   LNInvoice({
     required this.payeePubkey,
+    required this.paymentHash,
     required this.description,
     this.amount,
     required this.timestamp,
     required this.expiry,
+    required this.routingHints,
+  });
+}
+
+class RouteHint {
+  final List<RouteHintHop> field0;
+
+  RouteHint({
+    required this.field0,
+  });
+}
+
+class RouteHintHop {
+  /// The node_id of the non-target end of the route
+  final String srcNodeId;
+
+  /// The short_channel_id of this channel
+  final int shortChannelId;
+
+  /// The fees which must be paid to use this channel
+  final int feesBaseMsat;
+  final int feesProportionalMillionths;
+
+  /// The difference in CLTV values between this node and the next node.
+  final int cltvExpiryDelta;
+
+  /// The minimum value, in msat, which must be relayed to the next hop.
+  final int? htlcMinimumMsat;
+
+  /// The maximum value in msat available for routing with a single HTLC.
+  final int? htlcMaximumMsat;
+
+  RouteHintHop({
+    required this.srcNodeId,
+    required this.shortChannelId,
+    required this.feesBaseMsat,
+    required this.feesProportionalMillionths,
+    required this.cltvExpiryDelta,
+    this.htlcMinimumMsat,
+    this.htlcMaximumMsat,
   });
 }
 
@@ -54,25 +107,89 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
         hint: hint,
       ));
 
+  Future<String> addRoutingHints(
+          {required String invoice,
+          required List<RouteHint> hints,
+          required Uint8List privateKey,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_add_routing_hints(
+            port_,
+            _api2wire_String(invoice),
+            _api2wire_list_route_hint(hints),
+            _api2wire_uint_8_list(privateKey)),
+        parseSuccessData: _wire2api_String,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "add_routing_hints",
+          argNames: ["invoice", "hints", "privateKey"],
+        ),
+        argValues: [invoice, hints, privateKey],
+        hint: hint,
+      ));
+
   Future<String> hsmdHandle(
           {required String hexsecret,
           required String hexmessage,
+          String? nodeId,
+          required int dbId,
           dynamic hint}) =>
       executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => inner.wire_hsmd_handle(
-            port_, _api2wire_String(hexsecret), _api2wire_String(hexmessage)),
+            port_,
+            _api2wire_String(hexsecret),
+            _api2wire_String(hexmessage),
+            _api2wire_opt_String(nodeId),
+            _api2wire_u64(dbId)),
         parseSuccessData: _wire2api_String,
         constMeta: const FlutterRustBridgeTaskConstMeta(
           debugName: "hsmd_handle",
-          argNames: ["hexsecret", "hexmessage"],
+          argNames: ["hexsecret", "hexmessage", "nodeId", "dbId"],
         ),
-        argValues: [hexsecret, hexmessage],
+        argValues: [hexsecret, hexmessage, nodeId, dbId],
         hint: hint,
       ));
 
   // Section: api2wire
   ffi.Pointer<wire_uint_8_list> _api2wire_String(String raw) {
     return _api2wire_uint_8_list(utf8.encoder.convert(raw));
+  }
+
+  ffi.Pointer<ffi.Uint64> _api2wire_box_autoadd_u64(int raw) {
+    return inner.new_box_autoadd_u64(raw);
+  }
+
+  ffi.Pointer<wire_list_route_hint> _api2wire_list_route_hint(
+      List<RouteHint> raw) {
+    final ans = inner.new_list_route_hint(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_route_hint(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  ffi.Pointer<wire_list_route_hint_hop> _api2wire_list_route_hint_hop(
+      List<RouteHintHop> raw) {
+    final ans = inner.new_list_route_hint_hop(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_route_hint_hop(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  ffi.Pointer<wire_uint_8_list> _api2wire_opt_String(String? raw) {
+    return raw == null ? ffi.nullptr : _api2wire_String(raw);
+  }
+
+  ffi.Pointer<ffi.Uint64> _api2wire_opt_box_autoadd_u64(int? raw) {
+    return raw == null ? ffi.nullptr : _api2wire_box_autoadd_u64(raw);
+  }
+
+  int _api2wire_u32(int raw) {
+    return raw;
+  }
+
+  int _api2wire_u64(int raw) {
+    return raw;
   }
 
   int _api2wire_u8(int raw) {
@@ -87,6 +204,23 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
 
   // Section: api_fill_to_wire
 
+  void _api_fill_to_wire_route_hint(RouteHint apiObj, wire_RouteHint wireObj) {
+    wireObj.field0 = _api2wire_list_route_hint_hop(apiObj.field0);
+  }
+
+  void _api_fill_to_wire_route_hint_hop(
+      RouteHintHop apiObj, wire_RouteHintHop wireObj) {
+    wireObj.src_node_id = _api2wire_String(apiObj.srcNodeId);
+    wireObj.short_channel_id = _api2wire_u64(apiObj.shortChannelId);
+    wireObj.fees_base_msat = _api2wire_u32(apiObj.feesBaseMsat);
+    wireObj.fees_proportional_millionths =
+        _api2wire_u32(apiObj.feesProportionalMillionths);
+    wireObj.cltv_expiry_delta = _api2wire_u64(apiObj.cltvExpiryDelta);
+    wireObj.htlc_minimum_msat =
+        _api2wire_opt_box_autoadd_u64(apiObj.htlcMinimumMsat);
+    wireObj.htlc_maximum_msat =
+        _api2wire_opt_box_autoadd_u64(apiObj.htlcMaximumMsat);
+  }
 }
 
 // Section: wire2api
@@ -98,21 +232,59 @@ int _wire2api_box_autoadd_u64(dynamic raw) {
   return raw as int;
 }
 
+List<RouteHint> _wire2api_list_route_hint(dynamic raw) {
+  return (raw as List<dynamic>).map(_wire2api_route_hint).toList();
+}
+
+List<RouteHintHop> _wire2api_list_route_hint_hop(dynamic raw) {
+  return (raw as List<dynamic>).map(_wire2api_route_hint_hop).toList();
+}
+
 LNInvoice _wire2api_ln_invoice(dynamic raw) {
   final arr = raw as List<dynamic>;
-  if (arr.length != 5)
-    throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+  if (arr.length != 7)
+    throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
   return LNInvoice(
     payeePubkey: _wire2api_String(arr[0]),
-    description: _wire2api_String(arr[1]),
-    amount: _wire2api_opt_box_autoadd_u64(arr[2]),
-    timestamp: _wire2api_u64(arr[3]),
-    expiry: _wire2api_u64(arr[4]),
+    paymentHash: _wire2api_String(arr[1]),
+    description: _wire2api_String(arr[2]),
+    amount: _wire2api_opt_box_autoadd_u64(arr[3]),
+    timestamp: _wire2api_u64(arr[4]),
+    expiry: _wire2api_u64(arr[5]),
+    routingHints: _wire2api_list_route_hint(arr[6]),
   );
 }
 
 int? _wire2api_opt_box_autoadd_u64(dynamic raw) {
   return raw == null ? null : _wire2api_box_autoadd_u64(raw);
+}
+
+RouteHint _wire2api_route_hint(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 1)
+    throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+  return RouteHint(
+    field0: _wire2api_list_route_hint_hop(arr[0]),
+  );
+}
+
+RouteHintHop _wire2api_route_hint_hop(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 7)
+    throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+  return RouteHintHop(
+    srcNodeId: _wire2api_String(arr[0]),
+    shortChannelId: _wire2api_u64(arr[1]),
+    feesBaseMsat: _wire2api_u32(arr[2]),
+    feesProportionalMillionths: _wire2api_u32(arr[3]),
+    cltvExpiryDelta: _wire2api_u64(arr[4]),
+    htlcMinimumMsat: _wire2api_opt_box_autoadd_u64(arr[5]),
+    htlcMaximumMsat: _wire2api_opt_box_autoadd_u64(arr[6]),
+  );
+}
+
+int _wire2api_u32(dynamic raw) {
+  return raw as int;
 }
 
 int _wire2api_u64(dynamic raw) {
@@ -166,25 +338,102 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_parse_invoice = _wire_parse_invoicePtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_add_routing_hints(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> invoice,
+    ffi.Pointer<wire_list_route_hint> hints,
+    ffi.Pointer<wire_uint_8_list> private_key,
+  ) {
+    return _wire_add_routing_hints(
+      port_,
+      invoice,
+      hints,
+      private_key,
+    );
+  }
+
+  late final _wire_add_routing_hintsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_list_route_hint>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_add_routing_hints');
+  late final _wire_add_routing_hints = _wire_add_routing_hintsPtr.asFunction<
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_list_route_hint>, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_hsmd_handle(
     int port_,
     ffi.Pointer<wire_uint_8_list> hexsecret,
     ffi.Pointer<wire_uint_8_list> hexmessage,
+    ffi.Pointer<wire_uint_8_list> node_id,
+    int db_id,
   ) {
     return _wire_hsmd_handle(
       port_,
       hexsecret,
       hexmessage,
+      node_id,
+      db_id,
     );
   }
 
   late final _wire_hsmd_handlePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_hsmd_handle');
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Uint64)>>('wire_hsmd_handle');
   late final _wire_hsmd_handle = _wire_hsmd_handlePtr.asFunction<
-      void Function(
-          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, int)>();
+
+  ffi.Pointer<ffi.Uint64> new_box_autoadd_u64(
+    int value,
+  ) {
+    return _new_box_autoadd_u64(
+      value,
+    );
+  }
+
+  late final _new_box_autoadd_u64Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint64> Function(ffi.Uint64)>>(
+          'new_box_autoadd_u64');
+  late final _new_box_autoadd_u64 = _new_box_autoadd_u64Ptr
+      .asFunction<ffi.Pointer<ffi.Uint64> Function(int)>();
+
+  ffi.Pointer<wire_list_route_hint> new_list_route_hint(
+    int len,
+  ) {
+    return _new_list_route_hint(
+      len,
+    );
+  }
+
+  late final _new_list_route_hintPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_list_route_hint> Function(
+              ffi.Int32)>>('new_list_route_hint');
+  late final _new_list_route_hint = _new_list_route_hintPtr
+      .asFunction<ffi.Pointer<wire_list_route_hint> Function(int)>();
+
+  ffi.Pointer<wire_list_route_hint_hop> new_list_route_hint_hop(
+    int len,
+  ) {
+    return _new_list_route_hint_hop(
+      len,
+    );
+  }
+
+  late final _new_list_route_hint_hopPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_list_route_hint_hop> Function(
+              ffi.Int32)>>('new_list_route_hint_hop');
+  late final _new_list_route_hint_hop = _new_list_route_hint_hopPtr
+      .asFunction<ffi.Pointer<wire_list_route_hint_hop> Function(int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list(
     int len,
@@ -232,6 +481,44 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
 
 class wire_uint_8_list extends ffi.Struct {
   external ffi.Pointer<ffi.Uint8> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+class wire_RouteHintHop extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> src_node_id;
+
+  @ffi.Uint64()
+  external int short_channel_id;
+
+  @ffi.Uint32()
+  external int fees_base_msat;
+
+  @ffi.Uint32()
+  external int fees_proportional_millionths;
+
+  @ffi.Uint64()
+  external int cltv_expiry_delta;
+
+  external ffi.Pointer<ffi.Uint64> htlc_minimum_msat;
+
+  external ffi.Pointer<ffi.Uint64> htlc_maximum_msat;
+}
+
+class wire_list_route_hint_hop extends ffi.Struct {
+  external ffi.Pointer<wire_RouteHintHop> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+class wire_RouteHint extends ffi.Struct {
+  external ffi.Pointer<wire_list_route_hint_hop> field0;
+}
+
+class wire_list_route_hint extends ffi.Struct {
+  external ffi.Pointer<wire_RouteHint> ptr;
 
   @ffi.Int32()
   external int len;

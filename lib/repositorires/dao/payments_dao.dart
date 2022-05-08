@@ -22,8 +22,8 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
 
   Stream<List<Invoice>> watchIncomingPayments() {
     return (select(invoices)
-          ..where((invoice) => invoice.receivedMsat.isBiggerThan(Constant(0)))
-          ..orderBy([(p) => OrderingTerm(expression: p.paymentTime)]))
+          ..where((invoice) => invoice.receivedMsat.isBiggerThan(const Constant(0)))
+          ..orderBy([(p) => OrderingTerm(expression: p.paymentTime, mode: OrderingMode.desc)]))
         .watch();
   }
 
@@ -39,7 +39,7 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
 
   Stream<List<OutgoingLightningPayment>> watchOutgoingPayments() {
     return (select(outgoingLightningPayments)
-          ..orderBy([(p) => OrderingTerm(expression: p.createdAt)]))
+          ..orderBy([(p) => OrderingTerm(expression: p.createdAt, mode: OrderingMode.desc)]))
         .watch();
   }
 }

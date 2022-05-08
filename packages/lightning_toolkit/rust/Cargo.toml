@@ -16,3 +16,6 @@ bitcoin_hashes = { version = "0.10.0", default-features = false }
 lightning-signer-core = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 vls-protocol-signer = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 vls-protocol = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
+secp256k1 = "0.20.3"
+base64 = "0.13.0"
+lightning = "0.0.106"

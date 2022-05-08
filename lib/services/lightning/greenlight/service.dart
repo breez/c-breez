@@ -4,12 +4,12 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:greenlight/hsmd.dart';
 import 'package:greenlight/scheduler_credentials.dart';
-import 'package:greenlight/signer.dart';
 import 'package:c_breez/services/lightning/models.dart';
 import 'package:greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
 import 'package:greenlight/generated/scheduler.pbgrpc.dart' as scheduler;
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:fixnum/fixnum.dart';
+import 'package:greenlight/signer.dart';
 import 'package:grpc/grpc.dart';
 import 'package:hex/hex.dart';
 import 'package:c_breez/logger.dart';
@@ -18,6 +18,8 @@ class GreenlightService implements LightningService {
   NodeCredentials? _nodeCredentials;
   greenlight.NodeClient? _nodeClient;
   scheduler.SchedulerClient? _schedulerClient;
+
+  final _incomingPaymentsStream = StreamController<IncomingLightningPayment>.broadcast();
   final Completer _readyCompleter = Completer();
 
   GreenlightService() {
@@ -27,8 +29,9 @@ class GreenlightService implements LightningService {
   }
 
   @override
-  Future initWithCredentials(List<int> credentials) async {
+  List<int> initWithCredentials(List<int> credentials) {
     _nodeCredentials = NodeCredentials.fromBuffer(credentials);
+    return _nodeCredentials!.nodePrivateKey!;
   }
 
   @override
@@ -47,17 +50,48 @@ class GreenlightService implements LightningService {
     _readyCompleter.complete(true);
     log.info("node started! " + HEX.encode(res.nodeId));
 
-    _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
-      log.info(value.line);
-    }, onDone: () {
-      log.info("streaming logs finished");      
-    }, onError: (err) {
-      log.severe("streaming logs finished with error $err");
-    });
+    runIncomingListenersLoop(res.nodeId);    
+  }
 
-    // _nodeClient!.streamHsmRequests(greenlight.Empty()).listen((value) {
-    //   print("hsmd: ${value.context.dbid}");
-    // });
+  Future runIncomingListenersLoop(List<int> nodeID) async {
+     while (true) {
+      var nodeInfo = await _schedulerClient!.getNodeInfo(scheduler.NodeInfoRequest()
+        ..nodeId = nodeID
+        ..wait = true);
+      var nodeChannel = _createNodeChannel(_nodeCredentials!, nodeInfo.grpcUri);
+      _nodeClient = greenlight.NodeClient(nodeChannel, interceptors: [NodeInterceptor(_nodeCredentials!.deviceKey)]);
+
+      var nodeAliveCompleter = Completer();
+
+      _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
+        log.info(value.line);
+      }, onDone: () {
+        log.info("streaming logs finished");
+        nodeAliveCompleter.complete();
+      }, onError: (err) {
+        log.severe("streaming logs finished with error $err");
+      });
+
+      // stream incoming payments
+      _nodeClient!
+          .streamIncoming(greenlight.StreamIncomingFilter())
+          .map((p) => IncomingLightningPayment(
+              label: p.offchain.label,
+              preimage: HEX.encode(p.offchain.preimage),
+              amountSat: amountToSats(p.offchain.amount),
+              paymentHash: HEX.encode(p.offchain.paymentHash),
+              bolt11: p.offchain.bolt11,
+              extratlvs: p.offchain.extratlvs.map((t) => TlvField(type: t.type.toInt(), value: HEX.encode(t.value))).toList()))
+          .listen(_incomingPaymentsStream.add);
+
+      // stream signer
+      // _nodeClient!.streamHsmRequests(greenlight.Empty()).listen((value) {
+      //   print("hsmd: ${value.context.dbid}");
+      // });
+
+      // wait for the node to go down.
+      await nodeAliveCompleter.future;
+    }
   }
 
   Future<scheduler.NodeInfoResponse> schedule() async {
@@ -74,13 +108,7 @@ class GreenlightService implements LightningService {
 
   @override
   Stream<IncomingLightningPayment> incomingPaymentsStream() {
-    return _nodeClient!.streamIncoming(greenlight.StreamIncomingFilter()).map((p) => IncomingLightningPayment(
-        label: p.offchain.label,
-        preimage: HEX.encode(p.offchain.preimage),
-        amountSat: amountToSats(p.offchain.amount),
-        paymentHash: HEX.encode(p.offchain.paymentHash),
-        bolt11: p.offchain.bolt11,
-        extratlvs: p.offchain.extratlvs.map((t) => TlvField(type: t.type.toInt(), value: HEX.encode(t.value))).toList()));
+    return _incomingPaymentsStream.stream;
   }
 
   @override
@@ -94,7 +122,7 @@ class GreenlightService implements LightningService {
     _nodeCredentials = NodeCredentials(caCert, recoverResponse.deviceCert, recoverResponse.deviceKey, hsmdCreds.nodeId,
         hsmdCreds.nodePrivateKey, hsmdCreds.secret);
     var creds = _nodeCredentials!.writeBuffer();
-    await initWithCredentials(creds);
+    initWithCredentials(creds);
     return creds;
   }
 
@@ -114,7 +142,7 @@ class GreenlightService implements LightningService {
     _nodeCredentials = NodeCredentials(
         caCert, registration.deviceCert, registration.deviceKey, hsmdCreds.nodeId, hsmdCreds.nodePrivateKey, hsmdCreds.secret);
     var creds = _nodeCredentials!.writeBuffer();
-    await initWithCredentials(creds);
+    initWithCredentials(creds);
     return creds;
   }
 
@@ -136,8 +164,10 @@ class GreenlightService implements LightningService {
       String? description,
       Int64? expiry}) async {
     await schedule();
-    var invoice = await _nodeClient!.createInvoice(
-        greenlight.InvoiceRequest(label: "breez-${DateTime.now().millisecondsSinceEpoch}", amount: greenlight.Amount(satoshi: amount), description: description));
+    var invoice = await _nodeClient!.createInvoice(greenlight.InvoiceRequest(
+        label: "breez-${DateTime.now().millisecondsSinceEpoch}",
+        amount: greenlight.Amount(satoshi: amount),
+        description: description));
     return Invoice(
         label: invoice.label,
         amountSats: amountToSats(invoice.amount),
@@ -153,6 +183,7 @@ class GreenlightService implements LightningService {
 
   @override
   Future<NodeInfo> getNodeInfo() async {
+    await schedule();
     var info = await _nodeClient!.getInfo(greenlight.GetInfoRequest());
     return NodeInfo(
         nodeID: HEX.encode(info.nodeId),
@@ -166,6 +197,7 @@ class GreenlightService implements LightningService {
 
   @override
   Future<ListFunds> listFunds() async {
+    await schedule();
     var listFunds = await _nodeClient!.listFunds(greenlight.ListFundsRequest());
 
     var channelFunds = listFunds.channels.map((e) {
@@ -192,6 +224,7 @@ class GreenlightService implements LightningService {
 
   @override
   Future<List<Peer>> listPeers() async {
+    await schedule();
     var peers = await _nodeClient!.listPeers(greenlight.ListPeersRequest());
     return peers.peers.map((e) {
       return Peer(
@@ -216,6 +249,7 @@ class GreenlightService implements LightningService {
 
   @override
   Future<List<OutgoingLightningPayment>> getPayments() async {
+    await schedule();
     var payments = await _nodeClient!.listPayments(greenlight.ListPaymentsRequest());
     var paymentsList = payments.payments.map((p) {
       var sentSats = amountToSats(p.amountSent);
@@ -239,6 +273,7 @@ class GreenlightService implements LightningService {
 
   @override
   Future<List<Invoice>> getInvoices() async {
+    await schedule();
     var invoices = await _nodeClient!.listInvoices(greenlight.ListInvoicesRequest());
     return invoices.invoices.map((p) {
       return Invoice(
@@ -314,7 +349,7 @@ Int64 amountToSats(greenlight.Amount amount) {
   } else if (amount.hasBitcoin()) {
     sats = amount.bitcoin * 100000000;
   } else {
-    sats = amount.bitcoin ~/ 1000;
+    sats = amount.millisatoshi ~/ 1000;
   }
   return sats;
 }
@@ -337,6 +372,8 @@ InvoiceStatus _convertInvoiceStatus(greenlight.InvoiceStatus s) {
   switch (s) {
     case greenlight.InvoiceStatus.EXPIRED:
       return InvoiceStatus.EXPIRED;
+    case greenlight.InvoiceStatus.PAID:
+      return InvoiceStatus.PAID;
     default:
       return InvoiceStatus.UNPAID;
   }

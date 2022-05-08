@@ -45,26 +45,27 @@ void main() async {
         hexsecret:
             "f4c8dffa2ffa5fe196766139416e3b5e1041c704f37452076256a7e1183c5f0f",
         hexmessage:
-            "00170020db170105cffa843916e2990c00ee6249fc901bf5decabbe366dc373b41533fd7");
+            "00170020db170105cffa843916e2990c00ee6249fc901bf5decabbe366dc373b41533fd7",
+            nodeId: null, dbId: 0);
     print('hsmd result: $s');
     HydratedBlocOverrides.runZoned(
         () => runApp(MultiBlocProvider(
               providers: [
-                BlocProvider<AccountBloc>(
-                  create: (BuildContext context) => AccountBloc(
-                      injector.breezBridge,
-                      injector.appStorage,
-                      injector.keychain),
-                ),
                 BlocProvider<LSPBloc>(
                   create: (BuildContext context) => LSPBloc(injector.appStorage,
                       injector.breezBridge, injector.breezServer),
                 ),
+                BlocProvider<AccountBloc>(
+                  create: (BuildContext context) => AccountBloc(
+                      injector.breezBridge,
+                      injector.appStorage,
+                      injector.keychain,                      
+                      context.read<LSPBloc>(),
+                      ),
+                ),                
                 BlocProvider<InvoiceBloc>(
-                  create: (BuildContext context) => InvoiceBloc(
-                      injector.lightningLinks,
-                      injector.device,
-                      injector.appStorage),
+                  create: (BuildContext context) =>
+                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage, injector.breezBridge),
                 ),
                 BlocProvider<UserProfileBloc>(
                   create: (BuildContext context) => UserProfileBloc(

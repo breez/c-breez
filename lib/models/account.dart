@@ -3,6 +3,7 @@ import 'package:hex/hex.dart';
 
 class Invoice {
   final String bolt11;
+  final String paymentHash;
   final String description;
   final int amount;
   final int expiry;
@@ -10,6 +11,7 @@ class Invoice {
 
   Invoice(
       {required this.bolt11,
+      required this.paymentHash,
       this.description = "",
       required this.amount,
       required this.expiry,

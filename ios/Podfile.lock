@@ -98,6 +98,24 @@ PODS:
     - Flutter
   - shared_preferences_ios (0.0.1):
     - Flutter
+  - sqlite3 (3.38.3):
+    - sqlite3/common (= 3.38.3)
+  - sqlite3/common (3.38.3)
+  - sqlite3/fts5 (3.38.3):
+    - sqlite3/common
+  - sqlite3/json1 (3.38.3):
+    - sqlite3/common
+  - sqlite3/perf-threadsafe (3.38.3):
+    - sqlite3/common
+  - sqlite3/rtree (3.38.3):
+    - sqlite3/common
+  - sqlite3_flutter_libs (0.0.1):
+    - Flutter
+    - sqlite3 (~> 3.38.3)
+    - sqlite3/fts5
+    - sqlite3/json1
+    - sqlite3/perf-threadsafe
+    - sqlite3/rtree
   - TOCropViewController (2.6.1)
   - uni_links (0.0.1):
     - Flutter
@@ -121,6 +139,7 @@ DEPENDENCIES:
   - scan (from `.symlinks/plugins/scan/ios`)
   - share_extend (from `.symlinks/plugins/share_extend/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
+  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -137,6 +156,7 @@ SPEC REPOS:
     - MTBBarcodeScanner
     - nanopb
     - PromisesObjC
+    - sqlite3
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -172,6 +192,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/share_extend/ios"
   shared_preferences_ios:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
+  sqlite3_flutter_libs:
+    :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
   uni_links:
     :path: ".symlinks/plugins/uni_links/ios"
   url_launcher_ios:
@@ -205,10 +227,12 @@ SPEC CHECKSUMS:
   scan: aea35bb4aa59ccc8839c576a18cd57c7d492cc86
   share_extend: b6748dc53695587891126a89533b862b92548c7b
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
+  sqlite3: 3315c18c19fd107a68bf466f9f0adce934b03eaa
+  sqlite3_flutter_libs: 98c5c7c59b1ecfd0530a03412015d22db89ea261
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

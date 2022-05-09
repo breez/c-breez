@@ -20,7 +20,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:lightning_toolkit/lightning_toolkit.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -38,16 +37,7 @@ void main() async {
     var injector = ServiceInjector();
     var appDir = await getApplicationDocumentsDirectory();
     final storage = await HydratedStorage.build(
-        storageDirectory: Directory(p.join(appDir.path, "bloc_storge")));
-    print('before getLightningToolkit:');
-    var lt = getLightningToolkit();
-    var s = await lt.hsmdHandle(
-        hexsecret:
-            "f4c8dffa2ffa5fe196766139416e3b5e1041c704f37452076256a7e1183c5f0f",
-        hexmessage:
-            "00170020db170105cffa843916e2990c00ee6249fc901bf5decabbe366dc373b41533fd7",
-            nodeId: null, dbId: 0);
-    print('hsmd result: $s');
+        storageDirectory: Directory(p.join(appDir.path, "bloc_storge")));                   
     HydratedBlocOverrides.runZoned(
         () => runApp(MultiBlocProvider(
               providers: [

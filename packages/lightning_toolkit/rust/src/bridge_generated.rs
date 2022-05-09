@@ -59,25 +59,25 @@ pub extern "C" fn wire_add_routing_hints(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_hsmd_handle(
+pub extern "C" fn wire_handle(
     port_: i64,
-    hexsecret: *mut wire_uint_8_list,
-    hexmessage: *mut wire_uint_8_list,
-    node_id: *mut wire_uint_8_list,
+    secret: *mut wire_uint_8_list,
+    msg: *mut wire_uint_8_list,
+    peer_id: *mut wire_uint_8_list,
     db_id: u64,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "hsmd_handle",
+            debug_name: "handle",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
-            let api_hexsecret = hexsecret.wire2api();
-            let api_hexmessage = hexmessage.wire2api();
-            let api_node_id = node_id.wire2api();
+            let api_secret = secret.wire2api();
+            let api_msg = msg.wire2api();
+            let api_peer_id = peer_id.wire2api();
             let api_db_id = db_id.wire2api();
-            move |task_callback| hsmd_handle(api_hexsecret, api_hexmessage, api_node_id, api_db_id)
+            move |task_callback| handle(api_secret, api_msg, api_peer_id, api_db_id)
         },
     )
 }

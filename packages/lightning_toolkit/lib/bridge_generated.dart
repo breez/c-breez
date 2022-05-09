@@ -20,10 +20,10 @@ abstract class LightningToolkit {
       required Uint8List privateKey,
       dynamic hint});
 
-  Future<String> hsmdHandle(
-      {required String hexsecret,
-      required String hexmessage,
-      String? nodeId,
+  Future<Uint8List> handle(
+      {required Uint8List secret,
+      required Uint8List msg,
+      Uint8List? peerId,
       required int dbId,
       dynamic hint});
 }
@@ -127,25 +127,25 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
         hint: hint,
       ));
 
-  Future<String> hsmdHandle(
-          {required String hexsecret,
-          required String hexmessage,
-          String? nodeId,
+  Future<Uint8List> handle(
+          {required Uint8List secret,
+          required Uint8List msg,
+          Uint8List? peerId,
           required int dbId,
           dynamic hint}) =>
       executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => inner.wire_hsmd_handle(
+        callFfi: (port_) => inner.wire_handle(
             port_,
-            _api2wire_String(hexsecret),
-            _api2wire_String(hexmessage),
-            _api2wire_opt_String(nodeId),
+            _api2wire_uint_8_list(secret),
+            _api2wire_uint_8_list(msg),
+            _api2wire_opt_uint_8_list(peerId),
             _api2wire_u64(dbId)),
-        parseSuccessData: _wire2api_String,
+        parseSuccessData: _wire2api_uint_8_list,
         constMeta: const FlutterRustBridgeTaskConstMeta(
-          debugName: "hsmd_handle",
-          argNames: ["hexsecret", "hexmessage", "nodeId", "dbId"],
+          debugName: "handle",
+          argNames: ["secret", "msg", "peerId", "dbId"],
         ),
-        argValues: [hexsecret, hexmessage, nodeId, dbId],
+        argValues: [secret, msg, peerId, dbId],
         hint: hint,
       ));
 
@@ -176,12 +176,12 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
     return ans;
   }
 
-  ffi.Pointer<wire_uint_8_list> _api2wire_opt_String(String? raw) {
-    return raw == null ? ffi.nullptr : _api2wire_String(raw);
-  }
-
   ffi.Pointer<ffi.Uint64> _api2wire_opt_box_autoadd_u64(int? raw) {
     return raw == null ? ffi.nullptr : _api2wire_box_autoadd_u64(raw);
+  }
+
+  ffi.Pointer<wire_uint_8_list> _api2wire_opt_uint_8_list(Uint8List? raw) {
+    return raw == null ? ffi.nullptr : _api2wire_uint_8_list(raw);
   }
 
   int _api2wire_u32(int raw) {
@@ -363,31 +363,31 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       void Function(int, ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_list_route_hint>, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_hsmd_handle(
+  void wire_handle(
     int port_,
-    ffi.Pointer<wire_uint_8_list> hexsecret,
-    ffi.Pointer<wire_uint_8_list> hexmessage,
-    ffi.Pointer<wire_uint_8_list> node_id,
+    ffi.Pointer<wire_uint_8_list> secret,
+    ffi.Pointer<wire_uint_8_list> msg,
+    ffi.Pointer<wire_uint_8_list> peer_id,
     int db_id,
   ) {
-    return _wire_hsmd_handle(
+    return _wire_handle(
       port_,
-      hexsecret,
-      hexmessage,
-      node_id,
+      secret,
+      msg,
+      peer_id,
       db_id,
     );
   }
 
-  late final _wire_hsmd_handlePtr = _lookup<
+  late final _wire_handlePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
               ffi.Int64,
               ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>,
-              ffi.Uint64)>>('wire_hsmd_handle');
-  late final _wire_hsmd_handle = _wire_hsmd_handlePtr.asFunction<
+              ffi.Uint64)>>('wire_handle');
+  late final _wire_handle = _wire_handlePtr.asFunction<
       void Function(int, ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>, int)>();
 

@@ -13,6 +13,7 @@ import 'package:greenlight/signer.dart';
 import 'package:grpc/grpc.dart';
 import 'package:hex/hex.dart';
 import 'package:c_breez/logger.dart';
+import 'package:lightning_toolkit/impl.dart';
 
 class GreenlightService implements LightningService {
   NodeCredentials? _nodeCredentials;
@@ -21,6 +22,7 @@ class GreenlightService implements LightningService {
 
   final _incomingPaymentsStream = StreamController<IncomingLightningPayment>.broadcast();
   final Completer _readyCompleter = Completer();
+  final lightningToolkit = getLightningToolkit();
 
   GreenlightService() {
     final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null, null);
@@ -50,11 +52,11 @@ class GreenlightService implements LightningService {
     _readyCompleter.complete(true);
     log.info("node started! " + HEX.encode(res.nodeId));
 
-    runIncomingListenersLoop(res.nodeId);    
+    runIncomingListenersLoop(res.nodeId);
   }
 
   Future runIncomingListenersLoop(List<int> nodeID) async {
-     while (true) {
+    while (true) {
       var nodeInfo = await _schedulerClient!.getNodeInfo(scheduler.NodeInfoRequest()
         ..nodeId = nodeID
         ..wait = true);
@@ -85,9 +87,23 @@ class GreenlightService implements LightningService {
           .listen(_incomingPaymentsStream.add);
 
       // stream signer
-      // _nodeClient!.streamHsmRequests(greenlight.Empty()).listen((value) {
-      //   print("hsmd: ${value.context.dbid}");
-      // });
+      var signer = Signer(Uint8List.fromList(_nodeCredentials!.secret!));
+      _nodeClient!.streamHsmRequests(greenlight.Empty()).listen((value) async {
+        var msg = HEX.encode(value.raw);
+        log.info(
+            "hsmd: $msg requestId: ${value.requestId} peer_id: ${HEX.encode(value.context.nodeId)} dbId: ${value.context.dbid.toInt()}");
+        try {
+          var result = await signer.handle(
+              message: Uint8List.fromList(value.raw),
+              peerId: Uint8List.fromList(value.context.nodeId),
+              dbId: value.context.dbid.toInt());
+          log.info("hsmd message signed succesfully");
+          await _nodeClient!.respondHsmRequest(greenlight.HsmResponse(requestId: value.requestId, raw: result.toList()));
+          log.info("hsmd message replied succesfully");
+        } catch (e) {
+          log.severe("failed to handle hsmd message: ${e.toString()}");
+        }
+      });
 
       // wait for the node to go down.
       await nodeAliveCompleter.future;

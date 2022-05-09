@@ -106,10 +106,6 @@ pub fn _add_routing_hints(
   .payment_secret(*invoice.payment_secret())
   .min_final_cltv_expiry(invoice.min_final_cltv_expiry());
 
- // if let Some(pubkey) = invoice.payee_pub_key() {
- //  invoice_builder = invoice_builder.payee_pub_key(*pubkey);
- // }
-
  for hint in invoice.route_hints() {
   invoice_builder = invoice_builder.private_route(hint);
  }

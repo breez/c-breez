@@ -112,6 +112,7 @@ target/aarch64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-hom
 	AR_aarch64_linux_android=$(ANDROID_AARCH64_AR) \
 	CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$(ANDROID_AARCH64_CC) \
 		cargo build --target aarch64-linux-android --release
+	mkdir -p ../android/src/main/jniLibs/arm64-v8a/
 	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/arm64-v8a/libc++_shared.so ../android/src/main/jniLibs/arm64-v8a/
 	cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
 	@echo "[DONE] $@"
@@ -123,6 +124,7 @@ target/armv7-linux-androideabi/release/liblightning_toolkit.so: $(SOURCES) ndk-h
 	AR_armv7_linux_androideabi=$(ANDROID_ARMV7_AR) \
 	CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER=$(ANDROID_ARMV7_CC) \
 		cargo build --target armv7-linux-androideabi --release
+	mkdir -p ../android/src/main/jniLibs/armeabi-v7a/
 	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_shared.so ../android/src/main/jniLibs/armeabi-v7a/
 	cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
 	@echo "[DONE] $@"
@@ -133,6 +135,7 @@ target/i686-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	AR_i686_linux_android=$(ANDROID_I686_AR) \
 	CARGO_TARGET_I686_LINUX_ANDROID_LINKER=$(ANDROID_I686_CC) \
 		cargo  build --target i686-linux-android --release
+	mkdir -p ../android/src/main/jniLibs/x86/
 	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/x86/libc++_shared.so ../android/src/main/jniLibs/x86/
 	cp target/i686-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86/liblightning_toolkit.so
 	@echo "[DONE] $@"
@@ -143,6 +146,7 @@ target/x86_64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	AR_x86_64_linux_android=$(ANDROID_X86_64_AR) \
 	CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER=$(ANDROID_X86_64_CC) \
 		cargo build --target x86_64-linux-android --release
+	mkdir -p ../android/src/main/jniLibs/x86_64/
 	cp -a $(ANDROID_NDK_HOME)/sources/cxx-stl/llvm-libc++/libs/x86_64/libc++_shared.so ../android/src/main/jniLibs/x86_64/
 	cp target/x86_64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86_64/liblightning_toolkit.so
 	@echo "[DONE] $@"

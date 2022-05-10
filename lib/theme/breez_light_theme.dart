@@ -1,4 +1,6 @@
+import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'breez_colors.dart';
 
@@ -14,17 +16,17 @@ final ThemeData breezLightTheme = ThemeData(
   canvasColor: BreezColors.blue[500],
   backgroundColor: Colors.white,
   bottomAppBarTheme: const BottomAppBarTheme(elevation: 0),
-  appBarTheme: const AppBarTheme(
-    iconTheme: IconThemeData(
+  appBarTheme: AppBarTheme(
+    backgroundColor: BreezColors.blue[500],
+    iconTheme: const IconThemeData(
       color: Colors.white,
     ),
-    color: Colors.transparent,
-    actionsIconTheme: IconThemeData(color: Color.fromRGBO(0, 120, 253, 1.0)),
-    //toolbarTextStyle: toolbarTextStyle,
-    // titleTextStyle: TextTheme(
-    //   headline6:
-    //       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
-    // ).headline6, systemOverlayStyle: SystemUiOverlayStyle.light,
+    toolbarTextStyle: toolbarTextStyle,
+    titleTextStyle: titleTextStyle,
+    elevation: 0.0,
+    actionsIconTheme:
+        const IconThemeData(color: Color.fromRGBO(0, 120, 253, 1.0)),
+    systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   dialogTheme: DialogTheme(
       titleTextStyle: TextStyle(

@@ -35,14 +35,8 @@ class SelectLSPPageState extends State<SelectLSPPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: Theme.of(context).appBarTheme.iconTheme,
-        backgroundColor: Theme.of(context).canvasColor,
         automaticallyImplyLeading: false,
-        elevation: 0.0,
-        title: Text(
-          "Select a Lightning Provider",
-          style: Theme.of(context).appBarTheme.textTheme?.headline6,
-        ),
+        title: const Text("Select a Lightning Provider"),
         actions: <Widget>[
           IconButton(
               onPressed: () => Navigator.pop(context),
@@ -50,8 +44,6 @@ class SelectLSPPageState extends State<SelectLSPPage> {
               icon: Icon(Icons.close,
                   color: Theme.of(context).appBarTheme.iconTheme!.color))
         ],
-        toolbarTextStyle: Theme.of(context).appBarTheme.textTheme?.bodyText2,
-        titleTextStyle: Theme.of(context).appBarTheme.textTheme?.headline6,
       ),
       body: BlocBuilder<LSPBloc, LSPState>(builder: (ctx, lspState) {
         if (_error != null) {

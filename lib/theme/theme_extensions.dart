@@ -31,6 +31,10 @@ final toolbarTextStyle = const TextTheme(
   headline6:
       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
 ).bodyText2;
+final titleTextStyle = const TextTheme(
+  headline6:
+  TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
+).headline6;
 const TextStyle drawerItemTextStyle =
     TextStyle(height: 1.2, letterSpacing: 0.25, fontSize: 14.3);
 final TextStyle notificationTextStyle = TextStyle(

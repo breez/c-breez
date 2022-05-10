@@ -83,15 +83,10 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
         ),
       ),
       appBar: AppBar(
-          iconTheme: themeData.appBarTheme.iconTheme,
-          backgroundColor: themeData.canvasColor,
-          leading: const backBtn.BackButton(),
-          actions: const [],
-          title: Text(texts.invoice_title,
-              style: themeData.appBarTheme.titleTextStyle),
-          elevation: 0.0,
-          toolbarTextStyle: themeData.appBarTheme.toolbarTextStyle,
-          titleTextStyle: themeData.appBarTheme.titleTextStyle),
+        leading: const backBtn.BackButton(),
+        actions: const [],
+        title: Text(texts.invoice_title),
+      ),
       body: BlocBuilder<CurrencyBoc, CurrencyState>(
           builder: (context, currencyState) {
         return BlocBuilder<AccountBloc, AccountState>(

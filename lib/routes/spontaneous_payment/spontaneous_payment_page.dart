@@ -66,7 +66,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
   @override
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
-    const String _title = "Send Payment";
     AccountBloc accountBloc = context.read<AccountBloc>();
     CurrencyBoc currencyBloc = context.read<CurrencyBoc>();
 
@@ -84,14 +83,8 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
         ),
       ),
       appBar: AppBar(
-        iconTheme: Theme.of(context).appBarTheme.iconTheme,
-        backgroundColor: Theme.of(context).canvasColor,
         leading: const backBtn.BackButton(),
-        title: Text(_title,
-            style: Theme.of(context).appBarTheme.textTheme!.headline6),
-        elevation: 0.0,
-        toolbarTextStyle: Theme.of(context).appBarTheme.textTheme!.bodyText2,
-        titleTextStyle: Theme.of(context).appBarTheme.textTheme!.headline6,
+        title: const Text("Send Payment"),
       ),
       body: BlocBuilder<CurrencyBoc, CurrencyState>(
           builder: (context, currencyState) {

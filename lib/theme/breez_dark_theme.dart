@@ -1,5 +1,7 @@
 // Color(0xFF121212) values are tbd
+import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'breez_colors.dart';
 
@@ -15,18 +17,16 @@ final ThemeData breezDarkTheme = ThemeData(
   canvasColor: const Color(0xFF0c2031),
   backgroundColor: const Color(0xFF152a3d),
   bottomAppBarTheme: const BottomAppBarTheme(elevation: 0),
-  appBarTheme: const AppBarTheme(
-    iconTheme: IconThemeData(
+  appBarTheme: AppBarTheme(
+    backgroundColor: const Color(0xFF0c2031),
+    iconTheme: const IconThemeData(
       color: Colors.white,
     ),
-    color: Colors.white,
-    // actionsIconTheme: IconThemeData(color: Colors.white), toolbarTextStyle: TextTheme(
-    //   headline6:
-    //       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
-    // ).bodyText2, titleTextStyle: TextTheme(
-    //   headline6:
-    //       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
-    // ).headline6, systemOverlayStyle: SystemUiOverlayStyle.light,
+    toolbarTextStyle: toolbarTextStyle,
+    titleTextStyle: titleTextStyle,
+    elevation: 0.0,
+    actionsIconTheme: const IconThemeData(color: Colors.white),
+    systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   dialogTheme: const DialogTheme(
       titleTextStyle:

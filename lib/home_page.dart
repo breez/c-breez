@@ -15,6 +15,7 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/navigation_drawer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
@@ -180,7 +181,9 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
               color: Color.fromARGB(255, 0, 133, 251),
             ),
             backgroundColor: theme.customData[theme.themeId]!.dashboardBgColor,
-            elevation: 0.0,
+            systemOverlayStyle: theme.themeId == "BLUE"
+                ? SystemUiOverlayStyle.dark
+                : SystemUiOverlayStyle.light,
           ),
           drawerEnableOpenDragGesture: true,
           drawerDragStartBehavior: DragStartBehavior.down,

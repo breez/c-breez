@@ -95,7 +95,9 @@ class PaymentItem extends StatelessWidget {
                         return _paymentInfo.shortTitle;
                       }()
                           .replaceAll("\n", " "),
-                      style: Theme.of(context).accentTextTheme.subtitle2,
+                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -112,12 +114,15 @@ class PaymentItem extends StatelessWidget {
                               DateTime.fromMillisecondsSinceEpoch(
                                   _paymentInfo.creationTimestamp.toInt() *
                                       1000)),
-                          style: Theme.of(context).accentTextTheme.caption,
+                          style: Theme.of(context).textTheme.caption?.copyWith(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                              ),
                         ),
                         _paymentInfo.pending
                             ? Text(" (Pending)",
                                 style: Theme.of(context)
-                                    .accentTextTheme
+                                    .textTheme
                                     .caption!
                                     .copyWith(
                                         color: theme.customData[theme.themeId]!
@@ -171,7 +176,9 @@ class PaymentItem extends StatelessWidget {
           : 1.0,
       child: Text(
         _hideBalance ? "******" : (negative ? "- " : "+ ") + amount,
-        style: Theme.of(context).accentTextTheme.headline6,
+        style: Theme.of(context).textTheme.headline6?.copyWith(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
       ),
     );
   }
@@ -185,7 +192,9 @@ class PaymentItem extends StatelessWidget {
     );
     return Text(
       _hideBalance ? "******" : "FEE $feeFormatted",
-      style: Theme.of(context).accentTextTheme.caption,
+      style: Theme.of(context).textTheme.caption?.copyWith(
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
     );
   }
 

@@ -40,10 +40,9 @@ class WalletDashboardState extends State<WalletDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    double startHeaderSize =
-        Theme.of(context).accentTextTheme.headline4!.fontSize!;
+    double startHeaderSize = Theme.of(context).textTheme.headline4!.fontSize!;
     double endHeaderFontSize =
-        Theme.of(context).accentTextTheme.headline4!.fontSize! - 8.0;
+        Theme.of(context).textTheme.headline4!.fontSize! - 8.0;
 
     FiatConversion? fiatConversion = widget._currencyState.fiatEnabled
         ? FiatConversion(widget._currencyState.fiatCurrency!,
@@ -96,9 +95,12 @@ class WalletDashboardState extends State<WalletDashboard> {
                   child: widget._userModel.hideBalance
                       ? Text("******",
                           style: Theme.of(context)
-                              .accentTextTheme
+                              .textTheme
                               .headline4!
                               .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSecondary,
                                   fontSize: startHeaderSize -
                                       (startHeaderSize - endHeaderFontSize) *
                                           widget._offsetFactor))
@@ -108,20 +110,27 @@ class WalletDashboardState extends State<WalletDashboard> {
                           ? Text(
                               fiatConversion
                                   .format(widget._accountState.balance),
-                              style: Theme.of(context)
-                                  .accentTextTheme
-                                  .headline4!
-                                  .copyWith(
-                                      fontSize: startHeaderSize -
-                                          (startHeaderSize -
-                                                  endHeaderFontSize) *
-                                              widget._offsetFactor))
+                              style:
+                                  Theme.of(context)
+                                      .textTheme
+                                      .headline4!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSecondary,
+                                          fontSize: startHeaderSize -
+                                              (startHeaderSize -
+                                                      endHeaderFontSize) *
+                                                  widget._offsetFactor))
                           : RichText(
                               text: TextSpan(
                                   style: Theme.of(context)
-                                      .accentTextTheme
+                                      .textTheme
                                       .headline4!
                                       .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSecondary,
                                           fontSize: startHeaderSize -
                                               (startHeaderSize -
                                                       endHeaderFontSize) *
@@ -136,9 +145,12 @@ class WalletDashboardState extends State<WalletDashboard> {
                                           widget._currencyState.bitcoinCurrency
                                               .displayName,
                                       style: Theme.of(context)
-                                          .accentTextTheme
+                                          .textTheme
                                           .headline4!
                                           .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondary,
                                               fontSize: startHeaderSize * 0.6 -
                                                   (startHeaderSize * 0.6 -
                                                           endHeaderFontSize) *
@@ -184,13 +196,12 @@ class WalletDashboardState extends State<WalletDashboard> {
                               fiatConversion
                                   .format(widget._accountState.balance),
                               style: Theme.of(context)
-                                  .accentTextTheme
+                                  .textTheme
                                   .subtitle1!
                                   .copyWith(
                                       color: Theme.of(context)
-                                          .accentTextTheme
-                                          .subtitle1!
-                                          .color!
+                                          .colorScheme
+                                          .onSecondary
                                           .withOpacity(pow(
                                                   1.00 - widget._offsetFactor,
                                                   2)

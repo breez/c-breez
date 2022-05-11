@@ -180,7 +180,7 @@ final ThemeData darkTheme = ThemeData(
       color: Colors.white,
     ),
     color: Colors.white,
-    // actionsIconTheme: IconThemeData(color: Colors.white), toolbarTextStyle: TextTheme(
+    actionsIconTheme: IconThemeData(color: Colors.white),
     //   headline6:
     //       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
     // ).bodyText2, titleTextStyle: TextTheme(

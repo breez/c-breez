@@ -102,3 +102,22 @@ final ThemeData breezDarkTheme = ThemeData(
     }),
   ),
 );
+
+final ThemeData calendarDarkTheme = ThemeData.dark().copyWith(
+  colorScheme: const ColorScheme.light(
+    primary: Color(0xFF4B89EB), // header bg color
+    onPrimary: Colors.white, // header text color
+    onSurface: Colors.white, // body text color
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(primary: const Color(0xFF7aa5eb)),
+  ),
+  dialogTheme: const DialogTheme(
+    backgroundColor: Color(0xFF152a3d),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(12.0),
+      ),
+    ),
+  ),
+);

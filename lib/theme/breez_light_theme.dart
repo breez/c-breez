@@ -111,3 +111,19 @@ final ThemeData breezLightTheme = ThemeData(
     ),
   ),
 );
+
+final ThemeData calendarLightTheme = ThemeData.light().copyWith(
+  colorScheme: const ColorScheme.light(
+    primary: Color.fromRGBO(5, 93, 235, 1.0),
+  ),
+  textButtonTheme: TextButtonThemeData(
+    style: TextButton.styleFrom(primary: BreezColors.blue[500]),
+  ),
+  dialogTheme: const DialogTheme(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(
+        Radius.circular(12.0),
+      ),
+    ),
+  ),
+);

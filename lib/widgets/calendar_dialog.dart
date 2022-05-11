@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
-import 'package:c_breez/widgets/breez_date_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -128,15 +127,23 @@ class _CalendarDialogState extends State<CalendarDialog> {
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartBtn) async {
-    DateTime selectedDate = await showBreezDatePicker(
+    // TODO: Show error if end date is earlier than start date or do not allow picking an earlier date at all
+    DateTime? selectedDate = await showDatePicker(
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
       context: context,
       initialDate: isStartBtn ? _startDate : _endDate,
       firstDate: widget.firstDate,
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: theme.calendarTheme,
+          child: child!,
+        );
+      },
     );
     Duration difference = isStartBtn
-        ? selectedDate.difference(_endDate)
-        : selectedDate.difference(_startDate);
+        ? selectedDate!.difference(_endDate)
+        : selectedDate!.difference(_startDate);
     if (difference.inDays < 0) {
       setState(() {
         isStartBtn ? _startDate = selectedDate : _endDate = selectedDate;

@@ -91,7 +91,7 @@ class InvoiceBottomSheetState extends State<InvoiceBottomSheet>
                   ? Colors.white
                   : Theme.of(context).primaryColorLight
               : isFirst
-                  ? Theme.of(context).buttonColor
+                  ? Theme.of(context).primaryColor
                   : Theme.of(context).backgroundColor,
           padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
           shape: isFirst

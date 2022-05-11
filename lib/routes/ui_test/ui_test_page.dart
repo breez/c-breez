@@ -1,3 +1,4 @@
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,9 @@ import '../../bloc/account/account_bloc.dart';
 import '../../bloc/invoice/invoice_bloc.dart';
 import '../../bloc/lsp/lsp_bloc.dart';
 import '../../bloc/user_profile/user_profile_bloc.dart';
+import '../../bloc/user_profile/user_profile_state.dart';
+import '../../models/user_profile.dart';
+import '../../widgets/calendar_dialog.dart';
 import '../../widgets/route.dart';
 import '../initial_walkthrough.dart';
 import '../splash_page.dart';
@@ -25,6 +29,12 @@ class UITestPage extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: const Text("UI Test Page"),
         leading: const backBtn.BackButton(),
+        actions: [
+          BlocBuilder<UserProfileBloc, UserProfileState>(
+              builder: (context, userState) {
+            return _buildThemeSwitch(context, userState.profileSettings);
+          })
+        ],
       ),
       backgroundColor: Colors.white,
       body: ListView(
@@ -89,8 +99,82 @@ class UITestPage extends StatelessWidget {
               },
             ),
           ),
+          Card(
+            child: ListTile(
+              title: const Text("CalendarDialog"),
+              onTap: () {
+                showDialog(
+                  useRootNavigator: false,
+                  context: context,
+                  builder: (_) => CalendarDialog(
+                    DateTime.now().subtract(const Duration(days: 5)),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  GestureDetector _buildThemeSwitch(
+    BuildContext context,
+    UserProfileSettings user,
+  ) {
+    return GestureDetector(
+      onTap: () => _changeTheme(user.themeId == "BLUE" ? "DARK" : "BLUE",
+          context.read<UserProfileBloc>()),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 10,
+              right: 16.0,
+            ),
+            child: Container(
+              width: 64,
+              padding: const EdgeInsets.all(4),
+              decoration: const ShapeDecoration(
+                shape: StadiumBorder(),
+                color: theme.marketplaceButtonColor,
+              ),
+              child: Row(
+                children: [
+                  Image.asset(
+                    "src/icon/ic_lightmode.png",
+                    height: 24,
+                    width: 24,
+                    color:
+                        user.themeId == "BLUE" ? Colors.white : Colors.white30,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                    width: 8,
+                    child: VerticalDivider(
+                      color: Colors.white30,
+                    ),
+                  ),
+                  ImageIcon(
+                    const AssetImage("src/icon/ic_darkmode.png"),
+                    color:
+                        user.themeId == "DARK" ? Colors.white : Colors.white30,
+                    size: 24.0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future _changeTheme(
+    String themeId,
+    UserProfileBloc userProfileBloc,
+  ) async {
+    userProfileBloc.updateProfile(themeId: themeId);
   }
 }

@@ -62,7 +62,7 @@ class AccountRequiredActionsIndicatorState
       );
     }
 
-    if (lspStatus.selectionRequired == true) {
+    if (lspStatus.selectionRequired == true || lspStatus.connectionStatus == LSPConnectionStatus.notActive) {
       warnings.add(WarningAction(() {
         if (lspStatus.lastConnectionError != null) {
           showProviderErrorDialog(context, () {

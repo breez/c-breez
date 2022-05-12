@@ -14,6 +14,7 @@ anyhow = { version = "1.0.57", features = ["backtrace"] }
 hex = "*"
 bitcoin_hashes = { version = "0.10.0", default-features = false }
 lightning-signer-core = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
+lightning-signer-server = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 vls-protocol-signer = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 vls-protocol = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 secp256k1 = "0.20.3"

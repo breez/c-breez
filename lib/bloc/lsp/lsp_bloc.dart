@@ -26,6 +26,9 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
       watchLSPState();
       fetchLSPList();
     });
+    if (state.connectionStatus == LSPConnectionStatus.inProgress) {
+      emit(state.copyWith(connectionStatus: LSPConnectionStatus.notActive));
+    }
   }
 
   Future fetchLSPList() async {
@@ -37,7 +40,7 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
       emit(state.copyWith(availableLSPs: list.values.toList(), initial: false));
     } catch (e) {
       emit(state.copyWith(lastConnectionError: e.toString(), initial: false));
-    }
+    }    
     // if (state.availableLSPs.length == 1) {
     //   connectLSP(state.availableLSPs[0].lspID);
     // }
@@ -93,6 +96,7 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
           emit(this.state.copyWith(
               connectionStatus: LSPConnectionStatus.notActive,
               lastConnectionError: null));
+              return;
         }
         if (this.state.lastConnectionError != null ||
             state.connectionStatus != LSPConnectionStatus.active) {

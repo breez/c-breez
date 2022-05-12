@@ -3,8 +3,6 @@ use hex::ToHex;
 use lightning::routing::*;
 use lightning_invoice::*;
 use secp256k1::key::PublicKey;
-use secp256k1::Secp256k1;
-use secp256k1::SecretKey;
 use std::str::FromStr;
 use std::time::UNIX_EPOCH;
 
@@ -81,11 +79,7 @@ impl RouteHint {
  }
 }
 
-pub fn _add_routing_hints(
- invoice: &String,
- hints: Vec<RouteHint>,
- private_key: &[u8; 32],
-) -> Result<String> {
+pub fn _add_routing_hints(invoice: &String, hints: Vec<RouteHint>) -> Result<RawInvoice> {
  let signed = invoice.parse::<SignedRawInvoice>()?;
  let invoice = Invoice::from_signed(signed)?;
  let description = match invoice.description() {
@@ -93,7 +87,6 @@ pub fn _add_routing_hints(
   InvoiceDescription::Hash(_) => String::from(""),
  };
 
- let private_key = SecretKey::from_slice(private_key).unwrap();
  let mut invoice_builder = InvoiceBuilder::new(Currency::Bitcoin)
   .description(description)
   .payment_hash(*invoice.payment_hash())
@@ -113,9 +106,7 @@ pub fn _add_routing_hints(
   invoice_builder = invoice_builder.private_route(hint.to_ldk_hint()?);
  }
 
- let invoice_builder = invoice_builder
-  .build_signed(|hash| Secp256k1::new().sign_recoverable(hash, &private_key))
-  .and_then(|op| Ok(op.to_string()));
+ let invoice_builder = invoice_builder.build_raw();
 
  match invoice_builder {
   Ok(invoice) => Ok(invoice),
@@ -191,8 +182,8 @@ mod tests {
   };
   let route_hint = RouteHint(vec![hint_hop]);
 
-  let encoded = _add_routing_hints(&payreq, vec![route_hint], &private_key).unwrap();
+  let encoded = _add_routing_hints(&payreq, vec![route_hint]).unwrap();
 
-  print!("{}", encoded);
+  print!("{:?}", encoded);
  }
 }

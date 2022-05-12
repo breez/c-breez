@@ -41,14 +41,29 @@ typedef int64_t DartPort;
 
 typedef bool (*DartPostCObjectFnType)(DartPort port_id, void *message);
 
+void wire_init_hsmd(int64_t port_,
+                    struct wire_uint_8_list *storage_path,
+                    struct wire_uint_8_list *secret);
+
 void wire_parse_invoice(int64_t port_, struct wire_uint_8_list *invoice);
 
+void wire_node_pubkey(int64_t port_,
+                      struct wire_uint_8_list *storage_path,
+                      struct wire_uint_8_list *secret);
+
 void wire_add_routing_hints(int64_t port_,
+                            struct wire_uint_8_list *storage_path,
+                            struct wire_uint_8_list *secret,
                             struct wire_uint_8_list *invoice,
-                            struct wire_list_route_hint *hints,
-                            struct wire_uint_8_list *private_key);
+                            struct wire_list_route_hint *hints);
+
+void wire_sign_message(int64_t port_,
+                       struct wire_uint_8_list *storage_path,
+                       struct wire_uint_8_list *secret,
+                       struct wire_uint_8_list *msg);
 
 void wire_handle(int64_t port_,
+                 struct wire_uint_8_list *storage_path,
                  struct wire_uint_8_list *secret,
                  struct wire_uint_8_list *msg,
                  struct wire_uint_8_list *peer_id,
@@ -68,8 +83,11 @@ void store_dart_post_cobject(DartPostCObjectFnType ptr);
 
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
+    dummy_var ^= ((int64_t) (void*) wire_init_hsmd);
     dummy_var ^= ((int64_t) (void*) wire_parse_invoice);
+    dummy_var ^= ((int64_t) (void*) wire_node_pubkey);
     dummy_var ^= ((int64_t) (void*) wire_add_routing_hints);
+    dummy_var ^= ((int64_t) (void*) wire_sign_message);
     dummy_var ^= ((int64_t) (void*) wire_handle);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64);
     dummy_var ^= ((int64_t) (void*) new_list_route_hint);

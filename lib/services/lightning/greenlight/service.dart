@@ -2,38 +2,39 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:greenlight/hsmd.dart';
+import 'package:c_breez/services/lightning/greenlight/incoming_requests.dart';
 import 'package:greenlight/scheduler_credentials.dart';
 import 'package:c_breez/services/lightning/models.dart';
 import 'package:greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
 import 'package:greenlight/generated/scheduler.pbgrpc.dart' as scheduler;
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:greenlight/signer.dart';
 import 'package:grpc/grpc.dart';
 import 'package:hex/hex.dart';
 import 'package:c_breez/logger.dart';
 import 'package:lightning_toolkit/impl.dart';
 
 class GreenlightService implements LightningService {
+  final String _signerStoragePath;
   NodeCredentials? _nodeCredentials;
   greenlight.NodeClient? _nodeClient;
   scheduler.SchedulerClient? _schedulerClient;
+  Signer? _signer;
 
   final _incomingPaymentsStream = StreamController<IncomingLightningPayment>.broadcast();
   final Completer _readyCompleter = Completer();
-  final lightningToolkit = getLightningToolkit();
 
-  GreenlightService() {
-    final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null, null);
+  GreenlightService(this._signerStoragePath) {
+    final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null);
     var grpcChannel = _createNodeChannel(schedulerCredentials, "https://scheduler.gl.blckstrm.com:2601");
     _schedulerClient = scheduler.SchedulerClient(grpcChannel);
   }
 
   @override
-  List<int> initWithCredentials(List<int> credentials) {
+  Signer initWithCredentials(List<int> credentials) {
     _nodeCredentials = NodeCredentials.fromBuffer(credentials);
-    return _nodeCredentials!.nodePrivateKey!;
+    _signer = Signer(Uint8List.fromList(_nodeCredentials!.secret!), _signerStoragePath);
+    return _signer!;
   }
 
   @override
@@ -52,68 +53,38 @@ class GreenlightService implements LightningService {
     _readyCompleter.complete(true);
     log.info("node started! " + HEX.encode(res.nodeId));
 
-    runIncomingListenersLoop(res.nodeId);
+    streamIncomingRequests(res.nodeId);
   }
 
-  Future runIncomingListenersLoop(List<int> nodeID) async {
+  Future streamIncomingRequests(List<int> nodeID) async {
     while (true) {
+      log.info("streaming signer requests");
       var nodeInfo = await _schedulerClient!.getNodeInfo(scheduler.NodeInfoRequest()
         ..nodeId = nodeID
         ..wait = true);
       var nodeChannel = _createNodeChannel(_nodeCredentials!, nodeInfo.grpcUri);
-      _nodeClient = greenlight.NodeClient(nodeChannel, interceptors: [NodeInterceptor(_nodeCredentials!.deviceKey)]);
+      _nodeClient = greenlight.NodeClient(nodeChannel);
 
-      var nodeAliveCompleter = Completer();
+      try {
+        _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
+          log.info(value.line);
+        });
+        // stream incoming payments
+        IncomingPaymentsLoop(_nodeClient!, _incomingPaymentsStream.sink).start();
 
-      _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
-        log.info(value.line);
-      }, onDone: () {
-        log.info("streaming logs finished");
-        nodeAliveCompleter.complete();
-      }, onError: (err) {
-        log.severe("streaming logs finished with error $err");
-      });
-
-      // stream incoming payments
-      _nodeClient!
-          .streamIncoming(greenlight.StreamIncomingFilter())
-          .map((p) => IncomingLightningPayment(
-              label: p.offchain.label,
-              preimage: HEX.encode(p.offchain.preimage),
-              amountSat: amountToSats(p.offchain.amount),
-              paymentHash: HEX.encode(p.offchain.paymentHash),
-              bolt11: p.offchain.bolt11,
-              extratlvs: p.offchain.extratlvs.map((t) => TlvField(type: t.type.toInt(), value: HEX.encode(t.value))).toList()))
-          .listen(_incomingPaymentsStream.add);
-
-      // stream signer
-      var signer = Signer(Uint8List.fromList(_nodeCredentials!.secret!));
-      _nodeClient!.streamHsmRequests(greenlight.Empty()).listen((value) async {
-        var msg = HEX.encode(value.raw);
-        log.info(
-            "hsmd: $msg requestId: ${value.requestId} peer_id: ${HEX.encode(value.context.nodeId)} dbId: ${value.context.dbid.toInt()}");
-        try {
-          var result = await signer.handle(
-              message: Uint8List.fromList(value.raw),
-              peerId: Uint8List.fromList(value.context.nodeId),
-              dbId: value.context.dbid.toInt());
-          log.info("hsmd message signed succesfully");
-          await _nodeClient!.respondHsmRequest(greenlight.HsmResponse(requestId: value.requestId, raw: result.toList()));
-          log.info("hsmd message replied succesfully");
-        } catch (e) {
-          log.severe("failed to handle hsmd message: ${e.toString()}");
-        }
-      });
-
-      // wait for the node to go down.
-      await nodeAliveCompleter.future;
+        // stream signer and wait for it to shut down.
+        await SignerLoop(_signer!, _nodeClient!).start();
+      } catch (e) {
+        log.severe("signer exited, waiting 5 seconds...", e);
+        await Future.delayed(const Duration(seconds: 5));
+      }
     }
   }
 
   Future<scheduler.NodeInfoResponse> schedule() async {
     var res = await _schedulerClient!.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
     var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
-    _nodeClient = greenlight.NodeClient(nodeChannel, interceptors: [NodeInterceptor(_nodeCredentials!.deviceKey)]);
+    _nodeClient = greenlight.NodeClient(nodeChannel);
     return res;
   }
 
@@ -129,14 +100,16 @@ class GreenlightService implements LightningService {
 
   @override
   Future<List<int>> recover(Uint8List seed) async {
-    var hsmdCreds = await hsmdInit(seed);
+    final signer = Signer(seed, _signerStoragePath);
+    final init = await signer.init();
+    final nodePubkey = await signer.getNodePubkey();
     var challengeResponse = await _schedulerClient!
-        .getChallenge(scheduler.ChallengeRequest(nodeId: hsmdCreds.nodeId, scope: scheduler.ChallengeScope.RECOVER));
-    var sig = await _signChallenge(hsmdCreds.nodePrivateKey, challengeResponse.challenge, scheduler.ChallengeScope.REGISTER);
+        .getChallenge(scheduler.ChallengeRequest(nodeId: nodePubkey, scope: scheduler.ChallengeScope.RECOVER));
+    var sig = await signer.signMessage(message: Uint8List.fromList(challengeResponse.challenge));
     var recoverResponse = await _schedulerClient!
-        .recover(scheduler.RecoveryRequest(challenge: challengeResponse.challenge, nodeId: hsmdCreds.nodeId, signature: sig));
-    _nodeCredentials = NodeCredentials(caCert, recoverResponse.deviceCert, recoverResponse.deviceKey, hsmdCreds.nodeId,
-        hsmdCreds.nodePrivateKey, hsmdCreds.secret);
+        .recover(scheduler.RecoveryRequest(challenge: challengeResponse.challenge, nodeId: nodePubkey, signature: sig));
+    _nodeCredentials =
+        NodeCredentials(caCert, recoverResponse.deviceCert, recoverResponse.deviceKey, nodePubkey, seed);
     var creds = _nodeCredentials!.writeBuffer();
     initWithCredentials(creds);
     return creds;
@@ -144,31 +117,26 @@ class GreenlightService implements LightningService {
 
   @override
   Future<List<int>> register(Uint8List seed, {String network = "bitcoin", String? email}) async {
-    var hsmdCreds = await hsmdInit(seed);
+    final signer = Signer(seed, _signerStoragePath);
+    final init = await signer.init();
+    final nodePubkey = await signer.getNodePubkey();
+
     var challengeResponse = await _schedulerClient!
-        .getChallenge(scheduler.ChallengeRequest(nodeId: hsmdCreds.nodeId, scope: scheduler.ChallengeScope.REGISTER));
-    var sig = await _signChallenge(hsmdCreds.nodePrivateKey, challengeResponse.challenge, scheduler.ChallengeScope.REGISTER);
+        .getChallenge(scheduler.ChallengeRequest(nodeId: nodePubkey, scope: scheduler.ChallengeScope.REGISTER));    
+    var sig = await signer.signMessage(message: Uint8List.fromList(challengeResponse.challenge));    
+
     var registration = await _schedulerClient!.register(scheduler.RegistrationRequest(
         network: network,
-        nodeId: hsmdCreds.nodeId,
-        initMsg: hsmdCreds.init,
+        nodeId: nodePubkey,
+        initMsg: init,
         signature: sig,
         signerProto: "v0.10.1",
         challenge: challengeResponse.challenge));
-    _nodeCredentials = NodeCredentials(
-        caCert, registration.deviceCert, registration.deviceKey, hsmdCreds.nodeId, hsmdCreds.nodePrivateKey, hsmdCreds.secret);
+    _nodeCredentials =
+        NodeCredentials(caCert, registration.deviceCert, registration.deviceKey, nodePubkey, seed);
     var creds = _nodeCredentials!.writeBuffer();
     initWithCredentials(creds);
     return creds;
-  }
-
-  Future<List<int>> _signChallenge(List<int> privateKey, List<int> challenge, scheduler.ChallengeScope scope) async {
-    var s = "Lightning Signed Message:";
-    var chal = List<int>.empty(growable: true)
-      ..addAll(s.codeUnits)
-      ..addAll(challenge);
-
-    return eccSign(Uint8List.fromList(privateKey), doubleHash(chal));
   }
 
   @override

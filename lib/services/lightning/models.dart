@@ -24,25 +24,23 @@ class FileData {
   FileData(this.name, this.content);
 }
 
-class NodeCredentials {
-  final List<int>? nodePrivateKey;
+class NodeCredentials {  
   final List<int>? nodeId;
   List<int>? secret;
   final String caCert;
   final String deviceCert;
   final String deviceKey;
 
-  NodeCredentials(this.caCert, this.deviceCert, this.deviceKey, this.nodeId,
-      this.nodePrivateKey, this.secret);
+  NodeCredentials(this.caCert, this.deviceCert, this.deviceKey, this.nodeId, this.secret);
 
   factory NodeCredentials.fromBuffer(List<int> buffer) {
     List<String> parts = String.fromCharCodes(buffer).split("***");
     return NodeCredentials(parts[0], parts[1], parts[2], HEX.decode(parts[3]),
-        HEX.decode(parts[4]), HEX.decode(parts[5]));
+        HEX.decode(parts[4]));
   }
 
   List<int> writeBuffer() {
-    return "$caCert***$deviceCert***$deviceKey***${HEX.encode(nodeId ?? [])}***${HEX.encode(nodePrivateKey ?? [])}***${HEX.encode(secret ?? [])}"
+    return "$caCert***$deviceCert***$deviceKey***${HEX.encode(nodeId ?? [])}***${HEX.encode(secret ?? [])}"
         .codeUnits;
   }
 }

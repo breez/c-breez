@@ -11,13 +11,13 @@ import 'package:c_breez/utils/bip21.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lightning_toolkit/lightning_toolkit.dart';
+import 'package:lightning_toolkit/invoicer.dart';
 import 'package:rxdart/rxdart.dart';
 
 class InvoiceBloc extends Cubit<InvoiceState> {
   final LightningLinksService _lightningLinks;
   final Device _device;
-  final lightningToolkit = getLightningToolkit();
+  final lnInvoicer = Invoicer();
   final AppStorage _appStorage;  
   final LightningService _lightningService;
 
@@ -55,7 +55,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
         })
         .where((s) => !s.toLowerCase().startsWith("lnurl"))
         .asyncMap((bolt11) async {
-          var lnInvoice = await lightningToolkit.parseInvoice(invoice: bolt11);
+          var lnInvoice = await lnInvoicer.parseInvoice(invoice: bolt11);
           var nodeInfo = await _appStorage.watchNodeInfo().first;
           if (nodeInfo == null || nodeInfo.node.nodeID == lnInvoice.payeePubkey) {
             return null;

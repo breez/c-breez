@@ -3,14 +3,15 @@ import 'dart:typed_data';
 
 import 'package:c_breez/services/lightning/models.dart';
 import 'package:fixnum/fixnum.dart';
+import 'package:lightning_toolkit/signer.dart';
 
 abstract class LightningService {
   Future<List<int>> register(Uint8List seed,
       {String network = "bitcoin", String email});
 
   Future<List<int>> recover(Uint8List seed);
-
-  List<int> initWithCredentials(List<int> credentials);
+  
+  Signer initWithCredentials(List<int> credentials);  
 
   Future<List<FileData>> exportKeys();
 

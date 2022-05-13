@@ -174,7 +174,6 @@ class AccountPageState extends State<AccountPage>
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 16.0, bottom: 8),
               child: Chip(
-                  backgroundColor: Theme.of(context).bottomAppBarColor,
                   label: Text(BreezDateUtils.formatFilterDateRange(
                       filter.startDate!, filter.endDate!)),
                   onDeleted: () => context

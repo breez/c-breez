@@ -46,7 +46,6 @@ const TextStyle navigationDrawerHandleStyle = TextStyle(
     fontSize: 16.0,
     letterSpacing: 0.2,
     color: Color.fromRGBO(255, 255, 255, 0.6));
-const TextStyle warningStyle = TextStyle(color: errorColor, fontSize: 16.0);
 const TextStyle validatorStyle =
     TextStyle(color: Color(0xFFe3b42f), fontSize: 12.0, height: 1.25);
 final TextStyle welcomeTextStyle =
@@ -82,8 +81,7 @@ final TextStyle fiatConversionDescriptionStyle =
     TextStyle(color: BreezColors.white[200], fontSize: 14.3);
 final Color snackBarBackgroundColor = BreezColors.blue[300]!;
 final Color sessionAvatarBackgroundColor = BreezColors.white[500]!;
-const Color marketplaceButtonColor = Color.fromRGBO(229, 238, 251, 0.09);
-const Color errorColor = Color(0xffffe685);
+const Color themeSwitchBgColor = Color.fromRGBO(229, 238, 251, 0.09);
 final Color circularLoaderColor = BreezColors.blue[200]!.withOpacity(0.7);
 const Color warningBoxColor = Color.fromRGBO(251, 233, 148, 0.1);
 final BorderSide greyBorderSide = BorderSide(color: BreezColors.grey[500]!);

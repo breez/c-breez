@@ -128,15 +128,20 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                       }
 
                       if (message != null) {
+                        final themeData = Theme.of(context);
                         return Container(
                             padding: const EdgeInsets.only(
-                                top: 50.0, left: 30.0, right: 30.0),
+                              top: 32.0,
+                              left: 16.0,
+                              right: 16.0,
+                            ),
                             child: Column(children: <Widget>[
                               Text(
                                 message,
                                 textAlign: TextAlign.center,
-                                style: theme.warningStyle.copyWith(
-                                    color: Theme.of(context).errorColor),
+                                style: themeData.textTheme.headline6!.copyWith(
+                                  color: themeData.colorScheme.error,
+                                ),
                               ),
                             ]));
                       } else {

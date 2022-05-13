@@ -228,7 +228,7 @@ class UITestPage extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               decoration: const ShapeDecoration(
                 shape: StadiumBorder(),
-                color: theme.marketplaceButtonColor,
+                color: theme.themeSwitchBgColor,
               ),
               child: Row(
                 children: [

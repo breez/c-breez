@@ -6,9 +6,11 @@ import 'package:flutter/services.dart';
 import 'breez_colors.dart';
 
 final ThemeData breezDarkTheme = ThemeData(
-  brightness: Brightness.dark,
-  colorScheme: const ColorScheme.dark()
-      .copyWith(primary: Colors.white, secondary: Colors.white),
+  colorScheme: const ColorScheme.dark().copyWith(
+    primary: Colors.white,
+    secondary: Colors.white,
+    error: const Color(0xFFeddc97),
+  ),
   primaryColor: const Color(0xFF7aa5eb),
   primaryColorDark: const Color(0xFF00081C),
   primaryColorLight: const Color(0xFF4B89EB),
@@ -40,9 +42,9 @@ final ThemeData breezDarkTheme = ThemeData(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(12.0)))),
   dialogBackgroundColor: Colors.transparent,
-  errorColor: const Color(0xFFeddc97),
   dividerColor: const Color(0x337aa5eb),
-  cardColor: const Color(0xFF121212),
+  cardColor: const Color(0xFF121212), // will be replaced with CardTheme.color
+  cardTheme: const CardTheme(color: Color(0xFF121212)),
   highlightColor: const Color(0xFF81acf1),
   textTheme: const TextTheme(
       subtitle2:
@@ -103,6 +105,7 @@ final ThemeData breezDarkTheme = ThemeData(
       return Colors.white;
     }),
   ),
+  chipTheme: const ChipThemeData(backgroundColor: Color(0xff4D88EC)),
 );
 
 final ThemeData calendarDarkTheme = ThemeData.dark().copyWith(

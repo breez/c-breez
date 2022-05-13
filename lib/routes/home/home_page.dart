@@ -1,11 +1,16 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
+import 'package:c_breez/handlers/check_version_handler.dart';
+import 'package:c_breez/handlers/received_invoice_notification.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/user_profile.dart';
+import 'package:c_breez/routes/home/account_page.dart';
 import 'package:c_breez/routes/home/bottom_actions_bar.dart';
 import 'package:c_breez/routes/home/home_app_bar.dart';
 import 'package:c_breez/routes/home/home_drawer.dart';
@@ -18,25 +23,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'bloc/account/account_state.dart';
-import 'handlers/check_version_handler.dart';
-import 'handlers/received_invoice_notification.dart';
-import 'models/invoice.dart';
-import 'routes/home/account_page.dart';
-
 class Home extends StatefulWidget {
-  final AccountBloc accountBloc;
-  final InvoiceBloc invoiceBloc;
-  final UserProfileBloc userProfileBloc;
-  final LSPBloc lspBloc;
+  const Home({
+    Key? key,
+  }) : super(key: key);
 
-  const Home(
-      this.accountBloc,
-      this.invoiceBloc,
-      this.userProfileBloc,
-      this.lspBloc, {
-        Key? key,
-      }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -70,7 +61,7 @@ class HomeState extends State<Home> {
               return BlocBuilder<LSPBloc, LSPState>(
                 builder: (context, lspState) {
                   return StreamBuilder<DecodedClipboardData>(
-                    stream: widget.invoiceBloc.decodedClipboardStream,
+                    stream: context.read<InvoiceBloc>().decodedClipboardStream,
                     builder: (context, snapshot) {
                       return _build(
                         context,
@@ -91,12 +82,12 @@ class HomeState extends State<Home> {
   }
 
   Widget _build(
-      BuildContext context,
-      UserProfileSettings user,
-      AccountState account,
-      LSPState lspStatus,
-      AppLocalizations texts,
-      ) {
+    BuildContext context,
+    UserProfileSettings user,
+    AccountState account,
+    LSPState lspStatus,
+    AppLocalizations texts,
+  ) {
     final themeData = Theme.of(context);
     final mediaSize = MediaQuery.of(context).size;
 
@@ -109,7 +100,6 @@ class HomeState extends State<Home> {
           key: _scaffoldKey,
           appBar: HomeAppBar(
             themeData: themeData,
-            lspBloc: widget.lspBloc,
             scaffoldKey: _scaffoldKey,
           ),
           drawerEnableOpenDragGesture: true,
@@ -138,13 +128,13 @@ class HomeState extends State<Home> {
 
     InvoiceNotificationsHandler(
       context,
-      widget.accountBloc,
-      widget.invoiceBloc,
+      context.read(),
+      context.read(),
       firstPaymentItemKey,
       scrollController,
       _scaffoldKey,
     );
 
-    checkVersionDialog(context, widget.userProfileBloc);
+    checkVersionDialog(context, context.read());
   }
 }

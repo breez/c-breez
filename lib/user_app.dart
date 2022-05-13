@@ -7,13 +7,13 @@ import 'package:c_breez/l10n/locales.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/dev/commands.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
+import 'package:c_breez/routes/home/home_page.dart';
 import 'package:c_breez/routes/qr_scan.dart';
 import 'package:c_breez/utils/locale.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'bloc/lsp/lsp_bloc.dart';
-import 'home_page.dart';
 import 'routes/create_invoice/create_invoice_page.dart';
 import 'routes/initial_walkthrough.dart';
 import 'routes/lsp/select_lsp_page.dart';
@@ -100,12 +100,7 @@ class UserApp extends StatelessWidget {
                           switch (settings.name) {
                             case '/':
                               return FadeInRoute(
-                                builder: (_) => Home(
-                                  accountBloc,
-                                  invoiceBloc,
-                                  userProfileBloc,
-                                  lspBloc,
-                                ),
+                                builder: (_) => const Home(),
                                 settings: settings,
                               );
                             case '/select_lsp':

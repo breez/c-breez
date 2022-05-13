@@ -86,8 +86,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-
     return BlocBuilder<CurrencyBoc, CurrencyState>(
       builder: (context, currencyState) {
         if (currencyState.preferredCurrencies.isEmpty ||
@@ -99,13 +97,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
         _updateExchangeLabel(exchangeRate);
 
         return AlertDialog(
-          title: Theme(
-            data: themeData.copyWith(
-              brightness: Brightness.light,
-              canvasColor: theme.BreezColors.white[500],
-            ),
-            child: _dialogBody(context, currencyState),
-          ),
+          title: _dialogBody(context, currencyState),
           titlePadding: const EdgeInsets.fromLTRB(24.0, 16.0, 16.0, 8.0),
           contentPadding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 16.0),
           content: _dialogContent(context, currencyState),

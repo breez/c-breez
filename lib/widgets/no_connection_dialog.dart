@@ -22,25 +22,14 @@ Future<bool?> showNoConnectionDialog(BuildContext context) {
         content: SingleChildScrollView(
           child: RichText(
             text: TextSpan(
-              style: dialogTheme.contentTextStyle,
               text: texts.no_connection_dialog_tip_begin,
+              style: dialogTheme.contentTextStyle,
+              // This text style applies to children
               children: [
-                TextSpan(
-                  text: texts.no_connection_dialog_tip_airplane,
-                  style: dialogTheme.contentTextStyle,
-                ),
-                TextSpan(
-                  text: texts.no_connection_dialog_tip_wifi,
-                  style: dialogTheme.contentTextStyle,
-                ),
-                TextSpan(
-                  text: texts.no_connection_dialog_tip_signal,
-                  style: dialogTheme.contentTextStyle,
-                ),
-                TextSpan(
-                  text: "• ",
-                  style: dialogTheme.contentTextStyle,
-                ),
+                TextSpan(text: texts.no_connection_dialog_tip_airplane),
+                TextSpan(text: texts.no_connection_dialog_tip_wifi),
+                TextSpan(text: texts.no_connection_dialog_tip_signal),
+                const TextSpan(text: "• "),
                 TextSpan(
                   text: texts.no_connection_dialog_log_view_action,
                   style: theme.blueLinkStyle,
@@ -52,10 +41,7 @@ Future<bool?> showNoConnectionDialog(BuildContext context) {
                       // );
                     },
                 ),
-                TextSpan(
-                  text: texts.no_connection_dialog_log_view_message,
-                  style: dialogTheme.contentTextStyle,
-                ),
+                TextSpan(text: texts.no_connection_dialog_log_view_message),
               ],
             ),
           ),

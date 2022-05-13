@@ -23,9 +23,7 @@ void showProviderErrorDialog(BuildContext context, Function() onSelect) {
                     Navigator.of(context).pop();
                     onSelect();
                   }),
-            TextSpan(
-                text: "a provider.",
-                style: Theme.of(context).dialogTheme.contentTextStyle),
+            const TextSpan(text: "a provider."),
           ]),
     ),
   );

@@ -1465,6 +1465,8 @@
       }
     }
   },
+  "no_lsp_widget_message": "In order to activate Breez, please select a provider:",
+  "no_lsp_widget_action_select": "SELECT…",
   "locale": "en",
   "app_name": "Breez"
 }

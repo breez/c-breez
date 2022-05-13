@@ -11,7 +11,6 @@ import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/lsp.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/succesful_payment.dart';
-import 'package:c_breez/routes/home/theme.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/amount_form_field.dart';
@@ -333,9 +332,9 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   ) {
     if (result == true) {
       if (currentRoute.isCurrent) {
-        navigator.push(TransparentPageRoute((ctx) {
-          return withBreezTheme(ctx, const SuccessfulPaymentRoute());
-        }));
+        navigator.push(
+          TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
+        );
       }
     } else {
       if (result is String) {

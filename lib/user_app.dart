@@ -7,7 +7,6 @@ import 'package:c_breez/l10n/locales.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/dev/commands.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
-import 'package:c_breez/routes/home/theme.dart';
 import 'package:c_breez/routes/qr_scan.dart';
 import 'package:c_breez/utils/locale.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -117,29 +116,20 @@ class UserApp extends StatelessWidget {
                               );
                             case '/create_invoice':
                               return FadeInRoute(
-                                builder: (_) => withBreezTheme(
-                                  context,
-                                  CreateInvoicePage(),
-                                ),
+                                builder: (_) => CreateInvoicePage(),
                                 settings: settings,
                               );
                             case '/fiat_currency':
                               return FadeInRoute(
-                                builder: (_) => withBreezTheme(
-                                  context,
-                                  FiatCurrencySettings(
-                                    accountBloc,
-                                    userProfileBloc,
-                                  ),
+                                builder: (_) => FiatCurrencySettings(
+                                  accountBloc,
+                                  userProfileBloc,
                                 ),
                                 settings: settings,
                               );
                             case '/developers':
                               return FadeInRoute(
-                                builder: (_) => withBreezTheme(
-                                  context,
-                                  const DevelopersView(),
-                                ),
+                                builder: (_) => const DevelopersView(),
                                 settings: settings,
                               );
                             case '/qr_scan':

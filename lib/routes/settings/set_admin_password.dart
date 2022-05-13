@@ -118,6 +118,7 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
         ),
       ),
       bottomNavigationBar: SingleButtonBottomBar(
+        stickToBottom: true,
         text: widget.submitAction,
         onPressed: () async {
           if (_formKey.currentState?.validate() == true) {

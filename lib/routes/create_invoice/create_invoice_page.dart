@@ -63,25 +63,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
     return Scaffold(
       key: _scaffoldKey,
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: Platform.isIOS && _amountFocusNode.hasFocus ? 40.0 : 0.0,
-        ),
-        child: SingleButtonBottomBar(
-          stickToBottom: true,
-          text: texts.invoice_action_create,
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              _createInvoice(
-                context,
-                context.read<InvoiceBloc>(),
-                context.read<CurrencyBoc>(),
-                context.read<AccountBloc>(),
-              );
-            }
-          },
-        ),
-      ),
       appBar: AppBar(
         leading: const backBtn.BackButton(),
         actions: const [],
@@ -190,6 +171,25 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           },
         );
       }),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          bottom: Platform.isIOS && _amountFocusNode.hasFocus ? 40.0 : 0.0,
+        ),
+        child: SingleButtonBottomBar(
+          stickToBottom: true,
+          text: texts.invoice_action_create,
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              _createInvoice(
+                context,
+                context.read<InvoiceBloc>(),
+                context.read<CurrencyBoc>(),
+                context.read<AccountBloc>(),
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 

@@ -70,18 +70,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     CurrencyBoc currencyBloc = context.read<CurrencyBoc>();
 
     return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(top: 24.0),
-        child: SingleButtonBottomBar(
-          stickToBottom: true,
-          text: "PAY",
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _sendPayment(accountBloc, currencyBloc);
-            }
-          },
-        ),
-      ),
       appBar: AppBar(
         leading: const backBtn.BackButton(),
         title: const Text("Send Payment"),
@@ -162,6 +150,18 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
           },
         );
       }),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(top: 24.0),
+        child: SingleButtonBottomBar(
+          stickToBottom: true,
+          text: "PAY",
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _sendPayment(accountBloc, currencyBloc);
+            }
+          },
+        ),
+      ),
     );
   }
 

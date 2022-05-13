@@ -29,9 +29,8 @@ class BottomActionsBar extends StatelessWidget {
     AutoSizeGroup actionsGroup = AutoSizeGroup();
 
     return BottomAppBar(
-      child: Container(
+      child: SizedBox(
         height: 60,
-        color: Theme.of(context).bottomAppBarColor,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

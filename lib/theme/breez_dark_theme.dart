@@ -12,11 +12,14 @@ final ThemeData breezDarkTheme = ThemeData(
   primaryColor: const Color(0xFF7aa5eb),
   primaryColorDark: const Color(0xFF00081C),
   primaryColorLight: const Color(0xFF4B89EB),
-  floatingActionButtonTheme:
-      const FloatingActionButtonThemeData(backgroundColor: Color(0xFF4B89EB)),
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: Color(0xFF4B89EB),
+    sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
+  ),
   canvasColor: const Color(0xFF0c2031),
   backgroundColor: const Color(0xFF152a3d),
-  bottomAppBarTheme: const BottomAppBarTheme(elevation: 0),
+  bottomAppBarTheme:
+      const BottomAppBarTheme(elevation: 0, color: Color(0xff4D88EC)),
   appBarTheme: AppBarTheme(
     backgroundColor: const Color(0xFF0c2031),
     iconTheme: const IconThemeData(
@@ -91,7 +94,6 @@ final ThemeData breezDarkTheme = ThemeData(
     selectionHandleColor: Color(0xff4D88EC),
   ),
   primaryIconTheme: const IconThemeData(color: Color(0xFF7aa5eb)),
-  bottomAppBarColor: const Color(0xff4D88EC),
   fontFamily: 'IBMPlexSans',
   textButtonTheme: const TextButtonThemeData(),
   outlinedButtonTheme: const OutlinedButtonThemeData(),

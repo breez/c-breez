@@ -16,6 +16,7 @@ Iterable<Locale> supportedLocales() {
     const Locale('en', ''),
     const Locale('es', ''),
     const Locale('fi', ''),
+    const Locale('fr', ''),
     const Locale('pt', ''),
   ];
 }

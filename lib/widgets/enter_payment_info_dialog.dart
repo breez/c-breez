@@ -48,10 +48,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
     return AlertDialog(
       titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
-      title: Text(
-        texts.payment_info_dialog_title,
-        style: themeData.dialogTheme.titleTextStyle,
-      ),
+      title: Text(texts.payment_info_dialog_title),
       contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
       content: _buildPaymentInfoForm(context),
       actions: _buildActions(context),

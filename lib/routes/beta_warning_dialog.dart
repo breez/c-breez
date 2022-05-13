@@ -28,10 +28,7 @@ class _BetaWarningDialogState extends State<BetaWarningDialog> {
       ),
       child: AlertDialog(
         titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
-        title: Text(
-          texts.beta_warning_title,
-          style: themeData.dialogTheme.titleTextStyle,
-        ),
+        title: Text(texts.beta_warning_title),
         contentPadding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 24.0),
         content: Column(
           mainAxisSize: MainAxisSize.min,

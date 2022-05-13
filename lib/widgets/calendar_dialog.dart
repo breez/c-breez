@@ -36,7 +36,6 @@ class _CalendarDialogState extends State<CalendarDialog> {
     return AlertDialog(
       title: Text(
         texts.pos_transactions_range_dialog_title,
-        style: themeData.dialogTheme.titleTextStyle,
       ),
       content: Row(
         mainAxisSize: MainAxisSize.max,

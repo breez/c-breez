@@ -75,10 +75,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Invoice",
-                  style: Theme.of(context).dialogTheme.titleTextStyle,
-                ),
+                const Text("Invoice"),
                 Row(
                   children: <Widget>[
                     IconButton(

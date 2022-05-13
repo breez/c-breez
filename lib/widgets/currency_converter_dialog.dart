@@ -151,7 +151,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             child: Padding(
               child: AutoSizeText(
                 texts.currency_converter_dialog_title,
-                style: themeData.dialogTheme.titleTextStyle,
                 maxLines: 1,
                 minFontSize: MinFontSize(context).minFontSize,
                 stepGranularity: 0.1,

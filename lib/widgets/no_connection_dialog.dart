@@ -18,10 +18,7 @@ Future<bool?> showNoConnectionDialog(BuildContext context) {
 
       return AlertDialog(
         contentPadding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
-        title: Text(
-          texts.no_connection_dialog_title,
-          style: dialogTheme.titleTextStyle,
-        ),
+        title: Text(texts.no_connection_dialog_title),
         content: SingleChildScrollView(
           child: RichText(
             text: TextSpan(

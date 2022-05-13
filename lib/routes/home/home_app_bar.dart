@@ -1,5 +1,4 @@
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/routes/account_required_actions.dart';
+import 'package:c_breez/routes/home/account_required_actions.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,17 +8,14 @@ class HomeAppBar extends AppBar {
   HomeAppBar({
     Key? key,
     required ThemeData themeData,
-    required LSPBloc lspBloc,
     required GlobalKey<ScaffoldState> scaffoldKey,
   }) : super(
           key: key,
           centerTitle: false,
           actions: [
-            Padding(
-              padding: const EdgeInsets.all(14.0),
-              child: AccountRequiredActionsIndicator(
-                lspBloc,
-              ),
+            const Padding(
+              padding: EdgeInsets.all(14.0),
+              child: AccountRequiredActionsIndicator(),
             ),
           ],
           leading: IconButton(

@@ -3,20 +3,16 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/routes/lsp/select_lsp_page.dart';
+import 'package:c_breez/routes/select_provider_error_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'lsp/select_lsp_page.dart';
-import 'select_provider_error_dialog.dart';
-
 class AccountRequiredActionsIndicator extends StatefulWidget {
-  final LSPBloc lspBloc;
-
-  const AccountRequiredActionsIndicator(
-    this.lspBloc, {
+  const AccountRequiredActionsIndicator({
     Key? key,
   }) : super(key: key);
 
@@ -68,7 +64,7 @@ class AccountRequiredActionsIndicatorState
         if (lspStatus.lastConnectionError != null) {
           showProviderErrorDialog(context, () {
             navigatorState.push(FadeInRoute(
-              builder: (_) => SelectLSPPage(lstBloc: widget.lspBloc),
+              builder: (_) => SelectLSPPage(lstBloc: context.read()),
             ));
           });
         } else {

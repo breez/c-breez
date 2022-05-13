@@ -8,11 +8,18 @@ import '../../bloc/invoice/invoice_bloc.dart';
 import '../../bloc/lsp/lsp_bloc.dart';
 import '../../bloc/user_profile/user_profile_bloc.dart';
 import '../../bloc/user_profile/user_profile_state.dart';
+import '../../models/account.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/calendar_dialog.dart';
+import '../../widgets/no_connection_dialog.dart';
 import '../../widgets/route.dart';
+import '../../widgets/succesful_payment.dart';
+import '../beta_warning_dialog.dart';
+import '../create_invoice/qr_code_dialog.dart';
 import '../initial_walkthrough.dart';
+import '../settings/set_admin_password.dart';
 import '../splash_page.dart';
+import '../spontaneous_payment/spontaneous_payment_page.dart';
 
 class UITestPage extends StatelessWidget {
   const UITestPage({Key? key}) : super(key: key);
@@ -110,6 +117,89 @@ class UITestPage extends StatelessWidget {
                     DateTime.now().subtract(const Duration(days: 5)),
                   ),
                 );
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text("SuccessfulPaymentRoute"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeInRoute(
+                    builder: (_) => const SuccessfulPaymentRoute(),
+                  ),
+                );
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text("SpontaneousPaymentPage"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeInRoute(
+                    builder: (_) => SpontaneousPaymentPage(
+                        "123", GlobalKey(debugLabel: "123")),
+                  ),
+                );
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text("SetAdminPasswordPage"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeInRoute(
+                    builder: (_) => const SetAdminPasswordPage(
+                      submitAction: "CREATE",
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text("BetaWarningDialog"),
+              onTap: () {
+                showDialog(
+                  useRootNavigator: false,
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (BuildContext context) {
+                    return BetaWarningDialog();
+                  },
+                );
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text("QrCodeDialog"),
+              onTap: () async {
+                return showDialog(
+                  useRootNavigator: false,
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => QrCodeDialog(
+                      context,
+                      Invoice(
+                          paymentHash: "Fake Payment Hash",
+                          amount: 2000.toInt(),
+                          bolt11: "Fake bolt11",
+                          description: "Fake Description",
+                          expiry: 60.toInt()),
+                      (result) {}),
+                );
+              },
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: const Text("NoConnectionDialog"),
+              onTap: () {
+                showNoConnectionDialog(context).then((retry) {});
               },
             ),
           ),

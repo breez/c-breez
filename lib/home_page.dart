@@ -10,7 +10,7 @@ import 'package:c_breez/routes/home/bottom_actions_bar.dart';
 import 'package:c_breez/routes/home/home_app_bar.dart';
 import 'package:c_breez/routes/home/home_drawer.dart';
 import 'package:c_breez/routes/home/qr_action_button.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/close_popup.dart';
 import 'package:c_breez/widgets/fade_in_widget.dart';
 import 'package:flutter/gestures.dart';
@@ -31,12 +31,12 @@ class Home extends StatefulWidget {
   final LSPBloc lspBloc;
 
   const Home(
-    this.accountBloc,
-    this.invoiceBloc,
-    this.userProfileBloc,
-    this.lspBloc, {
-    Key? key,
-  }) : super(key: key);
+      this.accountBloc,
+      this.invoiceBloc,
+      this.userProfileBloc,
+      this.lspBloc, {
+        Key? key,
+      }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -91,12 +91,12 @@ class HomeState extends State<Home> {
   }
 
   Widget _build(
-    BuildContext context,
-    UserProfileSettings user,
-    AccountState account,
-    LSPState lspStatus,
-    AppLocalizations texts,
-  ) {
+      BuildContext context,
+      UserProfileSettings user,
+      AccountState account,
+      LSPState lspStatus,
+      AppLocalizations texts,
+      ) {
     final themeData = Theme.of(context);
     final mediaSize = MediaQuery.of(context).size;
 
@@ -124,7 +124,7 @@ class HomeState extends State<Home> {
           bottomNavigationBar: BottomActionsBar(account, firstPaymentItemKey),
           floatingActionButton: QrActionButton(account, firstPaymentItemKey),
           floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
+          FloatingActionButtonLocation.centerDocked,
           body: _drawerKey.currentState?.screen() ??
               AccountPage(firstPaymentItemKey, scrollController),
         ),

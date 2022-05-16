@@ -7,7 +7,6 @@ import 'package:c_breez/l10n/locales.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/dev/commands.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
-import 'package:c_breez/routes/home/theme.dart';
 import 'package:c_breez/routes/qr_scan.dart';
 import 'package:c_breez/utils/locale.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -19,7 +18,7 @@ import 'routes/create_invoice/create_invoice_page.dart';
 import 'routes/initial_walkthrough.dart';
 import 'routes/lsp/select_lsp_page.dart';
 import 'routes/splash_page.dart';
-import 'theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 //final routeObserver = RouteObserver();
@@ -117,29 +116,20 @@ class UserApp extends StatelessWidget {
                               );
                             case '/create_invoice':
                               return FadeInRoute(
-                                builder: (_) => withBreezTheme(
-                                  context,
-                                  CreateInvoicePage(),
-                                ),
+                                builder: (_) => CreateInvoicePage(),
                                 settings: settings,
                               );
                             case '/fiat_currency':
                               return FadeInRoute(
-                                builder: (_) => withBreezTheme(
-                                  context,
-                                  FiatCurrencySettings(
-                                    accountBloc,
-                                    userProfileBloc,
-                                  ),
+                                builder: (_) => FiatCurrencySettings(
+                                  accountBloc,
+                                  userProfileBloc,
                                 ),
                                 settings: settings,
                               );
                             case '/developers':
                               return FadeInRoute(
-                                builder: (_) => withBreezTheme(
-                                  context,
-                                  const DevelopersView(),
-                                ),
+                                builder: (_) => const DevelopersView(),
                                 settings: settings,
                               );
                             case '/qr_scan':

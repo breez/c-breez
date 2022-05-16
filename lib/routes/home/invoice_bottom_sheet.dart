@@ -3,7 +3,7 @@ import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -91,7 +91,7 @@ class InvoiceBottomSheetState extends State<InvoiceBottomSheet>
                   ? Colors.white
                   : Theme.of(context).primaryColorLight
               : isFirst
-                  ? Theme.of(context).buttonColor
+                  ? Theme.of(context).primaryColor
                   : Theme.of(context).backgroundColor,
           padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 12.0),
           shape: isFirst

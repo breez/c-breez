@@ -4,7 +4,7 @@ import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/user_profile.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/navigation_drawer.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,5 @@
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/no_connection_dialog.dart';
 import 'package:another_flushbar/flushbar.dart';

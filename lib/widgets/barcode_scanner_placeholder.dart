@@ -1,7 +1,7 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/l10n/locales.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -30,14 +30,9 @@ class BarcodeScannerPlaceholder extends StatelessWidget {
       supportedLocales: supportedLocales(),
       home: Scaffold(
         appBar: AppBar(
-          iconTheme: themeData.appBarTheme.iconTheme,
-          backgroundColor: themeData.canvasColor,
           leading: backBtn.BackButton(
             onPressed: () => Navigator.of(context).pop(),
           ),
-          elevation: 0.0,
-          toolbarTextStyle: themeData.appBarTheme.textTheme!.bodyText2,
-          titleTextStyle: themeData.appBarTheme.textTheme!.headline6,
         ),
         backgroundColor: Colors.black,
         body: Padding(

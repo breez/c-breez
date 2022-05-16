@@ -1,4 +1,4 @@
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 
 const double _kBubbleRadius = 12;

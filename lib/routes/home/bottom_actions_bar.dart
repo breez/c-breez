@@ -7,9 +7,8 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/routes/home/theme.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/enter_payment_info_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/warning_box.dart';
@@ -29,9 +28,8 @@ class BottomActionsBar extends StatelessWidget {
     AutoSizeGroup actionsGroup = AutoSizeGroup();
 
     return BottomAppBar(
-      child: Container(
+      child: SizedBox(
         height: 60,
-        color: Theme.of(context).bottomAppBarColor,
         child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -211,42 +209,40 @@ Future showReceiveOptions(BuildContext parentContext, AccountState account) {
   return showModalBottomSheet(
     context: parentContext,
     builder: (ctx) {
-      return withBreezTheme(
-        parentContext,
-        BlocBuilder<CurrencyBoc, CurrencyState>(
-          builder: (context, currencyState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const SizedBox(height: 8.0),
-                ListTile(
+      return BlocBuilder<CurrencyBoc, CurrencyState>(
+        builder: (context, currencyState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const SizedBox(height: 8.0),
+              ListTile(
+                  enabled: true,
+                  leading: const _ActionImage(
+                    iconAssetPath: "src/icon/paste.png",
                     enabled: true,
-                    leading: const _ActionImage(
-                      iconAssetPath: "src/icon/paste.png",
-                      enabled: true,
-                    ),
-                    title: Text(
-                      texts.bottom_action_bar_receive_invoice,
-                      style: theme.bottomSheetTextStyle,
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushNamed("/create_invoice");
-                    }),
-                account.maxChanReserve == 0
-                    ? const SizedBox(height: 8.0)
-                    : WarningBox(
-                        boxPadding: const EdgeInsets.all(16),
-                        contentPadding: const EdgeInsets.all(8),
-                        child: AutoSizeText(
-                          texts.bottom_action_bar_warning_balance_title(
-                            currencyState.bitcoinCurrency.format(
-                              account.maxChanReserve,
-                              removeTrailingZeros: true,
-                            ),
+                  ),
+                  title: Text(
+                    texts.bottom_action_bar_receive_invoice,
+                    style: theme.bottomSheetTextStyle,
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushNamed("/create_invoice");
+                  }),
+              account.maxChanReserve == 0
+                  ? const SizedBox(height: 8.0)
+                  : WarningBox(
+                      boxPadding: const EdgeInsets.all(16),
+                      contentPadding: const EdgeInsets.all(8),
+                      child: AutoSizeText(
+                        texts.bottom_action_bar_warning_balance_title(
+                          currencyState.bitcoinCurrency.format(
+                            account.maxChanReserve,
+                            removeTrailingZeros: true,
                           ),
-                          maxFontSize:
-                              Theme.of(context).textTheme.subtitle1!.fontSize!,
+                        ),
+                        maxFontSize:
+                            Theme.of(context).textTheme.subtitle1!.fontSize!,
                           style: Theme.of(context).textTheme.headline6,
                           textAlign: TextAlign.center,
                         ),
@@ -254,7 +250,6 @@ Future showReceiveOptions(BuildContext parentContext, AccountState account) {
               ],
             );
           },
-        ),
       );
     },
   );

@@ -5,7 +5,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/utils/payment_validator.dart';
@@ -66,32 +66,13 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
   @override
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
-    const String _title = "Send Payment";
     AccountBloc accountBloc = context.read<AccountBloc>();
     CurrencyBoc currencyBloc = context.read<CurrencyBoc>();
 
     return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(top: 24.0),
-        child: SingleButtonBottomBar(
-          stickToBottom: true,
-          text: "PAY",
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _sendPayment(accountBloc, currencyBloc);
-            }
-          },
-        ),
-      ),
       appBar: AppBar(
-        iconTheme: Theme.of(context).appBarTheme.iconTheme,
-        backgroundColor: Theme.of(context).canvasColor,
         leading: const backBtn.BackButton(),
-        title: Text(_title,
-            style: Theme.of(context).appBarTheme.textTheme!.headline6),
-        elevation: 0.0,
-        toolbarTextStyle: Theme.of(context).appBarTheme.textTheme!.bodyText2,
-        titleTextStyle: Theme.of(context).appBarTheme.textTheme!.headline6,
+        title: const Text("Send Payment"),
       ),
       body: BlocBuilder<CurrencyBoc, CurrencyState>(
           builder: (context, currencyState) {
@@ -147,15 +128,20 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                       }
 
                       if (message != null) {
+                        final themeData = Theme.of(context);
                         return Container(
                             padding: const EdgeInsets.only(
-                                top: 50.0, left: 30.0, right: 30.0),
+                              top: 32.0,
+                              left: 16.0,
+                              right: 16.0,
+                            ),
                             child: Column(children: <Widget>[
                               Text(
                                 message,
                                 textAlign: TextAlign.center,
-                                style: theme.warningStyle.copyWith(
-                                    color: Theme.of(context).errorColor),
+                                style: themeData.textTheme.headline6!.copyWith(
+                                  color: themeData.colorScheme.error,
+                                ),
                               ),
                             ]));
                       } else {
@@ -169,6 +155,18 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
           },
         );
       }),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(top: 24.0),
+        child: SingleButtonBottomBar(
+          stickToBottom: true,
+          text: "PAY",
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _sendPayment(accountBloc, currencyBloc);
+            }
+          },
+        ),
+      ),
     );
   }
 

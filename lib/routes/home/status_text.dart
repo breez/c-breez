@@ -30,20 +30,24 @@ class _StatusTextState extends State<StatusText> {
           textAlign: TextAlign.center,
           textElements: <TextSpan>[
             TextSpan(
-                text: "Breez is ",
-                style: Theme.of(context).accentTextTheme.bodyText2),
+              text: "Breez is ",
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+            ),
             _LinkTextSpan(
                 text: "opening a secure channel",
                 // url: widget.account.channelFundingTxUrl,
-                style: Theme.of(context)
-                    .accentTextTheme
-                    .bodyText2!
-                    .copyWith(decoration: TextDecoration.underline)),
+                style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    decoration: TextDecoration.underline)),
             // style: theme.blueLinkStyle),
             TextSpan(
               text:
                   " with our server. This might take a while, but don't worry, we'll notify you when the app is ready to send and receive payments.",
-              style: Theme.of(context).accentTextTheme.bodyText2,
+              style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
             )
           ]);
     }
@@ -51,7 +55,9 @@ class _StatusTextState extends State<StatusText> {
     if (widget.account.status == AccountStatus.CONNECTED) {
       return AutoSizeText(
         "Breez is ready to receive funds.",
-        style: Theme.of(context).accentTextTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyText2?.copyWith(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
         textAlign: TextAlign.center,
         minFontSize: MinFontSize(context).minFontSize,
         stepGranularity: 0.1,
@@ -59,7 +65,9 @@ class _StatusTextState extends State<StatusText> {
     }
 
     return Text("Breez is opening a secure connection",
-        style: Theme.of(context).accentTextTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyText2?.copyWith(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
         textAlign: TextAlign.center);
   }
 }

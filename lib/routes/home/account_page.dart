@@ -9,7 +9,7 @@ import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/home/bubble_painter.dart';
 import 'package:c_breez/routes/home/wallet_dashboard_header_delegate.dart';
 import 'package:c_breez/routes/lsp/no_lsp_widget.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/widgets/fixed_sliver_delegate.dart';
 import 'package:flutter/material.dart';
@@ -168,7 +168,6 @@ class AccountPageState extends State<AccountPage>
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 16.0, bottom: 8),
               child: Chip(
-                  backgroundColor: Theme.of(context).bottomAppBarColor,
                   label: Text(BreezDateUtils.formatFilterDateRange(
                       filter.startDate!, filter.endDate!)),
                   onDeleted: () => context

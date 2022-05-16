@@ -11,8 +11,7 @@ import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/lsp.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/succesful_payment.dart';
-import 'package:c_breez/routes/home/theme.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
@@ -63,35 +62,11 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
     return Scaffold(
       key: _scaffoldKey,
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: Platform.isIOS && _amountFocusNode.hasFocus ? 40.0 : 0.0,
-        ),
-        child: SingleButtonBottomBar(
-          stickToBottom: true,
-          text: texts.invoice_action_create,
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              _createInvoice(
-                context,
-                context.read<InvoiceBloc>(),
-                context.read<CurrencyBoc>(),
-                context.read<AccountBloc>(),
-              );
-            }
-          },
-        ),
-      ),
       appBar: AppBar(
-          iconTheme: themeData.appBarTheme.iconTheme,
-          backgroundColor: themeData.canvasColor,
-          leading: const backBtn.BackButton(),
-          actions: const [],
-          title: Text(texts.invoice_title,
-              style: themeData.appBarTheme.titleTextStyle),
-          elevation: 0.0,
-          toolbarTextStyle: themeData.appBarTheme.toolbarTextStyle,
-          titleTextStyle: themeData.appBarTheme.titleTextStyle),
+        leading: const backBtn.BackButton(),
+        actions: const [],
+        title: Text(texts.invoice_title),
+      ),
       body: BlocBuilder<CurrencyBoc, CurrencyState>(
           builder: (context, currencyState) {
         return BlocBuilder<AccountBloc, AccountState>(
@@ -163,17 +138,20 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                                   }
                                   return Container(
                                     padding: const EdgeInsets.only(
-                                      top: 50.0,
-                                      left: 30.0,
-                                      right: 30.0,
+                                      top: 32.0,
+                                      left: 16.0,
+                                      right: 16.0,
                                     ),
                                     child: Column(
                                       children: [
                                         Text(
                                           message,
                                           textAlign: TextAlign.center,
-                                          style: theme.warningStyle.copyWith(
-                                            color: themeData.errorColor,
+                                          style: themeData.textTheme.headline6!
+                                              .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error,
                                           ),
                                         ),
                                       ],
@@ -195,6 +173,25 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           },
         );
       }),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          bottom: Platform.isIOS && _amountFocusNode.hasFocus ? 40.0 : 0.0,
+        ),
+        child: SingleButtonBottomBar(
+          stickToBottom: true,
+          text: texts.invoice_action_create,
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              _createInvoice(
+                context,
+                context.read<InvoiceBloc>(),
+                context.read<CurrencyBoc>(),
+                context.read<AccountBloc>(),
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -338,9 +335,9 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   ) {
     if (result == true) {
       if (currentRoute.isCurrent) {
-        navigator.push(TransparentPageRoute((ctx) {
-          return withBreezTheme(ctx, const SuccessfulPaymentRoute());
-        }));
+        navigator.push(
+          TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
+        );
       }
     } else {
       if (result is String) {

@@ -1,4 +1,4 @@
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:flutter/material.dart';
 

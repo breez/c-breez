@@ -1,7 +1,8 @@
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/account_required_actions.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 class HomeAppBar extends AppBar {
@@ -46,6 +47,8 @@ class HomeAppBar extends AppBar {
             color: Color.fromARGB(255, 0, 133, 251),
           ),
           backgroundColor: theme.customData[theme.themeId]?.dashboardBgColor,
-          elevation: 0.0,
+          systemOverlayStyle: theme.themeId == "BLUE"
+              ? SystemUiOverlayStyle.dark
+              : SystemUiOverlayStyle.light,
         );
 }

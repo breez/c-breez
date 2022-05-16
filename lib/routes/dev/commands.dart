@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/widgets/back_button.dart' as back_button;
+import 'package:c_breez/routes/ui_test/ui_test_page.dart';
+import 'package:c_breez/widgets/back_button.dart' as backBtn;
+import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,10 +28,7 @@ class DevelopersView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          iconTheme: Theme.of(context).appBarTheme.iconTheme,
-          backgroundColor: Theme.of(context).canvasColor,
-          leading: const back_button.BackButton(),
-          elevation: 0.0,
+          leading: const backBtn.BackButton(),
           actions: <Widget>[
             PopupMenuButton<Choice>(
               onSelected: (c) => c.function(context),
@@ -39,7 +38,7 @@ class DevelopersView extends StatelessWidget {
                 color: Theme.of(context).iconTheme.color,
               ),
               itemBuilder: (BuildContext context) {
-                return _getChoices().map((Choice choice) {
+                return _getChoices(context).map((Choice choice) {
                   return PopupMenuItem<Choice>(
                     value: choice,
                     child: Text(choice.title,
@@ -49,20 +48,27 @@ class DevelopersView extends StatelessWidget {
               },
             ),
           ],
-          title: Text(
-            "Developers",
-            style: Theme.of(context).appBarTheme.toolbarTextStyle,
-          ),
+          title: const Text("Developers"),
         ),
         body: Container());
   }
 
-  List<Choice> _getChoices() {
+  List<Choice> _getChoices(BuildContext context) {
     return [
       Choice(
           title: 'Export Keys',
           icon: Icons.phone_android,
           function: _exportKeys),
+      Choice(
+        title: 'Test UI Widgets',
+        icon: Icons.phone_android,
+        function: (_) => Navigator.push(
+          context,
+          FadeInRoute(
+            builder: (_) => const UITestPage(),
+          ),
+        ),
+      ),
     ];
   }
 

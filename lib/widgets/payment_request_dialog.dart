@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/models/account.dart';
-import 'package:c_breez/routes/home/theme.dart';
 import 'package:c_breez/widgets/payment_confirmation_dialog.dart';
 import 'package:c_breez/widgets/payment_request_info_dialog.dart';
 import 'package:c_breez/widgets/processing_payment_dialog.dart';
@@ -57,7 +56,7 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: withBreezTheme(context, showPaymentRequestDialog()),
+      child: showPaymentRequestDialog(),
     );
   }
 

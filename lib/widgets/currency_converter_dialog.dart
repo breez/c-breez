@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/breez_dropdown.dart';
@@ -86,8 +86,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-
     return BlocBuilder<CurrencyBoc, CurrencyState>(
       builder: (context, currencyState) {
         if (currencyState.preferredCurrencies.isEmpty ||
@@ -99,13 +97,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
         _updateExchangeLabel(exchangeRate);
 
         return AlertDialog(
-          title: Theme(
-            data: themeData.copyWith(
-              brightness: Brightness.light,
-              canvasColor: theme.BreezColors.white[500],
-            ),
-            child: _dialogBody(context, currencyState),
-          ),
+          title: _dialogBody(context, currencyState),
           titlePadding: const EdgeInsets.fromLTRB(24.0, 16.0, 16.0, 8.0),
           contentPadding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 16.0),
           content: _dialogContent(context, currencyState),
@@ -151,7 +143,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             child: Padding(
               child: AutoSizeText(
                 texts.currency_converter_dialog_title,
-                style: themeData.dialogTheme.titleTextStyle,
                 maxLines: 1,
                 minFontSize: MinFontSize(context).minFontSize,
                 stepGranularity: 0.1,

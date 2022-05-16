@@ -49,16 +49,15 @@ class DrawerItemConfigGroup {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  final bool _avatar;
   final List<DrawerItemConfigGroup> _drawerGroupedItems;
   final void Function(String screenName) _onItemSelected;
   final _scrollController = ScrollController();
 
   NavigationDrawer(
-    this._avatar,
     this._drawerGroupedItems,
-    this._onItemSelected,
-  );
+    this._onItemSelected, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +66,7 @@ class NavigationDrawer extends StatelessWidget {
     return BlocBuilder<UserProfileBloc, UserProfileState>(
         builder: (context, userSettings) {
       List<Widget> children = [
-        _breezDrawerHeader(context, userSettings.profileSettings, _avatar),
+        _breezDrawerHeader(context, userSettings.profileSettings),
         const Padding(padding: EdgeInsets.only(top: 16)),
       ];
       for (var groupItems in _drawerGroupedItems) {
@@ -136,12 +135,14 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget _breezDrawerHeader(
-      BuildContext context, UserProfileSettings user, bool drawAvatar) {
+    BuildContext context,
+    UserProfileSettings user,
+  ) {
     return Container(
       color: theme.customData[theme.themeId]!.navigationDrawerHeaderBgColor,
       child: BreezDrawerHeader(
         padding: const EdgeInsets.only(left: 16.0),
-        child: _buildDrawerHeaderContent(user, context, drawAvatar),
+        child: _buildDrawerHeaderContent(user, context),
       ),
     );
   }
@@ -149,27 +150,22 @@ class NavigationDrawer extends StatelessWidget {
   Widget _buildDrawerHeaderContent(
     UserProfileSettings user,
     BuildContext context,
-    bool drawAvatar,
   ) {
     List<Widget> drawerHeaderContent = [];
     drawerHeaderContent.add(_buildThemeSwitch(context, user));
-    if (drawAvatar) {
-      drawerHeaderContent
-        ..add(_buildAvatarButton(user))
-        ..add(_buildBottomRow(user, context));
-    }
+    drawerHeaderContent
+      ..add(_buildAvatarButton(user))
+      ..add(_buildBottomRow(user, context));
     return GestureDetector(
-      onTap: drawAvatar
-          ? () {
-              showDialog<bool>(
-                useRootNavigator: false,
-                context: context,
-                barrierDismissible: false,
-                builder: (context) =>
-                    breezAvatarDialog(context.read<UserProfileBloc>()),
-              );
-            }
-          : null,
+      onTap: () {
+        showDialog<bool>(
+          useRootNavigator: false,
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              breezAvatarDialog(context.read<UserProfileBloc>()),
+        );
+      },
       child: Column(children: drawerHeaderContent),
     );
   }

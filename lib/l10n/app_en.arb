@@ -1662,6 +1662,7 @@
   "status_text_loading_middle": "opening a secure channel",
   "status_text_loading_end": " with our server. This might take a while, but don't worry, we'll notify you when the app is ready to send and receive payments.",
   "status_text_ready": "Breez is ready to receive funds.",
+  "status_opening_secure_connection": "Breez is opening a secure connection",
   "qr_action_button_open_link": "Open Link",
   "qr_action_button_open_link_confirmation": "Are you sure you want to open this link?",
   "qr_action_button_open_link_confirmation_no": "NO",

@@ -18,7 +18,7 @@ class SatAmountFormFieldFormatter extends TextInputFormatter {
       );
     }
 
-    var value;
+    Int64 value;
     try {
       value = Int64.parseInt(raw.length > 18 ? raw.substring(0, 18) : raw);
     } catch (ignored) {

@@ -29,7 +29,7 @@ class KeychainMoc extends Mock implements KeyChain {
   @override
   Future write(String key, String value) {
     _storage[key] = value;
-    print("keychain: " + value);
+    print("keychain: $value");
     return Future.value(null);
   }
 

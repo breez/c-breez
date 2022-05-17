@@ -24,7 +24,7 @@ class FirebaseNotifications implements Notifications {
   }
 
   Future _onMessage(RemoteMessage message) {
-    log.info("_onMessage = " + message.data.toString());
+    log.info("_onMessage = ${message.data}");
     var data = message.data["data"] ?? message.data["aps"] ?? message.data;
     if (data != null) {
       _notificationController.add(data);
@@ -33,7 +33,7 @@ class FirebaseNotifications implements Notifications {
   }
 
   Future _onResume(RemoteMessage message) {
-    log.info("_onResume = " + message.data.toString());
+    log.info("_onResume = ${message.data}");
     var data = message.data["data"] ?? message.data;
     if (data != null) {
       _notificationController.add(data);

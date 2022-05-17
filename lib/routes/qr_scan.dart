@@ -46,8 +46,8 @@ class QRScanState extends State<QRScan> {
           height: 32,
         ),
         onPressed: () async {
-          final _picker = ImagePicker();
-          PickedFile? pickedFile = await _picker
+          final picker = ImagePicker();
+          PickedFile? pickedFile = await picker
               .getImage(source: ImageSource.gallery)
               .catchError((err) {});
           final File file = File(pickedFile!.path);

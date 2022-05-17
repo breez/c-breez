@@ -136,12 +136,12 @@ class _DataImageAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final uri = UriData.parse(avatarURL);
-    final _bytes = uri.contentAsBytes();
+    final bytes = uri.contentAsBytes();
     return CircleAvatar(
       backgroundColor: theme.sessionAvatarBackgroundColor,
       radius: radius,
       child: ClipOval(
-        child: Image.memory(_bytes),
+        child: Image.memory(bytes),
       ),
     );
   }
@@ -169,20 +169,20 @@ class _VendorAvatar extends StatelessWidget {
   }
 
   Widget _vendorAvatar() {
-    String? _vendorName =
+    String? vendorName =
         RegExp("(?<=vendors/)(.*)(?=_logo)").stringMatch(avatarURL);
-    var _bgColor = theme.vendorTheme[_vendorName]?.iconBgColor ?? Colors.white;
-    var _fgColor =
-        theme.vendorTheme[_vendorName]?.iconFgColor ?? Colors.transparent;
+    var bgColor = theme.vendorTheme[vendorName]?.iconBgColor ?? Colors.white;
+    var fgColor =
+        theme.vendorTheme[vendorName]?.iconFgColor ?? Colors.transparent;
     return CircleAvatar(
       radius: radius,
       child: Container(
         decoration: ShapeDecoration(
-            color: _bgColor,
-            shape: CircleBorder(side: BorderSide(color: _bgColor)),
+            color: bgColor,
+            shape: CircleBorder(side: BorderSide(color: bgColor)),
             image: DecorationImage(
                 image: AssetImage(avatarURL),
-                colorFilter: ColorFilter.mode(_fgColor, BlendMode.color))),
+                colorFilter: ColorFilter.mode(fgColor, BlendMode.color))),
       ),
     );
   }

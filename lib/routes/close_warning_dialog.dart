@@ -24,9 +24,7 @@ class _CloseWarningDialogState extends State<CloseWarningDialog> {
         child: RichText(
             text: TextSpan(children: [
           TextSpan(
-            text: """You haven't made any payments with Breez for """ +
-                (widget.inactiveDuration ~/ 86400).toString() +
-                """ days, so your LSP might have to close your channels.
+            text: """You haven't made any payments with Breez for ${widget.inactiveDuration ~/ 86400} days, so your LSP might have to close your channels.
 Should this happen, Breez will generate an on-chain address and sweep your funds into it. You will retain complete control of your money, less the mining fee incurred by the sweep transaction, and you can come back any time. To learn more about why this happens, read our post on """,
             style: Theme.of(context)
                 .primaryTextTheme

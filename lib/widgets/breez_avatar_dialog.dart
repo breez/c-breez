@@ -21,12 +21,12 @@ int scaledWidth = 200;
 var _transparentImage = DartImage.Image(scaledWidth, scaledWidth);
 
 Widget breezAvatarDialog(UserProfileBloc userBloc) {
-  AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
-  CroppedFile? _pickedImage;
-  DefaultProfile _defaultProfile;
-  bool _isUploading = false;
+  AutoSizeGroup autoSizeGroup = AutoSizeGroup();
+  CroppedFile? pickedImage;
+  DefaultProfile defaultProfile;
+  bool isUploading = false;
 
-  final _nameInputController = TextEditingController();
+  final nameInputController = TextEditingController();
 
   Future<CroppedFile?> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -43,7 +43,7 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
 
   return WillPopScope(
     onWillPop: () {
-      return Future.value(!_isUploading);
+      return Future.value(!isUploading);
     },
     child: StatefulBuilder(
       builder: (context, setState) {
@@ -91,13 +91,13 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                           maxLines: 1,
                           minFontSize: minFontSize.minFontSize,
                           stepGranularity: 0.1,
-                          group: _autoSizeGroup,
+                          group: autoSizeGroup,
                         ),
                         onPressed: () {
                           var generated = userBloc.generateRandomProfile();
                           setState(() {
-                            _pickedImage = null;
-                            _defaultProfile = generated;
+                            pickedImage = null;
+                            defaultProfile = generated;
                           });
                           //userBloc.updateProfile(color: generated.color, animal: generated.animal);
                           FocusScope.of(context).requestFocus(FocusNode());
@@ -108,8 +108,9 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                       builder: (context, userModel) {
                         return Stack(
                           children: [
-                            _isUploading
+                            isUploading
                                 ? Padding(
+                                    padding: const EdgeInsets.only(top: 26.0),
                                     child: AspectRatio(
                                       aspectRatio: 1,
                                       child: CircularProgressIndicator(
@@ -122,19 +123,18 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                                             themeData.backgroundColor,
                                       ),
                                     ),
-                                    padding: const EdgeInsets.only(top: 26.0),
                                   )
                                 : const SizedBox(),
                             Padding(
+                              padding: const EdgeInsets.only(top: 26.0),
                               child: AspectRatio(
                                 aspectRatio: 1,
                                 child: BreezAvatar(
-                                  _pickedImage?.path ??
+                                  pickedImage?.path ??
                                       userModel.profileSettings.avatarURL,
                                   radius: 36.0,
                                 ),
                               ),
-                              padding: const EdgeInsets.only(top: 26.0),
                             ),
                           ],
                         );
@@ -154,12 +154,12 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                           maxLines: 1,
                           minFontSize: minFontSize.minFontSize,
                           stepGranularity: 0.1,
-                          group: _autoSizeGroup,
+                          group: autoSizeGroup,
                         ),
                         onPressed: () async {
                           await _pickImage().then((file) {
                             setState(() {
-                              _pickedImage = file;
+                              pickedImage = file;
                             });
                           });
                         },
@@ -179,9 +179,9 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                     hintColor: themeData.primaryTextTheme.bodyText2!.color,
                   ),
                   child: TextField(
-                    enabled: !_isUploading,
+                    enabled: !isUploading,
                     style: themeData.primaryTextTheme.bodyText2,
-                    controller: _nameInputController,
+                    controller: nameInputController,
                     decoration: InputDecoration(
                       hintText: texts.breez_avatar_dialog_your_name,
                     ),
@@ -193,29 +193,25 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
           ),
           actions: [
             TextButton(
+              onPressed: isUploading ? null : () => navigator.pop(),
               child: Text(
                 texts.breez_avatar_dialog_action_cancel,
                 style: themeData.primaryTextTheme.button,
               ),
-              onPressed: _isUploading ? null : () => navigator.pop(),
             ),
             TextButton(
-              child: Text(
-                texts.breez_avatar_dialog_action_save,
-                style: themeData.primaryTextTheme.button,
-              ),
-              onPressed: _isUploading
+              onPressed: isUploading
                   ? null
                   : () async {
                       try {
-                        var userName = _nameInputController.text;
+                        var userName = nameInputController.text;
                         setState(() {
-                          _isUploading = true;
+                          isUploading = true;
                         });
-                        String url = await _uploadImage(_pickedImage!, userBloc)
+                        String url = await _uploadImage(pickedImage!, userBloc)
                             .then((u) {
                           setState(() {
-                            _isUploading = false;
+                            isUploading = false;
                           });
                           return u;
                         });
@@ -224,8 +220,8 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                         navigator.pop();
                       } catch (e) {
                         setState(() {
-                          _isUploading = false;
-                          _pickedImage = null;
+                          isUploading = false;
+                          pickedImage = null;
                         });
                         showFlushbar(
                           context,
@@ -233,6 +229,10 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                         );
                       }
                     },
+              child: Text(
+                texts.breez_avatar_dialog_action_save,
+                style: themeData.primaryTextTheme.button,
+              ),
             ),
           ],
           shape: const RoundedRectangleBorder(

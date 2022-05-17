@@ -24,7 +24,7 @@ class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute>
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_showFuture == null) {
-      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         _showFuture = showDialog(
             useRootNavigator: false,
             context: context,

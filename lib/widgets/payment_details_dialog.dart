@@ -25,7 +25,7 @@ Future<void> showPaymentDetailsDialog(
   var mediaQuery = MediaQuery.of(context);
   final texts = AppLocalizations.of(context)!;
 
-  AlertDialog _paymentDetailsDialog = AlertDialog(
+  AlertDialog paymentDetailsDialog = AlertDialog(
     titlePadding: EdgeInsets.zero,
     title: Stack(
       children: <Widget>[
@@ -239,7 +239,7 @@ Future<void> showPaymentDetailsDialog(
   return showDialog<void>(
     useRootNavigator: false,
     context: context,
-    builder: (_) => _paymentDetailsDialog,
+    builder: (_) => paymentDetailsDialog,
   );
 }
 
@@ -303,10 +303,10 @@ class ShareablePaymentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
-    final _expansionTileTheme =
+    final expansionTileTheme =
         themeData.copyWith(dividerColor: themeData.backgroundColor);
     return Theme(
-      data: _expansionTileTheme,
+      data: expansionTileTheme,
       child: ExpansionTile(
         iconColor: themeData.primaryTextTheme.button!.color!,
         collapsedIconColor: themeData.primaryTextTheme.button!.color!,

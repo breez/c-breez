@@ -45,30 +45,6 @@ class AvatarPicker extends StatelessWidget {
     final texts = AppLocalizations.of(context)!;
 
     return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Image(
-            image: AssetImage("src/icon/camera.png"),
-            color: Colors.white,
-            width: 24.0,
-            height: 24.0,
-          ),
-          Text(
-            imagePath == null
-                ? texts.avatar_picker_action_set_photo
-                : texts.avatar_picker_action_change_photo,
-            style: const TextStyle(
-              fontSize: 10.0,
-              color: Color.fromRGBO(255, 255, 255, 0.88),
-              letterSpacing: 0.0,
-              fontFamily: "IBMPlexSans",
-            ),
-          ),
-        ],
-      ),
       width: renderedWidth.roundToDouble(),
       height: renderedWidth.roundToDouble(),
       decoration: BoxDecoration(
@@ -93,6 +69,30 @@ class AvatarPicker extends StatelessWidget {
               : FileImage(File(imagePath!)),
           fit: BoxFit.cover,
         ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Image(
+            image: AssetImage("src/icon/camera.png"),
+            color: Colors.white,
+            width: 24.0,
+            height: 24.0,
+          ),
+          Text(
+            imagePath == null
+                ? texts.avatar_picker_action_set_photo
+                : texts.avatar_picker_action_change_photo,
+            style: const TextStyle(
+              fontSize: 10.0,
+              color: Color.fromRGBO(255, 255, 255, 0.88),
+              letterSpacing: 0.0,
+              fontFamily: "IBMPlexSans",
+            ),
+          ),
+        ],
       ),
     );
   }

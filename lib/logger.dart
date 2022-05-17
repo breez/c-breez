@@ -10,7 +10,7 @@ import 'package:share_extend/share_extend.dart';
 final Logger log = Logger('c-breez');
 Future<File> get _logFile async {
   var appDir = await getApplicationDocumentsDirectory();
-  var logFile = File(appDir.path + "/log.txt");
+  var logFile = File("${appDir.path}/log.txt");
   if (!logFile.existsSync()) {
     logFile.createSync();
   }

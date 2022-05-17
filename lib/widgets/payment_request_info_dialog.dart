@@ -71,9 +71,9 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _paymentRequestDialog = [];
-    _addIfNotNull(_paymentRequestDialog, _buildPaymentRequestTitle());
-    _addIfNotNull(_paymentRequestDialog, _buildPaymentRequestContent());
+    List<Widget> paymentRequestDialog = [];
+    _addIfNotNull(paymentRequestDialog, _buildPaymentRequestTitle());
+    _addIfNotNull(paymentRequestDialog, _buildPaymentRequestContent());
     return Dialog(
       child: Container(
         constraints: BoxConstraints(minHeight: widget.minHeight),
@@ -82,7 +82,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
-          children: _paymentRequestDialog,
+          children: paymentRequestDialog,
         ),
       ),
     );
@@ -216,6 +216,17 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     }
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onLongPressStart: (_) {
+        setState(() {
+          _showFiatCurrency = true;
+        });
+      },
+      onLongPressEnd: (_) {
+        setState(() {
+          _showFiatCurrency = false;
+        });
+      },
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           minWidth: double.infinity,
@@ -229,17 +240,6 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           textAlign: TextAlign.center,
         ),
       ),
-      behavior: HitTestBehavior.translucent,
-      onLongPressStart: (_) {
-        setState(() {
-          _showFiatCurrency = true;
-        });
-      },
-      onLongPressEnd: (_) {
-        setState(() {
-          _showFiatCurrency = false;
-        });
-      },
     );
   }
 

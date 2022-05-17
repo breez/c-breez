@@ -20,20 +20,17 @@ const AVATAR_DIAMETER = 24.0;
 
 class PaymentItem extends StatelessWidget {
   final PaymentInfo _paymentInfo;
-  final int _itemIndex;
   final bool _firstItem;
   final bool _hideBalance;
   final GlobalKey firstPaymentItemKey;
-  final ScrollController _scrollController;
 
   const PaymentItem(
     this._paymentInfo,
-    this._itemIndex,
     this._firstItem,
     this._hideBalance,
-    this.firstPaymentItemKey,
-    this._scrollController,
-  );
+    this.firstPaymentItemKey, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,59 +44,33 @@ class PaymentItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ListTile(
-                leading: Opacity(
-                  // when the transaction list is fully expanded
-                  // set opacity the avatar of the item that's
-                  // no longer visible to transparent
-                  opacity: (_scrollController.offset -
-                              (DASHBOARD_MAX_HEIGHT - DASHBOARD_MIN_HEIGHT) -
-                              ((PAYMENT_LIST_ITEM_HEIGHT + BOTTOM_PADDING) *
-                                      (_itemIndex + 1) -
-                                  FILTER_MAX_SIZE +
-                                  AVATAR_DIAMETER) >
-                          0)
-                      ? 0.0
-                      : 1.0,
-                  child: Container(
-                      height: PAYMENT_LIST_ITEM_HEIGHT,
-                      decoration: _createdWithin(const Duration(seconds: 10))
-                          ? BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    offset: const Offset(0.5, 0.5),
-                                    blurRadius: 5.0),
-                              ],
-                            )
-                          : null,
-                      child: _buildPaymentItemAvatar()),
-                ),
+                leading: Container(
+                    height: PAYMENT_LIST_ITEM_HEIGHT,
+                    decoration: _createdWithin(const Duration(seconds: 10))
+                        ? BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  offset: const Offset(0.5, 0.5),
+                                  blurRadius: 5.0),
+                            ],
+                          )
+                        : null,
+                    child: _buildPaymentItemAvatar()),
                 key: _firstItem ? firstPaymentItemKey : null,
                 title: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: Opacity(
-                    // set title text to transparent when it leaves viewport
-                    opacity: (_scrollController.offset -
-                                (DASHBOARD_MAX_HEIGHT - DASHBOARD_MIN_HEIGHT) -
-                                ((PAYMENT_LIST_ITEM_HEIGHT + BOTTOM_PADDING) *
-                                        (_itemIndex + 1) -
-                                    FILTER_MAX_SIZE +
-                                    AVATAR_DIAMETER / 2) >
-                            0)
-                        ? 0.0
-                        : 1.0,
-                    child: Text(
-                      () {
-                        return _paymentInfo.shortTitle;
-                      }()
-                          .replaceAll("\n", " "),
-                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                            color: Theme.of(context).colorScheme.onSecondary,
-                          ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  child: Text(
+                    () {
+                      return _paymentInfo.shortTitle;
+                    }()
+                        .replaceAll("\n", " "),
+                    style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                        ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 subtitle: Transform.translate(
@@ -163,23 +134,11 @@ class PaymentItem extends StatelessWidget {
       _paymentInfo.amountSat,
       includeDisplayName: false,
     );
-    return Opacity(
-      // set amount text to transparent when it leaves viewport
-      opacity: (_scrollController.offset -
-                  (DASHBOARD_MAX_HEIGHT - DASHBOARD_MIN_HEIGHT) -
-                  ((PAYMENT_LIST_ITEM_HEIGHT + BOTTOM_PADDING) *
-                          (_itemIndex + 1) -
-                      FILTER_MAX_SIZE +
-                      AVATAR_DIAMETER / 2) >
-              0)
-          ? 0.0
-          : 1.0,
-      child: Text(
-        _hideBalance ? "******" : (negative ? "- " : "+ ") + amount,
-        style: Theme.of(context).textTheme.headline6?.copyWith(
-              color: Theme.of(context).colorScheme.onSecondary,
-            ),
-      ),
+    return Text(
+      _hideBalance ? "******" : (negative ? "- " : "+ ") + amount,
+      style: Theme.of(context).textTheme.headline6?.copyWith(
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
     );
   }
 

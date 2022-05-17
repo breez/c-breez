@@ -6,10 +6,10 @@ import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/routes/home/bubble_painter.dart';
+import 'package:c_breez/routes/home/header_filter_chip.dart';
 import 'package:c_breez/routes/home/wallet_dashboard_header_delegate.dart';
 import 'package:c_breez/routes/lsp/no_lsp_widget.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/widgets/fixed_sliver_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,20 +67,8 @@ class AccountPage extends StatelessWidget {
     final payments = payment.paymentsList;
     final nonFiltered = payment.nonFilteredItems;
 
-    double listHeightSpace = MediaQuery.of(context).size.height -
-        kMinExtent -
-        kToolbarHeight -
-        _kFilterMaxSize -
-        25.0;
-    double dateFilterSpace = payment.filter.endDate != null ? 0.65 : 0.0;
-    double bottomPlaceholderSpace = payments.isEmpty
-        ? 0.0
-        : (listHeightSpace -
-                (_kPaymentListItemHeight + 8) *
-                    (payments.length + 1 + dateFilterSpace))
-            .clamp(0.0, listHeightSpace);
-
     List<Widget> slivers = [];
+
     slivers.add(
       const SliverPersistentHeader(
         floating: false,
@@ -88,6 +76,7 @@ class AccountPage extends StatelessWidget {
         pinned: true,
       ),
     );
+
     if (nonFiltered.isNotEmpty) {
       slivers.add(
         PaymentFilterSliver(
@@ -104,46 +93,23 @@ class AccountPage extends StatelessWidget {
     final endDate = payment.filter.endDate;
     if (startDate != null && endDate != null) {
       slivers.add(
-        SliverPadding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
-          sliver: SliverPersistentHeader(
-            pinned: true,
-            delegate: FixedSliverDelegate(
-              _kFilterMaxSize / 1.2,
-              builder: (context, height, overlapContent) {
-                return Container(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  height: _kFilterMaxSize / 1.2,
-                  color: theme.customData[theme.themeId]!.dashboardBgColor,
-                  child: _filterChip(
-                    context,
-                    paymentTypes,
-                    startDate,
-                    endDate,
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
+        HeaderFilterChip(_kFilterMaxSize, paymentTypes, startDate, endDate),
       );
     }
 
     if (nonFiltered.isNotEmpty) {
       slivers.add(
         PaymentsList(
-          userModel.profileSettings,
           payments,
           _kPaymentListItemHeight,
           firstPaymentItemKey,
-          scrollController,
         ),
       );
       slivers.add(
         SliverPersistentHeader(
           pinned: true,
           delegate: FixedSliverDelegate(
-            bottomPlaceholderSpace,
+            _bottomPlaceholderSpace(context, payment, payments),
             child: Container(),
           ),
         ),
@@ -185,38 +151,22 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  Widget _filterChip(
+  double _bottomPlaceholderSpace(
     BuildContext context,
-    List<PaymentType> paymentTypes,
-    DateTime startDate,
-    DateTime endDate,
+    PaymentsState payment,
+    List<PaymentInfo> payments,
   ) {
-    return Container(
-      color: Colors.amber,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(5),
-        child: Container(
-          color: theme.customData[theme.themeId]!.paymentListBgColor,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8, left: 16.0, bottom: 8),
-                child: Chip(
-                  label: Text(
-                    BreezDateUtils.formatFilterDateRange(startDate, endDate),
-                  ),
-                  onDeleted: () =>
-                      context.read<AccountBloc>().changePaymentFilter(
-                            PaymentFilterModel(paymentTypes, null, null),
-                          ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    if (payments.isEmpty) return 0.0;
+    double listHeightSpace = MediaQuery.of(context).size.height -
+        kMinExtent -
+        kToolbarHeight -
+        _kFilterMaxSize -
+        25.0;
+    double dateFilterSpace = payment.filter.endDate != null ? 0.65 : 0.0;
+    double bottomPlaceholderSpace = (listHeightSpace -
+            (_kPaymentListItemHeight + 8) *
+                (payments.length + 1 + dateFilterSpace))
+        .clamp(0.0, listHeightSpace);
+    return bottomPlaceholderSpace;
   }
 }

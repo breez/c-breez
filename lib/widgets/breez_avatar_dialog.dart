@@ -22,18 +22,18 @@ var _transparentImage = DartImage.Image(scaledWidth, scaledWidth);
 
 Widget breezAvatarDialog(UserProfileBloc userBloc) {
   AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
-  File? _pickedImage;
+  CroppedFile? _pickedImage;
   DefaultProfile _defaultProfile;
   bool _isUploading = false;
 
   final _nameInputController = TextEditingController();
 
-  Future<File?> _pickImage() async {
-    final _picker = ImagePicker();
-    PickedFile? pickedFile =
-        await _picker.getImage(source: ImageSource.gallery);
+  Future<CroppedFile?> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
     final File file = File(pickedFile!.path);
-    final File? croppedFile = await ImageCropper().cropImage(
+    CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: file.path,
       cropStyle: CropStyle.circle,
       aspectRatioPresets: [CropAspectRatioPreset.square],
@@ -247,8 +247,9 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
   );
 }
 
-Future<String> _uploadImage(File _pickedImage, UserProfileBloc userBloc) async {
-  return _pickedImage
+Future<String> _uploadImage(
+    CroppedFile pickedImage, UserProfileBloc userBloc) async {
+  return pickedImage
       .readAsBytes()
       .then(scaleAndFormatPNG)
       .then((imageBytes) async {

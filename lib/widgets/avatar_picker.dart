@@ -32,7 +32,7 @@ class AvatarPicker extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
-        _pickImage(context);
+        _pickImage(context, (croppedFile) => _readFile(context, croppedFile));
       },
       child: Padding(
         padding: const EdgeInsets.only(top: 16.0),
@@ -97,26 +97,25 @@ class AvatarPicker extends StatelessWidget {
     );
   }
 
-  Future _pickImage(BuildContext context) async {
-    final _picker = ImagePicker();
-    PickedFile? pickedFile =
-        await _picker.getImage(source: ImageSource.gallery).catchError((err) {
+  Future _pickImage(BuildContext context, Function(CroppedFile?) onSuccess) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery).catchError((err) {
       log.severe(err.toString());
     });
     final File file = File(pickedFile!.path);
-    return ImageCropper()
+    CroppedFile? croppedFile = await ImageCropper()
         .cropImage(
-          sourcePath: file.path,
-          cropStyle: CropStyle.circle,
-          aspectRatio: const CropAspectRatio(
-            ratioX: 1.0,
-            ratioY: 1.0,
-          ),
-        )
-        .then((file) => _readFile(context, file!));
+      sourcePath: file.path,
+      cropStyle: CropStyle.circle,
+      aspectRatio: const CropAspectRatio(
+        ratioX: 1.0,
+        ratioY: 1.0,
+      ),
+    );
+    onSuccess.call(croppedFile);
   }
 
-  void _readFile(BuildContext context, File? file) {
+  void _readFile(BuildContext context, CroppedFile? file) {
     if (file == null) return;
     final texts = AppLocalizations.of(context)!;
     file

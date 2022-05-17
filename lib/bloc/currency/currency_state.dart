@@ -1,4 +1,5 @@
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/utils/fiat_conversion.dart';
 
 class CurrencyState {
   final List<String> preferredCurrencies;
@@ -46,6 +47,16 @@ class CurrencyState {
       }
     }
     return null;
+  }
+
+  FiatConversion? fiatConversion() {
+    final currency = fiatCurrency;
+    final exchange = fiatExchangeRate;
+    if (currency != null && exchange != null) {
+      return FiatConversion(currency, exchange);
+    } else {
+      return null;
+    }
   }
 
   CurrencyState.fromJson(Map<String, dynamic> json)

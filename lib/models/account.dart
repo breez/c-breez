@@ -1,4 +1,4 @@
-import 'package:fixnum/fixnum.dart';
+import 'package:c_breez/models/payment_type.dart';
 import 'package:hex/hex.dart';
 
 class Invoice {
@@ -48,8 +48,8 @@ class PaymentFilterModel {
   PaymentFilterModel.initial()
       : this(
           [
-            PaymentType.SENT,
-            PaymentType.RECEIVED,
+            PaymentType.sent,
+            PaymentType.received,
           ],
           initial: true,
         );
@@ -87,42 +87,4 @@ class PaymentFilterModel {
       "endDate": endDate
     };
   }
-}
-
-//enum PaymentType { DEPOSIT, WITHDRAWAL, SENT, RECEIVED, CLOSED_CHANNEL }
-enum PaymentType { SENT, RECEIVED }
-
-class PaymentInfo {
-  final PaymentType type;
-  final Int64 amountMsat;
-  final Int64 fee;
-  final Int64 creationTimestamp;
-  final bool keySend;
-  final String paymentHash;
-  final String? preimage;
-  final String destination;
-  final bool pending;
-  final Int64? pendingExpirationTimestamp;
-  final String description;
-  final String longTitle;
-  final String shortTitle;
-  final String? imageURL;
-
-  PaymentInfo(
-      {required this.type,
-      required this.amountMsat,
-      required this.fee,
-      required this.creationTimestamp,
-      this.pending = false,
-      this.keySend = false,
-      required this.paymentHash,
-      this.preimage,
-      required this.destination,
-      this.pendingExpirationTimestamp,
-      this.description = "",
-      this.longTitle = "",
-      required this.shortTitle,
-      this.imageURL});
-
-  Int64 get amountSat => amountMsat ~/ 1000;
 }

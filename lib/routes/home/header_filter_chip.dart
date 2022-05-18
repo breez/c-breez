@@ -1,5 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/payment_type.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/widgets/fixed_sliver_delegate.dart';

@@ -36,7 +36,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
 
-    return BlocBuilder<CurrencyBoc, CurrencyState>(
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
       buildWhen: (s1, s2) =>
           !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
       builder: (context, currencyState) {
@@ -180,6 +180,6 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     CurrencyState currencyState,
     List<String> preferredFiatCurrencies,
   ) {
-    context.read<CurrencyBoc>().setPreferredCurrencies(preferredFiatCurrencies);
+    context.read<CurrencyBloc>().setPreferredCurrencies(preferredFiatCurrencies);
   }
 }

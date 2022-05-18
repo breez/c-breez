@@ -27,7 +27,7 @@ class WalletDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CurrencyBoc, CurrencyState>(
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
       builder: (context, currencyState) {
         return BlocBuilder<UserProfileBloc, UserProfileState>(
           builder: (context, userProfileState) {
@@ -93,7 +93,7 @@ class WalletDashboard extends StatelessWidget {
                         if (nextCurrencyIndex == 1) {
                           _onPrivacyChanged(context, true);
                         }
-                        context.read<CurrencyBoc>().setBitcoinTicker(
+                        context.read<CurrencyBloc>().setBitcoinTicker(
                               list[nextCurrencyIndex].tickerSymbol,
                             );
                       },
@@ -224,7 +224,7 @@ class WalletDashboard extends StatelessWidget {
           accountState,
         );
         if (newFiatConversion != null) {
-          context.read<CurrencyBoc>().setFiatShortName(
+          context.read<CurrencyBloc>().setFiatShortName(
                 newFiatConversion.currencyData.shortName,
               );
         }

@@ -6,10 +6,10 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import 'models.dart';
 
-class CurrencyBoc extends Cubit<CurrencyState> with HydratedMixin {
+class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   final BreezServer _breezServer;
 
-  CurrencyBoc(this._breezServer) : super(CurrencyState.initial()) {
+  CurrencyBloc(this._breezServer) : super(CurrencyState.initial()) {
     rootBundle.loadString('src/json/currencies.json').then((jsonCurrencies) {
       var fiatCurrencies = currencyDataFromJson(jsonCurrencies).values.toList();
       var sorted =

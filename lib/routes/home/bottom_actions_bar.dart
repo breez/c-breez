@@ -209,7 +209,7 @@ Future showReceiveOptions(BuildContext parentContext, AccountState account) {
   return showModalBottomSheet(
     context: parentContext,
     builder: (ctx) {
-      return BlocBuilder<CurrencyBoc, CurrencyState>(
+      return BlocBuilder<CurrencyBloc, CurrencyState>(
         builder: (context, currencyState) {
           return Column(
             mainAxisSize: MainAxisSize.min,

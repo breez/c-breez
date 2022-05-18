@@ -1,10 +1,9 @@
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/payment_info.dart';
+import 'package:c_breez/routes/home/payment_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'payment_item.dart';
 
 const _kBottomPadding = 8.0;
 

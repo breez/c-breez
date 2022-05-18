@@ -2,12 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/models_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/account.dart';
-import 'package:c_breez/repositorires/dao/db.dart' as db;
+import 'package:c_breez/models/payment_info.dart';
+import 'package:c_breez/models/payment_type.dart';
 import 'package:c_breez/repositorires/app_storage.dart';
+import 'package:c_breez/repositorires/dao/db.dart' as db;
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:drift/drift.dart';
@@ -17,8 +21,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:lightning_toolkit/impl.dart' as lntoolkit;
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
-import './account_state.dart';
-import 'account_state_assembler.dart';
 
 const maxPaymentAmount = 4294967;
 
@@ -240,7 +242,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     // outgoing payments stream
     var outgoingPaymentsStream = _appStorage.watchOutgoingPayments().map((pList) => pList.map((p) {
           return PaymentInfo(
-              type: PaymentType.SENT,
+              type: PaymentType.sent,
               amountMsat: Int64(p.amount),
               destination: p.destination,
               shortTitle: "",
@@ -254,7 +256,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     // incoming payments stream (settled invoices)
     var incomingPaymentsStream = _appStorage.watchIncomingPayments().map((iList) => iList.map((invoice) {
           return PaymentInfo(
-              type: PaymentType.RECEIVED,
+              type: PaymentType.received,
               amountMsat: Int64(invoice.amountMsat),
               fee: Int64.ZERO,
               destination: state.id!,

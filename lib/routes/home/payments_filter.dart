@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/payment_type.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/calendar_dialog.dart';
 import 'package:c_breez/widgets/fixed_sliver_delegate.dart';
@@ -51,8 +51,8 @@ class PaymentFilterSliverState extends State<PaymentFilterSliver> {
     final filter = widget._paymentsModel.filter;
     final paymentType = filter.paymentType;
 
-    bool hasNoTypeFilter = (paymentType.contains(PaymentType.SENT) &&
-        paymentType.contains(PaymentType.RECEIVED));
+    bool hasNoTypeFilter = (paymentType.contains(PaymentType.sent) &&
+        paymentType.contains(PaymentType.received));
     bool hasNoDateFilter = (filter.endDate == null);
     bool hasNoFilter = hasNoTypeFilter && hasNoDateFilter;
 
@@ -128,10 +128,10 @@ class PaymentsFilterState extends State<PaymentsFilter> {
       _filterMap = {
         texts.payments_filter_option_all: PaymentType.values,
         texts.payments_filter_option_sent: [
-          PaymentType.SENT,
+          PaymentType.sent,
         ],
         texts.payments_filter_option_received: [
-          PaymentType.RECEIVED,
+          PaymentType.received,
         ],
       };
       _filter = _getFilterTypeString(

@@ -1,23 +1,19 @@
-import 'dart:async';
-import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/lsp.dart';
-import 'package:c_breez/utils/payment_validator.dart';
-import 'package:c_breez/widgets/succesful_payment.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
+import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
-import 'package:c_breez/widgets/single_button_bottom_bar.dart';
+import 'package:c_breez/widgets/succesful_payment.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:fixnum/fixnum.dart';
@@ -26,9 +22,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'qr_code_dialog.dart';
-
 class CreateInvoicePage extends StatefulWidget {
+  const CreateInvoicePage({
+    Key? key,
+  }) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return CreateInvoicePageState();
@@ -67,7 +65,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
         actions: const [],
         title: Text(texts.invoice_title),
       ),
-      body: BlocBuilder<CurrencyBoc, CurrencyState>(
+      body: BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, acc) {
@@ -173,25 +171,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           },
         );
       }),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: Platform.isIOS && _amountFocusNode.hasFocus ? 40.0 : 0.0,
-        ),
-        child: SingleButtonBottomBar(
-          stickToBottom: true,
-          text: texts.invoice_action_create,
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              _createInvoice(
-                context,
-                context.read<InvoiceBloc>(),
-                context.read<CurrencyBoc>(),
-                context.read<AccountBloc>(),
-              );
-            }
-          },
-        ),
-      ),
     );
   }
 
@@ -303,32 +282,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     }
   }
 
-  Future _createInvoice(
-    BuildContext context,
-    InvoiceBloc invoiceBloc,
-    CurrencyBoc currencyBloc,
-    AccountBloc accountBloc,
-  ) async {
-    var invoice = await accountBloc.addInvoice(
-        description: _descriptionController.text,
-        amount:
-            currencyBloc.state.bitcoinCurrency.parse(_amountController.text));
-    final navigator = Navigator.of(context);
-    navigator.pop();
-    var currentRoute = ModalRoute.of(navigator.context)!;
-    Widget dialog = QrCodeDialog(context, invoice, (result) {
-      onPaymentFinished(result, currentRoute, navigator);
-    });
-    //return _bgService.runAsTask(
-    return showDialog(
-      useRootNavigator: false,
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => dialog,
-    );
-  }
-
-  onPaymentFinished(
+  void onPaymentFinished(
     dynamic result,
     ModalRoute currentRoute,
     NavigatorState navigator,

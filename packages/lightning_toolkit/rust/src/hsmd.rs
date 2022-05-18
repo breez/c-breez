@@ -101,8 +101,6 @@ impl Hsmd {
    }
    _ => {}
   }
-
-  let channel_handler = self._inner.for_new_client(0, optional_peer, db_id);
   // check if the message should be signed by the root handler or the channel handler.
   // Ideally this should be abstracted in the lightning signer.
   let m = msgs::from_vec(msg.clone());
@@ -117,7 +115,10 @@ impl Hsmd {
   let root = self.is_root_handler(&m);
   let sign_res = match root {
    true => self._inner.handle(m),
-   false => channel_handler.handle(m),
+   false => self
+    ._inner
+    .for_new_client(0, optional_peer.ok_or(anyhow!(""))?, db_id)
+    .handle(m),
   };
 
   match sign_res {

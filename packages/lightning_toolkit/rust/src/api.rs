@@ -37,7 +37,7 @@ pub fn sign_message(storage_path: String, secret: Vec<u8>, msg: Vec<u8>) -> Resu
  let mut private_key_slice: [u8; 32] = [0; 32];
  private_key_slice.copy_from_slice(&secret[0..32]);
  let hsmd = _new_hsmd(private_key_slice, &storage_path)?;
- hsmd.handle_sign_message(&msg)
+ hsmd.handle_sign_message(msg)
 }
 
 pub fn handle(

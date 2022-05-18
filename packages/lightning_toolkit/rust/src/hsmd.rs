@@ -72,8 +72,13 @@ impl Hsmd {
   }
  }
 
- pub fn handle_sign_message(&self, msg: &Vec<u8>) -> Result<Vec<u8>> {
-  Ok(self._inner.node.sign_message(msg)?)
+ pub fn handle_sign_message(&self, msg: Vec<u8>) -> Result<Vec<u8>> {
+  let sign_message = Message::SignMessage(msgs::SignMessage { message: msg });
+  let res = self._inner.handle(sign_message).map(|r| r.as_vec());
+  match res {
+   Ok(r) => Ok(r[2..66].to_vec()),
+   Err(err) => Err(anyhow!(format!("failed to sign message {:?}", err))),
+  }
  }
 
  // handle message to sign
@@ -152,7 +157,6 @@ impl Hsmd {
    Message::SignMessageReply(_msg) => true,
    Message::GetChannelBasepoints(_msg) => true,
    Message::GetChannelBasepointsReply(_msg) => true,
-   Message::SignRemoteCommitmentTx(_msg) => true,
    Message::SignNodeAnnouncement(_msg) => true,
    Message::SignNodeAnnouncementReply(_msg) => true,
    Message::SignChannelUpdate(_msg) => true,

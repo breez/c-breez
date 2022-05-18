@@ -32,7 +32,7 @@ class GreenlightService implements LightningService {
 
   @override
   Signer initWithCredentials(List<int> credentials) {
-    _nodeCredentials = NodeCredentials.fromBuffer(credentials);
+    _nodeCredentials = NodeCredentials.fromBuffer(credentials);    
     _signer = Signer(Uint8List.fromList(_nodeCredentials!.secret!), _signerStoragePath);
     return _signer!;
   }
@@ -137,6 +137,11 @@ class GreenlightService implements LightningService {
     var creds = _nodeCredentials!.writeBuffer();
     initWithCredentials(creds);
     return creds;
+  }
+
+  @override
+  Signer getSigner() {
+    return _signer!;
   }
 
   @override

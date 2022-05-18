@@ -122,7 +122,11 @@ impl Hsmd {
    true => self._inner.handle(m),
    false => self
     ._inner
-    .for_new_client(0, optional_peer.ok_or(anyhow!(""))?, db_id)
+    .for_new_client(
+     0,
+     optional_peer.ok_or(anyhow!("failed to get optional peer"))?,
+     db_id,
+    )
     .handle(m),
   };
 
@@ -138,6 +142,7 @@ impl Hsmd {
 
  fn is_root_handler(&self, m: &Message) -> bool {
   match m {
+   Message::Ecdh(_msg) => true,
    Message::Ping(_msg) => true,
    Message::Pong(_msg) => true,
    Message::NewChannel(_msg) => true,

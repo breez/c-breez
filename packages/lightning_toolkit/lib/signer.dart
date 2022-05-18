@@ -17,7 +17,7 @@ class Signer {
     return _lnToolkit.signMessage(storagePath: storagePath, secret: privateKey, msg: message);
   }
 
-  Future<Uint8List> handle({required Uint8List message, Uint8List? peerId, required int dbId}) async {
+  Future<Uint8List> handle({required Uint8List message, Uint8List? peerId, required int dbId}) async {    
     return _lnToolkit.handle(storagePath: storagePath, secret: privateKey, msg: message, peerId: peerId, dbId: dbId);
   }
 

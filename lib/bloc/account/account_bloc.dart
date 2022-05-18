@@ -15,7 +15,6 @@ import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:lightning_toolkit/impl.dart' as lntoolkit;
-import 'package:lightning_toolkit/signer.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 import './account_state.dart';
@@ -38,7 +37,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   final KeyChain _keyChain;
   final LSPBloc _lspBloc;
   bool started = false;  
-  Signer? _signer;
 
   AccountBloc(this._breezLib, this._appStorage, this._keyChain, this._lspBloc)
       : super(AccountState.initial()) {
@@ -204,7 +202,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
     // inject routing hints and sign the new invoice
     var routingHints = lntoolkit.RouteHint(field0: List.from([lspHop]));
-    final bolt11 = await _signer!.addRoutingHints(
+    final bolt11 = await _breezLib.getSigner().addRoutingHints(
         invoice: invoice.bolt11, hints: [routingHints]);
 
     syncStateWithNode();

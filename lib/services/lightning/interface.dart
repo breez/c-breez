@@ -11,7 +11,9 @@ abstract class LightningService {
 
   Future<List<int>> recover(Uint8List seed);
   
-  Signer initWithCredentials(List<int> credentials);  
+  Signer initWithCredentials(List<int> credentials);
+
+  Signer getSigner();
 
   Future<List<FileData>> exportKeys();
 

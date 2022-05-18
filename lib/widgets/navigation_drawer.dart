@@ -4,7 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:c_breez/widgets/breez_avatar_dialog.dart';
 import 'package:c_breez/widgets/breez_drawer_header.dart';
@@ -49,16 +49,15 @@ class DrawerItemConfigGroup {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  final bool _avatar;
   final List<DrawerItemConfigGroup> _drawerGroupedItems;
   final void Function(String screenName) _onItemSelected;
   final _scrollController = ScrollController();
 
   NavigationDrawer(
-    this._avatar,
     this._drawerGroupedItems,
-    this._onItemSelected,
-  );
+    this._onItemSelected, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +66,7 @@ class NavigationDrawer extends StatelessWidget {
     return BlocBuilder<UserProfileBloc, UserProfileState>(
         builder: (context, userSettings) {
       List<Widget> children = [
-        _breezDrawerHeader(context, userSettings.profileSettings, _avatar),
+        _breezDrawerHeader(context, userSettings.profileSettings),
         const Padding(padding: EdgeInsets.only(top: 16)),
       ];
       for (var groupItems in _drawerGroupedItems) {
@@ -136,12 +135,14 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget _breezDrawerHeader(
-      BuildContext context, UserProfileSettings user, bool drawAvatar) {
+    BuildContext context,
+    UserProfileSettings user,
+  ) {
     return Container(
       color: theme.customData[theme.themeId]!.navigationDrawerHeaderBgColor,
       child: BreezDrawerHeader(
         padding: const EdgeInsets.only(left: 16.0),
-        child: _buildDrawerHeaderContent(user, context, drawAvatar),
+        child: _buildDrawerHeaderContent(user, context),
       ),
     );
   }
@@ -149,27 +150,22 @@ class NavigationDrawer extends StatelessWidget {
   Widget _buildDrawerHeaderContent(
     UserProfileSettings user,
     BuildContext context,
-    bool drawAvatar,
   ) {
     List<Widget> drawerHeaderContent = [];
     drawerHeaderContent.add(_buildThemeSwitch(context, user));
-    if (drawAvatar) {
-      drawerHeaderContent
-        ..add(_buildAvatarButton(user))
-        ..add(_buildBottomRow(user, context));
-    }
+    drawerHeaderContent
+      ..add(_buildAvatarButton(user))
+      ..add(_buildBottomRow(user, context));
     return GestureDetector(
-      onTap: drawAvatar
-          ? () {
-              showDialog<bool>(
-                useRootNavigator: false,
-                context: context,
-                barrierDismissible: false,
-                builder: (context) =>
-                    breezAvatarDialog(context.read<UserProfileBloc>()),
-              );
-            }
-          : null,
+      onTap: () {
+        showDialog<bool>(
+          useRootNavigator: false,
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              breezAvatarDialog(context.read<UserProfileBloc>()),
+        );
+      },
       child: Column(children: drawerHeaderContent),
     );
   }
@@ -205,7 +201,7 @@ GestureDetector _buildThemeSwitch(
             padding: const EdgeInsets.all(4),
             decoration: const ShapeDecoration(
               shape: StadiumBorder(),
-              color: theme.marketplaceButtonColor,
+              color: theme.themeSwitchBgColor,
             ),
             child: Row(
               children: [

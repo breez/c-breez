@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -48,10 +48,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
     return AlertDialog(
       titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
-      title: Text(
-        texts.payment_info_dialog_title,
-        style: themeData.dialogTheme.titleTextStyle,
-      ),
+      title: Text(texts.payment_info_dialog_title),
       contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
       content: _buildPaymentInfoForm(context),
       actions: _buildActions(context),

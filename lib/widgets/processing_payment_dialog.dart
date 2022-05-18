@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/loading_animated_text.dart';
 import 'package:c_breez/widgets/payment_request_dialog.dart';
 import 'package:flutter/material.dart';

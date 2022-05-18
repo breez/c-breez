@@ -61,10 +61,7 @@ Should this happen, Breez will generate an on-chain address and sweep your funds
         ),
         child: AlertDialog(
           titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
-          title: Text(
-            "Inactive Channels",
-            style: Theme.of(context).dialogTheme.titleTextStyle,
-          ),
+          title: const Text("Inactive Channels"),
           contentPadding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 24.0),
           content: Column(
             mainAxisSize: MainAxisSize.min,

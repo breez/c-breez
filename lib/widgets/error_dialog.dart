@@ -28,12 +28,7 @@ Future<void> promptError(
         onWillPop: canPopCallback,
         child: AlertDialog(
           contentPadding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
-          title: title == null
-              ? null
-              : Text(
-                  title,
-                  style: themeData.dialogTheme.titleTextStyle,
-                ),
+          title: title == null ? null : Text(title),
           content: SingleChildScrollView(
             child: body,
           ),
@@ -87,12 +82,7 @@ Future<bool?> promptAreYouSure(
   final texts = AppLocalizations.of(context)!;
   final themeData = Theme.of(context);
 
-  Widget? titleWidget = title == null
-      ? null
-      : Text(
-          title,
-          style: themeData.dialogTheme.titleTextStyle,
-        );
+  Widget? titleWidget = title == null ? null : Text(title);
   if (wideTitle) {
     titleWidget = SizedBox(
       child: titleWidget,

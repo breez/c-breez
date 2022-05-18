@@ -1,4 +1,4 @@
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/practicles_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -101,7 +101,7 @@ class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute>
           padding: const EdgeInsets.only(top: 20, bottom: 40),
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).buttonColor,
+              color: Theme.of(context).dialogTheme.backgroundColor,
               shape: BoxShape.circle,
             ),
             child: Image(

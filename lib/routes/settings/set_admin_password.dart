@@ -1,5 +1,5 @@
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -39,21 +39,12 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
   @override
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
-    final themeData = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: themeData.appBarTheme.iconTheme,
-        backgroundColor: themeData.canvasColor,
         automaticallyImplyLeading: false,
-        leading: backBtn.BackButton(),
-        title: Text(
-          texts.pos_password_admin_title,
-          style: themeData.appBarTheme.textTheme!.headline6,
-        ),
-        elevation: 0.0,
-        toolbarTextStyle: themeData.appBarTheme.textTheme!.bodyText2,
-        titleTextStyle: themeData.appBarTheme.textTheme!.headline6,
+        leading: const backBtn.BackButton(),
+        title: Text(texts.pos_password_admin_title),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
@@ -127,6 +118,7 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
         ),
       ),
       bottomNavigationBar: SingleButtonBottomBar(
+        stickToBottom: true,
         text: widget.submitAction,
         onPressed: () async {
           if (_formKey.currentState?.validate() == true) {

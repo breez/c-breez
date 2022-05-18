@@ -3,7 +3,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
@@ -34,7 +34,6 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
     return BlocBuilder<CurrencyBoc, CurrencyState>(
@@ -48,16 +47,8 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
 
         return Scaffold(
           appBar: AppBar(
-            iconTheme: themeData.appBarTheme.iconTheme,
-            backgroundColor: themeData.canvasColor,
             leading: const backBtn.BackButton(),
-            title: Text(
-              texts.fiat_currencies_title,
-              style: themeData.appBarTheme.titleTextStyle,
-            ),
-            elevation: 0.0,
-            toolbarTextStyle: themeData.appBarTheme.toolbarTextStyle,
-            titleTextStyle: themeData.appBarTheme.titleTextStyle,
+            title: Text(texts.fiat_currencies_title),
           ),
           body: DragAndDropLists(
             listPadding: EdgeInsets.zero,

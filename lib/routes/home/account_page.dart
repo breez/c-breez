@@ -1,14 +1,15 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/routes/home/bubble_painter.dart';
+import 'package:c_breez/routes/home/wallet_dashboard_header_delegate.dart';
+import 'package:c_breez/routes/lsp/no_lsp_widget.dart';
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/widgets/fixed_sliver_delegate.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'payments_filter.dart';
 import 'payments_list.dart';
 import 'status_text.dart';
-import 'wallet_dashboard.dart';
 
-const DASHBOARD_MAX_HEIGHT = 202.25;
-const DASHBOARD_MIN_HEIGHT = 70.0;
 const FILTER_MAX_SIZE = 64.0;
 const FILTER_MIN_SIZE = 0.0;
 const PAYMENT_LIST_ITEM_HEIGHT = 72.0;
@@ -70,7 +68,7 @@ class AccountPageState extends State<AccountPage>
     UserProfileState userModel,
   ) {
     double listHeightSpace = MediaQuery.of(context).size.height -
-        DASHBOARD_MIN_HEIGHT -
+        kDashboardMinHeight -
         kToolbarHeight -
         FILTER_MAX_SIZE -
         25.0;
@@ -132,16 +130,12 @@ class AccountPageState extends State<AccountPage>
         if (lspState.selectionRequired == true) {
           return const Padding(
             padding: EdgeInsets.only(top: 120.0),
-            child: NoLSPWidget(
-              error: "LSP is not connected",
-            ),
+            child: NoLSPWidget(),
           );
         }
-        return Container(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 120.0, left: 40.0, right: 40.0),
-            child: StatusText(account, message: message),
-          ),
+        return Padding(
+          padding: const EdgeInsets.only(top: 120.0, left: 40.0, right: 40.0),
+          child: StatusText(account, message: message),
         );
       })));
     }
@@ -151,7 +145,7 @@ class AccountPageState extends State<AccountPage>
       fit: StackFit.expand,
       children: [
         account.payments.nonFilteredItems.isEmpty
-            ? CustomPaint(painter: BubblePainter(context))
+            ? CustomPaint(painter: BubblePainter(MediaQuery.of(context).size))
             : const SizedBox(),
         CustomScrollView(controller: widget.scrollController, slivers: slivers),
       ],
@@ -174,7 +168,6 @@ class AccountPageState extends State<AccountPage>
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 16.0, bottom: 8),
               child: Chip(
-                  backgroundColor: Theme.of(context).bottomAppBarColor,
                   label: Text(BreezDateUtils.formatFilterDateRange(
                       filter.startDate!, filter.endDate!)),
                   onDeleted: () => context
@@ -186,138 +179,5 @@ class AccountPageState extends State<AccountPage>
         ),
       ),
     );
-  }
-}
-
-class BubblePainter extends CustomPainter {
-  BuildContext context;
-
-  BubblePainter(this.context);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var bubblePaint = Paint()
-      ..color = theme.themeId == "BLUE"
-          ? const Color(0xFF0085fb).withOpacity(0.1)
-          : const Color(0xff4D88EC).withOpacity(0.1)
-      ..style = PaintingStyle.fill;
-    double bubbleRadius = 12;
-    double height = (MediaQuery.of(context).size.height - kToolbarHeight);
-    canvas.drawCircle(
-        Offset(MediaQuery.of(context).size.width / 2, height * 0.36),
-        bubbleRadius,
-        bubblePaint);
-    canvas.drawCircle(
-        Offset(MediaQuery.of(context).size.width * 0.39, height * 0.59),
-        bubbleRadius * 1.5,
-        bubblePaint);
-    canvas.drawCircle(
-        Offset(MediaQuery.of(context).size.width * 0.65, height * 0.71),
-        bubbleRadius * 1.25,
-        bubblePaint);
-    canvas.drawCircle(
-        Offset(MediaQuery.of(context).size.width / 2, height * 0.80),
-        bubbleRadius * 0.75,
-        bubblePaint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
-}
-
-class WalletDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
-  WalletDashboardHeaderDelegate();
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return BlocBuilder<CurrencyBoc, CurrencyState>(
-        builder: (context, currencyState) {
-      return BlocBuilder<UserProfileBloc, UserProfileState>(
-          builder: (settingCtx, userState) {
-        return BlocBuilder<AccountBloc, AccountState>(
-            builder: (context, accountState) {
-          double height =
-              (maxExtent - shrinkOffset).clamp(minExtent, maxExtent);
-          double heightFactor =
-              (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
-
-          return Stack(clipBehavior: Clip.none, children: <Widget>[
-            WalletDashboard(
-              userState.profileSettings,
-              accountState,
-              currencyState,
-              height,
-              heightFactor,
-              context.read<CurrencyBoc>().setBitcoinTicker,
-              context.read<CurrencyBoc>().setFiatShortName,
-              (hideBalance) => context
-                  .read<UserProfileBloc>()
-                  .updateProfile(hideBalance: true),
-            )
-          ]);
-        });
-      });
-    });
-  }
-
-  @override
-  double get maxExtent => DASHBOARD_MAX_HEIGHT;
-
-  @override
-  double get minExtent => DASHBOARD_MIN_HEIGHT;
-
-  @override
-  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
-  }
-}
-
-class NoLSPWidget extends StatelessWidget {
-  final String error;
-
-  const NoLSPWidget({Key? key, required this.error}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> buttons = [
-      SizedBox(
-        height: 24.0,
-        child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.0)),
-              side: BorderSide(
-                  color: Theme.of(context).textTheme.button!.color!,
-                  style: BorderStyle.solid),
-            ),
-            child: Text("SELECT...",
-                style: TextStyle(
-                  fontSize: 12.3,
-                  color: Theme.of(context).textTheme.button!.color!,
-                )),
-            onPressed: () {
-              Navigator.of(context).pushNamed("/select_lsp");
-            }),
-      )
-    ];
-
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: const <Widget>[
-              Text("In order to activate Breez, please select a provider:")
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: buttons)
-        ]);
   }
 }

@@ -1,7 +1,7 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/models/account.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/calendar_dialog.dart';
 import 'package:c_breez/widgets/fixed_sliver_delegate.dart';
 import 'package:flutter/foundation.dart';
@@ -152,7 +152,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
       child: IconButton(
         icon: ImageIcon(
           const AssetImage("src/icon/calendar.png"),
-          color: themeData.accentTextTheme.subtitle2!.color,
+          color: themeData.colorScheme.onSecondary,
           size: 24.0,
         ),
         onPressed: () => widget._paymentsModel.firstDate != null
@@ -191,9 +191,11 @@ class PaymentsFilterState extends State<PaymentsFilter> {
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton(
-            iconEnabledColor: themeData.accentTextTheme.subtitle2!.color,
+            iconEnabledColor: themeData.colorScheme.onSecondary,
             value: _filter,
-            style: themeData.accentTextTheme.subtitle2,
+            style: themeData.textTheme.subtitle2?.copyWith(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
             items: [
               texts.payments_filter_option_all,
               texts.payments_filter_option_sent,
@@ -204,7 +206,9 @@ class PaymentsFilterState extends State<PaymentsFilter> {
                 child: Material(
                   child: Text(
                     value,
-                    style: themeData.accentTextTheme.subtitle2,
+                    style: themeData.textTheme.subtitle2?.copyWith(
+                      color: Theme.of(context).colorScheme.onSecondary,
+                    ),
                   ),
                 ),
               );
@@ -251,7 +255,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
         icon: Icon(
           Icons.more_vert,
           color: theme.themeId == "BLUE"
-              ? themeData.accentTextTheme.subtitle2!.color!.withOpacity(0.25)
+              ? themeData.colorScheme.onSecondary.withOpacity(0.25)
               : themeData.disabledColor,
           size: 24.0,
         ),

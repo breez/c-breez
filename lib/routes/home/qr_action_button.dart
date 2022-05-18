@@ -1,7 +1,7 @@
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/bip21.dart';
 import 'package:c_breez/utils/btc_address.dart';
 import 'package:c_breez/utils/node_id.dart';
@@ -25,67 +25,63 @@ class QrActionButton extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: 32.0),
-      child: SizedBox(
-        width: 64,
-        height: 64,
-        child: FloatingActionButton(
-          onPressed: () async {
-            String? scannedString =
-                await Navigator.pushNamed<String>(context, "/qr_scan");
-            if (scannedString != null && scannedString.isEmpty) {
-              showFlushbar(context, message: "QR code wasn't detected.");
-              return;
-            }
-            String lower = scannedString!.toLowerCase();
+      child: FloatingActionButton(
+        onPressed: () async {
+          String? scannedString =
+              await Navigator.pushNamed<String>(context, "/qr_scan");
+          if (scannedString != null && scannedString.isEmpty) {
+            showFlushbar(context, message: "QR code wasn't detected.");
+            return;
+          }
+          String lower = scannedString!.toLowerCase();
 
-            // bip 121
-            String? lnInvoice = extractBolt11FromBip21(lower);
-            lower = (lnInvoice ?? "").toLowerCase();
+          // bip 121
+          String? lnInvoice = extractBolt11FromBip21(lower);
+          lower = (lnInvoice ?? "").toLowerCase();
 
-            // regular lightning invoice.
-            if (lower.startsWith("lightning:") || lower.startsWith("ln")) {
-              invoiceBloc.addIncomingInvoice(scannedString);
-              return;
-            }
+          // regular lightning invoice.
+          if (lower.startsWith("lightning:") || lower.startsWith("ln")) {
+            invoiceBloc.addIncomingInvoice(scannedString);
+            return;
+          }
 
-            // bitcoin
-            BTCAddressInfo btcInvoice = parseBTCAddress(scannedString);
+          // bitcoin
+          BTCAddressInfo btcInvoice = parseBTCAddress(scannedString);
 
-            var nodeID = parseNodeId(scannedString);
-            if (nodeID != null) {
-              Navigator.of(context).push(FadeInRoute(
-                builder: (_) =>
-                    SpontaneousPaymentPage(nodeID, firstPaymentItemKey),
-              ));
-              return;
-            }
+          var nodeID = parseNodeId(scannedString);
+          if (nodeID != null) {
+            Navigator.of(context).push(FadeInRoute(
+              builder: (_) =>
+                  SpontaneousPaymentPage(nodeID, firstPaymentItemKey),
+            ));
+            return;
+          }
 
-            // Open on whenever app the system links to
-            if (await canLaunch(scannedString)) {
-              _handleWebAddress(context, scannedString);
-              return;
-            }
+          // Open on whenever app the system links to
+          if (await canLaunch(scannedString)) {
+            _handleWebAddress(context, scannedString);
+            return;
+          }
 
-            // Open on browser
-            final validUrl = isURL(
-              scannedString,
-              requireProtocol: true,
-              allowUnderscore: true,
-            );
-            if (validUrl) {
-              _handleWebAddress(context, scannedString);
-              return;
-            }
+          // Open on browser
+          final validUrl = isURL(
+            scannedString,
+            requireProtocol: true,
+            allowUnderscore: true,
+          );
+          if (validUrl) {
+            _handleWebAddress(context, scannedString);
+            return;
+          }
 
-            showFlushbar(context, message: "QR code cannot be processed.");
-          },
-          child: SvgPicture.asset(
-            "src/icon/qr_scan.svg",
-            color: theme.BreezColors.white[500],
-            fit: BoxFit.contain,
-            width: 24.0,
-            height: 24.0,
-          ),
+          showFlushbar(context, message: "QR code cannot be processed.");
+        },
+        child: SvgPicture.asset(
+          "src/icon/qr_scan.svg",
+          color: theme.BreezColors.white[500],
+          fit: BoxFit.contain,
+          width: 24.0,
+          height: 24.0,
         ),
       ),
     );
@@ -102,41 +98,38 @@ class QrActionButton extends StatelessWidget {
           title: Container(
             height: 64.0,
             padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 8.0),
-            child: Text(
+            child: const Text(
               "Open Link",
-              style: dialogTheme.titleTextStyle,
               textAlign: TextAlign.center,
             ),
           ),
-          content: Container(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-              child: SizedBox(
-                width: size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      url,
-                      style: dialogTheme.contentTextStyle!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
+          content: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+            child: SizedBox(
+              width: size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    url,
+                    style: dialogTheme.contentTextStyle!.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(
-                      width: 0.0,
-                      height: 16.0,
-                    ),
-                    Text(
-                      "Are you sure you want to open this link?",
-                      style: dialogTheme.contentTextStyle,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    width: 0.0,
+                    height: 16.0,
+                  ),
+                  Text(
+                    "Are you sure you want to open this link?",
+                    style: dialogTheme.contentTextStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
           ),

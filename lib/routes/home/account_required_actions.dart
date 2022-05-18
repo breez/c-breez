@@ -1,23 +1,20 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/routes/lsp/select_lsp_page.dart';
+import 'package:c_breez/routes/select_provider_error_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'lsp/select_lsp_page.dart';
-import 'select_provider_error_dialog.dart';
-
 class AccountRequiredActionsIndicator extends StatefulWidget {
-  final LSPBloc lspBloc;
-
-  const AccountRequiredActionsIndicator(
-    this.lspBloc,
-  );
+  const AccountRequiredActionsIndicator({
+    Key? key,
+  }) : super(key: key);
 
   @override
   AccountRequiredActionsIndicatorState createState() {
@@ -67,7 +64,7 @@ class AccountRequiredActionsIndicatorState
         if (lspStatus.lastConnectionError != null) {
           showProviderErrorDialog(context, () {
             navigatorState.push(FadeInRoute(
-              builder: (_) => SelectLSPPage(lstBloc: widget.lspBloc),
+              builder: (_) => SelectLSPPage(lstBloc: context.read()),
             ));
           });
         } else {
@@ -94,8 +91,9 @@ class WarningAction extends StatefulWidget {
 
   const WarningAction(
     this.onTap, {
+    Key? key,
     this.iconWidget,
-  });
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -136,7 +134,7 @@ class WarningActionState extends State<WarningAction>
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     return IconButton(
       iconSize: 45.0,

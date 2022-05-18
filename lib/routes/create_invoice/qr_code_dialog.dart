@@ -7,7 +7,7 @@ import 'package:c_breez/bloc/invoice/invoice_state.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/theme_data.dart' as theme;
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/widgets/compact_qr_image.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -75,10 +75,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Invoice",
-                  style: Theme.of(context).dialogTheme.titleTextStyle,
-                ),
+                const Text("Invoice"),
                 Row(
                   children: <Widget>[
                     IconButton(

@@ -17,7 +17,7 @@ import 'flushbar.dart';
 class CurrencyConverterDialog extends StatefulWidget {
   final Function(String string) _onConvert;
   final String? Function(Int64 amount) validatorFn;
-  final CurrencyBoc _currecyBloc;
+  final CurrencyBloc _currecyBloc;
 
   const CurrencyConverterDialog(
     this._currecyBloc,
@@ -86,7 +86,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CurrencyBoc, CurrencyState>(
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
       builder: (context, currencyState) {
         if (currencyState.preferredCurrencies.isEmpty ||
             !currencyState.fiatEnabled) {

@@ -101,7 +101,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   }
 
   Widget _buildPaymentRequestContent() {
-    return BlocBuilder<CurrencyBoc, CurrencyState>(builder: (c, currencyState) {
+    return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (c, currencyState) {
       return BlocBuilder<AccountBloc, AccountState>(
         builder: (context, account) {
           List<Widget> children = [];

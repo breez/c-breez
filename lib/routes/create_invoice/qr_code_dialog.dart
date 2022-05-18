@@ -67,7 +67,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget _buildQrCodeDialog() {
-    return BlocBuilder<CurrencyBoc, CurrencyState>(builder: (context, currencyState) {
+    return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
       return BlocBuilder<InvoiceBloc, InvoiceState>(builder: (context, invoiceState) {
         return FadeTransition(
           opacity: _opacityAnimation!,

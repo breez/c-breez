@@ -51,7 +51,7 @@ class GreenlightService implements LightningService {
   Future startNode() async {
     var res = await schedule();
     _readyCompleter.complete(true);
-    log.info("node started! " + HEX.encode(res.nodeId));
+    log.info("node started! ${HEX.encode(res.nodeId)}");
 
     streamIncomingRequests(res.nodeId);
   }

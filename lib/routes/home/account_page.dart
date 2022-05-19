@@ -87,7 +87,7 @@ class AccountPageState extends State<AccountPage>
     bool showMessage = !account.initial;
 
     List<Widget> slivers = <Widget>[];
-    slivers.add(SliverPersistentHeader(
+    slivers.add(const SliverPersistentHeader(
         floating: false,
         delegate: WalletDashboardHeaderDelegate(),
         pinned: true));

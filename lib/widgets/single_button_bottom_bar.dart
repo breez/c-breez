@@ -61,12 +61,12 @@ class SubmitButton extends StatelessWidget {
           elevation: 0.0,
           shape: const StadiumBorder(),
         ),
+        onPressed: onPressed,
         child: AutoSizeText(
           text,
           maxLines: 1,
           style: Theme.of(context).textTheme.button,
         ),
-        onPressed: onPressed,
       ),
     );
   }

@@ -51,15 +51,15 @@ class PaymentFilterSliverState extends State<PaymentFilterSliver> {
     final filter = widget._paymentsModel.filter;
     final paymentType = filter.paymentType;
 
-    bool _hasNoTypeFilter = (paymentType.contains(PaymentType.SENT) &&
+    bool hasNoTypeFilter = (paymentType.contains(PaymentType.SENT) &&
         paymentType.contains(PaymentType.RECEIVED));
-    bool _hasNoDateFilter = (filter.endDate == null);
-    bool _hasNoFilter = _hasNoTypeFilter && _hasNoDateFilter;
+    bool hasNoDateFilter = (filter.endDate == null);
+    bool hasNoFilter = hasNoTypeFilter && hasNoDateFilter;
 
     return SliverPersistentHeader(
       pinned: true,
       delegate: FixedSliverDelegate(
-        !_hasNoFilter
+        !hasNoFilter
             ? widget._maxSize
             : scrollOffset.clamp(
                 widget._minSize,
@@ -68,7 +68,7 @@ class PaymentFilterSliverState extends State<PaymentFilterSliver> {
         builder: (context, shrinkedHeight, overlapContent) {
           return AnimatedOpacity(
             duration: const Duration(milliseconds: 100),
-            opacity: !_hasNoFilter
+            opacity: !hasNoFilter
                 ? 1.0
                 : (scrollOffset - widget._maxSize / 2).clamp(0.0, 1.0),
             child: Container(
@@ -228,8 +228,8 @@ class PaymentsFilterState extends State<PaymentsFilter> {
     );
   }
 
-  List<PaymentType> _getFilterType(String? _filter) {
-    return _filterMap[_filter] ?? PaymentType.values;
+  List<PaymentType> _getFilterType(String? filter) {
+    return _filterMap[filter] ?? PaymentType.values;
   }
 
   String _getFilterTypeString(

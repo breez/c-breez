@@ -43,7 +43,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   Animation<double>? borderAnimation;
   Animation<double>? opacityAnimation;
   Animation<RelativeRect>? transitionAnimation;
-  final GlobalKey? _dialogKey = GlobalKey();
+  final GlobalKey _dialogKey = GlobalKey();
   ModalRoute? _currentRoute;
   double? channelsSyncProgress;
   final Completer? synchronizedCompleter = Completer<bool>();
@@ -114,7 +114,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
     // We subtract dialog size from safe area and divide by half because the dialog
     // is at the center of the screen (distances to top and bottom are equal).
     RenderBox? box =
-        _dialogKey!.currentContext!.findRenderObject() as RenderBox;
+        _dialogKey.currentContext!.findRenderObject() as RenderBox;
     startHeight = box.size.height;
     double yMargin = (safeArea - box.size.height) / 2;
 
@@ -122,8 +122,8 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
     RelativeRect startPosition = endPosition;
     final paymentCtx = widget.firstPaymentItemKey.currentContext;
     if (paymentCtx != null) {
-      RenderBox _paymentTableBox = paymentCtx.findRenderObject() as RenderBox;
-      final dy = _paymentTableBox.localToGlobal(Offset.zero).dy;
+      RenderBox paymentTableBox = paymentCtx.findRenderObject() as RenderBox;
+      final dy = paymentTableBox.localToGlobal(Offset.zero).dy;
       final start = dy - statusBarHeight;
       final end = safeArea - start - PAYMENT_LIST_ITEM_HEIGHT;
       startPosition = RelativeRect.fromLTRB(0.0, start, 0.0, end);
@@ -198,11 +198,6 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
               child: Container(
                 height: startHeight,
                 width: queryData.size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: _buildProcessingPaymentDialog(context),
-                ),
                 decoration: ShapeDecoration(
                   color: theme.themeId == "BLUE"
                       ? colorAnimation!.value
@@ -214,6 +209,11 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
                       borderAnimation!.value,
                     ),
                   ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: _buildProcessingPaymentDialog(context),
                 ),
               ),
             ),

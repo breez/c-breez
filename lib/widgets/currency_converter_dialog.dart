@@ -141,6 +141,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
         children: [
           Expanded(
             child: Padding(
+              padding: const EdgeInsets.only(right: 0.0, bottom: 2.0),
               child: AutoSizeText(
                 texts.currency_converter_dialog_title,
                 maxLines: 1,
@@ -148,7 +149,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
                 stepGranularity: 0.1,
                 group: _autoSizeGroup,
               ),
-              padding: const EdgeInsets.only(right: 0.0, bottom: 2.0),
             ),
           ),
           Theme(
@@ -179,7 +179,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     var fiatConversion = FiatConversion(
         currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
 
-    final int? fractionSize = currencyState.fiatCurrency!.fractionSize;
+    final int fractionSize = currencyState.fiatCurrency!.fractionSize;
     final isBlue = theme.themeId == "BLUE";
 
     return Column(

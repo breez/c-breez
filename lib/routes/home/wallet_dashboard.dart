@@ -49,6 +49,17 @@ class WalletDashboardState extends State<WalletDashboard> {
             widget._currencyState.fiatExchangeRate!)
         : null;
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onLongPressStart: (_) {
+        setState(() {
+          _showFiatCurrency = true;
+        });
+      },
+      onLongPressEnd: (_) {
+        setState(() {
+          _showFiatCurrency = false;
+        });
+      },
       child: Stack(
         alignment: AlignmentDirectional.topCenter,
         children: <Widget>[
@@ -65,12 +76,14 @@ class WalletDashboardState extends State<WalletDashboard> {
                   style: ButtonStyle(
                     overlayColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.focused))
+                      if (states.contains(MaterialState.focused)) {
                         return theme
                             .customData[theme.themeId]!.paymentListBgColor;
-                      if (states.contains(MaterialState.hovered))
+                      }
+                      if (states.contains(MaterialState.hovered)) {
                         return theme
                             .customData[theme.themeId]!.paymentListBgColor;
+                      }
                       return Theme.of(context)
                           .textTheme
                           .button!
@@ -141,9 +154,8 @@ class WalletDashboardState extends State<WalletDashboard> {
                                           includeDisplayName: false),
                                   children: <TextSpan>[
                                     TextSpan(
-                                      text: " " +
-                                          widget._currencyState.bitcoinCurrency
-                                              .displayName,
+                                      text: " ${widget._currencyState.bitcoinCurrency
+                                              .displayName}",
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline4!
@@ -171,12 +183,14 @@ class WalletDashboardState extends State<WalletDashboard> {
                       style: ButtonStyle(
                         overlayColor: MaterialStateProperty.resolveWith<Color>(
                             (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.focused))
+                          if (states.contains(MaterialState.focused)) {
                             return theme
                                 .customData[theme.themeId]!.paymentListBgColor;
-                          if (states.contains(MaterialState.hovered))
+                          }
+                          if (states.contains(MaterialState.hovered)) {
                             return theme
                                 .customData[theme.themeId]!.paymentListBgColor;
+                          }
                           return Theme.of(context)
                               .textTheme
                               .button!
@@ -212,17 +226,6 @@ class WalletDashboardState extends State<WalletDashboard> {
           ),
         ],
       ),
-      behavior: HitTestBehavior.translucent,
-      onLongPressStart: (_) {
-        setState(() {
-          _showFiatCurrency = true;
-        });
-      },
-      onLongPressEnd: (_) {
-        setState(() {
-          _showFiatCurrency = false;
-        });
-      },
     );
   }
 

@@ -36,7 +36,7 @@ class BreezDateUtils {
     var formatter = (startDate.year == endDate.year)
         ? _monthDateFormat
         : _yearMonthDayFormat;
-    return formatter.format(startDate) + "-" + formatter.format(endDate);
+    return "${formatter.format(startDate)}-${formatter.format(endDate)}";
   }
 
   static void setupLocales() {

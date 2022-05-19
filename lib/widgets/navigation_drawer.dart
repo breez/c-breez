@@ -359,11 +359,11 @@ class _ExpansionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final _expansionTileTheme = themeData.copyWith(
+    final expansionTileTheme = themeData.copyWith(
       dividerColor: themeData.canvasColor,
     );
     return Theme(
-      data: _expansionTileTheme,
+      data: expansionTileTheme,
       child: ExpansionTile(
         title: Padding(
           padding: const EdgeInsets.only(left: 8.0, right: 8.0),

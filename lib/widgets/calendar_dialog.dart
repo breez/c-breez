@@ -59,6 +59,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
       ),
       actions: [
         TextButton(
+          onPressed: _clearFilter,
           child: Text(
             texts.pos_transactions_range_dialog_clear,
             style: theme.cancelButtonStyle.copyWith(
@@ -66,7 +67,6 @@ class _CalendarDialogState extends State<CalendarDialog> {
                   theme.themeId == "BLUE" ? Colors.red : themeData.errorColor,
             ),
           ),
-          onPressed: _clearFilter,
         ),
         TextButton(
           child: Text(
@@ -100,6 +100,12 @@ class _CalendarDialogState extends State<CalendarDialog> {
     final themeData = Theme.of(context);
 
     return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectDate(context, isStartBtn);
+        });
+      },
+      behavior: HitTestBehavior.translucent,
       child: Theme(
         data: theme.themeId == "BLUE"
             ? themeData
@@ -116,12 +122,6 @@ class _CalendarDialogState extends State<CalendarDialog> {
           style: themeData.dialogTheme.contentTextStyle,
         ),
       ),
-      onTap: () {
-        setState(() {
-          _selectDate(context, isStartBtn);
-        });
-      },
-      behavior: HitTestBehavior.translucent,
     );
   }
 

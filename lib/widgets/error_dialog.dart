@@ -85,8 +85,8 @@ Future<bool?> promptAreYouSure(
   Widget? titleWidget = title == null ? null : Text(title);
   if (wideTitle) {
     titleWidget = SizedBox(
-      child: titleWidget,
       width: MediaQuery.of(context).size.width,
+      child: titleWidget,
     );
   }
   return showDialog<bool>(
@@ -142,8 +142,8 @@ Future<bool?> promptMessage(
         );
   if (wideTitle) {
     titleWidget = SizedBox(
-      child: titleWidget,
       width: MediaQuery.of(context).size.width,
+      child: titleWidget,
     );
   }
   return showDialog<bool>(

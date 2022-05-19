@@ -21,7 +21,7 @@ void main(List<String> arguments) async {
   }
 
   var creds = credsFile.readAsBytesSync();
-  print("creds = " + String.fromCharCodes(creds));
+  print("creds = ${String.fromCharCodes(creds)}");
   service.initWithCredentials(creds);
   await service.startNode();
   print("ok");

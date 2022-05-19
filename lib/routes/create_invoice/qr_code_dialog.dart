@@ -85,7 +85,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                       icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
                       color: Theme.of(context).primaryTextTheme.button!.color!,
                       onPressed: () {
-                        ShareExtend.share("lightning:" + widget._invoice.bolt11, "text");
+                        ShareExtend.share("lightning:${widget._invoice.bolt11}", "text");
                       },
                     ),
                     IconButton(
@@ -155,9 +155,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {
-    String _message = "";
+    String message = "";
 
-    _message = "";
+    message = "";
     var lspFee = widget._invoice.lspFee;
     if (lspFee != 0) {
       String conversionText = "";
@@ -165,9 +165,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
         FiatConversion conversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
         conversionText = " (${conversion.format(Int64(lspFee))})";
       }
-      _message = "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
+      message = "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
     }
-    _message += "Keep Breez open until the payment is completed.";
+    message += "Keep Breez open until the payment is completed.";
 
     return WarningBox(
       boxPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -175,7 +175,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       backgroundColor: theme.themeId == "BLUE" ? const Color(0xFFf3f8fc) : null,
       borderColor: theme.themeId == "BLUE" ? const Color(0xFF0085fb) : null,
       child: Text(
-        _message,
+        message,
         textAlign: TextAlign.center,
         style: Theme.of(context).primaryTextTheme.caption,
       ),

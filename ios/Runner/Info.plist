@@ -43,5 +43,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+    <string>Camera permission is required for QR code scanning.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Required for selecting user avatar image.</string>
 </dict>
 </plist>

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 void showProviderErrorDialog(BuildContext context, Function() onSelect) {
   String message = "In order to activate Breez, please ";
   message =
-      "There was an error connecting to the selected provider. " + message;
+      "There was an error connecting to the selected provider. $message";
   promptError(
     context,
     "Connection Error",

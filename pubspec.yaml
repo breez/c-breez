@@ -54,11 +54,6 @@ dependencies:
   validators: ^3.0.0
   bip39: ^1.0.6
   image_picker: ^0.8.5+3
-  qr_code_scanner:
-    git:
-      url: https://github.com/X-SLAYER/qr_code_scanner.git
-      ref: flutter-beta
-  # Point to fork that solves Flutter 3.0 issues until author merge changes
   mobile_scanner: ^1.1.0
   shared_preferences: ^2.0.15
   protobuf: ^2.0.1
@@ -77,13 +72,13 @@ dependencies:
   timeago: ^3.2.2
   email_validator: ^2.0.1
   image_cropper: ^2.0.3
-  image: ^3.1.3
+  image: ^3.1.3 # 3.2.0 available, conflicts with flutter_svg due to xml dependency
   app_settings: ^4.1.6
   qr_flutter: ^4.0.0
   simple_animations: ^4.0.2
   scan: ^1.6.0
-  another_flushbar: ^1.10.28
-  archive: ^3.1.9
+  another_flushbar: ^1.10.29
+  archive: ^3.3.0
   sqlite3_flutter_libs: ^0.5.7
   greenlight:
     path: ./packages/greenlight
@@ -101,7 +96,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
-  mockito: ^5.1.0
+  mockito: ^5.2.0
   sqflite_common_ffi: ^2.1.1
   test: any
 

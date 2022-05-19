@@ -90,8 +90,8 @@ class InjectorMock extends Mock implements ServiceInjector {
   MockClientHandler? mockHandler;
 
   @override
-  LightningService get breezBridge {
-    return GreenlightService();
+  Future<LightningService> get breezBridge async {
+    return GreenlightService("test_storage.json");
   }
 
   @override

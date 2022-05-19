@@ -13,6 +13,7 @@ import 'package:grpc/grpc.dart';
 import 'package:hex/hex.dart';
 import 'package:c_breez/logger.dart';
 import 'package:lightning_toolkit/impl.dart';
+import 'package:lightning_toolkit/signer.dart';
 
 class GreenlightService implements LightningService {
   final String _signerStoragePath;

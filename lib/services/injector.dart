@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:c_breez/repositorires/app_storage.dart';
 import 'package:c_breez/repositorires/dao/db.dart';
@@ -12,6 +13,7 @@ import 'package:c_breez/services/lightning/greenlight/service.dart';
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'background_task.dart';
@@ -52,8 +54,14 @@ class ServiceInjector {
     return _breezServer ??= BreezServer();
   }
 
-  LightningService get breezBridge {
-    return _lightningService ??= GreenlightService();
+  Future<LightningService> get breezBridge async {
+    if (_lightningService != null) {
+      return Future.value(_lightningService);
+    }
+    final docDir = await getApplicationDocumentsDirectory();
+    final signerDir = Directory("${docDir.path}/signer");
+    await signerDir.create(recursive: true);
+    return _lightningService ??= GreenlightService(signerDir.path);
   }
 
   Device get device {

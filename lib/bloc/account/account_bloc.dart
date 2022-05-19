@@ -31,14 +31,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String paymentFilterSettingsKey = "payment_filter_settings";
   static const String accountCredsKey = "account_creds_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
-
-  final _lightningToolkit = lntoolkit.getLightningToolkit();
+  
   final AppStorage _appStorage;
   final LightningService _breezLib;  
   final KeyChain _keyChain;
   final LSPBloc _lspBloc;
-  bool started = false;
-  List<int>? _nodePrivateKey;
+  bool started = false;  
 
   AccountBloc(this._breezLib, this._appStorage, this._keyChain, this._lspBloc)
       : super(AccountState.initial()) {
@@ -60,7 +58,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         if (credsHEX != null) {
           var creds = HEX.decode(credsHEX);
           log.info("found account credentials: ${String.fromCharCodes(creds)}");
-          _nodePrivateKey = _breezLib.initWithCredentials(creds);
+          _breezLib.initWithCredentials(creds);
           _startNode();
         }
       });
@@ -204,8 +202,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
     // inject routing hints and sign the new invoice
     var routingHints = lntoolkit.RouteHint(field0: List.from([lspHop]));
-    final bolt11 = await _lightningToolkit.addRoutingHints(
-        invoice: invoice.bolt11, hints: [routingHints], privateKey: Uint8List.fromList(_nodePrivateKey!));
+    final bolt11 = await _breezLib.getSigner().addRoutingHints(
+        invoice: invoice.bolt11, hints: [routingHints]);
 
     syncStateWithNode();
 

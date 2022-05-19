@@ -4,7 +4,7 @@ import 'package:c_breez/services/lightning/greenlight/service.dart';
 import 'package:bip39/bip39.dart' as bip39;
 
 void main(List<String> arguments) async {
-  var service = GreenlightService();
+  var service = GreenlightService("test_storage.json");
   var certsDir = Directory("certs");
   certsDir.createSync(recursive: true);
   var seedFile = File(p.join(certsDir.path, "secret_rust"));

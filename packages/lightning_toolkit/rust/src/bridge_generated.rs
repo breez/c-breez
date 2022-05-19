@@ -22,6 +22,26 @@ use crate::invoice::RouteHintHop;
 // Section: wire functions
 
 #[no_mangle]
+pub extern "C" fn wire_init_hsmd(
+    port_: i64,
+    storage_path: *mut wire_uint_8_list,
+    secret: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "init_hsmd",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_storage_path = storage_path.wire2api();
+            let api_secret = secret.wire2api();
+            move |task_callback| init_hsmd(api_storage_path, api_secret)
+        },
+    )
+}
+
+#[no_mangle]
 pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -37,11 +57,32 @@ pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list)
 }
 
 #[no_mangle]
+pub extern "C" fn wire_node_pubkey(
+    port_: i64,
+    storage_path: *mut wire_uint_8_list,
+    secret: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "node_pubkey",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_storage_path = storage_path.wire2api();
+            let api_secret = secret.wire2api();
+            move |task_callback| node_pubkey(api_storage_path, api_secret)
+        },
+    )
+}
+
+#[no_mangle]
 pub extern "C" fn wire_add_routing_hints(
     port_: i64,
+    storage_path: *mut wire_uint_8_list,
+    secret: *mut wire_uint_8_list,
     invoice: *mut wire_uint_8_list,
     hints: *mut wire_list_route_hint,
-    private_key: *mut wire_uint_8_list,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -50,10 +91,69 @@ pub extern "C" fn wire_add_routing_hints(
             mode: FfiCallMode::Normal,
         },
         move || {
+            let api_storage_path = storage_path.wire2api();
+            let api_secret = secret.wire2api();
             let api_invoice = invoice.wire2api();
             let api_hints = hints.wire2api();
-            let api_private_key = private_key.wire2api();
-            move |task_callback| add_routing_hints(api_invoice, api_hints, api_private_key)
+            move |task_callback| {
+                add_routing_hints(api_storage_path, api_secret, api_invoice, api_hints)
+            }
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_sign_message(
+    port_: i64,
+    storage_path: *mut wire_uint_8_list,
+    secret: *mut wire_uint_8_list,
+    msg: *mut wire_uint_8_list,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "sign_message",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_storage_path = storage_path.wire2api();
+            let api_secret = secret.wire2api();
+            let api_msg = msg.wire2api();
+            move |task_callback| sign_message(api_storage_path, api_secret, api_msg)
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_handle(
+    port_: i64,
+    storage_path: *mut wire_uint_8_list,
+    secret: *mut wire_uint_8_list,
+    msg: *mut wire_uint_8_list,
+    peer_id: *mut wire_uint_8_list,
+    db_id: u64,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "handle",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_storage_path = storage_path.wire2api();
+            let api_secret = secret.wire2api();
+            let api_msg = msg.wire2api();
+            let api_peer_id = peer_id.wire2api();
+            let api_db_id = db_id.wire2api();
+            move |task_callback| {
+                handle(
+                    api_storage_path,
+                    api_secret,
+                    api_msg,
+                    api_peer_id,
+                    api_db_id,
+                )
+            }
         },
     )
 }

@@ -35,19 +35,20 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     var injector = ServiceInjector();
-    var appDir = await getApplicationDocumentsDirectory();
+    var breezBridge = await injector.breezBridge;
+    var appDir = await getApplicationDocumentsDirectory();    
     final storage = await HydratedStorage.build(
-        storageDirectory: Directory(p.join(appDir.path, "bloc_storge")));    
+        storageDirectory: Directory(p.join(appDir.path, "bloc_storge")));                   
     HydratedBlocOverrides.runZoned(
         () => runApp(MultiBlocProvider(
               providers: [
                 BlocProvider<LSPBloc>(
                   create: (BuildContext context) => LSPBloc(injector.appStorage,
-                      injector.breezBridge, injector.breezServer),
+                      breezBridge, injector.breezServer),
                 ),
                 BlocProvider<AccountBloc>(
                   create: (BuildContext context) => AccountBloc(
-                      injector.breezBridge,
+                      breezBridge,
                       injector.appStorage,
                       injector.keychain,                      
                       context.read<LSPBloc>(),
@@ -55,7 +56,7 @@ void main() async {
                 ),                
                 BlocProvider<InvoiceBloc>(
                   create: (BuildContext context) =>
-                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage, injector.breezBridge),
+                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage, breezBridge),
                 ),
                 BlocProvider<UserProfileBloc>(
                   create: (BuildContext context) => UserProfileBloc(

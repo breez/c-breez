@@ -12,12 +12,33 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'dart:ffi' as ffi;
 
 abstract class LightningToolkit {
+  Future<Uint8List> initHsmd(
+      {required String storagePath, required Uint8List secret, dynamic hint});
+
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
+  Future<Uint8List> nodePubkey(
+      {required String storagePath, required Uint8List secret, dynamic hint});
+
   Future<String> addRoutingHints(
-      {required String invoice,
+      {required String storagePath,
+      required Uint8List secret,
+      required String invoice,
       required List<RouteHint> hints,
-      required Uint8List privateKey,
+      dynamic hint});
+
+  Future<Uint8List> signMessage(
+      {required String storagePath,
+      required Uint8List secret,
+      required Uint8List msg,
+      dynamic hint});
+
+  Future<Uint8List> handle(
+      {required String storagePath,
+      required Uint8List secret,
+      required Uint8List msg,
+      Uint8List? peerId,
+      required int dbId,
       dynamic hint});
 }
 
@@ -87,6 +108,22 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
 
   LightningToolkitImpl.raw(LightningToolkitWire inner) : super(inner);
 
+  Future<Uint8List> initHsmd(
+          {required String storagePath,
+          required Uint8List secret,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_init_hsmd(port_,
+            _api2wire_String(storagePath), _api2wire_uint_8_list(secret)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "init_hsmd",
+          argNames: ["storagePath", "secret"],
+        ),
+        argValues: [storagePath, secret],
+        hint: hint,
+      ));
+
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint}) =>
       executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) =>
@@ -100,23 +137,85 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
         hint: hint,
       ));
 
+  Future<Uint8List> nodePubkey(
+          {required String storagePath,
+          required Uint8List secret,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_node_pubkey(port_,
+            _api2wire_String(storagePath), _api2wire_uint_8_list(secret)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "node_pubkey",
+          argNames: ["storagePath", "secret"],
+        ),
+        argValues: [storagePath, secret],
+        hint: hint,
+      ));
+
   Future<String> addRoutingHints(
-          {required String invoice,
+          {required String storagePath,
+          required Uint8List secret,
+          required String invoice,
           required List<RouteHint> hints,
-          required Uint8List privateKey,
           dynamic hint}) =>
       executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => inner.wire_add_routing_hints(
             port_,
+            _api2wire_String(storagePath),
+            _api2wire_uint_8_list(secret),
             _api2wire_String(invoice),
-            _api2wire_list_route_hint(hints),
-            _api2wire_uint_8_list(privateKey)),
+            _api2wire_list_route_hint(hints)),
         parseSuccessData: _wire2api_String,
         constMeta: const FlutterRustBridgeTaskConstMeta(
           debugName: "add_routing_hints",
-          argNames: ["invoice", "hints", "privateKey"],
+          argNames: ["storagePath", "secret", "invoice", "hints"],
         ),
-        argValues: [invoice, hints, privateKey],
+        argValues: [storagePath, secret, invoice, hints],
+        hint: hint,
+      ));
+
+  Future<Uint8List> signMessage(
+          {required String storagePath,
+          required Uint8List secret,
+          required Uint8List msg,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_sign_message(
+            port_,
+            _api2wire_String(storagePath),
+            _api2wire_uint_8_list(secret),
+            _api2wire_uint_8_list(msg)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "sign_message",
+          argNames: ["storagePath", "secret", "msg"],
+        ),
+        argValues: [storagePath, secret, msg],
+        hint: hint,
+      ));
+
+  Future<Uint8List> handle(
+          {required String storagePath,
+          required Uint8List secret,
+          required Uint8List msg,
+          Uint8List? peerId,
+          required int dbId,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_handle(
+            port_,
+            _api2wire_String(storagePath),
+            _api2wire_uint_8_list(secret),
+            _api2wire_uint_8_list(msg),
+            _api2wire_opt_uint_8_list(peerId),
+            _api2wire_u64(dbId)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "handle",
+          argNames: ["storagePath", "secret", "msg", "peerId", "dbId"],
+        ),
+        argValues: [storagePath, secret, msg, peerId, dbId],
         hint: hint,
       ));
 
@@ -149,6 +248,10 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
 
   ffi.Pointer<ffi.Uint64> _api2wire_opt_box_autoadd_u64(int? raw) {
     return raw == null ? ffi.nullptr : _api2wire_box_autoadd_u64(raw);
+  }
+
+  ffi.Pointer<wire_uint_8_list> _api2wire_opt_uint_8_list(Uint8List? raw) {
+    return raw == null ? ffi.nullptr : _api2wire_uint_8_list(raw);
   }
 
   int _api2wire_u32(int raw) {
@@ -288,6 +391,26 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           lookup)
       : _lookup = lookup;
 
+  void wire_init_hsmd(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> storage_path,
+    ffi.Pointer<wire_uint_8_list> secret,
+  ) {
+    return _wire_init_hsmd(
+      port_,
+      storage_path,
+      secret,
+    );
+  }
+
+  late final _wire_init_hsmdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_init_hsmd');
+  late final _wire_init_hsmd = _wire_init_hsmdPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_parse_invoice(
     int port_,
     ffi.Pointer<wire_uint_8_list> invoice,
@@ -305,17 +428,39 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_parse_invoice = _wire_parse_invoicePtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_node_pubkey(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> storage_path,
+    ffi.Pointer<wire_uint_8_list> secret,
+  ) {
+    return _wire_node_pubkey(
+      port_,
+      storage_path,
+      secret,
+    );
+  }
+
+  late final _wire_node_pubkeyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_node_pubkey');
+  late final _wire_node_pubkey = _wire_node_pubkeyPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_add_routing_hints(
     int port_,
+    ffi.Pointer<wire_uint_8_list> storage_path,
+    ffi.Pointer<wire_uint_8_list> secret,
     ffi.Pointer<wire_uint_8_list> invoice,
     ffi.Pointer<wire_list_route_hint> hints,
-    ffi.Pointer<wire_uint_8_list> private_key,
   ) {
     return _wire_add_routing_hints(
       port_,
+      storage_path,
+      secret,
       invoice,
       hints,
-      private_key,
     );
   }
 
@@ -324,11 +469,77 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.Void Function(
               ffi.Int64,
               ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_list_route_hint>,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_add_routing_hints');
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_list_route_hint>)>>('wire_add_routing_hints');
   late final _wire_add_routing_hints = _wire_add_routing_hintsPtr.asFunction<
+      void Function(
+          int,
+          ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_list_route_hint>)>();
+
+  void wire_sign_message(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> storage_path,
+    ffi.Pointer<wire_uint_8_list> secret,
+    ffi.Pointer<wire_uint_8_list> msg,
+  ) {
+    return _wire_sign_message(
+      port_,
+      storage_path,
+      secret,
+      msg,
+    );
+  }
+
+  late final _wire_sign_messagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_sign_message');
+  late final _wire_sign_message = _wire_sign_messagePtr.asFunction<
       void Function(int, ffi.Pointer<wire_uint_8_list>,
-          ffi.Pointer<wire_list_route_hint>, ffi.Pointer<wire_uint_8_list>)>();
+          ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_handle(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> storage_path,
+    ffi.Pointer<wire_uint_8_list> secret,
+    ffi.Pointer<wire_uint_8_list> msg,
+    ffi.Pointer<wire_uint_8_list> peer_id,
+    int db_id,
+  ) {
+    return _wire_handle(
+      port_,
+      storage_path,
+      secret,
+      msg,
+      peer_id,
+      db_id,
+    );
+  }
+
+  late final _wire_handlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Uint64)>>('wire_handle');
+  late final _wire_handle = _wire_handlePtr.asFunction<
+      void Function(
+          int,
+          ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>,
+          int)>();
 
   ffi.Pointer<ffi.Uint64> new_box_autoadd_u64(
     int value,

@@ -10,19 +10,18 @@ import 'package:c_breez/handlers/received_invoice_notification.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/user_profile.dart';
+import 'package:c_breez/routes/home/account_page.dart';
+import 'package:c_breez/routes/home/widgets/app_bar/home_app_bar.dart';
+import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_actions_bar.dart';
+import 'package:c_breez/routes/home/widgets/close_popup.dart';
+import 'package:c_breez/routes/home/widgets/drawer/home_drawer.dart';
+import 'package:c_breez/routes/home/widgets/fade_in_widget.dart';
+import 'package:c_breez/routes/home/widgets/qr_action_button.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'account_page.dart';
-import 'widgets/app_bar/home_app_bar.dart';
-import 'widgets/bottom_actions_bar/bottom_actions_bar.dart';
-import 'widgets/qr_action_button.dart';
-import 'widgets/close_popup.dart';
-import 'widgets/drawer/home_drawer.dart';
-import 'widgets/fade_in_widget.dart';
 
 class Home extends StatefulWidget {
   const Home({
@@ -113,10 +112,12 @@ class HomeState extends State<Home> {
           ),
           bottomNavigationBar: BottomActionsBar(account, firstPaymentItemKey),
           floatingActionButton: QrActionButton(account, firstPaymentItemKey),
-          floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerDocked,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
           body: _drawerKey.currentState?.screen() ??
-              AccountPage(firstPaymentItemKey, scrollController),
+              AccountPage(
+                firstPaymentItemKey,
+                scrollController,
+              ),
         ),
       ),
     );

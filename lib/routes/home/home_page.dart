@@ -128,8 +128,6 @@ class HomeState extends State<Home> {
 
     InvoiceNotificationsHandler(
       context,
-      context.read(),
-      context.read(),
       firstPaymentItemKey,
       scrollController,
       _scaffoldKey,

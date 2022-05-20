@@ -25,7 +25,11 @@ class SpontaneousPaymentPage extends StatefulWidget {
   final String? nodeID;
   final GlobalKey firstPaymentItemKey;
 
-  const SpontaneousPaymentPage(this.nodeID, this.firstPaymentItemKey);
+  const SpontaneousPaymentPage(
+    this.nodeID,
+    this.firstPaymentItemKey, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -211,7 +215,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
             context: context,
             barrierDismissible: false,
             builder: (_) => ProcessingPaymentDialog(
-                  context,
                   () {
                     var sendPayment =
                         Future.delayed(const Duration(seconds: 1), () {
@@ -223,7 +226,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
                     return sendPayment;
                   },
-                  accBloc,
                   widget.firstPaymentItemKey,
                   (_) {},
                   220,

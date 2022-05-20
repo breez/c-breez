@@ -1,17 +1,14 @@
 import 'dart:async';
 
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/loading_animated_text.dart';
 import 'package:c_breez/widgets/payment_request_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-const PAYMENT_LIST_ITEM_HEIGHT = 72.0;
+const _kPaymentListItemHeight = 72.0;
 
 class ProcessingPaymentDialog extends StatefulWidget {
-  final BuildContext context;
-  final AccountBloc accountBloc;
   final GlobalKey firstPaymentItemKey;
   final Function(PaymentRequestState state) _onStateChange;
   final bool popOnCompletion;
@@ -19,14 +16,13 @@ class ProcessingPaymentDialog extends StatefulWidget {
   final double minHeight;
 
   const ProcessingPaymentDialog(
-    this.context,
     this.paymentFunc,
-    this.accountBloc,
     this.firstPaymentItemKey,
     this._onStateChange,
     this.minHeight, {
+    Key? key,
     this.popOnCompletion = false,
-  });
+  }) : super(key: key);
 
   @override
   ProcessingPaymentDialogState createState() {
@@ -47,8 +43,6 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   ModalRoute? _currentRoute;
   double? channelsSyncProgress;
   final Completer? synchronizedCompleter = Completer<bool>();
-
-  final bool _isInit = false;
 
   @override
   void initState() {
@@ -81,13 +75,6 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
     });
   }
 
-  _closeDialog() {
-    if (widget.popOnCompletion) {
-      Navigator.of(context).removeRoute(_currentRoute!);
-    }
-    widget._onStateChange(PaymentRequestState.USER_CANCELLED);
-  }
-
   _payAncClose() {
     widget.paymentFunc().then((value) => _animateClose()).catchError((err) {
       if (widget.popOnCompletion) {
@@ -111,10 +98,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
     final queryData = MediaQuery.of(context);
     final statusBarHeight = queryData.padding.top;
     final safeArea = queryData.size.height - statusBarHeight;
-    // We subtract dialog size from safe area and divide by half because the dialog
-    // is at the center of the screen (distances to top and bottom are equal).
-    RenderBox? box =
-        _dialogKey.currentContext!.findRenderObject() as RenderBox;
+    RenderBox? box = _dialogKey.currentContext!.findRenderObject() as RenderBox;
     startHeight = box.size.height;
     double yMargin = (safeArea - box.size.height) / 2;
 
@@ -125,7 +109,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
       RenderBox paymentTableBox = paymentCtx.findRenderObject() as RenderBox;
       final dy = paymentTableBox.localToGlobal(Offset.zero).dy;
       final start = dy - statusBarHeight;
-      final end = safeArea - start - PAYMENT_LIST_ITEM_HEIGHT;
+      final end = safeArea - start - _kPaymentListItemHeight;
       startPosition = RelativeRect.fromLTRB(0.0, start, 0.0, end);
     }
     transitionAnimation = RelativeRectTween(
@@ -243,22 +227,20 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
     final themeData = Theme.of(context);
     final queryData = MediaQuery.of(context);
 
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-        child: SizedBox(
-          width: queryData.size.width,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              LoadingAnimatedText(
-                texts.processing_payment_dialog_wait,
-                textStyle: themeData.dialogTheme.contentTextStyle,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+      child: SizedBox(
+        width: queryData.size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            LoadingAnimatedText(
+              texts.processing_payment_dialog_wait,
+              textStyle: themeData.dialogTheme.contentTextStyle,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

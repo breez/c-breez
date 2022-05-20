@@ -1,11 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PaymentConfirmationDialog extends StatelessWidget {
-  final AccountBloc accountBloc;
   final String bolt11;
   final Int64 _amountToPay;
   final String _amountToPayStr;
@@ -14,14 +12,14 @@ class PaymentConfirmationDialog extends StatelessWidget {
   final double minHeight;
 
   const PaymentConfirmationDialog(
-    this.accountBloc,
     this.bolt11,
     this._amountToPay,
     this._amountToPayStr,
     this._onCancel,
     this._onPaymentApproved,
-    this.minHeight,
-  );
+    this.minHeight, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,41 +64,39 @@ class PaymentConfirmationDialog extends StatelessWidget {
     final queryData = MediaQuery.of(context);
     final texts = AppLocalizations.of(context)!;
 
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-        child: SizedBox(
-          width: queryData.size.width,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                texts.payment_confirmation_dialog_confirmation,
-                style: themeData.dialogTheme.contentTextStyle,
-                textAlign: TextAlign.center,
-              ),
-              AutoSizeText.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: _amountToPayStr,
-                      style: themeData.dialogTheme.contentTextStyle!.copyWith(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+      child: SizedBox(
+        width: queryData.size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              texts.payment_confirmation_dialog_confirmation,
+              style: themeData.dialogTheme.contentTextStyle,
+              textAlign: TextAlign.center,
+            ),
+            AutoSizeText.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: _amountToPayStr,
+                    style: themeData.dialogTheme.contentTextStyle!.copyWith(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    TextSpan(
-                      text: texts.payment_confirmation_dialog_confirmation_end,
-                    )
-                  ],
-                ),
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                style: themeData.dialogTheme.contentTextStyle,
+                  ),
+                  TextSpan(
+                    text: texts.payment_confirmation_dialog_confirmation_end,
+                  )
+                ],
               ),
-            ],
-          ),
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: themeData.dialogTheme.contentTextStyle,
+            ),
+          ],
         ),
       ),
     );

@@ -53,11 +53,10 @@ class WalletDashboard extends StatelessWidget {
     UserProfileState userProfileState,
     AccountState accountState,
   ) {
-    final themeData = Theme.of(context);
-    final headline4 = themeData.accentTextTheme.headline4!;
+    const balanceAmountTextStyle = theme.balanceAmountTextStyle;
     final profileSettings = userProfileState.profileSettings;
 
-    double startHeaderSize = headline4.fontSize!;
+    double startHeaderSize = balanceAmountTextStyle.fontSize!;
     double endHeaderFontSize = startHeaderSize - 8.0;
 
     return GestureDetector(
@@ -153,11 +152,14 @@ class WalletDashboard extends StatelessWidget {
     double endHeaderFontSize,
   ) {
     final themeData = Theme.of(context);
-    final headline4 = themeData.accentTextTheme.headline4!;
+    final balanceAmountTextStyle = theme.balanceAmountTextStyle
+        .copyWith(color: themeData.colorScheme.onSecondary);
+    final balanceCurrencyTextStyle = theme.balanceCurrencyTextStyle
+        .copyWith(color: themeData.colorScheme.onSecondary);
 
     return RichText(
       text: TextSpan(
-        style: headline4.copyWith(
+        style: balanceAmountTextStyle.copyWith(
           fontSize: startHeaderSize -
               (startHeaderSize - endHeaderFontSize) * _offsetFactor,
         ),
@@ -168,8 +170,8 @@ class WalletDashboard extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: currencyState.bitcoinCurrency.displayName,
-            style: headline4.copyWith(
+            text: ' ${currencyState.bitcoinCurrency.displayName}',
+            style: balanceCurrencyTextStyle.copyWith(
               fontSize: startHeaderSize * 0.6 -
                   (startHeaderSize * 0.6 - endHeaderFontSize) * _offsetFactor,
             ),
@@ -189,7 +191,8 @@ class WalletDashboard extends StatelessWidget {
 
     return Text(
       texts.wallet_dashboard_balance_hide,
-      style: themeData.accentTextTheme.headline4!.copyWith(
+      style: theme.balanceAmountTextStyle.copyWith(
+        color: themeData.colorScheme.onSecondary,
         fontSize: startHeaderSize -
             (startHeaderSize - endHeaderFontSize) * _offsetFactor,
       ),
@@ -202,7 +205,7 @@ class WalletDashboard extends StatelessWidget {
     AccountState accountState,
   ) {
     final themeData = Theme.of(context);
-    final subtitle1 = themeData.accentTextTheme.subtitle1!;
+    const fiatConversionTextStyle = theme.balanceFiatConversionTextStyle;
 
     return TextButton(
       style: ButtonStyle(
@@ -231,8 +234,8 @@ class WalletDashboard extends StatelessWidget {
       },
       child: Text(
         currencyState.fiatConversion()?.format(accountState.balance) ?? "",
-        style: subtitle1.copyWith(
-          color: subtitle1.color!.withOpacity(
+        style: fiatConversionTextStyle.copyWith(
+          color: themeData.colorScheme.onSecondary.withOpacity(
             pow(1.00 - _offsetFactor, 2).toDouble(),
           ),
         ),

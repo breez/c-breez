@@ -62,7 +62,9 @@ class PaymentItem extends StatelessWidget {
                   offset: const Offset(-8, 0),
                   child: Text(
                     _paymentInfo.shortTitle,
-                    style: themeData.accentTextTheme.subtitle2,
+                    style: themeData.textTheme.subtitle2?.copyWith(
+                      color: themeData.colorScheme.onSecondary,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -79,7 +81,9 @@ class PaymentItem extends StatelessWidget {
                             _paymentInfo.creationTimestamp.toInt() * 1000,
                           ),
                         ),
-                        style: themeData.accentTextTheme.caption,
+                        style: themeData.textTheme.caption?.copyWith(
+                          color: themeData.colorScheme.onSecondary,
+                        ),
                       ),
                       _pendingSuffix(context),
                     ],
@@ -119,7 +123,7 @@ class PaymentItem extends StatelessWidget {
     return _paymentInfo.pending
         ? Text(
             texts.wallet_dashboard_payment_item_balance_pending_suffix,
-            style: themeData.accentTextTheme.caption!.copyWith(
+            style: themeData.textTheme.caption!.copyWith(
               color: theme.customData[theme.themeId]!.pendingTextColor,
             ),
           )
@@ -143,7 +147,9 @@ class PaymentItem extends StatelessWidget {
           : _paymentInfo.type.isIncome
               ? texts.wallet_dashboard_payment_item_balance_positive(amount)
               : texts.wallet_dashboard_payment_item_balance_negative(amount),
-      style: themeData.accentTextTheme.headline6,
+      style: themeData.textTheme.headline6?.copyWith(
+        color: themeData.colorScheme.onSecondary,
+      ),
     );
   }
 
@@ -165,7 +171,9 @@ class PaymentItem extends StatelessWidget {
       _hideBalance
           ? texts.wallet_dashboard_payment_item_balance_hide
           : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
-      style: themeData.accentTextTheme.caption,
+      style: themeData.textTheme.caption?.copyWith(
+        color: themeData.colorScheme.onSecondary,
+      ),
     );
   }
 

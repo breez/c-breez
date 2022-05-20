@@ -165,7 +165,7 @@ class _DropdownMenuState<T> extends State<_DropdownMenu<T>> {
           ),
           onTap: () => Navigator.pop(
             context,
-            _DropdownRouteResult<T>(route.items[itemIndex].value!),
+            _DropdownRouteResult<T>(route.items[itemIndex].value as T),
           ),
         ),
       ));
@@ -719,12 +719,12 @@ class _BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>>
   void initState() {
     super.initState();
     _updateSelectedIndex();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     _removeDropdownRoute();
     super.dispose();
   }
@@ -884,8 +884,8 @@ class _BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>>
       items.add(DefaultTextStyle(
         style: _textStyle.copyWith(color: Theme.of(context).hintColor),
         child: IgnorePointer(
-          child: emplacedHint,
           ignoringSemantics: false,
+          child: emplacedHint,
         ),
       ));
     }
@@ -1020,7 +1020,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
               isEmpty: value == null,
               child: DropdownButtonHideUnderline(
                 child: BreezDropdownButton<T>(
-                  value: value!,
+                  value: value as T,
                   items: items,
                   hint: hint,
                   onChanged: onChanged == null ? null : field.didChange,

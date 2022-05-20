@@ -9,6 +9,7 @@ final ThemeData breezDarkTheme = ThemeData(
   colorScheme: const ColorScheme.dark().copyWith(
     primary: Colors.white,
     secondary: Colors.white,
+    onSecondary: Colors.white,
     error: const Color(0xFFeddc97),
   ),
   primaryColor: const Color(0xFF7aa5eb),

@@ -1,18 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/models/payment_info.dart';
+import 'package:c_breez/models/payment_type.dart';
 import 'package:c_breez/routes/home/payment_item_avatar.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_extend/share_extend.dart';
-
-import 'flushbar.dart';
 
 final AutoSizeGroup _labelGroup = AutoSizeGroup();
 final AutoSizeGroup _valueGroup = AutoSizeGroup();
@@ -25,7 +25,7 @@ Future<void> showPaymentDetailsDialog(
   var mediaQuery = MediaQuery.of(context);
   final texts = AppLocalizations.of(context)!;
 
-  AlertDialog _paymentDetailsDialog = AlertDialog(
+  AlertDialog paymentDetailsDialog = AlertDialog(
     titlePadding: EdgeInsets.zero,
     title: Stack(
       children: <Widget>[
@@ -56,7 +56,7 @@ Future<void> showPaymentDetailsDialog(
     ),
     contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
     content: SingleChildScrollView(
-      child: BlocBuilder<CurrencyBoc, CurrencyState>(
+      child: BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
         return SizedBox(
           width: mediaQuery.size.width,
@@ -239,7 +239,7 @@ Future<void> showPaymentDetailsDialog(
   return showDialog<void>(
     useRootNavigator: false,
     context: context,
-    builder: (_) => _paymentDetailsDialog,
+    builder: (_) => paymentDetailsDialog,
   );
 }
 
@@ -250,9 +250,9 @@ Widget _amountText(
   ThemeData themeData,
 ) {
   final amount = currency.format(paymentInfo.amountSat);
-  final text = (paymentInfo.type == PaymentType.SENT)
-      ? texts.payment_details_dialog_amount_negative(amount)
-      : texts.payment_details_dialog_amount_positive(amount);
+  final text = (paymentInfo.type.isIncome)
+      ? texts.payment_details_dialog_amount_positive(amount)
+      : texts.payment_details_dialog_amount_negative(amount);
   return AutoSizeText(
     text,
     style: themeData.primaryTextTheme.headline3,
@@ -303,10 +303,10 @@ class ShareablePaymentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
-    final _expansionTileTheme =
+    final expansionTileTheme =
         themeData.copyWith(dividerColor: themeData.backgroundColor);
     return Theme(
-      data: _expansionTileTheme,
+      data: expansionTileTheme,
       child: ExpansionTile(
         iconColor: themeData.primaryTextTheme.button!.color!,
         collapsedIconColor: themeData.primaryTextTheme.button!.color!,

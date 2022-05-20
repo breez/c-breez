@@ -1,4 +1,4 @@
-import 'package:fixnum/fixnum.dart';
+import 'package:c_breez/models/payment_type.dart';
 import 'package:hex/hex.dart';
 
 class Invoice {
@@ -38,32 +38,46 @@ class PaymentFilterModel {
   final DateTime? endDate;
   final bool initial;
 
-  PaymentFilterModel(this.paymentType, this.startDate, this.endDate,
-      {this.initial = false});
+  PaymentFilterModel(
+    this.paymentType, {
+    this.startDate,
+    this.endDate,
+    this.initial = false,
+  });
 
   PaymentFilterModel.initial()
-      : this([
-          PaymentType.SENT,
-          PaymentType.RECEIVED,
-        ], null, null, initial: true);
+      : this(
+          [
+            PaymentType.sent,
+            PaymentType.received,
+          ],
+          initial: true,
+        );
 
-  PaymentFilterModel copyWith(
-      {List<PaymentType>? filter, DateTime? startDate, DateTime? endDate}) {
-    return PaymentFilterModel(filter ?? paymentType,
-        startDate ?? this.startDate, endDate ?? this.endDate);
+  PaymentFilterModel copyWith({
+    List<PaymentType>? filter,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) {
+    return PaymentFilterModel(
+      filter ?? paymentType,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+    );
   }
 
   factory PaymentFilterModel.fromJson(Map<String, dynamic> json) {
     var paymentType = (json["paymentType"] ?? <int>[]) as List<dynamic>;
     return PaymentFilterModel(
-        paymentType
-            .map((e) {
-              return PaymentType.values[e];
-            })
-            .cast<PaymentType>()
-            .toList(),
-        json["startDate"],
-        json["endDate"]);
+      paymentType
+          .map((e) {
+            return PaymentType.values[e];
+          })
+          .cast<PaymentType>()
+          .toList(),
+      startDate: json["startDate"],
+      endDate: json["endDate"],
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -73,42 +87,4 @@ class PaymentFilterModel {
       "endDate": endDate
     };
   }
-}
-
-//enum PaymentType { DEPOSIT, WITHDRAWAL, SENT, RECEIVED, CLOSED_CHANNEL }
-enum PaymentType { SENT, RECEIVED }
-
-class PaymentInfo {
-  final PaymentType type;
-  final Int64 amountMsat;
-  final Int64 fee;
-  final Int64 creationTimestamp;
-  final bool keySend;
-  final String paymentHash;
-  final String? preimage;
-  final String destination;
-  final bool pending;
-  final Int64? pendingExpirationTimestamp;
-  final String description;
-  final String longTitle;
-  final String shortTitle;
-  final String? imageURL;
-
-  PaymentInfo(
-      {required this.type,
-      required this.amountMsat,
-      required this.fee,
-      required this.creationTimestamp,
-      this.pending = false,
-      this.keySend = false,
-      required this.paymentHash,
-      this.preimage,
-      required this.destination,
-      this.pendingExpirationTimestamp,
-      this.description = "",
-      this.longTitle = "",
-      required this.shortTitle,
-      this.imageURL});
-
-  Int64 get amountSat => amountMsat ~/ 1000;
 }

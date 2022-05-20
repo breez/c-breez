@@ -1,5 +1,5 @@
-import 'dart:ui';
 
+import 'package:c_breez/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'breez_colors.dart';
@@ -13,6 +13,24 @@ class FieldTextStyle {
       TextStyle(color: BreezColors.white[200], letterSpacing: 0.4);
 }
 
+const balanceAmountTextStyle = TextStyle(
+    fontSize: 28,
+    letterSpacing: 1,
+    fontWeight: FontWeight.w600,
+    height: 1.56,
+    fontFamily: 'IBMPlexSans');
+const balanceCurrencyTextStyle = TextStyle(
+    fontSize: 22,
+    letterSpacing: 1,
+    fontWeight: FontWeight.w600,
+    height: 1.32,
+    fontFamily: 'IBMPlexSans');
+const balanceFiatConversionTextStyle = TextStyle(
+    fontSize: 16,
+    letterSpacing: 0.2,
+    fontWeight: FontWeight.w500,
+    height: 1.24,
+    fontFamily: 'IBMPlexSans');
 final toolbarTextStyle = const TextTheme(
   headline6:
       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),

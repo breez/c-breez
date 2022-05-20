@@ -32,7 +32,7 @@ class AvatarPicker extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
-        _pickImage(context);
+        _pickImage(context, (croppedFile) => _readFile(context, croppedFile));
       },
       child: Padding(
         padding: const EdgeInsets.only(top: 16.0),
@@ -45,30 +45,6 @@ class AvatarPicker extends StatelessWidget {
     final texts = AppLocalizations.of(context)!;
 
     return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Image(
-            image: AssetImage("src/icon/camera.png"),
-            color: Colors.white,
-            width: 24.0,
-            height: 24.0,
-          ),
-          Text(
-            imagePath == null
-                ? texts.avatar_picker_action_set_photo
-                : texts.avatar_picker_action_change_photo,
-            style: const TextStyle(
-              fontSize: 10.0,
-              color: Color.fromRGBO(255, 255, 255, 0.88),
-              letterSpacing: 0.0,
-              fontFamily: "IBMPlexSans",
-            ),
-          ),
-        ],
-      ),
       width: renderedWidth.roundToDouble(),
       height: renderedWidth.roundToDouble(),
       decoration: BoxDecoration(
@@ -94,29 +70,52 @@ class AvatarPicker extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Image(
+            image: AssetImage("src/icon/camera.png"),
+            color: Colors.white,
+            width: 24.0,
+            height: 24.0,
+          ),
+          Text(
+            imagePath == null
+                ? texts.avatar_picker_action_set_photo
+                : texts.avatar_picker_action_change_photo,
+            style: const TextStyle(
+              fontSize: 10.0,
+              color: Color.fromRGBO(255, 255, 255, 0.88),
+              letterSpacing: 0.0,
+              fontFamily: "IBMPlexSans",
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Future _pickImage(BuildContext context) async {
-    final _picker = ImagePicker();
-    PickedFile? pickedFile =
-        await _picker.getImage(source: ImageSource.gallery).catchError((err) {
+  Future _pickImage(BuildContext context, Function(CroppedFile?) onSuccess) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery).catchError((err) {
       log.severe(err.toString());
     });
     final File file = File(pickedFile!.path);
-    return ImageCropper()
+    CroppedFile? croppedFile = await ImageCropper()
         .cropImage(
-          sourcePath: file.path,
-          cropStyle: CropStyle.circle,
-          aspectRatio: const CropAspectRatio(
-            ratioX: 1.0,
-            ratioY: 1.0,
-          ),
-        )
-        .then((file) => _readFile(context, file!));
+      sourcePath: file.path,
+      cropStyle: CropStyle.circle,
+      aspectRatio: const CropAspectRatio(
+        ratioX: 1.0,
+        ratioY: 1.0,
+      ),
+    );
+    onSuccess.call(croppedFile);
   }
 
-  void _readFile(BuildContext context, File? file) {
+  void _readFile(BuildContext context, CroppedFile? file) {
     if (file == null) return;
     final texts = AppLocalizations.of(context)!;
     file

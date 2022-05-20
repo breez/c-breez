@@ -62,9 +62,9 @@ void main() async {
                   create: (BuildContext context) => UserProfileBloc(
                       injector.breezServer, injector.notifications),
                 ),
-                BlocProvider<CurrencyBoc>(
+                BlocProvider<CurrencyBloc>(
                   create: (BuildContext context) =>
-                      CurrencyBoc(injector.breezServer),
+                      CurrencyBloc(injector.breezServer),
                 ),
               ],
               child: UserApp(),
@@ -72,7 +72,7 @@ void main() async {
         storage: storage);
   }, (error, stackTrace) async {
     if (error is! FlutterErrorDetails) {
-      log.log(Level.SEVERE, error.toString() + '\n' + stackTrace.toString(),
+      log.log(Level.SEVERE, '$error\n$stackTrace',
           "FlutterError");
     }
   });

@@ -1,44 +1,37 @@
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/models/account.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/models/payment_info.dart';
+import 'package:c_breez/models/payment_type.dart';
+import 'package:c_breez/routes/home/flip_transition.dart';
+import 'package:c_breez/routes/home/payment_item_avatar.dart';
+import 'package:c_breez/routes/home/success_avatar.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/widgets/payment_details_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'flip_transition.dart';
-import 'payment_item_avatar.dart';
-import 'success_avatar.dart';
-
-const DASHBOARD_MAX_HEIGHT = 202.25;
-const DASHBOARD_MIN_HEIGHT = 70.0;
-const FILTER_MAX_SIZE = 64.0;
-const PAYMENT_LIST_ITEM_HEIGHT = 72.0;
-const BOTTOM_PADDING = 8.0;
-const AVATAR_DIAMETER = 24.0;
-
 class PaymentItem extends StatelessWidget {
   final PaymentInfo _paymentInfo;
-  final int _itemIndex;
   final bool _firstItem;
   final bool _hideBalance;
   final GlobalKey firstPaymentItemKey;
-  final ScrollController _scrollController;
 
   const PaymentItem(
     this._paymentInfo,
-    this._itemIndex,
     this._firstItem,
     this._hideBalance,
-    this.firstPaymentItemKey,
-    this._scrollController,
-  );
+    this.firstPaymentItemKey, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: BOTTOM_PADDING, left: 8, right: 8),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: Container(
@@ -47,105 +40,72 @@ class PaymentItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ListTile(
-                leading: Opacity(
-                  // when the transaction list is fully expanded
-                  // set opacity the avatar of the item that's
-                  // no longer visible to transparent
-                  opacity: (_scrollController.offset -
-                              (DASHBOARD_MAX_HEIGHT - DASHBOARD_MIN_HEIGHT) -
-                              ((PAYMENT_LIST_ITEM_HEIGHT + BOTTOM_PADDING) *
-                                      (_itemIndex + 1) -
-                                  FILTER_MAX_SIZE +
-                                  AVATAR_DIAMETER) >
-                          0)
-                      ? 0.0
-                      : 1.0,
-                  child: Container(
-                      height: PAYMENT_LIST_ITEM_HEIGHT,
-                      decoration: _createdWithin(const Duration(seconds: 10))
-                          ? BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    offset: const Offset(0.5, 0.5),
-                                    blurRadius: 5.0),
-                              ],
-                            )
-                          : null,
-                      child: _buildPaymentItemAvatar()),
+                leading: Container(
+                  height: 72.0,
+                  decoration: _createdWithin(const Duration(seconds: 10))
+                      ? BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              offset: const Offset(0.5, 0.5),
+                              blurRadius: 5.0,
+                            ),
+                          ],
+                        )
+                      : null,
+                  child: _buildPaymentItemAvatar(),
                 ),
                 key: _firstItem ? firstPaymentItemKey : null,
                 title: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: Opacity(
-                    // set title text to transparent when it leaves viewport
-                    opacity: (_scrollController.offset -
-                                (DASHBOARD_MAX_HEIGHT - DASHBOARD_MIN_HEIGHT) -
-                                ((PAYMENT_LIST_ITEM_HEIGHT + BOTTOM_PADDING) *
-                                        (_itemIndex + 1) -
-                                    FILTER_MAX_SIZE +
-                                    AVATAR_DIAMETER / 2) >
-                            0)
-                        ? 0.0
-                        : 1.0,
-                    child: Text(
-                      () {
-                        return _paymentInfo.shortTitle;
-                      }()
-                          .replaceAll("\n", " "),
-                      style: Theme.of(context).textTheme.subtitle2?.copyWith(
-                            color: Theme.of(context).colorScheme.onSecondary,
-                          ),
-                      overflow: TextOverflow.ellipsis,
+                  child: Text(
+                    _paymentInfo.shortTitle,
+                    style: themeData.textTheme.subtitle2?.copyWith(
+                      color: themeData.colorScheme.onSecondary,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 subtitle: Transform.translate(
                   offset: const Offset(-8, 0),
                   child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          BreezDateUtils.formatTimelineRelative(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  _paymentInfo.creationTimestamp.toInt() *
-                                      1000)),
-                          style: Theme.of(context).textTheme.caption?.copyWith(
-                                color:
-                                    Theme.of(context).colorScheme.onSecondary,
-                              ),
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        BreezDateUtils.formatTimelineRelative(
+                          DateTime.fromMillisecondsSinceEpoch(
+                            _paymentInfo.creationTimestamp.toInt() * 1000,
+                          ),
                         ),
-                        _paymentInfo.pending
-                            ? Text(" (Pending)",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .caption!
-                                    .copyWith(
-                                        color: theme.customData[theme.themeId]!
-                                            .pendingTextColor))
-                            : const SizedBox()
-                      ]),
+                        style: themeData.textTheme.caption?.copyWith(
+                          color: themeData.colorScheme.onSecondary,
+                        ),
+                      ),
+                      _pendingSuffix(context),
+                    ],
+                  ),
                 ),
                 trailing: SizedBox(
                   height: 44,
-                  child: BlocBuilder<CurrencyBoc, CurrencyState>(
-                      builder: (context, currencyState) {
-                    return Column(
-                      mainAxisAlignment:
-                          _paymentInfo.fee == 0 || _paymentInfo.pending
-                              ? MainAxisAlignment.center
-                              : MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        _paymentAmount(context, currencyState),
-                        _paymentFee(context, currencyState),
-                      ],
-                    );
-                  }),
+                  child: BlocBuilder<CurrencyBloc, CurrencyState>(
+                    builder: (context, currencyState) {
+                      return Column(
+                        mainAxisAlignment:
+                            _paymentInfo.fee == 0 || _paymentInfo.pending
+                                ? MainAxisAlignment.center
+                                : MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          _paymentAmount(context, currencyState),
+                          _paymentFee(context, currencyState),
+                        ],
+                      );
+                    },
+                  ),
                 ),
                 onTap: () => _showDetail(context),
               ),
@@ -156,50 +116,68 @@ class PaymentItem extends StatelessWidget {
     );
   }
 
-  Widget _paymentAmount(BuildContext context, CurrencyState currencyState) {
-    final type = _paymentInfo.type;
-    final negative = type == PaymentType.SENT;
+  Widget _pendingSuffix(BuildContext context) {
+    final texts = context.texts();
+    final themeData = Theme.of(context);
+
+    return _paymentInfo.pending
+        ? Text(
+            texts.wallet_dashboard_payment_item_balance_pending_suffix,
+            style: themeData.textTheme.caption!.copyWith(
+              color: theme.customData[theme.themeId]!.pendingTextColor,
+            ),
+          )
+        : const SizedBox();
+  }
+
+  Widget _paymentAmount(
+    BuildContext context,
+    CurrencyState currencyState,
+  ) {
+    final texts = context.texts();
+    final themeData = Theme.of(context);
     final amount = currencyState.bitcoinCurrency.format(
       _paymentInfo.amountSat,
       includeDisplayName: false,
     );
-    return Opacity(
-      // set amount text to transparent when it leaves viewport
-      opacity: (_scrollController.offset -
-                  (DASHBOARD_MAX_HEIGHT - DASHBOARD_MIN_HEIGHT) -
-                  ((PAYMENT_LIST_ITEM_HEIGHT + BOTTOM_PADDING) *
-                          (_itemIndex + 1) -
-                      FILTER_MAX_SIZE +
-                      AVATAR_DIAMETER / 2) >
-              0)
-          ? 0.0
-          : 1.0,
-      child: Text(
-        _hideBalance ? "******" : (negative ? "- " : "+ ") + amount,
-        style: Theme.of(context).textTheme.headline6?.copyWith(
-              color: Theme.of(context).colorScheme.onSecondary,
-            ),
+
+    return Text(
+      _hideBalance
+          ? texts.wallet_dashboard_payment_item_balance_hide
+          : _paymentInfo.type.isIncome
+              ? texts.wallet_dashboard_payment_item_balance_positive(amount)
+              : texts.wallet_dashboard_payment_item_balance_negative(amount),
+      style: themeData.textTheme.headline6?.copyWith(
+        color: themeData.colorScheme.onSecondary,
       ),
     );
   }
 
-  Widget _paymentFee(BuildContext context, CurrencyState currencyState) {
+  Widget _paymentFee(
+    BuildContext context,
+    CurrencyState currencyState,
+  ) {
+    final texts = context.texts();
+    final themeData = Theme.of(context);
+
     final fee = _paymentInfo.fee;
     if (fee == 0 || _paymentInfo.pending) return const SizedBox();
     final feeFormatted = currencyState.bitcoinCurrency.format(
       fee,
       includeDisplayName: false,
     );
+
     return Text(
-      _hideBalance ? "******" : "FEE $feeFormatted",
-      style: Theme.of(context).textTheme.caption?.copyWith(
-            color: Theme.of(context).colorScheme.onSecondary,
-          ),
+      _hideBalance
+          ? texts.wallet_dashboard_payment_item_balance_hide
+          : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
+      style: themeData.textTheme.caption?.copyWith(
+        color: themeData.colorScheme.onSecondary,
+      ),
     );
   }
 
   Widget _buildPaymentItemAvatar() {
-    // Show Flip Transition if the payment item is created within last 10 seconds
     if (_createdWithin(const Duration(seconds: 10))) {
       return PaymentItemAvatar(_paymentInfo, radius: 16);
     } else {
@@ -215,11 +193,14 @@ class PaymentItem extends StatelessWidget {
   }
 
   bool _createdWithin(Duration duration) {
-    return DateTime.fromMillisecondsSinceEpoch(
-                _paymentInfo.creationTimestamp.toInt() * 1000)
-            .difference(DateTime.fromMillisecondsSinceEpoch(
-                DateTime.now().millisecondsSinceEpoch)) <
-        -duration;
+    final diff = DateTime.fromMillisecondsSinceEpoch(
+      _paymentInfo.creationTimestamp.toInt() * 1000,
+    ).difference(
+      DateTime.fromMillisecondsSinceEpoch(
+        DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+    return diff < -duration;
   }
 
   void _showDetail(BuildContext context) {

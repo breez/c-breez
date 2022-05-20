@@ -67,14 +67,14 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
     AccountBloc accountBloc = context.read<AccountBloc>();
-    CurrencyBoc currencyBloc = context.read<CurrencyBoc>();
+    CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
 
     return Scaffold(
       appBar: AppBar(
         leading: const backBtn.BackButton(),
         title: const Text("Send Payment"),
       ),
-      body: BlocBuilder<CurrencyBoc, CurrencyState>(
+      body: BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, acc) {
@@ -191,7 +191,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
         userStyle: const TextStyle(color: Colors.white));
   }
 
-  Future _sendPayment(AccountBloc accBloc, CurrencyBoc currencyBloc) async {
+  Future _sendPayment(AccountBloc accBloc, CurrencyBloc currencyBloc) async {
     String tipMessage = _descriptionController.text;
     var bitcoinCurrency = currencyBloc.state.bitcoinCurrency;
     var amount = bitcoinCurrency.parse(_amountController.text);

@@ -58,7 +58,7 @@ class FiatConversion {
     // it.
     if (fiatAmount < minimumAmount) {
       formattedAmount = minimumAmount.toStringAsFixed(fractionSize);
-      symbol = '< ' + symbol;
+      symbol = '< $symbol';
     } else {
       final formatter = CurrencyFormatter().formatter;
       formatter.minimumFractionDigits = fractionSize;

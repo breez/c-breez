@@ -29,7 +29,7 @@ class KeychainMoc extends Mock implements KeyChain {
   @override
   Future write(String key, String value) {
     _storage[key] = value;
-    print("keychain: " + value);
+    print("keychain: $value");
     return Future.value(null);
   }
 
@@ -90,8 +90,8 @@ class InjectorMock extends Mock implements ServiceInjector {
   MockClientHandler? mockHandler;
 
   @override
-  LightningService get breezBridge {
-    return GreenlightService();
+  Future<LightningService> get breezBridge async {
+    return GreenlightService("test_storage.json");
   }
 
   @override

@@ -1662,6 +1662,7 @@
   "status_text_loading_middle": "en train d'ouvrir un canal sécurisé",
   "status_text_loading_end": " avec notre serveur. Cela peut prendre un certain temps, mais ne vous inquiétez pas, nous vous informerons lorsque l'application sera prête à envoyer et recevoir des paiements.",
   "status_text_ready": "Breez est prêt à recevoir des fonds.",
+  "status_opening_secure_connection": "Breez is opening a secure connection",
   "qr_action_button_open_link": "Ouvrir le lien",
   "qr_action_button_open_link_confirmation": "Êtes-vous sûr de vouloir ouvrir ce lien ?",
   "qr_action_button_open_link_confirmation_no": "NON",

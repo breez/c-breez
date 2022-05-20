@@ -1,255 +1,202 @@
 import 'dart:math';
 
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/models/user_profile.dart';
+import 'package:c_breez/routes/home/balance_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class WalletDashboard extends StatefulWidget {
-  final CurrencyState _currencyState;
-  final AccountState _accountState;
-  final UserProfileSettings _userModel;
+const _kBalanceOffsetTransition = 60.0;
+
+class WalletDashboard extends StatelessWidget {
   final double _height;
   final double _offsetFactor;
-  final Function(String bitcoinCurrencyTicker) _onCurrencyChange;
-  final Function(String fiatShortName) _onFiatCurrencyChange;
-  final Function(bool hideBalance) _onPrivacyChange;
 
   const WalletDashboard(
-      this._userModel,
-      this._accountState,
-      this._currencyState,
-      this._height,
-      this._offsetFactor,
-      this._onCurrencyChange,
-      this._onFiatCurrencyChange,
-      this._onPrivacyChange);
-
-  @override
-  State<StatefulWidget> createState() {
-    return WalletDashboardState();
-  }
-}
-
-class WalletDashboardState extends State<WalletDashboard> {
-  static const BALANCE_OFFSET_TRANSITION = 60.0;
-  bool _showFiatCurrency = false;
+    this._height,
+    this._offsetFactor, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double startHeaderSize = Theme.of(context).textTheme.headline4!.fontSize!;
-    double endHeaderFontSize =
-        Theme.of(context).textTheme.headline4!.fontSize! - 8.0;
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
+      builder: (context, currencyState) {
+        return BlocBuilder<UserProfileBloc, UserProfileState>(
+          builder: (context, userProfileState) {
+            return BlocBuilder<AccountBloc, AccountState>(
+              builder: (context, accountState) {
+                return _build(
+                  context,
+                  currencyState,
+                  userProfileState,
+                  accountState,
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
 
-    FiatConversion? fiatConversion = widget._currencyState.fiatEnabled
-        ? FiatConversion(widget._currencyState.fiatCurrency!,
-            widget._currencyState.fiatExchangeRate!)
-        : null;
+  Widget _build(
+    BuildContext context,
+    CurrencyState currencyState,
+    UserProfileState userProfileState,
+    AccountState accountState,
+  ) {
+    final profileSettings = userProfileState.profileSettings;
+
     return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       child: Stack(
         alignment: AlignmentDirectional.topCenter,
-        children: <Widget>[
+        children: [
           Container(
-              width: MediaQuery.of(context).size.width,
-              height: widget._height,
-              decoration: BoxDecoration(
-                color: theme.customData[theme.themeId]!.dashboardBgColor,
-              )),
-          Positioned(
-            top: 60 - BALANCE_OFFSET_TRANSITION * widget._offsetFactor,
-            child: Center(
-              child: TextButton(
-                  style: ButtonStyle(
-                    overlayColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                      if (states.contains(MaterialState.focused))
-                        return theme
-                            .customData[theme.themeId]!.paymentListBgColor;
-                      if (states.contains(MaterialState.hovered))
-                        return theme
-                            .customData[theme.themeId]!.paymentListBgColor;
-                      return Theme.of(context)
-                          .textTheme
-                          .button!
-                          .color!; // Defer to the widget's default.
-                    }),
-                  ),
-                  onPressed: () {
-                    if (widget._userModel.hideBalance) {
-                      widget._onPrivacyChange(false);
-                      return;
-                    }
-                    var nextCurrencyIndex = (BitcoinCurrency.currencies.indexOf(
-                                widget._currencyState.bitcoinCurrency) +
-                            1) %
-                        BitcoinCurrency.currencies.length;
-                    if (nextCurrencyIndex == 1) {
-                      widget._onPrivacyChange(true);
-                    }
-                    widget._onCurrencyChange(BitcoinCurrency
-                        .currencies[nextCurrencyIndex].tickerSymbol);
-                  },
-                  child: widget._userModel.hideBalance
-                      ? Text("******",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline4!
-                              .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSecondary,
-                                  fontSize: startHeaderSize -
-                                      (startHeaderSize - endHeaderFontSize) *
-                                          widget._offsetFactor))
-                      : (widget._offsetFactor > 0.8 &&
-                              _showFiatCurrency &&
-                              fiatConversion != null)
-                          ? Text(
-                              fiatConversion
-                                  .format(widget._accountState.balance),
-                              style:
-                                  Theme.of(context)
-                                      .textTheme
-                                      .headline4!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSecondary,
-                                          fontSize: startHeaderSize -
-                                              (startHeaderSize -
-                                                      endHeaderFontSize) *
-                                                  widget._offsetFactor))
-                          : RichText(
-                              text: TextSpan(
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline4!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSecondary,
-                                          fontSize: startHeaderSize -
-                                              (startHeaderSize -
-                                                      endHeaderFontSize) *
-                                                  widget._offsetFactor),
-                                  text: widget._currencyState.bitcoinCurrency
-                                      .format(widget._accountState.balance,
-                                          removeTrailingZeros: true,
-                                          includeDisplayName: false),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: " " +
-                                          widget._currencyState.bitcoinCurrency
-                                              .displayName,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline4!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSecondary,
-                                              fontSize: startHeaderSize * 0.6 -
-                                                  (startHeaderSize * 0.6 -
-                                                          endHeaderFontSize) *
-                                                      widget._offsetFactor),
-                                    ),
-                                  ]),
-                            )),
+            width: MediaQuery.of(context).size.width,
+            height: _height,
+            decoration: BoxDecoration(
+              color: theme.customData[theme.themeId]!.dashboardBgColor,
             ),
           ),
           Positioned(
-            top: 100 - BALANCE_OFFSET_TRANSITION * widget._offsetFactor,
+            top: 60 - _kBalanceOffsetTransition * _offsetFactor,
             child: Center(
-              child: widget._currencyState.fiatEnabled &&
-                      isAboveMinAmount(widget._currencyState.fiatCurrency!,
-                          widget._currencyState.fiatExchangeRate!) &&
-                      !widget._userModel.hideBalance
+              child: !accountState.initial
                   ? TextButton(
-                      style: ButtonStyle(
-                        overlayColor: MaterialStateProperty.resolveWith<Color>(
-                            (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.focused))
-                            return theme
-                                .customData[theme.themeId]!.paymentListBgColor;
-                          if (states.contains(MaterialState.hovered))
-                            return theme
-                                .customData[theme.themeId]!.paymentListBgColor;
-                          return Theme.of(context)
-                              .textTheme
-                              .button!
-                              .color!; // Defer to the widget's default.
-                        }),
-                      ),
+                      style: _balanceStyle(),
                       onPressed: () {
-                        FiatConversion? newFiatConversion =
-                            nextValidFiatConversion();
-                        if (newFiatConversion != null) {
-                          widget._onFiatCurrencyChange(
-                              newFiatConversion.currencyData.shortName);
+                        if (profileSettings.hideBalance == true) {
+                          _onPrivacyChanged(context, false);
+                          return;
                         }
+                        final list = BitcoinCurrency.currencies;
+                        final index = list.indexOf(
+                          BitcoinCurrency.fromTickerSymbol(
+                            currencyState.bitcoinTicker,
+                          ),
+                        );
+                        final nextCurrencyIndex = (index + 1) % list.length;
+                        if (nextCurrencyIndex == 1) {
+                          _onPrivacyChanged(context, true);
+                        }
+                        context.read<CurrencyBloc>().setBitcoinTicker(
+                              list[nextCurrencyIndex].tickerSymbol,
+                            );
                       },
-                      child: fiatConversion != null
-                          ? Text(
-                              fiatConversion
-                                  .format(widget._accountState.balance),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSecondary
-                                          .withOpacity(pow(
-                                                  1.00 - widget._offsetFactor,
-                                                  2)
-                                              .toDouble())))
-                          : Container())
+                      child: BalanceText(_offsetFactor),
+                    )
+                  : const SizedBox(),
+            ),
+          ),
+          Positioned(
+            top: 100 - _kBalanceOffsetTransition * _offsetFactor,
+            child: Center(
+              child: currencyState.fiatEnabled &&
+                      isAboveMinAmount(currencyState, accountState) &&
+                      !profileSettings.hideBalance
+                  ? _fiatButton(context, currencyState, accountState)
                   : const SizedBox(),
             ),
           ),
         ],
       ),
-      behavior: HitTestBehavior.translucent,
-      onLongPressStart: (_) {
-        setState(() {
-          _showFiatCurrency = true;
-        });
-      },
-      onLongPressEnd: (_) {
-        setState(() {
-          _showFiatCurrency = false;
-        });
-      },
     );
   }
 
-  FiatConversion? nextValidFiatConversion() {
-    var currentIndex = widget._currencyState.preferredCurrencies
-        .indexOf(widget._currencyState.fiatShortName);
-    for (var i = 1; i < widget._currencyState.preferredCurrencies.length; i++) {
-      var nextIndex =
-          (i + currentIndex) % widget._currencyState.preferredCurrencies.length;
-      var nextFiat = widget._currencyState.preferredCurrencies[nextIndex];
-      var nextFiatObj = widget._currencyState.fiatByShortName(nextFiat);
-      var nextFiatCurrency = widget._currencyState.exchangeRates[nextFiat];
-      if (nextFiatObj != null && nextFiatCurrency != null) {
-        if (isAboveMinAmount(nextFiatObj, nextFiatCurrency)) {
-          return FiatConversion(nextFiatObj, nextFiatCurrency);
+  ButtonStyle _balanceStyle() {
+    return ButtonStyle(
+      overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
+        final customData = theme.customData[theme.themeId];
+        if (customData == null) return null;
+        if (states.contains(MaterialState.focused)) {
+          return customData.paymentListBgColor;
+        }
+        if (states.contains(MaterialState.hovered)) {
+          return customData.paymentListBgColor;
+        }
+        return null;
+      }),
+    );
+  }
+
+  Widget _fiatButton(
+    BuildContext context,
+    CurrencyState currencyState,
+    AccountState accountState,
+  ) {
+    final themeData = Theme.of(context);
+    const fiatConversionTextStyle = theme.balanceFiatConversionTextStyle;
+
+    return TextButton(
+      style: _balanceStyle(),
+      onPressed: () {
+        final newFiatConversion = nextValidFiatConversion(
+          currencyState,
+          accountState,
+        );
+        if (newFiatConversion != null) {
+          context.read<CurrencyBloc>().setFiatShortName(
+                newFiatConversion.currencyData.shortName,
+              );
+        }
+      },
+      child: Text(
+        currencyState.fiatConversion()?.format(accountState.balance) ?? "",
+        style: fiatConversionTextStyle.copyWith(
+          color: themeData.colorScheme.onSecondary.withOpacity(
+            pow(1.00 - _offsetFactor, 2).toDouble(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  FiatConversion? nextValidFiatConversion(
+    CurrencyState currencyState,
+    AccountState accountState,
+  ) {
+    final currencies = currencyState.preferredCurrencies;
+    final currentIndex = currencies.indexOf(currencyState.fiatShortName);
+    for (var i = 1; i < currencies.length; i++) {
+      final nextIndex = (i + currentIndex) % currencies.length;
+      if (isAboveMinAmount(currencyState, accountState)) {
+        final conversion = currencyState.fiatByShortName(currencies[nextIndex]);
+        final exchangeRate = currencyState.fiatExchangeRate;
+        if (conversion != null && exchangeRate != null) {
+          return FiatConversion(conversion, exchangeRate);
         }
       }
     }
     return null;
   }
 
-  bool isAboveMinAmount(FiatCurrency currency, double exchangeRate) {
-    var fiatConversion = FiatConversion(currency, exchangeRate);
-    double fiatValue = fiatConversion.satToFiat(widget._accountState.balance);
+  bool isAboveMinAmount(
+    CurrencyState currencyState,
+    AccountState accountState,
+  ) {
+    final fiatConversion = currencyState.fiatConversion();
+    if (fiatConversion == null) return false;
+
+    double fiatValue = fiatConversion.satToFiat(accountState.balance);
     int fractionSize = fiatConversion.currencyData.fractionSize;
     double minimumAmount = 1 / (pow(10, fractionSize));
 
     return fiatValue > minimumAmount;
+  }
+
+  void _onPrivacyChanged(
+    BuildContext context,
+    bool hideBalance,
+  ) {
+    context.read<UserProfileBloc>().updateProfile(hideBalance: hideBalance);
   }
 }

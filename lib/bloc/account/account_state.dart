@@ -1,4 +1,5 @@
 import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/payment_info.dart';
 import 'package:fixnum/fixnum.dart';
 
 const initialInboundCapacity = 4000000;

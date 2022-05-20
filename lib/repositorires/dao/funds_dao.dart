@@ -13,7 +13,7 @@ class FundsDao extends DatabaseAccessor<AppDatabase> with _$FundsDaoMixin {
 
   Future setOffchainFunds(List<OffChainFund> offchainFundsEntries) async {
     return transaction(() async {
-      await offChainFunds.deleteWhere((c) => Constant(true));
+      await offChainFunds.deleteWhere((c) => const Constant(true));
       await batch((batch) {
         return batch.insertAll(offChainFunds, offchainFundsEntries);
       });
@@ -26,7 +26,7 @@ class FundsDao extends DatabaseAccessor<AppDatabase> with _$FundsDaoMixin {
 
   Future setOnchainFunds(List<OnChainFund> onchainFundsEntries) async {
     return transaction(() async {
-      await onChainFunds.deleteWhere((c) => Constant(true));
+      await onChainFunds.deleteWhere((c) => const Constant(true));
       await batch((batch) {
         return batch.insertAll(onChainFunds, onchainFundsEntries);
       });

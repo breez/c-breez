@@ -32,7 +32,7 @@ class DeepLinksService {
     _dynamicLinks!.onLink.listen((data) {
       publishLink(data);
     }).onError((err) {
-      log.severe("Failed to fetch dynamic link " + err.toString());
+      log.severe("Failed to fetch dynamic link $err");
       return Future.value(null);
     });
   }
@@ -88,10 +88,9 @@ class PodcastShareLinkModel {
   PodcastShareLinkModel(this.feedURL, {this.episodeID});
 
   String toLinkQuery() {
-    return 'feedURL=${Uri.encodeQueryComponent(feedURL)}' +
-        (episodeID != null
+    return 'feedURL=${Uri.encodeQueryComponent(feedURL)}${episodeID != null
             ? '&episodeID=${Uri.encodeQueryComponent(episodeID!)}'
-            : '');
+            : ''}';
   }
 
   static PodcastShareLinkModel fromLinkQuery(String queryStr) {

@@ -6,8 +6,8 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/routes/home/balance_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:flutter/material.dart';
@@ -53,11 +53,7 @@ class WalletDashboard extends StatelessWidget {
     UserProfileState userProfileState,
     AccountState accountState,
   ) {
-    const balanceAmountTextStyle = theme.balanceAmountTextStyle;
     final profileSettings = userProfileState.profileSettings;
-
-    double startHeaderSize = balanceAmountTextStyle.fontSize!;
-    double endHeaderFontSize = startHeaderSize - 8.0;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -96,19 +92,7 @@ class WalletDashboard extends StatelessWidget {
                               list[nextCurrencyIndex].tickerSymbol,
                             );
                       },
-                      child: profileSettings.hideBalance
-                          ? _balanceHide(
-                              context,
-                              startHeaderSize,
-                              endHeaderFontSize,
-                            )
-                          : _balanceRichText(
-                              context,
-                              currencyState,
-                              accountState,
-                              startHeaderSize,
-                              endHeaderFontSize,
-                            ),
+                      child: BalanceText(_offsetFactor),
                     )
                   : const SizedBox(),
             ),
@@ -144,61 +128,6 @@ class WalletDashboard extends StatelessWidget {
     );
   }
 
-  Widget _balanceRichText(
-    BuildContext context,
-    CurrencyState currencyState,
-    AccountState accountState,
-    double startHeaderSize,
-    double endHeaderFontSize,
-  ) {
-    final themeData = Theme.of(context);
-    final balanceAmountTextStyle = theme.balanceAmountTextStyle
-        .copyWith(color: themeData.colorScheme.onSecondary);
-    final balanceCurrencyTextStyle = theme.balanceCurrencyTextStyle
-        .copyWith(color: themeData.colorScheme.onSecondary);
-
-    return RichText(
-      text: TextSpan(
-        style: balanceAmountTextStyle.copyWith(
-          fontSize: startHeaderSize -
-              (startHeaderSize - endHeaderFontSize) * _offsetFactor,
-        ),
-        text: currencyState.bitcoinCurrency.format(
-          accountState.balance,
-          removeTrailingZeros: true,
-          includeDisplayName: false,
-        ),
-        children: [
-          TextSpan(
-            text: ' ${currencyState.bitcoinCurrency.displayName}',
-            style: balanceCurrencyTextStyle.copyWith(
-              fontSize: startHeaderSize * 0.6 -
-                  (startHeaderSize * 0.6 - endHeaderFontSize) * _offsetFactor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _balanceHide(
-    BuildContext context,
-    double startHeaderSize,
-    double endHeaderFontSize,
-  ) {
-    final themeData = Theme.of(context);
-    final texts = context.texts();
-
-    return Text(
-      texts.wallet_dashboard_balance_hide,
-      style: theme.balanceAmountTextStyle.copyWith(
-        color: themeData.colorScheme.onSecondary,
-        fontSize: startHeaderSize -
-            (startHeaderSize - endHeaderFontSize) * _offsetFactor,
-      ),
-    );
-  }
-
   Widget _fiatButton(
     BuildContext context,
     CurrencyState currencyState,
@@ -208,19 +137,7 @@ class WalletDashboard extends StatelessWidget {
     const fiatConversionTextStyle = theme.balanceFiatConversionTextStyle;
 
     return TextButton(
-      style: ButtonStyle(
-        overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
-          final customData = theme.customData[theme.themeId];
-          if (customData == null) return null;
-          if (states.contains(MaterialState.focused)) {
-            return customData.paymentListBgColor;
-          }
-          if (states.contains(MaterialState.hovered)) {
-            return customData.paymentListBgColor;
-          }
-          return null;
-        }),
-      ),
+      style: _balanceStyle(),
       onPressed: () {
         final newFiatConversion = nextValidFiatConversion(
           currencyState,

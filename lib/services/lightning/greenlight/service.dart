@@ -75,9 +75,9 @@ class GreenlightService implements LightningService {
         // stream signer and wait for it to shut down.
         await SignerLoop(_signer!, _nodeClient!).start();
       } catch (e) {
-        log.severe("signer exited, waiting 5 seconds...", e);
-        await Future.delayed(const Duration(seconds: 5));
+        log.severe("signer exited, waiting 5 seconds...", e);        
       }
+      await Future.delayed(const Duration(seconds: 5));
     }
   }
 

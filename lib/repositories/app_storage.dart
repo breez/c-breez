@@ -1,4 +1,4 @@
-import 'package:c_breez/repositorires/dao/db.dart';
+import 'package:c_breez/repositories/dao/db.dart';
 
 abstract class AppStorage {
   // lightning

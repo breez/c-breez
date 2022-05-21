@@ -16,6 +16,6 @@ void main() {
 
     test("should return empty user when not registered", () async {});
 
-    test("shoud return registered user", () async {});
+    test("should return registered user", () async {});
   });
 }

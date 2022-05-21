@@ -60,7 +60,7 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
       return f1.shortName.compareTo(f2.shortName);
     });
 
-    // Then give precendence to the preferred items.
+    // Then give precedence to the preferred items.
     for (var p in preferredCurrencies.reversed) {
       var preferredIndex = sorted.indexWhere((e) => e.shortName == p);
       if (preferredIndex >= 0) {

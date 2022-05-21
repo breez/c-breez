@@ -1,4 +1,4 @@
-import 'package:c_breez/repositorires/dao/db.dart' as db;
+import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:c_breez/services/lightning/models.dart';
 
 extension NodeInfoAdapter on NodeInfo {

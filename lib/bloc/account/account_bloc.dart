@@ -10,8 +10,8 @@ import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/payment_info.dart';
 import 'package:c_breez/models/payment_type.dart';
-import 'package:c_breez/repositorires/app_storage.dart';
-import 'package:c_breez/repositorires/dao/db.dart' as db;
+import 'package:c_breez/repositories/app_storage.dart';
+import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:drift/drift.dart';
@@ -86,7 +86,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       throw Exception("Node already started");
     }
     var creds = await _breezLib.register(seed, email: email, network: network);
-    log.info("node registered succesfully");
+    log.info("node registered successfully");
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
     emit(state.copyWith(initial: false));
     await _startNode();

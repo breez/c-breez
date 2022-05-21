@@ -17,10 +17,10 @@ import 'flushbar.dart';
 class CurrencyConverterDialog extends StatefulWidget {
   final Function(String string) _onConvert;
   final String? Function(Int64 amount) validatorFn;
-  final CurrencyBloc _currecyBloc;
+  final CurrencyBloc _currencyBloc;
 
   const CurrencyConverterDialog(
-    this._currecyBloc,
+    this._currencyBloc,
     this._onConvert,
     this.validatorFn,
   );
@@ -63,7 +63,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
       }
     });
 
-    widget._currecyBloc.fetchExchangeRates().catchError((value) {
+    widget._currencyBloc.fetchExchangeRates().catchError((value) {
       final texts = AppLocalizations.of(context)!;
       if (mounted) {
         setState(() {
@@ -350,6 +350,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   }
 
   void _selectFiatCurrency(String shortName) {
-    widget._currecyBloc.setFiatShortName(shortName);
+    widget._currencyBloc.setFiatShortName(shortName);
   }
 }

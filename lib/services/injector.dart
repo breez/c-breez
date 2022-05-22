@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:c_breez/repositorires/app_storage.dart';
-import 'package:c_breez/repositorires/dao/db.dart';
+import 'package:c_breez/repositories/app_storage.dart';
+import 'package:c_breez/repositories/dao/db.dart';
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';

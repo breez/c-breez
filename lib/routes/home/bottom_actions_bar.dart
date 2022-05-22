@@ -196,7 +196,7 @@ class BottomActionsBar extends StatelessWidget {
     Navigator.of(context).pop();
     if (clipboardData != null) {
       final data = clipboardData.data;
-      if (clipboardData.type == ClipboardDataType.payamentRequest) {
+      if (clipboardData.type == ClipboardDataType.paymentRequest) {
         invoiceBloc.addIncomingInvoice(data ?? "");
       } else if (clipboardData.type == ClipboardDataType.nodeID) {
         Navigator.of(context).push(FadeInRoute(

@@ -3,7 +3,7 @@ enum ClipboardDataType {
   lnurl,
   nodeID,
   lightningAddress,
-  payamentRequest
+  paymentRequest
 }
 
 class DecodedClipboardData {

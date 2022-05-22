@@ -27,9 +27,9 @@ class SignerLoop {
               message: Uint8List.fromList(value.raw),
               peerId: value.context.nodeId.length == 33 ? Uint8List.fromList(value.context.nodeId) : null,
               dbId: value.context.dbid.toInt());
-          log.info("hsmd message signed succesfully");
+          log.info("hsmd message signed successfully");
           await _nodeClient.respondHsmRequest(greenlight.HsmResponse(requestId: value.requestId, raw: result.toList()));
-          log.info("hsmd message replied succesfully");
+          log.info("hsmd message replied successfully");
         } catch (e) {
           log.severe("failed to handle hsmd message: ${e.toString()}");
         }

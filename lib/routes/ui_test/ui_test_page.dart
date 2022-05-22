@@ -13,7 +13,7 @@ import '../../models/user_profile.dart';
 import '../../widgets/calendar_dialog.dart';
 import '../../widgets/no_connection_dialog.dart';
 import '../../widgets/route.dart';
-import '../../widgets/succesful_payment.dart';
+import '../../widgets/successful_payment.dart';
 import '../beta_warning_dialog.dart';
 import '../create_invoice/qr_code_dialog.dart';
 import '../initial_walkthrough.dart';

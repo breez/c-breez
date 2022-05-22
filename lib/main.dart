@@ -38,7 +38,7 @@ void main() async {
     var breezBridge = await injector.breezBridge;
     var appDir = await getApplicationDocumentsDirectory();    
     final storage = await HydratedStorage.build(
-        storageDirectory: Directory(p.join(appDir.path, "bloc_storge")));                   
+        storageDirectory: Directory(p.join(appDir.path, "bloc_storage")));  
     HydratedBlocOverrides.runZoned(
         () => runApp(MultiBlocProvider(
               providers: [

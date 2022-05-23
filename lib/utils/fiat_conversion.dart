@@ -46,8 +46,8 @@ class FiatConversion {
     final currencyData = this
         .currencyData
         .localeAware(locale.toLanguageTag(), locale.languageCode);
-    int? fractionSize = currencyData.fractionSize;
-    double minimumAmount = 1 / (pow(10, fractionSize!));
+    int fractionSize = currencyData.fractionSize;
+    double minimumAmount = 1 / (pow(10, fractionSize));
 
     String formattedAmount = "";
     String spacing = " " * currencyData.spacing;

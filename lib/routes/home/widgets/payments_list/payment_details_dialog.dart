@@ -138,20 +138,18 @@ Future<void> showPaymentDetailsDialog(
                         ],
                       ),
                     ),
-              paymentInfo.creationTimestamp == null
-                  ? Container()
-                  : Container(
-                      height: 36.0,
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 16.0, top: 8.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: AutoSizeText(
-                              texts.payment_details_dialog_date_and_time,
-                              style: themeData.primaryTextTheme.headline4,
+              Container(
+                height: 36.0,
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: AutoSizeText(
+                        texts.payment_details_dialog_date_and_time,
+                        style: themeData.primaryTextTheme.headline4,
                               textAlign: TextAlign.left,
                               maxLines: 1,
                               group: _labelGroup,
@@ -165,8 +163,7 @@ Future<void> showPaymentDetailsDialog(
                               child: AutoSizeText(
                                 BreezDateUtils.formatYearMonthDayHourMinute(
                                   DateTime.fromMillisecondsSinceEpoch(
-                                    paymentInfo.creationTimestamp!.toInt() *
-                                        1000,
+                                    paymentInfo.creationTimestamp.toInt() * 1000,
                                   ),
                                 ),
                                 style: themeData.primaryTextTheme.headline3,

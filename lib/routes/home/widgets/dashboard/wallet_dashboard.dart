@@ -188,8 +188,8 @@ class WalletDashboard extends StatelessWidget {
     if (fiatConversion == null) return false;
 
     double fiatValue = fiatConversion.satToFiat(accountState.balance);
-    int? fractionSize = fiatConversion.currencyData.fractionSize;
-    double minimumAmount = 1 / (pow(10, fractionSize!));
+    int fractionSize = fiatConversion.currencyData.fractionSize;
+    double minimumAmount = 1 / (pow(10, fractionSize));
 
     return fiatValue > minimumAmount;
   }

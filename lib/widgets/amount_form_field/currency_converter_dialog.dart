@@ -177,7 +177,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     var fiatConversion = FiatConversion(
         currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
 
-    final int? fractionSize = currencyState.fiatCurrency!.fractionSize;
+    final int fractionSize = currencyState.fiatCurrency!.fractionSize;
     final isBlue = theme.themeId == "BLUE";
 
     return Column(

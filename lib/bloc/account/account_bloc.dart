@@ -276,7 +276,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
       return incomingList.toList()
         ..addAll(outgoingList)
-        ..sort((p1, p2) => (p2.creationTimestamp! - p1.creationTimestamp!).toInt());
+        ..sort((p1, p2) => (p2.creationTimestamp - p1.creationTimestamp).toInt());
     });
   }
 

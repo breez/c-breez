@@ -80,7 +80,7 @@ class FiatCurrency {
   String name;
   Map<String, String> localizedName;
   String shortName;
-  int? fractionSize;
+  int fractionSize;
   String symbol;
   bool rtl;
   int position;
@@ -91,7 +91,7 @@ class FiatCurrency {
     required this.name,
     required this.localizedName,
     required this.shortName,
-    this.fractionSize = 2,
+    required this.fractionSize,
     required this.symbol,
     required this.rtl,
     required this.position,

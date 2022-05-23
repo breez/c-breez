@@ -15,6 +15,7 @@ import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
+import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:fixnum/fixnum.dart';
@@ -22,7 +23,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import 'widgets/successful_payment.dart';
 
 class CreateInvoicePage extends StatefulWidget {

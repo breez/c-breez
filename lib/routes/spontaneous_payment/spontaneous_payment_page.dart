@@ -13,7 +13,7 @@ import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
-import 'package:c_breez/widgets/processing_payment_dialog.dart';
+import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

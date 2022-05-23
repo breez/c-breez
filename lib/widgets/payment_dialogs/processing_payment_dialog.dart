@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/loading_animated_text.dart';
-import 'package:c_breez/widgets/payment_request_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'payment_request_dialog.dart';
 
 const _kPaymentListItemHeight = 72.0;
 

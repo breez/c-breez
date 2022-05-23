@@ -9,13 +9,14 @@ import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
-import 'package:c_breez/widgets/compact_qr_image.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_extend/share_extend.dart';
+
+import 'widgets/compact_qr_image.dart';
 
 class QrCodeDialog extends StatefulWidget {
   final BuildContext context;

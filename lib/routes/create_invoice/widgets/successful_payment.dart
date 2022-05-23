@@ -1,7 +1,8 @@
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/particles_animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+
+import 'particles_animations.dart';
 
 class SuccessfulPaymentRoute extends StatefulWidget {
   final Function()? onPrint;

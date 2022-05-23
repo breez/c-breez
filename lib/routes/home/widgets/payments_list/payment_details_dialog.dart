@@ -165,7 +165,7 @@ Future<void> showPaymentDetailsDialog(
                               child: AutoSizeText(
                                 BreezDateUtils.formatYearMonthDayHourMinute(
                                   DateTime.fromMillisecondsSinceEpoch(
-                                    paymentInfo.creationTimestamp.toInt() *
+                                    paymentInfo.creationTimestamp!.toInt() *
                                         1000,
                                   ),
                                 ),
@@ -250,7 +250,7 @@ Widget _amountText(
   AppLocalizations texts,
   ThemeData themeData,
 ) {
-  final amount = currency.format(paymentInfo.amountSat);
+  final amount = currency.format(paymentInfo.amountSat!);
   final text = (paymentInfo.type.isIncome)
       ? texts.payment_details_dialog_amount_positive(amount)
       : texts.payment_details_dialog_amount_negative(amount);

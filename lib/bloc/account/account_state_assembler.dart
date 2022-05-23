@@ -77,10 +77,10 @@ List<PaymentInfo> _filterPayments(List<PaymentInfo> paymentsList, PaymentFilterM
     if (!filter.paymentType.contains(p.type)) {
       return false;
     }
-    if (filter.startDate != null && p.creationTimestamp.toInt() * 1000 < filter.startDate!.millisecondsSinceEpoch) {
+    if (filter.startDate != null && p.creationTimestamp!.toInt() * 1000 < filter.startDate!.millisecondsSinceEpoch) {
       return false;
     }
-    if (filter.endDate != null && p.creationTimestamp.toInt() * 1000 > filter.endDate!.millisecondsSinceEpoch) {
+    if (filter.endDate != null && p.creationTimestamp!.toInt() * 1000 > filter.endDate!.millisecondsSinceEpoch) {
       return false;
     }
     return true;

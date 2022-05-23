@@ -79,7 +79,7 @@ class PaymentItem extends StatelessWidget {
                       Text(
                         BreezDateUtils.formatTimelineRelative(
                           DateTime.fromMillisecondsSinceEpoch(
-                            _paymentInfo.creationTimestamp.toInt() * 1000,
+                            _paymentInfo.creationTimestamp!.toInt() * 1000,
                           ),
                         ),
                         style: themeData.textTheme.caption?.copyWith(
@@ -138,7 +138,7 @@ class PaymentItem extends StatelessWidget {
     final texts = context.texts();
     final themeData = Theme.of(context);
     final amount = currencyState.bitcoinCurrency.format(
-      _paymentInfo.amountSat,
+      _paymentInfo.amountSat!,
       includeDisplayName: false,
     );
 
@@ -195,7 +195,7 @@ class PaymentItem extends StatelessWidget {
 
   bool _createdWithin(Duration duration) {
     final diff = DateTime.fromMillisecondsSinceEpoch(
-      _paymentInfo.creationTimestamp.toInt() * 1000,
+      _paymentInfo.creationTimestamp!.toInt() * 1000,
     ).difference(
       DateTime.fromMillisecondsSinceEpoch(
         DateTime.now().millisecondsSinceEpoch,

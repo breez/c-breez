@@ -3,28 +3,15 @@ import 'package:flutter/material.dart';
 const double _kBreezDrawerHeaderHeight = 160.0 + 1.0; // bottom edge
 
 class BreezDrawerHeader extends DrawerHeader {
-  @override
-  final Decoration? decoration;
-  @override
-  final EdgeInsetsGeometry padding;
-  @override
-  final EdgeInsetsGeometry margin;
-  @override
-  final Duration duration;
-  @override
-  final Curve curve;
-  @override
-  final Widget child;
-
   const BreezDrawerHeader({
     Key? key,
-    this.decoration,
-    this.margin = const EdgeInsets.only(bottom: 16.0),
-    this.padding = const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-    this.duration = const Duration(milliseconds: 250),
-    this.curve = Curves.fastOutSlowIn,
-    required this.child,
-  }) : super(key: key, child: child);
+    super.decoration,
+    super.margin = const EdgeInsets.only(bottom: 16.0),
+    super.padding = const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+    super.duration = const Duration(milliseconds: 250),
+    super.curve = Curves.fastOutSlowIn,
+    required super.child,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,16 +27,14 @@ class BreezDrawerHeader extends DrawerHeader {
         decoration: decoration,
         duration: duration,
         curve: curve,
-        child: child == null
-            ? null
-            : DefaultTextStyle(
-                style: theme.textTheme.headline4!,
-                child: MediaQuery.removePadding(
-                  context: context,
-                  removeTop: true,
-                  child: child,
-                ),
-              ),
+        child: DefaultTextStyle(
+          style: theme.textTheme.headline4!,
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: child!,
+          ),
+        ),
       ),
     );
   }

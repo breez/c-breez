@@ -1023,7 +1023,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
                   value: value as T,
                   items: items,
                   hint: hint,
-                  onChanged: onChanged == null ? null : field.didChange,
+                  onChanged: field.didChange,
                   disabledHint: disabledHint,
                   elevation: elevation,
                   style: style,

@@ -190,6 +190,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
       return;
     }
     if (barcode.isEmpty) {
+      if (!mounted) return;
       showFlushbar(
         context,
         message: texts.payment_info_dialog_error_qrcode,
@@ -204,9 +205,6 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
   String? _decodeInvoice(String invoiceString) {
     String normalized = invoiceString.toLowerCase();
-    if (normalized == null) {
-      return null;
-    }
     if (normalized.startsWith("lightning:")) {
       normalized = normalized.substring(10);
     }

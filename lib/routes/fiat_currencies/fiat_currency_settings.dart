@@ -58,7 +58,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
             lastListTargetSize: 0,
             lastItemTargetHeight: 8,
             scrollController: _scrollController,
-            onListReorder: (oldListIndex, newListIndex) => null,
+            onListReorder: (oldListIndex, newListIndex) => {},
             onItemReorder: (from, oldListIndex, to, newListIndex) =>
                 _onReorder(context, currencyState, from, to),
             itemDragHandle: DragHandle(

@@ -5,7 +5,7 @@ class PaymentInfo {
   final PaymentType type;
   final Int64 amountMsat;
   final Int64 feeMsat;
-  final Int64 creationTimestamp;
+  final Int64? creationTimestamp;
   final bool keySend;
   final String paymentHash;
   final String? preimage;
@@ -34,6 +34,6 @@ class PaymentInfo {
     this.imageURL,
   });
 
-  Int64 get amountSat => amountMsat ~/ 1000;
+  Int64? get amountSat => amountMsat ~/ 1000;
   Int64 get feeSat => feeMsat ~/ 1000;
 }

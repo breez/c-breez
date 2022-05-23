@@ -107,44 +107,27 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             titlePadding: const EdgeInsets.fromLTRB(20.0, 22.0, 0.0, 8.0),
             contentPadding: const EdgeInsets.only(left: 0.0, right: 0.0, bottom: 20.0),
             children: <Widget>[
-              AnimatedCrossFade(
-                firstChild: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 310.0,
-                    child: Align(
-                        alignment: const Alignment(0, -0.33),
-                        child: SizedBox(
-                          height: 80.0,
-                          width: 80.0,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryTextTheme.button!.color!),
-                            backgroundColor: Theme.of(context).backgroundColor,
-                          ),
-                        ))),
-                secondChild: widget._invoice.bolt11 == null
-                    ? const SizedBox()
-                    : Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: SizedBox(
-                                width: 230.0,
-                                height: 230.0,
-                                child: CompactQRImage(
-                                  data: widget._invoice.bolt11,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const Padding(padding: EdgeInsets.only(top: 16.0)),
-                          SizedBox(width: MediaQuery.of(context).size.width, child: _buildExpiryAndFeeMessage(currencyState)),
-                          const Padding(padding: EdgeInsets.only(top: 16.0)),
-                        ],
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: SizedBox(
+                        width: 230.0,
+                        height: 230.0,
+                        child: CompactQRImage(
+                          data: widget._invoice.bolt11,
+                        ),
                       ),
-                duration: const Duration(seconds: 1),
-                crossFadeState: widget._invoice.bolt11 == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                    ),
+                  ),
+                  const Padding(padding: EdgeInsets.only(top: 16.0)),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: _buildExpiryAndFeeMessage(currencyState)),
+                  const Padding(padding: EdgeInsets.only(top: 16.0)),
+                ],
               ),
               _buildCloseButton()
             ],

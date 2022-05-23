@@ -179,7 +179,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     var fiatConversion = FiatConversion(
         currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
 
-    final int fractionSize = currencyState.fiatCurrency!.fractionSize;
+    final int? fractionSize = currencyState.fiatCurrency!.fractionSize;
     final isBlue = theme.themeId == "BLUE";
 
     return Column(
@@ -219,7 +219,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
               FilteringTextInputFormatter.allow(
                 fractionSize == 0
                     ? RegExp(r'\d+')
-                    : RegExp("^\\d+\\.?\\d{0,${fractionSize ?? 2}}"),
+                    : RegExp("^\\d+\\.?\\d{0,$fractionSize}"),
               ),
             ],
             keyboardType: const TextInputType.numberWithOptions(decimal: true),

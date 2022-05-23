@@ -48,11 +48,11 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   @override
   void initState() {
     super.initState();
-    _payAncClose();    
+    _payAndClose();
     controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
-    );    
+    );
     controller!.value = 1.0;
     controller!.addStatusListener((status) {
       if (status == AnimationStatus.dismissed) {
@@ -81,7 +81,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
         .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
   }
 
-  _payAncClose() {
+  _payAndClose() {
     widget.paymentFunc().then((value) => _animateClose()).catchError((err) {
       if (widget.popOnCompletion) {
         Navigator.of(context).removeRoute(_currentRoute!);

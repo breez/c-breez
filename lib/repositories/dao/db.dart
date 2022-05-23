@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:c_breez/repositorires/app_storage.dart';
-import 'package:c_breez/repositorires/dao/funds_dao.dart';
-import 'package:c_breez/repositorires/dao/node_info_dao.dart';
-import 'package:c_breez/repositorires/dao/payments_dao.dart';
-import 'package:c_breez/repositorires/dao/peers_dao.dart';
-import 'package:c_breez/repositorires/dao/settings_dao.dart';
+import 'package:c_breez/repositories/app_storage.dart';
+import 'package:c_breez/repositories/dao/funds_dao.dart';
+import 'package:c_breez/repositories/dao/node_info_dao.dart';
+import 'package:c_breez/repositories/dao/payments_dao.dart';
+import 'package:c_breez/repositories/dao/peers_dao.dart';
+import 'package:c_breez/repositories/dao/settings_dao.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';

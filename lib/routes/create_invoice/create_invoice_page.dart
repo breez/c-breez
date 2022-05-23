@@ -16,7 +16,7 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
-import 'package:c_breez/widgets/succesful_payment.dart';
+import 'package:c_breez/widgets/successful_payment.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:fixnum/fixnum.dart';

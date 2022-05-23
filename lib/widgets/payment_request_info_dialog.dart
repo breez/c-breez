@@ -10,16 +10,13 @@ import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
+import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'keyboard_done_action.dart';
-
 class PaymentRequestInfoDialog extends StatefulWidget {
-  final BuildContext context;
-  final AccountBloc accountBloc;
   final Invoice invoice;
   final Function() _onCancel;
   final Function() _onWaitingConfirmation;
@@ -28,15 +25,14 @@ class PaymentRequestInfoDialog extends StatefulWidget {
   final double minHeight;
 
   const PaymentRequestInfoDialog(
-    this.context,
-    this.accountBloc,
     this.invoice,
     this._onCancel,
     this._onWaitingConfirmation,
     this._onPaymentApproved,
     this._setAmountToPay,
-    this.minHeight,
-  );
+    this.minHeight, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -101,7 +97,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   }
 
   Widget _buildPaymentRequestContent() {
-    return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (c, currencyState) {
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
+        builder: (c, currencyState) {
       return BlocBuilder<AccountBloc, AccountState>(
         builder: (context, account) {
           List<Widget> children = [];

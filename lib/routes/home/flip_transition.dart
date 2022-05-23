@@ -1,15 +1,19 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:flutter/material.dart';
 
 class FlipTransition extends StatefulWidget {
   final Widget firstChild;
   final Widget secondChild;
   final double radius;
 
-  const FlipTransition(this.firstChild, this.secondChild,
-      {required this.radius});
+  const FlipTransition(
+    this.firstChild,
+    this.secondChild, {
+    Key? key,
+    required this.radius,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {

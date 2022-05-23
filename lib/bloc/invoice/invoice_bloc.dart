@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:c_breez/bloc/invoice/invoice_state.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/repositorires/app_storage.dart';
+import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:c_breez/services/lightning_links.dart';
@@ -98,7 +98,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
 
         if (normalized.startsWith("ln")) {
           return DecodedClipboardData(
-              data: normalized, type: ClipboardDataType.payamentRequest);
+              data: normalized, type: ClipboardDataType.paymentRequest);
         }
         return DecodedClipboardData.unrecognized();
       });

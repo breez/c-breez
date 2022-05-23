@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:c_breez/repositorires/app_storage.dart';
+import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:c_breez/utils/retry.dart';

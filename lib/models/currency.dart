@@ -98,10 +98,10 @@ class FiatCurrency {
     required this.spacing,
   });
 
-  FiatCurrency localeAware(String langualgeTag, String languageCode) {
+  FiatCurrency localeAware(String languageTag, String languageCode) {
     if (localeOverrides.isEmpty) return this;
-    if (localeOverrides.containsKey(langualgeTag)) {
-      return localeOverrides[langualgeTag]!;
+    if (localeOverrides.containsKey(languageTag)) {
+      return localeOverrides[languageTag]!;
     }
     if (localeOverrides.containsKey(languageCode)) {
       return localeOverrides[languageCode]!;

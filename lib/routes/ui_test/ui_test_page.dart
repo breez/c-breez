@@ -182,11 +182,10 @@ class UITestPage extends StatelessWidget {
                   useRootNavigator: false,
                   context: context,
                   barrierDismissible: false,
-                  builder: (_) => QrCodeDialog(
-                      context,
+                  builder: (_) => QrCodeDialog(                      
                       Invoice(
                           paymentHash: "Fake Payment Hash",
-                          amount: 2000.toInt(),
+                          amountMsat: 2000000.toInt(),
                           bolt11: "Fake bolt11",
                           description: "Fake Description",
                           expiry: 60.toInt()),

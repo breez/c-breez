@@ -17,12 +17,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_extend/share_extend.dart';
 
-class QrCodeDialog extends StatefulWidget {
-  final BuildContext context;
+class QrCodeDialog extends StatefulWidget {  
   final Invoice _invoice;
   final Function(dynamic result) _onFinish;
 
-  const QrCodeDialog(this.context, this._invoice, this._onFinish);
+  const QrCodeDialog(this._invoice, this._onFinish);
 
   @override
   State<StatefulWidget> createState() {

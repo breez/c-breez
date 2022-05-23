@@ -95,7 +95,7 @@ class PaymentItem extends StatelessWidget {
                     builder: (context, currencyState) {
                       return Column(
                         mainAxisAlignment:
-                            _paymentInfo.fee == 0 || _paymentInfo.pending
+                            _paymentInfo.feeSat == 0 || _paymentInfo.pending
                                 ? MainAxisAlignment.center
                                 : MainAxisAlignment.spaceAround,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -160,7 +160,7 @@ class PaymentItem extends StatelessWidget {
     final texts = context.texts();
     final themeData = Theme.of(context);
 
-    final fee = _paymentInfo.fee;
+    final fee = _paymentInfo.feeSat;
     if (fee == 0 || _paymentInfo.pending) return const SizedBox();
     final feeFormatted = currencyState.bitcoinCurrency.format(
       fee,

@@ -3,16 +3,19 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/lsp.dart';
+import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field.dart';
-import 'package:c_breez/widgets/back_button.dart' as backBtn;
+import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
+import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/succesful_payment.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:c_breez/widgets/warning_box.dart';
@@ -61,12 +64,11 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading: const backBtn.BackButton(),
+        leading: const back_button.BackButton(),
         actions: const [],
         title: Text(texts.invoice_title),
       ),
-      body: BlocBuilder<CurrencyBloc, CurrencyState>(
-          builder: (context, currencyState) {
+      body: BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, acc) {
             return BlocBuilder<LSPBloc, LSPState>(
@@ -76,17 +78,14 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     final channelMinimumFee = Int64(
                       lspState.currentLSP!.channelMinimumFeeMsat ~/ 1000,
                     );
-                    if (amount > acc.maxInboundLiquidity &&
-                        amount <= channelMinimumFee) {
+                    if (amount > acc.maxInboundLiquidity && amount <= channelMinimumFee) {
                       return texts.invoice_insufficient_amount_fee(
                         currencyState.bitcoinCurrency.format(channelMinimumFee),
                       );
                     }
                   }
                   var accBloc = context.read<AccountBloc>();
-                  return PaymentValidator(accBloc.validatePayment,
-                          currencyState.bitcoinCurrency)
-                      .validateIncoming(amount);
+                  return PaymentValidator(accBloc.validatePayment, currencyState.bitcoinCurrency).validateIncoming(amount);
                 }
 
                 return Form(
@@ -105,8 +104,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                               textInputAction: TextInputAction.done,
                               maxLines: null,
                               maxLength: 90,
-                              maxLengthEnforcement:
-                                  MaxLengthEnforcement.enforced,
+                              maxLengthEnforcement: MaxLengthEnforcement.enforced,
                               decoration: InputDecoration(
                                 labelText: texts.invoice_description_label,
                               ),
@@ -121,8 +119,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                               validatorFn: validatePayment,
                               style: theme.FieldTextStyle.textStyle,
                             ),
-                            _buildReceivableBTC(
-                                context, acc, currencyState, lspState),
+                            _buildReceivableBTC(context, acc, currencyState, lspState),
                             BlocBuilder<AccountBloc, AccountState>(
                               builder: (context, acc) {
                                 String? message = _availabilityMessage(
@@ -145,11 +142,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                                         Text(
                                           message,
                                           textAlign: TextAlign.center,
-                                          style: themeData.textTheme.headline6!
-                                              .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .error,
+                                          style: themeData.textTheme.headline6!.copyWith(
+                                            color: Theme.of(context).colorScheme.error,
                                           ),
                                         ),
                                       ],
@@ -171,6 +165,48 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           },
         );
       }),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(
+          bottom: 40.0,
+        ),
+        child: SingleButtonBottomBar(
+          stickToBottom: true,
+          text: texts.invoice_action_create,
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              _createInvoice(
+                context,
+                context.read<InvoiceBloc>(),
+                context.read<CurrencyBloc>(),
+                context.read<AccountBloc>(),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Future _createInvoice(
+    BuildContext context,
+    InvoiceBloc invoiceBloc,
+    CurrencyBloc currencyBloc,
+    AccountBloc accountBloc,
+  ) async {
+    final navigator = Navigator.of(context);
+    var currentRoute = ModalRoute.of(navigator.context)!;
+    var invoice = await accountBloc.addInvoice(
+        description: _descriptionController.text, amount: currencyBloc.state.bitcoinCurrency.parse(_amountController.text));
+    navigator.pop();
+    Widget dialog = QrCodeDialog(invoice, (result) {
+      onPaymentFinished(result, currentRoute, navigator);
+    });
+
+    return showDialog(
+      useRootNavigator: false,
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => dialog,
     );
   }
 
@@ -201,8 +237,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  formatFeeMessage(
-                      texts, acc, currencyState, lspStatus.currentLSP!),
+                  formatFeeMessage(texts, acc, currencyState, lspStatus.currentLSP!),
                   style: themeData.textTheme.headline6,
                   textAlign: TextAlign.center,
                 ),
@@ -230,8 +265,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
             warning,
           ],
         ),
-        onTap: () =>
-            _amountController.text = currencyState.bitcoinCurrency.format(
+        onTap: () => _amountController.text = currencyState.bitcoinCurrency.format(
           acc.maxAllowedToReceive,
           includeDisplayName: false,
           userInput: true,
@@ -247,9 +281,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     LSPInfo lspInfo,
   ) {
     final connected = accountModel.status == AccountStatus.CONNECTED;
-    final minFee = (lspInfo != null)
-        ? Int64(lspInfo.channelMinimumFeeMsat) ~/ 1000
-        : Int64(0);
+    final minFee = Int64(lspInfo.channelMinimumFeeMsat) ~/ 100;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFee);
     final showMinFeeMessage = minFee > 0;
     final setUpFee = (lspInfo.channelFeePermyriad / 100).toString();
@@ -269,14 +301,12 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
         liquidity,
       );
     } else if (!connected && showMinFeeMessage) {
-      return texts
-          .invoice_ln_address_warning_with_min_fee_account_not_connected(
+      return texts.invoice_ln_address_warning_with_min_fee_account_not_connected(
         setUpFee,
         minFeeFormatted,
       );
     } else {
-      return texts
-          .invoice_ln_address_warning_without_min_fee_account_not_connected(
+      return texts.invoice_ln_address_warning_without_min_fee_account_not_connected(
         setUpFee,
       );
     }

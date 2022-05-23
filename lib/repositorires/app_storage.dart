@@ -7,9 +7,11 @@ abstract class AppStorage {
 
   addOutgoingPayments(List<OutgoingLightningPayment> payments);
   Stream<List<OutgoingLightningPayment>> watchOutgoingPayments();
+  Future<List<OutgoingLightningPayment>> listOutgoingPayments();
 
   Future addIncomingPayments(List<Invoice> settledInvoices);
   Stream<List<Invoice>> watchIncomingPayments();
+  Future<List<Invoice>> listIncomingPayments();
 
   Future setPeers(List<PeerWithChannels> peers);
   Stream<List<PeerWithChannels>> watchPeers();

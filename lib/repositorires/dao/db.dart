@@ -20,8 +20,8 @@ class OutgoingLightningPayments extends Table {
   TextColumn get paymentHash => text()();
   TextColumn get destination => text().withLength(min: 66, max: 66)();
   IntColumn get feeMsat => integer()();
-  IntColumn get amount => integer()();
-  IntColumn get amountSent => integer()();
+  IntColumn get amountMsats => integer()();
+  IntColumn get amountSentMsats => integer()();
   TextColumn get preimage => text()();
   BoolColumn get isKeySend => boolean()();
   BoolColumn get pending => boolean()();
@@ -174,7 +174,7 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -189,6 +189,17 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
         }
         if (from < 3) {
           await m.alterTable(TableMigration(channels));
+        }
+        if (from < 4) {
+          await m.alterTable(
+            TableMigration(
+              outgoingLightningPayments,
+              columnTransformer: {
+                outgoingLightningPayments.amountMsats: const CustomExpression('amount'),
+                outgoingLightningPayments.amountSentMsats: const CustomExpression('amount_sent')
+              },
+            )
+          );          
         }
       },
     );
@@ -215,6 +226,11 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   }
 
   @override
+  Future<List<OutgoingLightningPayment>> listOutgoingPayments() {
+    return paymentsDao.listOutgoingPayments();
+  }
+
+  @override
   Future addIncomingPayments(List<Invoice> settledInvoices) {
     return paymentsDao.addIncomingPayments(settledInvoices);
   }
@@ -222,6 +238,11 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   @override
   Stream<List<Invoice>> watchIncomingPayments() {
     return paymentsDao.watchIncomingPayments();
+  }
+
+  @override
+  Future<List<Invoice>> listIncomingPayments() {
+    return paymentsDao.listIncomingPayments();
   }
 
   @override

@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:scan/scan.dart';
 
-import '../widgets/scan_overlay.dart';
+import '../scan_overlay.dart';
 
 class QRScan extends StatefulWidget {
   @override

@@ -12,13 +12,13 @@ import '../../models/account.dart';
 import '../../models/user_profile.dart';
 import '../../widgets/no_connection_dialog.dart';
 import '../../widgets/route.dart';
-import '../../widgets/successful_payment.dart';
-import '../beta_warning_dialog.dart';
+import '../create_invoice/widgets/successful_payment.dart';
+import '../initial_walkthrough/beta_warning_dialog.dart';
 import '../create_invoice/qr_code_dialog.dart';
 import '../home/widgets/payments_filter/calendar_dialog.dart';
-import '../initial_walkthrough.dart';
+import '../initial_walkthrough/initial_walkthrough.dart';
 import '../settings/set_admin_password.dart';
-import '../splash_page.dart';
+import '../splash/splash_page.dart';
 import '../spontaneous_payment/spontaneous_payment_page.dart';
 
 class UITestPage extends StatelessWidget {

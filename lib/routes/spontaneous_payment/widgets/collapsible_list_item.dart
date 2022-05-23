@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:share_extend/share_extend.dart';
 
-import 'flushbar.dart';
+import '../../../widgets/flushbar.dart';
 
 class CollapsibleListItem extends StatelessWidget {
   final String title;

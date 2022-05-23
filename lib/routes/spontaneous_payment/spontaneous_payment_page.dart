@@ -11,7 +11,6 @@ import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as backBtn;
-import 'package:c_breez/widgets/collapsible_list_item.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/processing_payment_dialog.dart';
@@ -20,6 +19,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'widgets/collapsible_list_item.dart';
 
 class SpontaneousPaymentPage extends StatefulWidget {
   final String? nodeID;

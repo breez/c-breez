@@ -24,6 +24,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../widgets/loader.dart';
 import 'widgets/successful_payment.dart';
 
 class CreateInvoicePage extends StatefulWidget {
@@ -205,10 +206,13 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   ) async {
     final navigator = Navigator.of(context);
     var currentRoute = ModalRoute.of(navigator.context)!;
+    var loaderRoute = createLoaderRoute(context);
+    navigator.push(loaderRoute);
     var invoice = await accountBloc.addInvoice(
         description: _descriptionController.text,
         amount:
             currencyBloc.state.bitcoinCurrency.parse(_amountController.text));
+    navigator.removeRoute(loaderRoute);
     navigator.pop();
     Widget dialog = QrCodeDialog(invoice, (result) {
       onPaymentFinished(result, currentRoute, navigator);

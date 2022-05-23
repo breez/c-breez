@@ -7,6 +7,7 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/widgets/loader.dart';
 //import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -53,14 +54,18 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _proceedToRegister() async {
+    final navigator = Navigator.of(context);
+    var loaderRoute = createLoaderRoute(context);
+    navigator.push(loaderRoute);
     await widget._registrationBloc.registerForNotifications();
     _registered = true;
     var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
     var range = seed.getRange(0, 32);
     var list = Uint8List.fromList(range.toList());
-    await widget._accountBloc.startNewNode(list);
-    if(!mounted) return;
-    Navigator.of(context).pushReplacementNamed("/");
+    await widget._accountBloc
+        .startNewNode(list)
+        .whenComplete(() => navigator.removeRoute(loaderRoute));
+    navigator.pushReplacementNamed("/");
   }
 
   Future<bool> _onWillPop() async {
@@ -166,19 +171,18 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     );
   }
 
-  void _letsBreez(BuildContext context) {
-    showDialog(
+  void _letsBreez(BuildContext context) async {
+    bool approved = await showDialog(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return BetaWarningDialog();
       },
-    ).then((approved) {
-      if (approved) {
-        return _proceedToRegister();
-      }
-    });
+    );
+    if (approved) {
+      return _proceedToRegister();
+    }
   }
 
   void _restoreFromBackup(BuildContext context) {}

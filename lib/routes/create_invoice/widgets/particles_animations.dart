@@ -53,7 +53,7 @@ class ParticlesState extends State<Particles> {
 class ParticleModel {
   Animatable? tween;
   double? size;
-  _AnimationProgress? animationProgress;
+  AnimationProgress? animationProgress;
   Random random;
 
   ParticleModel(this.random) {
@@ -84,7 +84,7 @@ class ParticleModel {
         duration,
         Curves.easeIn,
       );
-    animationProgress = _AnimationProgress(
+    animationProgress = AnimationProgress(
       duration: duration,
       startTime: time,
     );

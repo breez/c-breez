@@ -10,7 +10,7 @@ import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
-import 'package:c_breez/widgets/back_button.dart' as backBtn;
+import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
@@ -76,7 +76,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const backBtn.BackButton(),
+        leading: const back_button.BackButton(),
         title: const Text("Send Payment"),
       ),
       body: BlocBuilder<CurrencyBloc, CurrencyState>(

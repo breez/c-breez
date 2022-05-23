@@ -1,5 +1,5 @@
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/back_button.dart' as backBtn;
+import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -35,7 +35,7 @@ class UITestPage extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text("UI Test Page"),
-        leading: const backBtn.BackButton(),
+        leading: const back_button.BackButton(),
         actions: [
           BlocBuilder<UserProfileBloc, UserProfileState>(
               builder: (context, userState) {

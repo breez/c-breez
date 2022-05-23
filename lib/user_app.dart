@@ -111,7 +111,7 @@ class UserApp extends StatelessWidget {
                               );
                             case '/create_invoice':
                               return FadeInRoute(
-                                builder: (_) => CreateInvoicePage(),
+                                builder: (_) => const CreateInvoicePage(),
                                 settings: settings,
                               );
                             case '/fiat_currency':

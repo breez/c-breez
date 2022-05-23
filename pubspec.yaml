@@ -31,55 +31,62 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  drift: ^1.6.0
-  flutter_bloc: ^8.0.1
-  hydrated_bloc: ^8.1.0
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.4
-  fixnum: ^1.0.1
-  hex: ^0.2.0
-  rxdart: ^0.27.3
-  intl: ^0.17.0
-  url_launcher: ^6.1.2
-  duration: ^3.0.11
-  bolt11_decoder: ^1.0.1
-  path_provider: ^2.0.10
-  auto_size_text: ^3.0.0
-  share_extend: ^2.0.0
-  drag_and_drop_lists: ^0.3.2+2
-  extended_image: ^6.2.1
-  flutter_svg: ^1.0.3
-  validators: ^3.0.0
-  bip39: ^1.0.6
-  image_picker: ^0.8.5+3
-  mobile_scanner: ^1.1.0
-  shared_preferences: ^2.0.15
-  protobuf: ^2.0.1
-  grpc: ^3.0.2
-  ini: ^2.1.0
-  cryptography: ^2.0.5
-  pointycastle: ^3.6.0
-  bip32: ^2.0.0
-  basic_utils: ^4.2.2
-  firebase_dynamic_links: ^4.2.3
-  package_info_plus: ^1.4.2
-  flutter_secure_storage: ^5.0.2
-  uni_links: ^0.5.1
-  local_auth: ^2.0.2
-  firebase_messaging: ^11.4.0
-  timeago: ^3.2.2
-  email_validator: ^2.0.1
-  image_cropper: ^2.0.3
-  image: ^3.1.3 # 3.2.0 available, conflicts with flutter_svg due to xml dependency
-  app_settings: ^4.1.6
-  qr_flutter: ^4.0.0
-  simple_animations: ^4.0.2
-  scan: ^1.6.0
   another_flushbar: ^1.10.29
+  app_settings: ^4.1.6
   archive: ^3.3.0
+  auto_size_text: ^3.0.0
+  basic_utils: ^4.2.2
+  bip32: ^2.0.0
+  bip39: ^1.0.6
+  bolt11_decoder: ^1.0.1
+  cryptography: ^2.0.5
+  cupertino_icons: ^1.0.4
+  drag_and_drop_lists: ^0.3.2+2
+  drift: ^1.6.0
+  duration: ^3.0.11
+  email_validator: ^2.0.1
+  extended_image: ^6.2.1
+  firebase_core: ^1.17.0
+  firebase_dynamic_links: ^4.2.3
+  firebase_messaging: ^11.4.0
+  fixnum: ^1.0.1
+  flutter_bloc: ^8.0.1
+  flutter_secure_storage: ^5.0.2
+  flutter_svg: # Target this ref until new release
+    git:
+      url: https://github.com/dnfield/flutter_svg
+      ref: f0a1b4f8cb73524ddf67468be189d481b5ff2046
+  grpc: ^3.0.2
+  hex: ^0.2.0
+  http: ^0.13.4
+  hydrated_bloc: ^8.1.0
+  image: ^3.2.0
+  image_cropper: ^2.0.3
+  image_picker: ^0.8.5+3
+  ini: ^2.1.0
+  intl: ^0.17.0
+  local_auth: ^2.1.0
+  local_auth_android: ^1.0.4
+  local_auth_ios: ^1.0.6
+  logging: ^1.0.2
+  mobile_scanner: ^1.1.0
+  package_info_plus: ^1.4.2
+  path: ^1.8.1
+  path_provider: ^2.0.10
+  pointycastle: ^3.6.0
+  protobuf: ^2.0.1
+  qr_flutter: ^4.0.0
+  rxdart: ^0.27.3
+  scan: ^1.6.0
+  share_extend: ^2.0.0
+  shared_preferences: ^2.0.15
+  simple_animations: ^4.0.2
   sqlite3_flutter_libs: ^0.5.7
+  timeago: ^3.2.2
+  uni_links: ^0.5.1
+  url_launcher: ^6.1.2
+  validators: ^3.0.0
   greenlight:
     path: ./packages/greenlight
   lightning_toolkit:
@@ -88,8 +95,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  drift_dev: ^1.6.0
   build_runner: ^2.1.11
+  drift_dev: ^1.6.0
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -98,7 +105,7 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   mockito: ^5.2.0
   sqflite_common_ffi: ^2.1.1
-  test: any
+  test: ^1.21.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/ui_test/ui_test_page.dart';
-import 'package:c_breez/widgets/back_button.dart' as backBtn;
+import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +28,7 @@ class DevelopersView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          leading: const backBtn.BackButton(),
+          leading: const back_button.BackButton(),
           actions: <Widget>[
             PopupMenuButton<Choice>(
               onSelected: (c) => c.function(context),

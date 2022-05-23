@@ -5,10 +5,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BetaWarningDialog extends StatefulWidget {
   @override
-  _BetaWarningDialogState createState() => _BetaWarningDialogState();
+  BetaWarningDialogState createState() => BetaWarningDialogState();
 }
 
-class _BetaWarningDialogState extends State<BetaWarningDialog> {
+class BetaWarningDialogState extends State<BetaWarningDialog> {
   bool _isUnderstood = false;
   bool _showReminderText = false;
 

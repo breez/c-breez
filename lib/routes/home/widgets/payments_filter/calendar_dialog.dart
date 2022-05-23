@@ -11,10 +11,10 @@ class CalendarDialog extends StatefulWidget {
   const CalendarDialog(this.firstDate);
 
   @override
-  _CalendarDialogState createState() => _CalendarDialogState();
+  CalendarDialogState createState() => CalendarDialogState();
 }
 
-class _CalendarDialogState extends State<CalendarDialog> {
+class CalendarDialogState extends State<CalendarDialog> {
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
   DateTime _endDate = DateTime.now();

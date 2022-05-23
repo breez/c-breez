@@ -3,9 +3,10 @@ import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/payment_type.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
-import 'package:c_breez/widgets/fixed_sliver_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'fixed_sliver_delegate.dart';
 
 class HeaderFilterChip extends SliverPadding {
   HeaderFilterChip(

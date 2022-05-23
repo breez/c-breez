@@ -8,14 +8,13 @@ import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:image/image.dart' as DartImage;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-
-import 'flushbar.dart';
 
 int scaledWidth = 200;
 var _transparentImage = DartImage.Image(scaledWidth, scaledWidth);

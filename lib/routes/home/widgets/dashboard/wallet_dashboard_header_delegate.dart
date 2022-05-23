@@ -1,5 +1,6 @@
-import 'package:c_breez/routes/home/wallet_dashboard.dart';
 import 'package:flutter/material.dart';
+
+import 'wallet_dashboard.dart';
 
 const kMaxExtent = 200.0;
 const kMinExtent = 70.0;

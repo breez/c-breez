@@ -3,14 +3,15 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/payment_info.dart';
 import 'package:c_breez/models/payment_type.dart';
-import 'package:c_breez/routes/home/flip_transition.dart';
-import 'package:c_breez/routes/home/payment_item_avatar.dart';
-import 'package:c_breez/routes/home/success_avatar.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
-import 'package:c_breez/widgets/payment_details_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'flip_transition.dart';
+import 'payment_details_dialog.dart';
+import 'payment_item_avatar.dart';
+import 'success_avatar.dart';
 
 class PaymentItem extends StatelessWidget {
   final PaymentInfo _paymentInfo;

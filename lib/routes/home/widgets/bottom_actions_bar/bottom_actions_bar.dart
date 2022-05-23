@@ -7,16 +7,17 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/routes/home/bottom_action_item.dart';
-import 'package:c_breez/routes/home/bottom_action_item_image.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/enter_payment_info_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'bottom_action_item.dart';
+import 'bottom_action_item_image.dart';
+import 'enter_payment_info_dialog.dart';
 
 class BottomActionsBar extends StatelessWidget {
   final AccountState account;

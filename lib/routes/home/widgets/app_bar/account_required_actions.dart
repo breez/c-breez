@@ -2,13 +2,14 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
-import 'package:c_breez/routes/home/warning_action.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/select_provider_error_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'warning_action.dart';
 
 class AccountRequiredActionsIndicator extends StatelessWidget {
   const AccountRequiredActionsIndicator({

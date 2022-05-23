@@ -1,8 +1,9 @@
-import 'package:c_breez/routes/home/account_required_actions.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+
+import 'account_required_actions.dart';
 
 class HomeAppBar extends AppBar {
   HomeAppBar({

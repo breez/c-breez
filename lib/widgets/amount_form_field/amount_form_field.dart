@@ -2,13 +2,14 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
-import 'package:c_breez/widgets/currency_converter_dialog.dart';
-import 'package:c_breez/widgets/sat_amount_form_field_formatter.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'currency_converter_dialog.dart';
+import 'sat_amount_form_field_formatter.dart';
 
 class AmountFormField extends TextFormField {
   final FiatConversion? fiatConversion;

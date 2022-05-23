@@ -59,6 +59,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     var range = seed.getRange(0, 32);
     var list = Uint8List.fromList(range.toList());
     await widget._accountBloc.startNewNode(list);
+    if(!mounted) return;
     Navigator.of(context).pushReplacementNamed("/");
   }
 
@@ -166,9 +167,6 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _letsBreez(BuildContext context) {
-    final texts = AppLocalizations.of(context);
-    final themeData = Theme.of(context);
-
     showDialog(
       useRootNavigator: false,
       context: context,

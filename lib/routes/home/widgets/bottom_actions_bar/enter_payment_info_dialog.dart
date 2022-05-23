@@ -43,7 +43,6 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
     return AlertDialog(
@@ -169,7 +168,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
             ));
             return;
 
-            widget.invoiceBloc.addIncomingInvoice(_paymentInfoController.text);
+            // widget.invoiceBloc.addIncomingInvoice(_paymentInfoController.text);
           }
         }),
         child: Text(

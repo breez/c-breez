@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'calendar_dialog.dart';
 import 'fixed_sliver_delegate.dart';
 
 class PaymentFilterSliver extends StatefulWidget {
@@ -144,42 +143,6 @@ class PaymentsFilterState extends State<PaymentsFilter> {
     return Row(children: [_buildFilterDropdown(context)]);
   }
 
-  Padding _buildCalendarButton(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
-    final themeData = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 0.0, right: 0.0),
-      child: IconButton(
-        icon: ImageIcon(
-          const AssetImage("src/icon/calendar.png"),
-          color: themeData.colorScheme.onSecondary,
-          size: 24.0,
-        ),
-        onPressed: () => widget._paymentsModel.firstDate != null
-            ? showDialog(
-                useRootNavigator: false,
-                context: context,
-                builder: (_) =>
-                    CalendarDialog(widget._paymentsModel.firstDate!),
-              ).then((result) {
-                widget._accountBloc.changePaymentFilter(
-                    widget._accountBloc.state.payments.filter.copyWith(
-                        filter: _getFilterType(_filter),
-                        startDate: result[0],
-                        endDate: result[1]));
-              })
-            : ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    texts.payments_filter_message_loading_transactions,
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-
   Theme _buildFilterDropdown(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
     final themeData = Theme.of(context);
@@ -246,24 +209,6 @@ class PaymentsFilterState extends State<PaymentsFilter> {
     return texts.payments_filter_option_all;
   }
 
-  Padding _buildExportButton(BuildContext context) {
-    final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 0),
-      child: IconButton(
-        icon: Icon(
-          Icons.more_vert,
-          color: theme.themeId == "BLUE"
-              ? themeData.colorScheme.onSecondary.withOpacity(0.25)
-              : themeData.disabledColor,
-          size: 24.0,
-        ),
-        onPressed: null,
-      ),
-    );
-  }
 }
 
 class Choice {

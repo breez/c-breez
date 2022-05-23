@@ -26,7 +26,9 @@ bool isLNURL(String url) {
     return lightning != null &&
         (_lnurlPrefix.firstMatch(lightning) != null ||
             _lnurlRfc17Prefix.firstMatch(lightning) != null);
-  } on FormatException {} // do nothing.
+  } on FormatException {
+    // do nothing.
+  }
   return false;
 }
 

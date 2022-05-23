@@ -2,6 +2,7 @@ library breez.logger;
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -38,7 +39,7 @@ class BreezLogger {
       final stack = details.stack?.toString() ?? "NoStack";
       final name = details.context?.name ?? "FlutterError";
       final exception = details.exceptionAsString();
-      log.severe(exception + '\n' + stack + " --" + name);
+      log.severe('$exception\n$stack --$name');
     };
   }
 }

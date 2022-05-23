@@ -19,11 +19,6 @@ class DeepLinksService {
   }
 
   void listen() async {
-    var publishLink = (PendingDynamicLinkData data) async {
-      final Uri uri = data.link;
-      _linksNotificationsController.add(uri.toString());
-    };
-
     var data = await FirebaseDynamicLinks.instance.getInitialLink();
     if (data != null) {
       publishLink(data);
@@ -35,6 +30,11 @@ class DeepLinksService {
       log.severe("Failed to fetch dynamic link $err");
       return Future.value(null);
     });
+  }
+
+  publishLink(PendingDynamicLinkData data) async {
+    final Uri uri = data.link;
+    _linksNotificationsController.add(uri.toString());
   }
 
   SessionLinkModel parseSessionInviteLink(String link) {

@@ -125,6 +125,7 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
             await context
                 .read<UserProfileBloc>()
                 .setAdminPassword(_passwordController.text);
+            if(!mounted) return;
             Navigator.of(context).pop();
           }
         },

@@ -67,7 +67,7 @@ extension OnchainFundsAdapter on ListFundsOutput {
     return db.OnChainFund(
       txid: outpoint.txid,
       outnum: outpoint.outnum,
-      amountMsat: amount.toInt(),
+      amountMsat: amountMsats.toInt(),
       address: address,
       outputStatus: status.index,
     );
@@ -80,9 +80,9 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
       createdAt: creationTimestamp,
       paymentHash: paymentHash,
       destination: destination,
-      feeMsat: fee.toInt(),
-      amount: amount.toInt(),
-      amountSent: amountSent.toInt(),
+      feeMsat: feeMsats.toInt(),
+      amountMsats: amountMsats.toInt(),
+      amountSentMsats: amountSentMsats.toInt(),
       preimage: preimage,
       isKeySend: isKeySend,
       pending: pending,
@@ -95,8 +95,8 @@ extension InvoiceAdapter on Invoice {
   db.Invoice toDbInvoice() {
     return db.Invoice(
       label: label,
-      amountMsat: amountSats.toInt() * 1000,
-      receivedMsat: received.toInt() * 1000,
+      amountMsat: amountMsats.toInt(),
+      receivedMsat: receivedMsats.toInt(),
       status: status.index,
       paymentTime: paymentTime,
       expiryTime: expiryTime,

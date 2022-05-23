@@ -49,7 +49,7 @@ class IncomingPaymentsLoop {
           .map((p) => IncomingLightningPayment(
               label: p.offchain.label,
               preimage: HEX.encode(p.offchain.preimage),
-              amountSat: amountToSats(p.offchain.amount),
+              amountMsats: amountToMSats(p.offchain.amount),
               paymentHash: HEX.encode(p.offchain.paymentHash),
               bolt11: p.offchain.bolt11,
               extratlvs: p.offchain.extratlvs.map((t) => TlvField(type: t.type.toInt(), value: HEX.encode(t.value))).toList()))

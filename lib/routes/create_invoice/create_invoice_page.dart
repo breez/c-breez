@@ -3,14 +3,16 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/lsp.dart';
+import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
-import 'package:c_breez/widgets/back_button.dart' as backBtn;
+import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
@@ -62,7 +64,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading: const backBtn.BackButton(),
+        leading: const back_button.BackButton(),
         actions: const [],
         title: Text(texts.invoice_title),
       ),
@@ -85,7 +87,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     }
                   }
                   var accBloc = context.read<AccountBloc>();
-                  return PaymentValidator(accBloc.validatePayment,
+                      return PaymentValidator(accBloc.validatePayment,
                           currencyState.bitcoinCurrency)
                       .validateIncoming(amount);
                 }
@@ -172,6 +174,50 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           },
         );
       }),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(
+          bottom: 40.0,
+        ),
+        child: SingleButtonBottomBar(
+          stickToBottom: true,
+          text: texts.invoice_action_create,
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              _createInvoice(
+                context,
+                context.read<InvoiceBloc>(),
+                context.read<CurrencyBloc>(),
+                context.read<AccountBloc>(),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Future _createInvoice(
+    BuildContext context,
+    InvoiceBloc invoiceBloc,
+    CurrencyBloc currencyBloc,
+    AccountBloc accountBloc,
+  ) async {
+    final navigator = Navigator.of(context);
+    var currentRoute = ModalRoute.of(navigator.context)!;
+    var invoice = await accountBloc.addInvoice(
+        description: _descriptionController.text,
+        amount:
+            currencyBloc.state.bitcoinCurrency.parse(_amountController.text));
+    navigator.pop();
+    Widget dialog = QrCodeDialog(invoice, (result) {
+      onPaymentFinished(result, currentRoute, navigator);
+    });
+
+    return showDialog(
+      useRootNavigator: false,
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => dialog,
     );
   }
 
@@ -248,9 +294,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     LSPInfo lspInfo,
   ) {
     final connected = accountModel.status == AccountStatus.CONNECTED;
-    final minFee = (lspInfo != null)
-        ? Int64(lspInfo.channelMinimumFeeMsat) ~/ 1000
-        : Int64(0);
+    final minFee = Int64(lspInfo.channelMinimumFeeMsat) ~/ 100;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFee);
     final showMinFeeMessage = minFee > 0;
     final setUpFee = (lspInfo.channelFeePermyriad / 100).toString();

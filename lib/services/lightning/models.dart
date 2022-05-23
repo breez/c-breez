@@ -83,13 +83,13 @@ class Outpoint {
 
 class ListFundsOutput {
   final Outpoint outpoint;
-  final Int64 amount;
+  final Int64 amountMsats;
   final String address;
   final OutputStatus status;
 
   ListFundsOutput(
       {required this.outpoint,
-      required this.amount,
+      required this.amountMsats,
       required this.address,
       required this.status});
 }
@@ -202,8 +202,8 @@ class Withdrawal {
 
 class Invoice {
   final String label;
-  final Int64 amountSats;
-  final Int64 received;
+  final Int64 amountMsats;
+  final Int64 receivedMsats;
   final String description;
   final InvoiceStatus status;
   final int paymentTime;
@@ -213,10 +213,10 @@ class Invoice {
   final String paymentHash;
 
   Invoice(
-      {required this.amountSats,
+      {required this.amountMsats,
       required this.label,
       required this.description,
-      required this.received,
+      required this.receivedMsats,
       required this.status,
       required this.paymentTime,
       required this.expiryTime,
@@ -233,9 +233,9 @@ class OutgoingLightningPayment {
   final int creationTimestamp;
   final String paymentHash;
   final String destination;
-  final Int64 fee;
-  final Int64 amount;
-  final Int64 amountSent;
+  final Int64 feeMsats;
+  final Int64 amountMsats;
+  final Int64 amountSentMsats;
   final String preimage;
   final bool isKeySend;
   final bool pending;
@@ -245,9 +245,9 @@ class OutgoingLightningPayment {
       {required this.creationTimestamp,
       required this.paymentHash,
       required this.destination,
-      required this.fee,
-      required this.amount,
-      required this.amountSent,
+      required this.feeMsats,
+      required this.amountMsats,
+      required this.amountSentMsats,
       required this.preimage,
       required this.isKeySend,
       required this.pending,
@@ -264,7 +264,7 @@ class TlvField {
 class IncomingLightningPayment {
   final String label;
   final String preimage;
-  final Int64 amountSat;
+  final Int64 amountMsats;
   final List<TlvField> extratlvs;
   final String paymentHash;
   final String bolt11;
@@ -272,7 +272,7 @@ class IncomingLightningPayment {
   IncomingLightningPayment(
       {required this.label,
       required this.preimage,
-      required this.amountSat,
+      required this.amountMsats,
       required this.extratlvs,
       required this.paymentHash,
       required this.bolt11});

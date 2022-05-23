@@ -64,7 +64,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
               bolt11: bolt11,
               paymentHash: lnInvoice.paymentHash,
               description: lnInvoice.description,
-              amount: lnInvoice.amount ?? 0,
+              amountMsat: lnInvoice.amount ?? 0,
               expiry: lnInvoice.expiry);
 
           return invoice;

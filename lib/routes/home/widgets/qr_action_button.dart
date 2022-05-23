@@ -37,7 +37,7 @@ class QrActionButton extends StatelessWidget {
 
           // bip 121
           String? lnInvoice = extractBolt11FromBip21(lower);
-          lower = (lnInvoice ?? "").toLowerCase();
+          lower = (lnInvoice ?? lower).toLowerCase();
 
           // regular lightning invoice.
           if (lower.startsWith("lightning:") || lower.startsWith("ln")) {

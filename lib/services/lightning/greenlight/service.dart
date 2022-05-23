@@ -160,9 +160,9 @@ class GreenlightService implements LightningService {
         description: description));
     return Invoice(
         label: invoice.label,
-        amountSats: amountToSats(invoice.amount),
+        amountMsats: amountToMSats(invoice.amount),
         description: invoice.description,
-        received: amountToSats(invoice.received),
+        receivedMsats: amountToMSats(invoice.received),
         status: _convertInvoiceStatus(invoice.status),
         paymentTime: invoice.paymentTime,
         expiryTime: invoice.expiryTime,
@@ -203,7 +203,7 @@ class GreenlightService implements LightningService {
 
     var onchainFunds = listFunds.outputs.map((e) {
       return ListFundsOutput(
-          amount: amountToSats(e.amount),
+          amountMsats: amountToMSats(e.amount),
           address: e.address,
           status: e.status.value as OutputStatus,
           outpoint: Outpoint(HEX.encode(e.output.txid), e.output.outnum));
@@ -242,16 +242,16 @@ class GreenlightService implements LightningService {
     await schedule();
     var payments = await _nodeClient!.listPayments(greenlight.ListPaymentsRequest());
     var paymentsList = payments.payments.map((p) {
-      var sentSats = amountToSats(p.amountSent);
-      var requestedSats = amountToSats(p.amount);
+      var sentMsats = amountToMSats(p.amountSent);
+      var requestedMsats = amountToMSats(p.amount);
 
       return OutgoingLightningPayment(
           creationTimestamp: p.createdAt.toInt(),
-          amount: requestedSats,
-          amountSent: sentSats,
+          amountMsats: requestedMsats,
+          amountSentMsats: sentMsats,
           paymentHash: HEX.encode(p.paymentHash),
           destination: HEX.encode(p.destination),
-          fee: sentSats - requestedSats,
+          feeMsats: sentMsats - requestedMsats,
           preimage: HEX.encode(p.paymentPreimage),
           isKeySend: p.bolt11.isNotEmpty == true,
           pending: p.status == greenlight.PayStatus.PENDING,
@@ -268,8 +268,8 @@ class GreenlightService implements LightningService {
     return invoices.invoices.map((p) {
       return Invoice(
           label: p.label,
-          amountSats: amountToSats(p.amount),
-          received: amountToSats(p.received),
+          amountMsats: amountToMSats(p.amount),
+          receivedMsats: amountToMSats(p.received),
           description: p.description,
           status: _convertInvoiceStatus(p.status),
           paymentTime: p.paymentTime,
@@ -299,9 +299,9 @@ class GreenlightService implements LightningService {
   }
 
   @override
-  Future<OutgoingLightningPayment> sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) {
-    // TODO: implement sendPaymentForRequest
-    throw UnimplementedError();
+  Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
+    await schedule();
+    await _nodeClient!.pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: amount), timeout: 60));    
   }
 
   @override
@@ -332,14 +332,14 @@ class GreenlightService implements LightningService {
   }
 }
 
-Int64 amountToSats(greenlight.Amount amount) {
+Int64 amountToMSats(greenlight.Amount amount) {
   var sats = Int64(0);
   if (amount.hasSatoshi()) {
-    sats = amount.satoshi;
+    sats = amount.satoshi * 1000;
   } else if (amount.hasBitcoin()) {
-    sats = amount.bitcoin * 100000000;
+    sats = amount.bitcoin * 100000000000;
   } else {
-    sats = amount.millisatoshi ~/ 1000;
+    sats = amount.millisatoshi;
   }
   return sats;
 }

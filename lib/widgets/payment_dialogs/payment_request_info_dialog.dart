@@ -163,7 +163,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
-    if (widget.invoice.amount == 0) {
+    if (widget.invoice.amountMsat == 0) {
       return Theme(
         data: themeData.copyWith(
           inputDecorationTheme: InputDecorationTheme(
@@ -230,9 +230,9 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         ),
         child: Text(
           _showFiatCurrency && fiatConversion != null
-              ? fiatConversion.format(Int64(widget.invoice.amount))
+              ? fiatConversion.format(Int64(widget.invoice.amountMsat ~/ 1000))
               : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                  .format(Int64(widget.invoice.amount)),
+                  .format(Int64(widget.invoice.amountMsat ~/ 1000)),
           style: themeData.primaryTextTheme.headline5,
           textAlign: TextAlign.center,
         ),
@@ -278,7 +278,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         .validateOutgoing(
       amountToPay(currencyState),
     );
-    if (widget.invoice.amount == 0) {
+    if (widget.invoice.amountMsat == 0) {
       return null;
     }
 
@@ -317,8 +317,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     if (toPay > 0 && accState.maxAllowedToPay >= toPay) {
       actions.add(SimpleDialogOption(
         onPressed: (() async {
-          if (widget.invoice.amount > 0 || _formKey.currentState!.validate()) {
-            if (widget.invoice.amount == 0) {
+          if (widget.invoice.amountMsat > 0 || _formKey.currentState!.validate()) {
+            if (widget.invoice.amountMsat == 0) {
               _amountToPayMap["_amountToPay"] = toPay;
               _amountToPayMap["_amountToPayStr"] =
                   BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker)
@@ -356,7 +356,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   }
 
   Int64 amountToPay(CurrencyState acc) {
-    Int64 amount = Int64(widget.invoice.amount);
+    Int64 amount = Int64(widget.invoice.amountMsat ~/ 1000);
     if (amount == 0) {
       try {
         amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker)

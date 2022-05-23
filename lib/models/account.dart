@@ -5,7 +5,7 @@ class Invoice {
   final String bolt11;
   final String paymentHash;
   final String description;
-  final int amount;
+  final int amountMsat;
   final int expiry;
   final int lspFee;
 
@@ -13,7 +13,7 @@ class Invoice {
       {required this.bolt11,
       required this.paymentHash,
       this.description = "",
-      required this.amount,
+      required this.amountMsat,
       required this.expiry,
       this.lspFee = 0});
 

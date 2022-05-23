@@ -39,7 +39,7 @@ abstract class LightningService {
       String destNode, Int64 amount, String description,
       {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv});
 
-  Future<OutgoingLightningPayment> sendPaymentForRequest(
+  Future sendPaymentForRequest(
       String blankInvoicePaymentRequest,
       {Int64 amount});
 

@@ -48,12 +48,26 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   @override
   void initState() {
     super.initState();
-    _payAncClose();
-    _currentRoute = ModalRoute.of(context);
+    _payAncClose();    
     controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
-    );
+    );    
+    controller!.value = 1.0;
+    controller!.addStatusListener((status) {
+      if (status == AnimationStatus.dismissed) {
+        if (widget.popOnCompletion) {
+          Navigator.of(context).removeRoute(_currentRoute!);
+        }
+        widget._onStateChange(PaymentRequestState.PAYMENT_COMPLETED);
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _currentRoute ??= ModalRoute.of(context);
     colorAnimation = ColorTween(
       begin: Theme.of(context).canvasColor,
       end: Theme.of(context).backgroundColor,
@@ -65,15 +79,6 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
         .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
     opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
-    controller!.value = 1.0;
-    controller!.addStatusListener((status) {
-      if (status == AnimationStatus.dismissed) {
-        if (widget.popOnCompletion) {
-          Navigator.of(context).removeRoute(_currentRoute!);
-        }
-        widget._onStateChange(PaymentRequestState.PAYMENT_COMPLETED);
-      }
-    });
   }
 
   _payAncClose() {

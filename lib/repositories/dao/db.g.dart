@@ -6,7 +6,7 @@ part of 'db.dart';
 // MoorGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
+// ignore_for_file: type=lint
 class Node extends DataClass implements Insertable<Node> {
   final String nodeID;
   final String nodeAlias;
@@ -1079,8 +1079,8 @@ class OutgoingLightningPayment extends DataClass
   final String paymentHash;
   final String destination;
   final int feeMsat;
-  final int amount;
-  final int amountSent;
+  final int amountMsats;
+  final int amountSentMsats;
   final String preimage;
   final bool isKeySend;
   final bool pending;
@@ -1090,8 +1090,8 @@ class OutgoingLightningPayment extends DataClass
       required this.paymentHash,
       required this.destination,
       required this.feeMsat,
-      required this.amount,
-      required this.amountSent,
+      required this.amountMsats,
+      required this.amountSentMsats,
       required this.preimage,
       required this.isKeySend,
       required this.pending,
@@ -1108,10 +1108,10 @@ class OutgoingLightningPayment extends DataClass
           .mapFromDatabaseResponse(data['${effectivePrefix}destination'])!,
       feeMsat: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}fee_msat'])!,
-      amount: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-      amountSent: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount_sent'])!,
+      amountMsats: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}amount_msats'])!,
+      amountSentMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}amount_sent_msats'])!,
       preimage: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}preimage'])!,
       isKeySend: const BoolType()
@@ -1129,8 +1129,8 @@ class OutgoingLightningPayment extends DataClass
     map['payment_hash'] = Variable<String>(paymentHash);
     map['destination'] = Variable<String>(destination);
     map['fee_msat'] = Variable<int>(feeMsat);
-    map['amount'] = Variable<int>(amount);
-    map['amount_sent'] = Variable<int>(amountSent);
+    map['amount_msats'] = Variable<int>(amountMsats);
+    map['amount_sent_msats'] = Variable<int>(amountSentMsats);
     map['preimage'] = Variable<String>(preimage);
     map['is_key_send'] = Variable<bool>(isKeySend);
     map['pending'] = Variable<bool>(pending);
@@ -1144,8 +1144,8 @@ class OutgoingLightningPayment extends DataClass
       paymentHash: Value(paymentHash),
       destination: Value(destination),
       feeMsat: Value(feeMsat),
-      amount: Value(amount),
-      amountSent: Value(amountSent),
+      amountMsats: Value(amountMsats),
+      amountSentMsats: Value(amountSentMsats),
       preimage: Value(preimage),
       isKeySend: Value(isKeySend),
       pending: Value(pending),
@@ -1161,8 +1161,8 @@ class OutgoingLightningPayment extends DataClass
       paymentHash: serializer.fromJson<String>(json['paymentHash']),
       destination: serializer.fromJson<String>(json['destination']),
       feeMsat: serializer.fromJson<int>(json['feeMsat']),
-      amount: serializer.fromJson<int>(json['amount']),
-      amountSent: serializer.fromJson<int>(json['amountSent']),
+      amountMsats: serializer.fromJson<int>(json['amountMsats']),
+      amountSentMsats: serializer.fromJson<int>(json['amountSentMsats']),
       preimage: serializer.fromJson<String>(json['preimage']),
       isKeySend: serializer.fromJson<bool>(json['isKeySend']),
       pending: serializer.fromJson<bool>(json['pending']),
@@ -1177,8 +1177,8 @@ class OutgoingLightningPayment extends DataClass
       'paymentHash': serializer.toJson<String>(paymentHash),
       'destination': serializer.toJson<String>(destination),
       'feeMsat': serializer.toJson<int>(feeMsat),
-      'amount': serializer.toJson<int>(amount),
-      'amountSent': serializer.toJson<int>(amountSent),
+      'amountMsats': serializer.toJson<int>(amountMsats),
+      'amountSentMsats': serializer.toJson<int>(amountSentMsats),
       'preimage': serializer.toJson<String>(preimage),
       'isKeySend': serializer.toJson<bool>(isKeySend),
       'pending': serializer.toJson<bool>(pending),
@@ -1191,8 +1191,8 @@ class OutgoingLightningPayment extends DataClass
           String? paymentHash,
           String? destination,
           int? feeMsat,
-          int? amount,
-          int? amountSent,
+          int? amountMsats,
+          int? amountSentMsats,
           String? preimage,
           bool? isKeySend,
           bool? pending,
@@ -1202,8 +1202,8 @@ class OutgoingLightningPayment extends DataClass
         paymentHash: paymentHash ?? this.paymentHash,
         destination: destination ?? this.destination,
         feeMsat: feeMsat ?? this.feeMsat,
-        amount: amount ?? this.amount,
-        amountSent: amountSent ?? this.amountSent,
+        amountMsats: amountMsats ?? this.amountMsats,
+        amountSentMsats: amountSentMsats ?? this.amountSentMsats,
         preimage: preimage ?? this.preimage,
         isKeySend: isKeySend ?? this.isKeySend,
         pending: pending ?? this.pending,
@@ -1216,8 +1216,8 @@ class OutgoingLightningPayment extends DataClass
           ..write('paymentHash: $paymentHash, ')
           ..write('destination: $destination, ')
           ..write('feeMsat: $feeMsat, ')
-          ..write('amount: $amount, ')
-          ..write('amountSent: $amountSent, ')
+          ..write('amountMsats: $amountMsats, ')
+          ..write('amountSentMsats: $amountSentMsats, ')
           ..write('preimage: $preimage, ')
           ..write('isKeySend: $isKeySend, ')
           ..write('pending: $pending, ')
@@ -1228,7 +1228,7 @@ class OutgoingLightningPayment extends DataClass
 
   @override
   int get hashCode => Object.hash(createdAt, paymentHash, destination, feeMsat,
-      amount, amountSent, preimage, isKeySend, pending, bolt11);
+      amountMsats, amountSentMsats, preimage, isKeySend, pending, bolt11);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1237,8 +1237,8 @@ class OutgoingLightningPayment extends DataClass
           other.paymentHash == this.paymentHash &&
           other.destination == this.destination &&
           other.feeMsat == this.feeMsat &&
-          other.amount == this.amount &&
-          other.amountSent == this.amountSent &&
+          other.amountMsats == this.amountMsats &&
+          other.amountSentMsats == this.amountSentMsats &&
           other.preimage == this.preimage &&
           other.isKeySend == this.isKeySend &&
           other.pending == this.pending &&
@@ -1251,8 +1251,8 @@ class OutgoingLightningPaymentsCompanion
   final Value<String> paymentHash;
   final Value<String> destination;
   final Value<int> feeMsat;
-  final Value<int> amount;
-  final Value<int> amountSent;
+  final Value<int> amountMsats;
+  final Value<int> amountSentMsats;
   final Value<String> preimage;
   final Value<bool> isKeySend;
   final Value<bool> pending;
@@ -1262,8 +1262,8 @@ class OutgoingLightningPaymentsCompanion
     this.paymentHash = const Value.absent(),
     this.destination = const Value.absent(),
     this.feeMsat = const Value.absent(),
-    this.amount = const Value.absent(),
-    this.amountSent = const Value.absent(),
+    this.amountMsats = const Value.absent(),
+    this.amountSentMsats = const Value.absent(),
     this.preimage = const Value.absent(),
     this.isKeySend = const Value.absent(),
     this.pending = const Value.absent(),
@@ -1274,8 +1274,8 @@ class OutgoingLightningPaymentsCompanion
     required String paymentHash,
     required String destination,
     required int feeMsat,
-    required int amount,
-    required int amountSent,
+    required int amountMsats,
+    required int amountSentMsats,
     required String preimage,
     required bool isKeySend,
     required bool pending,
@@ -1284,8 +1284,8 @@ class OutgoingLightningPaymentsCompanion
         paymentHash = Value(paymentHash),
         destination = Value(destination),
         feeMsat = Value(feeMsat),
-        amount = Value(amount),
-        amountSent = Value(amountSent),
+        amountMsats = Value(amountMsats),
+        amountSentMsats = Value(amountSentMsats),
         preimage = Value(preimage),
         isKeySend = Value(isKeySend),
         pending = Value(pending),
@@ -1295,8 +1295,8 @@ class OutgoingLightningPaymentsCompanion
     Expression<String>? paymentHash,
     Expression<String>? destination,
     Expression<int>? feeMsat,
-    Expression<int>? amount,
-    Expression<int>? amountSent,
+    Expression<int>? amountMsats,
+    Expression<int>? amountSentMsats,
     Expression<String>? preimage,
     Expression<bool>? isKeySend,
     Expression<bool>? pending,
@@ -1307,8 +1307,8 @@ class OutgoingLightningPaymentsCompanion
       if (paymentHash != null) 'payment_hash': paymentHash,
       if (destination != null) 'destination': destination,
       if (feeMsat != null) 'fee_msat': feeMsat,
-      if (amount != null) 'amount': amount,
-      if (amountSent != null) 'amount_sent': amountSent,
+      if (amountMsats != null) 'amount_msats': amountMsats,
+      if (amountSentMsats != null) 'amount_sent_msats': amountSentMsats,
       if (preimage != null) 'preimage': preimage,
       if (isKeySend != null) 'is_key_send': isKeySend,
       if (pending != null) 'pending': pending,
@@ -1321,8 +1321,8 @@ class OutgoingLightningPaymentsCompanion
       Value<String>? paymentHash,
       Value<String>? destination,
       Value<int>? feeMsat,
-      Value<int>? amount,
-      Value<int>? amountSent,
+      Value<int>? amountMsats,
+      Value<int>? amountSentMsats,
       Value<String>? preimage,
       Value<bool>? isKeySend,
       Value<bool>? pending,
@@ -1332,8 +1332,8 @@ class OutgoingLightningPaymentsCompanion
       paymentHash: paymentHash ?? this.paymentHash,
       destination: destination ?? this.destination,
       feeMsat: feeMsat ?? this.feeMsat,
-      amount: amount ?? this.amount,
-      amountSent: amountSent ?? this.amountSent,
+      amountMsats: amountMsats ?? this.amountMsats,
+      amountSentMsats: amountSentMsats ?? this.amountSentMsats,
       preimage: preimage ?? this.preimage,
       isKeySend: isKeySend ?? this.isKeySend,
       pending: pending ?? this.pending,
@@ -1356,11 +1356,11 @@ class OutgoingLightningPaymentsCompanion
     if (feeMsat.present) {
       map['fee_msat'] = Variable<int>(feeMsat.value);
     }
-    if (amount.present) {
-      map['amount'] = Variable<int>(amount.value);
+    if (amountMsats.present) {
+      map['amount_msats'] = Variable<int>(amountMsats.value);
     }
-    if (amountSent.present) {
-      map['amount_sent'] = Variable<int>(amountSent.value);
+    if (amountSentMsats.present) {
+      map['amount_sent_msats'] = Variable<int>(amountSentMsats.value);
     }
     if (preimage.present) {
       map['preimage'] = Variable<String>(preimage.value);
@@ -1384,8 +1384,8 @@ class OutgoingLightningPaymentsCompanion
           ..write('paymentHash: $paymentHash, ')
           ..write('destination: $destination, ')
           ..write('feeMsat: $feeMsat, ')
-          ..write('amount: $amount, ')
-          ..write('amountSent: $amountSent, ')
+          ..write('amountMsats: $amountMsats, ')
+          ..write('amountSentMsats: $amountSentMsats, ')
           ..write('preimage: $preimage, ')
           ..write('isKeySend: $isKeySend, ')
           ..write('pending: $pending, ')
@@ -1426,15 +1426,17 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
   late final GeneratedColumn<int?> feeMsat = GeneratedColumn<int?>(
       'fee_msat', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+  final VerificationMeta _amountMsatsMeta =
+      const VerificationMeta('amountMsats');
   @override
-  late final GeneratedColumn<int?> amount = GeneratedColumn<int?>(
-      'amount', aliasedName, false,
+  late final GeneratedColumn<int?> amountMsats = GeneratedColumn<int?>(
+      'amount_msats', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _amountSentMeta = const VerificationMeta('amountSent');
+  final VerificationMeta _amountSentMsatsMeta =
+      const VerificationMeta('amountSentMsats');
   @override
-  late final GeneratedColumn<int?> amountSent = GeneratedColumn<int?>(
-      'amount_sent', aliasedName, false,
+  late final GeneratedColumn<int?> amountSentMsats = GeneratedColumn<int?>(
+      'amount_sent_msats', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _preimageMeta = const VerificationMeta('preimage');
   @override
@@ -1466,8 +1468,8 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
         paymentHash,
         destination,
         feeMsat,
-        amount,
-        amountSent,
+        amountMsats,
+        amountSentMsats,
         preimage,
         isKeySend,
         pending,
@@ -1511,19 +1513,21 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
     } else if (isInserting) {
       context.missing(_feeMsatMeta);
     }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    if (data.containsKey('amount_sent')) {
+    if (data.containsKey('amount_msats')) {
       context.handle(
-          _amountSentMeta,
-          amountSent.isAcceptableOrUnknown(
-              data['amount_sent']!, _amountSentMeta));
+          _amountMsatsMeta,
+          amountMsats.isAcceptableOrUnknown(
+              data['amount_msats']!, _amountMsatsMeta));
     } else if (isInserting) {
-      context.missing(_amountSentMeta);
+      context.missing(_amountMsatsMeta);
+    }
+    if (data.containsKey('amount_sent_msats')) {
+      context.handle(
+          _amountSentMsatsMeta,
+          amountSentMsats.isAcceptableOrUnknown(
+              data['amount_sent_msats']!, _amountSentMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_amountSentMsatsMeta);
     }
     if (data.containsKey('preimage')) {
       context.handle(_preimageMeta,

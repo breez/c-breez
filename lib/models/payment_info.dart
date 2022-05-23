@@ -4,7 +4,7 @@ import 'package:fixnum/fixnum.dart';
 class PaymentInfo {
   final PaymentType type;
   final Int64 amountMsat;
-  final Int64 fee;
+  final Int64 feeMsat;
   final Int64 creationTimestamp;
   final bool keySend;
   final String paymentHash;
@@ -20,7 +20,7 @@ class PaymentInfo {
   const PaymentInfo({
     required this.type,
     required this.amountMsat,
-    required this.fee,
+    required this.feeMsat,
     required this.creationTimestamp,
     this.pending = false,
     this.keySend = false,
@@ -35,4 +35,5 @@ class PaymentInfo {
   });
 
   Int64 get amountSat => amountMsat ~/ 1000;
+  Int64 get feeSat => feeMsat ~/ 1000;
 }

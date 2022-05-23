@@ -19,11 +19,10 @@ import 'package:share_extend/share_extend.dart';
 import 'widgets/compact_qr_image.dart';
 
 class QrCodeDialog extends StatefulWidget {
-  final BuildContext context;
   final Invoice _invoice;
   final Function(dynamic result) _onFinish;
 
-  const QrCodeDialog(this.context, this._invoice, this._onFinish);
+  const QrCodeDialog(this._invoice, this._onFinish);
 
   @override
   State<StatefulWidget> createState() {

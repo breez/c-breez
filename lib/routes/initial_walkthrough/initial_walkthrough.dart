@@ -165,22 +165,18 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     );
   }
 
-  void _letsBreez(BuildContext context) {
-    final texts = AppLocalizations.of(context);
-    final themeData = Theme.of(context);
-
-    showDialog(
+  void _letsBreez(BuildContext context) async {
+    bool approved = await showDialog(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return BetaWarningDialog();
       },
-    ).then((approved) {
-      if (approved) {
-        return _proceedToRegister();
-      }
-    });
+    );
+    if (approved) {
+      return _proceedToRegister();
+    }
   }
 
   void _restoreFromBackup(BuildContext context) {}

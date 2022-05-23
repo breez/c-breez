@@ -34,6 +34,6 @@ class PaymentInfo {
     this.imageURL,
   });
 
-  Int64? get amountSat => amountMsat ~/ 1000;
+  Int64 get amountSat => amountMsat ~/ 1000;
   Int64 get feeSat => feeMsat ~/ 1000;
 }

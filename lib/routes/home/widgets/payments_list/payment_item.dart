@@ -138,7 +138,7 @@ class PaymentItem extends StatelessWidget {
     final texts = context.texts();
     final themeData = Theme.of(context);
     final amount = currencyState.bitcoinCurrency.format(
-      _paymentInfo.amountSat!,
+      _paymentInfo.amountSat,
       includeDisplayName: false,
     );
 

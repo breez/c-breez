@@ -13,10 +13,10 @@ class Particles extends StatefulWidget {
   });
 
   @override
-  _ParticlesState createState() => _ParticlesState();
+  ParticlesState createState() => ParticlesState();
 }
 
-class _ParticlesState extends State<Particles> {
+class ParticlesState extends State<Particles> {
   final random = Random();
   final startTime = DateTime.now();
   final List<ParticleModel> particles = [];
@@ -180,11 +180,11 @@ enum MyAniPropsEnum {
   COLOR2,
 }
 
-class _AnimationProgress {
+class AnimationProgress {
   final Duration duration;
   final Duration startTime;
 
-  const _AnimationProgress({
+  const AnimationProgress({
     required this.duration,
     required this.startTime,
   });

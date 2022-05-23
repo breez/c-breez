@@ -4,7 +4,7 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/back_button.dart' as backBtn;
+import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/foundation.dart';
@@ -47,7 +47,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
 
         return Scaffold(
           appBar: AppBar(
-            leading: const backBtn.BackButton(),
+            leading: const back_button.BackButton(),
             title: Text(texts.fiat_currencies_title),
           ),
           body: DragAndDropLists(

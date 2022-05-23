@@ -7,7 +7,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/services.dart';
 import 'package:grpc/grpc.dart';
 import "package:ini/ini.dart";
-import 'package:c_breez/services/breez_server/models.dart' as serverModels;
+import 'package:c_breez/services/breez_server/models.dart' as server_models;
 
 //proto command:
 //protoc --dart_out=grpc:lib/services/breez_server/generated/ -Ilib/services/breez_server/protobuf/ lib/services/breez_server/protobuf/breez.proto
@@ -31,7 +31,7 @@ class BreezServer {
     return _defaultCallOptions!;
   }
 
-  Future<List<serverModels.Rate>> rate() async {
+  Future<List<server_models.Rate>> rate() async {
     var channel = await _ensureValidChannel();
     var infoClient =
         InformationClient(channel, options: await defaultCallOptions);
@@ -39,7 +39,7 @@ class BreezServer {
     log.info('registerDevice response: $response');
 
     return response.rates
-        .map((r) => serverModels.Rate(r.coin, r.value))
+        .map((r) => server_models.Rate(r.coin, r.value))
         .toList();
   }
 

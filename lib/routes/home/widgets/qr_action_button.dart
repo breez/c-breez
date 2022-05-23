@@ -10,7 +10,7 @@ import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:validators/validators.dart';
 
 class QrActionButton extends StatelessWidget {
@@ -58,7 +58,7 @@ class QrActionButton extends StatelessWidget {
           }
 
           // Open on whenever app the system links to
-          if (await canLaunch(scannedString)) {
+          if (await canLaunchUrlString(scannedString)) {
             _handleWebAddress(context, scannedString);
             return;
           }
@@ -173,7 +173,7 @@ class QrActionButton extends StatelessWidget {
                 style: Theme.of(context).primaryTextTheme.button,
               ),
               onPressed: () async {
-                await launch(url, forceSafariVC: false);
+                await launchUrlString(url);
                 Navigator.of(context).pop();
               },
             ),

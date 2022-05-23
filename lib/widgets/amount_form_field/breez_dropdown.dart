@@ -706,10 +706,10 @@ class BreezDropdownButton<T> extends StatefulWidget {
   final bool isExpanded;
 
   @override
-  _BreezDropdownButtonState<T> createState() => _BreezDropdownButtonState<T>();
+  BreezDropdownButtonState<T> createState() => BreezDropdownButtonState<T>();
 }
 
-class _BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>>
+class BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>>
     with WidgetsBindingObserver {
   int? _selectedIndex;
   _DropdownRoute<T>? _dropdownRoute;

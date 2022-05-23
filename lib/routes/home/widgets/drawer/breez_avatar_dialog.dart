@@ -12,12 +12,12 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:image/image.dart' as DartImage;
+import 'package:image/image.dart' as dart_image;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 int scaledWidth = 200;
-var _transparentImage = DartImage.Image(scaledWidth, scaledWidth);
+var _transparentImage = dart_image.Image(scaledWidth, scaledWidth);
 
 Widget breezAvatarDialog(UserProfileBloc userBloc) {
   AutoSizeGroup autoSizeGroup = AutoSizeGroup();
@@ -257,12 +257,12 @@ Future<String> _uploadImage(
 }
 
 List<int> scaleAndFormatPNG(List<int> imageBytes) {
-  DartImage.Image image = DartImage.decodeImage(imageBytes)!;
-  DartImage.Image resized = DartImage.copyResize(image,
+  dart_image.Image image = dart_image.decodeImage(imageBytes)!;
+  dart_image.Image resized = dart_image.copyResize(image,
       width: image.width < image.height ? -1 : scaledWidth,
       height: image.width < image.height ? scaledWidth : -1);
-  DartImage.Image centered = DartImage.copyInto(_transparentImage, resized,
+  dart_image.Image centered = dart_image.copyInto(_transparentImage, resized,
       dstX: ((scaledWidth - resized.width) / 2).round(),
       dstY: ((scaledWidth - resized.height) / 2).round());
-  return DartImage.encodePng(centered);
+  return dart_image.encodePng(centered);
 }

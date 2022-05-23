@@ -131,7 +131,7 @@ class GreenlightService implements LightningService {
         nodeId: nodePubkey,
         initMsg: init,
         signature: sig,
-        signerProto: "v0.10.1",
+        signerProto: "v0.11.0.1",
         challenge: challengeResponse.challenge));
     _nodeCredentials =
         NodeCredentials(caCert, registration.deviceCert, registration.deviceKey, nodePubkey, seed);

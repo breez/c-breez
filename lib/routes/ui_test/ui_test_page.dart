@@ -174,18 +174,26 @@ class UITestPage extends StatelessWidget {
             child: ListTile(
               title: const Text("QrCodeDialog"),
               onTap: () async {
+                Future<Invoice> invoice = Future.delayed(
+                    const Duration(seconds: 2),
+                    () => Invoice(
+                        paymentHash: "Fake Payment Hash",
+                        amountMsat: 2000000.toInt(),
+                        bolt11: "Fake bolt11",
+                        description: "Fake Description",
+                        expiry: 60.toInt()));
+                Widget dialog = FutureBuilder(
+                  future: invoice,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<Invoice> invoice) {
+                    return QrCodeDialog(invoice.data, (result) {});
+                  },
+                );
                 return showDialog(
                   useRootNavigator: false,
                   context: context,
                   barrierDismissible: false,
-                  builder: (_) => QrCodeDialog(                      
-                      Invoice(
-                          paymentHash: "Fake Payment Hash",
-                          amountMsat: 2000000.toInt(),
-                          bolt11: "Fake bolt11",
-                          description: "Fake Description",
-                          expiry: 60.toInt()),
-                      (result) {}),
+                  builder: (_) => dialog,
                 );
               },
             ),

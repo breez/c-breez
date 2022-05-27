@@ -351,6 +351,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
+  fimber:
+    dependency: "direct main"
+    description:
+      name: fimber
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.6"
+  fimber_io:
+    dependency: "direct main"
+    description:
+      name: fimber_io
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.6"
   firebase_core:
     dependency: "direct main"
     description:
@@ -764,7 +778,7 @@ packages:
     source: hosted
     version: "1.0.0"
   logging:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: logging
       url: "https://pub.dartlang.org"

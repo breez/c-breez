@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/logger.dart';
 import 'package:c_breez/routes/ui_test/ui_test_page.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
@@ -13,8 +14,11 @@ import 'package:share_extend/share_extend.dart';
 bool allowRebroadcastRefunds = false;
 
 class Choice {
-  const Choice(
-      {required this.title, required this.icon, required this.function});
+  const Choice({
+    required this.title,
+    required this.icon,
+    required this.function,
+  });
 
   final String title;
   final IconData icon;
@@ -22,43 +26,50 @@ class Choice {
 }
 
 class DevelopersView extends StatelessWidget {
-  const DevelopersView({Key? key}) : super(key: key);
+  const DevelopersView({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
     return Scaffold(
-        appBar: AppBar(
-          leading: const back_button.BackButton(),
-          actions: <Widget>[
-            PopupMenuButton<Choice>(
-              onSelected: (c) => c.function(context),
-              color: Theme.of(context).backgroundColor,
-              icon: Icon(
-                Icons.more_vert,
-                color: Theme.of(context).iconTheme.color,
-              ),
-              itemBuilder: (BuildContext context) {
-                return _getChoices(context).map((Choice choice) {
-                  return PopupMenuItem<Choice>(
-                    value: choice,
-                    child: Text(choice.title,
-                        style: Theme.of(context).textTheme.button),
-                  );
-                }).toList();
-              },
+      appBar: AppBar(
+        leading: const back_button.BackButton(),
+        actions: [
+          PopupMenuButton<Choice>(
+            onSelected: (c) => c.function(context),
+            color: themeData.backgroundColor,
+            icon: Icon(
+              Icons.more_vert,
+              color: themeData.iconTheme.color,
             ),
-          ],
-          title: const Text("Developers"),
-        ),
-        body: Container());
+            itemBuilder: (context) {
+              return _getChoices(context).map((Choice choice) {
+                return PopupMenuItem<Choice>(
+                  value: choice,
+                  child: Text(
+                    choice.title,
+                    style: themeData.textTheme.button,
+                  ),
+                );
+              }).toList();
+            },
+          ),
+        ],
+        title: const Text("Developers"),
+      ),
+      body: Container(),
+    );
   }
 
   List<Choice> _getChoices(BuildContext context) {
     return [
       Choice(
-          title: 'Export Keys',
-          icon: Icons.phone_android,
-          function: _exportKeys),
+        title: 'Export Keys',
+        icon: Icons.phone_android,
+        function: _exportKeys,
+      ),
       Choice(
         title: 'Test UI Widgets',
         icon: Icons.phone_android,
@@ -69,6 +80,11 @@ class DevelopersView extends StatelessWidget {
           ),
         ),
       ),
+      Choice(
+        title: 'Share Logs',
+        icon: Icons.share,
+        function: (_) => shareLog(),
+      )
     ];
   }
 

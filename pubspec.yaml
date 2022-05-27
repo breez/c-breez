@@ -47,6 +47,8 @@ dependencies:
   duration: ^3.0.11
   email_validator: ^2.0.1
   extended_image: ^6.2.1
+  fimber: ^0.6.6
+  fimber_io: ^0.6.6
   firebase_core: ^1.17.0
   firebase_dynamic_links: ^4.2.4
   firebase_messaging: ^11.4.0
@@ -66,7 +68,6 @@ dependencies:
   local_auth: ^2.1.0
   local_auth_android: ^1.0.4
   local_auth_ios: ^1.0.6
-  logging: ^1.0.2
   mobile_scanner: ^1.1.1
   package_info_plus: ^1.4.2
   path: ^1.8.1

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:c_breez/services/lightning/greenlight/incoming_requests.dart';
+import 'package:fimber/fimber.dart';
 import 'package:greenlight/scheduler_credentials.dart';
 import 'package:c_breez/services/lightning/models.dart';
 import 'package:greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
@@ -22,6 +23,7 @@ class GreenlightService implements LightningService {
   scheduler.SchedulerClient? _schedulerClient;
   Signer? _signer;
 
+  final _log = FimberLog("GreenlightService");
   final _incomingPaymentsStream = StreamController<IncomingLightningPayment>.broadcast();
   final Completer _readyCompleter = Completer();
 
@@ -52,14 +54,14 @@ class GreenlightService implements LightningService {
   Future startNode() async {
     var res = await schedule();
     _readyCompleter.complete(true);
-    log.info("node started! ${HEX.encode(res.nodeId)}");
+    _log.i("node started! ${HEX.encode(res.nodeId)}");
 
     streamIncomingRequests(res.nodeId);
   }
 
   Future streamIncomingRequests(List<int> nodeID) async {
     while (true) {
-      log.info("streaming signer requests");
+      _log.i("streaming signer requests");
       var nodeInfo = await _schedulerClient!.getNodeInfo(scheduler.NodeInfoRequest()
         ..nodeId = nodeID
         ..wait = true);
@@ -68,7 +70,7 @@ class GreenlightService implements LightningService {
 
       try {
         _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
-          log.info(value.line);
+          _log.v(value.line);
         });
         // stream incoming payments
         IncomingPaymentsLoop(_nodeClient!, _incomingPaymentsStream.sink).start();
@@ -76,7 +78,7 @@ class GreenlightService implements LightningService {
         // stream signer and wait for it to shut down.
         await SignerLoop(_signer!, _nodeClient!).start();
       } catch (e) {
-        log.severe("signer exited, waiting 5 seconds...", e);        
+        _log.e("signer exited, waiting 5 seconds...", ex: e);
       }
       await Future.delayed(const Duration(seconds: 5));
     }

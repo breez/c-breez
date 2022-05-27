@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:c_breez/logger.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
@@ -10,6 +10,7 @@ import 'package:local_auth_ios/local_auth_ios.dart';
 class LocalAuthenticationService {
   LocalAuthenticationService();
 
+  final _log = FimberLog("LocalAuthenticationService");
   final _auth = LocalAuthentication();
 
   Future<LocalAuthenticationOption> get localAuthenticationOption async =>
@@ -45,7 +46,7 @@ class LocalAuthenticationService {
       if (error.code == "LockedOut" || error.code == "PermanentlyLockedOut") {
         throw error.message!;
       }
-      log.severe("Error Code: ${error.code} - Message: ${error.message}");
+      _log.e("Error Code: ${error.code} - Message: ${error.message}", ex: error);
       await _auth.stopAuthentication();
       return false;
     }

@@ -2,8 +2,8 @@
 
 import 'dart:typed_data';
 
-import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/lightning/models.dart';
+import 'package:fimber/fimber.dart';
 import 'package:hex/hex.dart';
 import 'package:lightning_toolkit/signer.dart';
 import 'package:greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
@@ -13,13 +13,14 @@ import 'service.dart';
 class SignerLoop {
   final Signer _signer;
   final greenlight.NodeClient _nodeClient;
+  final _log = FimberLog("SignerLoop");
 
   SignerLoop(this._signer, this._nodeClient);
 
   Future start() {
     return _nodeClient.streamHsmRequests(greenlight.Empty()).listen((value) async {
         var msg = HEX.encode(value.raw);        
-        log.info(
+        _log.i(
             "hsmd raw: $msg requestId: ${value.requestId} peer_id: ${HEX.encode(value.context.nodeId)} dbId: ${value.context.dbid.toInt()}");
 
         try {          
@@ -27,11 +28,11 @@ class SignerLoop {
               message: Uint8List.fromList(value.raw),
               peerId: value.context.nodeId.length == 33 ? Uint8List.fromList(value.context.nodeId) : null,
               dbId: value.context.dbid.toInt());
-          log.info("hsmd message signed successfully");
+          _log.i("hsmd message signed successfully");
           await _nodeClient.respondHsmRequest(greenlight.HsmResponse(requestId: value.requestId, raw: result.toList()));
-          log.info("hsmd message replied successfully");
+          _log.i("hsmd message replied successfully");
         } catch (e) {
-          log.severe("failed to handle hsmd message: ${e.toString()}");
+          _log.e("failed to handle hsmd message: ${e.toString()}", ex: e);
         }
       }).asFuture();
   }

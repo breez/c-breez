@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/lsp.dart';
 import 'package:c_breez/services/breez_server/generated/breez.pbgrpc.dart';
 import 'package:fixnum/fixnum.dart';
@@ -36,7 +35,6 @@ class BreezServer {
     var infoClient =
         InformationClient(channel, options: await defaultCallOptions);
     var response = await infoClient.rates(RatesRequest());
-    log.info('registerDevice response: $response');
 
     return response.rates
         .map((r) => server_models.Rate(r.coin, r.value))
@@ -101,7 +99,6 @@ class BreezServer {
       ..invoice = bolt11
       ..payee = payee
       ..amount = amount);
-    log.info('sendInvoice response: $response');
     return response.toString();
   }
 

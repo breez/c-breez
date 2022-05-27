@@ -15,6 +15,7 @@ import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning/interface.dart';
 import 'package:drift/drift.dart';
+import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -34,6 +35,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String accountCredsKey = "account_creds_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
+  final _log = FimberLog("AccountBloc");
   final AppStorage _appStorage;
   final LightningService _breezLib;
   final KeyChain _keyChain;
@@ -57,7 +59,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       _keyChain.read(accountCredsKey).then((credsHEX) {
         if (credsHEX != null) {
           var creds = HEX.decode(credsHEX);
-          log.info("found account credentials: ${String.fromCharCodes(creds)}");
+          _log.v("found account credentials: ${String.fromCharCodes(creds)}");
           _breezLib.initWithCredentials(creds);
           _startNode();
         }
@@ -84,11 +86,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       throw Exception("Node already started");
     }
     var creds = await _breezLib.register(seed, email: email, network: network);
-    log.info("node registered successfully");
+    _log.i("node registered successfully");
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
     emit(state.copyWith(initial: false));
     await _startNode();
-    log.info("new node started");
+    _log.i("new node started");
     return creds;
   }
 
@@ -281,38 +283,38 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future _syncNodeInfo() async {
-    log.info("_syncNodeInfo started");
+    _log.i("_syncNodeInfo started");
     await _appStorage.setNodeInfo((await _breezLib.getNodeInfo()).toDbNodeInfo());
-    log.info("_syncNodeInfo finished");
+    _log.i("_syncNodeInfo finished");
   }
 
   Future _syncPeers() async {
-    log.info("_syncPeers started");
+    _log.i("_syncPeers started");
     var peers = (await _breezLib.listPeers()).map((p) => p.toDbPeer()).toList();
     await _appStorage.setPeers(peers);
-    log.info("_syncPeers finished");
+    _log.i("_syncPeers finished");
   }
 
   Future _syncFunds() async {
-    log.info("_syncFunds started");
+    _log.i("_syncFunds started");
     var funds = await _breezLib.listFunds();
     await _appStorage.setOffchainFunds(funds.channelFunds.map((f) => f.toDbOffchainFund()).toList());
     await _appStorage.setOnchainFunds(funds.onchainFunds.map((f) => f.toDbOnchainFund()).toList());
-    log.info("_syncFunds finished");
+    _log.i("_syncFunds finished");
   }
 
   Future _syncOutgoingPayments() async {
-    log.info("_syncOutgoingPayments");
+    _log.i("_syncOutgoingPayments");
     var outgoingPayments = await _breezLib.getPayments();
     await _appStorage.addOutgoingPayments(outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
-    log.info("_syncOutgoingPayments finished");
+    _log.i("_syncOutgoingPayments finished");
   }
 
   Future _syncSettledInvoices() async {
-    log.info("_syncSettledInvoices started");
+    _log.i("_syncSettledInvoices started");
     var invoices = await _breezLib.getInvoices();
     await _appStorage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
-    log.info("_syncSettledInvoices finished");
+    _log.i("_syncSettledInvoices finished");
   }
 
   @override

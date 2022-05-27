@@ -1,11 +1,12 @@
-import 'package:c_breez/logger.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:fimber/fimber.dart';
 
 RegExp _lnurlPrefix = RegExp(",*?((lnurl)([0-9]{1,}[a-z0-9]+){1})");
 
 /// https://github.com/fiatjaf/lnurl-rfc/blob/luds/17.md
 RegExp _lnurlRfc17Prefix = RegExp("(lnurl)(c|w|p)");
 String _lightningProtocolPrefix = "lightning:";
+final _log = FimberLog("lnurl");
 
 bool isLNURL(String url) {
   var lower = url.toLowerCase();
@@ -47,7 +48,7 @@ bool isLightningAddressURI(String uri) {
 
 parseLightningAddress(String? uri) {
   // Ref. https://github.com/andrerfneves/lightning-address/blob/master/DIY.md
-  log.info('parseLightningAddress: given "$uri"');
+  _log.i('parseLightningAddress: given "$uri"');
 
   String? result;
   if (uri != null && uri.isNotEmpty) {
@@ -61,7 +62,7 @@ parseLightningAddress(String? uri) {
     if (!EmailValidator.validate(result)) {
       result = null;
     }
-    log.info('parseLightningAddress: got "$result"');
+    _log.i('parseLightningAddress: got "$result"');
   }
   return result;
 }

@@ -6,6 +6,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
+import 'package:fimber/fimber.dart';
 import 'package:path/path.dart' as p;
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
@@ -17,10 +18,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'firebase_options.dart';
+
+final _log = FimberLog("Main");
 
 void main() async {
   // runZonedGuarded wrapper is required to log Dart errors.
@@ -72,8 +74,7 @@ void main() async {
         storage: storage);
   }, (error, stackTrace) async {
     if (error is! FlutterErrorDetails) {
-      log.log(Level.SEVERE, '$error\n$stackTrace',
-          "FlutterError");
+      _log.e("FlutterError: $error", ex: error, stacktrace: stackTrace);
     }
   });
 }

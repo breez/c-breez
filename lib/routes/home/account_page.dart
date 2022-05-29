@@ -5,21 +5,19 @@ import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/payment_info.dart';
+import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
+import 'package:c_breez/routes/home/widgets/dashboard/wallet_dashboard_header_delegate.dart';
+import 'package:c_breez/routes/home/widgets/no_lsp_widget.dart';
+import 'package:c_breez/routes/home/widgets/payments_filter/fixed_sliver_delegate.dart';
+import 'package:c_breez/routes/home/widgets/payments_filter/header_filter_chip.dart';
+import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_sliver.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/payments_list.dart';
+import 'package:c_breez/routes/home/widgets/status_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'widgets/bubble_painter.dart';
-import 'widgets/dashboard/wallet_dashboard_header_delegate.dart';
-import 'widgets/no_lsp_widget.dart';
-import 'widgets/payments_filter/fixed_sliver_delegate.dart';
-import 'widgets/payments_filter/header_filter_chip.dart';
-import 'widgets/payments_filter/payments_filter.dart';
-import 'widgets/payments_list/payments_list.dart';
-import 'widgets/status_text.dart';
-
 const _kFilterMaxSize = 64.0;
-const _kFilterMinSize = 0.0;
 const _kPaymentListItemHeight = 72.0;
 
 class AccountPage extends StatelessWidget {
@@ -78,14 +76,7 @@ class AccountPage extends StatelessWidget {
     );
 
     if (nonFiltered.isNotEmpty) {
-      slivers.add(
-        PaymentFilterSliver(
-          scrollController,
-          _kFilterMinSize,
-          _kFilterMaxSize,
-          payment,
-        ),
-      );
+      slivers.add(const PaymentsFilterSliver(_kFilterMaxSize));
     }
 
     final paymentTypes = payment.filter.paymentType;

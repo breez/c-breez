@@ -219,7 +219,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
               FilteringTextInputFormatter.allow(
                 fractionSize == 0
                     ? RegExp(r'\d+')
-                    : RegExp("^\\d+\\.?\\d{0,${fractionSize ?? 2}}"),
+                    : RegExp("^\\d+\\.?\\d{0,$fractionSize}"),
               ),
             ],
             keyboardType: const TextInputType.numberWithOptions(decimal: true),

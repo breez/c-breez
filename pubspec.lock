@@ -351,6 +351,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.2"
+  fimber:
+    dependency: "direct main"
+    description:
+      name: fimber
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.6"
+  fimber_io:
+    dependency: "direct main"
+    description:
+      name: fimber_io
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.6"
   firebase_core:
     dependency: "direct main"
     description:
@@ -378,7 +392,7 @@ packages:
       name: firebase_dynamic_links
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.3"
+    version: "4.2.4"
   firebase_dynamic_links_platform_interface:
     dependency: transitive
     description:
@@ -497,11 +511,9 @@ packages:
   flutter_svg:
     dependency: "direct main"
     description:
-      path: "."
-      ref: f0a1b4f8cb73524ddf67468be189d481b5ff2046
-      resolved-ref: f0a1b4f8cb73524ddf67468be189d481b5ff2046
-      url: "https://github.com/dnfield/flutter_svg"
-    source: git
+      name: flutter_svg
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.1.0"
   flutter_test:
     dependency: "direct dev"
@@ -766,7 +778,7 @@ packages:
     source: hosted
     version: "1.0.0"
   logging:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: logging
       url: "https://pub.dartlang.org"
@@ -806,7 +818,7 @@ packages:
       name: mobile_scanner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   mockito:
     dependency: "direct dev"
     description:

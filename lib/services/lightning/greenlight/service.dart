@@ -20,6 +20,7 @@ class GreenlightService implements LightningService {
   NodeCredentials? _nodeCredentials;
   greenlight.NodeClient? _nodeClient;
   //scheduler.SchedulerClient? _schedulerClient;
+  ClientChannel? _schedulerChannel;
   Signer? _signer;
 
   final _log = FimberLog("GreenlightService");
@@ -30,7 +31,7 @@ class GreenlightService implements LightningService {
 
   @override
   Signer initWithCredentials(List<int> credentials) {
-    _nodeCredentials = NodeCredentials.fromBuffer(credentials);    
+    _nodeCredentials = NodeCredentials.fromBuffer(credentials);
     _signer = Signer(Uint8List.fromList(_nodeCredentials!.secret!), _signerStoragePath);
     return _signer!;
   }
@@ -45,14 +46,16 @@ class GreenlightService implements LightningService {
     ]);
   }
 
-  scheduler.SchedulerClient _createSchedulerClient() {
-    final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null);
-    var grpcChannel = _createNodeChannel(schedulerCredentials, "https://scheduler.gl.blckstrm.com:2601");
-    return scheduler.SchedulerClient(grpcChannel);
+  Future<scheduler.SchedulerClient> _createSchedulerClient() async {
+    if (_schedulerChannel == null) {
+      final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null);
+      _schedulerChannel = _createNodeChannel(schedulerCredentials, "https://scheduler.gl.blckstrm.com:2601");
+    }
+    return scheduler.SchedulerClient(_schedulerChannel!);
   }
 
   @override
-  Future startNode() async {    
+  Future startNode() async {
     var res = await schedule();
     _readyCompleter.complete(true);
     _log.i("node started! ${HEX.encode(res.nodeId)}");
@@ -61,16 +64,16 @@ class GreenlightService implements LightningService {
   }
 
   Future streamIncomingRequests(List<int> nodeID) async {
-    while (true) {      
-       _log.i("streaming signer requests");
-      var schedulerClient = _createSchedulerClient();
-      var nodeInfo = await schedulerClient.getNodeInfo(scheduler.NodeInfoRequest()
-        ..nodeId = nodeID
-        ..wait = true);
-      var nodeChannel = _createNodeChannel(_nodeCredentials!, nodeInfo.grpcUri);
-      _nodeClient = greenlight.NodeClient(nodeChannel);
-
+    while (true) {
       try {
+        _log.i("streaming signer requests");
+        var schedulerClient = await _createSchedulerClient();
+        var nodeInfo = await schedulerClient.getNodeInfo(scheduler.NodeInfoRequest()
+          ..nodeId = nodeID
+          ..wait = true);
+        var nodeChannel = _createNodeChannel(_nodeCredentials!, nodeInfo.grpcUri);
+        _nodeClient = greenlight.NodeClient(nodeChannel);
+
         _nodeClient!.streamLog(greenlight.StreamLogRequest()).listen((value) {
           _log.v(value.line);
         });
@@ -81,17 +84,23 @@ class GreenlightService implements LightningService {
         await SignerLoop(_signer!, _nodeClient!).start();
       } catch (e) {
         _log.e("signer exited, waiting 5 seconds...", ex: e);
-      }      
-      await Future.delayed(const Duration(seconds: 5));      
+      }
+      await Future.delayed(const Duration(seconds: 5));
     }
   }
 
-  Future<scheduler.NodeInfoResponse> schedule() async {    
-    var schedulerClient = _createSchedulerClient();
-    var res = await schedulerClient.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
-    var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
-    _nodeClient = greenlight.NodeClient(nodeChannel);
-    return res;
+  Future<scheduler.NodeInfoResponse> schedule() async {
+    _log.i("scheduling node ${_nodeCredentials!.nodeId}");
+    var schedulerClient = await _createSchedulerClient(killOldChannel: true);
+    try {
+      var res = await schedulerClient.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
+      var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
+      _nodeClient = greenlight.NodeClient(nodeChannel);
+      return res;
+    } catch (e) {
+      _log.e("error scheduling node ${e.toString()}");
+      rethrow;
+    }
   }
 
   @override
@@ -109,12 +118,13 @@ class GreenlightService implements LightningService {
     final signer = Signer(seed, _signerStoragePath);
     final init = await signer.init();
     final nodePubkey = await signer.getNodePubkey();
-    var schedulerClient = _createSchedulerClient();
-    var challengeResponse = await schedulerClient.getChallenge(scheduler.ChallengeRequest(nodeId: nodePubkey, scope: scheduler.ChallengeScope.RECOVER));
+    var schedulerClient = await _createSchedulerClient();
+    var challengeResponse = await schedulerClient
+        .getChallenge(scheduler.ChallengeRequest(nodeId: nodePubkey, scope: scheduler.ChallengeScope.RECOVER));
     var sig = await signer.signMessage(message: Uint8List.fromList(challengeResponse.challenge));
-    var recoverResponse = await schedulerClient.recover(scheduler.RecoveryRequest(challenge: challengeResponse.challenge, nodeId: nodePubkey, signature: sig));
-    _nodeCredentials =
-        NodeCredentials(caCert, recoverResponse.deviceCert, recoverResponse.deviceKey, nodePubkey, seed);
+    var recoverResponse = await schedulerClient
+        .recover(scheduler.RecoveryRequest(challenge: challengeResponse.challenge, nodeId: nodePubkey, signature: sig));
+    _nodeCredentials = NodeCredentials(caCert, recoverResponse.deviceCert, recoverResponse.deviceKey, nodePubkey, seed);
     var creds = _nodeCredentials!.writeBuffer();
     initWithCredentials(creds);
     return creds;
@@ -126,9 +136,10 @@ class GreenlightService implements LightningService {
     final init = await signer.init();
     final nodePubkey = await signer.getNodePubkey();
 
-    var schedulerClient = _createSchedulerClient();
-    var challengeResponse = await schedulerClient.getChallenge(scheduler.ChallengeRequest(nodeId: nodePubkey, scope: scheduler.ChallengeScope.REGISTER));    
-    var sig = await signer.signMessage(message: Uint8List.fromList(challengeResponse.challenge));    
+    var schedulerClient = await _createSchedulerClient();
+    var challengeResponse = await schedulerClient
+        .getChallenge(scheduler.ChallengeRequest(nodeId: nodePubkey, scope: scheduler.ChallengeScope.REGISTER));
+    var sig = await signer.signMessage(message: Uint8List.fromList(challengeResponse.challenge));
 
     var registration = await schedulerClient.register(scheduler.RegistrationRequest(
         network: network,
@@ -137,8 +148,7 @@ class GreenlightService implements LightningService {
         signature: sig,
         signerProto: "v0.11.0.1",
         challenge: challengeResponse.challenge));
-    _nodeCredentials =
-        NodeCredentials(caCert, registration.deviceCert, registration.deviceKey, nodePubkey, seed);
+    _nodeCredentials = NodeCredentials(caCert, registration.deviceCert, registration.deviceKey, nodePubkey, seed);
     var creds = _nodeCredentials!.writeBuffer();
     initWithCredentials(creds);
     return creds;
@@ -305,7 +315,8 @@ class GreenlightService implements LightningService {
   @override
   Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
     await schedule();
-    await _nodeClient!.pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: amount), timeout: 60));    
+    await _nodeClient!
+        .pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: amount), timeout: 60));
   }
 
   @override
@@ -326,7 +337,7 @@ class GreenlightService implements LightningService {
     return ClientChannel(uri.host,
         port: uri.port,
         options: ChannelOptions(
-            connectionTimeout: const Duration(seconds: 90),
+            connectionTimeout: const Duration(seconds: 20),
             credentials: ClientCertificateChannelCredentials(
                 trustedRoots: Uint8List.fromList(utf8.encode(caCert)),
                 certificateChain: Uint8List.fromList(utf8.encode(credentials.deviceCert)),

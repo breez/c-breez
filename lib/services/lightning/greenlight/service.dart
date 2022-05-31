@@ -91,7 +91,7 @@ class GreenlightService implements LightningService {
 
   Future<scheduler.NodeInfoResponse> schedule() async {
     _log.i("scheduling node ${_nodeCredentials!.nodeId}");
-    var schedulerClient = await _createSchedulerClient(killOldChannel: true);
+    var schedulerClient = await _createSchedulerClient();
     try {
       var res = await schedulerClient.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
       var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);

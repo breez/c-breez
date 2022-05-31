@@ -284,9 +284,11 @@ packages:
   drag_and_drop_lists:
     dependency: "direct main"
     description:
-      name: drag_and_drop_lists
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: "2b9660e90b073de4bf7510ba98140f778e846f2e"
+      resolved-ref: "2b9660e90b073de4bf7510ba98140f778e846f2e"
+      url: "https://github.com/mauriceraguseinit/DragAndDropLists"
+    source: git
     version: "0.3.2+2"
   drift:
     dependency: "direct main"

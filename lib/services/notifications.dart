@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:c_breez/logger.dart';
+import 'package:fimber/fimber.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -10,6 +10,7 @@ abstract class Notifications {
 }
 
 class FirebaseNotifications implements Notifications {
+  final _log = FimberLog("FirebaseNotifications");
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   final StreamController<Map<dynamic, dynamic>> _notificationController =
@@ -24,7 +25,7 @@ class FirebaseNotifications implements Notifications {
   }
 
   Future _onMessage(RemoteMessage message) {
-    log.info("_onMessage = ${message.data}");
+    _log.i("_onMessage = ${message.data}");
     var data = message.data["data"] ?? message.data["aps"] ?? message.data;
     if (data != null) {
       _notificationController.add(data);
@@ -33,7 +34,7 @@ class FirebaseNotifications implements Notifications {
   }
 
   Future _onResume(RemoteMessage message) {
-    log.info("_onResume = ${message.data}");
+    _log.i("_onResume = ${message.data}");
     var data = message.data["data"] ?? message.data;
     if (data != null) {
       _notificationController.add(data);

@@ -9,7 +9,7 @@ class UserProfileSettings {
   final bool registrationRequested;
   final bool hideBalance;
 
-  UserProfileSettings._({
+  const UserProfileSettings._({
     this.userID,
     this.name,
     this.color,

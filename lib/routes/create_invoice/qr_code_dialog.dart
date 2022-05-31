@@ -4,7 +4,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/invoice/invoice_state.dart';
-import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;

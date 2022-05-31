@@ -1,25 +1,24 @@
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
+import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/models/user_profile.dart';
+import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
+import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
+import 'package:c_breez/routes/home/widgets/payments_filter/calendar_dialog.dart';
+import 'package:c_breez/routes/initial_walkthrough/beta_warning_dialog.dart';
+import 'package:c_breez/routes/initial_walkthrough/initial_walkthrough.dart';
+import 'package:c_breez/routes/settings/set_admin_password.dart';
+import 'package:c_breez/routes/splash/splash_page.dart';
+import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
+import 'package:c_breez/widgets/no_connection_dialog.dart';
+import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../bloc/account/account_bloc.dart';
-import '../../bloc/invoice/invoice_bloc.dart';
-import '../../bloc/lsp/lsp_bloc.dart';
-import '../../bloc/user_profile/user_profile_bloc.dart';
-import '../../bloc/user_profile/user_profile_state.dart';
-import '../../models/account.dart';
-import '../../models/user_profile.dart';
-import '../../widgets/no_connection_dialog.dart';
-import '../../widgets/route.dart';
-import '../create_invoice/widgets/successful_payment.dart';
-import '../initial_walkthrough/beta_warning_dialog.dart';
-import '../create_invoice/qr_code_dialog.dart';
-import '../home/widgets/payments_filter/calendar_dialog.dart';
-import '../initial_walkthrough/initial_walkthrough.dart';
-import '../settings/set_admin_password.dart';
-import '../splash/splash_page.dart';
-import '../spontaneous_payment/spontaneous_payment_page.dart';
 
 class UITestPage extends StatelessWidget {
   const UITestPage({Key? key}) : super(key: key);
@@ -182,7 +181,7 @@ class UITestPage extends StatelessWidget {
                   useRootNavigator: false,
                   context: context,
                   barrierDismissible: false,
-                  builder: (_) => QrCodeDialog(                      
+                  builder: (_) => QrCodeDialog(
                       Invoice(
                           paymentHash: "Fake Payment Hash",
                           amountMsat: 2000000.toInt(),

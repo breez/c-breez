@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

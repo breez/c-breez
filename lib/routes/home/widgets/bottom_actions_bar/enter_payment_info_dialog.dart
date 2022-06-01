@@ -43,7 +43,6 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
     final texts = AppLocalizations.of(context)!;
 
     return AlertDialog(
@@ -169,7 +168,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
             ));
             return;
 
-            widget.invoiceBloc.addIncomingInvoice(_paymentInfoController.text);
+            // widget.invoiceBloc.addIncomingInvoice(_paymentInfoController.text);
           }
         }),
         child: Text(
@@ -190,6 +189,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
       return;
     }
     if (barcode.isEmpty) {
+      if (!mounted) return;
       showFlushbar(
         context,
         message: texts.payment_info_dialog_error_qrcode,
@@ -204,9 +204,6 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
   String? _decodeInvoice(String invoiceString) {
     String normalized = invoiceString.toLowerCase();
-    if (normalized == null) {
-      return null;
-    }
     if (normalized.startsWith("lightning:")) {
       normalized = normalized.substring(10);
     }

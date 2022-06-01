@@ -104,81 +104,76 @@ Future<void> showPaymentDetailsDialog(
                         ),
                       ),
                     ),
-              paymentInfo.amountSat == null
-                  ? Container()
-                  : Container(
-                      height: 36.0,
-                      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: AutoSizeText(
-                              texts.payment_details_dialog_amount_title,
-                              style: themeData.primaryTextTheme.headline4,
-                              textAlign: TextAlign.left,
-                              maxLines: 1,
-                              group: _labelGroup,
-                            ),
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              reverse: true,
-                              child: _amountText(
-                                BitcoinCurrency.fromTickerSymbol(
-                                    currencyState.bitcoinTicker),
-                                paymentInfo,
-                                texts,
-                                themeData,
-                              ),
-                            ),
-                          ),
-                        ],
+              Container(
+                height: 36.0,
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: AutoSizeText(
+                        texts.payment_details_dialog_amount_title,
+                        style: themeData.primaryTextTheme.headline4,
+                        textAlign: TextAlign.left,
+                        maxLines: 1,
+                        group: _labelGroup,
                       ),
                     ),
-              paymentInfo.creationTimestamp == null
-                  ? Container()
-                  : Container(
-                      height: 36.0,
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 16.0, top: 8.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: AutoSizeText(
-                              texts.payment_details_dialog_date_and_time,
-                              style: themeData.primaryTextTheme.headline4,
-                              textAlign: TextAlign.left,
-                              maxLines: 1,
-                              group: _labelGroup,
-                            ),
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              reverse: true,
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: AutoSizeText(
-                                BreezDateUtils.formatYearMonthDayHourMinute(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                    paymentInfo.creationTimestamp.toInt() *
-                                        1000,
-                                  ),
-                                ),
-                                style: themeData.primaryTextTheme.headline3,
-                                textAlign: TextAlign.right,
-                                maxLines: 1,
-                                group: _valueGroup,
-                              ),
-                            ),
-                          ),
-                        ],
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        reverse: true,
+                        child: _amountText(
+                          BitcoinCurrency.fromTickerSymbol(
+                              currencyState.bitcoinTicker),
+                          paymentInfo,
+                          texts,
+                          themeData,
+                        ),
                       ),
                     ),
+                  ],
+                ),
+              ),
+              Container(
+                height: 36.0,
+                padding:
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: AutoSizeText(
+                        texts.payment_details_dialog_date_and_time,
+                        style: themeData.primaryTextTheme.headline4,
+                        textAlign: TextAlign.left,
+                        maxLines: 1,
+                        group: _labelGroup,
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        reverse: true,
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: AutoSizeText(
+                          BreezDateUtils.formatYearMonthDayHourMinute(
+                            DateTime.fromMillisecondsSinceEpoch(
+                              paymentInfo.creationTimestamp.toInt() * 1000,
+                            ),
+                          ),
+                          style: themeData.primaryTextTheme.headline3,
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          group: _valueGroup,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               !paymentInfo.pending
                   ? Container()
                   : Container(

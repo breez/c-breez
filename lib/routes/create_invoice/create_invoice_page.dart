@@ -6,6 +6,7 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/lsp.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -24,7 +25,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../widgets/loader.dart';
 import 'widgets/successful_payment.dart';
 
 class CreateInvoicePage extends StatefulWidget {
@@ -206,17 +206,19 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   ) async {
     final navigator = Navigator.of(context);
     var currentRoute = ModalRoute.of(navigator.context)!;
-    var loaderRoute = createLoaderRoute(context);
-    navigator.push(loaderRoute);
-    var invoice = await accountBloc.addInvoice(
+    Future<Invoice> invoice = accountBloc.addInvoice(
         description: _descriptionController.text,
         amount:
             currencyBloc.state.bitcoinCurrency.parse(_amountController.text));
-    navigator.removeRoute(loaderRoute);
     navigator.pop();
-    Widget dialog = QrCodeDialog(invoice, (result) {
-      onPaymentFinished(result, currentRoute, navigator);
-    });
+    Widget dialog = FutureBuilder(
+      future: invoice,
+      builder: (BuildContext context, AsyncSnapshot<Invoice> invoice) {
+        return QrCodeDialog(invoice.data, (result) {
+          onPaymentFinished(result, currentRoute, navigator);
+        });
+      },
+    );
 
     return showDialog(
       useRootNavigator: false,

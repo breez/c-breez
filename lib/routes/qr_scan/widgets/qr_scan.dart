@@ -52,14 +52,10 @@ class QRScanState extends State<QRScan> {
               .catchError((err) {});
           final File file = File(pickedFile!.path);
           try {
-            if (file == null) {
-              return;
-            }
             String? data = await Scan.parse(file.path);
-            if (data != null) {
-              Navigator.of(context).pop(data);
-            }
-          } catch (e) {}
+            if (!mounted) return;
+            Navigator.of(context).pop(data);
+          } catch (_) {}
         },
       ),
     );

@@ -6,7 +6,6 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/models_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/payment_info.dart';
 import 'package:c_breez/models/payment_type.dart';

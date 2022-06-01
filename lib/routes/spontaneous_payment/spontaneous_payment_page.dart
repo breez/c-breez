@@ -232,9 +232,11 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                   220,
                   popOnCompletion: true,
                 ));
+        if(!mounted) return;
         Navigator.of(context).removeRoute(_currentRoute!);
         await sendFuture;
       } catch (err) {
+        if(!mounted) return;
         promptError(
             context,
             "Payment Error",

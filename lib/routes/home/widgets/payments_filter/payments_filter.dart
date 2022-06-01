@@ -57,7 +57,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
             PaymentsFilterCalendar(_getFilterType()),
             PaymentsFilterDropdown(
               _filter!,
-              (value) {
+                  (value) {
                 setState(() {
                   _filter = value?.toString();
                 });
@@ -80,9 +80,9 @@ class PaymentsFilterState extends State<PaymentsFilter> {
   }
 
   String _getFilterTypeString(
-    BuildContext context,
-    List<PaymentType> filterList,
-  ) {
+      BuildContext context,
+      List<PaymentType> filterList,
+      ) {
     for (var entry in _filterMap.entries) {
       if (listEquals(filterList, entry.value)) {
         return entry.key;

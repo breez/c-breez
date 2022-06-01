@@ -17,7 +17,7 @@ Future<void> promptError(
   final themeData = Theme.of(context);
 
   bool canPop = !disableBack;
-  Future<bool> Function() canPopCallback = () => Future.value(canPop);
+  Future<bool> canPopCallback() => Future.value(canPop);
 
   return showDialog<void>(
     useRootNavigator: false,

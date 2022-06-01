@@ -1,6 +1,8 @@
+// ignore_for_file: avoid_print, unused_local_variable
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:test/test.dart';
+
 import 'mocks.dart';
 
 void main() {

@@ -42,16 +42,19 @@ dependencies:
   bolt11_decoder: ^1.0.1
   cryptography: ^2.0.5
   cupertino_icons: ^1.0.4
-  drag_and_drop_lists: ^0.3.2+2
+  drag_and_drop_lists: # Target this ref until new release
+    git:
+      url: https://github.com/mauriceraguseinit/DragAndDropLists
+      ref: 2b9660e90b073de4bf7510ba98140f778e846f2e
   drift: ^1.6.0
   duration: ^3.0.11
   email_validator: ^2.0.1
   extended_image: ^6.2.1
   fimber: ^0.6.6
   fimber_io: ^0.6.6
-  firebase_core: ^1.17.0
-  firebase_dynamic_links: ^4.2.4
-  firebase_messaging: ^11.4.0
+  firebase_core: ^1.17.1
+  firebase_dynamic_links: ^4.2.5
+  firebase_messaging: ^11.4.1
   fixnum: ^1.0.1
   flutter_bloc: ^8.0.1
   flutter_secure_storage: ^5.0.2
@@ -68,14 +71,14 @@ dependencies:
   local_auth: ^2.1.0
   local_auth_android: ^1.0.4
   local_auth_ios: ^1.0.6
-  mobile_scanner: ^1.1.1
+  mobile_scanner: ^2.0.0
   package_info_plus: ^1.4.2
   path: ^1.8.1
   path_provider: ^2.0.10
   pointycastle: ^3.6.0
   protobuf: ^2.0.1
   qr_flutter: ^4.0.0
-  rxdart: ^0.27.3
+  rxdart: ^0.27.4
   scan: ^1.6.0
   share_extend: ^2.0.0
   shared_preferences: ^2.0.15

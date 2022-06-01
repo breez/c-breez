@@ -361,7 +361,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       try {
         amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker)
             .parse(_invoiceAmountController.text);
-      } catch (e) {}
+      } catch (_) {}
     }
     return amount;
   }

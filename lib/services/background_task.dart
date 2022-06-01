@@ -6,7 +6,7 @@ class BackgroundTaskService {
   // static const _eventsChannel =
   //     EventChannel('com.breez.client/background_task_notifications');
 
-  final Map<dynamic, Function()> _tasksCallbacks = <dynamic, Function()>{};
+  // final Map<dynamic, Function()> _tasksCallbacks = <dynamic, Function()>{};
 
   BackgroundTaskService() {
     if (defaultTargetPlatform == TargetPlatform.iOS) {

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -22,7 +21,6 @@ var _transparentImage = dart_image.Image(scaledWidth, scaledWidth);
 Widget breezAvatarDialog(UserProfileBloc userBloc) {
   AutoSizeGroup autoSizeGroup = AutoSizeGroup();
   CroppedFile? pickedImage;
-  DefaultProfile defaultProfile;
   bool isUploading = false;
 
   final nameInputController = TextEditingController();
@@ -93,12 +91,9 @@ Widget breezAvatarDialog(UserProfileBloc userBloc) {
                           group: autoSizeGroup,
                         ),
                         onPressed: () {
-                          var generated = userBloc.generateRandomProfile();
                           setState(() {
                             pickedImage = null;
-                            defaultProfile = generated;
                           });
-                          //userBloc.updateProfile(color: generated.color, animal: generated.animal);
                           FocusScope.of(context).requestFocus(FocusNode());
                         },
                       ),

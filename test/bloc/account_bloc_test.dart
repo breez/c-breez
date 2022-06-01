@@ -1,14 +1,13 @@
-
-// ignore_for_file: avoid_print
-
+// ignore_for_file: avoid_print, unused_local_variable
+import 'package:bip39/bip39.dart' as bip39;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:bip39/bip39.dart' as bip39;
 import 'package:fixnum/fixnum.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:hex/hex.dart';
+
 import '../mocks.dart';
 
 var testSeed =
@@ -19,7 +18,8 @@ void main() {
     test('recover node', () async {
       var injector = InjectorMock();
       var breezBridge = await injector.breezBridge;
-      var lspBloc = LSPBloc(injector.appStorage, breezBridge, injector.breezServer);
+      var lspBloc =
+          LSPBloc(injector.appStorage, breezBridge, injector.breezServer);
       AccountBloc accBloc = AccountBloc(
           breezBridge, injector.appStorage, injector.keychain, lspBloc);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());

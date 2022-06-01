@@ -38,13 +38,11 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   final FocusNode _fiatAmountFocusNode = FocusNode();
 
   AnimationController? _controller;
-  Animation<Color?>? _colorAnimation;
 
   double? _exchangeRate;
 
   final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
 
-  final bool _isInit = false;
 
   @override
   void initState() {

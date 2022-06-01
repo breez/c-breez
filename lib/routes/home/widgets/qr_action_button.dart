@@ -3,7 +3,6 @@ import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/bip21.dart';
-import 'package:c_breez/utils/btc_address.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -27,8 +26,8 @@ class QrActionButton extends StatelessWidget {
       padding: const EdgeInsets.only(top: 32.0),
       child: FloatingActionButton(
         onPressed: () async {
-          String? scannedString =
-              await Navigator.pushNamed<String>(context, "/qr_scan");
+          final navigator = Navigator.of(context);
+          String? scannedString = await navigator.pushNamed("/qr_scan");
           if (scannedString != null && scannedString.isEmpty) {
             showFlushbar(context, message: "QR code wasn't detected.");
             return;
@@ -45,12 +44,9 @@ class QrActionButton extends StatelessWidget {
             return;
           }
 
-          // bitcoin
-          BTCAddressInfo btcInvoice = parseBTCAddress(scannedString);
-
           var nodeID = parseNodeId(scannedString);
           if (nodeID != null) {
-            Navigator.of(context).push(FadeInRoute(
+            navigator.push(FadeInRoute(
               builder: (_) =>
                   SpontaneousPaymentPage(nodeID, firstPaymentItemKey),
             ));
@@ -173,8 +169,9 @@ class QrActionButton extends StatelessWidget {
                 style: Theme.of(context).primaryTextTheme.button,
               ),
               onPressed: () async {
+                final navigator = Navigator.of(context);
                 await launchUrlString(url);
-                Navigator.of(context).pop();
+                navigator.pop();
               },
             ),
           ],

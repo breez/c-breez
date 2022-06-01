@@ -1,6 +1,4 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -26,9 +24,7 @@ class UITestPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accountBloc = context.read<AccountBloc>();
-    final invoiceBloc = context.read<InvoiceBloc>();
     final userProfileBloc = context.read<UserProfileBloc>();
-    final lspBloc = context.read<LSPBloc>();
 
     return Scaffold(
       appBar: AppBar(
@@ -177,18 +173,26 @@ class UITestPage extends StatelessWidget {
             child: ListTile(
               title: const Text("QrCodeDialog"),
               onTap: () async {
+                Future<Invoice> invoice = Future.delayed(
+                    const Duration(seconds: 2),
+                    () => Invoice(
+                        paymentHash: "Fake Payment Hash",
+                        amountMsat: 2000000.toInt(),
+                        bolt11: "Fake bolt11",
+                        description: "Fake Description",
+                        expiry: 60.toInt()));
+                Widget dialog = FutureBuilder(
+                  future: invoice,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<Invoice> invoice) {
+                    return QrCodeDialog(invoice.data, (result) {});
+                  },
+                );
                 return showDialog(
                   useRootNavigator: false,
                   context: context,
                   barrierDismissible: false,
-                  builder: (_) => QrCodeDialog(
-                      Invoice(
-                          paymentHash: "Fake Payment Hash",
-                          amountMsat: 2000000.toInt(),
-                          bolt11: "Fake bolt11",
-                          description: "Fake Description",
-                          expiry: 60.toInt()),
-                      (result) {}),
+                  builder: (_) => dialog,
                 );
               },
             ),

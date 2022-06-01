@@ -6,7 +6,7 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
-import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/lsp.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;

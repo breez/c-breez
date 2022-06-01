@@ -1,4 +1,4 @@
-import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:fixnum/fixnum.dart';
 

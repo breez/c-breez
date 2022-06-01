@@ -8,7 +8,7 @@ import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/handlers/check_version_handler.dart';
 import 'package:c_breez/handlers/received_invoice_notification.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/home/account_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/home_app_bar.dart';

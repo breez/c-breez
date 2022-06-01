@@ -1,6 +1,7 @@
+import 'package:c_breez/bloc/account/payments_state.dart';
+import 'package:c_breez/models/payment_filter.dart';
 import 'package:c_breez/models/payment_info.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:c_breez/models/account.dart';
 import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'account_bloc.dart';
 import 'account_state.dart';

@@ -1,4 +1,4 @@
-import 'package:c_breez/models/account.dart';
+import 'package:c_breez/models/invoice.dart';
 
 class InvoiceState {
   final Invoice? invoice;

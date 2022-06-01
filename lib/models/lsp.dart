@@ -14,21 +14,22 @@ class LSPInfo {
   final int maxInactiveDuration;
   final int channelMinimumFeeMsat;
 
-  LSPInfo(
-      {required this.lspID,
-      required this.name,
-      this.widgetURL,
-      required this.pubKey,
-      required this.host,
-      this.frozen = false,
-      required this.minHtlcMsat,
-      required this.targetConf,
-      required this.timeLockDelta,
-      required this.baseFeeMsat,
-      required this.channelCapacity,
-      required this.channelFeePermyriad,
-      required this.maxInactiveDuration,
-      required this.channelMinimumFeeMsat});
+  const LSPInfo({
+    required this.lspID,
+    required this.name,
+    this.widgetURL,
+    required this.pubKey,
+    required this.host,
+    this.frozen = false,
+    required this.minHtlcMsat,
+    required this.targetConf,
+    required this.timeLockDelta,
+    required this.baseFeeMsat,
+    required this.channelCapacity,
+    required this.channelFeePermyriad,
+    required this.maxInactiveDuration,
+    required this.channelMinimumFeeMsat,
+  });
 
   Map toJson() => {
         'lspID': lspID,

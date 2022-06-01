@@ -1,5 +1,4 @@
-import 'package:c_breez/models/account.dart';
-import 'package:c_breez/models/payment_info.dart';
+import 'package:c_breez/bloc/account/payments_state.dart';
 import 'package:fixnum/fixnum.dart';
 
 const initialInboundCapacity = 4000000;
@@ -22,54 +21,57 @@ class AccountState {
   final Int64 onChainFeeRate;
   final PaymentsState payments;
 
-  AccountState(
-      {required this.payments,
-      required this.id,
-      required this.initial,
-      required this.blockheight,
-      required this.balance,
-      required this.walletBalance,
-      required this.status,
-      required this.maxAllowedToPay,
-      required this.maxAllowedToReceive,
-      required this.maxPaymentAmount,
-      required this.maxChanReserve,
-      required this.connectedPeers,
-      required this.maxInboundLiquidity,
-      required this.onChainFeeRate});
+  const AccountState({
+    required this.payments,
+    required this.id,
+    required this.initial,
+    required this.blockheight,
+    required this.balance,
+    required this.walletBalance,
+    required this.status,
+    required this.maxAllowedToPay,
+    required this.maxAllowedToReceive,
+    required this.maxPaymentAmount,
+    required this.maxChanReserve,
+    required this.connectedPeers,
+    required this.maxInboundLiquidity,
+    required this.onChainFeeRate,
+  });
 
   AccountState.initial()
       : this(
-            id: null,
-            blockheight: Int64(0),
-            status: AccountStatus.DISCONNECTED,
-            maxAllowedToPay: Int64(0),
-            maxAllowedToReceive: Int64(0),
-            maxPaymentAmount: Int64(0),
-            maxChanReserve: Int64(0),
-            connectedPeers: List.empty(),
-            maxInboundLiquidity: Int64(0),
-            onChainFeeRate: Int64(0),
-            balance: Int64(0),
-            walletBalance: Int64(0),
-            payments: PaymentsState.initial(),
-            initial: true);
+          id: null,
+          blockheight: Int64(0),
+          status: AccountStatus.DISCONNECTED,
+          maxAllowedToPay: Int64(0),
+          maxAllowedToReceive: Int64(0),
+          maxPaymentAmount: Int64(0),
+          maxChanReserve: Int64(0),
+          connectedPeers: List.empty(),
+          maxInboundLiquidity: Int64(0),
+          onChainFeeRate: Int64(0),
+          balance: Int64(0),
+          walletBalance: Int64(0),
+          payments: PaymentsState.initial(),
+          initial: true,
+        );
 
-  AccountState copyWith(
-      {String? id,
-      PaymentsState? payments,
-      bool? initial,
-      Int64? blockheight,
-      Int64? balance,
-      Int64? walletBalance,
-      AccountStatus? status,
-      Int64? maxAllowedToPay,
-      Int64? maxAllowedToReceive,
-      Int64? maxPaymentAmount,
-      Int64? maxChanReserve,
-      List<String>? connectedPeers,
-      Int64? maxInboundLiquidity,
-      Int64? onChainFeeRate}) {
+  AccountState copyWith({
+    String? id,
+    PaymentsState? payments,
+    bool? initial,
+    Int64? blockheight,
+    Int64? balance,
+    Int64? walletBalance,
+    AccountStatus? status,
+    Int64? maxAllowedToPay,
+    Int64? maxAllowedToReceive,
+    Int64? maxPaymentAmount,
+    Int64? maxChanReserve,
+    List<String>? connectedPeers,
+    Int64? maxInboundLiquidity,
+    Int64? onChainFeeRate,
+  }) {
     return AccountState(
         payments: payments ?? this.payments,
         id: id ?? this.id,
@@ -126,43 +128,3 @@ class AccountState {
         onChainFeeRate: Int64(json["onChainFeeRate"]));
   }
 }
-
-class PaymentsState {
-  final List<PaymentInfo> nonFilteredItems;
-  final List<PaymentInfo> paymentsList;
-  final PaymentFilterModel filter;
-  final DateTime? firstDate;
-
-  PaymentsState(this.nonFilteredItems, this.paymentsList, this.filter,
-      [this.firstDate]);
-
-  PaymentsState.initial()
-      : this(<PaymentInfo>[], <PaymentInfo>[], PaymentFilterModel.initial(),
-            DateTime(DateTime.now().year));
-
-  PaymentsState copyWith(
-      {List<PaymentInfo>? nonFilteredItems,
-      List<PaymentInfo>? paymentsList,
-      PaymentFilterModel? filter,
-      DateTime? firstDate}) {
-    return PaymentsState(
-        nonFilteredItems ?? this.nonFilteredItems,
-        paymentsList ?? this.paymentsList,
-        filter ?? this.filter,
-        firstDate ?? this.firstDate);
-  }
-}
-
-class PaymentExceededLimitError implements Exception {
-  final Int64 limitSat;
-
-  PaymentExceededLimitError(this.limitSat);
-}
-
-class PaymentBellowReserveError implements Exception {
-  final Int64 reserveAmount;
-
-  PaymentBellowReserveError(this.reserveAmount);
-}
-
-class InsufficientLocalBalanceError implements Exception {}

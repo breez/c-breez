@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:c_breez/bloc/invoice/invoice_state.dart';
-import 'package:c_breez/models/account.dart';
 import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning/interface.dart';

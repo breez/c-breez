@@ -1,36 +1,4 @@
 import 'package:c_breez/models/payment_type.dart';
-import 'package:hex/hex.dart';
-
-class Invoice {
-  final String bolt11;
-  final String paymentHash;
-  final String description;
-  final int amountMsat;
-  final int expiry;
-  final int lspFee;
-
-  Invoice(
-      {required this.bolt11,
-      required this.paymentHash,
-      this.description = "",
-      required this.amountMsat,
-      required this.expiry,
-      this.lspFee = 0});
-
-  String get payeeName => "";
-  String get payerName => "";
-  String get payerImageURL => "";
-  String get payeeImageURL => "";
-}
-
-class Withdrawal {
-  final String txid;
-  final String tx;
-
-  Withdrawal(this.txid, this.tx);
-
-  List<int> get txBytes => HEX.decode(tx);
-}
 
 class PaymentFilterModel {
   final List<PaymentType> paymentType;
@@ -38,7 +6,7 @@ class PaymentFilterModel {
   final DateTime? endDate;
   final bool initial;
 
-  PaymentFilterModel(
+  const PaymentFilterModel(
     this.paymentType, {
     this.startDate,
     this.endDate,

@@ -1,16 +1,25 @@
-enum ClipboardDataType {
-  unrecognized,
-  lnurl,
-  nodeID,
-  lightningAddress,
-  paymentRequest
-}
+class Invoice {
+  final String bolt11;
+  final String paymentHash;
+  final String description;
+  final int amountMsat;
+  final int expiry;
+  final int lspFee;
 
-class DecodedClipboardData {
-  String? data;
-  ClipboardDataType type;
+  const Invoice({
+    required this.bolt11,
+    required this.paymentHash,
+    this.description = "",
+    required this.amountMsat,
+    required this.expiry,
+    this.lspFee = 0,
+  });
 
-  DecodedClipboardData({this.data, this.type = ClipboardDataType.unrecognized});
+  String get payeeName => "";
 
-  DecodedClipboardData.unrecognized() : this();
+  String get payerName => "";
+
+  String get payerImageURL => "";
+
+  String get payeeImageURL => "";
 }

@@ -1,19 +1,25 @@
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/payments_state.dart';
+import 'package:c_breez/bloc/account/swap_funds.dart';
 import 'package:c_breez/models/payment_filter.dart';
 import 'package:c_breez/models/payment_info.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:c_breez/repositories/dao/db.dart' as db;
-import 'account_bloc.dart';
-import 'account_state.dart';
+import 'package:fixnum/fixnum.dart';
 
 // assembleAccountState assembles the account state using the local synchronized data.
-AccountState? assembleAccountState(List<PaymentInfo> payments, PaymentFilterModel paymentsFilter, db.NodeInfo? nodeInfo,
-    List<db.OffChainFund> offChainFunds, List<db.OnChainFund> onChainFunds, List<db.PeerWithChannels> peers) {
+AccountState? assembleAccountState(
+  List<PaymentInfo> payments,
+  PaymentFilterModel paymentsFilter,
+  db.NodeInfo? nodeInfo,
+  List<db.OffChainFund> offChainFunds,
+  List<db.OnChainFund> onChainFunds,
+  List<db.PeerWithChannels> peers,
+) {
   var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat) ~/ 1000;
 
   // calculate the on-chain balance
   var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsat) ~/ 1000;
-
 
   // assemble the peers list and channels list.
   var channels = List<db.Channel>.empty(growable: true);
@@ -69,19 +75,31 @@ AccountState? assembleAccountState(List<PaymentInfo> payments, PaymentFilterMode
     connectedPeers: peersList,
     onChainFeeRate: Int64(0),
     maxInboundLiquidity: maxReceivableSingleChannel,
-    payments: PaymentsState(payments, _filterPayments(payments, paymentsFilter), paymentsFilter, null),
+    payments: PaymentsState(
+      payments,
+      _filterPayments(payments, paymentsFilter),
+      paymentsFilter,
+      null,
+    ),
+    swapFundsStatus: SwapFundsStatus.initial(),
   );
 }
 
-List<PaymentInfo> _filterPayments(List<PaymentInfo> paymentsList, PaymentFilterModel filter) {
+List<PaymentInfo> _filterPayments(
+  List<PaymentInfo> paymentsList,
+  PaymentFilterModel filter,
+) {
   return paymentsList.where((p) {
     if (!filter.paymentType.contains(p.type)) {
       return false;
     }
-    if (filter.startDate != null && p.creationTimestamp.toInt() * 1000 < filter.startDate!.millisecondsSinceEpoch) {
+    final creation = p.creationTimestamp.toInt() * 1000;
+    final startDate = filter.startDate;
+    if (startDate != null && creation < startDate.millisecondsSinceEpoch) {
       return false;
     }
-    if (filter.endDate != null && p.creationTimestamp.toInt() * 1000 > filter.endDate!.millisecondsSinceEpoch) {
+    final endDate = filter.endDate;
+    if (endDate != null && creation > endDate.millisecondsSinceEpoch) {
       return false;
     }
     return true;

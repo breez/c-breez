@@ -1,15 +1,17 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/account/swap_funds.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/routes/home/widgets/app_bar/select_provider_error_dialog.dart';
+import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
+import 'package:c_breez/routes/swap_refund/swap_refund_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
+import 'package:collection/collection.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'select_provider_error_dialog.dart';
-import 'warning_action.dart';
 
 class AccountRequiredActionsIndicator extends StatelessWidget {
   const AccountRequiredActionsIndicator({
@@ -38,31 +40,11 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
     LSPState lspStatus,
     AccountState accountModel,
   ) {
-    final navigatorState = Navigator.of(context);
-
-    List<Widget> warnings = [];
-    Int64 walletBalance = accountModel.walletBalance;
-
-    if (walletBalance > 0) {
-      warnings.add(
-        WarningAction(() => navigatorState.pushNamed("/send_coins")),
-      );
-    }
-
-    if (lspStatus.selectionRequired == true ||
-        lspStatus.connectionStatus == LSPConnectionStatus.notActive) {
-      warnings.add(WarningAction(() {
-        if (lspStatus.lastConnectionError != null) {
-          showProviderErrorDialog(context, () {
-            navigatorState.push(FadeInRoute(
-              builder: (_) => SelectLSPPage(lstBloc: context.read()),
-            ));
-          });
-        } else {
-          navigatorState.pushNamed("/select_lsp");
-        }
-      }));
-    }
+    List<Widget> warnings = [
+      _warningBalance(context, accountModel.walletBalance),
+      _warningLsp(context, lspStatus),
+      _warningSwapFunds(context, accountModel.swapFundsStatus),
+    ].whereNotNull().toList();
 
     if (warnings.isEmpty) {
       return const SizedBox();
@@ -73,5 +55,57 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: warnings,
     );
+  }
+
+  WarningAction? _warningBalance(
+    BuildContext context,
+    Int64 walletBalance,
+  ) {
+    if (walletBalance > 0) {
+      return WarningAction(
+        () => Navigator.of(context).pushNamed("/send_coins"),
+      );
+    }
+    return null;
+  }
+
+  WarningAction? _warningLsp(
+    BuildContext context,
+    LSPState lspStatus,
+  ) {
+    if (lspStatus.selectionRequired == true ||
+        lspStatus.connectionStatus == LSPConnectionStatus.notActive) {
+      final navigatorState = Navigator.of(context);
+      return WarningAction(() {
+        if (lspStatus.lastConnectionError != null) {
+          showProviderErrorDialog(context, () {
+            navigatorState.push(FadeInRoute(
+              builder: (_) => SelectLSPPage(lstBloc: context.read()),
+            ));
+          });
+        } else {
+          navigatorState.pushNamed("/select_lsp");
+        }
+      });
+    }
+    return null;
+  }
+
+  WarningAction? _warningSwapFunds(
+    BuildContext context,
+    SwapFundsStatus swapFundsStatus,
+  ) {
+    List<RefundableAddress> address = swapFundsStatus.waitingRefundAddresses;
+    if (address.isNotEmpty) {
+      return WarningAction(
+        () => showDialog(
+          useRootNavigator: false,
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => SwapRefundDialog(address),
+        ),
+      );
+    }
+    return null;
   }
 }

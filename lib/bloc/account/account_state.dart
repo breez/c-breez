@@ -1,4 +1,5 @@
 import 'package:c_breez/bloc/account/payments_state.dart';
+import 'package:c_breez/bloc/account/swap_funds.dart';
 import 'package:fixnum/fixnum.dart';
 
 const initialInboundCapacity = 4000000;
@@ -20,6 +21,7 @@ class AccountState {
   final Int64 maxInboundLiquidity;
   final Int64 onChainFeeRate;
   final PaymentsState payments;
+  final SwapFundsStatus swapFundsStatus;
 
   const AccountState({
     required this.payments,
@@ -36,6 +38,7 @@ class AccountState {
     required this.connectedPeers,
     required this.maxInboundLiquidity,
     required this.onChainFeeRate,
+    required this.swapFundsStatus,
   });
 
   AccountState.initial()
@@ -54,6 +57,7 @@ class AccountState {
           walletBalance: Int64(0),
           payments: PaymentsState.initial(),
           initial: true,
+          swapFundsStatus: SwapFundsStatus.initial(),
         );
 
   AccountState copyWith({
@@ -71,22 +75,25 @@ class AccountState {
     List<String>? connectedPeers,
     Int64? maxInboundLiquidity,
     Int64? onChainFeeRate,
+    SwapFundsStatus? swapFundsStatus,
   }) {
     return AccountState(
-        payments: payments ?? this.payments,
-        id: id ?? this.id,
-        initial: initial ?? this.initial,
-        balance: balance ?? this.balance,
-        walletBalance: walletBalance ?? this.walletBalance,
-        status: status ?? this.status,
-        maxAllowedToPay: maxAllowedToPay ?? this.maxAllowedToPay,
-        maxAllowedToReceive: maxAllowedToReceive ?? this.maxAllowedToReceive,
-        maxPaymentAmount: maxPaymentAmount ?? this.maxPaymentAmount,
-        blockheight: blockheight ?? this.blockheight,
-        maxChanReserve: maxChanReserve ?? this.maxChanReserve,
-        connectedPeers: connectedPeers ?? this.connectedPeers,
-        maxInboundLiquidity: maxInboundLiquidity ?? this.maxInboundLiquidity,
-        onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate);
+      payments: payments ?? this.payments,
+      id: id ?? this.id,
+      initial: initial ?? this.initial,
+      balance: balance ?? this.balance,
+      walletBalance: walletBalance ?? this.walletBalance,
+      status: status ?? this.status,
+      maxAllowedToPay: maxAllowedToPay ?? this.maxAllowedToPay,
+      maxAllowedToReceive: maxAllowedToReceive ?? this.maxAllowedToReceive,
+      maxPaymentAmount: maxPaymentAmount ?? this.maxPaymentAmount,
+      blockheight: blockheight ?? this.blockheight,
+      maxChanReserve: maxChanReserve ?? this.maxChanReserve,
+      connectedPeers: connectedPeers ?? this.connectedPeers,
+      maxInboundLiquidity: maxInboundLiquidity ?? this.maxInboundLiquidity,
+      onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
+      swapFundsStatus: swapFundsStatus ?? this.swapFundsStatus,
+    );
   }
 
   Int64 get reserveAmount => balance - maxAllowedToPay;
@@ -105,26 +112,29 @@ class AccountState {
       "maxChanReserve": maxChanReserve.toInt(),
       "maxInboundLiquidity": maxInboundLiquidity.toInt(),
       "onChainFeeRate": onChainFeeRate.toInt(),
+      "swapFundsStatus": swapFundsStatus.toJson(),
     };
   }
 
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
-        payments: PaymentsState.initial(),
-        id: json["id"],
-        initial: json["initial"],
-        blockheight: Int64(json["blockheight"]),
-        balance: Int64(json["balance"]),
-        walletBalance: Int64(json["walletBalance"]),
-        status: json["status"] != null
-            ? AccountStatus.values[json["status"]]
-            : AccountStatus.DISCONNECTED,
-        maxAllowedToPay: Int64(json["maxAllowedToPay"]),
-        maxAllowedToReceive: Int64(json["maxAllowedToReceive"]),
-        maxPaymentAmount: Int64(json["maxPaymentAmount"]),
-        maxChanReserve: Int64(json["maxChanReserve"]),
-        connectedPeers: <String>[],
-        maxInboundLiquidity: Int64(json["maxInboundLiquidity"] ?? 0),
-        onChainFeeRate: Int64(json["onChainFeeRate"]));
+      payments: PaymentsState.initial(),
+      id: json["id"],
+      initial: json["initial"],
+      blockheight: Int64(json["blockheight"]),
+      balance: Int64(json["balance"]),
+      walletBalance: Int64(json["walletBalance"]),
+      status: json["status"] != null
+          ? AccountStatus.values[json["status"]]
+          : AccountStatus.DISCONNECTED,
+      maxAllowedToPay: Int64(json["maxAllowedToPay"]),
+      maxAllowedToReceive: Int64(json["maxAllowedToReceive"]),
+      maxPaymentAmount: Int64(json["maxPaymentAmount"]),
+      maxChanReserve: Int64(json["maxChanReserve"]),
+      connectedPeers: <String>[],
+      maxInboundLiquidity: Int64(json["maxInboundLiquidity"] ?? 0),
+      onChainFeeRate: Int64(json["onChainFeeRate"]),
+      swapFundsStatus: SwapFundsStatus.fromJson(json["swapFundsStatus"]),
+    );
   }
 }

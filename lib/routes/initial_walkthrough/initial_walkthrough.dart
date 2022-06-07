@@ -1,11 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/route.dart';
+import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'beta_warning_dialog.dart';
-import 'mnemonics/enter_mnemonic_seed_page.dart';
 
 class InitialWalkthroughPage extends StatefulWidget {
   @override
@@ -114,7 +117,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
                   child: Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: GestureDetector(
-                      onTap: () => _restoreFromBackup(context),
+                      onTap: () => _restoreNodeFromMnemonicSeed(),
                       child: Text(
                         texts.initial_walk_through_restore_from_backup,
                         style: theme.restoreLinkStyle,
@@ -146,11 +149,27 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     if (approved) _generateMnemonicSeed();
   }
 
-  void _generateMnemonicSeed() async {
+  void _generateMnemonicSeed() {
     Navigator.of(context).pushNamed("/mnemonics");
   }
 
-  void _restoreFromBackup(BuildContext context) {
-    Navigator.of(context).pushNamed("/restore");
+  void _restoreNodeFromMnemonicSeed() async {
+    Uint8List? mnemonicSeed = await _getMnemonicSeed();
+    if (mnemonicSeed != null) {
+      restoreNode(mnemonicSeed);
+    }
+  }
+
+  Future<Uint8List?> _getMnemonicSeed() async {
+    return await Navigator.of(context)
+        .pushNamed<Uint8List>("/enter_mnemonic_seed");
+  }
+
+  void restoreNode(Uint8List mnemonicSeed) async {
+    var accountBloc = context.read<AccountBloc>();
+    final navigator = Navigator.of(context);
+    var loaderRoute = createLoaderRoute(context);
+    await accountBloc.recoverNode(mnemonicSeed);
+    navigator.removeRoute(loaderRoute);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -76,8 +78,8 @@ class UserApp extends StatelessWidget {
                     builder: (_) => GenerateMnemonicSeedConfirmationPage(),
                     settings: settings,
                   );
-                case '/restore':
-                  return FadeInRoute(
+                case '/enter_mnemonic_seed':
+                  return FadeInRoute<Uint8List>(
                     builder: (_) => EnterMnemonicSeedPage(),
                     settings: settings,
                   );

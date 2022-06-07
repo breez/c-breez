@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bip39/bip39.dart' as bip39;
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -228,13 +227,14 @@ class EnterMnemonicSeedPageState extends State<EnterMnemonicSeedPage> {
   }
 
   Future _validateMnemonics() async {
-    final accountBloc = context.read<AccountBloc>();
     final mnemonic = textEditingControllers
         .map((controller) => controller.text.toLowerCase().trim())
         .toList()
         .join(" ");
     try {
-      await accountBloc.recoverNode(bip39.mnemonicToSeed(mnemonic));
+      if (bip39.validateMnemonic(mnemonic)) {
+        Navigator.pop(context, bip39.mnemonicToSeed(mnemonic));
+      }
     } catch (e) {
       setState(() {
         _hasError = true;

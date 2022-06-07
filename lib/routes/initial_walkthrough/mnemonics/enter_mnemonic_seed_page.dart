@@ -201,14 +201,6 @@ class EnterMnemonicSeedPageState extends State<EnterMnemonicSeedPage> {
     );
   }
 
-  T? exceptionAware<T>(T Function() f) {
-    try {
-      return f();
-    } catch (_) {
-      return null;
-    }
-  }
-
   Widget _buildBottomBtn(
     BuildContext context,
   ) {

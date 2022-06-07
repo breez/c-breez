@@ -7,6 +7,7 @@ import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/dev/commands.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
 import 'package:c_breez/routes/home/home_page.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonic_seed_page.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/generate_mnemonic_seed_confirmation_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -73,6 +74,11 @@ class UserApp extends StatelessWidget {
                 case '/mnemonics':
                   return FadeInRoute(
                     builder: (_) => GenerateMnemonicSeedConfirmationPage(),
+                    settings: settings,
+                  );
+                case '/restore':
+                  return FadeInRoute(
+                    builder: (_) => EnterMnemonicSeedPage(),
                     settings: settings,
                   );
                 case '/':

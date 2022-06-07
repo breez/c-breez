@@ -151,12 +151,6 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _restoreFromBackup(BuildContext context) {
-    Navigator.of(context).push(
-      FadeInRoute(
-        builder: (BuildContext context) {
-          return EnterMnemonicSeedPage();
-        },
-      ),
-    );
+    Navigator.of(context).pushNamed("/restore");
   }
 }

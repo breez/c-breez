@@ -1,4 +1,3 @@
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -23,9 +22,6 @@ class UITestPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accountBloc = context.read<AccountBloc>();
-    final userProfileBloc = context.read<UserProfileBloc>();
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -48,10 +44,7 @@ class UITestPage extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   FadeInRoute(
-                    builder: (_) => InitialWalkthroughPage(
-                      userProfileBloc,
-                      accountBloc,
-                    ),
+                    builder: (_) => InitialWalkthroughPage(),
                   ),
                 );
               },

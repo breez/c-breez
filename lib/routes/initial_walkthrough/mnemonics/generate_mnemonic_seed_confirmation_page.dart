@@ -34,19 +34,29 @@ class GenerateMnemonicSeedConfirmationPageState
       ),
       body: Column(
         children: [
-          _buildBackupPhraseImage(),
-          _buildInstructions(context),
-          _buildCheckbox(context),
-          SizedBox(
-            height: _isUnderstood ? 0 : 48,
-          )
+          const BackupPhraseImage(),
+          MnemonicsInstructions(),
+          ConfirmationCheckbox(
+            isUnderstood: _isUnderstood,
+            onPressed: (value) {
+              _isUnderstood = value;
+            },
+          ),
+          SizedBox(height: _isUnderstood ? 0 : 48)
         ],
       ),
-      bottomNavigationBar: _buildNextBtn(context, _isUnderstood),
+      bottomNavigationBar: ConfirmButton(isUnderstood: _isUnderstood),
     );
   }
+}
 
-  Widget _buildBackupPhraseImage() {
+class BackupPhraseImage extends StatelessWidget {
+  const BackupPhraseImage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return const Expanded(
       flex: 2,
       child: Image(
@@ -56,8 +66,11 @@ class GenerateMnemonicSeedConfirmationPageState
       ),
     );
   }
+}
 
-  Widget _buildInstructions(BuildContext context) {
+class MnemonicsInstructions extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     final texts = context.texts();
     return Padding(
       padding: const EdgeInsets.only(
@@ -76,8 +89,20 @@ class GenerateMnemonicSeedConfirmationPageState
       ),
     );
   }
+}
 
-  Widget _buildCheckbox(BuildContext context) {
+class ConfirmationCheckbox extends StatelessWidget {
+  final bool isUnderstood;
+  final Function onPressed;
+
+  const ConfirmationCheckbox({
+    Key? key,
+    required this.onPressed,
+    required this.isUnderstood,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final themeData = Theme.of(context);
     final texts = context.texts();
     return Expanded(
@@ -91,13 +116,10 @@ class GenerateMnemonicSeedConfirmationPageState
               unselectedWidgetColor: Colors.white,
             ),
             child: Checkbox(
-              activeColor: Colors.white,
-              checkColor: themeData.canvasColor,
-              value: _isUnderstood,
-              onChanged: (value) => setState(() {
-                _isUnderstood = value!;
-              }),
-            ),
+                activeColor: Colors.white,
+                checkColor: themeData.canvasColor,
+                value: isUnderstood,
+                onChanged: (value) => onPressed(value!)),
           ),
           Text(
             texts.backup_phrase_action_confirm,
@@ -107,15 +129,26 @@ class GenerateMnemonicSeedConfirmationPageState
       ),
     );
   }
+}
 
-  Widget _buildNextBtn(BuildContext context, bool isUnderstood) {
+class ConfirmButton extends StatelessWidget {
+  const ConfirmButton({
+    Key? key,
+    required bool isUnderstood,
+  })  : _isUnderstood = isUnderstood,
+        super(key: key);
+
+  final bool _isUnderstood;
+
+  @override
+  Widget build(BuildContext context) {
     final texts = context.texts();
     return Padding(
       padding: const EdgeInsets.only(top: 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          isUnderstood
+          _isUnderstood
               ? SingleButtonBottomBar(
                   text: texts.backup_phrase_action_next,
                   onPressed: () {

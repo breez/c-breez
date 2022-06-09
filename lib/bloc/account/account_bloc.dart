@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
@@ -152,8 +153,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _lightningNode.getNodeAPI().publishTransaction(tx);
   }
 
-  Future<bool> validateAddress(String address) {
-    throw Exception("not implemented");
+  bool validateAddress(String? address) {
+    if (address == null) return false;
+    // TODO real impl. Random next bool is used to simulate valid/invalid flow
+    return Random().nextBool();
   }
 
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity

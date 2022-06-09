@@ -103,3 +103,27 @@ const Color themeSwitchBgColor = Color.fromRGBO(229, 238, 251, 0.09);
 final Color circularLoaderColor = BreezColors.blue[200]!.withOpacity(0.7);
 const Color warningBoxColor = Color.fromRGBO(251, 233, 148, 0.1);
 final BorderSide greyBorderSide = BorderSide(color: BreezColors.grey[500]!);
+final TextStyle mnemonicSeedTextStyle = TextStyle(
+  color: BreezColors.white[400],
+  fontSize: 16.4,
+  letterSpacing: 0.73,
+  height: 1.25,
+);
+final TextStyle mnemonicSeedInformationTextStyle = TextStyle(
+  color: BreezColors.white[500],
+  fontSize: 14.3,
+  letterSpacing: 0.4,
+  height: 1.16,
+);
+final TextStyle mnemonicSeedConfirmationTextStyle = TextStyle(
+  color: BreezColors.white[500],
+  fontSize: 14.3,
+  letterSpacing: 1.25,
+  height: 1.16,
+  fontWeight: FontWeight.w500,
+  fontFamily: 'IBMPlexSans',
+);
+const TextStyle autoCompleteStyle = TextStyle(
+  color: Colors.black,
+  fontSize: 14.0,
+);

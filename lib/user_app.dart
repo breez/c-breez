@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -7,6 +9,8 @@ import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/dev/commands.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
 import 'package:c_breez/routes/home/home_page.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonic_seed_page.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/generate_mnemonic_seed_confirmation_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/locale.dart';
@@ -61,15 +65,22 @@ class UserApp extends StatelessWidget {
               switch (settings.name) {
                 case '/intro':
                   return FadeInRoute(
-                    builder: (_) => InitialWalkthroughPage(
-                      userProfileBloc,
-                      accountBloc,
-                    ),
+                    builder: (_) => InitialWalkthroughPage(),
                     settings: settings,
                   );
                 case '/splash':
                   return FadeInRoute(
                     builder: (_) => const SplashPage(),
+                    settings: settings,
+                  );
+                case '/mnemonics':
+                  return FadeInRoute(
+                    builder: (_) => GenerateMnemonicSeedConfirmationPage(),
+                    settings: settings,
+                  );
+                case '/enter_mnemonic_seed':
+                  return FadeInRoute<Uint8List>(
+                    builder: (_) => EnterMnemonicSeedPage(),
                     settings: settings,
                   );
                 case '/':

@@ -113,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  breez_sdk:
+    dependency: "direct main"
+    description:
+      path: "packages/breez_sdk"
+      relative: true
+    source: path
+    version: "0.0.1"
   bs58check:
     dependency: transitive
     description:
@@ -562,13 +569,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  greenlight:
-    dependency: "direct main"
-    description:
-      path: "packages/greenlight"
-      relative: true
-    source: path
-    version: "0.0.1"
   grpc:
     dependency: "direct main"
     description:
@@ -730,13 +730,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.5.0"
-  lightning_toolkit:
-    dependency: "direct main"
-    description:
-      path: "packages/lightning_toolkit"
-      relative: true
-    source: path
-    version: "0.0.1"
   lints:
     dependency: transitive
     description:

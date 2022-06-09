@@ -1,13 +1,12 @@
 
 
 import 'dart:typed_data';
-
-import 'package:c_breez/services/lightning/models.dart';
 import 'package:fimber/fimber.dart';
 import 'package:hex/hex.dart';
-import 'package:lightning_toolkit/signer.dart';
-import 'package:greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
+import '../../signer.dart';
+import './generated/greenlight.pbgrpc.dart' as greenlight;
 
+import '../models.dart';
 import 'service.dart';
 
 class SignerLoop {

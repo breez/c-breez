@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/services/breez_server/server.dart';
-import 'package:c_breez/services/lightning/interface.dart';
 import 'package:c_breez/utils/retry.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 
 import 'lsp_state.dart';
 
 class LSPBloc extends Cubit<LSPState> with HydratedMixin {
   final AppStorage _appStorage;
-  final LightningService _lnService;
+  final lntoolkit.NodeAPI _lnService;
   final BreezServer _breezServer;
   String? nodeID;
 
@@ -50,8 +50,7 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
     var lsp = state.availableLSPs.firstWhere((l) => l.lspID == lspID);
     emit(state.copyWith(
         connectionStatus: LSPConnectionStatus.inProgress, selectedLSP: lspID));
-    try {
-      await _lnService.waitReady();
+    try {      
       await retry(() async {
         await _lnService.connectPeer(lsp.pubKey, lsp.host);
         await _breezServer.openLSPChannel(lsp.lspID, nodeID!);

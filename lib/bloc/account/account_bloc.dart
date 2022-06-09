@@ -8,21 +8,21 @@ import 'package:c_breez/bloc/account/models_extensions.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/models/withdrawal.dart';
 import 'package:c_breez/models/payment_filter.dart';
 import 'package:c_breez/models/payment_info.dart';
 import 'package:c_breez/models/payment_type.dart';
+import 'package:c_breez/models/withdrawal.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:c_breez/services/keychain.dart';
-import 'package:c_breez/services/lightning/interface.dart';
 import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:lightning_toolkit/impl.dart' as lntoolkit;
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 const maxPaymentAmount = 4294967;
@@ -35,14 +35,16 @@ const maxPaymentAmount = 4294967;
 class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String paymentFilterSettingsKey = "payment_filter_settings";
   static const String accountCredsKey = "account_creds_key";
+  static const String accountSeedKey = "account_seed_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
   final _log = FimberLog("AccountBloc");
   final AppStorage _appStorage;
-  final LightningService _breezLib;
+  final lntoolkit.NodeAPI _breezLib;
   final KeyChain _keyChain;
   final LSPBloc _lspBloc;
   bool started = false;
+  lntoolkit.Signer? _signer;
 
   AccountBloc(this._breezLib, this._appStorage, this._keyChain, this._lspBloc) : super(AccountState.initial()) {
     // emit on every change
@@ -51,23 +53,31 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     });
 
     // sync node info on incoming payments
-    _breezLib.waitReady().then((value) {
-      _breezLib.incomingPaymentsStream().listen((event) {
-        syncStateWithNode();
-      });
+    _breezLib.incomingPaymentsStream().listen((event) {
+      syncStateWithNode();
     });
 
     if (!state.initial) {
-      _keyChain.read(accountCredsKey).then((credsHEX) {
+      _keyChain.read(accountCredsKey).then((credsHEX) async {
         if (credsHEX != null) {
           var creds = HEX.decode(credsHEX);
           _log.v("found account credentials: ${String.fromCharCodes(creds)}");
-          _breezLib.initWithCredentials(creds);
+
+          // temporary fix for older versions that didn't save the seed in keychain
+          final nodeCreds = lntoolkit.NodeCredentials.fromBuffer(creds);
+          await _keyChain.write(accountSeedKey, HEX.encode(nodeCreds.secret!));
+
+          // create signer
+          final seedHex = await _keyChain.read(accountSeedKey);          
+          await _createSignerFromSeed(Uint8List.fromList(HEX.decode(seedHex!)));         
+
+          // init service with credentials
+          _breezLib.initWithCredentials(creds, _signer!);
           _startNode();
         }
       });
     }
-  }
+  }  
 
   // Export the user keys to a file
   Future exportKeyFiles(Directory destDir) async {
@@ -77,18 +87,15 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  // initiWithCredentials initialized the lightning service with credentials that identify the node.
-  void initiWithCredentials(List<int> creds) {
-    _breezLib.initWithCredentials(creds);
-  }
-
   // startNewNode register a new node and start it
   Future<List<int>> startNewNode(Uint8List seed, {String network = "bitcoin", String email = ""}) async {
     if (started) {
       throw Exception("Node already started");
     }
-    var creds = await _breezLib.register(seed, email: email, network: network);
+    await _createSignerFromSeed(seed);
+    var creds = await _breezLib.register(seed, _signer!, email: email, network: network);
     _log.i("node registered successfully");
+    await _keyChain.write(accountSeedKey,HEX.encode(seed));
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
     emit(state.copyWith(initial: false));
     await _startNode();
@@ -101,14 +108,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     if (started) {
       throw Exception("Node already started");
     }
-    var creds = await _breezLib.recover(seed);
+    await _createSignerFromSeed(seed);
+    var creds = await _breezLib.recover(seed, _signer!);
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
     await _startNode();
     return creds;
   }
 
-  Future _startNode() async {
-    await _breezLib.startNode();
+  Future _startNode() async {    
     await syncStateWithNode();
     started = true;
   }
@@ -206,7 +213,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
     // inject routing hints and sign the new invoice
     var routingHints = lntoolkit.RouteHint(field0: List.from([lspHop]));
-    final bolt11 = await _breezLib.getSigner().addRoutingHints(invoice: invoice.bolt11, hints: [routingHints]);
+    final bolt11 = await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints]);
 
     syncStateWithNode();
 
@@ -328,6 +335,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Map<String, dynamic>? toJson(AccountState state) {
     return state.toJson();
   }
+
+  Future _createSignerFromSeed(Uint8List seed) async {
+    final docDir = await getApplicationDocumentsDirectory();
+    final signerDir = Directory("${docDir.path}/signer");
+    await signerDir.create(recursive: true);
+    _signer = lntoolkit.Signer(seed, signerDir.path);
+  }
 }
 
 int _parseShortChannelID(String idStr) {
@@ -340,3 +354,4 @@ int _parseShortChannelID(String idStr) {
   var txOut = int.parse(parts[2]);
   return ((blockNum & 0xFFFFFF) << 40 | (txNum & 0xFFFFFF) << 16 | (txOut & 0xFFFF));
 }
+

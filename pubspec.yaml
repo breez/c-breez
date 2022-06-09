@@ -88,10 +88,8 @@ dependencies:
   uni_links: ^0.5.1
   url_launcher: ^6.1.2
   validators: ^3.0.0
-  greenlight:
-    path: ./packages/greenlight
-  lightning_toolkit:
-    path: ./packages/lightning_toolkit
+  breez_sdk:
+    path: ./packages/breez_sdk
 
 dev_dependencies:
   flutter_test:

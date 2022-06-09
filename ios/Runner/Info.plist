@@ -47,5 +47,7 @@
     <string>Camera permission is required for QR code scanning.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
     <string>Required for selecting user avatar image.</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>

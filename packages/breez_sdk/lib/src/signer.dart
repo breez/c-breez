@@ -1,11 +1,11 @@
 import 'dart:typed_data';
-import 'bridge_generated.dart';
-import 'lightning_toolkit.dart';
+import '../generated/bridge_generated.dart';
+import 'native_toolkit.dart';
 
 class Signer {
   final Uint8List privateKey;
   final String storagePath;
-  final _lnToolkit = getLightningToolkit();
+  final _lnToolkit = getNativeToolkit();
 
   Signer(this.privateKey, this.storagePath);
 

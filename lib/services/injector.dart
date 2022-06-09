@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/repositories/dao/db.dart';
@@ -9,11 +8,9 @@ import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/services/local_auth_service.dart';
 import 'package:c_breez/services/notifications.dart';
-import 'package:c_breez/services/lightning/greenlight/service.dart';
-import 'package:c_breez/services/lightning/interface.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:http/http.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'background_task.dart';
@@ -24,7 +21,7 @@ class ServiceInjector {
 
   BreezServer? _breezServer;
   FirebaseNotifications? _notifications;
-  LightningService? _lightningService;
+  lntoolkit.NodeAPI? _lightningService;
   DeepLinksService? _deepLinksService;
   LightningLinksService? _lightningLinksService;
   Device? _device;
@@ -54,14 +51,12 @@ class ServiceInjector {
     return _breezServer ??= BreezServer();
   }
 
-  Future<LightningService> get breezBridge async {
+  Future<lntoolkit.NodeAPI> get breezBridge async {
     if (_lightningService != null) {
       return Future.value(_lightningService);
     }
-    final docDir = await getApplicationDocumentsDirectory();
-    final signerDir = Directory("${docDir.path}/signer");
-    await signerDir.create(recursive: true);
-    return _lightningService ??= GreenlightService(signerDir.path);
+
+    return _lightningService ??= lntoolkit.Greenlight();
   }
 
   Device get device {

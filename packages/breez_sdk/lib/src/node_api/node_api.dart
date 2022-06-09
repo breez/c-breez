@@ -1,31 +1,23 @@
-//import 'package:c_breez/models/currency.dart';
 import 'dart:typed_data';
 
-import 'package:c_breez/services/lightning/models.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:lightning_toolkit/signer.dart';
+import '../../src/signer.dart';
 
-abstract class LightningService {
-  Future<List<int>> register(Uint8List seed,
+import 'models.dart';
+
+abstract class NodeAPI {  
+  Future<List<int>> register(Uint8List seed, Signer signer,
       {String network = "bitcoin", String email});
 
-  Future<List<int>> recover(Uint8List seed);
+  Future<List<int>> recover(Uint8List seed, Signer signer);
   
-  Signer initWithCredentials(List<int> credentials);
-
-  Signer getSigner();
+  void initWithCredentials(List<int> credentials, Signer signer);  
 
   Future<List<FileData>> exportKeys();
-
-  Future startNode();
-
-  Future waitReady();
 
   Stream<IncomingLightningPayment> incomingPaymentsStream();
 
   Future<Withdrawal> sweepAllCoinsTransactions(String address);
-
-  Future publishTransaction(List<int> tx);
 
   Future<NodeInfo> getNodeInfo();
 
@@ -41,15 +33,15 @@ abstract class LightningService {
 
   Future sendPaymentForRequest(
       String blankInvoicePaymentRequest,
-      {Int64 amount});
+      {Int64? amount});
 
   Future<List<OutgoingLightningPayment>> getPayments();
 
   Future<List<Invoice>> getInvoices();
 
-  Future<Invoice> addInvoice(Int64 amount, {String description, Int64 expiry});
-
-  Future<String> newAddress(String breezID);
+  Future<Invoice> addInvoice(Int64 amount, {String? description, Int64? expiry});
 
   Future<Int64> getDefaultOnChainFeeRate();
+
+  Future publishTransaction(List<int> tx);
 }

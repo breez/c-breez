@@ -5,21 +5,18 @@ import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/services/device.dart';
-import 'package:c_breez/services/lightning/interface.dart';
 import 'package:c_breez/services/lightning_links.dart';
-import 'package:c_breez/utils/bip21.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lightning_toolkit/invoicer.dart';
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:rxdart/rxdart.dart';
 
 class InvoiceBloc extends Cubit<InvoiceState> {
   final LightningLinksService _lightningLinks;
   final Device _device;
-  final lnInvoicer = Invoicer();
-  final AppStorage _appStorage;  
-  final LightningService _lightningService;
+  final AppStorage _appStorage;
+  final lntoolkit.NodeAPI _lightningService;
 
   final _decodeInvoiceController = StreamController<String>();
 
@@ -36,50 +33,42 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   }
 
   Stream<Invoice?> _watchIncomingInvoices() {
-    return Rx.merge([
-      _decodeInvoiceController.stream,
-      _lightningLinks.linksNotifications,
-      _device.distinctClipboardStream.where((s) =>
-          s.toLowerCase().startsWith("ln") ||
-          s.toLowerCase().startsWith("lightning:"))
-    ])
-        .map((s) {
-          String lower = s.toLowerCase();
-          if (lower.startsWith("lightning:")) {
-            return s.substring(10);
-          }
+    return Rx.merge([_decodeInvoiceController.stream, _lightningLinks.linksNotifications, _device.distinctClipboardStream])
+        .asyncMap((s) async {
 
-          // check bip21 with bolt11
-          String? bolt11 = extractBolt11FromBip21(lower);
-          return bolt11 ?? s;
-        })
-        .where((s) => !s.toLowerCase().startsWith("lnurl"))
-        .asyncMap((bolt11) async {
-          var lnInvoice = await lnInvoicer.parseInvoice(invoice: bolt11);
-          var nodeInfo = await _appStorage.watchNodeInfo().first;
-          if (nodeInfo == null || nodeInfo.node.nodeID == lnInvoice.payeePubkey) {
-            return null;
-          }          
-          var invoice = Invoice(
-              bolt11: bolt11,
-              paymentHash: lnInvoice.paymentHash,
-              description: lnInvoice.description,
-              amountMsat: lnInvoice.amount ?? 0,
-              expiry: lnInvoice.expiry);
-
-          return invoice;
-        }).where((invoice) => invoice != null);
+      final command = await lntoolkit.InputParser().parse(s);
+      switch (command.protocol) {
+        case lntoolkit.InputProtocol.paymentRequest:
+          return handlePaymentRequest(s, command);
+        default:
+          return null;
+      }
+    }).where((invoice) => invoice != null);
   }
 
-  Stream<DecodedClipboardData> get decodedClipboardStream =>
-      _device.rawClipboardStream.map((clipboardData) {
+  Future<Invoice?> handlePaymentRequest(String raw, lntoolkit.ParsedInput command) async {
+    final lnInvoice = command.decoded as lntoolkit.LNInvoice;
+    var nodeInfo = await _appStorage.watchNodeInfo().first;
+    if (nodeInfo == null || nodeInfo.node.nodeID == lnInvoice.payeePubkey) {
+      return null;
+    }
+    var invoice = Invoice(
+        bolt11: raw,
+        paymentHash: lnInvoice.paymentHash,
+        description: lnInvoice.description,
+        amountMsat: lnInvoice.amount ?? 0,
+        expiry: lnInvoice.expiry);
+
+    return invoice;
+  }
+
+  Stream<DecodedClipboardData> get decodedClipboardStream => _device.rawClipboardStream.map((clipboardData) {
         if (clipboardData.isEmpty) {
           return DecodedClipboardData.unrecognized();
         }
         var nodeID = parseNodeId(clipboardData);
         if (nodeID != null) {
-          return DecodedClipboardData(
-              data: nodeID, type: ClipboardDataType.nodeID);
+          return DecodedClipboardData(data: nodeID, type: ClipboardDataType.nodeID);
         }
         String normalized = clipboardData.toLowerCase();
         if (normalized.startsWith("lightning:")) {
@@ -87,18 +76,15 @@ class InvoiceBloc extends Cubit<InvoiceState> {
         }
 
         if (normalized.startsWith("lnurl")) {
-          return DecodedClipboardData(
-              data: clipboardData, type: ClipboardDataType.lnurl);
+          return DecodedClipboardData(data: clipboardData, type: ClipboardDataType.lnurl);
         }
 
         if (isLightningAddress(normalized)) {
-          return DecodedClipboardData(
-              data: normalized, type: ClipboardDataType.lightningAddress);
+          return DecodedClipboardData(data: normalized, type: ClipboardDataType.lightningAddress);
         }
 
         if (normalized.startsWith("ln")) {
-          return DecodedClipboardData(
-              data: normalized, type: ClipboardDataType.paymentRequest);
+          return DecodedClipboardData(data: normalized, type: ClipboardDataType.paymentRequest);
         }
         return DecodedClipboardData.unrecognized();
       });

@@ -1,7 +1,7 @@
 import 'package:c_breez/repositories/dao/db.dart' as db;
-import 'package:c_breez/services/lightning/models.dart';
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 
-extension NodeInfoAdapter on NodeInfo {
+extension NodeInfoAdapter on lntoolkit.NodeInfo {
   db.NodeInfo toDbNodeInfo() {
     return db.NodeInfo(
         db.Node(
@@ -22,7 +22,7 @@ extension NodeInfoAdapter on NodeInfo {
   }
 }
 
-extension PeerAdapter on Peer {
+extension PeerAdapter on lntoolkit.Peer {
   db.PeerWithChannels toDbPeer() {
     return db.PeerWithChannels(
         db.Peer(peerId: id, connected: connected, features: features),
@@ -48,7 +48,7 @@ extension PeerAdapter on Peer {
   }
 }
 
-extension ChannelFundsAdapter on ListFundsChannel {
+extension ChannelFundsAdapter on lntoolkit.ListFundsChannel {
   db.OffChainFund toDbOffchainFund() {
     return db.OffChainFund(
       peerId: peerId,
@@ -62,7 +62,7 @@ extension ChannelFundsAdapter on ListFundsChannel {
   }
 }
 
-extension OnchainFundsAdapter on ListFundsOutput {
+extension OnchainFundsAdapter on lntoolkit.ListFundsOutput {
   db.OnChainFund toDbOnchainFund() {
     return db.OnChainFund(
       txid: outpoint.txid,
@@ -74,7 +74,7 @@ extension OnchainFundsAdapter on ListFundsOutput {
   }
 }
 
-extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
+extension OutgoingLightningPaymentAdapter on lntoolkit.OutgoingLightningPayment {
   db.OutgoingLightningPayment toDbOutgoingLightningPayment() {
     return db.OutgoingLightningPayment(
       createdAt: creationTimestamp,
@@ -91,7 +91,7 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
   }
 }
 
-extension InvoiceAdapter on Invoice {
+extension InvoiceAdapter on lntoolkit.Invoice {
   db.Invoice toDbInvoice() {
     return db.Invoice(
       label: label,

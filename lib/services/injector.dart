@@ -21,7 +21,7 @@ class ServiceInjector {
 
   BreezServer? _breezServer;
   FirebaseNotifications? _notifications;
-  lntoolkit.NodeAPI? _lightningService;
+  lntoolkit.LightningServices? _lightningService;
   DeepLinksService? _deepLinksService;
   LightningLinksService? _lightningLinksService;
   Device? _device;
@@ -51,12 +51,12 @@ class ServiceInjector {
     return _breezServer ??= BreezServer();
   }
 
-  Future<lntoolkit.NodeAPI> get breezBridge async {
+  Future<lntoolkit.LightningServices> get lightningServices async {
     if (_lightningService != null) {
       return Future.value(_lightningService);
     }
 
-    return _lightningService ??= lntoolkit.Greenlight();
+    return _lightningService ??= lntoolkit.LightningServices();
   }
 
   Device get device {

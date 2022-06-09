@@ -10,7 +10,7 @@ import 'lsp_state.dart';
 
 class LSPBloc extends Cubit<LSPState> with HydratedMixin {
   final AppStorage _appStorage;
-  final lntoolkit.NodeAPI _lnService;
+  final lntoolkit.LightningServices _lnService;
   final BreezServer _breezServer;
   String? nodeID;
 
@@ -52,7 +52,7 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
         connectionStatus: LSPConnectionStatus.inProgress, selectedLSP: lspID));
     try {      
       await retry(() async {
-        await _lnService.connectPeer(lsp.pubKey, lsp.host);
+        await _lnService.getNodeAPI().connectPeer(lsp.pubKey, lsp.host);
         await _breezServer.openLSPChannel(lsp.lspID, nodeID!);
       }, tryLimit: 3, interval: const Duration(seconds: 2));
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.active));

@@ -17,7 +17,7 @@ void main() {
   group('account', () {
     test('recover node', () async {
       var injector = InjectorMock();
-      var breezBridge = await injector.breezBridge;
+      var breezBridge = await injector.lightningServices;
       var lspBloc =
           LSPBloc(injector.appStorage, breezBridge, injector.breezServer);
       AccountBloc accBloc = AccountBloc(

@@ -40,20 +40,21 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   final _log = FimberLog("AccountBloc");
   final AppStorage _appStorage;
-  final lntoolkit.NodeAPI _breezLib;
+  final lntoolkit.LightningServices _lightningServices;
   final KeyChain _keyChain;
   final LSPBloc _lspBloc;
   bool started = false;
   lntoolkit.Signer? _signer;
 
-  AccountBloc(this._breezLib, this._appStorage, this._keyChain, this._lspBloc) : super(AccountState.initial()) {
+  AccountBloc(this._lightningServices, this._appStorage, this._keyChain, this._lspBloc) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
     });
 
     // sync node info on incoming payments
-    _breezLib.incomingPaymentsStream().listen((event) {
+    final nodeAPI = _lightningServices.getNodeAPI();
+    nodeAPI.incomingPaymentsStream().listen((event) {
       syncStateWithNode();
     });
 
@@ -72,7 +73,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           await _createSignerFromSeed(Uint8List.fromList(HEX.decode(seedHex!)));         
 
           // init service with credentials
-          _breezLib.initWithCredentials(creds, _signer!);
+          nodeAPI.initWithCredentials(creds, _signer!);
           _startNode();
         }
       });
@@ -81,7 +82,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // Export the user keys to a file
   Future exportKeyFiles(Directory destDir) async {
-    var keys = await _breezLib.exportKeys();
+    var keys = await _lightningServices.getNodeAPI().exportKeys();
     for (var k in keys) {
       File(p.join(destDir.path, k.name)).writeAsBytesSync(k.content, flush: true);
     }
@@ -93,7 +94,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       throw Exception("Node already started");
     }
     await _createSignerFromSeed(seed);
-    var creds = await _breezLib.register(seed, _signer!, email: email, network: network);
+    var creds = await _lightningServices.newNodeFromSeed(seed, _signer!);
     _log.i("node registered successfully");
     await _keyChain.write(accountSeedKey,HEX.encode(seed));
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
@@ -109,7 +110,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       throw Exception("Node already started");
     }
     await _createSignerFromSeed(seed);
-    var creds = await _breezLib.recover(seed, _signer!);
+    var creds = await _lightningServices.connectWithSeed(seed, _signer!);
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
     await _startNode();
     return creds;
@@ -131,7 +132,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future sendPayment(String bolt11, Int64 amountSat) async {
-    await _breezLib.sendPaymentForRequest(bolt11, amount: amountSat);
+    await _lightningServices.getNodeService().sendPaymentForRequest(bolt11, amount: amountSat);
     await syncStateWithNode();
   }
 
@@ -140,18 +141,18 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
-    await _breezLib.sendSpontaneousPayment(nodeID, amountSat, description);
+    await _lightningServices.getNodeAPI().sendSpontaneousPayment(nodeID, amountSat, description);
     await syncStateWithNode();
   }
 
   Future<Withdrawal> sweepAllCoins(String address) async {
-    var w = await _breezLib.sweepAllCoinsTransactions(address);
+    var w = await _lightningServices.getNodeAPI().sweepAllCoinsTransactions(address);
     await syncStateWithNode();
     return Withdrawal(w.txid, w.tx);
   }
 
   Future publishTransaction(List<int> tx) async {
-    await _breezLib.publishTransaction(tx);
+    await _lightningServices.getNodeAPI().publishTransaction(tx);
   }
 
   Future<bool> validateAddress(String address) {
@@ -184,7 +185,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future<Invoice> addInvoice(
       {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
-    var invoice = await _breezLib.addInvoice(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
+    var invoice = await _lightningServices.getNodeService().requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
     var currentLSP = _lspBloc.state.currentLSP;
     if (currentLSP == null) {
       throw Exception("LSP is not available");
@@ -293,20 +294,20 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _syncNodeInfo() async {
     _log.i("_syncNodeInfo started");
-    await _appStorage.setNodeInfo((await _breezLib.getNodeInfo()).toDbNodeInfo());
+    await _appStorage.setNodeInfo((await _lightningServices.getNodeAPI().getNodeInfo()).toDbNodeInfo());
     _log.i("_syncNodeInfo finished");
   }
 
   Future _syncPeers() async {
     _log.i("_syncPeers started");
-    var peers = (await _breezLib.listPeers()).map((p) => p.toDbPeer()).toList();
+    var peers = (await _lightningServices.getNodeAPI().listPeers()).map((p) => p.toDbPeer()).toList();
     await _appStorage.setPeers(peers);
     _log.i("_syncPeers finished");
   }
 
   Future _syncFunds() async {
     _log.i("_syncFunds started");
-    var funds = await _breezLib.listFunds();
+    var funds = await _lightningServices.getNodeAPI().listFunds();
     await _appStorage.setOffchainFunds(funds.channelFunds.map((f) => f.toDbOffchainFund()).toList());
     await _appStorage.setOnchainFunds(funds.onchainFunds.map((f) => f.toDbOnchainFund()).toList());
     _log.i("_syncFunds finished");
@@ -314,14 +315,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _syncOutgoingPayments() async {
     _log.i("_syncOutgoingPayments");
-    var outgoingPayments = await _breezLib.getPayments();
+    var outgoingPayments = await _lightningServices.getNodeAPI().getPayments();
     await _appStorage.addOutgoingPayments(outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
     _log.i("_syncOutgoingPayments finished");
   }
 
   Future _syncSettledInvoices() async {
     _log.i("_syncSettledInvoices started");
-    var invoices = await _breezLib.getInvoices();
+    var invoices = await _lightningServices.getNodeAPI().getInvoices();
     await _appStorage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
     _log.i("_syncSettledInvoices finished");
   }

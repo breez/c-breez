@@ -60,4 +60,3 @@ packages/breez_sdk/android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
 packages/breez_sdk/android/src/main/jniLibs/x86/liblightning_toolkit.so
 packages/breez_sdk/android/src/main/jniLibs/x86_64/liblightning_toolkit.so
 packages/breez_sdk/ios/liblightning_toolkit.a
-packages/breez_sdk/.gitignore

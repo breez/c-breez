@@ -29,44 +29,40 @@ void main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
     BreezLogger();
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     //initializeDateFormatting(Platform.localeName, null);
     BreezDateUtils.setupLocales();
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     var injector = ServiceInjector();
-    var breezBridge = await injector.breezBridge;
-    var appDir = await getApplicationDocumentsDirectory();    
-    final storage = await HydratedStorage.build(
-        storageDirectory: Directory(p.join(appDir.path, "bloc_storage")));  
+    final lightningServices = await injector.lightningServices;
+    var appDir = await getApplicationDocumentsDirectory();
+
+    final storage = await HydratedStorage.build(storageDirectory: Directory(p.join(appDir.path, "bloc_storage")));
     HydratedBlocOverrides.runZoned(
         () => runApp(MultiBlocProvider(
               providers: [
                 BlocProvider<LSPBloc>(
-                  create: (BuildContext context) => LSPBloc(injector.appStorage,
-                      breezBridge, injector.breezServer),
+                  create: (BuildContext context) => LSPBloc(injector.appStorage, lightningServices, injector.breezServer),
                 ),
                 BlocProvider<AccountBloc>(
                   create: (BuildContext context) => AccountBloc(
-                      breezBridge,
-                      injector.appStorage,
-                      injector.keychain,                      
-                      context.read<LSPBloc>(),
-                      ),
-                ),                
+                    lightningServices,
+                    injector.appStorage,
+                    injector.keychain,
+                    context.read<LSPBloc>(),
+                  ),
+                ),
                 BlocProvider<InvoiceBloc>(
                   create: (BuildContext context) =>
-                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage, breezBridge),
+                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage, lightningServices),
                 ),
                 BlocProvider<UserProfileBloc>(
-                  create: (BuildContext context) => UserProfileBloc(
-                      injector.breezServer, injector.notifications),
+                  create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
                 ),
                 BlocProvider<CurrencyBloc>(
-                  create: (BuildContext context) =>
-                      CurrencyBloc(injector.breezServer),
+                  create: (BuildContext context) => CurrencyBloc(injector.breezServer),
                 ),
               ],
               child: UserApp(),

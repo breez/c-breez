@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/repositories/dao/db.dart';
 import 'package:c_breez/services/breez_server/server.dart';
@@ -9,8 +10,6 @@ import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/notifications.dart';
-import 'package:c_breez/services/lightning/greenlight/service.dart';
-import 'package:c_breez/services/lightning/interface.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -92,8 +91,8 @@ class InjectorMock extends Mock implements ServiceInjector {
   MockClientHandler? mockHandler;
 
   @override
-  Future<LightningService> get breezBridge async {
-    return GreenlightService("test_storage.json");
+  Future<LightningServices> get lightningServices async {
+    return LightningServices();
   }
 
   @override

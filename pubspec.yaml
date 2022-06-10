@@ -33,7 +33,7 @@ dependencies:
     sdk: flutter
 
   another_flushbar: ^1.10.29
-  app_settings: ^4.1.6
+  app_settings: ^4.1.8
   archive: ^3.3.0
   auto_size_text: ^3.0.0
   basic_utils: ^4.2.2
@@ -41,12 +41,12 @@ dependencies:
   bip39: ^1.0.6
   bolt11_decoder: ^1.0.1
   cryptography: ^2.0.5
-  cupertino_icons: ^1.0.4
+  cupertino_icons: ^1.0.5
   drag_and_drop_lists: # Target this ref until new release
     git:
       url: https://github.com/mauriceraguseinit/DragAndDropLists
       ref: 2b9660e90b073de4bf7510ba98140f778e846f2e
-  drift: ^1.6.0
+  drift: ^1.7.0
   duration: ^3.0.11
   email_validator: ^2.0.1
   extended_image: ^6.2.1
@@ -70,12 +70,12 @@ dependencies:
   ini: ^2.1.0
   intl: ^0.17.0
   local_auth: ^2.1.0
-  local_auth_android: ^1.0.4
-  local_auth_ios: ^1.0.6
+  local_auth_android: ^1.0.5
+  local_auth_ios: ^1.0.7
   mobile_scanner: ^2.0.0
   package_info_plus: ^1.4.2
   path: ^1.8.1
-  path_provider: ^2.0.10
+  path_provider: ^2.0.11
   pointycastle: ^3.6.0
   protobuf: ^2.0.1
   qr_flutter: ^4.0.0
@@ -83,11 +83,11 @@ dependencies:
   scan: ^1.6.0
   share_extend: ^2.0.0
   shared_preferences: ^2.0.15
-  simple_animations: ^4.0.2
+  simple_animations: ^4.1.0
   sqlite3_flutter_libs: ^0.5.7
   timeago: ^3.2.2
   uni_links: ^0.5.1
-  url_launcher: ^6.1.2
+  url_launcher: ^6.1.3
   validators: ^3.0.0
   breez_sdk:
     path: ./packages/breez_sdk
@@ -96,7 +96,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.1.11
-  drift_dev: ^1.6.0
+  drift_dev: ^1.7.0
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

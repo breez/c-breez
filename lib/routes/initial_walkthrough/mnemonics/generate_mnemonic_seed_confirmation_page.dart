@@ -39,7 +39,9 @@ class GenerateMnemonicSeedConfirmationPageState
           ConfirmationCheckbox(
             isUnderstood: _isUnderstood,
             onPressed: (value) {
-              _isUnderstood = value;
+              setState(() {
+                _isUnderstood = value;
+              });
             },
           ),
           SizedBox(height: _isUnderstood ? 0 : 48)
@@ -93,7 +95,7 @@ class MnemonicsInstructions extends StatelessWidget {
 
 class ConfirmationCheckbox extends StatelessWidget {
   final bool isUnderstood;
-  final Function onPressed;
+  final Function(bool value) onPressed;
 
   const ConfirmationCheckbox({
     Key? key,

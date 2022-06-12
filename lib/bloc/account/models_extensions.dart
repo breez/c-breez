@@ -1,6 +1,24 @@
 import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:breez_sdk/sdk.dart' as lntoolkit;
 
+extension NodeStateAdapter on lntoolkit.NodeState {
+  db.NodeState toDbNodeState() {
+    return db.NodeState(
+        nodeID: id,
+        channelsBalanceMsats: channelsBalanceMsats.toInt(),
+        onchainBalanceMsats: onchainBalanceMsats.toInt(),
+        blockHeight: blockheight.toInt(),
+        connectionStatus: status.index,
+        maxAllowedToPayMsats: maxAllowedToPayMsats.toInt(),
+        maxAllowedToReceiveMsats: maxAllowedToReceiveMsats.toInt(),
+        maxPaymentAmountMsats: maxPaymentAmountMsats.toInt(),
+        maxChanReserveMsats: maxChanReserveMsats.toInt(),
+        connectedPeers: connectedPeers.join(","),
+        maxInboundLiquidityMsats: maxInboundLiquidityMsats.toInt(),
+        onChainFeeRate: onChainFeeRate.toInt());
+  }
+}
+
 extension NodeInfoAdapter on lntoolkit.NodeInfo {
   db.NodeInfo toDbNodeInfo() {
     return db.NodeInfo(
@@ -11,14 +29,7 @@ extension NodeInfoAdapter on lntoolkit.NodeInfo {
             blockheight: blockheight,
             version: version,
             network: network),
-        addresses
-            .map((a) => db.NodeAddresse(
-                id: 0,
-                type: a.type.index,
-                addr: a.addr,
-                port: a.port,
-                nodeId: nodeID))
-            .toList());
+        addresses.map((a) => db.NodeAddresse(id: 0, type: a.type.index, addr: a.addr, port: a.port, nodeId: nodeID)).toList());
   }
 }
 

@@ -336,6 +336,629 @@ class $NodesTable extends Nodes with TableInfo<$NodesTable, Node> {
   }
 }
 
+class NodeState extends DataClass implements Insertable<NodeState> {
+  final String nodeID;
+  final int channelsBalanceMsats;
+  final int onchainBalanceMsats;
+  final int blockHeight;
+  final int connectionStatus;
+  final int maxAllowedToPayMsats;
+  final int maxAllowedToReceiveMsats;
+  final int maxPaymentAmountMsats;
+  final int maxChanReserveMsats;
+  final String connectedPeers;
+  final int maxInboundLiquidityMsats;
+  final int onChainFeeRate;
+  NodeState(
+      {required this.nodeID,
+      required this.channelsBalanceMsats,
+      required this.onchainBalanceMsats,
+      required this.blockHeight,
+      required this.connectionStatus,
+      required this.maxAllowedToPayMsats,
+      required this.maxAllowedToReceiveMsats,
+      required this.maxPaymentAmountMsats,
+      required this.maxChanReserveMsats,
+      required this.connectedPeers,
+      required this.maxInboundLiquidityMsats,
+      required this.onChainFeeRate});
+  factory NodeState.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return NodeState(
+      nodeID: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}node_i_d'])!,
+      channelsBalanceMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}channels_balance_msats'])!,
+      onchainBalanceMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}onchain_balance_msats'])!,
+      blockHeight: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}block_height'])!,
+      connectionStatus: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}connection_status'])!,
+      maxAllowedToPayMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}max_allowed_to_pay_msats'])!,
+      maxAllowedToReceiveMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}max_allowed_to_receive_msats'])!,
+      maxPaymentAmountMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}max_payment_amount_msats'])!,
+      maxChanReserveMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}max_chan_reserve_msats'])!,
+      connectedPeers: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}connected_peers'])!,
+      maxInboundLiquidityMsats: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}max_inbound_liquidity_msats'])!,
+      onChainFeeRate: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}on_chain_fee_rate'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['node_i_d'] = Variable<String>(nodeID);
+    map['channels_balance_msats'] = Variable<int>(channelsBalanceMsats);
+    map['onchain_balance_msats'] = Variable<int>(onchainBalanceMsats);
+    map['block_height'] = Variable<int>(blockHeight);
+    map['connection_status'] = Variable<int>(connectionStatus);
+    map['max_allowed_to_pay_msats'] = Variable<int>(maxAllowedToPayMsats);
+    map['max_allowed_to_receive_msats'] =
+        Variable<int>(maxAllowedToReceiveMsats);
+    map['max_payment_amount_msats'] = Variable<int>(maxPaymentAmountMsats);
+    map['max_chan_reserve_msats'] = Variable<int>(maxChanReserveMsats);
+    map['connected_peers'] = Variable<String>(connectedPeers);
+    map['max_inbound_liquidity_msats'] =
+        Variable<int>(maxInboundLiquidityMsats);
+    map['on_chain_fee_rate'] = Variable<int>(onChainFeeRate);
+    return map;
+  }
+
+  NodeStatesCompanion toCompanion(bool nullToAbsent) {
+    return NodeStatesCompanion(
+      nodeID: Value(nodeID),
+      channelsBalanceMsats: Value(channelsBalanceMsats),
+      onchainBalanceMsats: Value(onchainBalanceMsats),
+      blockHeight: Value(blockHeight),
+      connectionStatus: Value(connectionStatus),
+      maxAllowedToPayMsats: Value(maxAllowedToPayMsats),
+      maxAllowedToReceiveMsats: Value(maxAllowedToReceiveMsats),
+      maxPaymentAmountMsats: Value(maxPaymentAmountMsats),
+      maxChanReserveMsats: Value(maxChanReserveMsats),
+      connectedPeers: Value(connectedPeers),
+      maxInboundLiquidityMsats: Value(maxInboundLiquidityMsats),
+      onChainFeeRate: Value(onChainFeeRate),
+    );
+  }
+
+  factory NodeState.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NodeState(
+      nodeID: serializer.fromJson<String>(json['nodeID']),
+      channelsBalanceMsats:
+          serializer.fromJson<int>(json['channelsBalanceMsats']),
+      onchainBalanceMsats:
+          serializer.fromJson<int>(json['onchainBalanceMsats']),
+      blockHeight: serializer.fromJson<int>(json['blockHeight']),
+      connectionStatus: serializer.fromJson<int>(json['connectionStatus']),
+      maxAllowedToPayMsats:
+          serializer.fromJson<int>(json['maxAllowedToPayMsats']),
+      maxAllowedToReceiveMsats:
+          serializer.fromJson<int>(json['maxAllowedToReceiveMsats']),
+      maxPaymentAmountMsats:
+          serializer.fromJson<int>(json['maxPaymentAmountMsats']),
+      maxChanReserveMsats:
+          serializer.fromJson<int>(json['maxChanReserveMsats']),
+      connectedPeers: serializer.fromJson<String>(json['connectedPeers']),
+      maxInboundLiquidityMsats:
+          serializer.fromJson<int>(json['maxInboundLiquidityMsats']),
+      onChainFeeRate: serializer.fromJson<int>(json['onChainFeeRate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'nodeID': serializer.toJson<String>(nodeID),
+      'channelsBalanceMsats': serializer.toJson<int>(channelsBalanceMsats),
+      'onchainBalanceMsats': serializer.toJson<int>(onchainBalanceMsats),
+      'blockHeight': serializer.toJson<int>(blockHeight),
+      'connectionStatus': serializer.toJson<int>(connectionStatus),
+      'maxAllowedToPayMsats': serializer.toJson<int>(maxAllowedToPayMsats),
+      'maxAllowedToReceiveMsats':
+          serializer.toJson<int>(maxAllowedToReceiveMsats),
+      'maxPaymentAmountMsats': serializer.toJson<int>(maxPaymentAmountMsats),
+      'maxChanReserveMsats': serializer.toJson<int>(maxChanReserveMsats),
+      'connectedPeers': serializer.toJson<String>(connectedPeers),
+      'maxInboundLiquidityMsats':
+          serializer.toJson<int>(maxInboundLiquidityMsats),
+      'onChainFeeRate': serializer.toJson<int>(onChainFeeRate),
+    };
+  }
+
+  NodeState copyWith(
+          {String? nodeID,
+          int? channelsBalanceMsats,
+          int? onchainBalanceMsats,
+          int? blockHeight,
+          int? connectionStatus,
+          int? maxAllowedToPayMsats,
+          int? maxAllowedToReceiveMsats,
+          int? maxPaymentAmountMsats,
+          int? maxChanReserveMsats,
+          String? connectedPeers,
+          int? maxInboundLiquidityMsats,
+          int? onChainFeeRate}) =>
+      NodeState(
+        nodeID: nodeID ?? this.nodeID,
+        channelsBalanceMsats: channelsBalanceMsats ?? this.channelsBalanceMsats,
+        onchainBalanceMsats: onchainBalanceMsats ?? this.onchainBalanceMsats,
+        blockHeight: blockHeight ?? this.blockHeight,
+        connectionStatus: connectionStatus ?? this.connectionStatus,
+        maxAllowedToPayMsats: maxAllowedToPayMsats ?? this.maxAllowedToPayMsats,
+        maxAllowedToReceiveMsats:
+            maxAllowedToReceiveMsats ?? this.maxAllowedToReceiveMsats,
+        maxPaymentAmountMsats:
+            maxPaymentAmountMsats ?? this.maxPaymentAmountMsats,
+        maxChanReserveMsats: maxChanReserveMsats ?? this.maxChanReserveMsats,
+        connectedPeers: connectedPeers ?? this.connectedPeers,
+        maxInboundLiquidityMsats:
+            maxInboundLiquidityMsats ?? this.maxInboundLiquidityMsats,
+        onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('NodeState(')
+          ..write('nodeID: $nodeID, ')
+          ..write('channelsBalanceMsats: $channelsBalanceMsats, ')
+          ..write('onchainBalanceMsats: $onchainBalanceMsats, ')
+          ..write('blockHeight: $blockHeight, ')
+          ..write('connectionStatus: $connectionStatus, ')
+          ..write('maxAllowedToPayMsats: $maxAllowedToPayMsats, ')
+          ..write('maxAllowedToReceiveMsats: $maxAllowedToReceiveMsats, ')
+          ..write('maxPaymentAmountMsats: $maxPaymentAmountMsats, ')
+          ..write('maxChanReserveMsats: $maxChanReserveMsats, ')
+          ..write('connectedPeers: $connectedPeers, ')
+          ..write('maxInboundLiquidityMsats: $maxInboundLiquidityMsats, ')
+          ..write('onChainFeeRate: $onChainFeeRate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      nodeID,
+      channelsBalanceMsats,
+      onchainBalanceMsats,
+      blockHeight,
+      connectionStatus,
+      maxAllowedToPayMsats,
+      maxAllowedToReceiveMsats,
+      maxPaymentAmountMsats,
+      maxChanReserveMsats,
+      connectedPeers,
+      maxInboundLiquidityMsats,
+      onChainFeeRate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NodeState &&
+          other.nodeID == this.nodeID &&
+          other.channelsBalanceMsats == this.channelsBalanceMsats &&
+          other.onchainBalanceMsats == this.onchainBalanceMsats &&
+          other.blockHeight == this.blockHeight &&
+          other.connectionStatus == this.connectionStatus &&
+          other.maxAllowedToPayMsats == this.maxAllowedToPayMsats &&
+          other.maxAllowedToReceiveMsats == this.maxAllowedToReceiveMsats &&
+          other.maxPaymentAmountMsats == this.maxPaymentAmountMsats &&
+          other.maxChanReserveMsats == this.maxChanReserveMsats &&
+          other.connectedPeers == this.connectedPeers &&
+          other.maxInboundLiquidityMsats == this.maxInboundLiquidityMsats &&
+          other.onChainFeeRate == this.onChainFeeRate);
+}
+
+class NodeStatesCompanion extends UpdateCompanion<NodeState> {
+  final Value<String> nodeID;
+  final Value<int> channelsBalanceMsats;
+  final Value<int> onchainBalanceMsats;
+  final Value<int> blockHeight;
+  final Value<int> connectionStatus;
+  final Value<int> maxAllowedToPayMsats;
+  final Value<int> maxAllowedToReceiveMsats;
+  final Value<int> maxPaymentAmountMsats;
+  final Value<int> maxChanReserveMsats;
+  final Value<String> connectedPeers;
+  final Value<int> maxInboundLiquidityMsats;
+  final Value<int> onChainFeeRate;
+  const NodeStatesCompanion({
+    this.nodeID = const Value.absent(),
+    this.channelsBalanceMsats = const Value.absent(),
+    this.onchainBalanceMsats = const Value.absent(),
+    this.blockHeight = const Value.absent(),
+    this.connectionStatus = const Value.absent(),
+    this.maxAllowedToPayMsats = const Value.absent(),
+    this.maxAllowedToReceiveMsats = const Value.absent(),
+    this.maxPaymentAmountMsats = const Value.absent(),
+    this.maxChanReserveMsats = const Value.absent(),
+    this.connectedPeers = const Value.absent(),
+    this.maxInboundLiquidityMsats = const Value.absent(),
+    this.onChainFeeRate = const Value.absent(),
+  });
+  NodeStatesCompanion.insert({
+    required String nodeID,
+    required int channelsBalanceMsats,
+    required int onchainBalanceMsats,
+    required int blockHeight,
+    required int connectionStatus,
+    required int maxAllowedToPayMsats,
+    required int maxAllowedToReceiveMsats,
+    required int maxPaymentAmountMsats,
+    required int maxChanReserveMsats,
+    required String connectedPeers,
+    required int maxInboundLiquidityMsats,
+    required int onChainFeeRate,
+  })  : nodeID = Value(nodeID),
+        channelsBalanceMsats = Value(channelsBalanceMsats),
+        onchainBalanceMsats = Value(onchainBalanceMsats),
+        blockHeight = Value(blockHeight),
+        connectionStatus = Value(connectionStatus),
+        maxAllowedToPayMsats = Value(maxAllowedToPayMsats),
+        maxAllowedToReceiveMsats = Value(maxAllowedToReceiveMsats),
+        maxPaymentAmountMsats = Value(maxPaymentAmountMsats),
+        maxChanReserveMsats = Value(maxChanReserveMsats),
+        connectedPeers = Value(connectedPeers),
+        maxInboundLiquidityMsats = Value(maxInboundLiquidityMsats),
+        onChainFeeRate = Value(onChainFeeRate);
+  static Insertable<NodeState> custom({
+    Expression<String>? nodeID,
+    Expression<int>? channelsBalanceMsats,
+    Expression<int>? onchainBalanceMsats,
+    Expression<int>? blockHeight,
+    Expression<int>? connectionStatus,
+    Expression<int>? maxAllowedToPayMsats,
+    Expression<int>? maxAllowedToReceiveMsats,
+    Expression<int>? maxPaymentAmountMsats,
+    Expression<int>? maxChanReserveMsats,
+    Expression<String>? connectedPeers,
+    Expression<int>? maxInboundLiquidityMsats,
+    Expression<int>? onChainFeeRate,
+  }) {
+    return RawValuesInsertable({
+      if (nodeID != null) 'node_i_d': nodeID,
+      if (channelsBalanceMsats != null)
+        'channels_balance_msats': channelsBalanceMsats,
+      if (onchainBalanceMsats != null)
+        'onchain_balance_msats': onchainBalanceMsats,
+      if (blockHeight != null) 'block_height': blockHeight,
+      if (connectionStatus != null) 'connection_status': connectionStatus,
+      if (maxAllowedToPayMsats != null)
+        'max_allowed_to_pay_msats': maxAllowedToPayMsats,
+      if (maxAllowedToReceiveMsats != null)
+        'max_allowed_to_receive_msats': maxAllowedToReceiveMsats,
+      if (maxPaymentAmountMsats != null)
+        'max_payment_amount_msats': maxPaymentAmountMsats,
+      if (maxChanReserveMsats != null)
+        'max_chan_reserve_msats': maxChanReserveMsats,
+      if (connectedPeers != null) 'connected_peers': connectedPeers,
+      if (maxInboundLiquidityMsats != null)
+        'max_inbound_liquidity_msats': maxInboundLiquidityMsats,
+      if (onChainFeeRate != null) 'on_chain_fee_rate': onChainFeeRate,
+    });
+  }
+
+  NodeStatesCompanion copyWith(
+      {Value<String>? nodeID,
+      Value<int>? channelsBalanceMsats,
+      Value<int>? onchainBalanceMsats,
+      Value<int>? blockHeight,
+      Value<int>? connectionStatus,
+      Value<int>? maxAllowedToPayMsats,
+      Value<int>? maxAllowedToReceiveMsats,
+      Value<int>? maxPaymentAmountMsats,
+      Value<int>? maxChanReserveMsats,
+      Value<String>? connectedPeers,
+      Value<int>? maxInboundLiquidityMsats,
+      Value<int>? onChainFeeRate}) {
+    return NodeStatesCompanion(
+      nodeID: nodeID ?? this.nodeID,
+      channelsBalanceMsats: channelsBalanceMsats ?? this.channelsBalanceMsats,
+      onchainBalanceMsats: onchainBalanceMsats ?? this.onchainBalanceMsats,
+      blockHeight: blockHeight ?? this.blockHeight,
+      connectionStatus: connectionStatus ?? this.connectionStatus,
+      maxAllowedToPayMsats: maxAllowedToPayMsats ?? this.maxAllowedToPayMsats,
+      maxAllowedToReceiveMsats:
+          maxAllowedToReceiveMsats ?? this.maxAllowedToReceiveMsats,
+      maxPaymentAmountMsats:
+          maxPaymentAmountMsats ?? this.maxPaymentAmountMsats,
+      maxChanReserveMsats: maxChanReserveMsats ?? this.maxChanReserveMsats,
+      connectedPeers: connectedPeers ?? this.connectedPeers,
+      maxInboundLiquidityMsats:
+          maxInboundLiquidityMsats ?? this.maxInboundLiquidityMsats,
+      onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (nodeID.present) {
+      map['node_i_d'] = Variable<String>(nodeID.value);
+    }
+    if (channelsBalanceMsats.present) {
+      map['channels_balance_msats'] = Variable<int>(channelsBalanceMsats.value);
+    }
+    if (onchainBalanceMsats.present) {
+      map['onchain_balance_msats'] = Variable<int>(onchainBalanceMsats.value);
+    }
+    if (blockHeight.present) {
+      map['block_height'] = Variable<int>(blockHeight.value);
+    }
+    if (connectionStatus.present) {
+      map['connection_status'] = Variable<int>(connectionStatus.value);
+    }
+    if (maxAllowedToPayMsats.present) {
+      map['max_allowed_to_pay_msats'] =
+          Variable<int>(maxAllowedToPayMsats.value);
+    }
+    if (maxAllowedToReceiveMsats.present) {
+      map['max_allowed_to_receive_msats'] =
+          Variable<int>(maxAllowedToReceiveMsats.value);
+    }
+    if (maxPaymentAmountMsats.present) {
+      map['max_payment_amount_msats'] =
+          Variable<int>(maxPaymentAmountMsats.value);
+    }
+    if (maxChanReserveMsats.present) {
+      map['max_chan_reserve_msats'] = Variable<int>(maxChanReserveMsats.value);
+    }
+    if (connectedPeers.present) {
+      map['connected_peers'] = Variable<String>(connectedPeers.value);
+    }
+    if (maxInboundLiquidityMsats.present) {
+      map['max_inbound_liquidity_msats'] =
+          Variable<int>(maxInboundLiquidityMsats.value);
+    }
+    if (onChainFeeRate.present) {
+      map['on_chain_fee_rate'] = Variable<int>(onChainFeeRate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NodeStatesCompanion(')
+          ..write('nodeID: $nodeID, ')
+          ..write('channelsBalanceMsats: $channelsBalanceMsats, ')
+          ..write('onchainBalanceMsats: $onchainBalanceMsats, ')
+          ..write('blockHeight: $blockHeight, ')
+          ..write('connectionStatus: $connectionStatus, ')
+          ..write('maxAllowedToPayMsats: $maxAllowedToPayMsats, ')
+          ..write('maxAllowedToReceiveMsats: $maxAllowedToReceiveMsats, ')
+          ..write('maxPaymentAmountMsats: $maxPaymentAmountMsats, ')
+          ..write('maxChanReserveMsats: $maxChanReserveMsats, ')
+          ..write('connectedPeers: $connectedPeers, ')
+          ..write('maxInboundLiquidityMsats: $maxInboundLiquidityMsats, ')
+          ..write('onChainFeeRate: $onChainFeeRate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NodeStatesTable extends NodeStates
+    with TableInfo<$NodeStatesTable, NodeState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NodeStatesTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _nodeIDMeta = const VerificationMeta('nodeID');
+  @override
+  late final GeneratedColumn<String?> nodeID = GeneratedColumn<String?>(
+      'node_i_d', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 66, maxTextLength: 66),
+      type: const StringType(),
+      requiredDuringInsert: true);
+  final VerificationMeta _channelsBalanceMsatsMeta =
+      const VerificationMeta('channelsBalanceMsats');
+  @override
+  late final GeneratedColumn<int?> channelsBalanceMsats = GeneratedColumn<int?>(
+      'channels_balance_msats', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _onchainBalanceMsatsMeta =
+      const VerificationMeta('onchainBalanceMsats');
+  @override
+  late final GeneratedColumn<int?> onchainBalanceMsats = GeneratedColumn<int?>(
+      'onchain_balance_msats', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _blockHeightMeta =
+      const VerificationMeta('blockHeight');
+  @override
+  late final GeneratedColumn<int?> blockHeight = GeneratedColumn<int?>(
+      'block_height', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _connectionStatusMeta =
+      const VerificationMeta('connectionStatus');
+  @override
+  late final GeneratedColumn<int?> connectionStatus = GeneratedColumn<int?>(
+      'connection_status', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _maxAllowedToPayMsatsMeta =
+      const VerificationMeta('maxAllowedToPayMsats');
+  @override
+  late final GeneratedColumn<int?> maxAllowedToPayMsats = GeneratedColumn<int?>(
+      'max_allowed_to_pay_msats', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _maxAllowedToReceiveMsatsMeta =
+      const VerificationMeta('maxAllowedToReceiveMsats');
+  @override
+  late final GeneratedColumn<int?> maxAllowedToReceiveMsats =
+      GeneratedColumn<int?>('max_allowed_to_receive_msats', aliasedName, false,
+          type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _maxPaymentAmountMsatsMeta =
+      const VerificationMeta('maxPaymentAmountMsats');
+  @override
+  late final GeneratedColumn<int?> maxPaymentAmountMsats =
+      GeneratedColumn<int?>('max_payment_amount_msats', aliasedName, false,
+          type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _maxChanReserveMsatsMeta =
+      const VerificationMeta('maxChanReserveMsats');
+  @override
+  late final GeneratedColumn<int?> maxChanReserveMsats = GeneratedColumn<int?>(
+      'max_chan_reserve_msats', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _connectedPeersMeta =
+      const VerificationMeta('connectedPeers');
+  @override
+  late final GeneratedColumn<String?> connectedPeers = GeneratedColumn<String?>(
+      'connected_peers', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _maxInboundLiquidityMsatsMeta =
+      const VerificationMeta('maxInboundLiquidityMsats');
+  @override
+  late final GeneratedColumn<int?> maxInboundLiquidityMsats =
+      GeneratedColumn<int?>('max_inbound_liquidity_msats', aliasedName, false,
+          type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _onChainFeeRateMeta =
+      const VerificationMeta('onChainFeeRate');
+  @override
+  late final GeneratedColumn<int?> onChainFeeRate = GeneratedColumn<int?>(
+      'on_chain_fee_rate', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        nodeID,
+        channelsBalanceMsats,
+        onchainBalanceMsats,
+        blockHeight,
+        connectionStatus,
+        maxAllowedToPayMsats,
+        maxAllowedToReceiveMsats,
+        maxPaymentAmountMsats,
+        maxChanReserveMsats,
+        connectedPeers,
+        maxInboundLiquidityMsats,
+        onChainFeeRate
+      ];
+  @override
+  String get aliasedName => _alias ?? 'node_states';
+  @override
+  String get actualTableName => 'node_states';
+  @override
+  VerificationContext validateIntegrity(Insertable<NodeState> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('node_i_d')) {
+      context.handle(_nodeIDMeta,
+          nodeID.isAcceptableOrUnknown(data['node_i_d']!, _nodeIDMeta));
+    } else if (isInserting) {
+      context.missing(_nodeIDMeta);
+    }
+    if (data.containsKey('channels_balance_msats')) {
+      context.handle(
+          _channelsBalanceMsatsMeta,
+          channelsBalanceMsats.isAcceptableOrUnknown(
+              data['channels_balance_msats']!, _channelsBalanceMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_channelsBalanceMsatsMeta);
+    }
+    if (data.containsKey('onchain_balance_msats')) {
+      context.handle(
+          _onchainBalanceMsatsMeta,
+          onchainBalanceMsats.isAcceptableOrUnknown(
+              data['onchain_balance_msats']!, _onchainBalanceMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_onchainBalanceMsatsMeta);
+    }
+    if (data.containsKey('block_height')) {
+      context.handle(
+          _blockHeightMeta,
+          blockHeight.isAcceptableOrUnknown(
+              data['block_height']!, _blockHeightMeta));
+    } else if (isInserting) {
+      context.missing(_blockHeightMeta);
+    }
+    if (data.containsKey('connection_status')) {
+      context.handle(
+          _connectionStatusMeta,
+          connectionStatus.isAcceptableOrUnknown(
+              data['connection_status']!, _connectionStatusMeta));
+    } else if (isInserting) {
+      context.missing(_connectionStatusMeta);
+    }
+    if (data.containsKey('max_allowed_to_pay_msats')) {
+      context.handle(
+          _maxAllowedToPayMsatsMeta,
+          maxAllowedToPayMsats.isAcceptableOrUnknown(
+              data['max_allowed_to_pay_msats']!, _maxAllowedToPayMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_maxAllowedToPayMsatsMeta);
+    }
+    if (data.containsKey('max_allowed_to_receive_msats')) {
+      context.handle(
+          _maxAllowedToReceiveMsatsMeta,
+          maxAllowedToReceiveMsats.isAcceptableOrUnknown(
+              data['max_allowed_to_receive_msats']!,
+              _maxAllowedToReceiveMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_maxAllowedToReceiveMsatsMeta);
+    }
+    if (data.containsKey('max_payment_amount_msats')) {
+      context.handle(
+          _maxPaymentAmountMsatsMeta,
+          maxPaymentAmountMsats.isAcceptableOrUnknown(
+              data['max_payment_amount_msats']!, _maxPaymentAmountMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_maxPaymentAmountMsatsMeta);
+    }
+    if (data.containsKey('max_chan_reserve_msats')) {
+      context.handle(
+          _maxChanReserveMsatsMeta,
+          maxChanReserveMsats.isAcceptableOrUnknown(
+              data['max_chan_reserve_msats']!, _maxChanReserveMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_maxChanReserveMsatsMeta);
+    }
+    if (data.containsKey('connected_peers')) {
+      context.handle(
+          _connectedPeersMeta,
+          connectedPeers.isAcceptableOrUnknown(
+              data['connected_peers']!, _connectedPeersMeta));
+    } else if (isInserting) {
+      context.missing(_connectedPeersMeta);
+    }
+    if (data.containsKey('max_inbound_liquidity_msats')) {
+      context.handle(
+          _maxInboundLiquidityMsatsMeta,
+          maxInboundLiquidityMsats.isAcceptableOrUnknown(
+              data['max_inbound_liquidity_msats']!,
+              _maxInboundLiquidityMsatsMeta));
+    } else if (isInserting) {
+      context.missing(_maxInboundLiquidityMsatsMeta);
+    }
+    if (data.containsKey('on_chain_fee_rate')) {
+      context.handle(
+          _onChainFeeRateMeta,
+          onChainFeeRate.isAcceptableOrUnknown(
+              data['on_chain_fee_rate']!, _onChainFeeRateMeta));
+    } else if (isInserting) {
+      context.missing(_onChainFeeRateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {nodeID};
+  @override
+  NodeState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return NodeState.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $NodeStatesTable createAlias(String alias) {
+    return $NodeStatesTable(attachedDatabase, alias);
+  }
+}
+
 class NodeAddresse extends DataClass implements Insertable<NodeAddresse> {
   final int id;
   final int type;
@@ -3755,6 +4378,7 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $NodesTable nodes = $NodesTable(this);
+  late final $NodeStatesTable nodeStates = $NodeStatesTable(this);
   late final $NodeAddressesTable nodeAddresses = $NodeAddressesTable(this);
   late final $InvoicesTable invoices = $InvoicesTable(this);
   late final $OutgoingLightningPaymentsTable outgoingLightningPayments =
@@ -3775,6 +4399,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         nodes,
+        nodeStates,
         nodeAddresses,
         invoices,
         outgoingLightningPayments,

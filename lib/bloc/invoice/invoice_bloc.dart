@@ -48,8 +48,8 @@ class InvoiceBloc extends Cubit<InvoiceState> {
 
   Future<Invoice?> handlePaymentRequest(String raw, lntoolkit.ParsedInput command) async {
     final lnInvoice = command.decoded as lntoolkit.LNInvoice;
-    var nodeInfo = await _appStorage.watchNodeInfo().first;
-    if (nodeInfo == null || nodeInfo.node.nodeID == lnInvoice.payeePubkey) {
+    var nodeState = await _appStorage.watchNodeState().first;
+    if (nodeState == null || nodeState.nodeID == lnInvoice.payeePubkey) {
       return null;
     }
     var invoice = Invoice(

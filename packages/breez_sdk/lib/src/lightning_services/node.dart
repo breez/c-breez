@@ -2,15 +2,14 @@ import 'package:breez_sdk/src/node_api/models.dart';
 import 'package:breez_sdk/src/node_api/node_api.dart';
 import 'package:fixnum/fixnum.dart';
 
-const _maxPaymentAmount = 4294967;
+const _maxPaymentAmountMsats = 4294967000;
 
 class LightningNode {
-
   final NodeAPI _nodeAPI;
 
   LightningNode(this._nodeAPI);
 
-  Future<NodeState> getAccountState() async {
+  Future<NodeState> getState() async {
     final peers = await _nodeAPI.listPeers();
     final nodeInfo = await _nodeAPI.getNodeInfo();
     final funds = await _nodeAPI.listFunds();
@@ -32,36 +31,47 @@ class LightningNode {
   }
 
   Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) {
-    return _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount:amount);
+    return _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
   }
 }
 
 enum NodeStatus { connecting, connected, disconnecting, disconnected }
 
 class NodeState {
-  final String id;  
+  final String id;
   final Int64 blockheight;
-  final Int64 balance;
-  final Int64 walletBalance;
+  final Int64 channelsBalanceMsats;
+  final Int64 onchainBalanceMsats;
   final NodeStatus status;
-  final Int64 maxAllowedToPay;
-  final Int64 maxAllowedToReceive;
-  final Int64 maxPaymentAmount;
-  final Int64 maxChanReserve;
+  final Int64 maxAllowedToPayMsats;
+  final Int64 maxAllowedToReceiveMsats;
+  final Int64 maxPaymentAmountMsats;
+  final Int64 maxChanReserveMsats;
   final List<String> connectedPeers;
-  final Int64 maxInboundLiquidity;
+  final Int64 maxInboundLiquidityMsats;
   final Int64 onChainFeeRate;
 
-  NodeState({required this.id, required this.blockheight, required this.balance, required this.walletBalance, required this.status, required this.maxAllowedToPay, required this.maxAllowedToReceive, required this.maxPaymentAmount, required this.maxChanReserve, required this.connectedPeers, required this.maxInboundLiquidity, required this.onChainFeeRate});  
+  NodeState(
+      {required this.id,
+      required this.blockheight,
+      required this.channelsBalanceMsats,
+      required this.onchainBalanceMsats,
+      required this.status,
+      required this.maxAllowedToPayMsats,
+      required this.maxAllowedToReceiveMsats,
+      required this.maxPaymentAmountMsats,
+      required this.maxChanReserveMsats,
+      required this.connectedPeers,
+      required this.maxInboundLiquidityMsats,
+      required this.onChainFeeRate});
 }
 
-NodeState _assembleAccountState(NodeInfo nodeInfo,
-    List<ListFundsChannel> offChainFunds, List<ListFundsOutput> onChainFunds, List<Peer> peers) {
-  var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat) ~/ 1000;
+NodeState _assembleAccountState(
+    NodeInfo nodeInfo, List<ListFundsChannel> offChainFunds, List<ListFundsOutput> onChainFunds, List<Peer> peers) {
+  var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat);
 
-  // calculate the on-chain balance  
-  var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsats) ~/ 1000;
-
+  // calculate the on-chain balance
+  var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsats);
 
   // assemble the peers list and channels list.
   var channels = List<Channel>.empty(growable: true);
@@ -90,8 +100,8 @@ NodeState _assembleAccountState(NodeInfo nodeInfo,
   Int64 maxReceivable = Int64(0);
   Int64 maxReceivableSingleChannel = Int64(0);
   for (var c in channels) {
-    maxPayable += c.spendable ~/ 1000;
-    Int64 channelReceivable = Int64(c.receivable ~/ 1000);
+    maxPayable += c.spendable;
+    Int64 channelReceivable = Int64(c.receivable);
     if (channelReceivable > maxReceivableSingleChannel) {
       maxReceivableSingleChannel = channelReceivable;
     }
@@ -99,18 +109,18 @@ NodeState _assembleAccountState(NodeInfo nodeInfo,
   }
 
   // return the new account state
-  return NodeState(    
+  return NodeState(
     blockheight: Int64(nodeInfo.blockheight),
     id: nodeInfo.nodeID,
-    balance: channelsBalance,
-    walletBalance: walletBalance,
+    channelsBalanceMsats: channelsBalance,
+    onchainBalanceMsats: walletBalance,
     status: accStatus,
-    maxAllowedToPay: maxPayable,
-    maxAllowedToReceive: maxReceivable,
-    maxPaymentAmount: Int64(_maxPaymentAmount),
-    maxChanReserve: channelsBalance - maxPayable,
+    maxAllowedToPayMsats: maxPayable,
+    maxAllowedToReceiveMsats: maxReceivable,
+    maxPaymentAmountMsats: Int64(_maxPaymentAmountMsats),
+    maxChanReserveMsats: channelsBalance - maxPayable,
     connectedPeers: peersList,
     onChainFeeRate: Int64(0),
-    maxInboundLiquidity: maxReceivableSingleChannel,    
+    maxInboundLiquidityMsats: maxReceivableSingleChannel,
   );
 }

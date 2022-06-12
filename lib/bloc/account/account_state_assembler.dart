@@ -7,68 +7,26 @@ import 'account_bloc.dart';
 import 'account_state.dart';
 
 // assembleAccountState assembles the account state using the local synchronized data.
-AccountState? assembleAccountState(List<PaymentInfo> payments, PaymentFilterModel paymentsFilter, db.NodeInfo? nodeInfo,
-    List<db.OffChainFund> offChainFunds, List<db.OnChainFund> onChainFunds, List<db.PeerWithChannels> peers) {
-  var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat) ~/ 1000;
-
-  // calculate the on-chain balance
-  var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsat) ~/ 1000;
-
-
-  // assemble the peers list and channels list.
-  var channels = List<db.Channel>.empty(growable: true);
-  List<String> peersList = List<String>.empty(growable: true);
-  for (var p in peers) {
-    peersList.add(p.peer.peerId);
-    channels.addAll(p.channels);
-  }
-
-  // calculate the account status based on the channels status.
-  bool hasActive = channels.any((c) => c.channelState == db.ChannelState.OPEN.index);
-  bool hasPendingOpen = channels.any((c) => c.channelState == db.ChannelState.PENDING_OPEN.index);
-  bool hasPendingClose = channels.any((c) => c.channelState == db.ChannelState.PENDING_CLOSED.index);
-
-  AccountStatus accStatus = AccountStatus.DISCONNECTED;
-  if (hasActive) {
-    accStatus = AccountStatus.CONNECTED;
-  } else if (hasPendingOpen) {
-    accStatus = AccountStatus.CONNECTING;
-  } else if (hasPendingClose) {
-    accStatus = AccountStatus.DISCONNECTION;
-  }
-
-  // calculate incoming and outgoing liquidity
-  Int64 maxPayable = Int64(0);
-  Int64 maxReceivable = Int64(0);
-  Int64 maxReceivableSingleChannel = Int64(0);
-  for (var c in channels) {
-    maxPayable += c.spendableMsat ~/ 1000;
-    Int64 channelReceivable = Int64(c.receivableMsat ~/ 1000);
-    if (channelReceivable > maxReceivableSingleChannel) {
-      maxReceivableSingleChannel = channelReceivable;
-    }
-    maxReceivable += channelReceivable;
-  }
-
-  if (nodeInfo == null) {
+AccountState? assembleAccountState(List<PaymentInfo> payments, PaymentFilterModel paymentsFilter, db.NodeState? nodeState) {
+  if (nodeState == null) {
     return null;
   }
 
   // return the new account state
   return AccountState(
     initial: false,
-    blockheight: Int64(nodeInfo.node.blockheight),
-    id: nodeInfo.node.nodeID,
-    balance: channelsBalance,
-    walletBalance: walletBalance,
-    status: accStatus,
-    maxAllowedToPay: maxPayable,
-    maxAllowedToReceive: maxReceivable,
+    blockheight: Int64(nodeState.blockHeight),
+    id: nodeState.nodeID,
+    balance: Int64(nodeState.channelsBalanceMsats ~/ 1000),
+    walletBalance: Int64(nodeState.onchainBalanceMsats ~/ 1000),
+    status: AccountStatus.values[nodeState.connectionStatus],
+    maxAllowedToPay: Int64(nodeState.maxAllowedToPayMsats ~/ 1000),
+    maxAllowedToReceive: Int64(nodeState.maxAllowedToReceiveMsats ~/ 1000),
     maxPaymentAmount: Int64(maxPaymentAmount),
-    maxChanReserve: channelsBalance - maxPayable,
-    connectedPeers: peersList,
+    maxChanReserve: Int64( (nodeState.channelsBalanceMsats - nodeState.maxAllowedToPayMsats) ~/ 1000),
+    connectedPeers: nodeState.connectedPeers.split(","),
     onChainFeeRate: Int64(0),
-    maxInboundLiquidity: maxReceivableSingleChannel,
+    maxInboundLiquidity: Int64(nodeState.maxInboundLiquidityMsats ~/ 1000),
     payments: PaymentsState(payments, _filterPayments(payments, paymentsFilter), paymentsFilter, null),
   );
 }

@@ -2,8 +2,9 @@ import 'package:c_breez/repositories/dao/db.dart';
 
 abstract class AppStorage {
   // lightning
-  Future setNodeInfo(NodeInfo nodeInfo);
-  Stream<NodeInfo?> watchNodeInfo();
+  
+  Future setNodeState(NodeState nodeSate);
+  Stream<NodeState?> watchNodeState();
 
   addOutgoingPayments(List<OutgoingLightningPayment> payments);
   Stream<List<OutgoingLightningPayment>> watchOutgoingPayments();
@@ -15,13 +16,7 @@ abstract class AppStorage {
 
   Future setPeers(List<PeerWithChannels> peers);
   Stream<List<PeerWithChannels>> watchPeers();
-
-  Future setOffchainFunds(List<OffChainFund> offchainFundsEntries);
-  Stream<List<OffChainFund>> watchOffchainFunds();
-
-  Future setOnchainFunds(List<OnChainFund> onchainFundsEntries);
-  Stream<List<OnChainFund>> watchOnchainFunds();
-
+  
   // settings
   Future<int> updateSettings(String key, String value);
   Future<Setting> readSettings(String key);

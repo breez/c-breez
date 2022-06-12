@@ -123,10 +123,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // syncStateWithNode synchronized the node state with the local state.
   // This is required to assemble the account state (e.g liquidity, connected, etc...)
-  Future syncStateWithNode() async {
-    await _syncNodeInfo();
+  Future syncStateWithNode() async {        
+    await _syncNodeState();
     await _syncPeers();
-    await _syncFunds();
     await _syncOutgoingPayments();
     await _syncSettledInvoices();
   }
@@ -228,15 +227,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   Stream<AccountState> _watchAccountChanges() {
-    return Rx.combineLatest6<List<PaymentInfo>, PaymentFilterModel, db.NodeInfo?, List<db.OffChainFund>, List<db.OnChainFund>,
-            List<db.PeerWithChannels>, AccountState>(
+    return Rx.combineLatest3<List<PaymentInfo>, PaymentFilterModel, db.NodeState?,
+            AccountState>(
         _paymentsStream(),
         _paymentsFilterStream(),
-        _appStorage.watchNodeInfo(),
-        _appStorage.watchOffchainFunds(),
-        _appStorage.watchOnchainFunds(),
-        _appStorage.watchPeers(), (payments, paymentsFilter, nodeInfo, offChainFunds, onChainFunds, peers) {
-      return assembleAccountState(payments, paymentsFilter, nodeInfo, offChainFunds, onChainFunds, peers) ?? state;
+        _appStorage.watchNodeState(),        
+        (payments, paymentsFilter, nodeInfo) {
+      return assembleAccountState(payments, paymentsFilter, nodeInfo) ?? state;
     });
   }
 
@@ -292,10 +289,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     });
   }
 
-  Future _syncNodeInfo() async {
-    _log.i("_syncNodeInfo started");
-    await _appStorage.setNodeInfo((await _lightningServices.getNodeAPI().getNodeInfo()).toDbNodeInfo());
-    _log.i("_syncNodeInfo finished");
+  Future _syncNodeState() async {
+    _log.i("_syncNodeState started");
+    await _appStorage.setNodeState((await _lightningServices.getNodeService().getState()).toDbNodeState());
+    _log.i("_syncNodeState finished");
   }
 
   Future _syncPeers() async {
@@ -303,14 +300,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     var peers = (await _lightningServices.getNodeAPI().listPeers()).map((p) => p.toDbPeer()).toList();
     await _appStorage.setPeers(peers);
     _log.i("_syncPeers finished");
-  }
-
-  Future _syncFunds() async {
-    _log.i("_syncFunds started");
-    var funds = await _lightningServices.getNodeAPI().listFunds();
-    await _appStorage.setOffchainFunds(funds.channelFunds.map((f) => f.toDbOffchainFund()).toList());
-    await _appStorage.setOnchainFunds(funds.onchainFunds.map((f) => f.toDbOnchainFund()).toList());
-    _log.i("_syncFunds finished");
   }
 
   Future _syncOutgoingPayments() async {

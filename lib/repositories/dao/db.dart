@@ -55,6 +55,24 @@ class Nodes extends Table {
   Set<Column> get primaryKey => {nodeID};
 }
 
+class NodeStates extends Table {  
+  TextColumn get nodeID => text().withLength(min: 66, max: 66)();
+  IntColumn get channelsBalanceMsats => integer()();
+  IntColumn get onchainBalanceMsats => integer()();  
+  IntColumn get blockHeight => integer()();
+  IntColumn get connectionStatus => integer()();
+  IntColumn get maxAllowedToPayMsats => integer()();
+  IntColumn get maxAllowedToReceiveMsats => integer()();
+  IntColumn get maxPaymentAmountMsats => integer()();
+  IntColumn get maxChanReserveMsats => integer()();
+  TextColumn get connectedPeers => text()();
+  IntColumn get maxInboundLiquidityMsats => integer()();
+  IntColumn get onChainFeeRate => integer()();
+
+  @override
+  Set<Column> get primaryKey => {nodeID};
+}
+
 class OnChainFunds extends Table {
   TextColumn get txid => text()();
   IntColumn get outnum => integer()();
@@ -151,6 +169,7 @@ LazyDatabase _openConnection() {
 
 @DriftDatabase(tables: [
   Nodes,
+  NodeStates,
   NodeAddresses,
   Invoices,
   OutgoingLightningPayments,
@@ -174,7 +193,7 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -201,8 +220,21 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
             )
           );          
         }
+        if (from < 6) {
+          await m.createTable(nodeStates);
+        }
       },
     );
+  }
+
+  @override
+  Future setNodeState(NodeState nodeState) async {
+    await nodeStates.insertOnConflictUpdate(nodeState);    
+  }
+
+  @override
+  Stream<NodeState?> watchNodeState() {
+    return select(nodeStates).watch().map((event) => event.isEmpty ? null : event.first);    
   }
 
   @override

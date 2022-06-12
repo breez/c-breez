@@ -17,9 +17,9 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
   LSPBloc(this._appStorage, this._lnService, this._breezServer)
       : super(LSPState.initial()) {
     _appStorage
-        .watchNodeInfo()
+        .watchNodeState()
         .where((node) => node != null)
-        .map((node) => node!.node.nodeID)
+        .map((node) => node!.nodeID)
         .distinct()
         .listen((nodeID) {
       this.nodeID = nodeID;
@@ -66,9 +66,9 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
   }
 
   Future<String> waitCurrentNodeID() async {
-    var nodeInfo = await _appStorage.watchNodeInfo().firstWhere(
-        (nodeInfo) => nodeInfo != null && nodeInfo.node.nodeID.isNotEmpty);
-    return nodeInfo!.node.nodeID;
+    var nodeState = await _appStorage.watchNodeState().firstWhere(
+        (nodeState) => nodeState != null && nodeState.nodeID.isNotEmpty);
+    return nodeState!.nodeID;
   }
 
   void watchLSPState() {

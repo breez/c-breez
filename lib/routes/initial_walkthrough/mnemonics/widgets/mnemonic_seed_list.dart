@@ -25,8 +25,8 @@ class MnemonicSeedList extends StatelessWidget {
           children: List<Widget>.generate(
             6,
             (index) => MnemonicItem(
-              mnemonic: mnemonicsList[1 + 2 * index + 12],
-              index: 1 + 2 * index + 12,
+              mnemonic: mnemonicsList[2 * index],
+              index: 2 * index,
               autoSizeGroup: autoSizeGroup,
             ),
           ),
@@ -37,8 +37,8 @@ class MnemonicSeedList extends StatelessWidget {
           children: List<Widget>.generate(
             6,
             (index) => MnemonicItem(
-              mnemonic: mnemonicsList[2 * index + (12)],
-              index: 2 * index + (12),
+              mnemonic: mnemonicsList[1 + 2 * index],
+              index: 1 + 2 * index,
               autoSizeGroup: autoSizeGroup,
             ),
           ),

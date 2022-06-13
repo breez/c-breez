@@ -3,7 +3,6 @@ import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/notifications.dart';
-import 'package:c_breez/utils/locale.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
@@ -27,7 +26,6 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     return _breezServer.uploadLogo(bytes);
   }
 
-
   void updateProfile({
     String? name,
     String? color,
@@ -43,6 +41,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
         color: color ?? profile.color,
         animal: animal ?? profile.animal,
         themeId: themeId ?? profile.themeId,
+        image: image ?? profile.image,
         registrationRequested:
             registrationRequested ?? profile.registrationRequested,
         hideBalance: hideBalance ?? profile.hideBalance);

@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:c_breez/bloc/user_profile/profile_animal.dart';
 import 'package:c_breez/bloc/user_profile/profile_color.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:c_breez/utils/locale.dart';
 
 class DefaultProfile {
   final String color;
@@ -29,7 +29,8 @@ class DefaultProfile {
   }
 }
 
-DefaultProfile generateDefaultProfile(AppLocalizations texts) {
+DefaultProfile generateDefaultProfile() {
+  final texts = getSystemAppLocalizations();
   final random = Random();
 
   const colors = ProfileColor.values;

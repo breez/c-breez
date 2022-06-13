@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:c_breez/repositories/app_storage.dart';
-import 'package:c_breez/repositories/dao/funds_dao.dart';
-import 'package:c_breez/repositories/dao/node_info_dao.dart';
 import 'package:c_breez/repositories/dao/payments_dao.dart';
 import 'package:c_breez/repositories/dao/peers_dao.dart';
 import 'package:c_breez/repositories/dao/settings_dao.dart';
@@ -179,12 +177,10 @@ LazyDatabase _openConnection() {
   Channels,
   Peers,
   Settings
-], daos: [
-  NodesDao,
+], daos: [  
   PaymentsDao,
   SettingsDao,
-  PeersDao,
-  FundsDao
+  PeersDao,  
 ])
 class AppDatabase extends _$AppDatabase implements AppStorage {
   // we tell the database where to store the data with this constructor
@@ -238,16 +234,6 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   }
 
   @override
-  Future setNodeInfo(NodeInfo nodeInfo) {
-    return nodesDao.setNodeInfo(nodeInfo);
-  }
-
-  @override
-  Stream<NodeInfo?> watchNodeInfo() {
-    return nodesDao.watchNodeInfo();
-  }
-
-  @override
   addOutgoingPayments(List<OutgoingLightningPayment> payments) async {
     return paymentsDao.addOutgoingPayments(payments);
   }
@@ -285,26 +271,6 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   @override
   Stream<List<PeerWithChannels>> watchPeers() {
     return peersDao.watchPeers();
-  }
-
-  @override
-  Future setOffchainFunds(List<OffChainFund> offchainFundsEntries) async {
-    return fundsDao.setOffchainFunds(offchainFundsEntries);
-  }
-
-  @override
-  Stream<List<OffChainFund>> watchOffchainFunds() {
-    return fundsDao.watchOffchainFunds();
-  }
-
-  @override
-  Future setOnchainFunds(List<OnChainFund> onchainFundsEntries) async {
-    return fundsDao.setOnchainFunds(onchainFundsEntries);
-  }
-
-  @override
-  Stream<List<OnChainFund>> watchOnchainFunds() {
-    return fundsDao.watchOnchainFunds();
   }
 
   @override

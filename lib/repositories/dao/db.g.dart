@@ -4389,11 +4389,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ChannelsTable channels = $ChannelsTable(this);
   late final $HtlcsTable htlcs = $HtlcsTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
-  late final NodesDao nodesDao = NodesDao(this as AppDatabase);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDatabase);
   late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
   late final PeersDao peersDao = PeersDao(this as AppDatabase);
-  late final FundsDao fundsDao = FundsDao(this as AppDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override

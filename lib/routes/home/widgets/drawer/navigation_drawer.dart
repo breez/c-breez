@@ -163,8 +163,7 @@ class NavigationDrawer extends StatelessWidget {
           useRootNavigator: false,
           context: context,
           barrierDismissible: false,
-          builder: (context) =>
-              breezAvatarDialog(context.read<UserProfileBloc>()),
+          builder: (context) => BreezAvatarDialog(),
         );
       },
       child: Column(children: drawerHeaderContent),

@@ -33,7 +33,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
   void initState() {
     super.initState();
     userBloc = context.read<UserProfileBloc>();
-    nameInputController.text = userBloc.state.profileSettings.name!;
+    nameInputController.text = userBloc.state.profileSettings.name ?? "";
   }
 
   @override

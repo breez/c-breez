@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:c_breez/bloc/user_profile/profile_animal.dart';
 import 'package:c_breez/bloc/user_profile/profile_color.dart';
 import 'package:c_breez/utils/locale.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DefaultProfile {
   final String color;

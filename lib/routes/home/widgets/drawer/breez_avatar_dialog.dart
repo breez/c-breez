@@ -22,12 +22,12 @@ class BreezAvatarDialog extends StatefulWidget {
 }
 
 class BreezAvatarDialogState extends State<BreezAvatarDialog> {
-  AutoSizeGroup autoSizeGroup = AutoSizeGroup();
+  late UserProfileBloc userBloc;
+  final nameInputController = TextEditingController();
+  final AutoSizeGroup autoSizeGroup = AutoSizeGroup();
   CroppedFile? pickedImage;
   String? randomAvatarPath;
   bool isUploading = false;
-  final nameInputController = TextEditingController();
-  late UserProfileBloc userBloc;
 
   @override
   void initState() {
@@ -39,34 +39,19 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () {
-        return Future.value(!isUploading);
-      },
+      onWillPop: () => Future.value(!isUploading),
       child: StatefulBuilder(
         builder: (context, setState) {
-          final themeData = Theme.of(context);
-          final queryData = MediaQuery.of(context);
           final texts = context.texts();
+          final themeData = Theme.of(context);
           final navigator = Navigator.of(context);
-          final minFontSize = MinFontSize(context);
+          final queryData = MediaQuery.of(context);
 
           return AlertDialog(
             titlePadding: const EdgeInsets.all(0.0),
             title: Stack(
               children: [
-                Container(
-                  height: 70.0,
-                  decoration: ShapeDecoration(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(12.0),
-                      ),
-                    ),
-                    color: theme.themeId == "BLUE"
-                        ? themeData.primaryColorDark
-                        : themeData.canvasColor,
-                  ),
-                ),
+                const TitleBackground(),
                 SizedBox(
                   width: queryData.size.width,
                   height: 100.0,
@@ -74,123 +59,33 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.only(
-                              bottom: 20.0,
-                              top: 26.0,
-                            ),
-                          ),
-                          child: AutoSizeText(
-                            texts.breez_avatar_dialog_random,
-                            style: theme.whiteButtonStyle,
-                            maxLines: 1,
-                            minFontSize: minFontSize.minFontSize,
-                            stepGranularity: 0.1,
-                            group: autoSizeGroup,
-                          ),
-                          onPressed: () {
-                            final DefaultProfile randomUser =
-                                generateDefaultProfile();
-                            setState(() {
-                              nameInputController.text =
-                                  "${randomUser.color} ${randomUser.animal}";
-                              randomAvatarPath =
-                                  'breez://profile_image?animal=${randomUser.animal}&color=${randomUser.color}';
-                              pickedImage = null;
-                            });
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          },
-                        ),
+                      RandomButton(onPressed: generateRandomProfile),
+                      AvatarPreview(
+                        isUploading: isUploading,
+                        pickedImage: pickedImage,
+                        randomAvatarPath: randomAvatarPath,
                       ),
-                      BlocBuilder<UserProfileBloc, UserProfileState>(
-                        builder: (context, userModel) {
-                          return Stack(
-                            children: [
-                              isUploading
-                                  ? Padding(
-                                      padding: const EdgeInsets.only(top: 26.0),
-                                      child: AspectRatio(
-                                        aspectRatio: 1,
-                                        child: CircularProgressIndicator(
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                            themeData.primaryTextTheme.button!
-                                                .color!,
-                                          ),
-                                          backgroundColor:
-                                              themeData.backgroundColor,
-                                        ),
-                                      ),
-                                    )
-                                  : const SizedBox(),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 26.0),
-                                child: AspectRatio(
-                                  aspectRatio: 1,
-                                  child: BreezAvatar(
-                                    pickedImage?.path ??
-                                        randomAvatarPath ??
-                                        userModel.profileSettings.avatarURL,
-                                    radius: 36.0,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      Expanded(
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.only(
-                              bottom: 20.0,
-                              top: 26.0,
-                            ),
-                          ),
-                          child: AutoSizeText(
-                            texts.breez_avatar_dialog_gallery,
-                            style: theme.whiteButtonStyle,
-                            maxLines: 1,
-                            minFontSize: minFontSize.minFontSize,
-                            stepGranularity: 0.1,
-                            group: autoSizeGroup,
-                          ),
-                          onPressed: () async {
-                            await _pickImage().then((file) {
-                              setState(() {
-                                pickedImage = file;
-                                randomAvatarPath = null;
-                              });
-                            });
-                          },
-                        ),
-                      ),
+                      GalleryButton(onPressed: pickImageFromGallery),
                     ],
                   ),
                 ),
               ],
             ),
             content: SingleChildScrollView(
-              child: ListBody(
-                children: [
-                  Theme(
-                    data: ThemeData(
-                      primaryColor: themeData.primaryTextTheme.bodyText2!.color,
-                      hintColor: themeData.primaryTextTheme.bodyText2!.color,
-                    ),
-                    child: TextField(
-                      enabled: !isUploading,
-                      style: themeData.primaryTextTheme.bodyText2,
-                      controller: nameInputController,
-                      decoration: InputDecoration(
-                        hintText: texts.breez_avatar_dialog_your_name,
-                      ),
-                      onSubmitted: (text) {},
-                    ),
-                  )
-                ],
+              child: Theme(
+                data: ThemeData(
+                  primaryColor: themeData.primaryTextTheme.bodyText2!.color,
+                  hintColor: themeData.primaryTextTheme.bodyText2!.color,
+                ),
+                child: TextField(
+                  enabled: !isUploading,
+                  style: themeData.primaryTextTheme.bodyText2,
+                  controller: nameInputController,
+                  decoration: InputDecoration(
+                    hintText: texts.breez_avatar_dialog_your_name,
+                  ),
+                  onSubmitted: (text) {},
+                ),
               ),
             ),
             actions: [
@@ -205,29 +100,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                 onPressed: isUploading
                     ? null
                     : () async {
-                        try {
-                          setState(() {
-                            isUploading = true;
-                          });
-                          var userName = nameInputController.text.isNotEmpty
-                              ? nameInputController.text
-                              : userBloc.state.profileSettings.name;
-                          userBloc.updateProfile(name: userName);
-                          await uploadAvatar();
-                          setState(() {
-                            isUploading = false;
-                          });
-                          navigator.pop();
-                        } catch (e) {
-                          setState(() {
-                            isUploading = false;
-                            pickedImage = null;
-                          });
-                          showFlushbar(
-                            context,
-                            message: texts.breez_avatar_dialog_error_upload,
-                          );
-                        }
+                  await saveAvatarChanges();
                       },
                 child: Text(
                   texts.breez_avatar_dialog_action_save,
@@ -247,7 +120,47 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
     );
   }
 
-  Future<CroppedFile?> _pickImage() async {
+  Future<void> saveAvatarChanges() async {
+    final navigator = Navigator.of(context);
+    final texts = context.texts();
+    try {
+      setState(() {
+        isUploading = true;
+      });
+      var userName = nameInputController.text.isNotEmpty
+          ? nameInputController.text
+          : userBloc.state.profileSettings.name;
+      userBloc.updateProfile(name: userName);
+      await uploadAvatar();
+      setState(() {
+        isUploading = false;
+      });
+      navigator.pop();
+    } catch (e) {
+      setState(() {
+        isUploading = false;
+        pickedImage = null;
+      });
+      showFlushbar(
+        context,
+        message: texts.breez_avatar_dialog_error_upload,
+      );
+    }
+  }
+
+  void generateRandomProfile() {
+    final DefaultProfile randomUser = generateDefaultProfile();
+    setState(() {
+      nameInputController.text = "${randomUser.color} ${randomUser.animal}";
+      randomAvatarPath =
+          'breez://profile_image?animal=${randomUser.animal}&color=${randomUser.color}';
+      pickedImage = null;
+    });
+    // Close keyboard
+    FocusScope.of(context).unfocus();
+  }
+
+  pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
         await picker.pickImage(source: ImageSource.gallery);
@@ -257,7 +170,10 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
       cropStyle: CropStyle.circle,
       aspectRatioPresets: [CropAspectRatioPreset.square],
     );
-    return croppedFile;
+    setState(() {
+      pickedImage = croppedFile;
+      randomAvatarPath = null;
+    });
   }
 
   Future<void> uploadAvatar() async {
@@ -282,5 +198,158 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
         dstX: ((scaledWidth - resized.width) / 2).round(),
         dstY: ((scaledWidth - resized.height) / 2).round());
     return dart_image.encodePng(centered);
+  }
+}
+
+class TitleBackground extends StatelessWidget {
+  const TitleBackground({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
+    return Container(
+      height: 70.0,
+      decoration: ShapeDecoration(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(12.0),
+          ),
+        ),
+        color: theme.themeId == "BLUE"
+            ? themeData.primaryColorDark
+            : themeData.canvasColor,
+      ),
+    );
+  }
+}
+
+class RandomButton extends StatelessWidget {
+  final Function() onPressed;
+  final AutoSizeGroup? autoSizeGroup;
+
+  const RandomButton({Key? key, required this.onPressed, this.autoSizeGroup})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final texts = context.texts();
+    final minFontSize = MinFontSize(context);
+
+    return Expanded(
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.only(
+            bottom: 20.0,
+            top: 26.0,
+          ),
+        ),
+        onPressed: onPressed,
+        child: AutoSizeText(
+          texts.breez_avatar_dialog_random,
+          style: theme.whiteButtonStyle,
+          maxLines: 1,
+          minFontSize: minFontSize.minFontSize,
+          stepGranularity: 0.1,
+          group: autoSizeGroup,
+        ),
+      ),
+    );
+  }
+}
+
+class AvatarPreview extends StatelessWidget {
+  final CroppedFile? pickedImage;
+  final String? randomAvatarPath;
+  final bool isUploading;
+
+  const AvatarPreview({
+    Key? key,
+    required this.pickedImage,
+    required this.randomAvatarPath,
+    required this.isUploading,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<UserProfileBloc, UserProfileState>(
+      builder: (context, userModel) {
+        return Stack(
+          children: [
+            isUploading ? const AvatarSpinner() : const SizedBox(),
+            Padding(
+              padding: const EdgeInsets.only(top: 26.0),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: BreezAvatar(
+                  pickedImage?.path ??
+                      randomAvatarPath ??
+                      userModel.profileSettings.avatarURL,
+                  radius: 36.0,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class AvatarSpinner extends StatelessWidget {
+  const AvatarSpinner({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 26.0),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(
+            themeData.primaryTextTheme.button!.color!,
+          ),
+          backgroundColor: themeData.backgroundColor,
+        ),
+      ),
+    );
+  }
+}
+
+class GalleryButton extends StatelessWidget {
+  final Function() onPressed;
+  final AutoSizeGroup? autoSizeGroup;
+
+  const GalleryButton({Key? key, required this.onPressed, this.autoSizeGroup})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final texts = context.texts();
+    final minFontSize = MinFontSize(context);
+
+    return Expanded(
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.only(
+            bottom: 20.0,
+            top: 26.0,
+          ),
+        ),
+        onPressed: onPressed,
+        child: AutoSizeText(
+          texts.breez_avatar_dialog_gallery,
+          style: theme.whiteButtonStyle,
+          maxLines: 1,
+          minFontSize: minFontSize.minFontSize,
+          stepGranularity: 0.1,
+          group: autoSizeGroup,
+        ),
+      ),
+    );
   }
 }

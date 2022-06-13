@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server/server.dart';
@@ -28,10 +27,6 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     return _breezServer.uploadLogo(bytes);
   }
 
-  DefaultProfile generateRandomProfile() {
-    final texts = getSystemAppLocalizations();
-    return generateDefaultProfile(texts);
-  }
 
   void updateProfile({
     String? name,

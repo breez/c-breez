@@ -19,20 +19,6 @@ extension NodeStateAdapter on lntoolkit.NodeState {
   }
 }
 
-extension NodeInfoAdapter on lntoolkit.NodeInfo {
-  db.NodeInfo toDbNodeInfo() {
-    return db.NodeInfo(
-        db.Node(
-            nodeID: nodeID,
-            nodeAlias: nodeAlias,
-            numPeers: numPeers,
-            blockheight: blockheight,
-            version: version,
-            network: network),
-        addresses.map((a) => db.NodeAddresse(id: 0, type: a.type.index, addr: a.addr, port: a.port, nodeId: nodeID)).toList());
-  }
-}
-
 extension PeerAdapter on lntoolkit.Peer {
   db.PeerWithChannels toDbPeer() {
     return db.PeerWithChannels(
@@ -56,32 +42,6 @@ extension PeerAdapter on lntoolkit.Peer {
                   peerId: id,
                 ))
             .toList());
-  }
-}
-
-extension ChannelFundsAdapter on lntoolkit.ListFundsChannel {
-  db.OffChainFund toDbOffchainFund() {
-    return db.OffChainFund(
-      peerId: peerId,
-      connected: connected,
-      shortChannelId: shortChannelId.toInt(),
-      ourAmountMsat: ourAmountMsat.toInt(),
-      amountMsat: amountMsat.toInt(),
-      fundingTxid: fundingTxid,
-      fundingOutput: fundingOutput,
-    );
-  }
-}
-
-extension OnchainFundsAdapter on lntoolkit.ListFundsOutput {
-  db.OnChainFund toDbOnchainFund() {
-    return db.OnChainFund(
-      txid: outpoint.txid,
-      outnum: outpoint.outnum,
-      amountMsat: amountMsats.toInt(),
-      address: address,
-      outputStatus: status.index,
-    );
   }
 }
 

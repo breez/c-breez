@@ -34,25 +34,6 @@ class NodeAddresses extends Table {
   TextColumn get nodeId => text().withLength(min: 66, max: 66)();
 }
 
-class NodeInfo {
-  final Node node;
-  final List<NodeAddresse> addresses;
-
-  NodeInfo(this.node, this.addresses);
-}
-
-class Nodes extends Table {
-  TextColumn get nodeID => text().withLength(min: 66, max: 66)();
-  TextColumn get nodeAlias => text()();
-  IntColumn get numPeers => integer()();
-  TextColumn get version => text()();
-  IntColumn get blockheight => integer()();
-  TextColumn get network => text()();
-
-  @override
-  Set<Column> get primaryKey => {nodeID};
-}
-
 class NodeStates extends Table {  
   TextColumn get nodeID => text().withLength(min: 66, max: 66)();
   IntColumn get channelsBalanceMsats => integer()();
@@ -69,25 +50,6 @@ class NodeStates extends Table {
 
   @override
   Set<Column> get primaryKey => {nodeID};
-}
-
-class OnChainFunds extends Table {
-  TextColumn get txid => text()();
-  IntColumn get outnum => integer()();
-  IntColumn get amountMsat => integer()();
-  TextColumn get address => text()();
-  IntColumn get outputStatus => integer()();
-}
-
-class OffChainFunds extends Table {
-  TextColumn get peerId =>
-      text().withLength(min: 66, max: 66).references(Nodes, #nodeID)();
-  BoolColumn get connected => boolean()();
-  IntColumn get shortChannelId => integer()();
-  IntColumn get ourAmountMsat => integer()();
-  IntColumn get amountMsat => integer()();
-  TextColumn get fundingTxid => text()();
-  IntColumn get fundingOutput => integer()();
 }
 
 class Htlcs extends Table {
@@ -165,14 +127,11 @@ LazyDatabase _openConnection() {
   });
 }
 
-@DriftDatabase(tables: [
-  Nodes,
+@DriftDatabase(tables: [  
   NodeStates,
   NodeAddresses,
   Invoices,
-  OutgoingLightningPayments,
-  OnChainFunds,
-  OffChainFunds,
+  OutgoingLightningPayments,  
   Htlcs,
   Channels,
   Peers,

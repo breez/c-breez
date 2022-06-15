@@ -6,7 +6,6 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/models_extensions.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/payment_filter.dart';
 import 'package:c_breez/models/payment_info.dart';
@@ -40,20 +39,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   final _log = FimberLog("AccountBloc");
   final AppStorage _appStorage;
-  final lntoolkit.LightningServices _lightningServices;
+  final lntoolkit.LightningNode _lightningNode;
   final KeyChain _keyChain;
-  final LSPBloc _lspBloc;
   bool started = false;
   lntoolkit.Signer? _signer;
 
-  AccountBloc(this._lightningServices, this._appStorage, this._keyChain, this._lspBloc) : super(AccountState.initial()) {
+  AccountBloc(this._lightningNode, this._appStorage, this._keyChain) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
     });
 
     // sync node info on incoming payments    
-    final nodeAPI = _lightningServices.getNodeAPI();
+    final nodeAPI = _lightningNode.getNodeAPI();
     nodeAPI.incomingPaymentsStream().listen((event) {
       syncStateWithNode();
     });
@@ -73,7 +71,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           await _createSignerFromSeed(Uint8List.fromList(HEX.decode(seedHex!)));         
 
           // init service with credentials
-          _lightningServices.connectWithCredentials(creds, _signer!);
+          _lightningNode.connectWithCredentials(creds, _signer!);
           _startNode();
         }
       });
@@ -82,7 +80,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // Export the user keys to a file
   Future exportKeyFiles(Directory destDir) async {
-    var keys = await _lightningServices.getNodeAPI().exportKeys();
+    var keys = await _lightningNode.getNodeAPI().exportKeys();
     for (var k in keys) {
       File(p.join(destDir.path, k.name)).writeAsBytesSync(k.content, flush: true);
     }
@@ -94,7 +92,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       throw Exception("Node already started");
     }
     await _createSignerFromSeed(seed);
-    var creds = await _lightningServices.newNodeFromSeed(seed, _signer!);
+    var creds = await _lightningNode.newNodeFromSeed(seed, _signer!);
     _log.i("node registered successfully");
     await _keyChain.write(accountSeedKey,HEX.encode(seed));
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
@@ -110,7 +108,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       throw Exception("Node already started");
     }
     await _createSignerFromSeed(seed);
-    var creds = await _lightningServices.connectWithSeed(seed, _signer!);
+    var creds = await _lightningNode.connectWithSeed(seed, _signer!);
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
     await _startNode();
     return creds;
@@ -131,7 +129,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future sendPayment(String bolt11, Int64 amountSat) async {
-    await _lightningServices.getNodeService().sendPaymentForRequest(bolt11, amount: amountSat);
+    await _lightningNode.sendPaymentForRequest(bolt11, amount: amountSat);
     await syncStateWithNode();
   }
 
@@ -140,18 +138,18 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
-    await _lightningServices.getNodeAPI().sendSpontaneousPayment(nodeID, amountSat, description);
+    await _lightningNode.getNodeAPI().sendSpontaneousPayment(nodeID, amountSat, description);
     await syncStateWithNode();
   }
 
   Future<Withdrawal> sweepAllCoins(String address) async {
-    var w = await _lightningServices.getNodeAPI().sweepAllCoinsTransactions(address);
+    var w = await _lightningNode.getNodeAPI().sweepAllCoinsTransactions(address);
     await syncStateWithNode();
     return Withdrawal(w.txid, w.tx);
   }
 
   Future publishTransaction(List<int> tx) async {
-    await _lightningServices.getNodeAPI().publishTransaction(tx);
+    await _lightningNode.getNodeAPI().publishTransaction(tx);
   }
 
   Future<bool> validateAddress(String address) {
@@ -184,7 +182,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future<Invoice> addInvoice(
       {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
-    var invoice = await _lightningServices.getNodeService().requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));    
+    var invoice = await _lightningNode.requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));    
     syncStateWithNode();
 
     return Invoice(
@@ -261,27 +259,27 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _syncNodeState() async {
     _log.i("_syncNodeState started");
-    await _appStorage.setNodeState((await _lightningServices.getNodeService().getState()).toDbNodeState());
+    await _appStorage.setNodeState((await _lightningNode.getState()).toDbNodeState());
     _log.i("_syncNodeState finished");
   }
 
   Future _syncPeers() async {
     _log.i("_syncPeers started");
-    var peers = (await _lightningServices.getNodeAPI().listPeers()).map((p) => p.toDbPeer()).toList();
+    var peers = (await _lightningNode.getNodeAPI().listPeers()).map((p) => p.toDbPeer()).toList();
     await _appStorage.setPeers(peers);
     _log.i("_syncPeers finished");
   }
 
   Future _syncOutgoingPayments() async {
     _log.i("_syncOutgoingPayments");
-    var outgoingPayments = await _lightningServices.getNodeAPI().getPayments();
+    var outgoingPayments = await _lightningNode.getNodeAPI().getPayments();
     await _appStorage.addOutgoingPayments(outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
     _log.i("_syncOutgoingPayments finished");
   }
 
   Future _syncSettledInvoices() async {
     _log.i("_syncSettledInvoices started");
-    var invoices = await _lightningServices.getNodeAPI().getInvoices();
+    var invoices = await _lightningNode.getNodeAPI().getInvoices();
     await _appStorage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
     _log.i("_syncSettledInvoices finished");
   }
@@ -303,15 +301,3 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _signer = lntoolkit.Signer(seed, signerDir.path);
   }
 }
-
-int _parseShortChannelID(String idStr) {
-  var parts = idStr.split("x");
-  if (parts.length != 3) {
-    return 0;
-  }
-  var blockNum = int.parse(parts[0]);
-  var txNum = int.parse(parts[1]);
-  var txOut = int.parse(parts[2]);
-  return ((blockNum & 0xFFFFFF) << 40 | (txNum & 0xFFFFFF) << 16 | (txOut & 0xFFFF));
-}
-

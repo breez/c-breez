@@ -1,9 +1,9 @@
 
 
 import 'dart:typed_data';
+import 'package:breez_sdk/src/signer.dart';
 import 'package:fimber/fimber.dart';
 import 'package:hex/hex.dart';
-import '../../signer.dart';
 import './generated/greenlight.pbgrpc.dart' as greenlight;
 
 import '../models.dart';

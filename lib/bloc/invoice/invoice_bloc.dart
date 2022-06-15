@@ -16,11 +16,11 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   final LightningLinksService _lightningLinks;
   final Device _device;
   final AppStorage _appStorage;
-  final lntoolkit.LightningServices _lightningService;
+  final lntoolkit.LightningNode _lightningNode;
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InvoiceBloc(this._lightningLinks, this._device, this._appStorage, this._lightningService) : super(InvoiceState(null)) {
+  InvoiceBloc(this._lightningLinks, this._device, this._appStorage, this._lightningNode) : super(InvoiceState(null)) {
     _watchIncomingInvoices().listen((invoice) => emit(InvoiceState(invoice)));
   }
 
@@ -29,7 +29,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
   }
 
   Future trackPayment(String paymentHash) {
-    return _lightningService.getNodeAPI().incomingPaymentsStream().where((p) => p.paymentHash == paymentHash).first;
+    return _lightningNode.getNodeAPI().incomingPaymentsStream().where((p) => p.paymentHash == paymentHash).first;
   }
 
   Stream<Invoice?> _watchIncomingInvoices() {

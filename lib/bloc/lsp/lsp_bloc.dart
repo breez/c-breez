@@ -8,12 +8,12 @@ import 'lsp_state.dart';
 
 class LSPBloc extends Cubit<LSPState> with HydratedMixin {
   final AppStorage _appStorage;
-  final lntoolkit.LightningServices _lnService;
+  final lntoolkit.LightningNode _lightningNode;
   final lntoolkit.LSPService _lspService;
   String? nodeID;
   bool _lspFetched = false;
 
-  LSPBloc(this._appStorage, this._lnService, this._lspService) : super(LSPState.initial()) {
+  LSPBloc(this._appStorage, this._lightningNode, this._lspService) : super(LSPState.initial()) {
     if (state.connectionStatus == LSPConnectionStatus.inProgress) {
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.notActive));
     }
@@ -25,7 +25,7 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
       fetchLSPList();
       if (state.currentLSP != null) {
         final shouldConnect = !nodeState.connectedPeers.split(",").contains(state.currentLSP!.pubKey);
-        await _lnService.getNodeService().setLSP(state.currentLSP!, connect: shouldConnect);
+        await _lightningNode.setLSP(state.currentLSP!, connect: shouldConnect);
         return;
       }      
     });    
@@ -52,7 +52,7 @@ class LSPBloc extends Cubit<LSPState> with HydratedMixin {
     try {
       var lsp = state.availableLSPs.firstWhere((l) => l.lspID == lspID);
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.inProgress, selectedLSP: lspID));
-      await _lnService.getNodeService().setLSP(lsp, connect: true);
+      await _lightningNode.setLSP(lsp, connect: true);
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.active));
     } catch (e) {
       emit(LSPState.initial().copyWith(

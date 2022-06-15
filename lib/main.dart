@@ -51,7 +51,6 @@ void main() async {
                     lightningServices,
                     injector.appStorage,
                     injector.keychain,
-                    context.read<LSPBloc>(),
                   ),
                 ),
                 BlocProvider<InvoiceBloc>(

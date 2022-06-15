@@ -1,19 +1,44 @@
+import 'dart:typed_data';
+
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
 import 'package:breez_sdk/src/utils/retry.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 
+import 'node_api/node_api.dart';
+
 const _maxPaymentAmountMsats = 4294967000;
 
 class LightningNode {
-  final NodeAPI _nodeAPI;
-  final Signer _signer;
+  final NodeAPI _nodeAPI = Greenlight();
   final LSPService _lspService;
   final _lnToolkit = getNativeToolkit();
   LSPInfo? _currentLSP;
+  Signer? _signer;
 
-  LightningNode(this._nodeAPI, this._signer, this._lspService);
+  LightningNode(this._lspService);
+
+  Future<List<int>> newNodeFromSeed(Uint8List seed, Signer signer) async {
+    final creds = await _nodeAPI.register(seed, signer);
+    _signer = signer;
+    return creds;
+  }
+
+  Future<List<int>> connectWithSeed(Uint8List seed, Signer signer) async {
+    final creds = await _nodeAPI.recover(seed, signer);
+    _signer = signer;
+    return creds;
+  }
+
+  connectWithCredentials(List<int> credentials, Signer signer) {
+    _nodeAPI.initWithCredentials(credentials, signer);
+    _signer = signer;
+  }
+
+  NodeAPI getNodeAPI() {
+    return _nodeAPI;
+  }
 
   Future setLSP(LSPInfo lspInfo, {required bool connect}) async {
     _currentLSP = lspInfo;
@@ -50,7 +75,7 @@ class LightningNode {
       throw Exception("LSP is not set");
     }
 
-    int shortChannelId = ((1 & 0xFFFFFF) << 40 | (0 & 0xFFFFFF) << 16 | (0 & 0xFFFF));    
+    int shortChannelId = ((1 & 0xFFFFFF) << 40 | (0 & 0xFFFFFF) << 16 | (0 & 0xFFFF));
     var destinationInvoiceAmountSats = amountSats;
     // check if we need to open channel
     if (currentNodeState.maxAllowedToReceiveMsats < amountMSat) {
@@ -65,7 +90,7 @@ class LightningNode {
       }
 
       // remove the fees from the amount to get the small amount on the current node invoice.
-      destinationInvoiceAmountSats = amountSats - channelFeesMsat / 1000;      
+      destinationInvoiceAmountSats = amountSats - channelFeesMsat / 1000;
     } else {
       // not opening a channel so we need to get the real channel id into the routing hints
       final nodePeers = await _nodeAPI.listPeers();
@@ -93,7 +118,7 @@ class LightningNode {
     // inject routing hints and sign the new invoice
     var routingHints = RouteHint(field0: List.from([lspHop]));
 
-    final bolt11WithHints = await _signer.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints]);
+    final bolt11WithHints = await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints]);
 
     // register the payment at the lsp if needed.
     if (destinationInvoiceAmountSats < amountSats) {

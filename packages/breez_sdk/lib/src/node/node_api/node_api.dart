@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:breez_sdk/src/signer.dart';
 import 'package:fixnum/fixnum.dart';
-import '../../src/signer.dart';
 
 import 'models.dart';
 

@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -7,7 +8,6 @@ import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/models/lsp.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
@@ -298,7 +298,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     AppLocalizations texts,
     AccountState accountModel,
     CurrencyState currencyState,
-    LSPInfo lspInfo,
+    lntoolkit.LSPInfo lspInfo,
   ) {
     final connected = accountModel.status == AccountStatus.CONNECTED;
     final minFee = Int64(lspInfo.channelMinimumFeeMsat) ~/ 100;

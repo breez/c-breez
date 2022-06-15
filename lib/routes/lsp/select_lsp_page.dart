@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
-import 'package:c_breez/models/lsp.dart';
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class SelectLSPPage extends StatefulWidget {
 }
 
 class SelectLSPPageState extends State<SelectLSPPage> {
-  LSPInfo? _selectedLSP;
+  lntoolkit.LSPInfo? _selectedLSP;
   dynamic _error;
 
   @override

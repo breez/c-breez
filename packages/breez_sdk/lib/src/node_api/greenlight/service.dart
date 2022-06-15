@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:fimber/fimber.dart';
-import '../node_api.dart';
 import './generated/greenlight.pbgrpc.dart' as greenlight;
 import './generated/scheduler.pbgrpc.dart' as scheduler;
 import 'package:fixnum/fixnum.dart';
@@ -162,7 +161,7 @@ class Greenlight implements NodeAPI {
     var invoice = await _nodeClient!.createInvoice(greenlight.InvoiceRequest(
         label: "breez-${DateTime.now().millisecondsSinceEpoch}",
         amount: greenlight.Amount(satoshi: amount),
-        description: description));
+        description: description));        
     return Invoice(
         label: invoice.label,
         amountMsats: amountToMSats(invoice.amount),

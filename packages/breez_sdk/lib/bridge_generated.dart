@@ -50,6 +50,7 @@ class LNInvoice {
   final int timestamp;
   final int expiry;
   final List<RouteHint> routingHints;
+  final Uint8List paymentSecret;
 
   LNInvoice({
     required this.payeePubkey,
@@ -59,6 +60,7 @@ class LNInvoice {
     required this.timestamp,
     required this.expiry,
     required this.routingHints,
+    required this.paymentSecret,
   });
 }
 
@@ -312,8 +314,8 @@ List<RouteHintHop> _wire2api_list_route_hint_hop(dynamic raw) {
 
 LNInvoice _wire2api_ln_invoice(dynamic raw) {
   final arr = raw as List<dynamic>;
-  if (arr.length != 7)
-    throw Exception('unexpected arr length: expect 7 but see ${arr.length}');
+  if (arr.length != 8)
+    throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
   return LNInvoice(
     payeePubkey: _wire2api_String(arr[0]),
     paymentHash: _wire2api_String(arr[1]),
@@ -322,6 +324,7 @@ LNInvoice _wire2api_ln_invoice(dynamic raw) {
     timestamp: _wire2api_u64(arr[4]),
     expiry: _wire2api_u64(arr[5]),
     routingHints: _wire2api_list_route_hint(arr[6]),
+    paymentSecret: _wire2api_uint_8_list(arr[7]),
   );
 }
 

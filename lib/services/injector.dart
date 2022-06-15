@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/repositories/dao/db.dart';
 import 'package:c_breez/services/breez_server/server.dart';
@@ -23,7 +24,11 @@ class ServiceInjector {
   FirebaseNotifications? _notifications;
   lntoolkit.LightningServices? _lightningService;
   DeepLinksService? _deepLinksService;
+
+  // breez sdk
   LightningLinksService? _lightningLinksService;
+  LSPService? _lspService;
+
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences =
       SharedPreferences.getInstance();
@@ -57,6 +62,10 @@ class ServiceInjector {
     }
 
     return _lightningService ??= lntoolkit.LightningServices();
+  }
+
+  LSPService get lspService {
+    return _lspService ??= lntoolkit.LSPService();
   }
 
   Device get device {

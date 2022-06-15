@@ -14,6 +14,7 @@ pub struct LNInvoice {
  pub timestamp: u64,
  pub expiry: u64,
  pub routing_hints: Vec<RouteHint>,
+ pub payment_secret: Vec<u8>,
 }
 
 #[derive(Default, Debug, PartialEq)]
@@ -141,7 +142,6 @@ pub fn _parse_invoice(invoice: &String) -> Result<LNInvoice> {
    return RouteHint::from_ldk_hint(h);
   })
   .collect();
-
  // return the parsed invoice
  let ln_invoice = LNInvoice {
   payee_pubkey: payee_pubkey,
@@ -150,6 +150,7 @@ pub fn _parse_invoice(invoice: &String) -> Result<LNInvoice> {
   timestamp: since_the_epoch.as_secs(),
   routing_hints: converted_hints,
   payment_hash: invoice.payment_hash().encode_hex::<String>(),
+  payment_secret: invoice.payment_secret().0.to_vec(),
   description: match invoice.description() {
    InvoiceDescription::Direct(msg) => msg.to_string(),
    InvoiceDescription::Hash(_) => String::from(""),

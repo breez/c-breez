@@ -382,6 +382,7 @@ impl support::IntoDart for LNInvoice {
             self.timestamp.into_dart(),
             self.expiry.into_dart(),
             self.routing_hints.into_dart(),
+            self.payment_secret.into_dart(),
         ]
         .into_dart()
     }

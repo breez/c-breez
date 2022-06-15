@@ -44,7 +44,7 @@ void main() async {
         () => runApp(MultiBlocProvider(
               providers: [
                 BlocProvider<LSPBloc>(
-                  create: (BuildContext context) => LSPBloc(injector.appStorage, lightningServices, injector.breezServer),
+                  create: (BuildContext context) => LSPBloc(injector.appStorage, lightningServices, injector.lspService),
                 ),
                 BlocProvider<AccountBloc>(
                   create: (BuildContext context) => AccountBloc(

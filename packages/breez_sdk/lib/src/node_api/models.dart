@@ -24,7 +24,7 @@ class FileData {
   FileData(this.name, this.content);
 }
 
-class NodeCredentials {  
+class NodeCredentials {
   final List<int>? nodeId;
   List<int>? secret;
   final String caCert;
@@ -35,13 +35,11 @@ class NodeCredentials {
 
   factory NodeCredentials.fromBuffer(List<int> buffer) {
     List<String> parts = String.fromCharCodes(buffer).split("***");
-    return NodeCredentials(parts[0], parts[1], parts[2], HEX.decode(parts[3]),
-        HEX.decode(parts[4]));
+    return NodeCredentials(parts[0], parts[1], parts[2], HEX.decode(parts[3]), HEX.decode(parts[4]));
   }
 
   List<int> writeBuffer() {
-    return "$caCert***$deviceCert***$deviceKey***${HEX.encode(nodeId ?? [])}***${HEX.encode(secret ?? [])}"
-        .codeUnits;
+    return "$caCert***$deviceCert***$deviceKey***${HEX.encode(nodeId ?? [])}***${HEX.encode(secret ?? [])}".codeUnits;
   }
 }
 
@@ -87,11 +85,7 @@ class ListFundsOutput {
   final String address;
   final OutputStatus status;
 
-  ListFundsOutput(
-      {required this.outpoint,
-      required this.amountMsats,
-      required this.address,
-      required this.status});
+  ListFundsOutput({required this.outpoint, required this.amountMsats, required this.address, required this.status});
 }
 
 class ListFundsChannel {
@@ -183,12 +177,7 @@ class Peer {
   final String features;
   final List<Channel> channels;
 
-  Peer(
-      {required this.id,
-      required this.connected,
-      required this.addresses,
-      required this.features,
-      required this.channels});
+  Peer({required this.id, required this.connected, required this.addresses, required this.features, required this.channels});
 }
 
 enum InvoiceStatus { PAID, UNPAID, EXPIRED }
@@ -223,6 +212,20 @@ class Invoice {
       required this.bolt11,
       required this.paymentPreimage,
       required this.paymentHash});
+
+  Invoice copyWithNewAmount({required Int64 amountMsats, required String bolt11}) {
+    return Invoice(
+        amountMsats: amountMsats,
+        label: label,
+        description: description,
+        receivedMsats: receivedMsats,
+        status: status,
+        paymentTime: paymentTime,
+        expiryTime: expiryTime,
+        bolt11: bolt11,
+        paymentPreimage: paymentPreimage,
+        paymentHash: paymentHash);
+  }
 
   String get payeeImageURL => "";
   String get payeeName => "";

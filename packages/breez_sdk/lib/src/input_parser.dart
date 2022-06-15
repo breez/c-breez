@@ -1,4 +1,4 @@
-import '../generated/bridge_generated.dart';
+import '../bridge_generated.dart';
 import 'native_toolkit.dart';
 
 

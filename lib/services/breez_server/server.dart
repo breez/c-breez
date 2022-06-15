@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:c_breez/models/lsp.dart';
 import 'package:c_breez/services/breez_server/generated/breez.pbgrpc.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/services.dart';
@@ -39,33 +37,6 @@ class BreezServer {
     return response.rates
         .map((r) => server_models.Rate(r.coin, r.value))
         .toList();
-  }
-
-  Future<Map<String, LSPInfo>> getLSPList(String nodePubkey) async {
-    var channel = await _ensureValidChannel();
-    var channelClient =
-        ChannelOpenerClient(channel, options: await defaultCallOptions);
-    var response =
-        await channelClient.lSPList(LSPListRequest()..pubkey = nodePubkey);
-
-    return response.lsps.map((key, value) => MapEntry(
-        key,
-        LSPInfo(
-          lspID: key,
-          name: value.name,
-          widgetURL: value.widgetUrl,
-          pubKey: value.pubkey,
-          host: value.host,
-          frozen: value.isFrozen,
-          minHtlcMsat: value.minHtlcMsat.toInt(),
-          targetConf: value.targetConf,
-          timeLockDelta: value.timeLockDelta,
-          baseFeeMsat: value.baseFeeMsat.toInt(),
-          channelCapacity: value.channelCapacity.toInt(),
-          channelMinimumFeeMsat: value.channelMinimumFeeMsat.toInt(),
-          maxInactiveDuration: value.maxInactiveDuration.toInt(),
-          channelFeePermyriad: value.channelFeePermyriad.toInt(),
-        )));
   }
 
   Future checkVersion() async {

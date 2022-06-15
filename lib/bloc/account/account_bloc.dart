@@ -52,7 +52,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       emit(acc);
     });
 
-    // sync node info on incoming payments
+    // sync node info on incoming payments    
     final nodeAPI = _lightningServices.getNodeAPI();
     nodeAPI.incomingPaymentsStream().listen((event) {
       syncStateWithNode();
@@ -73,7 +73,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           await _createSignerFromSeed(Uint8List.fromList(HEX.decode(seedHex!)));         
 
           // init service with credentials
-          nodeAPI.initWithCredentials(creds, _signer!);
+          _lightningServices.connectWithCredentials(creds, _signer!);
           _startNode();
         }
       });
@@ -184,43 +184,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future<Invoice> addInvoice(
       {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
-    var invoice = await _lightningServices.getNodeService().requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
-    var currentLSP = _lspBloc.state.currentLSP;
-    if (currentLSP == null) {
-      throw Exception("LSP is not available");
-    }
-
-    // parse the lsp short channel id
-    var peers = await _appStorage.watchPeers().first;
-    int shortChannelId = 0;
-    for (var p in peers) {
-      if (p.peer.peerId == currentLSP.pubKey && p.channels.first.shortChannelId != null) {
-        shortChannelId = _parseShortChannelID(p.channels.first.shortChannelId!);
-        break;
-      }
-    }
-
-    // create lsp routing hints
-    var lspHop = lntoolkit.RouteHintHop(
-      srcNodeId: currentLSP.pubKey,
-      shortChannelId: shortChannelId,
-      feesBaseMsat: currentLSP.baseFeeMsat,
-      feesProportionalMillionths: 0,
-      cltvExpiryDelta: 40,
-      htlcMinimumMsat: currentLSP.minHtlcMsat,
-      htlcMaximumMsat: 1000000000,
-    );
-
-    // inject routing hints and sign the new invoice
-    var routingHints = lntoolkit.RouteHint(field0: List.from([lspHop]));
-    final bolt11 = await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints]);
-
+    var invoice = await _lightningServices.getNodeService().requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));    
     syncStateWithNode();
 
     return Invoice(
         paymentHash: invoice.paymentHash,
         amountMsat: invoice.amountMsats.toInt(),
-        bolt11: bolt11,
+        bolt11: invoice.bolt11,
         description: invoice.description,
         expiry: expiry?.toInt() ?? defaultInvoiceExpiry);
   }

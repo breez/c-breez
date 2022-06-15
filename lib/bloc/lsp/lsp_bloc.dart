@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:c_breez/repositories/app_storage.dart';
-import 'package:c_breez/services/breez_server/server.dart';
-import 'package:c_breez/utils/retry.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:breez_sdk/sdk.dart' as lntoolkit;
 
@@ -11,100 +9,57 @@ import 'lsp_state.dart';
 class LSPBloc extends Cubit<LSPState> with HydratedMixin {
   final AppStorage _appStorage;
   final lntoolkit.LightningServices _lnService;
-  final BreezServer _breezServer;
+  final lntoolkit.LSPService _lspService;
   String? nodeID;
+  bool _lspFetched = false;
 
-  LSPBloc(this._appStorage, this._lnService, this._breezServer)
-      : super(LSPState.initial()) {
-    _appStorage
-        .watchNodeState()
-        .where((node) => node != null)
-        .map((node) => node!.nodeID)
-        .distinct()
-        .listen((nodeID) {
-      this.nodeID = nodeID;
-      watchLSPState();
-      fetchLSPList();
-    });
+  LSPBloc(this._appStorage, this._lnService, this._lspService) : super(LSPState.initial()) {
     if (state.connectionStatus == LSPConnectionStatus.inProgress) {
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.notActive));
     }
+    
+    // for every change in node state check if we have the current selected lsp as a peer.
+    // If not instruct the sdk to connect.
+    _appStorage.watchNodeState().where((nodeState) => nodeState != null).listen((nodeState) async {
+      nodeID = nodeState!.nodeID;
+      fetchLSPList();
+      if (state.currentLSP != null) {
+        final shouldConnect = !nodeState.connectedPeers.split(",").contains(state.currentLSP!.pubKey);
+        await _lnService.getNodeService().setLSP(state.currentLSP!, connect: shouldConnect);
+        return;
+      }      
+    });    
   }
 
+  // fetch the lsp list from the sdk.
   Future fetchLSPList() async {
     if (nodeID == null) {
       throw Exception("node id is not initialized");
     }
-    try {
-      var list = await _breezServer.getLSPList(nodeID!);
-      emit(state.copyWith(availableLSPs: list.values.toList(), initial: false));
-    } catch (e) {
-      emit(state.copyWith(lastConnectionError: e.toString(), initial: false));
+    if (!_lspFetched) {
+      try {
+        var list = await _lspService.getLSPList(nodeID!);
+        emit(state.copyWith(availableLSPs: list.values.toList()));
+        _lspFetched = true;
+      } catch (e) {
+        emit(state.copyWith(lastConnectionError: e.toString()));
+      }
     }    
-    // if (state.availableLSPs.length == 1) {
-    //   connectLSP(state.availableLSPs[0].lspID);
-    // }
   }
 
+  // connectd to a specific lsp
   Future connectLSP(String lspID) async {
-    var lsp = state.availableLSPs.firstWhere((l) => l.lspID == lspID);
-    emit(state.copyWith(
-        connectionStatus: LSPConnectionStatus.inProgress, selectedLSP: lspID));
-    try {      
-      await retry(() async {
-        await _lnService.getNodeAPI().connectPeer(lsp.pubKey, lsp.host);
-        await _breezServer.openLSPChannel(lsp.lspID, nodeID!);
-      }, tryLimit: 3, interval: const Duration(seconds: 2));
+    try {
+      var lsp = state.availableLSPs.firstWhere((l) => l.lspID == lspID);
+      emit(state.copyWith(connectionStatus: LSPConnectionStatus.inProgress, selectedLSP: lspID));
+      await _lnService.getNodeService().setLSP(lsp, connect: true);
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.active));
     } catch (e) {
       emit(LSPState.initial().copyWith(
-          initial: false,
           availableLSPs: state.availableLSPs,
           connectionStatus: LSPConnectionStatus.notSelected,
           lastConnectionError: e.toString()));
     }
-  }
-
-  Future<String> waitCurrentNodeID() async {
-    var nodeState = await _appStorage.watchNodeState().firstWhere(
-        (nodeState) => nodeState != null && nodeState.nodeID.isNotEmpty);
-    return nodeState!.nodeID;
-  }
-
-  void watchLSPState() {
-    _appStorage.watchPeers().listen((peers) async {
-      if (this.state.connectionStatus == LSPConnectionStatus.inProgress) {
-        return;
-      }
-      var state = this.state;
-      var lspIndex =
-          state.availableLSPs.indexWhere((l) => l.lspID == state.selectedLSP);
-      if (state.selectedLSP != null) {
-        // if the selected lsp is no longer in server list emit not active.
-        if (lspIndex < 0) {
-          emit(this.state.copyWith(
-              connectionStatus: LSPConnectionStatus.notActive,
-              lastConnectionError: "selected lsp not in list"));
-        }
-
-        var lsp = state.availableLSPs[lspIndex];
-        var lspPeers = peers.where((p) => p.peer.peerId == lsp.pubKey).toList();
-
-        // if we don't have the lsp in one of our peers then emit not active.
-        if (lspPeers.isEmpty || lspPeers[0].channels.isEmpty) {
-          emit(this.state.copyWith(
-              connectionStatus: LSPConnectionStatus.notActive,
-              lastConnectionError: null));
-              return;
-        }
-        if (this.state.lastConnectionError != null ||
-            state.connectionStatus != LSPConnectionStatus.active) {
-          emit(this.state.copyWith(
-              connectionStatus: LSPConnectionStatus.active,
-              lastConnectionError: null));
-        }
-      }
-    });
   }
 
   @override

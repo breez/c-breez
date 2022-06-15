@@ -82,6 +82,12 @@ class Channels extends Table {
       text().withLength(min: 66, max: 66).references(Peers, #peerId)();
 }
 
+class LSPs extends Table {
+  TextColumn get lspId => text()();
+  TextColumn get peerId => text().withLength(min: 66, max: 66)();
+  BoolColumn get connected => boolean()();
+}
+
 class PeerWithChannels {
   final Peer peer;
   final List<Channel> channels;

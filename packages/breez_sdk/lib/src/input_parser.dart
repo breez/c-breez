@@ -40,7 +40,7 @@ class InputParser {
                 ? InputProtocol.lnurlWithdraw
                 : null;
         if (inputProtocol != null) {
-          return ParsedInput(InputProtocol.lnurlPay, invoice);
+          return ParsedInput(inputProtocol, invoice);
         }
         throw Exception("not implemented");
       }

@@ -282,7 +282,7 @@ packages:
     source: hosted
     version: "1.0.5"
   dart_lnurl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
       ref: HEAD

@@ -17,35 +17,12 @@ class InputParser {
     }
 
     // lnurl
-    if (lower.contains(lnurlPrefix)) {
-      LNURLParseResult parseResult = await getParams(lower);
-      if (parseResult.payParams != null) {
-        return ParsedInput(InputProtocol.lnurlPay, lower);
-      }
-      if (parseResult.withdrawalParams != null) {
-        return ParsedInput(InputProtocol.lnurlWithdraw, lower);
-      }
-      throw Exception("not implemented");
-    } else if (lower.contains(lnurlRfc17Prefix) ||
-        lower.startsWith('keyauth://')) {
-      // Check if input is a valid url
-      if (Uri.tryParse(lower)?.hasAbsolutePath ?? false) {
-        // Replace prefix with https for clearnet URL's, http for onion URLs
-        var prefix =
-            RegExp(r'\.onion($|\W)').hasMatch(lower) ? 'http' : 'https';
-        final invoice = lower.replaceFirst(RegExp("(lnurl)(c|w|p)"), prefix);
-        InputProtocol? inputProtocol = lower.startsWith("lnurlp://")
-            ? InputProtocol.lnurlPay
-            : lower.startsWith("lnurlw://")
-                ? InputProtocol.lnurlWithdraw
-                : null;
-        if (inputProtocol != null) {
-          return ParsedInput(inputProtocol, invoice);
-        }
-        throw Exception("not implemented");
-      }
-    } else if (lower.startsWith('https://')) {
-      throw Exception("not implemented");
+    LNURLParseResult parseResult = await getParams(lower);
+    if (parseResult.payParams != null) {
+      return ParsedInput(InputProtocol.lnurlPay, lower);
+    }
+    if (parseResult.withdrawalParams != null) {
+      return ParsedInput(InputProtocol.lnurlWithdraw, lower);
     }
 
     // bolt 11 lightning
@@ -84,6 +61,7 @@ enum InputProtocol {paymentRequest, lnurlPay, lnurlWithdraw}
 class ParsedInput {
   final InputProtocol protocol;
   final dynamic decoded;
+  final LNURLParseResult? lnurlParseResult;
 
-  ParsedInput(this.protocol, this.decoded);
+  ParsedInput(this.protocol, this.decoded, {this.lnurlParseResult});
 }

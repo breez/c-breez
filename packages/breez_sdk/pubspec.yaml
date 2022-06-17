@@ -2,14 +2,18 @@ name: breez_sdk
 description: A new flutter plugin project.
 version: 0.0.1
 homepage:
+publish_to: none
 
 environment:
-  sdk: ">=2.16.2 <3.0.0"
-  flutter: ">=2.5.0"
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  dart_lnurl:
+    git:
+      url: https://github.com/breez/dart_lnurl
   encrypt: ^5.0.1
   ffi: ^1.2.1
   fimber: ^0.6.6

@@ -281,6 +281,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  dart_lnurl:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "8ea05835c055dd6a45d64098191eb30e9cabda13"
+      url: "https://github.com/breez/dart_lnurl"
+    source: git
+    version: "0.1.0"
   dart_style:
     dependency: transitive
     description:

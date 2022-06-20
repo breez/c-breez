@@ -1,17 +1,13 @@
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/services/breez_server/server.dart';
-import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-import 'models.dart';
-
 class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
-  final BreezServer _breezServer;
+  final FiatService _fiatService;
 
-  CurrencyBloc(this._breezServer) : super(CurrencyState.initial()) {
-    rootBundle.loadString('src/json/currencies.json').then((jsonCurrencies) {
-      var fiatCurrencies = currencyDataFromJson(jsonCurrencies).values.toList();
+  CurrencyBloc(this._fiatService) : super(CurrencyState.initial()) {  
+    _fiatService.fiatCurrencies().then((jsonCurrencies) {
+      var fiatCurrencies = jsonCurrencies.values.toList();
       var sorted =
           _sortFiatConversionList(fiatCurrencies, state.preferredCurrencies);
       emit(state.copyWith(fiatCurrenciesData: sorted));
@@ -36,9 +32,7 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   }
 
   Future<Map<String, double>> fetchExchangeRates() async {
-    var rates = await _breezServer.rate();
-    var ratesMap =
-        rates.asMap().map((_, rate) => MapEntry(rate.coin, rate.value));
+    var ratesMap = await _fiatService.fetchRates();   
     emit(state.copyWith(exchangeRates: ratesMap));
     return ratesMap;
   }

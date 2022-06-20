@@ -28,6 +28,7 @@ class ServiceInjector {
   // breez sdk
   LightningLinksService? _lightningLinksService;
   LSPService? _lspService;
+  FiatService? _fiatService;
 
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences =
@@ -66,6 +67,10 @@ class ServiceInjector {
 
   LSPService get lspService {
     return _lspService ??= lntoolkit.LSPService();
+  }
+
+  FiatService get fiatService {
+    return _fiatService ??= lntoolkit.FiatService();
   }
 
   Device get device {

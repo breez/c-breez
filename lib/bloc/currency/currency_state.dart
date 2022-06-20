@@ -1,3 +1,4 @@
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
 

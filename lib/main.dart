@@ -61,7 +61,7 @@ void main() async {
                   create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
                 ),
                 BlocProvider<CurrencyBloc>(
-                  create: (BuildContext context) => CurrencyBloc(injector.breezServer),
+                  create: (BuildContext context) => CurrencyBloc(injector.fiatService),
                 ),
               ],
               child: UserApp(),

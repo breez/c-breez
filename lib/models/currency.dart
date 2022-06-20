@@ -75,37 +75,3 @@ class BitcoinCurrency extends Object {
 
   double get satConversionRate => this == SAT ? 1.0 : 100000000;
 }
-
-class FiatCurrency {
-  String name;
-  Map<String, String> localizedName;
-  String shortName;
-  int fractionSize;
-  String symbol;
-  bool rtl;
-  int position;
-  int spacing;
-  Map<String, FiatCurrency> localeOverrides = {};
-
-  FiatCurrency({
-    required this.name,
-    required this.localizedName,
-    required this.shortName,
-    required this.fractionSize,
-    required this.symbol,
-    required this.rtl,
-    required this.position,
-    required this.spacing,
-  });
-
-  FiatCurrency localeAware(String languageTag, String languageCode) {
-    if (localeOverrides.isEmpty) return this;
-    if (localeOverrides.containsKey(languageTag)) {
-      return localeOverrides[languageTag]!;
-    }
-    if (localeOverrides.containsKey(languageCode)) {
-      return localeOverrides[languageCode]!;
-    }
-    return this;
-  }
-}

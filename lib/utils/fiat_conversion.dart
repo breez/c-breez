@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:c_breez/models/currency.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/utils/currency_formatter.dart';
 import 'package:c_breez/utils/locale.dart';
 import 'package:fixnum/fixnum.dart';

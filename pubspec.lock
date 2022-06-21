@@ -286,7 +286,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "8ea05835c055dd6a45d64098191eb30e9cabda13"
+      resolved-ref: "0369bb7cd096d62c7c0557cae8661564f1a9bb56"
       url: "https://github.com/breez/dart_lnurl"
     source: git
     version: "0.1.0"

@@ -10,7 +10,7 @@ import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
-import 'package:flutter_bloc/flutter_bloc.dart' as lntoolkit;
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 class InvoiceBloc extends Cubit<InvoiceState> {

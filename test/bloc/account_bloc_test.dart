@@ -17,11 +17,11 @@ void main() {
   group('account', () {
     test('recover node', () async {
       var injector = InjectorMock();
-      var breezBridge = await injector.lightningServices;
+      var lightningServices = await injector.lightningServices;
       var lspBloc =
-          LSPBloc(injector.appStorage, breezBridge, injector.breezServer);
+          LSPBloc(injector.appStorage, lightningServices, injector.lspService);
       AccountBloc accBloc = AccountBloc(
-          breezBridge, injector.appStorage, injector.keychain, lspBloc);
+          lightningServices, injector.appStorage, injector.keychain);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 

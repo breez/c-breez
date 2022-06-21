@@ -89,10 +89,15 @@ class FirebaseNotificationsMock extends Mock implements FirebaseNotifications {
 
 class InjectorMock extends Mock implements ServiceInjector {
   MockClientHandler? mockHandler;
+  LightningNode? _lightningService;
 
   @override
-  Future<LightningServices> get lightningServices async {
-    return LightningServices();
+  Future<LightningNode> get lightningServices async {
+    if (_lightningService != null) {
+      return Future.value(_lightningService);
+    }
+
+    return _lightningService ??= LightningNode(lspService);
   }
 
   @override

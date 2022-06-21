@@ -65,6 +65,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
         title: Text(texts.backup_phrase_generation_verify),
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.only(left: 16, right: 16),
         child: SizedBox(
           height: query.size.height - kToolbarHeight - query.padding.top,
           child: Column(
@@ -79,25 +80,33 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
                     _hasError = true;
                   });
                 },
+                errorText: _hasError
+                    ? Text(
+                        texts.backup_phrase_generation_verification_failed,
+                        style: themeData.textTheme.headline4?.copyWith(
+                          fontSize: 12,
+                        ),
+                      )
+                    : const SizedBox(),
+                registrationFailedText: _registrationFailed
+                    ? Text(
+                        _registrationErrorMessage,
+                        style: themeData.textTheme.headline4?.copyWith(
+                          fontSize: 12,
+                        ),
+                      )
+                    : const SizedBox(),
               ),
-              if (_hasError) ...[
-                Text(
-                  texts.backup_phrase_generation_verification_failed,
-                  style: themeData.textTheme.headline4?.copyWith(
-                    fontSize: 12,
-                  ),
-                )
-              ],
-              if (_registrationFailed) ...[
-                Text(
-                  _registrationErrorMessage,
-                  style: themeData.textTheme.headline4?.copyWith(
-                    fontSize: 12,
-                  ),
-                )
-              ],
-              VerifyMnemonicSeedInstructions(
-                indexes: _randomlySelectedIndexes,
+              Text(
+                texts.backup_phrase_generation_type_words(
+                  _randomlySelectedIndexes[0] + 1,
+                  _randomlySelectedIndexes[1] + 1,
+                  _randomlySelectedIndexes[2] + 1,
+                ),
+                style: theme.mnemonicSeedInformationTextStyle.copyWith(
+                  color: theme.BreezColors.white[300],
+                ),
+                textAlign: TextAlign.center,
               ),
               SingleButtonBottomBar(
                 text: texts.backup_phrase_warning_action_backup,
@@ -141,33 +150,5 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
     );
 
     navigator.pushReplacementNamed("/");
-  }
-}
-
-class VerifyMnemonicSeedInstructions extends StatelessWidget {
-  final List indexes;
-
-  const VerifyMnemonicSeedInstructions({
-    Key? key,
-    required this.indexes,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final texts = context.texts();
-    return Padding(
-      padding: const EdgeInsets.only(left: 72, right: 72),
-      child: Text(
-        texts.backup_phrase_generation_type_words(
-          indexes[0] + 1,
-          indexes[1] + 1,
-          indexes[2] + 1,
-        ),
-        style: theme.mnemonicSeedInformationTextStyle.copyWith(
-          color: theme.BreezColors.white[300],
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
   }
 }

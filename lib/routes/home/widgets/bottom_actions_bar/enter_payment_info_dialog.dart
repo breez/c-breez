@@ -1,4 +1,4 @@
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/lnurl.dart';
@@ -11,12 +11,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EnterPaymentInfoDialog extends StatefulWidget {
   final BuildContext context;
-  final InvoiceBloc invoiceBloc;
+  final InputBloc inputBloc;
   final GlobalKey firstPaymentItemKey;
 
   const EnterPaymentInfoDialog(
     this.context,
-    this.invoiceBloc,
+    this.inputBloc,
     this.firstPaymentItemKey,
   );
 
@@ -168,7 +168,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
             ));
             return;
 
-            // widget.invoiceBloc.addIncomingInvoice(_paymentInfoController.text);
+            // widget.inputBloc.addIncomingInput(_paymentInfoController.text);
           }
         }),
         child: Text(

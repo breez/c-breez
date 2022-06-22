@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
-import 'package:c_breez/bloc/invoice/invoice_state.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/services/injector.dart';
@@ -62,7 +62,7 @@ class QrCodeDialogState extends State<QrCodeDialog>
     super.didUpdateWidget(oldWidget);
     if (widget._invoice != oldWidget._invoice) {
       context
-          .read<InvoiceBloc>()
+          .read<InputBloc>()
           .trackPayment(widget._invoice!.paymentHash)
           .then((value) {
         Timer(const Duration(milliseconds: 1000), () {
@@ -82,7 +82,7 @@ class QrCodeDialogState extends State<QrCodeDialog>
   Widget _buildQrCodeDialog() {
     return BlocBuilder<CurrencyBloc, CurrencyState>(
         builder: (context, currencyState) {
-      return BlocBuilder<InvoiceBloc, InvoiceState>(
+      return BlocBuilder<InputBloc, InputState>(
           builder: (context, invoiceState) {
         return FadeTransition(
           opacity: _opacityAnimation!,

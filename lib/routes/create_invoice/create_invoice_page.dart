@@ -4,7 +4,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -187,7 +187,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
             if (_formKey.currentState?.validate() ?? false) {
               _createInvoice(
                 context,
-                context.read<InvoiceBloc>(),
+                context.read<InputBloc>(),
                 context.read<CurrencyBloc>(),
                 context.read<AccountBloc>(),
               );
@@ -200,7 +200,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   Future _createInvoice(
     BuildContext context,
-    InvoiceBloc invoiceBloc,
+    InputBloc inputBloc,
     CurrencyBloc currencyBloc,
     AccountBloc accountBloc,
   ) async {

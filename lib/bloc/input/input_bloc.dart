@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/sdk.dart' as lntoolkit;
-import 'package:c_breez/bloc/invoice/invoice_state.dart';
+import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/repositories/app_storage.dart';
@@ -9,11 +9,10 @@ import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
-class InvoiceBloc extends Cubit<InvoiceState> {
+class InputBloc extends Cubit<InputState> {
   final LightningLinksService _lightningLinks;
   final Device _device;
   final AppStorage _appStorage;
@@ -21,11 +20,11 @@ class InvoiceBloc extends Cubit<InvoiceState> {
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InvoiceBloc(this._lightningLinks, this._device, this._appStorage, this._lightningNode) : super(InvoiceState(null)) {
-    _watchIncomingInvoices().listen((invoice) => emit(InvoiceState(invoice)));
+  InputBloc(this._lightningLinks, this._device, this._appStorage, this._lightningNode) : super(InputState(null)) {
+    _watchIncomingInvoices().listen((invoice) => emit(InputState(invoice)));
   }
 
-  void addIncomingInvoice(String bolt11) {
+  void addIncomingInput(String bolt11) {
     _decodeInvoiceController.add(bolt11);
   }
 
@@ -73,28 +72,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
         specify payment amount bounded by <minSendable-maxSendable>
         with domain name in the title and a way to display sent metadata
     */
-    /*
-    final lnURL = command.decoded;
-    final payRequestParams = command.lnurlParseResult!.payParams!;
-    await specifyPayerData(payRequestParams.payerData);
-    await addComment(payRequestParams.commentAllowed);
-     */
     throw Exception('Not implemented yet.');
-  }
-
-  Future<PayerData> specifyPayerData(PayerDataRecord? payerDataRecord) async {
-    throw Exception('Not implemented yet. Will be handled on UI.');
-    // Fill mandatory fields and return PayerData
-    PayerData payerData = PayerData();
-    if (payerDataRecord!.name?.mandatory != null &&
-        payerDataRecord!.name!.mandatory) {
-      payerData = payerData.copyWith(name: "placeholderName");
-    }
-    return payerData;
-  }
-
-  Future<String> addComment(int charLimit) async {
-    throw Exception('Not implemented yet. Will be handled on UI.');
   }
 
   Future<Invoice?> handleLNURLWithdrawRequest(

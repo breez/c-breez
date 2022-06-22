@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -60,7 +60,7 @@ class HomeState extends State<Home> {
               return BlocBuilder<LSPBloc, LSPState>(
                 builder: (context, lspState) {
                   return StreamBuilder<DecodedClipboardData>(
-                    stream: context.read<InvoiceBloc>().decodedClipboardStream,
+                    stream: context.read<InputBloc>().decodedClipboardStream,
                     builder: (context, snapshot) {
                       return _build(
                         context,

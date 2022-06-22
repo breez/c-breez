@@ -1,7 +1,7 @@
 import 'package:c_breez/models/invoice.dart';
 
-class InvoiceState {
+class InputState {
   final Invoice? invoice;
 
-  InvoiceState(this.invoice);
+  InputState(this.invoice);
 }

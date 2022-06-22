@@ -1,4 +1,4 @@
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
@@ -21,7 +21,7 @@ class InvoiceNotificationsHandler {
     this.scrollController,
     this.scaffoldController,
   ) {
-    _context.read<InvoiceBloc>().stream.listen((invoiceState) {
+    _context.read<InputBloc>().stream.listen((invoiceState) {
       if (_handlingRequest || invoiceState.invoice == null) {
         return;
       }

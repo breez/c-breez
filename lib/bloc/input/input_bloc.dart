@@ -9,6 +9,7 @@ import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -72,11 +73,13 @@ class InputBloc extends Cubit<InputState> {
         specify payment amount bounded by <minSendable-maxSendable>
         with domain name in the title and a way to display sent metadata
     */
+    final payRequest = command.decoded as LNURLPayParams;
     throw Exception('Not implemented yet.');
   }
 
   Future<Invoice?> handleLNURLWithdrawRequest(
       String raw, lntoolkit.ParsedInput command) async {
+    final withdrawRequest = command.decoded as LNURLWithdrawParams;
     throw Exception('Not implemented yet.');
   }
 

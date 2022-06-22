@@ -19,10 +19,13 @@ class InputParser {
     // lnurl
     LNURLParseResult parseResult = await getParams(lower);
     if (parseResult.payParams != null) {
-      return ParsedInput(InputProtocol.lnurlPay, lower);
+      return ParsedInput(InputProtocol.lnurlPay, parseResult.payParams);
     }
     if (parseResult.withdrawalParams != null) {
-      return ParsedInput(InputProtocol.lnurlWithdraw, lower);
+      return ParsedInput(
+        InputProtocol.lnurlWithdraw,
+        parseResult.withdrawalParams,
+      );
     }
 
     // bolt 11 lightning
@@ -61,7 +64,6 @@ enum InputProtocol {paymentRequest, lnurlPay, lnurlWithdraw}
 class ParsedInput {
   final InputProtocol protocol;
   final dynamic decoded;
-  final LNURLParseResult? lnurlParseResult;
 
-  ParsedInput(this.protocol, this.decoded, {this.lnurlParseResult});
+  ParsedInput(this.protocol, this.decoded);
 }

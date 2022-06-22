@@ -19,6 +19,11 @@ class InputBloc extends Cubit<InputState> {
   final AppStorage _appStorage;
   final lntoolkit.LightningNode _lightningNode;
 
+  final _lnurlPaymentStreamController =
+      StreamController<LNURLPayParams>.broadcast();
+
+  Stream<LNURLPayParams> get lnurlPaymentStream =>
+      _lnurlPaymentStreamController.stream;
   final _decodeInvoiceController = StreamController<String>();
 
   InputBloc(this._lightningLinks, this._device, this._appStorage, this._lightningNode) : super(InputState(null)) {
@@ -74,6 +79,7 @@ class InputBloc extends Cubit<InputState> {
         with domain name in the title and a way to display sent metadata
     */
     final payRequest = command.decoded as LNURLPayParams;
+    _lnurlPaymentStreamController.add(payRequest);
     throw Exception('Not implemented yet.');
   }
 

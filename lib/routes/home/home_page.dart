@@ -6,6 +6,7 @@ import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/handlers/check_version_handler.dart';
+import 'package:c_breez/handlers/lnurl_handler.dart';
 import 'package:c_breez/handlers/received_invoice_notification.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/clipboard.dart';
@@ -128,6 +129,13 @@ class HomeState extends State<Home> {
     _listensInit = true;
 
     InvoiceNotificationsHandler(
+      context,
+      firstPaymentItemKey,
+      scrollController,
+      _scaffoldKey,
+    );
+
+    LNURLHandler(
       context,
       firstPaymentItemKey,
       scrollController,

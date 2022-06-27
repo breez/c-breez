@@ -18,11 +18,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'widgets/lnurl_metadata.dart';
 
-class AddPayerDataPage extends StatefulWidget {
+class LNURLPaymentPage extends StatefulWidget {
   final LNURLPayParams payParams;
   final Function(Map<dynamic, dynamic>) onSubmit;
 
-  const AddPayerDataPage({
+  const LNURLPaymentPage({
     Key? key,
     required this.payParams,
     required this.onSubmit,
@@ -30,11 +30,11 @@ class AddPayerDataPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return AddPayerDataPageState();
+    return LNURLPaymentPageState();
   }
 }
 
-class AddPayerDataPageState extends State<AddPayerDataPage> {
+class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _amountController = TextEditingController();
@@ -64,7 +64,7 @@ class AddPayerDataPageState extends State<AddPayerDataPage> {
       appBar: AppBar(
         leading: const back_button.BackButton(),
         actions: const [],
-        title: const Text("Add Payer Data"),
+        title: const Text("LNURL Invoice"),
       ),
       body: Form(
         key: _formKey,
@@ -75,8 +75,15 @@ class AddPayerDataPageState extends State<AddPayerDataPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (widget.payParams.domain.isNotEmpty) ...[
-                Text(widget.payParams.domain,
-                    style: Theme.of(context).textTheme.headline6)
+                Center(
+                  child: Text(
+                    fixedAmount
+                        ? '${widget.payParams.domain} is requesting you to pay ${widget.payParams.maxSendable} sats.'
+                        : widget.payParams.domain,
+                    style: Theme.of(context).textTheme.headline6,
+                    textAlign: TextAlign.center,
+                  ),
+                )
               ],
               LNURLMetadata(
                 {
@@ -97,22 +104,21 @@ class AddPayerDataPageState extends State<AddPayerDataPage> {
                   ),
                 )
               ],
-              AmountFormField(
-                enabled: !fixedAmount,
-                context: context,
-                texts: texts,
-                bitcoinCurrency: currencyState.bitcoinCurrency,
-                controller: _amountController,
-                validatorFn: validatePayment,
-              ),
-              ReceivableBTCBox(
-                receiveLabel: fixedAmount
-                    ? ''
-                    : '${texts.lnurl_fetch_invoice_limit(
-                        widget.payParams.minSendable.toString(),
-                        widget.payParams.maxSendable.toString(),
-                      )} sats.',
-              ),
+              if (!fixedAmount) ...[
+                AmountFormField(
+                  context: context,
+                  texts: texts,
+                  bitcoinCurrency: currencyState.bitcoinCurrency,
+                  controller: _amountController,
+                  validatorFn: validatePayment,
+                ),
+                ReceivableBTCBox(
+                  receiveLabel: '${texts.lnurl_fetch_invoice_limit(
+                    widget.payParams.minSendable.toString(),
+                    widget.payParams.maxSendable.toString(),
+                  )} sats.',
+                ),
+              ],
               if (widget.payParams.payerData != null &&
                   widget.payParams.payerData!.name != null &&
                   widget.payParams.payerData!.name!.mandatory) ...[

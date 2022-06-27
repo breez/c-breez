@@ -1,4 +1,5 @@
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/routes/lnurl/lnurl_payment_dialog.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
@@ -7,7 +8,7 @@ import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../routes/lnurl/add_payer_data_page.dart';
+import '../routes/lnurl/lnurl_payment_page.dart';
 import '../widgets/route.dart';
 
 class InputHandler {
@@ -49,25 +50,50 @@ class InputHandler {
       if (_handlingRequest) {
         return;
       }
-      switch(parseResult.runtimeType) {
+      _handlingRequest = true;
+      switch (parseResult.runtimeType) {
         case LNURLPayParams:
-          Navigator.of(_context).push(
-            FadeInRoute(
-              builder: (_) =>
-                  AddPayerDataPage(
-                      payParams: parseResult,
-                      onSubmit: (payerDataMap) {
-                        var amount = payerDataMap["amount"];
-                        var comment = payerDataMap["comment"];
-                        var payerData = payerDataMap["payerData"];
-                        debugPrint(payerDataMap.toString());
-                      }),
-            ),
-          );
+          bool fixedAmount = parseResult.minSendable == parseResult.maxSendable;
+          if (fixedAmount) {
+            showDialog(
+              useRootNavigator: false,
+              context: _context,
+              barrierDismissible: false,
+              builder: (_) => LNURLPaymentDialog(
+                parseResult,
+                onComplete: () {
+                  Navigator.pop(_context);
+                  _handlingRequest = false;
+                  throw Exception("Not implemented");
+                },
+                onCancel: () {
+                  Navigator.pop(_context);
+                  _handlingRequest = false;
+                  throw Exception("Payment Cancelled");
+                },
+              ),
+            );
+          } else {
+            Navigator.of(_context).push(
+              FadeInRoute(
+                builder: (_) => LNURLPaymentPage(
+                    payParams: parseResult,
+                    onSubmit: (payerDataMap) {
+                      var amount = payerDataMap["amount"];
+                      var comment = payerDataMap["comment"];
+                      var payerData = payerDataMap["payerData"];
+                      debugPrint(payerDataMap.toString());
+                    }),
+              ),
+            );
+            _handlingRequest = false;
+          }
           break;
         case LNURLWithdrawParams:
+          _handlingRequest = false;
           throw Exception("Withdraw is not implemented yet.");
         default:
+          _handlingRequest = false;
           throw Exception("Not implemented.");
       }
     }).onError((error) {

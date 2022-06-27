@@ -3,10 +3,14 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
     as payment_request;
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class InvoiceNotificationsHandler {
+import '../routes/lnurl/add_payer_data_page.dart';
+import '../widgets/route.dart';
+
+class InputHandler {
   final BuildContext _context;
   final GlobalKey firstPaymentItemKey;
   final ScrollController scrollController;
@@ -15,7 +19,7 @@ class InvoiceNotificationsHandler {
   ModalRoute? _loaderRoute;
   bool _handlingRequest = false;
 
-  InvoiceNotificationsHandler(
+  InputHandler(
     this._context,
     this.firstPaymentItemKey,
     this.scrollController,
@@ -37,6 +41,35 @@ class InvoiceNotificationsHandler {
           () => _handlingRequest = false,
         ),
       );
+    }).onError((error) {
+      _setLoading(false);
+      showFlushbar(_context, message: error.toString());
+    });
+    _context.read<InputBloc>().lnurlParseResultStream.listen((parseResult) {
+      if (_handlingRequest) {
+        return;
+      }
+      switch(parseResult.runtimeType) {
+        case LNURLPayParams:
+          Navigator.of(_context).push(
+            FadeInRoute(
+              builder: (_) =>
+                  AddPayerDataPage(
+                      payParams: parseResult,
+                      onSubmit: (payerDataMap) {
+                        var amount = payerDataMap["amount"];
+                        var comment = payerDataMap["comment"];
+                        var payerData = payerDataMap["payerData"];
+                        debugPrint(payerDataMap.toString());
+                      }),
+            ),
+          );
+          break;
+        case LNURLWithdrawParams:
+          throw Exception("Withdraw is not implemented yet.");
+        default:
+          throw Exception("Not implemented.");
+      }
     }).onError((error) {
       _setLoading(false);
       showFlushbar(_context, message: error.toString());

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
@@ -13,6 +15,8 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'widgets/lnurl_metadata.dart';
 
 class AddPayerDataPage extends StatefulWidget {
   final LNURLPayParams payParams;
@@ -70,6 +74,16 @@ class AddPayerDataPageState extends State<AddPayerDataPage> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              if (widget.payParams.domain.isNotEmpty) ...[
+                Text(widget.payParams.domain,
+                    style: Theme.of(context).textTheme.headline6)
+              ],
+              LNURLMetadata(
+                {
+                  for (var v in json.decode(widget.payParams.metadata))
+                    v[0] as String: v[1]
+                },
+              ),
               if (widget.payParams.commentAllowed > 0) ...[
                 TextFormField(
                   controller: _commentController,

@@ -20,7 +20,7 @@ import 'widgets/lnurl_metadata.dart';
 
 class LNURLPaymentPage extends StatefulWidget {
   final LNURLPayParams payParams;
-  final Function(Map<dynamic, dynamic>) onSubmit;
+  final Function(Map<String, String>) onSubmit;
 
   const LNURLPaymentPage({
     Key? key,
@@ -169,7 +169,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
         text: "PAY",
         onPressed: () {
           if (_formKey.currentState!.validate()) {
-            final int amount = int.parse(_amountController.text);
+            final Int64 amount = Int64.parseInt(_amountController.text) * 1000;
             final String comment = _commentController.text;
             final PayerData payerData = PayerData(
               name:
@@ -193,13 +193,13 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   ? _identifierController.text
                   : null,
             );
-            var payerDataMap = {
-              "amount": amount,
-              "comment": comment,
-              "payerData": payerData.toJson(),
+            final Map<String, String> payerDataMap = {
+              "amount": amount.toString(),
+              "comment": comment.toString(),
+              "payerData": json.encode(payerData.toJson()),
             };
-            widget.onSubmit(payerDataMap);
             Navigator.of(context).pop();
+            widget.onSubmit(payerDataMap);
           }
         },
       ),

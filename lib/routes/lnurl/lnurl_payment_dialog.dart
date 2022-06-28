@@ -136,6 +136,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             }),
           ),
           onPressed: () {
+            Navigator.of(context).pop;
             widget.onCancel();
           },
           child: Text(

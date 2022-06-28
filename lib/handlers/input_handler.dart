@@ -54,7 +54,7 @@ class InputHandler {
       switch (parseResult.runtimeType) {
         case LNURLPayParams:
           bool fixedAmount = parseResult.minSendable == parseResult.maxSendable;
-          if (fixedAmount) {
+          if (fixedAmount && !(parseResult.commentAllowed > 0)) {
             showDialog(
               useRootNavigator: false,
               context: _context,

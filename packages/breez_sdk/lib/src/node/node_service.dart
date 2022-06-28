@@ -45,7 +45,8 @@ class LightningNode {
     if (connect) {
       await retry(() async {
         await _nodeAPI.connectPeer(lspInfo.pubKey, lspInfo.host);
-        //await _breezServer.openLSPChannel(lsp.lspID, nodeID!);
+        final nodeInfo = await _nodeAPI.getNodeInfo();
+        await _lspService.openLSPChannel(lspInfo.lspID, nodeInfo.nodeID);
       }, tryLimit: 3, interval: const Duration(seconds: 2));
     }
   }

@@ -23,7 +23,7 @@ class WithdrawFundsAddressNextButton extends StatelessWidget {
         () {
           if (validator()) {
             Navigator.of(context).pushNamed(
-              "/withdraw_funds_amount",
+              "/withdraw_funds_confirmation",
               arguments: addressController.text,
             );
           }

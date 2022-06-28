@@ -5,22 +5,22 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/transaction/transaction_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
-import 'package:fimber/fimber.dart';
-import 'package:path/path.dart' as p;
+import 'package:c_breez/firebase_options.dart';
+import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
-import 'package:c_breez/logger.dart';
+import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-
-import 'firebase_options.dart';
 
 final _log = FimberLog("Main");
 
@@ -62,6 +62,9 @@ void main() async {
                 ),
                 BlocProvider<CurrencyBloc>(
                   create: (BuildContext context) => CurrencyBloc(injector.fiatService),
+                ),
+                BlocProvider<WithdrawFudsBloc>(
+                  create: (BuildContext context) => WithdrawFudsBloc(),
                 ),
               ],
               child: UserApp(),

@@ -18,7 +18,7 @@ import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
-import 'package:c_breez/routes/withdraw_funds/withdraw_funds_amount_page.dart';
+import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/locale.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -135,9 +135,9 @@ class UserApp extends StatelessWidget {
                                     const WithdrawFundsAddressPage(),
                                 settings: settings,
                               );
-                            case '/withdraw_funds_amount':
+                            case '/withdraw_funds_confirmation':
                               return FadeInRoute(
-                                builder: (_) => WithdrawFundsAmountPage(
+                                builder: (_) => WithdrawFundsConfirmationPage(
                                   settings.arguments as String,
                                 ),
                                 settings: settings,

@@ -50,7 +50,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     super.initState();
     fixedAmount = widget.payParams.minSendable == widget.payParams.maxSendable;
     if (fixedAmount) {
-      _amountController.text = widget.payParams.maxSendable.toString();
+      _amountController.text = (widget.payParams.maxSendable ~/ 1000).toString();
     }
   }
 
@@ -78,7 +78,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                 Center(
                   child: Text(
                     fixedAmount
-                        ? '${widget.payParams.domain} is requesting you to pay ${widget.payParams.maxSendable} sats.'
+                        ? '${widget.payParams.domain} is requesting you to pay ${widget.payParams.maxSendable ~/ 1000} sats.'
                         : widget.payParams.domain,
                     style: Theme.of(context).textTheme.headline6,
                     textAlign: TextAlign.center,
@@ -100,7 +100,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   maxLength: widget.payParams.commentAllowed,
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   decoration: InputDecoration(
-                    labelText: texts.invoice_description_label,
+                    labelText: '${texts.payment_details_dialog_share_comment} (optional)',
                   ),
                 )
               ],
@@ -114,8 +114,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                 ),
                 ReceivableBTCBox(
                   receiveLabel: '${texts.lnurl_fetch_invoice_limit(
-                    widget.payParams.minSendable.toString(),
-                    widget.payParams.maxSendable.toString(),
+                    (widget.payParams.minSendable ~/ 1000).toString(),
+                    (widget.payParams.maxSendable ~/ 1000).toString(),
                   )} sats.',
                 ),
               ],
@@ -213,11 +213,11 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     late final currencyState = context.read<CurrencyBloc>().state;
     late final texts = context.texts();
 
-    if (amount > widget.payParams.maxSendable) {
-      return "Exceeds maximum sendable amount: ${widget.payParams.maxSendable}";
+    if (amount > (widget.payParams.maxSendable ~/ 1000)) {
+      return "Exceeds maximum sendable amount: ${widget.payParams.maxSendable ~/ 1000}";
     }
-    if (amount < widget.payParams.minSendable) {
-      return "Below minimum accepted amount: ${widget.payParams.minSendable}";
+    if (amount < (widget.payParams.minSendable ~/ 1000)) {
+      return "Below minimum accepted amount: ${widget.payParams.minSendable ~/ 1000}";
     }
 
     if (lspStatus.currentLSP != null) {

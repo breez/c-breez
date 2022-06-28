@@ -90,10 +90,10 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 child: Text(
                   _showFiatCurrency && fiatConversion != null
                       ? fiatConversion
-                          .format(Int64(widget.payParams.maxSendable))
+                          .format(Int64(widget.payParams.maxSendable ~/ 1000))
                       : BitcoinCurrency.fromTickerSymbol(
                               currencyState.bitcoinTicker)
-                          .format(Int64(widget.payParams.maxSendable)),
+                          .format(Int64(widget.payParams.maxSendable ~/ 1000)),
                   style: themeData.primaryTextTheme.headline5,
                   textAlign: TextAlign.center,
                 ),

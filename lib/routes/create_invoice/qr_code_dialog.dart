@@ -83,7 +83,7 @@ class QrCodeDialogState extends State<QrCodeDialog>
     return BlocBuilder<CurrencyBloc, CurrencyState>(
         builder: (context, currencyState) {
       return BlocBuilder<InputBloc, InputState>(
-          builder: (context, invoiceState) {
+          builder: (context, inputState) {
         return FadeTransition(
           opacity: _opacityAnimation!,
           child: SimpleDialog(

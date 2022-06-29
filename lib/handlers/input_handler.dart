@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/lnurl/lnurl_payment_dialog.dart';
 import 'package:c_breez/routes/lnurl/success_action_dialog.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -33,80 +35,56 @@ class InputHandler {
     this.scrollController,
     this.scaffoldController,
   ) {
-    final AccountBloc accountBloc = _context.read<AccountBloc>();
     final InputBloc inputBloc = _context.read<InputBloc>();
-    inputBloc.stream.listen((invoiceState) {
-      if (_handlingRequest || invoiceState.invoice == null) {
+    inputBloc.stream.listen((inputState) {
+      if (_handlingRequest ||
+          inputState.invoice == null ||
+          inputState.lnurlParseResult == null) {
         return;
       }
       _handlingRequest = true;
+      handleInput(inputState);
+    }).onError((error) {
+      _setLoading(false);
+      showFlushbar(_context, message: error.toString());
+    });
+  }
+
+  void handleLNURLPayRequest(payParams) {
+    final AccountBloc accountBloc = _context.read<AccountBloc>();
+    bool fixedAmount = payParams.minSendable == payParams.maxSendable;
+    if (fixedAmount && !(payParams.commentAllowed > 0)) {
       showDialog(
         useRootNavigator: false,
         context: _context,
         barrierDismissible: false,
-        builder: (_) => payment_request.PaymentRequestDialog(
-          invoiceState.invoice!,
-          firstPaymentItemKey,
-          scrollController,
-          () => _handlingRequest = false,
+        builder: (_) => LNURLPaymentDialog(
+          payParams,
+          onComplete: () {
+            Map<String, String> qParams = {
+              'amount': payParams.maxSendable.toString(),
+            };
+            processLNURLPayment(payParams, qParams, accountBloc);
+          },
+          onCancel: () {
+            _handlingRequest = false;
+            showFlushbar(_context, message: 'Payment Cancelled.');
+          },
         ),
       );
-    }).onError((error) {
-      _setLoading(false);
-      showFlushbar(_context, message: error.toString());
-    });
-    inputBloc.lnurlParseResultStream.listen((parseResult) {
-      if (_handlingRequest) {
-        return;
-      }
-      _handlingRequest = true;
-      switch (parseResult.runtimeType) {
-        case LNURLPayParams:
-          bool fixedAmount = parseResult.minSendable == parseResult.maxSendable;
-          if (fixedAmount && !(parseResult.commentAllowed > 0)) {
-            showDialog(
-              useRootNavigator: false,
-              context: _context,
-              barrierDismissible: false,
-              builder: (_) => LNURLPaymentDialog(
-                parseResult,
-                onComplete: () {
-                  Map<String, String> qParams = {
-                    'amount': parseResult.maxSendable.toString(),
-                  };
-                  processLNURLPayment(parseResult, qParams, accountBloc);
-                },
-                onCancel: () {
-                  _handlingRequest = false;
-                  showFlushbar(_context, message: 'Payment Cancelled.');
-                },
-              ),
-            );
-          } else {
-            Navigator.of(_context).push(
-              FadeInRoute(
-                builder: (_) => LNURLPaymentPage(
-                  payParams: parseResult,
-                  onSubmit: (payerDataMap) {
-                    processLNURLPayment(parseResult, payerDataMap, accountBloc);
-                  },
-                ),
-              ),
-            );
-            _handlingRequest = false;
-          }
-          break;
-        case LNURLWithdrawParams:
-          _handlingRequest = false;
-          throw Exception("Withdraw is not implemented yet.");
-        default:
-          _handlingRequest = false;
-          throw Exception("Not implemented.");
-      }
-    }).onError((error) {
-      _setLoading(false);
-      showFlushbar(_context, message: error.toString());
-    });
+    } else {
+      Navigator.of(_context).push(
+        FadeInRoute(
+          builder: (_) => LNURLPaymentPage(
+            payParams: payParams,
+            onSubmit: (payerDataMap) {
+              processLNURLPayment(payParams, payerDataMap, accountBloc);
+            },
+          ),
+        ),
+      );
+      _handlingRequest = false;
+    }
   }
 
   Future<void> processLNURLPayment(
@@ -200,5 +178,32 @@ class InputHandler {
         return successAction.message!;
     }
     return '';
+  }
+
+  void handleInput(InputState inputState) {
+    if (inputState.invoice != null) {
+      handleInvoice(inputState.invoice);
+    }
+    final lnurlParseResult = inputState.lnurlParseResult;
+    if (lnurlParseResult != null) {
+      if (lnurlParseResult.payParams != null) {
+        handleLNURLPayRequest(lnurlParseResult.payParams);
+      }
+      if (lnurlParseResult.withdrawalParams != null) {}
+    }
+  }
+
+  void handleInvoice(Invoice? invoice) {
+    showDialog(
+      useRootNavigator: false,
+      context: _context,
+      barrierDismissible: false,
+      builder: (_) => payment_request.PaymentRequestDialog(
+        invoice!,
+        firstPaymentItemKey,
+        scrollController,
+        () => _handlingRequest = false,
+      ),
+    );
   }
 }

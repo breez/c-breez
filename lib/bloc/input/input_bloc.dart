@@ -19,13 +19,12 @@ class InputBloc extends Cubit<InputState> {
   final AppStorage _appStorage;
   final lntoolkit.LightningNode _lightningNode;
 
-  final _lnurlParseResultController = StreamController<dynamic>.broadcast();
-  Stream<dynamic> get lnurlParseResultStream =>
-      _lnurlParseResultController.stream;
   final _decodeInvoiceController = StreamController<String>();
 
-  InputBloc(this._lightningLinks, this._device, this._appStorage, this._lightningNode) : super(InputState(null)) {
-    _watchIncomingInvoices().listen((invoice) => emit(InputState(invoice)));
+  InputBloc(
+      this._lightningLinks, this._device, this._appStorage, this._lightningNode)
+      : super(InputState()) {
+    _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
   void addIncomingInput(String bolt11) {
@@ -33,28 +32,35 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future trackPayment(String paymentHash) {
-    return _lightningNode.getNodeAPI().incomingPaymentsStream().where((p) => p.paymentHash == paymentHash).first;
+    return _lightningNode
+        .getNodeAPI()
+        .incomingPaymentsStream()
+        .where((p) => p.paymentHash == paymentHash)
+        .first;
   }
 
-  Stream<Invoice?> _watchIncomingInvoices() {
-    return Rx.merge([_decodeInvoiceController.stream, _lightningLinks.linksNotifications, _device.distinctClipboardStream])
-        .asyncMap((s) async {
-
+  Stream<InputState?> _watchIncomingInvoices() {
+    return Rx.merge([
+      _decodeInvoiceController.stream,
+      _lightningLinks.linksNotifications,
+      _device.distinctClipboardStream
+    ]).asyncMap((s) async {
       final command = await lntoolkit.InputParser().parse(s);
       switch (command.protocol) {
         case lntoolkit.InputProtocol.paymentRequest:
           return handlePaymentRequest(s, command);
-        case lntoolkit.InputProtocol.lnurlPay:
-          return handleLNURLPayRequest(s, command);
-        case lntoolkit.InputProtocol.lnurlWithdraw:
-          return handleLNURLWithdrawRequest(s, command);
+        case lntoolkit.InputProtocol.lnurl:
+          return InputState(
+            lnurlParseResult: command.decoded as LNURLParseResult,
+          );
         default:
           return null;
       }
-    }).where((invoice) => invoice != null);
+    }).where((inputState) => inputState != null);
   }
 
-  Future<Invoice?> handlePaymentRequest(String raw, lntoolkit.ParsedInput command) async {
+  Future<InputState?> handlePaymentRequest(
+      String raw, lntoolkit.ParsedInput command) async {
     final lnInvoice = command.decoded as lntoolkit.LNInvoice;
     var nodeState = await _appStorage.watchNodeState().first;
     if (nodeState == null || nodeState.nodeID == lnInvoice.payeePubkey) {
@@ -67,24 +73,7 @@ class InputBloc extends Cubit<InputState> {
         amountMsat: lnInvoice.amount ?? 0,
         expiry: lnInvoice.expiry);
 
-    return invoice;
-  }
-
-  Future<Invoice?> handleLNURLPayRequest(
-      String raw, lntoolkit.ParsedInput command) async {
-    /* TODO: Open a page or a dialog to supply PayerData & comment string,
-        specify payment amount bounded by <minSendable-maxSendable>
-        with domain name in the title and a way to display sent metadata
-    */
-    final payRequest = command.decoded as LNURLPayParams;
-    _lnurlParseResultController.add(payRequest);
-  }
-
-  Future<Invoice?> handleLNURLWithdrawRequest(
-      String raw, lntoolkit.ParsedInput command) async {
-    final withdrawRequest = command.decoded as LNURLWithdrawParams;
-    _lnurlParseResultController.add(withdrawRequest);
-    throw Exception('Not implemented yet.');
+    return InputState(invoice: invoice);
   }
 
   Stream<DecodedClipboardData> get decodedClipboardStream => _device.rawClipboardStream.map((clipboardData) {

@@ -13,14 +13,9 @@ class InputParser {
     String lower = s.toLowerCase();
     try {
       LNURLParseResult parseResult = await getParams(lower);
-      if (parseResult.payParams != null) {
-        return ParsedInput(InputProtocol.lnurlPay, parseResult.payParams);
-      }
-      if (parseResult.withdrawalParams != null) {
-        return ParsedInput(
-          InputProtocol.lnurlWithdraw,
-          parseResult.withdrawalParams,
-        );
+      if (parseResult.payParams != null ||
+          parseResult.withdrawalParams != null) {
+        return ParsedInput(InputProtocol.lnurl, parseResult);
       }
     } catch (error) {
       // do nothing
@@ -64,7 +59,7 @@ String? _extractBolt11FromBip21(String bip21) {
   return null;
 }
 
-enum InputProtocol {paymentRequest, lnurlPay, lnurlWithdraw}
+enum InputProtocol { paymentRequest, lnurl }
 
 class ParsedInput {
   final InputProtocol protocol;

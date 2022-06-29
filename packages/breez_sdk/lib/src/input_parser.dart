@@ -9,23 +9,27 @@ class InputParser {
   static RegExp lnurlRfc17Prefix = RegExp("(lnurl)(c|w|p)");
 
   Future<ParsedInput> parse(String s) async {
-    // lightning link
+    // lnurl
     String lower = s.toLowerCase();
-    if (lower.startsWith("lightning:")) {
-      final invoice = await _lnToolkit.parseInvoice(invoice: s.substring(10));
-      return ParsedInput(InputProtocol.paymentRequest, invoice);
+    try {
+      LNURLParseResult parseResult = await getParams(lower);
+      if (parseResult.payParams != null) {
+        return ParsedInput(InputProtocol.lnurlPay, parseResult.payParams);
+      }
+      if (parseResult.withdrawalParams != null) {
+        return ParsedInput(
+          InputProtocol.lnurlWithdraw,
+          parseResult.withdrawalParams,
+        );
+      }
+    } catch (error) {
+      // do nothing
     }
 
-    // lnurl
-    LNURLParseResult parseResult = await getParams(lower);
-    if (parseResult.payParams != null) {
-      return ParsedInput(InputProtocol.lnurlPay, parseResult.payParams);
-    }
-    if (parseResult.withdrawalParams != null) {
-      return ParsedInput(
-        InputProtocol.lnurlWithdraw,
-        parseResult.withdrawalParams,
-      );
+    // lightning link
+    if (lower.startsWith('lightning:')) {
+      final invoice = await _lnToolkit.parseInvoice(invoice: s.substring(10));
+      return ParsedInput(InputProtocol.paymentRequest, invoice);
     }
 
     // bolt 11 lightning
@@ -37,8 +41,9 @@ class InputParser {
     try {
       final invoice = await _lnToolkit.parseInvoice(invoice: lower);
       return ParsedInput(InputProtocol.paymentRequest, invoice);
-    } catch(e) {}
-
+    } catch (e) {
+      // do nothing
+    }
     throw Exception("not implemented");
   }
 }

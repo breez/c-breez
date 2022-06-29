@@ -286,7 +286,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "62d19404e1d10ea414f027e8732353f7bdd36990"
+      resolved-ref: "4e1664381098cbab304250264c20114705d60079"
       url: "https://github.com/breez/dart_lnurl"
     source: git
     version: "0.1.0"
@@ -567,7 +567,7 @@ packages:
       name: flutter_svg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -1275,7 +1275,7 @@ packages:
       name: sqlite3_flutter_libs
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.7"
+    version: "0.5.8"
   sqlparser:
     dependency: transitive
     description:

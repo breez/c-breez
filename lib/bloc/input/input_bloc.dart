@@ -78,7 +78,6 @@ class InputBloc extends Cubit<InputState> {
     */
     final payRequest = command.decoded as LNURLPayParams;
     _lnurlParseResultController.add(payRequest);
-    throw Exception('Not implemented yet.');
   }
 
   Future<Invoice?> handleLNURLWithdrawRequest(

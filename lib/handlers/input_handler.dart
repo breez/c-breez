@@ -1,13 +1,16 @@
 import 'dart:convert';
 
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/lnurl/lnurl_payment_dialog.dart';
+import 'package:c_breez/routes/lnurl/success_action_dialog.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
     as payment_request;
 import 'package:dart_lnurl/dart_lnurl.dart';
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
@@ -30,6 +33,7 @@ class InputHandler {
     this.scrollController,
     this.scaffoldController,
   ) {
+    final AccountBloc accountBloc = _context.read<AccountBloc>();
     final InputBloc inputBloc = _context.read<InputBloc>();
     inputBloc.stream.listen((invoiceState) {
       if (_handlingRequest || invoiceState.invoice == null) {
@@ -70,7 +74,7 @@ class InputHandler {
                   Map<String, String> qParams = {
                     'amount': parseResult.maxSendable.toString(),
                   };
-                  processLNURLPayment(parseResult, qParams);
+                  processLNURLPayment(parseResult, qParams, accountBloc);
                 },
                 onCancel: () {
                   _handlingRequest = false;
@@ -84,7 +88,7 @@ class InputHandler {
                 builder: (_) => LNURLPaymentPage(
                   payParams: parseResult,
                   onSubmit: (payerDataMap) {
-                    processLNURLPayment(parseResult, payerDataMap);
+                    processLNURLPayment(parseResult, payerDataMap, accountBloc);
                   },
                 ),
               ),
@@ -108,10 +112,10 @@ class InputHandler {
   Future<void> processLNURLPayment(
     LNURLPayParams parseResult,
     Map<String, String> qParams,
+    AccountBloc accountBloc,
   ) async {
     {
       try {
-        // final AccountBloc accountBloc = _context.read<AccountBloc>();
         _setLoading(true);
         final texts = _context.texts();
         /*
@@ -132,17 +136,33 @@ class InputHandler {
             {
               pr: string, // bech32-serialized lightning invoice
               routes: [] // an empty array
+              "successAction": Object (optional)
             }
             or
             {"status":"ERROR", "reason":"error details..."}
         */
         Map<String, dynamic> decoded = json.decode(response.body);
-        String bech32SerializedLNInvoice = decoded['pr'];
+        LNURLPayResult lnurlPayResult = LNURLPayResult.fromJson(decoded);
         /* TODO:
             7. LN WALLET Verifies that h tag in provided invoice is a hash of metadata string converted to byte array in UTF-8 encoding.
             8. LN WALLET Verifies that amount in provided invoice equals the amount previously specified by user.
             9. LN WALLET pays the invoice, no additional user confirmation is required at this point.
         */
+        await accountBloc
+            .sendPayment(lnurlPayResult.pr, Int64.parseInt(qParams['amount']!))
+            .whenComplete(() {
+          LNURLPaySuccessAction? successAction = lnurlPayResult.successAction;
+          if (successAction != null) {
+            showDialog(
+              useRootNavigator: false,
+              context: _context,
+              builder: (_) => SuccessActionDialog(
+                getSuccessActionMessage(lnurlPayResult, successAction),
+                url: successAction.url,
+              ),
+            );
+          }
+        });
         _handlingRequest = false;
         _setLoading(false);
       } catch (error) {
@@ -164,5 +184,21 @@ class InputHandler {
       Navigator.removeRoute(_context, _loaderRoute!);
       _loaderRoute = null;
     }
+  }
+
+  String getSuccessActionMessage(
+      LNURLPayResult lnurlPayResult, LNURLPaySuccessAction successAction) {
+    switch (successAction.tag) {
+      case 'aes':
+        return decryptSuccessActionAesPayload(
+          preimage: lnurlPayResult.pr,
+          successAction: successAction,
+        );
+      case 'url':
+        return successAction.description!;
+      case 'message':
+        return successAction.message!;
+    }
+    return '';
   }
 }

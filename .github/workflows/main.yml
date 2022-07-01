@@ -24,8 +24,10 @@ jobs:
       - name: compile rust library
         run: |
           cd packages/breez_sdk/rust
-          rustup target add aarch64-linux-android
+          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
           make target/aarch64-linux-android/release/liblightning_toolkit.so
+          make target/armv7-linux-androideabi/release/liblightning_toolkit.so
+          make target/x86_64-linux-android/release/liblightning_toolkit.so
 
       - uses: actions/setup-java@v2
         with:
@@ -45,10 +47,10 @@ jobs:
         run: flutter pub get
 
       - name: build-apk
-        run: flutter build apk
+        run: flutter build apk --split-per-abi
 
       - name: Upload apk
         uses: actions/upload-artifact@v3
         with:
           name: c-breez
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-*.apk

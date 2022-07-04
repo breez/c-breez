@@ -3,7 +3,6 @@ import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/lnurl/lnurl_payment_dialog.dart';
-import 'package:c_breez/routes/lnurl/success_action_dialog.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -96,19 +95,7 @@ class InputHandler {
             await accountBloc.getPaymentResult(payParams, qParams);
         await accountBloc
             .sendPayment(lnurlPayResult.pr, Int64.parseInt(qParams['amount']!))
-            .whenComplete(() {
-          LNURLPaySuccessAction? successAction = lnurlPayResult.successAction;
-          if (successAction != null) {
-            showDialog(
-              useRootNavigator: false,
-              context: _context,
-              builder: (_) => SuccessActionDialog(
-                getSuccessActionMessage(lnurlPayResult, successAction),
-                url: successAction.url,
-              ),
-            );
-          }
-        });
+            .whenComplete(() => handleSuccessAction(_context, lnurlPayResult));
         _handlingRequest = false;
         _setLoading(false);
       } catch (error) {

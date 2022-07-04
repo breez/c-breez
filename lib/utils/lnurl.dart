@@ -1,6 +1,8 @@
+import 'package:c_breez/routes/lnurl/success_action_dialog.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fimber/fimber.dart';
+import 'package:flutter/material.dart';
 
 RegExp _lnurlPrefix = RegExp(",*?((lnurl)([0-9]{1,}[a-z0-9]+){1})");
 
@@ -84,4 +86,18 @@ String getSuccessActionMessage(
       return successAction.message!;
   }
   return '';
+}
+
+handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
+  LNURLPaySuccessAction? successAction = payResult.successAction;
+  if (successAction != null) {
+    showDialog(
+      useRootNavigator: false,
+      context: context,
+      builder: (_) => SuccessActionDialog(
+        getSuccessActionMessage(payResult, successAction),
+        url: successAction.url,
+      ),
+    );
+  }
 }

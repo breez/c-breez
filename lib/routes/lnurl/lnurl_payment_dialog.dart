@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
+import 'package:c_breez/utils/lnurl.dart';
+import 'package:c_breez/widgets/loader.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +16,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class LNURLPaymentDialog extends StatefulWidget {
   final LNURLPayParams payParams;
   final Function() onComplete;
-  final Function() onCancel;
 
   const LNURLPaymentDialog(
     this.payParams, {
     required this.onComplete,
-    required this.onCancel,
     Key? key,
   }) : super(key: key);
 
@@ -137,7 +138,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
-            widget.onCancel();
+            widget.onComplete();
           },
           child: Text(
             texts.payment_request_dialog_action_cancel,
@@ -156,8 +157,25 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                   .color!; // Defer to the widget's default.
             }),
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
+          onPressed: () async {
+            // Create loader and process payment
+            final navigator = Navigator.of(context);
+            navigator.pop();
+            var loaderRoute = createLoaderRoute(context);
+
+            Map<String, String> qParams = {
+              'amount': widget.payParams.maxSendable.toString(),
+            };
+            final AccountBloc accountBloc = context.read<AccountBloc>();
+            LNURLPayResult lnurlPayResult =
+                await accountBloc.getPaymentResult(widget.payParams, qParams);
+            await accountBloc
+                .sendPayment(
+                    lnurlPayResult.pr, Int64.parseInt(qParams['amount']!))
+                .whenComplete(
+                    () => handleSuccessAction(context, lnurlPayResult));
+
+            navigator.removeRoute(loaderRoute);
             widget.onComplete();
           },
           child: Text(

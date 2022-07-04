@@ -4,9 +4,11 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
+import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
@@ -20,12 +22,12 @@ import 'widgets/lnurl_metadata.dart';
 
 class LNURLPaymentPage extends StatefulWidget {
   final LNURLPayParams payParams;
-  final Function(Map<String, String>) onSubmit;
+  final Function() onComplete;
 
   const LNURLPaymentPage({
     Key? key,
     required this.payParams,
-    required this.onSubmit,
+    required this.onComplete,
   }) : super(key: key);
 
   @override
@@ -160,8 +162,9 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       bottomNavigationBar: SingleButtonBottomBar(
         stickToBottom: true,
         text: "PAY",
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
+            // Create payerDataMap
             final Int64 amount = Int64.parseInt(_amountController.text) * 1000;
             final String comment = _commentController.text;
             final PayerData payerData = PayerData(
@@ -189,8 +192,22 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               "comment": comment.toString(),
               "payerData": json.encode(payerData.toJson()),
             };
-            Navigator.of(context).pop();
-            widget.onSubmit(payerDataMap);
+            // Create loader and process payment
+            final navigator = Navigator.of(context);
+            navigator.pop();
+            var loaderRoute = createLoaderRoute(context);
+
+            final AccountBloc accountBloc = context.read<AccountBloc>();
+            LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(
+                widget.payParams, payerDataMap);
+            await accountBloc
+                .sendPayment(
+                lnurlPayResult.pr, Int64.parseInt(payerDataMap['amount']!))
+                .whenComplete(
+                    () => handleSuccessAction(context, lnurlPayResult));
+
+            navigator.removeRoute(loaderRoute);
+            widget.onComplete();
           }
         },
       ),

@@ -164,6 +164,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
         text: "PAY",
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
+            final AccountBloc accountBloc = context.read<AccountBloc>();
+
             // Create payerDataMap
             final Int64 amount = Int64.parseInt(_amountController.text) * 1000;
             final String comment = _commentController.text;
@@ -197,14 +199,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             navigator.pop();
             var loaderRoute = createLoaderRoute(context);
 
-            final AccountBloc accountBloc = context.read<AccountBloc>();
-            LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(
-                widget.payParams, payerDataMap);
-            await accountBloc
-                .sendPayment(
-                lnurlPayResult.pr, Int64.parseInt(payerDataMap['amount']!))
-                .whenComplete(
-                    () => handleSuccessAction(context, lnurlPayResult));
+            await accountBloc.sendLNURLPayment(widget.payParams, payerDataMap).then((lnurlPayResult) => handleSuccessAction(context, lnurlPayResult));
 
             navigator.removeRoute(loaderRoute);
             widget.onComplete();

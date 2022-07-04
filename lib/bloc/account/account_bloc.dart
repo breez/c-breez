@@ -129,11 +129,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _syncSettledInvoices();
   }
 
-  Future<LNURLPayResult> getPaymentResult(
-      LNURLPayParams payParams,
-      Map<String, String> qParams,
-      ) async {
-    return await _lightningNode.getPaymentResult(payParams, qParams);
+  Future<LNURLPayResult> sendLNURLPayment(LNURLPayParams payParams,
+      Map<String, String> qParams) async {
+    final LNURLPayResult lnurlPayResult = await _lightningNode.getPaymentResult(payParams, qParams);
+    await _lightningNode.sendPaymentForRequest(lnurlPayResult.pr, amount: Int64.parseInt(qParams['amount']!));
+    await syncStateWithNode();
+    return lnurlPayResult;
   }
 
   Future sendPayment(String bolt11, Int64 amountSat) async {

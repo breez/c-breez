@@ -18,10 +18,12 @@ dependencies:
   ffi: ^1.2.1
   fimber: ^0.6.6
   fimber_io: ^0.6.6
+  fixnum: ^1.0.1
   flutter_rust_bridge: ^1.34.2
   freezed_annotation: ^2.0.3
   grpc: ^3.0.2
   hex: ^0.2.0
+  http: ^0.13.4
   ini: ^2.1.0
   protobuf: ^2.1.0
 

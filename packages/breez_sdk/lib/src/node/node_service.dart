@@ -2,7 +2,9 @@ import 'dart:typed_data';
 
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
+import 'package:breez_sdk/src/utils/lnurl_utils.dart' as lnurl_utils;
 import 'package:breez_sdk/src/utils/retry.dart';
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 
@@ -141,6 +143,10 @@ class LightningNode {
 
   Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) {
     return _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
+  }
+
+  Future<LNURLPayResult> getPaymentResult(LNURLPayParams payParams, Map<String, String> qParams) async {
+    return await lnurl_utils.getPaymentResult(payParams, qParams);
   }
 }
 

@@ -119,9 +119,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   )} sats.',
                 ),
               ],
-              if (widget.payParams.payerData != null &&
-                  widget.payParams.payerData!.name != null &&
-                  widget.payParams.payerData!.name!.mandatory) ...[
+              if (widget.payParams.payerData?.name?.mandatory == true) ...[
                 TextFormField(
                   controller: _nameController,
                   keyboardType: TextInputType.name,
@@ -130,9 +128,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                       : texts.breez_avatar_dialog_your_name,
                 )
               ],
-              if (widget.payParams.payerData != null &&
-                  widget.payParams.payerData!.auth != null &&
-                  widget.payParams.payerData!.auth!.mandatory) ...[
+              if (widget.payParams.payerData?.auth?.mandatory == true) ...[
                 TextFormField(
                   controller: _k1Controller,
                   keyboardType: TextInputType.text,
@@ -140,9 +136,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                       value != null ? null : "Please enter a k1",
                 )
               ],
-              if (widget.payParams.payerData != null &&
-                  widget.payParams.payerData!.email != null &&
-                  widget.payParams.payerData!.email!.mandatory) ...[
+              if (widget.payParams.payerData?.email?.mandatory == true) ...[
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -153,9 +147,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                       : texts.order_card_country_email_empty,
                 )
               ],
-              if (widget.payParams.payerData != null &&
-                  widget.payParams.payerData!.identifier != null &&
-                  widget.payParams.payerData!.identifier!.mandatory) ...[
+              if (widget.payParams.payerData?.identifier?.mandatory ==
+                  true) ...[
                 TextFormField(
                   controller: _identifierController,
                 )
@@ -174,9 +167,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             final PayerData payerData = PayerData(
               name:
                   _nameController.text.isNotEmpty ? _nameController.text : null,
-              pubkey: widget.payParams.payerData != null &&
-                      widget.payParams.payerData!.pubkey != null &&
-                      widget.payParams.payerData!.pubkey!.mandatory
+              pubkey: widget.payParams.payerData?.pubkey?.mandatory == true
                   ? 'hex(<randomly generated secp256k1 pubkey>)'
                   : null,
               auth: _k1Controller.text.isNotEmpty

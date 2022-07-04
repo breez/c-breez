@@ -198,9 +198,18 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             final navigator = Navigator.of(context);
             navigator.pop();
             var loaderRoute = createLoaderRoute(context);
-
-            await accountBloc.sendLNURLPayment(widget.payParams, payerDataMap).then((lnurlPayResult) => handleSuccessAction(context, lnurlPayResult));
-
+            navigator.push(loaderRoute);
+            await accountBloc
+                .sendLNURLPayment(widget.payParams, payerDataMap)
+                .onError(
+              (error, stackTrace) {
+                navigator.removeRoute(loaderRoute);
+                widget.onComplete();
+                throw Exception(error.toString());
+              },
+            ).then(
+              (lnurlPayResult) => handleSuccessAction(context, lnurlPayResult),
+            );
             navigator.removeRoute(loaderRoute);
             widget.onComplete();
           }

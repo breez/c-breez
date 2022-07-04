@@ -164,10 +164,21 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             final navigator = Navigator.of(context);
             navigator.pop();
             var loaderRoute = createLoaderRoute(context);
-
-            Map<String, String> qParams = {'amount': widget.payParams.maxSendable.toString()};
-            await accountBloc.sendLNURLPayment(widget.payParams, qParams).then((lnurlPayResult) => handleSuccessAction(context, lnurlPayResult));
-
+            navigator.push(loaderRoute);
+            Map<String, String> qParams = {
+              'amount': widget.payParams.maxSendable.toString()
+            };
+            await accountBloc
+                .sendLNURLPayment(widget.payParams, qParams)
+                .onError(
+              (error, stackTrace) {
+                navigator.removeRoute(loaderRoute);
+                widget.onComplete();
+                throw Exception(error.toString());
+              },
+            ).then(
+              (lnurlPayResult) => handleSuccessAction(context, lnurlPayResult),
+            );
             navigator.removeRoute(loaderRoute);
             widget.onComplete();
           },

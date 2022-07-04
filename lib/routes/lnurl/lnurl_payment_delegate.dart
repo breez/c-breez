@@ -6,7 +6,7 @@ import 'lnurl_payment_dialog.dart';
 import 'lnurl_payment_page.dart';
 
 void handleLNURLPayRequest(
-    BuildContext context, LNURLPayParams payParams, Function onComplete) {
+    BuildContext context, LNURLPayParams payParams, Function() onComplete) {
   bool fixedAmount = payParams.minSendable == payParams.maxSendable;
   if (fixedAmount && !(payParams.commentAllowed > 0)) {
     // Show dialog if payment is of fixed amount with no payer comment allowed
@@ -14,12 +14,12 @@ void handleLNURLPayRequest(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => LNURLPaymentDialog(payParams, onComplete: onComplete()),
+      builder: (_) => LNURLPaymentDialog(payParams, onComplete: onComplete),
     );
   } else {
     Navigator.of(context).push(
       FadeInRoute(
-        builder: (_) => LNURLPaymentPage(payParams, onComplete: onComplete()),
+        builder: (_) => LNURLPaymentPage(payParams, onComplete: onComplete),
       ),
     );
   }

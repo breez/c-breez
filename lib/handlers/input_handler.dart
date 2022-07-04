@@ -33,6 +33,7 @@ class InputHandler {
       _handlingRequest = true;
       handleInput(inputState);
     }).onError((error) {
+      _handlingRequest = false;
       _setLoading(false);
       showFlushbar(_context, message: error.toString());
     });

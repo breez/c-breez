@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
-import 'package:breez_sdk/src/utils/lnurl_utils.dart' as lnurl_utils;
 import 'package:breez_sdk/src/utils/retry.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
+import 'package:http/http.dart' as http;
 
 import 'node_api/node_api.dart';
 
@@ -146,7 +147,28 @@ class LightningNode {
   }
 
   Future<LNURLPayResult> getPaymentResult(LNURLPayParams payParams, Map<String, String> qParams) async {
-    return await lnurl_utils.getPaymentResult(payParams, qParams);
+    /*
+     5. LN WALLET makes a GET request using
+        <callback><?|&>amount=<milliSatoshi>
+        amount being the amount specified by the user in millisatoshis.
+   */
+    Uri uri = Uri.parse(payParams.callback).replace(queryParameters: qParams);
+    var response = await http.get(uri).timeout(const Duration(seconds: 60));
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to call ${payParams.domain} API');
+    }
+    /*
+   6. LN Service takes the GET request and returns JSON response of form:
+      {
+        pr: string, // bech32-serialized lightning invoice
+        routes: [] // an empty array
+        "successAction": Object (optional)
+      }
+      or
+      {"status":"ERROR", "reason":"error details..."}
+  */
+    Map<String, dynamic> decoded = json.decode(response.body);
+    return LNURLPayResult.fromJson(decoded);
   }
 }
 

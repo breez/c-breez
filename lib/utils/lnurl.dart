@@ -1,3 +1,4 @@
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fimber/fimber.dart';
 
@@ -67,4 +68,20 @@ parseLightningAddress(String? uri) {
     _log.i('parseLightningAddress: got "$result"');
   }
   return result;
+}
+
+String getSuccessActionMessage(
+    LNURLPayResult lnurlPayResult, LNURLPaySuccessAction successAction) {
+  switch (successAction.tag) {
+    case 'aes':
+      return decryptSuccessActionAesPayload(
+        preimage: lnurlPayResult.pr,
+        successAction: successAction,
+      );
+    case 'url':
+      return successAction.description!;
+    case 'message':
+      return successAction.message!;
+  }
+  return '';
 }

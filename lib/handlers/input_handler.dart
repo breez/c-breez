@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/lnurl/lnurl_payment_dialog.dart';
 import 'package:c_breez/routes/lnurl/success_action_dialog.dart';
+import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
@@ -129,22 +130,6 @@ class InputHandler {
       Navigator.removeRoute(_context, _loaderRoute!);
       _loaderRoute = null;
     }
-  }
-
-  String getSuccessActionMessage(
-      LNURLPayResult lnurlPayResult, LNURLPaySuccessAction successAction) {
-    switch (successAction.tag) {
-      case 'aes':
-        return decryptSuccessActionAesPayload(
-          preimage: lnurlPayResult.pr,
-          successAction: successAction,
-        );
-      case 'url':
-        return successAction.description!;
-      case 'message':
-        return successAction.message!;
-    }
-    return '';
   }
 
   void handleInput(InputState inputState) {

@@ -9,6 +9,7 @@ void handleLNURLPayRequest(
     BuildContext context, LNURLPayParams payParams, Function onComplete) {
   bool fixedAmount = payParams.minSendable == payParams.maxSendable;
   if (fixedAmount && !(payParams.commentAllowed > 0)) {
+    // Show dialog if payment is of fixed amount with no payer comment allowed
     showDialog(
       useRootNavigator: false,
       context: context,
@@ -18,10 +19,7 @@ void handleLNURLPayRequest(
   } else {
     Navigator.of(context).push(
       FadeInRoute(
-        builder: (_) => LNURLPaymentPage(
-          payParams: payParams,
-          onComplete: onComplete(),
-        ),
+        builder: (_) => LNURLPaymentPage(payParams, onComplete: onComplete()),
       ),
     );
   }

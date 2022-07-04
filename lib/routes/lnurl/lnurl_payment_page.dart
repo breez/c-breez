@@ -24,9 +24,9 @@ class LNURLPaymentPage extends StatefulWidget {
   final LNURLPayParams payParams;
   final Function() onComplete;
 
-  const LNURLPaymentPage({
+  const LNURLPaymentPage(
+    this.payParams, {
     Key? key,
-    required this.payParams,
     required this.onComplete,
   }) : super(key: key);
 

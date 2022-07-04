@@ -51,8 +51,8 @@ class InputBloc extends Cubit<InputState> {
           return handlePaymentRequest(s, command);
         case lntoolkit.InputProtocol.lnurl:
           return InputState(
-            lnurlParseResult: command.decoded as LNURLParseResult,
-          );
+              protocol: command.protocol,
+              inputData: command.decoded as LNURLParseResult);
         default:
           return null;
       }
@@ -73,7 +73,7 @@ class InputBloc extends Cubit<InputState> {
         amountMsat: lnInvoice.amount ?? 0,
         expiry: lnInvoice.expiry);
 
-    return InputState(invoice: invoice);
+    return InputState(protocol: command.protocol, inputData: invoice);
   }
 
   Stream<DecodedClipboardData> get decodedClipboardStream => _device.rawClipboardStream.map((clipboardData) {

@@ -1,9 +1,8 @@
-import 'package:c_breez/models/invoice.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
+import 'package:breez_sdk/sdk.dart';
 
 class InputState {
-  final Invoice? invoice;
-  final LNURLParseResult? lnurlParseResult;
+  final InputProtocol? protocol;
+  final dynamic inputData;
 
-  InputState({this.invoice, this.lnurlParseResult});
+  InputState({this.protocol, this.inputData});
 }

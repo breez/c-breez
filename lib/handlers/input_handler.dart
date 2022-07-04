@@ -1,11 +1,12 @@
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/lnurl/lnurl_payment_delegate.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
     as payment_request;
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,9 +27,7 @@ class InputHandler {
   ) {
     final InputBloc inputBloc = _context.read<InputBloc>();
     inputBloc.stream.listen((inputState) {
-      if (_handlingRequest ||
-          inputState.invoice == null ||
-          inputState.lnurlParseResult == null) {
+      if (_handlingRequest || inputState.inputData == null) {
         return;
       }
       _handlingRequest = true;
@@ -40,24 +39,30 @@ class InputHandler {
   }
 
   void handleInput(InputState inputState) {
-    if (inputState.invoice != null) {
-      handleInvoice(inputState.invoice);
+    switch (inputState.protocol) {
+      case InputProtocol.paymentRequest:
+        handleInvoice(inputState.inputData);
+        return;
+      case InputProtocol.lnurl:
+        final LNURLParseResult lnurlParseResult = inputState.inputData;
+        if (lnurlParseResult.payParams != null) {
+          handleLNURLPayRequest(_context, lnurlParseResult.payParams!,
+              () => _handlingRequest = false);
+        }
+        if (lnurlParseResult.withdrawalParams != null) {}
+        return;
+      default:
+        break;
     }
-    final lnurlParseResult = inputState.lnurlParseResult;
-    if (lnurlParseResult?.payParams != null) {
-      handleLNURLPayRequest(_context, lnurlParseResult!.payParams!,
-          () => _handlingRequest = false);
-    }
-    if (lnurlParseResult?.withdrawalParams != null) {}
   }
 
-  void handleInvoice(Invoice? invoice) {
+  void handleInvoice(dynamic invoice) {
     showDialog(
       useRootNavigator: false,
       context: _context,
       barrierDismissible: false,
       builder: (_) => payment_request.PaymentRequestDialog(
-        invoice!,
+        invoice,
         firstPaymentItemKey,
         scrollController,
         () => _handlingRequest = false,

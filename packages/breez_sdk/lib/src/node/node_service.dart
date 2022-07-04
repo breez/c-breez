@@ -167,8 +167,11 @@ class LightningNode {
       or
       {"status":"ERROR", "reason":"error details..."}
   */
-    Map<String, dynamic> decoded = json.decode(response.body);
-    return LNURLPayResult.fromJson(decoded);
+    Map<String, dynamic> parsedJson = json.decode(response.body);
+    if (parsedJson['status'] == 'ERROR') {
+      throw Exception(parsedJson['reason']);
+    }
+    return LNURLPayResult.fromJson(parsedJson);
   }
 }
 

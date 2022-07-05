@@ -1,4 +1,4 @@
-import 'package:c_breez/bloc/transaction/transaction_state.dart';
+import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_speed_chooser_item.dart';
 import 'package:flutter/material.dart';
 

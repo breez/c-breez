@@ -2,7 +2,7 @@ import 'package:c_breez/bloc/transaction/transaction_state.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_speed_chooser_item.dart';
 import 'package:flutter/material.dart';
 
-class WithdrawFundsConfirmationSpeedChooser extends StatelessWidget {
+class WithdrawFundsConfirmationSpeedChooser extends StatefulWidget {
   final WithdrawFudsInfoState transaction;
 
   const WithdrawFundsConfirmationSpeedChooser(
@@ -11,9 +11,18 @@ class WithdrawFundsConfirmationSpeedChooser extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<WithdrawFundsConfirmationSpeedChooser> createState() =>
+      _WithdrawFundsConfirmationSpeedChooserState();
+}
+
+class _WithdrawFundsConfirmationSpeedChooserState
+    extends State<WithdrawFundsConfirmationSpeedChooser> {
+  double? _offset;
+
+  @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final speed = transaction.selectedSpeed;
+    final speed = widget.transaction.selectedSpeed;
 
     return SizedBox(
       height: 60,
@@ -30,22 +39,32 @@ class WithdrawFundsConfirmationSpeedChooser extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final third = constraints.maxWidth / 3;
-                final offset = third * speed.index; // TODO animation
-                return Row(
-                  children: [
-                    Container(
-                      width: offset,
-                    ),
-                    Container(
-                      width: third,
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(10),
+                final offset = third * speed.index;
+
+                return TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: _offset ?? offset, end: offset),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  builder: (context, offset, child) {
+                    _offset = offset;
+                    return Row(
+                      children: [
+                        Container(
+                          width: offset,
                         ),
-                        color: themeData.backgroundColor,
+                        child!,
+                      ],
+                    );
+                  },
+                  child: Container(
+                    width: third,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
                       ),
+                      color: themeData.backgroundColor,
                     ),
-                  ],
+                  ),
                 );
               },
             ),

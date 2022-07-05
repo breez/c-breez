@@ -1,5 +1,5 @@
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/bip21.dart';
@@ -20,7 +20,7 @@ class QrActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    InvoiceBloc invoiceBloc = context.read<InvoiceBloc>();
+    InputBloc inputBloc = context.read<InputBloc>();
 
     return Padding(
       padding: const EdgeInsets.only(top: 32.0),
@@ -40,7 +40,7 @@ class QrActionButton extends StatelessWidget {
 
           // regular lightning invoice.
           if (lower.startsWith("lightning:") || lower.startsWith("ln")) {
-            invoiceBloc.addIncomingInvoice(scannedString);
+            inputBloc.addIncomingInput(scannedString);
             return;
           }
 

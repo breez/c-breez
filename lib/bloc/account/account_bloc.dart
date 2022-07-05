@@ -15,6 +15,7 @@ import 'package:c_breez/models/withdrawal.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:c_breez/services/keychain.dart';
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
@@ -127,6 +128,21 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _syncPeers();
     await _syncOutgoingPayments();
     await _syncSettledInvoices();
+  }
+
+  Future<LNURLPayResult> sendLNURLPayment(LNURLPayParams payParams,
+      Map<String, String> qParams) async {
+    final LNURLPayResult lnurlPayResult = await _lightningNode.getPaymentResult(payParams, qParams);
+    await _lightningNode
+        .sendPaymentForRequest(lnurlPayResult.pr,
+            amount: Int64.parseInt(qParams['amount']!))
+        .timeout(
+          const Duration(minutes: 3),
+          onTimeout: () =>
+              throw Exception('Timed out waiting 3 minutes for payment.'),
+        );
+    await syncStateWithNode();
+    return lnurlPayResult;
   }
 
   Future sendPayment(String bolt11, Int64 amountSat) async {

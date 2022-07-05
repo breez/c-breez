@@ -1,23 +1,31 @@
+import 'package:dart_lnurl/dart_lnurl.dart';
+
 import '../bridge_generated.dart';
 import 'native_toolkit.dart';
 
-
 class InputParser {
-  final LightningToolkit _lnToolkit = getNativeToolkit();  
+  final LightningToolkit _lnToolkit = getNativeToolkit();
+  static RegExp lnurlPrefix = RegExp(",*?((lnurl)([0-9]{1,}[a-z0-9]+){1})");
+  static RegExp lnurlRfc17Prefix = RegExp("(lnurl)(c|w|p)");
 
   Future<ParsedInput> parse(String s) async {
+    // lnurl
+    String lower = s.toLowerCase();
+    try {
+      LNURLParseResult parseResult = await getParams(lower);
+      if (parseResult.payParams != null ||
+          parseResult.withdrawalParams != null) {
+        return ParsedInput(InputProtocol.lnurl, parseResult);
+      }
+    } catch (error) {
+      // do nothing
+    }
 
     // lightning link
-    String lower = s.toLowerCase();
-    if (lower.startsWith("lightning:")) {
+    if (lower.startsWith('lightning:')) {
       final invoice = await _lnToolkit.parseInvoice(invoice: s.substring(10));
       return ParsedInput(InputProtocol.paymentRequest, invoice);
     }
-
-    // lnurl
-    if (lower.startsWith("lnurl")) {
-      throw Exception("not implemented");
-    }    
 
     // bolt 11 lightning
     String? bolt11 = _extractBolt11FromBip21(lower);
@@ -28,8 +36,9 @@ class InputParser {
     try {
       final invoice = await _lnToolkit.parseInvoice(invoice: lower);
       return ParsedInput(InputProtocol.paymentRequest, invoice);
-    } catch(e) {}
-
+    } catch (e) {
+      // do nothing
+    }
     throw Exception("not implemented");
   }
 }
@@ -50,7 +59,7 @@ String? _extractBolt11FromBip21(String bip21) {
   return null;
 }
 
-enum InputProtocol {paymentRequest, lnurlPay, lnurlWithdraw}
+enum InputProtocol { paymentRequest, lnurl }
 
 class ParsedInput {
   final InputProtocol protocol;

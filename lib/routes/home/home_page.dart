@@ -1,12 +1,12 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/handlers/check_version_handler.dart';
-import 'package:c_breez/handlers/received_invoice_notification.dart';
+import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/user_profile.dart';
@@ -60,7 +60,7 @@ class HomeState extends State<Home> {
               return BlocBuilder<LSPBloc, LSPState>(
                 builder: (context, lspState) {
                   return StreamBuilder<DecodedClipboardData>(
-                    stream: context.read<InvoiceBloc>().decodedClipboardStream,
+                    stream: context.read<InputBloc>().decodedClipboardStream,
                     builder: (context, snapshot) {
                       return _build(
                         context,
@@ -127,7 +127,7 @@ class HomeState extends State<Home> {
     if (_listensInit) return;
     _listensInit = true;
 
-    InvoiceNotificationsHandler(
+    InputHandler(
       context,
       firstPaymentItemKey,
       scrollController,

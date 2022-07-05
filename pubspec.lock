@@ -281,6 +281,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  dart_lnurl:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "4e1664381098cbab304250264c20114705d60079"
+      url: "https://github.com/breez/dart_lnurl"
+    source: git
+    version: "0.1.0"
   dart_style:
     dependency: transitive
     description:
@@ -558,7 +567,7 @@ packages:
       name: flutter_svg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -960,7 +969,7 @@ packages:
       name: path_provider_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.15"
+    version: "2.0.16"
   path_provider_ios:
     dependency: transitive
     description:
@@ -1385,7 +1394,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.3"
+    version: "6.1.4"
   url_launcher_android:
     dependency: transitive
     description:

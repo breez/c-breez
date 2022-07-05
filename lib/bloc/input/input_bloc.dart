@@ -1,18 +1,19 @@
 import 'dart:async';
 
-import 'package:c_breez/bloc/invoice/invoice_state.dart';
-import 'package:c_breez/models/invoice.dart';
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
+import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/clipboard.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
-import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/utils/lnurl.dart';
+import 'package:c_breez/utils/node_id.dart';
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:rxdart/rxdart.dart';
 
-class InvoiceBloc extends Cubit<InvoiceState> {
+class InputBloc extends Cubit<InputState> {
   final LightningLinksService _lightningLinks;
   final Device _device;
   final AppStorage _appStorage;
@@ -20,33 +21,46 @@ class InvoiceBloc extends Cubit<InvoiceState> {
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InvoiceBloc(this._lightningLinks, this._device, this._appStorage, this._lightningNode) : super(InvoiceState(null)) {
-    _watchIncomingInvoices().listen((invoice) => emit(InvoiceState(invoice)));
+  InputBloc(
+      this._lightningLinks, this._device, this._appStorage, this._lightningNode)
+      : super(InputState()) {
+    _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
-  void addIncomingInvoice(String bolt11) {
+  void addIncomingInput(String bolt11) {
     _decodeInvoiceController.add(bolt11);
   }
 
   Future trackPayment(String paymentHash) {
-    return _lightningNode.getNodeAPI().incomingPaymentsStream().where((p) => p.paymentHash == paymentHash).first;
+    return _lightningNode
+        .getNodeAPI()
+        .incomingPaymentsStream()
+        .where((p) => p.paymentHash == paymentHash)
+        .first;
   }
 
-  Stream<Invoice?> _watchIncomingInvoices() {
-    return Rx.merge([_decodeInvoiceController.stream, _lightningLinks.linksNotifications, _device.distinctClipboardStream])
-        .asyncMap((s) async {
-
+  Stream<InputState?> _watchIncomingInvoices() {
+    return Rx.merge([
+      _decodeInvoiceController.stream,
+      _lightningLinks.linksNotifications,
+      _device.distinctClipboardStream
+    ]).asyncMap((s) async {
       final command = await lntoolkit.InputParser().parse(s);
       switch (command.protocol) {
         case lntoolkit.InputProtocol.paymentRequest:
           return handlePaymentRequest(s, command);
+        case lntoolkit.InputProtocol.lnurl:
+          return InputState(
+              protocol: command.protocol,
+              inputData: command.decoded as LNURLParseResult);
         default:
           return null;
       }
-    }).where((invoice) => invoice != null);
+    }).where((inputState) => inputState != null);
   }
 
-  Future<Invoice?> handlePaymentRequest(String raw, lntoolkit.ParsedInput command) async {
+  Future<InputState?> handlePaymentRequest(
+      String raw, lntoolkit.ParsedInput command) async {
     final lnInvoice = command.decoded as lntoolkit.LNInvoice;
     var nodeState = await _appStorage.watchNodeState().first;
     if (nodeState == null || nodeState.nodeID == lnInvoice.payeePubkey) {
@@ -59,7 +73,7 @@ class InvoiceBloc extends Cubit<InvoiceState> {
         amountMsat: lnInvoice.amount ?? 0,
         expiry: lnInvoice.expiry);
 
-    return invoice;
+    return InputState(protocol: command.protocol, inputData: invoice);
   }
 
   Stream<DecodedClipboardData> get decodedClipboardStream => _device.rawClipboardStream.map((clipboardData) {

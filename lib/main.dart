@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:fimber/fimber.dart';
@@ -53,9 +53,9 @@ void main() async {
                     injector.keychain,
                   ),
                 ),
-                BlocProvider<InvoiceBloc>(
+                BlocProvider<InputBloc>(
                   create: (BuildContext context) =>
-                      InvoiceBloc(injector.lightningLinks, injector.device, injector.appStorage, lightningServices),
+                      InputBloc(injector.lightningLinks, injector.device, injector.appStorage, lightningServices),
                 ),
                 BlocProvider<UserProfileBloc>(
                   create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),

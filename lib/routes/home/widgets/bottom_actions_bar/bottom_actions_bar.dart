@@ -4,7 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/bloc/invoice/invoice_bloc.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
@@ -64,13 +64,13 @@ class BottomActionsBar extends StatelessWidget {
 
   Future _showSendOptions(BuildContext context) async {
     final texts = AppLocalizations.of(context)!;
-    final invoiceBloc = context.read<InvoiceBloc>();
+    final inputBloc = context.read<InputBloc>();
 
     await showModalBottomSheet(
       context: context,
       builder: (ctx) {
         return StreamBuilder<DecodedClipboardData>(
-          stream: invoiceBloc.decodedClipboardStream,
+          stream: inputBloc.decodedClipboardStream,
           builder: (context, snapshot) {
             final connected = account.status == AccountStatus.CONNECTED;
             return Column(
@@ -89,7 +89,7 @@ class BottomActionsBar extends StatelessWidget {
                   ),
                   onTap: () => _pasteTapped(
                     context,
-                    invoiceBloc,
+                    inputBloc,
                     snapshot.data,
                   ),
                 ),
@@ -191,14 +191,14 @@ class BottomActionsBar extends StatelessWidget {
 
   void _pasteTapped(
     BuildContext context,
-    InvoiceBloc invoiceBloc,
+    InputBloc inputBloc,
     DecodedClipboardData? clipboardData,
   ) async {
     Navigator.of(context).pop();
     if (clipboardData != null) {
       final data = clipboardData.data;
       if (clipboardData.type == ClipboardDataType.paymentRequest) {
-        invoiceBloc.addIncomingInvoice(data ?? "");
+        inputBloc.addIncomingInput(data ?? "");
       } else if (clipboardData.type == ClipboardDataType.nodeID) {
         Navigator.of(context).push(FadeInRoute(
           builder: (_) => SpontaneousPaymentPage(data, firstPaymentItemKey),
@@ -211,7 +211,7 @@ class BottomActionsBar extends StatelessWidget {
         barrierDismissible: false,
         builder: (_) => EnterPaymentInfoDialog(
           context,
-          invoiceBloc,
+          inputBloc,
           firstPaymentItemKey,
         ),
       );

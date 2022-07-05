@@ -44,6 +44,12 @@ class QrActionButton extends StatelessWidget {
             inputBloc.addIncomingInput(scannedString);
             return;
           }
+          // lnurl
+          final uri = Uri.tryParse(scannedString);
+          if(uri?.queryParameters['lightning'] != null) {
+            inputBloc.addIncomingInput(scannedString);
+            return;
+          }
 
           var nodeID = parseNodeId(scannedString);
           if (nodeID != null) {

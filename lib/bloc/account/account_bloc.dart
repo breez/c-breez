@@ -130,6 +130,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _syncSettledInvoices();
   }
 
+  Future<bool> processLNURLWithdraw(
+      LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
+    bool isSent = await _lightningNode
+        .processWithdrawRequest(withdrawParams, qParams)
+        .timeout(
+          const Duration(minutes: 3),
+          onTimeout: () =>
+              throw Exception('Timed out waiting 3 minutes for payment.'),
+        );
+    await syncStateWithNode();
+    return isSent;
+  }
+
   Future<LNURLPayResult> sendLNURLPayment(LNURLPayParams payParams,
       Map<String, String> qParams) async {
     final LNURLPayResult lnurlPayResult = await _lightningNode.getPaymentResult(payParams, qParams);

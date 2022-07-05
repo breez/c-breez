@@ -2,6 +2,7 @@ import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_delegate.dart';
+import 'package:c_breez/routes/lnurl/withdraw/lnurl_withdraw_dialog.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
@@ -50,7 +51,12 @@ class InputHandler {
           handleLNURLPayRequest(_context, lnurlParseResult.payParams!,
               () => _handlingRequest = false);
         }
-        if (lnurlParseResult.withdrawalParams != null) {}
+        if (lnurlParseResult.withdrawalParams != null) {
+          handleLNURLWithdrawRequest(
+              _context,
+              lnurlParseResult.withdrawalParams!,
+              () => _handlingRequest = false);
+        }
         return;
       default:
         break;
@@ -69,6 +75,22 @@ class InputHandler {
         () => _handlingRequest = false,
       ),
     );
+  }
+
+  void handleLNURLWithdrawRequest(BuildContext context,
+      LNURLWithdrawParams withdrawParams, Function() onComplete) {
+    bool fixedAmount =
+        withdrawParams.minWithdrawable == withdrawParams.maxWithdrawable;
+    if (fixedAmount) {
+      // Show dialog if payment is of fixed amount with no payer comment allowed
+      showDialog(
+        useRootNavigator: false,
+        context: context,
+        barrierDismissible: false,
+        builder: (_) =>
+            LNURLWithdrawDialog(withdrawParams, onComplete: onComplete),
+      );
+    }
   }
 
   _setLoading(bool visible) {

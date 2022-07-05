@@ -1,7 +1,7 @@
 import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/routes/lnurl/lnurl_payment_delegate.dart';
+import 'package:c_breez/routes/lnurl/payment/lnurl_payment_delegate.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'

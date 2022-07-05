@@ -20,22 +20,22 @@ class BubblePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     double height = (size.height - kToolbarHeight);
     canvas.drawCircle(
-      Offset(size.width / 2, height * 0.36),
+      Offset(size.width / 2, height * 0.4),
       _kBubbleRadius,
       bubblePaint,
     );
     canvas.drawCircle(
-      Offset(size.width * 0.39, height * 0.59),
+      Offset(size.width * 0.39, height * 0.6),
       _kBubbleRadius * 1.5,
       bubblePaint,
     );
     canvas.drawCircle(
-      Offset(size.width * 0.65, height * 0.71),
+      Offset(size.width * 0.65, height * 0.7),
       _kBubbleRadius * 1.25,
       bubblePaint,
     );
     canvas.drawCircle(
-      Offset(size.width / 2, height * 0.80),
+      Offset(size.width / 2, height * 0.8),
       _kBubbleRadius * 0.75,
       bubblePaint,
     );

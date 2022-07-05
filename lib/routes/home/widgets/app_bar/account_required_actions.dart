@@ -2,14 +2,13 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/routes/home/widgets/app_bar/select_provider_error_dialog.dart';
+import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'select_provider_error_dialog.dart';
-import 'warning_action.dart';
 
 class AccountRequiredActionsIndicator extends StatelessWidget {
   const AccountRequiredActionsIndicator({
@@ -45,7 +44,9 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
 
     if (walletBalance > 0) {
       warnings.add(
-        WarningAction(() => navigatorState.pushNamed("/send_coins")),
+        WarningAction(
+          () => navigatorState.pushNamed("/withdraw_funds_address"),
+        ),
       );
     }
 

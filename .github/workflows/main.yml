@@ -1,0 +1,54 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: compile rust library
+        run: |
+          cd packages/breez_sdk/rust
+          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+          make target/aarch64-linux-android/release/liblightning_toolkit.so
+          make target/armv7-linux-androideabi/release/liblightning_toolkit.so
+          make target/x86_64-linux-android/release/liblightning_toolkit.so
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Setup the flutter environment.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          # flutter-version: '3.0.3'
+
+      - name: flutter-doctor
+        run: flutter doctor
+
+      - name: pub-get
+        run: flutter pub get
+
+      - name: build-apk
+        run: flutter build apk --split-per-abi
+
+      - name: Upload apk
+        uses: actions/upload-artifact@v3
+        with:
+          name: c-breez
+          path: build/app/outputs/flutter-apk/app-*.apk

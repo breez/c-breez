@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:c_breez/bloc/transaction/transaction_bloc.dart';
-import 'package:c_breez/bloc/transaction/transaction_state.dart';
+import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
+import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

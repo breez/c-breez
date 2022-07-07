@@ -67,7 +67,7 @@ dependencies:
   share_extend: ^2.0.0
   shared_preferences: ^2.0.15
   simple_animations: ^4.2.0
-  sqlite3_flutter_libs: ^0.5.7
+  sqlite3_flutter_libs: ^0.5.8
   timeago: ^3.2.2
   uni_links: ^0.5.1
   url_launcher: ^6.1.5

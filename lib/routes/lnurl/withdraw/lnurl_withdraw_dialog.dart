@@ -4,12 +4,16 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
-
+import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../bloc/lsp/lsp_bloc.dart';
+import '../../../utils/payment_validator.dart';
+import '../../../widgets/receivable_btc_box.dart';
 
 class LNURLWithdrawDialog extends StatefulWidget {
   final LNURLWithdrawParams withdrawParams;
@@ -28,10 +32,14 @@ class LNURLWithdrawDialog extends StatefulWidget {
 }
 
 class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
+  final _amountController = TextEditingController();
   bool _showFiatCurrency = false;
+  late final bool fixedAmount;
 
   @override
   void initState() {
+    fixedAmount = widget.withdrawParams.minWithdrawable ==
+        widget.withdrawParams.maxWithdrawable;
     super.initState();
   }
 
@@ -66,35 +74,52 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                   themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
               textAlign: TextAlign.center,
             ),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onLongPressStart: (_) {
-                setState(() {
-                  _showFiatCurrency = true;
-                });
-              },
-              onLongPressEnd: (_) {
-                setState(() {
-                  _showFiatCurrency = false;
-                });
-              },
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minWidth: double.infinity,
+            if (fixedAmount) ...[
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onLongPressStart: (_) {
+                  setState(() {
+                    _showFiatCurrency = true;
+                  });
+                },
+                onLongPressEnd: (_) {
+                  setState(() {
+                    _showFiatCurrency = false;
+                  });
+                },
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: double.infinity,
+                  ),
+                  child: Text(
+                    _showFiatCurrency && fiatConversion != null
+                        ? fiatConversion.format(Int64(
+                            widget.withdrawParams.maxWithdrawable ~/ 1000))
+                        : BitcoinCurrency.fromTickerSymbol(
+                                currencyState.bitcoinTicker)
+                            .format(Int64(
+                                widget.withdrawParams.maxWithdrawable ~/ 1000)),
+                    style: themeData.primaryTextTheme.headline5,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                child: Text(
-                  _showFiatCurrency && fiatConversion != null
-                      ? fiatConversion.format(
-                          Int64(widget.withdrawParams.maxWithdrawable ~/ 1000))
-                      : BitcoinCurrency.fromTickerSymbol(
-                              currencyState.bitcoinTicker)
-                          .format(
-                              Int64(widget.withdrawParams.maxWithdrawable ~/ 1000)),
-                  style: themeData.primaryTextTheme.headline5,
-                  textAlign: TextAlign.center,
-                ),
+              )
+            ],
+            if (!fixedAmount) ...[
+              AmountFormField(
+                context: context,
+                texts: texts,
+                bitcoinCurrency: currencyState.bitcoinCurrency,
+                controller: _amountController,
+                validatorFn: validatePayment,
               ),
-            ),
+              ReceivableBTCBox(
+                receiveLabel: '${texts.lnurl_fetch_invoice_limit(
+                  (widget.withdrawParams.minWithdrawable ~/ 1000).toString(),
+                  (widget.withdrawParams.maxWithdrawable ~/ 1000).toString(),
+                )} sats.',
+              ),
+            ],
             Padding(
               padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
               child: Container(
@@ -109,12 +134,12 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                       style: themeData.primaryTextTheme.headline3!
                           .copyWith(fontSize: 16),
                       textAlign:
-                          widget.withdrawParams.defaultDescription.length >
-                                      40 &&
-                                  !widget.withdrawParams.defaultDescription
-                                      .contains("\n")
-                              ? TextAlign.start
-                              : TextAlign.center,
+                      widget.withdrawParams.defaultDescription.length >
+                          40 &&
+                          !widget.withdrawParams.defaultDescription
+                              .contains("\n")
+                          ? TextAlign.start
+                          : TextAlign.center,
                     ),
                   ),
                 ),
@@ -170,7 +195,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
             await accountBloc
                 .processLNURLWithdraw(widget.withdrawParams, qParams)
                 .onError(
-              (error, stackTrace) {
+                  (error, stackTrace) {
                 navigator.removeRoute(loaderRoute);
                 widget.onComplete();
                 throw Exception(error.toString());
@@ -186,5 +211,36 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
         ),
       ],
     );
+  }
+
+  String? validatePayment(Int64 amount) {
+    var accBloc = context.read<AccountBloc>();
+    late final accountState = accBloc.state;
+    late final lspStatus = context.read<LSPBloc>().state;
+    late final currencyState = context.read<CurrencyBloc>().state;
+    late final texts = context.texts();
+
+    if (amount > (widget.withdrawParams.maxWithdrawable ~/ 1000)) {
+      return "Exceeds maximum withdrawable amount: ${widget.withdrawParams.maxWithdrawable ~/ 1000}";
+    }
+    if (amount < (widget.withdrawParams.minWithdrawable ~/ 1000)) {
+      return "Below minimum withdrawable amount: ${widget.withdrawParams.minWithdrawable ~/ 1000}";
+    }
+
+    if (lspStatus.currentLSP != null) {
+      final channelMinimumFee = Int64(
+        lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000,
+      );
+      if (amount > accountState.maxInboundLiquidity &&
+          amount <= channelMinimumFee) {
+        return texts.invoice_insufficient_amount_fee(
+          currencyState.bitcoinCurrency.format(channelMinimumFee),
+        );
+      }
+    }
+
+    return PaymentValidator(
+            accBloc.validatePayment, currencyState.bitcoinCurrency)
+        .validateIncoming(amount);
   }
 }

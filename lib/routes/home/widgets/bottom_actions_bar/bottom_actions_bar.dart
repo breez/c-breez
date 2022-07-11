@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
@@ -20,11 +21,9 @@ import 'bottom_action_item_image.dart';
 import 'enter_payment_info_dialog.dart';
 
 class BottomActionsBar extends StatelessWidget {
-  final AccountState account;
   final GlobalKey firstPaymentItemKey;
 
   const BottomActionsBar(
-    this.account,
     this.firstPaymentItemKey, {
     Key? key,
   }) : super(key: key);
@@ -50,11 +49,15 @@ class BottomActionsBar extends StatelessWidget {
             Container(
               width: 64,
             ),
-            BottomActionItem(
-              onPress: () => _showReceiveOptions(context, account),
-              group: actionsGroup,
-              text: texts.bottom_action_bar_receive,
-              iconAssetPath: "src/icon/receive-action.png",
+            BlocBuilder<AccountBloc, AccountState>(
+              builder: (context, account) {
+                return BottomActionItem(
+                  onPress: () => _showReceiveOptions(context, account),
+                  group: actionsGroup,
+                  text: texts.bottom_action_bar_receive,
+                  iconAssetPath: "src/icon/receive-action.png",
+                );
+              },
             ),
           ],
         ),
@@ -69,66 +72,70 @@ class BottomActionsBar extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       builder: (ctx) {
-        return StreamBuilder<DecodedClipboardData>(
-          stream: inputBloc.decodedClipboardStream,
-          builder: (context, snapshot) {
-            final connected = account.status == AccountStatus.CONNECTED;
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 8.0),
-                ListTile(
-                  enabled: connected,
-                  leading: BottomActionItemImage(
-                    iconAssetPath: "src/icon/paste.png",
-                    enabled: connected,
-                  ),
-                  title: Text(
-                    texts.bottom_action_bar_paste_invoice,
-                    style: theme.bottomSheetTextStyle,
-                  ),
-                  onTap: () => _pasteTapped(
-                    context,
-                    inputBloc,
-                    snapshot.data,
-                  ),
-                ),
-                Divider(
-                  height: 0.0,
-                  color: Colors.white.withOpacity(0.2),
-                  indent: 72.0,
-                ),
-                ListTile(
-                  enabled: connected,
-                  leading: BottomActionItemImage(
-                    iconAssetPath: "src/icon/connect_to_pay.png",
-                    enabled: connected,
-                  ),
-                  title: Text(
-                    texts.bottom_action_bar_connect_to_pay,
-                    style: theme.bottomSheetTextStyle,
-                  ),
-                  onTap: () => _push(context, "/connect_to_pay"),
-                ),
-                Divider(
-                  height: 0.0,
-                  color: Colors.white.withOpacity(0.2),
-                  indent: 72.0,
-                ),
-                ListTile(
-                  enabled: connected,
-                  leading: BottomActionItemImage(
-                    iconAssetPath: "src/icon/bitcoin.png",
-                    enabled: connected,
-                  ),
-                  title: Text(
-                    texts.bottom_action_bar_send_btc_address,
-                    style: theme.bottomSheetTextStyle,
-                  ),
-                  onTap: () => _push(context, "/withdraw_funds"),
-                ),
-                const SizedBox(height: 8.0)
-              ],
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, account) {
+            return StreamBuilder<DecodedClipboardData>(
+              stream: inputBloc.decodedClipboardStream,
+              builder: (context, snapshot) {
+                final connected = account.status == AccountStatus.CONNECTED;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 8.0),
+                    ListTile(
+                      enabled: connected,
+                      leading: BottomActionItemImage(
+                        iconAssetPath: "src/icon/paste.png",
+                        enabled: connected,
+                      ),
+                      title: Text(
+                        texts.bottom_action_bar_paste_invoice,
+                        style: theme.bottomSheetTextStyle,
+                      ),
+                      onTap: () => _pasteTapped(
+                        context,
+                        inputBloc,
+                        snapshot.data,
+                      ),
+                    ),
+                    Divider(
+                      height: 0.0,
+                      color: Colors.white.withOpacity(0.2),
+                      indent: 72.0,
+                    ),
+                    ListTile(
+                      enabled: connected,
+                      leading: BottomActionItemImage(
+                        iconAssetPath: "src/icon/connect_to_pay.png",
+                        enabled: connected,
+                      ),
+                      title: Text(
+                        texts.bottom_action_bar_connect_to_pay,
+                        style: theme.bottomSheetTextStyle,
+                      ),
+                      onTap: () => _push(context, "/connect_to_pay"),
+                    ),
+                    Divider(
+                      height: 0.0,
+                      color: Colors.white.withOpacity(0.2),
+                      indent: 72.0,
+                    ),
+                    ListTile(
+                      enabled: connected,
+                      leading: BottomActionItemImage(
+                        iconAssetPath: "src/icon/bitcoin.png",
+                        enabled: connected,
+                      ),
+                      title: Text(
+                        texts.bottom_action_bar_send_btc_address,
+                        style: theme.bottomSheetTextStyle,
+                      ),
+                      onTap: () => _push(context, "/withdraw_funds"),
+                    ),
+                    const SizedBox(height: 8.0)
+                  ],
+                );
+              },
             );
           },
         );

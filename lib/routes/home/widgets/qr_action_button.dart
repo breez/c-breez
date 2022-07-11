@@ -1,4 +1,3 @@
-import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -13,10 +12,12 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:validators/validators.dart';
 
 class QrActionButton extends StatelessWidget {
-  final AccountState account;
   final GlobalKey firstPaymentItemKey;
 
-  const QrActionButton(this.account, this.firstPaymentItemKey);
+  const QrActionButton(
+    this.firstPaymentItemKey, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

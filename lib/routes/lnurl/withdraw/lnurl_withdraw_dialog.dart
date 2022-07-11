@@ -236,7 +236,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
             widget.onComplete();
           },
           child: Text(
-            texts.spontaneous_payment_action_pay,
+            texts.bottom_action_bar_receive,
             style: themeData.primaryTextTheme.button,
           ),
         ),

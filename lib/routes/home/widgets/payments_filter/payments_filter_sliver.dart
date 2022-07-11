@@ -13,6 +13,7 @@ class PaymentsFilterSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
     final customData = theme.customData[theme.themeId]!;
 
     return SliverPersistentHeader(
@@ -21,7 +22,7 @@ class PaymentsFilterSliver extends StatelessWidget {
         _size,
         builder: (context, height, overlapContent) {
           return Container(
-            color: customData.dashboardBgColor,
+            color: theme.themeId == "BLUE" ? themeData.backgroundColor : themeData.canvasColor,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
               child: ClipRRect(

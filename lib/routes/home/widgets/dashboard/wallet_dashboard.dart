@@ -55,6 +55,7 @@ class WalletDashboard extends StatelessWidget {
     AccountState accountState,
   ) {
     final profileSettings = userProfileState.profileSettings;
+    final themeData = Theme.of(context);
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -65,7 +66,7 @@ class WalletDashboard extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             height: _height,
             decoration: BoxDecoration(
-              color: theme.customData[theme.themeId]!.dashboardBgColor,
+              color: theme.themeId == "BLUE" ? themeData.backgroundColor : themeData.canvasColor,
             ),
           ),
           Positioned(

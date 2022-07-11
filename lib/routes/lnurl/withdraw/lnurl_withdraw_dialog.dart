@@ -3,7 +3,9 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
+import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
@@ -13,7 +15,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../bloc/lsp/lsp_bloc.dart';
 import '../../../utils/payment_validator.dart';
-import '../../../widgets/receivable_btc_box.dart';
 
 class LNURLWithdrawDialog extends StatefulWidget {
   final LNURLWithdrawParams withdrawParams;
@@ -106,18 +107,48 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               )
             ],
             if (!fixedAmount) ...[
-              AmountFormField(
-                context: context,
-                texts: texts,
-                bitcoinCurrency: currencyState.bitcoinCurrency,
-                controller: _amountController,
-                validatorFn: validatePayment,
-              ),
-              ReceivableBTCBox(
-                receiveLabel: '${texts.lnurl_fetch_invoice_limit(
-                  (widget.withdrawParams.minWithdrawable ~/ 1000).toString(),
-                  (widget.withdrawParams.maxWithdrawable ~/ 1000).toString(),
-                )} sats.',
+              Theme(
+                data: themeData.copyWith(
+                  inputDecorationTheme: InputDecorationTheme(
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: theme.greyBorderSide,
+                    ),
+                  ),
+                  hintColor: themeData.dialogTheme.contentTextStyle!.color,
+                  colorScheme: ColorScheme.dark(
+                    primary: themeData.textTheme.button!.color!,
+                  ),
+                  primaryColor: themeData.textTheme.button!.color!,
+                  errorColor: theme.themeId == "BLUE"
+                      ? Colors.red
+                      : themeData.errorColor,
+                ),
+                child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AmountFormField(
+                        context: context,
+                        texts: texts,
+                        bitcoinCurrency: currencyState.bitcoinCurrency,
+                        controller: _amountController,
+                        validatorFn: validatePayment,
+                        style: themeData.dialogTheme.contentTextStyle!
+                            .copyWith(height: 1.0),
+                        iconColor: themeData.primaryIconTheme.color,
+                      ),
+                      AutoSizeText(
+                        '${texts.lnurl_fetch_invoice_limit(
+                          (widget.withdrawParams.minWithdrawable ~/ 1000)
+                              .toString(),
+                          (widget.withdrawParams.maxWithdrawable ~/ 1000)
+                              .toString(),
+                        )} sats.',
+                        maxLines: 1,
+                        style: themeData.dialogTheme.contentTextStyle,
+                        minFontSize: MinFontSize(context).minFontSize,
+                      ),
+                    ]),
               ),
             ],
             Padding(

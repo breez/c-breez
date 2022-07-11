@@ -39,10 +39,6 @@ void handlePayRequest(
 
 void handleWithdrawRequest(BuildContext context,
     LNURLWithdrawParams withdrawParams, Function() onComplete) {
-  bool fixedAmount =
-      withdrawParams.minWithdrawable == withdrawParams.maxWithdrawable;
-  if (fixedAmount) {
-    // Show dialog if payment is of fixed amount with no payer comment allowed
     showDialog(
       useRootNavigator: false,
       context: context,
@@ -50,5 +46,4 @@ void handleWithdrawRequest(BuildContext context,
       builder: (_) =>
           LNURLWithdrawDialog(withdrawParams, onComplete: onComplete),
     );
-  }
 }

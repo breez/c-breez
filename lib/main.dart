@@ -64,7 +64,7 @@ void main() async {
                   create: (BuildContext context) => CurrencyBloc(injector.fiatService),
                 ),
                 BlocProvider<WithdrawFudsBloc>(
-                  create: (BuildContext context) => WithdrawFudsBloc(),
+                  create: (BuildContext context) => WithdrawFudsBloc(lightningServices),
                 ),
               ],
               child: UserApp(),

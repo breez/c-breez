@@ -5,6 +5,7 @@ import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/select_provider_error_dialog.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
+import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,13 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
     if (walletBalance > 0) {
       warnings.add(
         WarningAction(
-          () => navigatorState.pushNamed("/withdraw_funds_address"),
+          () => navigatorState.push(
+            FadeInRoute(
+              builder: (_) => WithdrawFundsAddressPage(
+                walletBalance,
+              ),
+            ),
+          ),
         ),
       );
     }

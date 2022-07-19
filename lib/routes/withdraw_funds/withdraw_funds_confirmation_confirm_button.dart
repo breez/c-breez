@@ -1,3 +1,4 @@
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
@@ -7,14 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
-  const WithdrawFundsConfirmationConfirmButton({
+  final String address;
+  final TransactionCostSpeed speed;
+
+  const WithdrawFundsConfirmationConfirmButton(
+    this.address,
+    this.speed, {
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
-    final themeData = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
@@ -23,21 +28,30 @@ class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
         () async {
           final navigator = Navigator.of(context);
           navigator.push(createLoaderRoute(context));
-          context.read<WithdrawFudsBloc>().withdraw().then(
-            (_) => navigator.popUntil((route) => route.settings.name == "/"),
-            onError: (e) {
-              navigator.pop();
-              promptError(
-                context,
-                null,
-                Text(
-                  e.toString(),
-                  style: themeData.dialogTheme.contentTextStyle,
-                ),
+          context.read<WithdrawFudsBloc>().sweepAllCoins(address, speed).then(
+                (_) => _sweepCoinsFinished(context),
+                onError: (e) => _sweepCoinsError(context, e),
               );
-            },
-          );
         },
+      ),
+    );
+  }
+
+  void _sweepCoinsFinished(BuildContext context) {
+    final navigator = Navigator.of(context);
+    navigator.popUntil((route) => route.settings.name == "/");
+  }
+
+  void _sweepCoinsError(BuildContext context, dynamic e) {
+    final navigator = Navigator.of(context);
+    final themeData = Theme.of(context);
+    navigator.pop();
+    promptError(
+      context,
+      null,
+      Text(
+        e.toString(),
+        style: themeData.dialogTheme.contentTextStyle,
       ),
     );
   }

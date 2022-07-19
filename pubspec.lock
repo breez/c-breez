@@ -7,14 +7,14 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "40.0.0"
+    version: "41.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.2.0"
   analyzer_plugin:
     dependency: transitive
     description:
@@ -77,7 +77,7 @@ packages:
       name: basic_utils
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.2"
+    version: "4.4.0"
   bech32:
     dependency: transitive
     description:
@@ -147,7 +147,7 @@ packages:
       name: build_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   build_daemon:
     dependency: transitive
     description:
@@ -168,7 +168,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.11"
+    version: "2.2.0"
   build_runner_core:
     dependency: transitive
     description:
@@ -189,7 +189,7 @@ packages:
       name: built_value
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.3.3"
+    version: "8.4.0"
   characters:
     dependency: transitive
     description:
@@ -252,7 +252,7 @@ packages:
       name: coverage
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.2"
+    version: "1.5.0"
   cross_file:
     dependency: transitive
     description:
@@ -286,7 +286,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "4e1664381098cbab304250264c20114705d60079"
+      resolved-ref: fa7bfeb76e9528733c539782a9090d55c8f2cdd9
       url: "https://github.com/breez/dart_lnurl"
     source: git
     version: "0.1.0"
@@ -319,7 +319,7 @@ packages:
       name: drift
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.0"
+    version: "1.7.1"
   drift_dev:
     dependency: "direct dev"
     description:
@@ -403,56 +403,56 @@ packages:
       name: firebase_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.18.0"
+    version: "1.19.2"
   firebase_core_platform_interface:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.1"
+    version: "4.4.3"
   firebase_core_web:
     dependency: transitive
     description:
       name: firebase_core_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.5"
+    version: "1.7.0"
   firebase_dynamic_links:
     dependency: "direct main"
     description:
       name: firebase_dynamic_links
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.6"
+    version: "4.3.2"
   firebase_dynamic_links_platform_interface:
     dependency: transitive
     description:
       name: firebase_dynamic_links_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.3+4"
+    version: "0.2.3+7"
   firebase_messaging:
     dependency: "direct main"
     description:
       name: firebase_messaging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "11.4.2"
+    version: "12.0.0"
   firebase_messaging_platform_interface:
     dependency: transitive
     description:
       name: firebase_messaging_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.5.2"
+    version: "4.0.0"
   firebase_messaging_web:
     dependency: transitive
     description:
       name: firebase_messaging_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.2"
+    version: "3.0.0"
   fixnum:
     dependency: "direct main"
     description:
@@ -511,14 +511,14 @@ packages:
       name: flutter_plugin_android_lifecycle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.7"
   flutter_rust_bridge:
     dependency: transitive
     description:
       name: flutter_rust_bridge
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.34.2"
+    version: "1.38.0"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -567,7 +567,7 @@ packages:
       name: flutter_svg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.1.1+1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -591,7 +591,7 @@ packages:
       name: freezed_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.3"
+    version: "2.1.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -640,7 +640,7 @@ packages:
       name: hive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.3"
   http:
     dependency: "direct main"
     description:
@@ -738,7 +738,7 @@ packages:
       name: image_picker_ios
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.5+5"
+    version: "0.8.5+6"
   image_picker_platform_interface:
     dependency: transitive
     description:
@@ -780,7 +780,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.5.0"
+    version: "4.6.0"
   lints:
     dependency: transitive
     description:
@@ -801,7 +801,7 @@ packages:
       name: local_auth_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.6"
   local_auth_ios:
     dependency: "direct main"
     description:
@@ -1032,7 +1032,7 @@ packages:
       name: pointycastle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.6.0"
+    version: "3.6.1"
   pool:
     dependency: transitive
     description:
@@ -1109,7 +1109,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.4"
+    version: "0.27.5"
   scan:
     dependency: "direct main"
     description:
@@ -1214,7 +1214,7 @@ packages:
       name: simple_animations
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.2.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -1331,21 +1331,21 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.21.1"
+    version: "1.21.4"
   test_api:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.9"
+    version: "0.4.12"
   test_core:
     dependency: transitive
     description:
       name: test_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.13"
+    version: "0.4.16"
   timeago:
     dependency: "direct main"
     description:
@@ -1394,7 +1394,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.4"
+    version: "6.1.5"
   url_launcher_android:
     dependency: transitive
     description:
@@ -1464,7 +1464,7 @@ packages:
       name: vm_service
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.3.0"
+    version: "9.0.0"
   watcher:
     dependency: transitive
     description:

@@ -1,22 +1,20 @@
-import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsSpeedMessage extends Text {
   WithdrawFundsSpeedMessage(
     BuildContext context,
-    WithdrawFudsInfoState infoState,
+    Duration waitingTime,
   ) : super(
-          _estimatedDelivery(context, infoState),
+          _estimatedDelivery(context, waitingTime),
           style: _style(context),
         );
 
   static String _estimatedDelivery(
     BuildContext context,
-    WithdrawFudsInfoState infoState,
+    Duration waitingTime,
   ) {
     final texts = context.texts();
-    final waitingTime = infoState.selectedCost().waitingTime;
     final hours = waitingTime.inHours;
 
     if (hours >= 12.0) {

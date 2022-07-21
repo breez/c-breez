@@ -1,28 +1,27 @@
-import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_speed_chooser_item.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsConfirmationSpeedChooser extends StatefulWidget {
-  final WithdrawFudsInfoState transaction;
+  final TransactionCostSpeed currentSpeed;
+  final Function(TransactionCostSpeed) onSpeedSelected;
 
   const WithdrawFundsConfirmationSpeedChooser(
-    this.transaction, {
+    this.currentSpeed,
+    this.onSpeedSelected, {
     Key? key,
   }) : super(key: key);
 
   @override
-  State<WithdrawFundsConfirmationSpeedChooser> createState() =>
-      _WithdrawFundsConfirmationSpeedChooserState();
+  State<WithdrawFundsConfirmationSpeedChooser> createState() => _WithdrawFundsConfirmationSpeedChooserState();
 }
 
-class _WithdrawFundsConfirmationSpeedChooserState
-    extends State<WithdrawFundsConfirmationSpeedChooser> {
+class _WithdrawFundsConfirmationSpeedChooserState extends State<WithdrawFundsConfirmationSpeedChooser> {
   double? _offset;
 
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final speed = widget.transaction.selectedSpeed;
 
     return SizedBox(
       height: 60,
@@ -39,7 +38,7 @@ class _WithdrawFundsConfirmationSpeedChooserState
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final third = constraints.maxWidth / 3;
-                final offset = third * speed.index;
+                final offset = third * widget.currentSpeed.index;
 
                 return TweenAnimationBuilder<double>(
                   tween: Tween<double>(begin: _offset ?? offset, end: offset),
@@ -72,15 +71,21 @@ class _WithdrawFundsConfirmationSpeedChooserState
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: Row(
-              children: const [
+              children: [
                 WithdrawFundsConfirmationSpeedChooserItem(
                   TransactionCostSpeed.economy,
+                  widget.currentSpeed,
+                  widget.onSpeedSelected,
                 ),
                 WithdrawFundsConfirmationSpeedChooserItem(
                   TransactionCostSpeed.regular,
+                  widget.currentSpeed,
+                  widget.onSpeedSelected,
                 ),
                 WithdrawFundsConfirmationSpeedChooserItem(
                   TransactionCostSpeed.priority,
+                  widget.currentSpeed,
+                  widget.onSpeedSelected,
                 ),
               ],
             ),

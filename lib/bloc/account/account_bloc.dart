@@ -159,12 +159,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await syncStateWithNode();
   }
 
-  Future<Withdrawal> sweepAllCoins(String address) async {
-    var w = await _lightningNode.getNodeAPI().sweepAllCoinsTransactions(address);
-    await syncStateWithNode();
-    return Withdrawal(w.txid, w.tx);
-  }
-
   Future publishTransaction(List<int> tx) async {
     await _lightningNode.getNodeAPI().publishTransaction(tx);
   }

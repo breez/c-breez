@@ -5,13 +5,18 @@ import 'package:c_breez/routes/withdraw_funds/withdraw_funds_available_btc.dart'
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
+import 'package:fixnum/fixnum.dart';
 
 class WithdrawFundsAddressPage extends StatefulWidget {
-  const WithdrawFundsAddressPage();
+  final Int64 availableBtc;
+
+  const WithdrawFundsAddressPage(
+    this.availableBtc, {
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<WithdrawFundsAddressPage> createState() =>
-      _WithdrawFundsAddressPageState();
+  State<WithdrawFundsAddressPage> createState() => _WithdrawFundsAddressPageState();
 }
 
 class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
@@ -57,6 +62,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
           WithdrawFundsAddressNextButton(
             addressController: _addressController,
             validator: () => _formKey.currentState?.validate() ?? false,
+            amount: widget.availableBtc,
           ),
         ],
       ),

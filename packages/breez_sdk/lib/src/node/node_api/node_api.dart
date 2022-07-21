@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:breez_sdk/src/signer.dart';
 import 'package:fixnum/fixnum.dart';
+import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
 
 import 'models.dart';
 
@@ -17,7 +18,7 @@ abstract class NodeAPI {
 
   Stream<IncomingLightningPayment> incomingPaymentsStream();
 
-  Future<Withdrawal> sweepAllCoinsTransactions(String address);
+  Future<Withdrawal> sweepAllCoinsTransactions(String address, greenlight.FeeratePreset feerate);
 
   Future<NodeInfo> getNodeInfo();
 

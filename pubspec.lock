@@ -308,8 +308,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "2b9660e90b073de4bf7510ba98140f778e846f2e"
-      resolved-ref: "2b9660e90b073de4bf7510ba98140f778e846f2e"
+      ref: bb224b167574a35f722c9e9fbfa960dbee232ce5
+      resolved-ref: bb224b167574a35f722c9e9fbfa960dbee232ce5
       url: "https://github.com/mauriceraguseinit/DragAndDropLists"
     source: git
     version: "0.3.2+2"

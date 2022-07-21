@@ -30,7 +30,7 @@ dependencies:
   drag_and_drop_lists: # Target this ref until new release
     git:
       url: https://github.com/mauriceraguseinit/DragAndDropLists
-      ref: 2b9660e90b073de4bf7510ba98140f778e846f2e
+      ref: bb224b167574a35f722c9e9fbfa960dbee232ce5
   drift: ^1.7.1
   duration: ^3.0.11
   email_validator: ^2.0.1

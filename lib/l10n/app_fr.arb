@@ -21,7 +21,7 @@
   "home_broadcast_transaction": "Diffusion de votre transaction",
   "home_config_error_title": "Erreur de configuration",
   "home_config_error_message": "Breez a détecté qu'un autre appareil fonctionne avec la même configuration (probablement en raison de la restauration). Breez ne peut pas exécuter la même configuration sur plus d'un appareil. Veuillez réinstaller Breez si vous souhaitez continuer à utiliser Breez sur ce périphérique.",
-  "home_config_error_action_exit": "Quitter Breez",
+  "home_config_error_action_exit": "ANNULER",
   "home_background_synchronization_title": "Synchronisation en arrière-plan",
   "home_background_synchronization_message": "Afin de prendre en charge les paiements instantanés, Breez a besoin de votre permission pour synchroniser les informations lorsque l'application n'est pas active. Veuillez approuver l'application dans le fenêtre suivante.",
   "home_payment_sent": "Paiement envoyé avec succès !",
@@ -49,7 +49,7 @@
         "type": "String",
         "example": "1 000 sats"
       },
-      "liquidity": { 
+      "liquidity": {
         "type": "String",
         "example": "99 000 sats"
       }
@@ -946,16 +946,17 @@
       }
     }
   },
-  "funds_over_limit_dialog_redeem_hour": "Vous pourrez racheter vos fonds après le bloc {lockHeight} (dans environ une heure).",
-  "@funds_over_limit_dialog_redeem_hour": {
+  "approximately_an_hour": "(dans environ une heure)",
+  "approximate_hours": "(~{hours} heures)",
+  "@approximate_hours": {
     "placeholders": {
-      "lockHeight": {
+      "hours": {
         "type": "String",
-        "example": "140659"
+        "example": "42"
       }
     }
   },
-  "funds_over_limit_dialog_redeem_hours": "Vous pourrez racheter vos fonds après le bloc {lockHeight} (~{hoursToUnlock} heures).",
+  "funds_over_limit_dialog_redeem_hours": "Vous pourrez racheter vos fonds après le bloc {lockHeight} {hoursToUnlock}.",
   "@funds_over_limit_dialog_redeem_hours": {
     "placeholders": {
       "lockHeight": {
@@ -964,7 +965,7 @@
       },
       "hoursToUnlock": {
         "type": "String",
-        "example": "7"
+        "example": "(~42 heures)"
       }
     }
   },
@@ -1532,6 +1533,21 @@
       }
     }
   },
+  "pos_payment_nfc_error_title": "Erreur de paiement NFC",
+  "pos_payment_nfc_range_error": "Seuls les paiements compris entre {minValue} et {maxValue} sont autorisés.",
+  "@pos_payment_nfc_range_error": {
+    "placeholders": {
+      "minValue": {
+        "type": "String",
+        "example": "1000 sats"
+      },
+      "maxValue": {
+        "type": "String",
+        "example": "1000 sats"
+      }
+    }
+  },
+  "pos_payment_nfc_error_action_close": "FERMER",
   "successful_payment_print": "Imprimer",
   "successful_payment_received": "Paiement reçu !",
   "payment_options_title": "Lightning Fees",
@@ -2068,6 +2084,23 @@
   },
   "no_lsp_widget_message": "In order to activate Breez, please select a provider:",
   "no_lsp_widget_action_select": "SELECT…",
+  "podcast_history_drawer": "Mes meilleurs podcasts",
+  "podcast_history_share_message":  "Mes meilleurs podcasts écoutés sur Breez",
+  "podcast_history_share_text":"PARTAGER",
+  "podcast_history_sats_streamed":"sats diffusés",
+  "podcast_history_boostagrams_sent":"boosts envoyés",
+  "podcast_history_open_podcast_button": "PODCASTS OUVERTS",
+  "podcast_history_appbar_top_weekly":"Top des podcasts hebdomadaires",
+  "podcast_history_appbar_top_monthly":"Meilleurs podcasts mensuels",
+  "podcast_history_appbar_top_yearly":"Meilleurs podcasts annuels",
+  "podcast_history_timerange_dropdown_week":"La semaine dernière",
+  "podcast_history_timerange_dropdown_month":"Mois passé",
+  "podcast_history_timerange_dropdown_year":"L'année passée",
+  "podcast_history_sort_dropdown_recent":"Récent",
+  "podcast_history_sort_dropdown_duration":"écouté",
+  "podcast_history_sort_dropdown_sats":"Payé",
+  "podcast_history_sort_dropdown_boosts":"Boosted",
+  "podcast_history_empty_text":"Aucune donnée disponible à afficher.",
   "locale": "fr",
   "app_name": "Breez"
 }

@@ -21,7 +21,7 @@
   "home_broadcast_transaction": "Transmitindo sua transação",
   "home_config_error_title": "Erro de configuração",
   "home_config_error_message": "Detectou-se que outro dispositivo está sendo executado com a mesma configuração (provavelmente devido à restauração). A Breez não pode executar a mesma configuração em mais de um dispositivo. Reinstale o Breez se desejar continuar usando a Breez neste dispositivo.",
-  "home_config_error_action_exit": "Sair da Breez",
+  "home_config_error_action_exit": "CANCELAR",
   "home_background_synchronization_title": "Sincronização em segundo plano",
   "home_background_synchronization_message": "Para suportar pagamentos instantâneos, a Breez precisa de sua permissão para sincronizar as informações enquanto o aplicativo não estiver ativo. Dê a aprovação para o aplicativo na próxima caixa de diálogo.",
   "home_payment_sent": "O pagamento foi enviado com sucesso!",
@@ -946,16 +946,17 @@
       }
     }
   },
-  "funds_over_limit_dialog_redeem_hour": "Você poderá resgatar seus fundos após o bloco {lockHeight} (aproximadamente em 1 hora).",
-  "@funds_over_limit_dialog_redeem_hour": {
+  "approximately_an_hour": "(aproximadamente em 1 hora)",
+  "approximate_hours": "(aproximadamente em {hours} horas)",
+  "@approximate_hours": {
     "placeholders": {
-      "lockHeight": {
+      "hours": {
         "type": "String",
-        "example": "140659"
+        "example": "42"
       }
     }
   },
-  "funds_over_limit_dialog_redeem_hours": "Você poderá resgatar seus fundos após o bloco {lockHeight} (aproximadamente em {hoursToUnlock} horas).",
+  "funds_over_limit_dialog_redeem_hours": "Você poderá resgatar seus fundos após o bloco {lockHeight} {hoursToUnlock}.",
   "@funds_over_limit_dialog_redeem_hours": {
     "placeholders": {
       "lockHeight": {
@@ -964,7 +965,7 @@
       },
       "hoursToUnlock": {
         "type": "String",
-        "example": "7"
+        "example": "(aproximadamente em 42 horas)"
       }
     }
   },
@@ -1532,6 +1533,21 @@
       }
     }
   },
+  "pos_payment_nfc_error_title": "Erro no pagamento com NFC",
+  "pos_payment_nfc_range_error": "Apenas pagamentos entre {minValue} e {maxValue} são permitidos.",
+  "@pos_payment_nfc_range_error": {
+    "placeholders": {
+      "minValue": {
+        "type": "String",
+        "example": "1000 sats"
+      },
+      "maxValue": {
+        "type": "String",
+        "example": "1000 sats"
+      }
+    }
+  },
+  "pos_payment_nfc_error_action_close": "CERRAR",
   "successful_payment_print": "Imprimir",
   "successful_payment_received": "Pagamento recebido!",
   "payment_options_title": "Taxas de Pagamento",
@@ -1818,8 +1834,8 @@
     }
   },
   "lock_screen_enter_pin": "Insira seu PIN",
-  "backup_phrase_generate": "Gerar a frase de backup",
-  "backup_phrase_instructions": "Você verá uma lista de palavras. Anote as palavras e guarde-as em um lugar seguro. Sem essas palavras você não poderá restaurar os seus fundos a partir do backup e seus fundos serão perdidos e a Breez não poderá te ajudar.",
+  "backup_phrase_generate": "Encriptar o backup na nuvem",
+  "backup_phrase_instructions": "Você verá uma lista de palavras. Anote as palavras e guarde-as em um lugar seguro. Sem essas palavras você não poderá restaurar os seus fundos a partir do backup e seus fundos serão perdidos e a Breez não poderá te ajudar. Esta chave não é uma semente de carteira. Ele é usado para criptografar os dados de backup armazenados na nuvem. Estas palavras não são uma semente para a sua carteira. Estas palavras são usadas para criptografar os dados no backup armazenado na nuvem.",
   "backup_phrase_action_confirm": "EU ENTENDO",
   "backup_phrase_action_next": "PRÓXIMO",
   "backup_phrase_warning_disclaimer": "Sua frase de backup existente será inválidada e uma nova frase será gerada na próxima vez que você decidir usar uma frase de backup. Você tem certeza de que você não deseja usar uma frase de backup?",
@@ -2068,6 +2084,23 @@
   },
   "no_lsp_widget_message": "In order to activate Breez, please select a provider:",
   "no_lsp_widget_action_select": "SELECT…",
+  "podcast_history_drawer": "Meus Principais Podcasts",
+  "podcast_history_share_message":  "Meus principais podcasts ouvidos no Breez",
+  "podcast_history_share_text":"COMPARTILHAR",
+  "podcast_history_sats_streamed":"sats transmitido",
+  "podcast_history_boostagrams_sent":"boosts enviados",
+  "podcast_history_open_podcast_button": "PODCASTS ABERTOS",
+  "podcast_history_appbar_top_weekly":"Principais podcasts semanais",
+  "podcast_history_appbar_top_monthly":"Principais podcasts mensais",
+  "podcast_history_appbar_top_yearly":"Principais podcasts anuais",
+  "podcast_history_timerange_dropdown_week":"Semana passada",
+  "podcast_history_timerange_dropdown_month":"Mês passado",
+  "podcast_history_timerange_dropdown_year":"Ano passado",
+  "podcast_history_sort_dropdown_recent":"Recente",
+  "podcast_history_sort_dropdown_duration":"Ouvido",
+  "podcast_history_sort_dropdown_sats":"Pago",
+  "podcast_history_sort_dropdown_boosts":"Boosted",
+  "podcast_history_empty_text":"Não há dados disponíveis para exibição.",
   "locale": "pt",
   "app_name": "Breez"
 }

@@ -42,7 +42,10 @@ dependencies:
   flutter_bloc: ^8.0.1
   flutter_secure_storage: ^5.0.2
   flutter_svg: ^1.1.1+1
-  flutter_typeahead: ^4.0.0
+  flutter_typeahead:
+    git:
+      url: https://github.com/breez/flutter_typeahead.git
+      ref: a16aa4deeff1c5e96c6da46da31cb0533f838d8d
   grpc: ^3.0.2
   hex: ^0.2.0
   http: ^0.13.4

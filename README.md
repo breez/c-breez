@@ -9,7 +9,7 @@ For more details, please check out [this medium post](https://medium.com/breez-t
 ### Build the lightning_tookit plugin
 
 c-Breez depends on lightning_toolkit plugin that exposes a set of API functions written in rust.
-If you didn't add any rust code then you can skip this step, otherwise please refer to the plugin [README](https://github.com/breez/c-breez/blob/main/packages/lightning_toolkit/README.md)
+If you didn't add any rust code then you can skip this step, otherwise please refer to the plugin [README](https://github.com/breez/c-breez/tree/main/packages/breez_sdk/README.md)
 
 ### Android
 

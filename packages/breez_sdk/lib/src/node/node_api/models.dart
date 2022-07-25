@@ -182,6 +182,12 @@ class Peer {
 
 enum InvoiceStatus { PAID, UNPAID, EXPIRED }
 
+enum TransactionCostSpeed {
+  economy,
+  regular,
+  priority,
+}
+
 class Withdrawal {
   final String txid;
   final String tx;

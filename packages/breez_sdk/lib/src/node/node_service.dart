@@ -8,6 +8,7 @@ import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
+import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
 
 import 'node_api/node_api.dart';
 
@@ -197,6 +198,15 @@ class LightningNode {
   */
     Map<String, dynamic> parsedJson = json.decode(response.body);
     return parsedJson['status'] == 'OK';
+  }
+
+  Future<Withdrawal> sweepAllCoinsTransactions(String address, TransactionCostSpeed speed) {
+    final feerate = speed == TransactionCostSpeed.priority
+        ? greenlight.FeeratePreset.URGENT
+        : speed == TransactionCostSpeed.economy
+            ? greenlight.FeeratePreset.SLOW
+            : greenlight.FeeratePreset.NORMAL;
+    return _nodeAPI.sweepAllCoinsTransactions(address, feerate);
   }
 }
 

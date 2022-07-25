@@ -1,15 +1,20 @@
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_page.dart';
+import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:fixnum/fixnum.dart';
 
 class WithdrawFundsAddressNextButton extends StatelessWidget {
   final TextEditingController addressController;
   final bool Function() validator;
+  final Int64 amount;
 
   const WithdrawFundsAddressNextButton({
     Key? key,
     required this.addressController,
     required this.validator,
+    required this.amount,
   }) : super(key: key);
 
   @override
@@ -22,9 +27,10 @@ class WithdrawFundsAddressNextButton extends StatelessWidget {
         texts.withdraw_funds_action_next,
         () {
           if (validator()) {
-            Navigator.of(context).pushNamed(
-              "/withdraw_funds_confirmation",
-              arguments: addressController.text,
+            Navigator.of(context).push(
+              FadeInRoute(
+                builder: (_) => WithdrawFundsConfirmationPage(addressController.text, amount),
+              ),
             );
           }
         },

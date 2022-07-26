@@ -59,10 +59,11 @@ dependencies:
   ini: ^2.1.0
   intl: ^0.17.0
   local_auth: ^2.1.0
-  local_auth_android: ^1.0.6
+  local_auth_android: ^1.0.7
   local_auth_ios: ^1.0.7
   mobile_scanner: ^2.0.0
   package_info_plus: ^1.4.3
+  path: ^1.8.2
   path_provider: ^2.0.11
   pointycastle: ^3.6.1
   protobuf: ^2.1.0

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -169,7 +170,14 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     var accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
-    await accountBloc.recoverNode(mnemonicSeed);
+    navigator.push(loaderRoute);
+    await accountBloc.recoverNode(mnemonicSeed).catchError(
+      (error) {
+        navigator.removeRoute(loaderRoute);
+        showFlushbar(context, message: error.toString());
+      },
+    );
     navigator.removeRoute(loaderRoute);
+    navigator.pushReplacementNamed('/');
   }
 }

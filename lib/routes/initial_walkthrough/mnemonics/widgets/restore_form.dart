@@ -95,7 +95,9 @@ class RestoreFormPageState extends State<RestoreForm> {
               },
               onSuggestionSelected: <String>(suggestion) {
                 widget.textEditingControllers[itemIndex].text = suggestion;
-                focusNodes[itemIndex + 1].requestFocus();
+                if(itemIndex + 1 < focusNodes.length) {
+                  focusNodes[itemIndex + 1].requestFocus();
+                }
               },
             );
           }),

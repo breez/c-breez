@@ -15,9 +15,8 @@ class InputParser {
 
   Future<ParsedInput> parse(String s) async {
     // lnurl
-    String lower = s.toLowerCase();
     try {
-      LNURLParseResult parseResult = await getParams(lower);
+      LNURLParseResult parseResult = await getParams(s);
       if (parseResult.payParams != null ||
           parseResult.withdrawalParams != null) {
         return ParsedInput(InputProtocol.lnurl, parseResult);
@@ -27,13 +26,14 @@ class InputParser {
     }
 
     // lightning link
+    String lower = s.toLowerCase();
     if (lower.startsWith('lightning:')) {
       final invoice = await _lnToolkit.parseInvoice(invoice: s.substring(10));
       return ParsedInput(InputProtocol.paymentRequest, invoice);
     }
 
     // bolt 11 lightning
-    String? bolt11 = _extractBolt11FromBip21(lower);
+    String? bolt11 = _extractBolt11FromBip21(s);
     if (bolt11 != null) {
       final invoice = await _lnToolkit.parseInvoice(invoice: bolt11);
       return ParsedInput(InputProtocol.paymentRequest, invoice);

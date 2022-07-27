@@ -33,6 +33,7 @@ class LNURLWithdrawDialog extends StatefulWidget {
 }
 
 class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
+  final formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   bool _showFiatCurrency = false;
   late final bool fixedAmount;
@@ -65,118 +66,126 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
             .copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
-      content: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              texts.sweep_all_coins_label_receive,
-              style:
-                  themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            if (fixedAmount) ...[
-              GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onLongPressStart: (_) {
-                  setState(() {
-                    _showFiatCurrency = true;
-                  });
-                },
-                onLongPressEnd: (_) {
-                  setState(() {
-                    _showFiatCurrency = false;
-                  });
-                },
-                child: ConstrainedBox(
+      content: Form(
+        key: formKey,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                texts.sweep_all_coins_label_receive,
+                style: themeData.primaryTextTheme.headline3!
+                    .copyWith(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              if (fixedAmount) ...[
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onLongPressStart: (_) {
+                    setState(() {
+                      _showFiatCurrency = true;
+                    });
+                  },
+                  onLongPressEnd: (_) {
+                    setState(() {
+                      _showFiatCurrency = false;
+                    });
+                  },
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: double.infinity,
+                    ),
+                    child: Text(
+                      _showFiatCurrency && fiatConversion != null
+                          ? fiatConversion.format(Int64(
+                              widget.withdrawParams.maxWithdrawable ~/ 1000))
+                          : BitcoinCurrency.fromTickerSymbol(
+                                  currencyState.bitcoinTicker)
+                              .format(Int64(
+                                  widget.withdrawParams.maxWithdrawable ~/
+                                      1000)),
+                      style: themeData.primaryTextTheme.headline5,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              ],
+              if (!fixedAmount) ...[
+                Theme(
+                  data: themeData.copyWith(
+                    inputDecorationTheme: InputDecorationTheme(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: theme.greyBorderSide,
+                      ),
+                    ),
+                    hintColor: themeData.dialogTheme.contentTextStyle!.color,
+                    colorScheme: ColorScheme.dark(
+                      primary: themeData.textTheme.button!.color!,
+                    ),
+                    primaryColor: themeData.textTheme.button!.color!,
+                    errorColor: theme.themeId == "BLUE"
+                        ? Colors.red
+                        : themeData.errorColor,
+                  ),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AmountFormField(
+                          context: context,
+                          texts: texts,
+                          bitcoinCurrency: currencyState.bitcoinCurrency,
+                          controller: _amountController,
+                          validatorFn: validatePayment,
+                          onFieldSubmitted: (_) {
+                            formKey.currentState?.validate();
+                          },
+                          style: themeData.dialogTheme.contentTextStyle!
+                              .copyWith(height: 1.0),
+                          iconColor: themeData.primaryIconTheme.color,
+                        ),
+                        AutoSizeText(
+                          '${texts.lnurl_fetch_invoice_limit(
+                            (widget.withdrawParams.minWithdrawable ~/ 1000)
+                                .toString(),
+                            (widget.withdrawParams.maxWithdrawable ~/ 1000)
+                                .toString(),
+                          )} sats.',
+                          maxLines: 2,
+                          style: themeData.dialogTheme.contentTextStyle,
+                          minFontSize: MinFontSize(context).minFontSize,
+                        ),
+                      ]),
+                ),
+              ],
+              Padding(
+                padding:
+                    const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+                child: Container(
                   constraints: const BoxConstraints(
+                    maxHeight: 200,
                     minWidth: double.infinity,
                   ),
-                  child: Text(
-                    _showFiatCurrency && fiatConversion != null
-                        ? fiatConversion.format(Int64(
-                            widget.withdrawParams.maxWithdrawable ~/ 1000))
-                        : BitcoinCurrency.fromTickerSymbol(
-                                currencyState.bitcoinTicker)
-                            .format(Int64(
-                                widget.withdrawParams.maxWithdrawable ~/ 1000)),
-                    style: themeData.primaryTextTheme.headline5,
-                    textAlign: TextAlign.center,
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      child: AutoSizeText(
+                        widget.withdrawParams.defaultDescription,
+                        style: themeData.primaryTextTheme.headline3!
+                            .copyWith(fontSize: 16),
+                        textAlign:
+                            widget.withdrawParams.defaultDescription.length >
+                                        40 &&
+                                    !widget.withdrawParams.defaultDescription
+                                        .contains("\n")
+                                ? TextAlign.start
+                                : TextAlign.center,
+                      ),
+                    ),
                   ),
                 ),
               )
-            ],
-            if (!fixedAmount) ...[
-              Theme(
-                data: themeData.copyWith(
-                  inputDecorationTheme: InputDecorationTheme(
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: theme.greyBorderSide,
-                    ),
-                  ),
-                  hintColor: themeData.dialogTheme.contentTextStyle!.color,
-                  colorScheme: ColorScheme.dark(
-                    primary: themeData.textTheme.button!.color!,
-                  ),
-                  primaryColor: themeData.textTheme.button!.color!,
-                  errorColor: theme.themeId == "BLUE"
-                      ? Colors.red
-                      : themeData.errorColor,
-                ),
-                child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AmountFormField(
-                        context: context,
-                        texts: texts,
-                        bitcoinCurrency: currencyState.bitcoinCurrency,
-                        controller: _amountController,
-                        validatorFn: validatePayment,
-                        style: themeData.dialogTheme.contentTextStyle!
-                            .copyWith(height: 1.0),
-                        iconColor: themeData.primaryIconTheme.color,
-                      ),
-                      AutoSizeText(
-                        '${texts.lnurl_fetch_invoice_limit(
-                          (widget.withdrawParams.minWithdrawable ~/ 1000)
-                              .toString(),
-                          (widget.withdrawParams.maxWithdrawable ~/ 1000)
-                              .toString(),
-                        )} sats.',
-                        maxLines: 1,
-                        style: themeData.dialogTheme.contentTextStyle,
-                        minFontSize: MinFontSize(context).minFontSize,
-                      ),
-                    ]),
-              ),
-            ],
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
-              child: Container(
-                constraints: const BoxConstraints(
-                  maxHeight: 200,
-                  minWidth: double.infinity,
-                ),
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    child: AutoSizeText(
-                      widget.withdrawParams.defaultDescription,
-                      style: themeData.primaryTextTheme.headline3!
-                          .copyWith(fontSize: 16),
-                      textAlign:
-                      widget.withdrawParams.defaultDescription.length >
-                          40 &&
-                          !widget.withdrawParams.defaultDescription
-                              .contains("\n")
-                          ? TextAlign.start
-                          : TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ]),
+            ]),
+      ),
       actions: [
         TextButton(
           style: ButtonStyle(
@@ -212,28 +221,31 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
             }),
           ),
           onPressed: () async {
-            final AccountBloc accountBloc = context.read<AccountBloc>();
+            if (formKey.currentState!.validate()) {
+              final AccountBloc accountBloc = context.read<AccountBloc>();
 
-            // Create loader and process payment
-            final navigator = Navigator.of(context);
-            navigator.pop();
-            var loaderRoute = createLoaderRoute(context);
-            navigator.push(loaderRoute);
-            Map<String, String> qParams = {
-              'k1': widget.withdrawParams.k1.toString(),
-              'pr': widget.withdrawParams.pr
-            };
-            await accountBloc
-                .processLNURLWithdraw(widget.withdrawParams, qParams)
-                .onError(
-                  (error, stackTrace) {
-                navigator.removeRoute(loaderRoute);
-                widget.onComplete();
-                throw Exception(error.toString());
-              },
-            );
-            navigator.removeRoute(loaderRoute);
-            widget.onComplete();
+              // Create loader and process payment
+              final navigator = Navigator.of(context);
+              navigator.pop();
+              var loaderRoute = createLoaderRoute(context);
+              navigator.push(loaderRoute);
+              // TODO: Generate a payment request for pr field
+              Map<String, String> qParams = {
+                'k1': widget.withdrawParams.k1.toString(),
+                'pr': 'TODO'
+              };
+              await accountBloc
+                  .processLNURLWithdraw(widget.withdrawParams, qParams)
+                  .onError(
+                (error, stackTrace) {
+                  navigator.removeRoute(loaderRoute);
+                  widget.onComplete();
+                  throw Exception(error.toString());
+                },
+              );
+              navigator.removeRoute(loaderRoute);
+              widget.onComplete();
+            }
           },
           child: Text(
             texts.bottom_action_bar_receive,

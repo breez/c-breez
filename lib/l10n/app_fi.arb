@@ -21,7 +21,7 @@
   "home_broadcast_transaction": "Tapahtumaa lähetetään",
   "home_config_error_title": "Konfiguraatiovirhe",
   "home_config_error_message": "Breez havaitsi että, sama konfiguraatio on käytössä myös toisessa laitteessa, johtuen todennäköisesti varmuuskopion palautuksesta. Breez voi toimia samalla konfiguraatiolla vain yhdessä laitteessa kerrallaan. Asenna Breez uudelleen mikäli haluat sen käyttöön tässä laitteessa.",
-  "home_config_error_action_exit": "Sulje Breez",
+  "home_config_error_action_exit": "Peruuta",
   "home_background_synchronization_title": "Taustasynkronointi",
   "home_background_synchronization_message": "Välittömästi tapahtuvien maksujen toteuttamiseksi Breez synkronoi tietoja taustalla. Sovellus vaatii sinulta luvan toimia myös silloin kun sovellus ei ole avattuna. Myönnä oikeus seuraavassa näkymässä.",
   "home_payment_sent": "Maksun lähetys onnistui.",
@@ -946,16 +946,17 @@
       }
     }
   },
-  "funds_over_limit_dialog_redeem_hour": "Voit lunastaa varasi Bitcoin-lohkon {lockHeight} jälkeen eli noin tunnin kuluttua.",
-  "@funds_over_limit_dialog_redeem_hour": {
+  "approximately_an_hour": "jälkeen eli noin tunnin kuluttua",
+  "approximate_hours": "jälkeen eli noin (~{hours} tunnin kuluttua)",
+  "@approximate_hours": {
     "placeholders": {
-      "lockHeight": {
+      "hours": {
         "type": "String",
-        "example": "140659"
+        "example": "42"
       }
     }
   },
-  "funds_over_limit_dialog_redeem_hours": "Voit lunastaa varasi Bitcoin-lohkon {lockHeight} jälkeen eli noin (~{hoursToUnlock} tunnin kuluttua).",
+  "funds_over_limit_dialog_redeem_hours": "Voit lunastaa varasi Bitcoin-lohkon {lockHeight} {hoursToUnlock}.",
   "@funds_over_limit_dialog_redeem_hours": {
     "placeholders": {
       "lockHeight": {
@@ -964,7 +965,7 @@
       },
       "hoursToUnlock": {
         "type": "String",
-        "example": "7"
+        "example": "jälkeen eli noin (~42 tunnin kuluttua)"
       }
     }
   },
@@ -1532,6 +1533,21 @@
       }
     }
   },
+  "pos_payment_nfc_error_title": "NFC Payment error",
+  "pos_payment_nfc_range_error": "Only payments between {minValue} and {maxValue} are allowed.",
+  "@pos_payment_nfc_range_error": {
+    "placeholders": {
+      "minValue": {
+        "type": "String",
+        "example": "1000 sats"
+      },
+      "maxValue": {
+        "type": "String",
+        "example": "1000 sats"
+      }
+    }
+  },
+  "pos_payment_nfc_error_action_close": "SULJE",
   "successful_payment_print": "Print",
   "successful_payment_received": "Payment received!",
   "payment_options_title": "Salamamaksun kulut",
@@ -2068,6 +2084,23 @@
   },
   "no_lsp_widget_message": "In order to activate Breez, please select a provider:",
   "no_lsp_widget_action_select": "SELECT…",
+  "podcast_history_drawer": "Suosituimmat Podcastit",
+  "podcast_history_share_message":  "Suosituimmat podcastit kuuntelivat Breez",
+  "podcast_history_share_text":"JAA",
+  "podcast_history_sats_streamed":"sats striimattiin",
+  "podcast_history_boostagrams_sent":"boosts lähetetty",
+  "podcast_history_open_podcast_button": "AVAA PODCAST",
+  "podcast_history_appbar_top_weekly":"Suosituimmat viikoittaiset podcastit",
+  "podcast_history_appbar_top_monthly":"Suosituimmat kuukausittaiset podcastit",
+  "podcast_history_appbar_top_yearly":"Vuoden suosituimmat podcastit",
+  "podcast_history_timerange_dropdown_week":"Mennyt viikko",
+  "podcast_history_timerange_dropdown_month":"Kulunut kuukausi",
+  "podcast_history_timerange_dropdown_year":"Viime vuosi",
+  "podcast_history_sort_dropdown_recent":"Viimeaikaiset",
+  "podcast_history_sort_dropdown_duration":"Kuunteli",
+  "podcast_history_sort_dropdown_sats":"Maksettu",
+  "podcast_history_sort_dropdown_boosts":"Boosted",
+  "podcast_history_empty_text":"Näytettäviä tietoja ei ole saatavilla.",
   "locale": "fi",
   "app_name": "Breez"
 }

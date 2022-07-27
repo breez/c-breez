@@ -25,13 +25,11 @@ import 'widgets/collapsible_list_item.dart';
 class SpontaneousPaymentPage extends StatefulWidget {
   final String? nodeID;
   final GlobalKey firstPaymentItemKey;
-  final Function()? onComplete;
 
   const SpontaneousPaymentPage(
     this.nodeID,
     this.firstPaymentItemKey, {
     Key? key,
-    this.onComplete,
   }) : super(key: key);
 
   @override
@@ -251,13 +249,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
         if (!mounted) return;
         Navigator.of(context).removeRoute(_currentRoute!);
         await sendFuture;
-        if(widget.onComplete != null) {
-          widget.onComplete!();
-        }
       } catch (err) {
-        if(widget.onComplete != null) {
-          widget.onComplete!();
-        }
         if (!mounted) return;
         promptError(
           context,

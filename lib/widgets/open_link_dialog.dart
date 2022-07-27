@@ -4,11 +4,9 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 class OpenLinkDialog extends StatefulWidget {
   final String url;
-  final Function() onComplete;
 
   const OpenLinkDialog(
     this.url, {
-    required this.onComplete,
     Key? key,
   }) : super(key: key);
 
@@ -107,7 +105,6 @@ class OpenLinkDialogState extends State<OpenLinkDialog> {
             final navigator = Navigator.of(context);
             await launchUrlString(widget.url);
             navigator.pop();
-            widget.onComplete();
           },
         ),
       ],

@@ -78,24 +78,24 @@ class InputHandler {
   }
 
   void handleNodeID(String nodeID) {
+    _handlingRequest = false;
     Navigator.of(_context).push(
       FadeInRoute(
         builder: (_) => SpontaneousPaymentPage(
           nodeID,
           firstPaymentItemKey,
-          onComplete: () => _handlingRequest = false,
         ),
       ),
     );
   }
 
   void handleWebAddress(String url) {
+    _handlingRequest = false;
     showDialog(
       useRootNavigator: false,
       context: _context,
       barrierDismissible: false,
-      builder: (_) =>
-          OpenLinkDialog(url, onComplete: () => _handlingRequest = false),
+      builder: (_) => OpenLinkDialog(url),
     );
   }
 

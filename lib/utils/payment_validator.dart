@@ -21,7 +21,7 @@ class PaymentValidator {
       _validatePayment(amount, outgoing);
     } on PaymentExceededLimitError catch (e) {
       return 'Payment exceeds the limit (${_currency.format(e.limitSat)})';
-    } on PaymentBellowReserveError catch (e) {
+    } on PaymentBelowReserveError catch (e) {
       return "Breez requires you to keep ${_currency.format(e.reserveAmount)} in your balance.";
     } on InsufficientLocalBalanceError {
       return "Insufficient local balance";

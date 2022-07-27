@@ -8,10 +8,10 @@ class PaymentExceededLimitError implements Exception {
   );
 }
 
-class PaymentBellowReserveError implements Exception {
+class PaymentBelowReserveError implements Exception {
   final Int64 reserveAmount;
 
-  const PaymentBellowReserveError(
+  const PaymentBelowReserveError(
     this.reserveAmount,
   );
 }

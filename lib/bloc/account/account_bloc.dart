@@ -199,9 +199,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
     if (outgoing && amount > accState.maxAllowedToPay) {
       if (accState.reserveAmount > 0) {
-        throw PaymentBellowReserveError(accState.reserveAmount);
+        throw PaymentBelowReserveError(accState.reserveAmount);
       }
-      throw PaymentBellowReserveError(accState.reserveAmount);
+      throw PaymentBelowReserveError(accState.reserveAmount);
     }
   }
 

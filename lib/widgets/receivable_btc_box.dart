@@ -93,7 +93,7 @@ class FeeMessage extends StatelessWidget {
     final lspInfo = context.read<LSPBloc>().state.currentLSP!;
 
     final connected = accountState.status == AccountStatus.CONNECTED;
-    final minFee = Int64(lspInfo.channelMinimumFeeMsat) ~/ 100;
+    final minFee = Int64(lspInfo.channelMinimumFeeMsat ~/ 1000);
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFee);
     final showMinFeeMessage = minFee > 0;
     final setUpFee = (lspInfo.channelFeePermyriad / 100).toString();

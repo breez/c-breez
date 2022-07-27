@@ -6,6 +6,8 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
@@ -49,16 +51,12 @@ class BottomActionsBar extends StatelessWidget {
             Container(
               width: 64,
             ),
-            BlocBuilder<AccountBloc, AccountState>(
-              builder: (context, account) {
-                return BottomActionItem(
-                  onPress: () => _showReceiveOptions(context, account),
-                  group: actionsGroup,
-                  text: texts.bottom_action_bar_receive,
-                  iconAssetPath: "src/icon/receive-action.png",
-                );
-              },
-            ),
+            BottomActionItem(
+              onPress: () => _showReceiveOptions(context),
+              group: actionsGroup,
+              text: texts.bottom_action_bar_receive,
+              iconAssetPath: "src/icon/receive-action.png",
+            )
           ],
         ),
       ),
@@ -71,69 +69,75 @@ class BottomActionsBar extends StatelessWidget {
 
     await showModalBottomSheet(
       context: context,
-      builder: (ctx) {
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, account) {
-            return StreamBuilder<DecodedClipboardData>(
-              stream: inputBloc.decodedClipboardStream,
-              builder: (context, snapshot) {
-                final connected = account.status == AccountStatus.CONNECTED;
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 8.0),
-                    ListTile(
-                      enabled: connected,
-                      leading: BottomActionItemImage(
-                        iconAssetPath: "src/icon/paste.png",
-                        enabled: connected,
-                      ),
-                      title: Text(
-                        texts.bottom_action_bar_paste_invoice,
-                        style: theme.bottomSheetTextStyle,
-                      ),
-                      onTap: () => _pasteTapped(
-                        context,
-                        inputBloc,
-                        snapshot.data,
-                      ),
-                    ),
-                    Divider(
-                      height: 0.0,
-                      color: Colors.white.withOpacity(0.2),
-                      indent: 72.0,
-                    ),
-                    ListTile(
-                      enabled: connected,
-                      leading: BottomActionItemImage(
-                        iconAssetPath: "src/icon/connect_to_pay.png",
-                        enabled: connected,
-                      ),
-                      title: Text(
-                        texts.bottom_action_bar_connect_to_pay,
-                        style: theme.bottomSheetTextStyle,
-                      ),
-                      onTap: () => _push(context, "/connect_to_pay"),
-                    ),
-                    Divider(
-                      height: 0.0,
-                      color: Colors.white.withOpacity(0.2),
-                      indent: 72.0,
-                    ),
-                    ListTile(
-                      enabled: connected,
-                      leading: BottomActionItemImage(
-                        iconAssetPath: "src/icon/bitcoin.png",
-                        enabled: connected,
-                      ),
-                      title: Text(
-                        texts.bottom_action_bar_send_btc_address,
-                        style: theme.bottomSheetTextStyle,
-                      ),
-                      onTap: () => _push(context, "/withdraw_funds"),
-                    ),
-                    const SizedBox(height: 8.0)
-                  ],
+      builder: (context) {
+        return BlocBuilder<LSPBloc, LSPState>(
+          builder: (context, lsp) {
+            return BlocBuilder<AccountBloc, AccountState>(
+              builder: (context, account) {
+                return StreamBuilder<DecodedClipboardData>(
+                  stream: inputBloc.decodedClipboardStream,
+                  builder: (context, snapshot) {
+                    final connected =
+                        lsp.connectionStatus == LSPConnectionStatus.active &&
+                            account.status == AccountStatus.CONNECTED;
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 8.0),
+                        ListTile(
+                          enabled: connected,
+                          leading: BottomActionItemImage(
+                            iconAssetPath: "src/icon/paste.png",
+                            enabled: connected,
+                          ),
+                          title: Text(
+                            texts.bottom_action_bar_paste_invoice,
+                            style: theme.bottomSheetTextStyle,
+                          ),
+                          onTap: () => _pasteTapped(
+                            context,
+                            inputBloc,
+                            snapshot.data,
+                          ),
+                        ),
+                        Divider(
+                          height: 0.0,
+                          color: Colors.white.withOpacity(0.2),
+                          indent: 72.0,
+                        ),
+                        ListTile(
+                          enabled: connected,
+                          leading: BottomActionItemImage(
+                            iconAssetPath: "src/icon/connect_to_pay.png",
+                            enabled: connected,
+                          ),
+                          title: Text(
+                            texts.bottom_action_bar_connect_to_pay,
+                            style: theme.bottomSheetTextStyle,
+                          ),
+                          onTap: () => _push(context, "/connect_to_pay"),
+                        ),
+                        Divider(
+                          height: 0.0,
+                          color: Colors.white.withOpacity(0.2),
+                          indent: 72.0,
+                        ),
+                        ListTile(
+                          enabled: connected,
+                          leading: BottomActionItemImage(
+                            iconAssetPath: "src/icon/bitcoin.png",
+                            enabled: connected,
+                          ),
+                          title: Text(
+                            texts.bottom_action_bar_send_btc_address,
+                            style: theme.bottomSheetTextStyle,
+                          ),
+                          onTap: () => _push(context, "/withdraw_funds"),
+                        ),
+                        const SizedBox(height: 8.0)
+                      ],
+                    );
+                  },
                 );
               },
             );
@@ -145,7 +149,6 @@ class BottomActionsBar extends StatelessWidget {
 
   Future _showReceiveOptions(
     BuildContext context,
-    AccountState account,
   ) {
     final texts = context.texts();
     final themeData = Theme.of(context);
@@ -153,42 +156,54 @@ class BottomActionsBar extends StatelessWidget {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return BlocBuilder<CurrencyBloc, CurrencyState>(
-          builder: (context, currencyState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 8.0),
-                ListTile(
-                  enabled: true,
-                  leading: const BottomActionItemImage(
-                    iconAssetPath: "src/icon/paste.png",
-                    enabled: true,
-                  ),
-                  title: Text(
-                    texts.bottom_action_bar_receive_invoice,
-                    style: theme.bottomSheetTextStyle,
-                  ),
-                  onTap: () => _push(context, "/create_invoice"),
-                ),
-                account.maxChanReserve == 0
-                    ? const SizedBox(height: 8.0)
-                    : WarningBox(
-                        boxPadding: const EdgeInsets.all(16),
-                        contentPadding: const EdgeInsets.all(8),
-                        child: AutoSizeText(
-                          texts.bottom_action_bar_warning_balance_title(
-                            currencyState.bitcoinCurrency.format(
-                              account.maxChanReserve,
-                              removeTrailingZeros: true,
-                            ),
+        return BlocBuilder<LSPBloc, LSPState>(
+          builder: (context, lsp) {
+            return BlocBuilder<AccountBloc, AccountState>(
+              builder: (context, account) {
+                return BlocBuilder<CurrencyBloc, CurrencyState>(
+                  builder: (context, currencyState) {
+                    final connected =
+                        lsp.connectionStatus == LSPConnectionStatus.active &&
+                            account.status == AccountStatus.CONNECTED;
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 8.0),
+                        ListTile(
+                          enabled: connected,
+                          leading: BottomActionItemImage(
+                            iconAssetPath: "src/icon/paste.png",
+                            enabled: connected,
                           ),
-                          maxFontSize: themeData.textTheme.subtitle1!.fontSize!,
-                          style: themeData.textTheme.headline6,
-                          textAlign: TextAlign.center,
+                          title: Text(
+                            texts.bottom_action_bar_receive_invoice,
+                            style: theme.bottomSheetTextStyle,
+                          ),
+                          onTap: () => _push(context, "/create_invoice"),
                         ),
-                      ),
-              ],
+                        account.maxChanReserve == 0
+                            ? const SizedBox(height: 8.0)
+                            : WarningBox(
+                                boxPadding: const EdgeInsets.all(16),
+                                contentPadding: const EdgeInsets.all(8),
+                                child: AutoSizeText(
+                                  texts.bottom_action_bar_warning_balance_title(
+                                    currencyState.bitcoinCurrency.format(
+                                      account.maxChanReserve,
+                                      removeTrailingZeros: true,
+                                    ),
+                                  ),
+                                  maxFontSize:
+                                      themeData.textTheme.subtitle1!.fontSize!,
+                                  style: themeData.textTheme.headline6,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                      ],
+                    );
+                  },
+                );
+              },
             );
           },
         );

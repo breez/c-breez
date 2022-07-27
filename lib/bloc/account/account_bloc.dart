@@ -187,14 +187,25 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity
   // constraints.
-  void validatePayment(Int64 amount, bool outgoing) {
+  void validatePayment(
+    Int64 amount,
+    bool outgoing, {
+    Int64? channelMinimumFee,
+  }) {
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
       throw PaymentExceededLimitError(accState.maxPaymentAmount);
     }
 
-    if (!outgoing && amount > accState.maxAllowedToReceive) {
-      throw PaymentExceededLimitError(accState.maxAllowedToReceive);
+    if (!outgoing) {
+      if (channelMinimumFee != null &&
+          (amount > accState.maxInboundLiquidity &&
+              amount <= channelMinimumFee)) {
+        throw PaymentBelowSetupFeesError(channelMinimumFee);
+      }
+      if (amount > accState.maxAllowedToReceive) {
+        throw PaymentExceededLimitError(accState.maxAllowedToReceive);
+      }
     }
 
     if (outgoing && amount > accState.maxAllowedToPay) {

@@ -220,10 +220,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
 
   String? validatePayment(Int64 amount) {
     var accBloc = context.read<AccountBloc>();
-    late final accountState = accBloc.state;
     late final lspStatus = context.read<LSPBloc>().state;
     late final currencyState = context.read<CurrencyBloc>().state;
-    late final texts = context.texts();
 
     if (amount > (widget.payParams.maxSendable ~/ 1000)) {
       return "Exceeds maximum sendable amount: ${widget.payParams.maxSendable ~/ 1000}";
@@ -232,20 +230,17 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       return "Below minimum accepted amount: ${widget.payParams.minSendable ~/ 1000}";
     }
 
+    Int64? channelMinimumFee;
     if (lspStatus.currentLSP != null) {
-      final channelMinimumFee = Int64(
+      channelMinimumFee = Int64(
         lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000,
       );
-      if (amount > accountState.maxInboundLiquidity &&
-          amount <= channelMinimumFee) {
-        return texts.invoice_insufficient_amount_fee(
-          currencyState.bitcoinCurrency.format(channelMinimumFee),
-        );
-      }
     }
 
     return PaymentValidator(
-            accBloc.validatePayment, currencyState.bitcoinCurrency)
-        .validateIncoming(amount);
+      accBloc.validatePayment,
+      currencyState.bitcoinCurrency,
+      channelMinimumFee: channelMinimumFee,
+    ).validateIncoming(amount);
   }
 }

@@ -180,21 +180,17 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   }
 
   String? validatePayment(Int64 amount) {
+    Int64? channelMinimumFee;
     if (lspStatus.currentLSP != null) {
-      final channelMinimumFee = Int64(
+      channelMinimumFee = Int64(
         lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000,
       );
-      if (amount > accountState.maxInboundLiquidity &&
-          amount <= channelMinimumFee) {
-        return texts.invoice_insufficient_amount_fee(
-          currencyState.bitcoinCurrency.format(channelMinimumFee),
-        );
-      }
     }
 
     return PaymentValidator(
       accountBloc.validatePayment,
       currencyState.bitcoinCurrency,
+      channelMinimumFee: channelMinimumFee,
     ).validateIncoming(amount);
   }
 }

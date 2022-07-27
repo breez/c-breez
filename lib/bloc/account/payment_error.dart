@@ -19,3 +19,11 @@ class PaymentBelowReserveError implements Exception {
 class InsufficientLocalBalanceError implements Exception {
   const InsufficientLocalBalanceError();
 }
+
+class PaymentBelowSetupFeesError implements Exception {
+  final Int64 setupFees;
+
+  const PaymentBelowSetupFeesError(
+    this.setupFees,
+  );
+}

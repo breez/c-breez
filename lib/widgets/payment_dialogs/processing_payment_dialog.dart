@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/loading_animated_text.dart';
+import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
+import 'package:c_breez/widgets/payment_dialogs/processing_payment/processing_payment_animated_content.dart';
+import 'package:c_breez/widgets/payment_dialogs/processing_payment/processing_payment_content.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'payment_request_dialog.dart';
 
 const _kPaymentListItemHeight = 72.0;
 
@@ -31,10 +29,9 @@ class ProcessingPaymentDialog extends StatefulWidget {
   }
 }
 
-class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
-    with SingleTickerProviderStateMixin {
+class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with SingleTickerProviderStateMixin {
   AnimationController? controller;
-  bool? _animating = false;
+  bool _animating = false;
   double? startHeight;
   Animation<Color?>? colorAnimation;
   Animation<double>? borderAnimation;
@@ -75,10 +72,10 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
       ..addListener(() {
         setState(() {});
       });
-    borderAnimation = Tween<double>(begin: 0.0, end: 12.0)
-        .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
-    opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
+    borderAnimation =
+        Tween<double>(begin: 0.0, end: 12.0).animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
+    opacityAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
   }
 
   _payAndClose() {
@@ -103,10 +100,9 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   void _initializeTransitionAnimation() {
     final queryData = MediaQuery.of(context);
     final statusBarHeight = queryData.padding.top;
-    final safeArea = queryData.size.height - statusBarHeight;
     RenderBox? box = _dialogKey.currentContext!.findRenderObject() as RenderBox;
     startHeight = box.size.height;
-    double yMargin = (safeArea - box.size.height) / 2;
+    double yMargin = (queryData.size.height - box.size.height - 24) / 2;
 
     final endPosition = RelativeRect.fromLTRB(40.0, yMargin, 40.0, yMargin);
     RelativeRect startPosition = endPosition;
@@ -115,7 +111,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
       RenderBox paymentTableBox = paymentCtx.findRenderObject() as RenderBox;
       final dy = paymentTableBox.localToGlobal(Offset.zero).dy;
       final start = dy - statusBarHeight;
-      final end = safeArea - start - _kPaymentListItemHeight;
+      final end = queryData.size.height - start - _kPaymentListItemHeight;
       startPosition = RelativeRect.fromLTRB(0.0, start, 0.0, end);
     }
     transitionAnimation = RelativeRectTween(
@@ -132,123 +128,25 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
 
   @override
   Widget build(BuildContext context) {
-    return _animating!
-        ? _createAnimatedContent(context)
-        : _createContentDialog(context);
-  }
-
-  List<Widget> _buildProcessingPaymentDialog(BuildContext context) {
-    final themeData = theme.customData[theme.themeId]!;
-    return [
-      _buildTitle(context),
-      _buildContent(context),
-      Padding(
-        padding: const EdgeInsets.only(bottom: 24.0),
-        child: Image.asset(
-          themeData.loaderAssetPath,
-          height: 64.0,
-          colorBlendMode: themeData.loaderColorBlendMode,
-          color: theme.themeId == "BLUE"
-              ? colorAnimation!.value ?? Colors.transparent
-              : null,
-          gaplessPlayback: true,
-        ),
-      )
-    ];
-  }
-
-  Widget _createContentDialog(BuildContext context) {
-    return Dialog(
-      child: Container(
-        constraints: BoxConstraints(
-          minHeight: widget.minHeight,
-        ),
-        child: Column(
-          key: _dialogKey,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.min,
-          children: _buildProcessingPaymentDialog(context),
-        ),
-      ),
-    );
-  }
-
-  Widget _createAnimatedContent(BuildContext context) {
-    final themeData = Theme.of(context);
-    final queryData = MediaQuery.of(context);
-
-    return Opacity(
-      opacity: opacityAnimation!.value,
-      child: Material(
-        color: Colors.transparent,
-        child: Stack(
-          children: [
-            PositionedTransition(
-              rect: transitionAnimation!,
-              child: Container(
-                height: startHeight,
-                width: queryData.size.width,
-                decoration: ShapeDecoration(
-                  color: theme.themeId == "BLUE"
-                      ? colorAnimation!.value
-                      : controller!.value >= 0.25
-                          ? themeData.backgroundColor
-                          : colorAnimation!.value,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      borderAnimation!.value,
-                    ),
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: _buildProcessingPaymentDialog(context),
-                ),
+    return _animating
+        ? ProcessingPaymentAnimatedContent(
+            color: colorAnimation?.value ?? Colors.transparent,
+            opacity: opacityAnimation!.value,
+            moment: controller!.value,
+            border: borderAnimation!.value,
+            startHeight: startHeight ?? 0.0,
+            transitionAnimation: transitionAnimation!,
+            child: const ProcessingPaymentContent(),
+          )
+        : Dialog(
+            child: Container(
+              constraints: BoxConstraints(
+                minHeight: widget.minHeight,
+              ),
+              child: ProcessingPaymentContent(
+                dialogKey: _dialogKey,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Container _buildTitle(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
-    final themeData = Theme.of(context);
-
-    return Container(
-      height: 64.0,
-      padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 8.0),
-      child: Text(
-        texts.processing_payment_dialog_processing_payment,
-        style: themeData.dialogTheme.titleTextStyle,
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _buildContent(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
-    final themeData = Theme.of(context);
-    final queryData = MediaQuery.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-      child: SizedBox(
-        width: queryData.size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            LoadingAnimatedText(
-              texts.processing_payment_dialog_wait,
-              textStyle: themeData.dialogTheme.contentTextStyle,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 }

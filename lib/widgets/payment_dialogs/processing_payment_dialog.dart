@@ -8,19 +8,21 @@ import 'package:flutter/material.dart';
 const _kPaymentListItemHeight = 72.0;
 
 class ProcessingPaymentDialog extends StatefulWidget {
-  final GlobalKey firstPaymentItemKey;
-  final Function(PaymentRequestState state) _onStateChange;
+  final GlobalKey? firstPaymentItemKey;
+  final double minHeight;
   final bool popOnCompletion;
   final Future Function() paymentFunc;
-  final double minHeight;
+  final Function(PaymentRequestState state)? onStateChange;
+  final Function(dynamic error)? onError;
 
-  const ProcessingPaymentDialog(
-    this.paymentFunc,
+  const ProcessingPaymentDialog({
     this.firstPaymentItemKey,
-    this._onStateChange,
-    this.minHeight, {
-    Key? key,
+    this.minHeight = 220,
     this.popOnCompletion = false,
+    required this.paymentFunc,
+    this.onStateChange,
+    this.onError,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -56,7 +58,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with S
         if (widget.popOnCompletion) {
           Navigator.of(context).removeRoute(_currentRoute!);
         }
-        widget._onStateChange(PaymentRequestState.PAYMENT_COMPLETED);
+        widget.onStateChange?.call(PaymentRequestState.PAYMENT_COMPLETED);
       }
     });
   }
@@ -83,7 +85,8 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with S
       if (widget.popOnCompletion) {
         Navigator.of(context).removeRoute(_currentRoute!);
       }
-      widget._onStateChange(PaymentRequestState.PAYMENT_COMPLETED);
+      widget.onStateChange?.call(PaymentRequestState.PAYMENT_COMPLETED);
+      widget.onError?.call(err);
     });
   }
 
@@ -106,7 +109,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with S
 
     final endPosition = RelativeRect.fromLTRB(40.0, yMargin, 40.0, yMargin);
     RelativeRect startPosition = endPosition;
-    final paymentCtx = widget.firstPaymentItemKey.currentContext;
+    final paymentCtx = widget.firstPaymentItemKey?.currentContext;
     if (paymentCtx != null) {
       RenderBox paymentTableBox = paymentCtx.findRenderObject() as RenderBox;
       final dy = paymentTableBox.localToGlobal(Offset.zero).dy;

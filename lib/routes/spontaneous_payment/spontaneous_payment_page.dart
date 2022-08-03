@@ -199,6 +199,8 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
   Future _sendPayment(AccountBloc accBloc, CurrencyBloc currencyBloc) async {
     final texts = context.texts();
+    final themeData = Theme.of(context);
+
     String tipMessage = _descriptionController.text;
     var bitcoinCurrency = currencyBloc.state.bitcoinCurrency;
     var amount = bitcoinCurrency.parse(_amountController.text);
@@ -223,7 +225,9 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
           context: context,
           barrierDismissible: false,
           builder: (_) => ProcessingPaymentDialog(
-            () {
+            firstPaymentItemKey: widget.firstPaymentItemKey,
+            popOnCompletion: true,
+            paymentFunc: () {
               var sendPayment = Future.delayed(
                 const Duration(seconds: 1),
                 () {
@@ -239,10 +243,14 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
               return sendPayment;
             },
-            widget.firstPaymentItemKey,
-            (_) {},
-            220,
-            popOnCompletion: true,
+            onError: (error) => promptError(
+              context,
+              texts.spontaneous_payment_error_title,
+              Text(
+                error.toString(),
+                style: themeData.dialogTheme.contentTextStyle,
+              ),
+            ),
           ),
         );
         if (!mounted) return;
@@ -255,7 +263,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
           texts.spontaneous_payment_error_title,
           Text(
             err.toString(),
-            style: Theme.of(context).dialogTheme.contentTextStyle,
+            style: themeData.dialogTheme.contentTextStyle,
           ),
         );
       }

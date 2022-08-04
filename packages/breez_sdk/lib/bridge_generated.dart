@@ -15,6 +15,12 @@ abstract class LightningToolkit {
   Future<Uint8List> initHsmd(
       {required String storagePath, required Uint8List secret, dynamic hint});
 
+  Future<Uint8List> encrypt(
+      {required Uint8List key, required Uint8List msg, dynamic hint});
+
+  Future<Uint8List> decrypt(
+      {required Uint8List key, required Uint8List msg, dynamic hint});
+
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
   Future<Uint8List> nodePubkey(
@@ -123,6 +129,34 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
           argNames: ["storagePath", "secret"],
         ),
         argValues: [storagePath, secret],
+        hint: hint,
+      ));
+
+  Future<Uint8List> encrypt(
+          {required Uint8List key, required Uint8List msg, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_encrypt(
+            port_, _api2wire_uint_8_list(key), _api2wire_uint_8_list(msg)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "encrypt",
+          argNames: ["key", "msg"],
+        ),
+        argValues: [key, msg],
+        hint: hint,
+      ));
+
+  Future<Uint8List> decrypt(
+          {required Uint8List key, required Uint8List msg, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_decrypt(
+            port_, _api2wire_uint_8_list(key), _api2wire_uint_8_list(msg)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "decrypt",
+          argNames: ["key", "msg"],
+        ),
+        argValues: [key, msg],
         hint: hint,
       ));
 
@@ -411,6 +445,46 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>)>>('wire_init_hsmd');
   late final _wire_init_hsmd = _wire_init_hsmdPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_encrypt(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> key,
+    ffi.Pointer<wire_uint_8_list> msg,
+  ) {
+    return _wire_encrypt(
+      port_,
+      key,
+      msg,
+    );
+  }
+
+  late final _wire_encryptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_encrypt');
+  late final _wire_encrypt = _wire_encryptPtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_decrypt(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> key,
+    ffi.Pointer<wire_uint_8_list> msg,
+  ) {
+    return _wire_decrypt(
+      port_,
+      key,
+      msg,
+    );
+  }
+
+  late final _wire_decryptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_decrypt');
+  late final _wire_decrypt = _wire_decryptPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
 

@@ -3,12 +3,14 @@ import 'dart:typed_data';
 import 'package:breez_sdk/src/breez_server/generated/breez.pbgrpc.dart';
 import 'package:breez_sdk/src/breez_server/server.dart';
 import 'package:breez_sdk/src/lsp/models.dart';
-import 'package:encrypt/encrypt.dart';
+import 'package:breez_sdk/src/native_toolkit.dart';
 import 'package:grpc/grpc.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 
 class LSPService {
+  final _lnToolkit = getNativeToolkit();
+
   Future<Map<String, LSPInfo>> getLSPList(String nodePubkey) async {
     final server = await BreezServer.createWithDefaultConfig();
     var channel = await server.createServerChannel();
@@ -54,10 +56,9 @@ class LSPService {
       outgoingAmountMsat: outgoingAmountMsat,
     );
     final buffer = paymentInfo.writeToBuffer();
-    final key = Key(Uint8List.fromList(HEX.decode(lspPubKey)));
-    final encrypter = Encrypter(AES(key, mode: AESMode.cbc));
-    final encryptedMessage = encrypter.encryptBytes(buffer).bytes;
-    
+    final key = Uint8List.fromList(HEX.decode(lspPubKey));    
+    final encryptedMessage = await _lnToolkit.encrypt(key: key, msg: buffer);    
+
     return channelClient.registerPayment(RegisterPaymentRequest(lspId: lspID, blob: encryptedMessage));
   }
 

@@ -1,3 +1,4 @@
+use crate::crypt::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use anyhow::Result;
@@ -7,6 +8,14 @@ pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  let mut private_key_slice: [u8; 32] = [0; 32];
  private_key_slice.copy_from_slice(&secret[0..32]);
  _new_hsmd(private_key_slice, &storage_path).map(|hsmd| hsmd.init)
+}
+
+pub fn encrypt(key: Vec<u8>, msg: Vec<u8>) -> Result<Vec<u8>> {
+ _encrypt(key, msg)
+}
+
+pub fn decrypt(key: Vec<u8>, msg: Vec<u8>) -> Result<Vec<u8>> {
+ _decrypt(key, msg)
 }
 
 pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {

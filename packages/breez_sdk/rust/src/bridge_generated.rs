@@ -42,6 +42,38 @@ pub extern "C" fn wire_init_hsmd(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_encrypt(port_: i64, key: *mut wire_uint_8_list, msg: *mut wire_uint_8_list) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "encrypt",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_key = key.wire2api();
+            let api_msg = msg.wire2api();
+            move |task_callback| encrypt(api_key, api_msg)
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_decrypt(port_: i64, key: *mut wire_uint_8_list, msg: *mut wire_uint_8_list) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "decrypt",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_key = key.wire2api();
+            let api_msg = msg.wire2api();
+            move |task_callback| decrypt(api_key, api_msg)
+        },
+    )
+}
+
+#[no_mangle]
 pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

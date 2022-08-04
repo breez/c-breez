@@ -178,7 +178,7 @@ class UITestPage extends StatelessWidget {
                   future: invoice,
                   builder:
                       (BuildContext context, AsyncSnapshot<Invoice> invoice) {
-                    return QrCodeDialog(invoice.data, (result) {});
+                    return QrCodeDialog(invoice.data, null, (result) {});
                   },
                 );
                 return showDialog(

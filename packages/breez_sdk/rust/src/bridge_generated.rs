@@ -206,12 +206,12 @@ pub struct wire_uint_8_list {
 // Section: allocate functions
 
 #[no_mangle]
-pub extern "C" fn new_box_autoadd_u64_0(value: u64) -> *mut u64 {
+pub extern "C" fn new_box_autoadd_u64(value: u64) -> *mut u64 {
     support::new_leak_box_ptr(value)
 }
 
 #[no_mangle]
-pub extern "C" fn new_list_route_hint_0(len: i32) -> *mut wire_list_route_hint {
+pub extern "C" fn new_list_route_hint(len: i32) -> *mut wire_list_route_hint {
     let wrap = wire_list_route_hint {
         ptr: support::new_leak_vec_ptr(<wire_RouteHint>::new_with_null_ptr(), len),
         len,
@@ -220,7 +220,7 @@ pub extern "C" fn new_list_route_hint_0(len: i32) -> *mut wire_list_route_hint {
 }
 
 #[no_mangle]
-pub extern "C" fn new_list_route_hint_hop_0(len: i32) -> *mut wire_list_route_hint_hop {
+pub extern "C" fn new_list_route_hint_hop(len: i32) -> *mut wire_list_route_hint_hop {
     let wrap = wire_list_route_hint_hop {
         ptr: support::new_leak_vec_ptr(<wire_RouteHintHop>::new_with_null_ptr(), len),
         len,
@@ -229,7 +229,7 @@ pub extern "C" fn new_list_route_hint_hop_0(len: i32) -> *mut wire_list_route_hi
 }
 
 #[no_mangle]
-pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
+pub extern "C" fn new_uint_8_list(len: i32) -> *mut wire_uint_8_list {
     let ans = wire_uint_8_list {
         ptr: support::new_leak_vec_ptr(Default::default(), len),
         len,

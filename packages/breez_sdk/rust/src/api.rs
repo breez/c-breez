@@ -1,4 +1,4 @@
-use crate::crypt::*;
+use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use anyhow::Result;

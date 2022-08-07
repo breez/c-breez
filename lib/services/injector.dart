@@ -28,6 +28,7 @@ class ServiceInjector {
   // breez sdk
   LightningLinksService? _lightningLinksService;
   LSPService? _lspService;
+  LNURLService? _lnurlService;
   FiatService? _fiatService;
 
   Device? _device;
@@ -67,6 +68,10 @@ class ServiceInjector {
 
   LSPService get lspService {
     return _lspService ??= lntoolkit.LSPService();
+  }
+
+  LNURLService get lnurlService {
+    return _lnurlService ??= lntoolkit.LNURLService();
   }
 
   FiatService get fiatService {

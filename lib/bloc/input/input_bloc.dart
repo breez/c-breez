@@ -53,6 +53,11 @@ class InputBloc extends Cubit<InputState> {
           return InputState(
               protocol: command.protocol,
               inputData: command.decoded as LNURLParseResult);
+        case lntoolkit.InputProtocol.nodeID:
+        case lntoolkit.InputProtocol.appLink:
+        case lntoolkit.InputProtocol.webView:
+          return InputState(
+              protocol: command.protocol, inputData: command.decoded);
         default:
           return null;
       }

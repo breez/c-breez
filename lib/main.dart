@@ -49,6 +49,7 @@ void main() async {
                 BlocProvider<AccountBloc>(
                   create: (BuildContext context) => AccountBloc(
                     lightningServices,
+                    injector.lnurlService,
                     injector.appStorage,
                     injector.keychain,
                   ),

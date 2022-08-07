@@ -21,7 +21,7 @@ void main() {
       var lspBloc =
           LSPBloc(injector.appStorage, lightningServices, injector.lspService);
       AccountBloc accBloc = AccountBloc(
-          lightningServices, injector.appStorage, injector.keychain);
+          lightningServices, injector.lnurlService, injector.appStorage, injector.keychain);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 

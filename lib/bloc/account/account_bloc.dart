@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/models_extensions.dart';
@@ -11,7 +12,6 @@ import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/payment_filter.dart';
 import 'package:c_breez/models/payment_info.dart';
 import 'package:c_breez/models/payment_type.dart';
-import 'package:c_breez/models/withdrawal.dart';
 import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:c_breez/services/keychain.dart';
@@ -21,7 +21,6 @@ import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -42,17 +41,20 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   final _log = FimberLog("AccountBloc");
   final AppStorage _appStorage;
   final lntoolkit.LightningNode _lightningNode;
+  final lntoolkit.LNURLService _lnurlService;
   final KeyChain _keyChain;
   bool started = false;
   lntoolkit.Signer? _signer;
 
-  AccountBloc(this._lightningNode, this._appStorage, this._keyChain) : super(AccountState.initial()) {
+  AccountBloc(
+      this._lightningNode, this._lnurlService, this._appStorage, this._keyChain)
+      : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
     });
 
-    // sync node info on incoming payments    
+    // sync node info on incoming payments
     final nodeAPI = _lightningNode.getNodeAPI();
     nodeAPI.incomingPaymentsStream().listen((event) {
       syncStateWithNode();
@@ -130,9 +132,29 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _syncSettledInvoices();
   }
 
+  Future<bool> processLNURLWithdraw(
+      LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
+    try {
+      bool isSent = await _lnurlService
+          .processWithdrawRequest(withdrawParams, qParams)
+          .timeout(
+            const Duration(minutes: 3),
+            onTimeout: () =>
+                throw Exception('Timed out waiting 3 minutes for payment.'),
+          );
+      if (isSent) {
+        await syncStateWithNode();
+      }
+      return isSent;
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<LNURLPayResult> sendLNURLPayment(LNURLPayParams payParams,
       Map<String, String> qParams) async {
-    final LNURLPayResult lnurlPayResult = await _lightningNode.getPaymentResult(payParams, qParams);
+    final LNURLPayResult lnurlPayResult =
+        await _lnurlService.getPaymentResult(payParams, qParams);
     await _lightningNode
         .sendPaymentForRequest(lnurlPayResult.pr,
             amount: Int64.parseInt(qParams['amount']!))
@@ -171,21 +193,32 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity
   // constraints.
-  void validatePayment(Int64 amount, bool outgoing) {
+  void validatePayment(
+    Int64 amount,
+    bool outgoing, {
+    Int64? channelMinimumFee,
+  }) {
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
       throw PaymentExceededLimitError(accState.maxPaymentAmount);
     }
 
-    if (!outgoing && amount > accState.maxAllowedToReceive) {
-      throw PaymentExceededLimitError(accState.maxAllowedToReceive);
+    if (!outgoing) {
+      if (channelMinimumFee != null &&
+          (amount > accState.maxInboundLiquidity &&
+              amount <= channelMinimumFee)) {
+        throw PaymentBelowSetupFeesError(channelMinimumFee);
+      }
+      if (amount > accState.maxAllowedToReceive) {
+        throw PaymentExceededLimitError(accState.maxAllowedToReceive);
+      }
     }
 
     if (outgoing && amount > accState.maxAllowedToPay) {
       if (accState.reserveAmount > 0) {
-        throw PaymentBellowReserveError(accState.reserveAmount);
+        throw PaymentBelowReserveError(accState.reserveAmount);
       }
-      throw PaymentBellowReserveError(accState.reserveAmount);
+      throw PaymentBelowReserveError(accState.reserveAmount);
     }
   }
 

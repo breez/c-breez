@@ -18,16 +18,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'widgets/lnurl_metadata.dart';
+import '../widgets/lnurl_metadata.dart';
 
 class LNURLPaymentPage extends StatefulWidget {
   final LNURLPayParams payParams;
   final Function() onComplete;
+  final Function(String error) onError;
 
   const LNURLPaymentPage(
     this.payParams, {
     Key? key,
     required this.onComplete,
+    required this.onError,
   }) : super(key: key);
 
   @override
@@ -205,7 +207,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               (error, stackTrace) {
                 navigator.removeRoute(loaderRoute);
                 widget.onComplete();
-                throw Exception(error.toString());
+                return widget.onError(error.toString());
               },
             ).then(
               (lnurlPayResult) => handleSuccessAction(context, lnurlPayResult),
@@ -220,10 +222,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
 
   String? validatePayment(Int64 amount) {
     var accBloc = context.read<AccountBloc>();
-    late final accountState = accBloc.state;
     late final lspStatus = context.read<LSPBloc>().state;
     late final currencyState = context.read<CurrencyBloc>().state;
-    late final texts = context.texts();
 
     if (amount > (widget.payParams.maxSendable ~/ 1000)) {
       return "Exceeds maximum sendable amount: ${widget.payParams.maxSendable ~/ 1000}";
@@ -232,20 +232,17 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       return "Below minimum accepted amount: ${widget.payParams.minSendable ~/ 1000}";
     }
 
+    Int64? channelMinimumFee;
     if (lspStatus.currentLSP != null) {
-      final channelMinimumFee = Int64(
+      channelMinimumFee = Int64(
         lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000,
       );
-      if (amount > accountState.maxInboundLiquidity &&
-          amount <= channelMinimumFee) {
-        return texts.invoice_insufficient_amount_fee(
-          currencyState.bitcoinCurrency.format(channelMinimumFee),
-        );
-      }
     }
 
     return PaymentValidator(
-            accBloc.validatePayment, currencyState.bitcoinCurrency)
-        .validateIncoming(amount);
+      accBloc.validatePayment,
+      currencyState.bitcoinCurrency,
+      channelMinimumFee: channelMinimumFee,
+    ).validateIncoming(amount);
   }
 }

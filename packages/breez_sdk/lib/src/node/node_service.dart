@@ -5,11 +5,9 @@ import 'dart:typed_data';
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
 import 'package:breez_sdk/src/utils/retry.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
-import 'package:http/http.dart' as http;
 import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
 
 import 'node_api/node_api.dart';
@@ -84,7 +82,8 @@ class LightningNode {
       throw Exception("LSP is not set");
     }
 
-    int shortChannelId = ((1 & 0xFFFFFF) << 40 | (0 & 0xFFFFFF) << 16 | (0 & 0xFFFF));
+    int shortChannelId =
+        ((1 & 0xFFFFFF) << 40 | (0 & 0xFFFFFF) << 16 | (0 & 0xFFFF));
     var destinationInvoiceAmountSats = amountSats;
     // check if we need to open channel
     if (currentNodeState.maxInboundLiquidityMsats < amountMSat) {
@@ -92,30 +91,40 @@ class LightningNode {
           "requestPayment: need to open a channel, creating payee invoice, currentLSP = ${json.encode(_currentLSP!.toJson())}");
 
       // we need to open channel so we are calculating the fees for the LSP
-      var channelFeesMsat = (amountMSat.toInt() * _currentLSP!.channelFeePermyriad / 10000 / 1000 * 1000).toInt();
+      var channelFeesMsat = (amountMSat.toInt() *
+              _currentLSP!.channelFeePermyriad /
+              10000 /
+              1000 *
+              1000)
+          .toInt();
       if (channelFeesMsat < _currentLSP!.channelMinimumFeeMsat) {
         channelFeesMsat = _currentLSP!.channelMinimumFeeMsat;
       }
 
       if (amountMSat.toInt() < channelFeesMsat + 1000) {
-        _log.i("requestPayment: Amount should be more than the minimum fees (${_currentLSP!.channelMinimumFeeMsat / 1000} sats)");
-        throw Exception("Amount should be more than the minimum fees (${_currentLSP!.channelMinimumFeeMsat / 1000} sats)");
+        _log.i(
+            "requestPayment: Amount should be more than the minimum fees (${_currentLSP!.channelMinimumFeeMsat / 1000} sats)");
+        throw Exception(
+            "Amount should be more than the minimum fees (${_currentLSP!.channelMinimumFeeMsat / 1000} sats)");
       }
 
       // remove the fees from the amount to get the small amount on the current node invoice.
-      destinationInvoiceAmountSats = Int64((amountSats.toInt() - channelFeesMsat / 1000).toInt());
+      destinationInvoiceAmountSats =
+          Int64((amountSats.toInt() - channelFeesMsat / 1000).toInt());
     } else {
       // not opening a channel so we need to get the real channel id into the routing hints
       final nodePeers = await _nodeAPI.listPeers();
       for (var p in nodePeers) {
         if (p.id == _currentLSP!.pubKey && p.channels.isNotEmpty) {
-          shortChannelId = _parseShortChannelID(p.channels.first.shortChannelId);
+          shortChannelId =
+              _parseShortChannelID(p.channels.first.shortChannelId);
           break;
         }
       }
     }
 
-    final invoice = await _nodeAPI.addInvoice(destinationInvoiceAmountSats, description: description, expiry: expiry);
+    final invoice = await _nodeAPI.addInvoice(destinationInvoiceAmountSats,
+        description: description, expiry: expiry);
     _log.i("requestPayment: node returned a new invoice, adding routing hints");
 
     // create lsp routing hints
@@ -132,12 +141,15 @@ class LightningNode {
     // inject routing hints and sign the new invoice
     var routingHints = RouteHint(field0: List.from([lspHop]));
 
-    final bolt11WithHints = await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints], newAmount: amountSats.toInt() * 1000);
+    final bolt11WithHints = await _signer!.addRoutingHints(
+        invoice: invoice.bolt11,
+        hints: [routingHints],
+        newAmount: amountSats.toInt() * 1000);
     // register the payment at the lsp if needed.
     if (destinationInvoiceAmountSats < amountSats) {
       _log.i("requestPayment: need to register paymenet, parsing invoice");
       final lnInvoice = await _lnToolkit.parseInvoice(invoice: bolt11WithHints);
-      
+
       _log.i("requestPayment: registering payment in LSP");
       final destination = HEX.decode(lnInvoice.payeePubkey);
 
@@ -159,34 +171,6 @@ class LightningNode {
 
   Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) {
     return _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
-  }
-
-  Future<LNURLPayResult> getPaymentResult(LNURLPayParams payParams, Map<String, String> qParams) async {
-    /*
-     5. LN WALLET makes a GET request using
-        <callback><?|&>amount=<milliSatoshi>
-        amount being the amount specified by the user in millisatoshis.
-   */
-    Uri uri = Uri.parse(payParams.callback).replace(queryParameters: qParams);
-    var response = await http.get(uri).timeout(const Duration(seconds: 60));
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to call ${payParams.domain} API');
-    }
-    /*
-   6. LN Service takes the GET request and returns JSON response of form:
-      {
-        pr: string, // bech32-serialized lightning invoice
-        routes: [] // an empty array
-        "successAction": Object (optional)
-      }
-      or
-      {"status":"ERROR", "reason":"error details..."}
-  */
-    Map<String, dynamic> parsedJson = json.decode(response.body);
-    if (parsedJson['status'] == 'ERROR') {
-      throw Exception(parsedJson['reason']);
-    }
-    return LNURLPayResult.fromJson(parsedJson);
   }
 
   Future<Withdrawal> sweepAllCoinsTransactions(String address, TransactionCostSpeed speed) {
@@ -231,11 +215,16 @@ class NodeState {
 }
 
 NodeState _assembleAccountState(
-    NodeInfo nodeInfo, List<ListFundsChannel> offChainFunds, List<ListFundsOutput> onChainFunds, List<Peer> peers) {
-  var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat);
+    NodeInfo nodeInfo,
+    List<ListFundsChannel> offChainFunds,
+    List<ListFundsOutput> onChainFunds,
+    List<Peer> peers) {
+  var channelsBalance = offChainFunds.fold<Int64>(
+      Int64(0), (balance, element) => balance + element.ourAmountMsat);
 
   // calculate the on-chain balance
-  var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsats);
+  var walletBalance = onChainFunds.fold<Int64>(
+      Int64(0), (balance, element) => balance + element.amountMsats);
 
   // assemble the peers list and channels list.
   var channels = List<Channel>.empty(growable: true);
@@ -260,17 +249,18 @@ NodeState _assembleAccountState(
   }
 
   // calculate incoming and outgoing liquidity
-  Int64 maxPayable = Int64(0);  
+  Int64 maxPayable = Int64(0);
   Int64 maxReceivableSingleChannel = Int64(0);
   for (var c in channels) {
     maxPayable += c.spendable;
     Int64 channelReceivable = Int64(c.receivable);
     if (channelReceivable > maxReceivableSingleChannel) {
       maxReceivableSingleChannel = channelReceivable;
-    }    
+    }
   }
 
-  final maxAllowedToReceiveMsats = max(maxInboundLiquidityMsats - channelsBalance.toInt(), 0);
+  final maxAllowedToReceiveMsats =
+      max(maxInboundLiquidityMsats - channelsBalance.toInt(), 0);
 
   // return the new account state
   return NodeState(

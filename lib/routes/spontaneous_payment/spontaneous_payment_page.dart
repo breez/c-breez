@@ -219,6 +219,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     );
     if (ok == true) {
       try {
+
         Future sendFuture = Future.value(null);
         showDialog(
           useRootNavigator: false,

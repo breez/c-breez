@@ -19,11 +19,11 @@ dependencies:
   fimber: ^0.6.6
   fimber_io: ^0.6.6
   fixnum: ^1.0.1
-  flutter_rust_bridge: ^1.38.1
+  flutter_rust_bridge: ^1.40.0
   freezed_annotation: ^2.1.0
   grpc: ^3.0.2
   hex: ^0.2.0
-  http: ^0.13.4
+  http: ^0.13.5
   ini: ^2.1.0
   json_annotation: ^4.6.0
   protobuf: ^2.1.0
@@ -34,9 +34,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
-  build_runner: ^2.1.11
+  build_runner: ^2.2.0
   ffigen: ^6.0.1
-  freezed: ^2.0.4
+  freezed: ^2.1.0+1
   json_serializable: ^6.3.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

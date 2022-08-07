@@ -233,11 +233,9 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               navigator.pop();
               var loaderRoute = createLoaderRoute(context);
               navigator.push(loaderRoute);
-              final Int64 amount =
-                  Int64.parseInt(_amountController.text) * 1000;
               Invoice invoice = await accountBloc.addInvoice(
                 description: widget.withdrawParams.defaultDescription,
-                amount: amount,
+                amount: Int64.parseInt(_amountController.text),
               );
               Map<String, String> qParams = {
                 'k1': widget.withdrawParams.k1.toString(),

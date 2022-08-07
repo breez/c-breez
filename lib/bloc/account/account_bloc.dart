@@ -138,11 +138,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       bool isSent = await _lnurlService
           .processWithdrawRequest(withdrawParams, qParams)
           .timeout(
-        const Duration(minutes: 3),
-        onTimeout: () =>
-        throw Exception('Timed out waiting 3 minutes for payment.'),
-      );
-      await syncStateWithNode();
+            const Duration(minutes: 3),
+            onTimeout: () =>
+                throw Exception('Timed out waiting 3 minutes for payment.'),
+          );
+      if (isSent) {
+        await syncStateWithNode();
+      }
       return isSent;
     } catch (_) {
       rethrow;

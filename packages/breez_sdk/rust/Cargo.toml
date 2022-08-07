@@ -21,3 +21,4 @@ vls-protocol = { git="https://gitlab.com/lightning-signer/validating-lightning-s
 secp256k1 = "0.20.3"
 base64 = "0.13.0"
 lightning = "0.0.108"
+ecies = {version = "0.2", default-features = false, features = ["pure"]}

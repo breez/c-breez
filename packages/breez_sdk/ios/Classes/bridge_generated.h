@@ -45,6 +45,10 @@ void wire_init_hsmd(int64_t port_,
                     struct wire_uint_8_list *storage_path,
                     struct wire_uint_8_list *secret);
 
+void wire_encrypt(int64_t port_, struct wire_uint_8_list *key, struct wire_uint_8_list *msg);
+
+void wire_decrypt(int64_t port_, struct wire_uint_8_list *key, struct wire_uint_8_list *msg);
+
 void wire_parse_invoice(int64_t port_, struct wire_uint_8_list *invoice);
 
 void wire_node_pubkey(int64_t port_,
@@ -55,7 +59,8 @@ void wire_add_routing_hints(int64_t port_,
                             struct wire_uint_8_list *storage_path,
                             struct wire_uint_8_list *secret,
                             struct wire_uint_8_list *invoice,
-                            struct wire_list_route_hint *hints);
+                            struct wire_list_route_hint *hints,
+                            uint64_t new_amount);
 
 void wire_sign_message(int64_t port_,
                        struct wire_uint_8_list *storage_path,
@@ -84,6 +89,8 @@ void store_dart_post_cobject(DartPostCObjectFnType ptr);
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_init_hsmd);
+    dummy_var ^= ((int64_t) (void*) wire_encrypt);
+    dummy_var ^= ((int64_t) (void*) wire_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_parse_invoice);
     dummy_var ^= ((int64_t) (void*) wire_node_pubkey);
     dummy_var ^= ((int64_t) (void*) wire_add_routing_hints);

@@ -143,9 +143,10 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     navigator.pop();
     Widget dialog = FutureBuilder(
       future: invoice,
-      builder: (BuildContext context, AsyncSnapshot<Invoice> invoice) {
+      builder: (BuildContext context, AsyncSnapshot<Invoice> invoice) {        
         return QrCodeDialog(
           invoice.data,
+          invoice.error,
           (result) {
             onPaymentFinished(result, currentRoute, navigator);
           },

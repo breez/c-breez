@@ -20,9 +20,10 @@ import 'widgets/compact_qr_image.dart';
 
 class QrCodeDialog extends StatefulWidget {
   final Invoice? _invoice;
+  final Object? error;
   final Function(dynamic result) _onFinish;
 
-  const QrCodeDialog(this._invoice, this._onFinish);
+  const QrCodeDialog(this._invoice, this.error, this._onFinish);
 
   @override
   State<StatefulWidget> createState() {
@@ -30,18 +31,15 @@ class QrCodeDialog extends StatefulWidget {
   }
 }
 
-class QrCodeDialogState extends State<QrCodeDialog>
-    with SingleTickerProviderStateMixin {
+class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderStateMixin {
   Animation<double>? _opacityAnimation;
   ModalRoute? _currentRoute;
   AnimationController? _controller;
 
   @override
   void initState() {
-    _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1000));
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _controller!, curve: Curves.ease));
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _controller!, curve: Curves.ease));
     _controller!.value = 1.0;
     _controller!.addStatusListener((status) async {
       if (status == AnimationStatus.dismissed && mounted) {
@@ -61,10 +59,7 @@ class QrCodeDialogState extends State<QrCodeDialog>
   void didUpdateWidget(covariant QrCodeDialog oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget._invoice != oldWidget._invoice) {
-      context
-          .read<InputBloc>()
-          .trackPayment(widget._invoice!.paymentHash)
-          .then((value) {
+      context.read<InputBloc>().trackPayment(widget._invoice!.paymentHash).then((value) {
         Timer(const Duration(milliseconds: 1000), () {
           if (mounted) {
             _controller!.reverse();
@@ -80,10 +75,8 @@ class QrCodeDialogState extends State<QrCodeDialog>
   }
 
   Widget _buildQrCodeDialog() {
-    return BlocBuilder<CurrencyBloc, CurrencyState>(
-        builder: (context, currencyState) {
-      return BlocBuilder<InputBloc, InputState>(
-          builder: (context, inputState) {
+    return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
+      return BlocBuilder<InputBloc, InputState>(builder: (context, inputState) {
         return FadeTransition(
           opacity: _opacityAnimation!,
           child: SimpleDialog(
@@ -96,30 +89,23 @@ class QrCodeDialogState extends State<QrCodeDialog>
                     IconButton(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      padding: const EdgeInsets.only(
-                          top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
                       icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
                       color: Theme.of(context).primaryTextTheme.button!.color!,
                       onPressed: () {
-                        ShareExtend.share(
-                            "lightning:${widget._invoice!.bolt11}", "text");
+                        ShareExtend.share("lightning:${widget._invoice!.bolt11}", "text");
                       },
                     ),
                     IconButton(
                       splashColor: Colors.transparent,
                       highlightColor: Colors.transparent,
-                      padding: const EdgeInsets.only(
-                          top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
                       icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
                       color: Theme.of(context).primaryTextTheme.button!.color!,
                       onPressed: () {
-                        ServiceInjector()
-                            .device
-                            .setClipboardText(widget._invoice!.bolt11);
+                        ServiceInjector().device.setClipboardText(widget._invoice!.bolt11);
                         showFlushbar(context,
-                            message:
-                                "Invoice data was copied to your clipboard.",
-                            duration: const Duration(seconds: 3));
+                            message: "Invoice data was copied to your clipboard.", duration: const Duration(seconds: 3));
                       },
                     )
                   ],
@@ -127,34 +113,16 @@ class QrCodeDialogState extends State<QrCodeDialog>
               ],
             ),
             titlePadding: const EdgeInsets.fromLTRB(20.0, 22.0, 0.0, 8.0),
-            contentPadding:
-                const EdgeInsets.only(left: 0.0, right: 0.0, bottom: 20.0),
+            contentPadding: const EdgeInsets.only(left: 0.0, right: 0.0, bottom: 20.0),
             children: <Widget>[
               AnimatedCrossFade(
-                firstChild: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 310.0,
-                    child: Align(
-                        alignment: const Alignment(0, -0.33),
-                        child: SizedBox(
-                          height: 80.0,
-                          width: 80.0,
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context)
-                                    .primaryTextTheme
-                                    .button!
-                                    .color!),
-                            backgroundColor: Theme.of(context).backgroundColor,
-                          ),
-                        ))),
+                firstChild: buildLoadingOrError(),
                 secondChild: widget._invoice == null
                     ? const SizedBox()
                     : Column(
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.only(left: 20.0, right: 20.0),
+                            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                             child: AspectRatio(
                               aspectRatio: 1,
                               child: SizedBox(
@@ -167,16 +135,12 @@ class QrCodeDialogState extends State<QrCodeDialog>
                             ),
                           ),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
-                          SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: _buildExpiryAndFeeMessage(currencyState)),
+                          SizedBox(width: MediaQuery.of(context).size.width, child: _buildExpiryAndFeeMessage(currencyState)),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
                         ],
                       ),
                 duration: const Duration(seconds: 1),
-                crossFadeState: widget._invoice == null
-                    ? CrossFadeState.showFirst
-                    : CrossFadeState.showSecond,
+                crossFadeState: widget._invoice == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               ),
               _buildCloseButton()
             ],
@@ -186,6 +150,25 @@ class QrCodeDialogState extends State<QrCodeDialog>
     });
   }
 
+  Widget buildLoadingOrError() {
+    if (widget.error == null) {
+      return SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: 310.0,
+          child: Align(
+              alignment: const Alignment(0, -0.33),
+              child: SizedBox(
+                height: 80.0,
+                width: 80.0,
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryTextTheme.button!.color!),
+                  backgroundColor: Theme.of(context).backgroundColor,
+                ),
+              )));
+    }
+    return Text(widget.error.toString());
+  }
+
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {
     String message = "";
 
@@ -193,14 +176,11 @@ class QrCodeDialogState extends State<QrCodeDialog>
     var lspFee = widget._invoice!.lspFee;
     if (lspFee != 0) {
       String conversionText = "";
-      if (currencyState.fiatCurrency != null &&
-          currencyState.fiatExchangeRate != null) {
-        FiatConversion conversion = FiatConversion(
-            currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+      if (currencyState.fiatCurrency != null && currencyState.fiatExchangeRate != null) {
+        FiatConversion conversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
         conversionText = " (${conversion.format(Int64(lspFee))})";
       }
-      message =
-          "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
+      message = "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
     }
     message += "Keep Breez open until the payment is completed.";
 

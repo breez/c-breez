@@ -42,6 +42,38 @@ pub extern "C" fn wire_init_hsmd(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_encrypt(port_: i64, key: *mut wire_uint_8_list, msg: *mut wire_uint_8_list) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "encrypt",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_key = key.wire2api();
+            let api_msg = msg.wire2api();
+            move |task_callback| encrypt(api_key, api_msg)
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_decrypt(port_: i64, key: *mut wire_uint_8_list, msg: *mut wire_uint_8_list) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "decrypt",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_key = key.wire2api();
+            let api_msg = msg.wire2api();
+            move |task_callback| decrypt(api_key, api_msg)
+        },
+    )
+}
+
+#[no_mangle]
 pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -83,6 +115,7 @@ pub extern "C" fn wire_add_routing_hints(
     secret: *mut wire_uint_8_list,
     invoice: *mut wire_uint_8_list,
     hints: *mut wire_list_route_hint,
+    new_amount: u64,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -95,8 +128,15 @@ pub extern "C" fn wire_add_routing_hints(
             let api_secret = secret.wire2api();
             let api_invoice = invoice.wire2api();
             let api_hints = hints.wire2api();
+            let api_new_amount = new_amount.wire2api();
             move |task_callback| {
-                add_routing_hints(api_storage_path, api_secret, api_invoice, api_hints)
+                add_routing_hints(
+                    api_storage_path,
+                    api_secret,
+                    api_invoice,
+                    api_hints,
+                    api_new_amount,
+                )
             }
         },
     )
@@ -206,12 +246,12 @@ pub struct wire_uint_8_list {
 // Section: allocate functions
 
 #[no_mangle]
-pub extern "C" fn new_box_autoadd_u64_0(value: u64) -> *mut u64 {
+pub extern "C" fn new_box_autoadd_u64(value: u64) -> *mut u64 {
     support::new_leak_box_ptr(value)
 }
 
 #[no_mangle]
-pub extern "C" fn new_list_route_hint_0(len: i32) -> *mut wire_list_route_hint {
+pub extern "C" fn new_list_route_hint(len: i32) -> *mut wire_list_route_hint {
     let wrap = wire_list_route_hint {
         ptr: support::new_leak_vec_ptr(<wire_RouteHint>::new_with_null_ptr(), len),
         len,
@@ -220,7 +260,7 @@ pub extern "C" fn new_list_route_hint_0(len: i32) -> *mut wire_list_route_hint {
 }
 
 #[no_mangle]
-pub extern "C" fn new_list_route_hint_hop_0(len: i32) -> *mut wire_list_route_hint_hop {
+pub extern "C" fn new_list_route_hint_hop(len: i32) -> *mut wire_list_route_hint_hop {
     let wrap = wire_list_route_hint_hop {
         ptr: support::new_leak_vec_ptr(<wire_RouteHintHop>::new_with_null_ptr(), len),
         len,
@@ -229,7 +269,7 @@ pub extern "C" fn new_list_route_hint_hop_0(len: i32) -> *mut wire_list_route_hi
 }
 
 #[no_mangle]
-pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
+pub extern "C" fn new_uint_8_list(len: i32) -> *mut wire_uint_8_list {
     let ans = wire_uint_8_list {
         ptr: support::new_leak_vec_ptr(Default::default(), len),
         len,

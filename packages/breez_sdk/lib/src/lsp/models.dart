@@ -3,6 +3,7 @@ class LSPInfo {
   final String name;
   final String? widgetURL;
   final String pubKey;
+  final List<int> lspPubkey;
   final String host;
   final bool frozen;
   final int minHtlcMsat;
@@ -19,6 +20,7 @@ class LSPInfo {
     required this.name,
     this.widgetURL,
     required this.pubKey,
+    required this.lspPubkey,
     required this.host,
     this.frozen = false,
     required this.minHtlcMsat,
@@ -54,6 +56,7 @@ class LSPInfo {
       name: json["name"],
       widgetURL: json["widgetURL"],
       pubKey: json["pubKey"],
+      lspPubkey: json["lspPubkey"],
       host: json["host"],
       frozen: json["frozen"],
       minHtlcMsat: json["minHtlcMsat"],

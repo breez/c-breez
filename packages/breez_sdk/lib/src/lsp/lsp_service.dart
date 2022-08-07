@@ -3,12 +3,13 @@ import 'dart:typed_data';
 import 'package:breez_sdk/src/breez_server/generated/breez.pbgrpc.dart';
 import 'package:breez_sdk/src/breez_server/server.dart';
 import 'package:breez_sdk/src/lsp/models.dart';
-import 'package:encrypt/encrypt.dart';
+import 'package:breez_sdk/src/native_toolkit.dart';
 import 'package:grpc/grpc.dart';
 import 'package:fixnum/fixnum.dart';
-import 'package:hex/hex.dart';
 
 class LSPService {
+  final _lnToolkit = getNativeToolkit();
+
   Future<Map<String, LSPInfo>> getLSPList(String nodePubkey) async {
     final server = await BreezServer.createWithDefaultConfig();
     var channel = await server.createServerChannel();
@@ -22,6 +23,7 @@ class LSPService {
           name: value.name,
           widgetURL: value.widgetUrl,
           pubKey: value.pubkey,
+          lspPubkey: value.lspPubkey,
           host: value.host,
           frozen: value.isFrozen,
           minHtlcMsat: value.minHtlcMsat.toInt(),
@@ -37,7 +39,7 @@ class LSPService {
 
   Future registerPayment(
       {required String lspID,
-      required String lspPubKey,
+      required List<int> lspPubKey,
       required List<int> paymentHash,
       required List<int> paymentSecret,
       required List<int> destination,
@@ -54,10 +56,9 @@ class LSPService {
       outgoingAmountMsat: outgoingAmountMsat,
     );
     final buffer = paymentInfo.writeToBuffer();
-    final key = Key(Uint8List.fromList(HEX.decode(lspPubKey)));
-    final encrypter = Encrypter(AES(key, mode: AESMode.cbc));
-    final encryptedMessage = encrypter.encryptBytes(buffer).bytes;
-    
+    final key = Uint8List.fromList(lspPubKey);    
+    final encryptedMessage = await _lnToolkit.encrypt(key: key, msg: buffer);    
+
     return channelClient.registerPayment(RegisterPaymentRequest(lspId: lspID, blob: encryptedMessage));
   }
 

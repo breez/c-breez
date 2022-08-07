@@ -10,8 +10,7 @@
 #endif
 
 @implementation LightningToolkitPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [LightningToolkitPlugin registerWithRegistrar:registrar];
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {  
   dummy_method_to_enforce_bundling();
 }
 @end

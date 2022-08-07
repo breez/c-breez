@@ -55,6 +55,9 @@ class LNURLService {
       JSON response and then attempts to pay the invoices asynchronously.
   */
       Map<String, dynamic> parsedJson = json.decode(response.body);
+      if (parsedJson['status'] == 'ERROR') {
+        throw Exception(parsedJson['reason']);
+      }
       return parsedJson['status'] == 'OK';
     } catch (_) {
       rethrow;

@@ -49,7 +49,14 @@ class InputHandler {
         return;
       case InputProtocol.lnurl:
         handleLNURL(
-            _context, inputState.inputData, () => _handlingRequest = false);
+          _context,
+          inputState.inputData,
+          () => _handlingRequest = false,
+          (errorMsg) {
+            _handlingRequest = false;
+            showFlushbar(_context, message: errorMsg);
+          },
+        );
         return;
       case InputProtocol.nodeID:
         handleNodeID(inputState.inputData);

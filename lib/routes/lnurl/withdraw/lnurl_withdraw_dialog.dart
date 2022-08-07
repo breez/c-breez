@@ -20,11 +20,13 @@ import '../../../utils/payment_validator.dart';
 class LNURLWithdrawDialog extends StatefulWidget {
   final LNURLWithdrawParams withdrawParams;
   final Function() onComplete;
+  final Function(String error) onError;
 
   const LNURLWithdrawDialog(
     this.withdrawParams, {
-    required this.onComplete,
     Key? key,
+    required this.onComplete,
+    required this.onError,
   }) : super(key: key);
 
   @override
@@ -241,17 +243,22 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                 'k1': widget.withdrawParams.k1.toString(),
                 'pr': invoice.bolt11
               };
-              await accountBloc
+              bool isSent = await accountBloc
                   .processLNURLWithdraw(widget.withdrawParams, qParams)
                   .onError(
                 (error, stackTrace) {
                   navigator.removeRoute(loaderRoute);
                   widget.onComplete();
-                  throw Exception(error.toString());
+                  return widget.onError(error.toString());
                 },
               );
               navigator.removeRoute(loaderRoute);
               widget.onComplete();
+              if (!isSent) {
+                String error =
+                    texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
+                widget.onError(error);
+              }
             }
           },
           child: Text(

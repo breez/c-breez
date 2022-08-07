@@ -23,11 +23,13 @@ import '../widgets/lnurl_metadata.dart';
 class LNURLPaymentPage extends StatefulWidget {
   final LNURLPayParams payParams;
   final Function() onComplete;
+  final Function(String error) onError;
 
   const LNURLPaymentPage(
     this.payParams, {
     Key? key,
     required this.onComplete,
+    required this.onError,
   }) : super(key: key);
 
   @override
@@ -205,7 +207,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               (error, stackTrace) {
                 navigator.removeRoute(loaderRoute);
                 widget.onComplete();
-                throw Exception(error.toString());
+                return widget.onError(error.toString());
               },
             ).then(
               (lnurlPayResult) => handleSuccessAction(context, lnurlPayResult),

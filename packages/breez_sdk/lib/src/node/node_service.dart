@@ -132,18 +132,19 @@ class LightningNode {
     // inject routing hints and sign the new invoice
     var routingHints = RouteHint(field0: List.from([lspHop]));
 
-    final bolt11WithHints = await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints]);
+    final bolt11WithHints = await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints], newAmount: amountSats.toInt() * 1000);
     // register the payment at the lsp if needed.
     if (destinationInvoiceAmountSats < amountSats) {
       _log.i("requestPayment: need to register paymenet, parsing invoice");
       final lnInvoice = await _lnToolkit.parseInvoice(invoice: bolt11WithHints);
+      
       _log.i("requestPayment: registering payment in LSP");
       final destination = HEX.decode(lnInvoice.payeePubkey);
 
       await _lspService.registerPayment(
           destination: destination,
           lspID: _currentLSP!.lspID,
-          lspPubKey: _currentLSP!.pubKey,
+          lspPubKey: _currentLSP!.lspPubkey,
           paymentHash: HEX.decode(invoice.paymentHash),
           paymentSecret: lnInvoice.paymentSecret.toList(),
           incomingAmountMsat: amountMSat,

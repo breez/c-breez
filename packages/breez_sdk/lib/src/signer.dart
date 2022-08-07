@@ -21,8 +21,8 @@ class Signer {
     return _lnToolkit.handle(storagePath: storagePath, secret: privateKey, msg: message, peerId: peerId, dbId: dbId);
   }
 
-  Future<String> addRoutingHints({required String invoice, required List<RouteHint> hints, dynamic hint}) {
-    return _lnToolkit.addRoutingHints(storagePath: storagePath, secret: privateKey, invoice: invoice, hints: hints);
+  Future<String> addRoutingHints({required String invoice, required List<RouteHint> hints, required int newAmount, dynamic hint}) {
+    return _lnToolkit.addRoutingHints(storagePath: storagePath, secret: privateKey, invoice: invoice, hints: hints, newAmount: newAmount);
   }
 
   Future<Uint8List> getNodePubkey() {

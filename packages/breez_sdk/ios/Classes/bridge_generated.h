@@ -59,7 +59,8 @@ void wire_add_routing_hints(int64_t port_,
                             struct wire_uint_8_list *storage_path,
                             struct wire_uint_8_list *secret,
                             struct wire_uint_8_list *invoice,
-                            struct wire_list_route_hint *hints);
+                            struct wire_list_route_hint *hints,
+                            uint64_t new_amount);
 
 void wire_sign_message(int64_t port_,
                        struct wire_uint_8_list *storage_path,

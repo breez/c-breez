@@ -31,6 +31,7 @@ abstract class LightningToolkit {
       required Uint8List secret,
       required String invoice,
       required List<RouteHint> hints,
+      required int newAmount,
       dynamic hint});
 
   Future<Uint8List> signMessage(
@@ -194,6 +195,7 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
           required Uint8List secret,
           required String invoice,
           required List<RouteHint> hints,
+          required int newAmount,
           dynamic hint}) =>
       executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => inner.wire_add_routing_hints(
@@ -201,13 +203,14 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
             _api2wire_String(storagePath),
             _api2wire_uint_8_list(secret),
             _api2wire_String(invoice),
-            _api2wire_list_route_hint(hints)),
+            _api2wire_list_route_hint(hints),
+            _api2wire_u64(newAmount)),
         parseSuccessData: _wire2api_String,
         constMeta: const FlutterRustBridgeTaskConstMeta(
           debugName: "add_routing_hints",
-          argNames: ["storagePath", "secret", "invoice", "hints"],
+          argNames: ["storagePath", "secret", "invoice", "hints", "newAmount"],
         ),
-        argValues: [storagePath, secret, invoice, hints],
+        argValues: [storagePath, secret, invoice, hints, newAmount],
         hint: hint,
       ));
 
@@ -531,6 +534,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
     ffi.Pointer<wire_uint_8_list> secret,
     ffi.Pointer<wire_uint_8_list> invoice,
     ffi.Pointer<wire_list_route_hint> hints,
+    int new_amount,
   ) {
     return _wire_add_routing_hints(
       port_,
@@ -538,6 +542,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       secret,
       invoice,
       hints,
+      new_amount,
     );
   }
 
@@ -548,14 +553,16 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_list_route_hint>)>>('wire_add_routing_hints');
+              ffi.Pointer<wire_list_route_hint>,
+              ffi.Uint64)>>('wire_add_routing_hints');
   late final _wire_add_routing_hints = _wire_add_routing_hintsPtr.asFunction<
       void Function(
           int,
           ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_uint_8_list>,
-          ffi.Pointer<wire_list_route_hint>)>();
+          ffi.Pointer<wire_list_route_hint>,
+          int)>();
 
   void wire_sign_message(
     int port_,

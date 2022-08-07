@@ -80,7 +80,11 @@ impl RouteHint {
  }
 }
 
-pub fn _add_routing_hints(invoice: &String, hints: Vec<RouteHint>) -> Result<RawInvoice> {
+pub fn _add_routing_hints(
+ invoice: &String,
+ hints: Vec<RouteHint>,
+ new_amount_msats: u64,
+) -> Result<RawInvoice> {
  let signed = invoice.parse::<SignedRawInvoice>()?;
  let invoice = Invoice::from_signed(signed)?;
  let description = match invoice.description() {
@@ -92,10 +96,7 @@ pub fn _add_routing_hints(invoice: &String, hints: Vec<RouteHint>) -> Result<Raw
   .description(description)
   .payment_hash(*invoice.payment_hash())
   .timestamp(invoice.timestamp())
-  .amount_milli_satoshis(match invoice.amount_milli_satoshis() {
-   Some(amount) => amount,
-   None => 0,
-  })
+  .amount_milli_satoshis(new_amount_msats)
   .expiry_time(invoice.expiry_time())
   .payment_secret(*invoice.payment_secret())
   .min_final_cltv_expiry(invoice.min_final_cltv_expiry());
@@ -183,7 +184,7 @@ mod tests {
   };
   let route_hint = RouteHint(vec![hint_hop]);
 
-  let encoded = _add_routing_hints(&payreq, vec![route_hint]).unwrap();
+  let encoded = _add_routing_hints(&payreq, vec![route_hint], 100).unwrap();
 
   print!("{:?}", encoded);
  }

@@ -33,12 +33,13 @@ pub fn add_routing_hints(
  secret: Vec<u8>,
  invoice: String,
  hints: Vec<RouteHint>,
+ new_amount: u64,
 ) -> Result<String> {
  let mut private_key_slice: [u8; 32] = [0; 32];
  private_key_slice.copy_from_slice(&secret[0..32]);
  let hsmd = _new_hsmd(private_key_slice, &storage_path)?;
  // create a new raw (not signed) invoice with the new routing hints
- let raw_invoice: RawInvoice = _add_routing_hints(&invoice, hints)?;
+ let raw_invoice: RawInvoice = _add_routing_hints(&invoice, hints, new_amount)?;
  hsmd.handle_sign_invoice(raw_invoice)
 }
 

@@ -115,6 +115,7 @@ pub extern "C" fn wire_add_routing_hints(
     secret: *mut wire_uint_8_list,
     invoice: *mut wire_uint_8_list,
     hints: *mut wire_list_route_hint,
+    new_amount: u64,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -127,8 +128,15 @@ pub extern "C" fn wire_add_routing_hints(
             let api_secret = secret.wire2api();
             let api_invoice = invoice.wire2api();
             let api_hints = hints.wire2api();
+            let api_new_amount = new_amount.wire2api();
             move |task_callback| {
-                add_routing_hints(api_storage_path, api_secret, api_invoice, api_hints)
+                add_routing_hints(
+                    api_storage_path,
+                    api_secret,
+                    api_invoice,
+                    api_hints,
+                    api_new_amount,
+                )
             }
         },
     )

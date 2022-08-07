@@ -44,7 +44,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
     fixedAmount = widget.withdrawParams.minWithdrawable ==
         widget.withdrawParams.maxWithdrawable;
     if (fixedAmount) {
-      _amountController.text = widget.withdrawParams.minWithdrawable.toString();
+      _amountController.text = (widget.withdrawParams.minWithdrawable ~/ 1000).toString();
     }
     super.initState();
   }

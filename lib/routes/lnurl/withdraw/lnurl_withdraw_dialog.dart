@@ -3,6 +3,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
@@ -42,6 +43,9 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
   void initState() {
     fixedAmount = widget.withdrawParams.minWithdrawable ==
         widget.withdrawParams.maxWithdrawable;
+    if (fixedAmount) {
+      _amountController.text = widget.withdrawParams.minWithdrawable.toString();
+    }
     super.initState();
   }
 
@@ -229,10 +233,15 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               navigator.pop();
               var loaderRoute = createLoaderRoute(context);
               navigator.push(loaderRoute);
-              // TODO: Generate a payment request for pr field
+              final Int64 amount =
+                  Int64.parseInt(_amountController.text) * 1000;
+              Invoice invoice = await accountBloc.addInvoice(
+                description: widget.withdrawParams.defaultDescription,
+                amount: amount,
+              );
               Map<String, String> qParams = {
                 'k1': widget.withdrawParams.k1.toString(),
-                'pr': 'TODO'
+                'pr': invoice.bolt11
               };
               await accountBloc
                   .processLNURLWithdraw(widget.withdrawParams, qParams)

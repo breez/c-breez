@@ -1,9 +1,14 @@
 import 'package:breez_sdk/src/storage/dao/db.dart';
+import 'package:drift/native.dart';
 
 abstract class Storage {
 
   static Storage createDefault() {
     return AppDatabase();
+  }
+
+  static Storage createInMemory() {
+    return AppDatabase(executor: NativeDatabase.memory(logStatements: true));
   }
 
   // lightning

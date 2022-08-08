@@ -3,14 +3,11 @@
 import 'dart:async';
 
 import 'package:breez_sdk/sdk.dart';
-import 'package:c_breez/repositories/app_storage.dart';
-import 'package:c_breez/repositories/dao/db.dart';
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/notifications.dart';
-import 'package:drift/native.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -97,7 +94,7 @@ class InjectorMock extends Mock implements ServiceInjector {
       return Future.value(_lightningService);
     }
 
-    return _lightningService ??= LightningNode(lspService);
+    return _lightningService ??= LightningNode(lspService, Storage.createDefault());
   }
 
   @override
@@ -115,8 +112,8 @@ class InjectorMock extends Mock implements ServiceInjector {
   KeyChain get keychain => KeychainMoc();
 
   @override
-  AppStorage get appStorage {
-    return AppDatabase(executor: NativeDatabase.memory(logStatements: true));
+  Storage get sdkStorage {
+    return Storage.createInMemory();
   }
 
   @override

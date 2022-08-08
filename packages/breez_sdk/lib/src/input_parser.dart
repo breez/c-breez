@@ -1,7 +1,12 @@
 import 'package:dart_lnurl/dart_lnurl.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:validators/validators.dart';
 
 import '../bridge_generated.dart';
 import 'native_toolkit.dart';
+
+const NODE_URI_SEPARATOR = "@";
+const NODE_ID_LENGTH = 66;
 
 class InputParser {
   final LightningToolkit _lnToolkit = getNativeToolkit();
@@ -10,9 +15,8 @@ class InputParser {
 
   Future<ParsedInput> parse(String s) async {
     // lnurl
-    String lower = s.toLowerCase();
     try {
-      LNURLParseResult parseResult = await getParams(lower);
+      LNURLParseResult parseResult = await getParams(s);
       if (parseResult.payParams != null ||
           parseResult.withdrawalParams != null) {
         return ParsedInput(InputProtocol.lnurl, parseResult);
@@ -22,13 +26,14 @@ class InputParser {
     }
 
     // lightning link
+    String lower = s.toLowerCase();
     if (lower.startsWith('lightning:')) {
       final invoice = await _lnToolkit.parseInvoice(invoice: s.substring(10));
       return ParsedInput(InputProtocol.paymentRequest, invoice);
     }
 
     // bolt 11 lightning
-    String? bolt11 = _extractBolt11FromBip21(lower);
+    String? bolt11 = _extractBolt11FromBip21(s);
     if (bolt11 != null) {
       final invoice = await _lnToolkit.parseInvoice(invoice: bolt11);
       return ParsedInput(InputProtocol.paymentRequest, invoice);
@@ -39,6 +44,24 @@ class InputParser {
     } catch (e) {
       // do nothing
     }
+
+    // nodeID
+    String? nodeID = _parseNodeID(s);
+    if (nodeID != null) {
+      return ParsedInput(InputProtocol.nodeID, nodeID);
+    }
+
+    // Open on whichever app the system links to
+    if (await canLaunchUrlString(s)) {
+      return ParsedInput(InputProtocol.appLink, s);
+    }
+
+    // Open on browser
+    bool validUrl = isURL(s, requireProtocol: true, allowUnderscore: true);
+    if (validUrl) {
+      return ParsedInput(InputProtocol.webView, s);
+    }
+
     throw Exception("not implemented");
   }
 }
@@ -59,7 +82,24 @@ String? _extractBolt11FromBip21(String bip21) {
   return null;
 }
 
-enum InputProtocol { paymentRequest, lnurl }
+String? _parseNodeID(String? nodeID) {
+  if (nodeID == null) {
+    return null;
+  }
+  if (nodeID.length == NODE_ID_LENGTH) {
+    return nodeID;
+  }
+
+  if (nodeID.length > NODE_ID_LENGTH &&
+      nodeID.substring(NODE_ID_LENGTH, NODE_ID_LENGTH + 1) ==
+          NODE_URI_SEPARATOR) {
+    return nodeID.substring(0, 66);
+  }
+
+  return null;
+}
+
+enum InputProtocol { paymentRequest, lnurl, nodeID, appLink, webView }
 
 class ParsedInput {
   final InputProtocol protocol;

@@ -1,14 +1,17 @@
 import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/routes/lnurl/lnurl_payment_delegate.dart';
+import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
+import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
     as payment_request;
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../widgets/open_link_dialog.dart';
+import '../widgets/route.dart';
 
 class InputHandler {
   final BuildContext _context;
@@ -45,12 +48,22 @@ class InputHandler {
         handleInvoice(inputState.inputData);
         return;
       case InputProtocol.lnurl:
-        final LNURLParseResult lnurlParseResult = inputState.inputData;
-        if (lnurlParseResult.payParams != null) {
-          handleLNURLPayRequest(_context, lnurlParseResult.payParams!,
-              () => _handlingRequest = false);
-        }
-        if (lnurlParseResult.withdrawalParams != null) {}
+        handleLNURL(
+          _context,
+          inputState.inputData,
+          () => _handlingRequest = false,
+          (errorMsg) {
+            _handlingRequest = false;
+            showFlushbar(_context, message: errorMsg);
+          },
+        );
+        return;
+      case InputProtocol.nodeID:
+        handleNodeID(inputState.inputData);
+        return;
+      case InputProtocol.appLink:
+      case InputProtocol.webView:
+        handleWebAddress(inputState.inputData);
         return;
       default:
         break;
@@ -68,6 +81,28 @@ class InputHandler {
         scrollController,
         () => _handlingRequest = false,
       ),
+    );
+  }
+
+  void handleNodeID(String nodeID) {
+    _handlingRequest = false;
+    Navigator.of(_context).push(
+      FadeInRoute(
+        builder: (_) => SpontaneousPaymentPage(
+          nodeID,
+          firstPaymentItemKey,
+        ),
+      ),
+    );
+  }
+
+  void handleWebAddress(String url) {
+    _handlingRequest = false;
+    showDialog(
+      useRootNavigator: false,
+      context: _context,
+      barrierDismissible: false,
+      builder: (_) => OpenLinkDialog(url),
     );
   }
 

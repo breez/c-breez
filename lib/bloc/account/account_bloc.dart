@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
@@ -31,19 +32,22 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String accountSeedKey = "account_seed_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
-  final _log = FimberLog("AccountBloc");
-  final breez_sdk.LightningNode _lightningNode;
+  final _log = FimberLog("AccountBloc");  
+  final lntoolkit.LightningNode _lightningNode;
+  final lntoolkit.LNURLService _lnurlService;
   final KeyChain _keyChain;
   bool started = false;
   breez_sdk.Signer? _signer;
 
-  AccountBloc(this._lightningNode, this._keyChain) : super(AccountState.initial()) {
+  AccountBloc(
+      this._lightningNode, this._lnurlService, this._keyChain)
+      : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
     });
 
-    // sync node info on incoming payments    
+    // sync node info on incoming payments
     final nodeAPI = _lightningNode.getNodeAPI();
     nodeAPI.incomingPaymentsStream().listen((event) {
       syncStateWithNode();
@@ -118,9 +122,29 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return _lightningNode.syncState();
   }
 
+  Future<bool> processLNURLWithdraw(
+      LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
+    try {
+      bool isSent = await _lnurlService
+          .processWithdrawRequest(withdrawParams, qParams)
+          .timeout(
+            const Duration(minutes: 3),
+            onTimeout: () =>
+                throw Exception('Timed out waiting 3 minutes for payment.'),
+          );
+      if (isSent) {
+        await syncStateWithNode();
+      }
+      return isSent;
+    } catch (_) {
+      rethrow;
+    }
+  }
+
   Future<LNURLPayResult> sendLNURLPayment(LNURLPayParams payParams,
       Map<String, String> qParams) async {
-    final LNURLPayResult lnurlPayResult = await _lightningNode.getPaymentResult(payParams, qParams);
+    final LNURLPayResult lnurlPayResult =
+        await _lnurlService.getPaymentResult(payParams, qParams);
     await _lightningNode
         .sendPaymentForRequest(lnurlPayResult.pr,
             amount: Int64.parseInt(qParams['amount']!))
@@ -159,21 +183,32 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity
   // constraints.
-  void validatePayment(Int64 amount, bool outgoing) {
+  void validatePayment(
+    Int64 amount,
+    bool outgoing, {
+    Int64? channelMinimumFee,
+  }) {
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
       throw PaymentExceededLimitError(accState.maxPaymentAmount);
     }
 
-    if (!outgoing && amount > accState.maxAllowedToReceive) {
-      throw PaymentExceededLimitError(accState.maxAllowedToReceive);
+    if (!outgoing) {
+      if (channelMinimumFee != null &&
+          (amount > accState.maxInboundLiquidity &&
+              amount <= channelMinimumFee)) {
+        throw PaymentBelowSetupFeesError(channelMinimumFee);
+      }
+      if (amount > accState.maxAllowedToReceive) {
+        throw PaymentExceededLimitError(accState.maxAllowedToReceive);
+      }
     }
 
     if (outgoing && amount > accState.maxAllowedToPay) {
       if (accState.reserveAmount > 0) {
-        throw PaymentBellowReserveError(accState.reserveAmount);
+        throw PaymentBelowReserveError(accState.reserveAmount);
       }
-      throw PaymentBellowReserveError(accState.reserveAmount);
+      throw PaymentBelowReserveError(accState.reserveAmount);
     }
   }
 

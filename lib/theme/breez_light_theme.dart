@@ -116,6 +116,7 @@ final ThemeData breezLightTheme = ThemeData(
     ),
   ),
   chipTheme: const ChipThemeData(backgroundColor: Color(0xFF0085fb)),
+  errorColor: const Color(0xffffe685),
 );
 
 final ThemeData calendarLightTheme = ThemeData.light().copyWith(

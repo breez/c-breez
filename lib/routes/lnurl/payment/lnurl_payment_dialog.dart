@@ -16,10 +16,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class LNURLPaymentDialog extends StatefulWidget {
   final LNURLPayParams payParams;
   final Function() onComplete;
+  final Function(String error) onError;
 
   const LNURLPaymentDialog(
     this.payParams, {
     required this.onComplete,
+    required this.onError,
     Key? key,
   }) : super(key: key);
 
@@ -174,7 +176,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               (error, stackTrace) {
                 navigator.removeRoute(loaderRoute);
                 widget.onComplete();
-                throw Exception(error.toString());
+                return widget.onError(error.toString());
               },
             ).then(
               (lnurlPayResult) => handleSuccessAction(context, lnurlPayResult),

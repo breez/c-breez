@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:breez_sdk/sdk.dart' as lntoolkit;
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 
 import 'lsp_state.dart';
 
 class LSPBloc extends Cubit<LSPState> with HydratedMixin {  
-  final lntoolkit.LightningNode _lightningNode;
-  final lntoolkit.LSPService _lspService;
+  final breez_sdk.LightningNode _lightningNode;
+  final breez_sdk.LSPService _lspService;
   String? nodeID;
   bool _lspFetched = false;
 

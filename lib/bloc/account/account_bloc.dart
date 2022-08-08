@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
@@ -33,8 +32,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
   final _log = FimberLog("AccountBloc");  
-  final lntoolkit.LightningNode _lightningNode;
-  final lntoolkit.LNURLService _lnurlService;
+  final breez_sdk.LightningNode _lightningNode;
+  final breez_sdk.LNURLService _lnurlService;
   final KeyChain _keyChain;
   bool started = false;
   breez_sdk.Signer? _signer;

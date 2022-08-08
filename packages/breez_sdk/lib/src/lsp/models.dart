@@ -48,6 +48,7 @@ class LSPInfo {
         'channelFeePermyriad': channelFeePermyriad,
         'maxInactiveDuration': maxInactiveDuration,
         'channelMinimumFeeMsat': channelMinimumFeeMsat,
+        'lspPubkey': lspPubkey,
       };
 
   factory LSPInfo.fromJson(Map<String, dynamic> json) {
@@ -56,7 +57,7 @@ class LSPInfo {
       name: json["name"],
       widgetURL: json["widgetURL"],
       pubKey: json["pubKey"],
-      lspPubkey: json["lspPubkey"],
+      lspPubkey: (json["lspPubkey"] as List).cast(),
       host: json["host"],
       frozen: json["frozen"],
       minHtlcMsat: json["minHtlcMsat"],

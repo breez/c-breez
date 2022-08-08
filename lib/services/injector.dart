@@ -8,7 +8,7 @@ import 'package:c_breez/services/local_auth_service.dart';
 import 'package:c_breez/services/notifications.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:http/http.dart';
-import 'package:breez_sdk/sdk.dart' as lntoolkit;
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'background_task.dart';
@@ -19,21 +19,21 @@ class ServiceInjector {
 
   BreezServer? _breezServer;
   FirebaseNotifications? _notifications;
-  lntoolkit.LightningNode? _lightningService;
+  breez_sdk.LightningNode? _lightningService;
   DeepLinksService? _deepLinksService;
 
   // breez sdk
   LightningLinksService? _lightningLinksService;
-  lntoolkit.LSPService? _lspService;
-  lntoolkit.LNURLService? _lnurlService;
-  lntoolkit.FiatService? _fiatService;
+  breez_sdk.LSPService? _lspService;
+  breez_sdk.LNURLService? _lnurlService;
+  breez_sdk.FiatService? _fiatService;
 
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences =
       SharedPreferences.getInstance();
   BackgroundTaskService? _backgroundTaskService;
   LocalAuthenticationService? _localAuthService;
-  lntoolkit.Storage? _appStorage;
+  breez_sdk.Storage? _appStorage;
   KeyChain? _keychain;
   Client? _client;
 
@@ -55,24 +55,24 @@ class ServiceInjector {
     return _breezServer ??= BreezServer();
   }
 
-  Future<lntoolkit.LightningNode> get lightningServices async {
+  Future<breez_sdk.LightningNode> get lightningServices async {
     if (_lightningService != null) {
       return Future.value(_lightningService);
     }
 
-    return _lightningService ??= lntoolkit.LightningNode(lspService, sdkStorage);
+    return _lightningService ??= breez_sdk.LightningNode(lspService, sdkStorage);
   }
 
-  lntoolkit.LSPService get lspService {
-    return _lspService ??= lntoolkit.LSPService();
+  breez_sdk.LSPService get lspService {
+    return _lspService ??= breez_sdk.LSPService();
   }
 
-  lntoolkit.LNURLService get lnurlService {
-    return _lnurlService ??= lntoolkit.LNURLService();
+  breez_sdk.LNURLService get lnurlService {
+    return _lnurlService ??= breez_sdk.LNURLService();
   }
 
-  lntoolkit.FiatService get fiatService {
-    return _fiatService ??= lntoolkit.FiatService();
+  breez_sdk.FiatService get fiatService {
+    return _fiatService ??= breez_sdk.FiatService();
   }
 
   Device get device {
@@ -99,8 +99,8 @@ class ServiceInjector {
     return _client ??= Client();
   }
 
-  lntoolkit.Storage get sdkStorage {
-    return _appStorage ??= lntoolkit.Storage.createDefault();
+  breez_sdk.Storage get sdkStorage {
+    return _appStorage ??= breez_sdk.Storage.createDefault();
   }
 
   KeyChain get keychain {

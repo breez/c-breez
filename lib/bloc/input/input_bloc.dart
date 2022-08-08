@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/sdk.dart' as lntoolkit;
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -15,7 +15,7 @@ import 'package:rxdart/rxdart.dart';
 class InputBloc extends Cubit<InputState> {
   final LightningLinksService _lightningLinks;
   final Device _device;  
-  final lntoolkit.LightningNode _lightningNode;
+  final breez_sdk.LightningNode _lightningNode;
 
   final _decodeInvoiceController = StreamController<String>();
 
@@ -43,17 +43,17 @@ class InputBloc extends Cubit<InputState> {
       _lightningLinks.linksNotifications,
       _device.distinctClipboardStream
     ]).asyncMap((s) async {
-      final command = await lntoolkit.InputParser().parse(s);
+      final command = await breez_sdk.InputParser().parse(s);
       switch (command.protocol) {
-        case lntoolkit.InputProtocol.paymentRequest:
+        case breez_sdk.InputProtocol.paymentRequest:
           return handlePaymentRequest(s, command);
-        case lntoolkit.InputProtocol.lnurl:
+        case breez_sdk.InputProtocol.lnurl:
           return InputState(
               protocol: command.protocol,
               inputData: command.decoded as LNURLParseResult);
-        case lntoolkit.InputProtocol.nodeID:
-        case lntoolkit.InputProtocol.appLink:
-        case lntoolkit.InputProtocol.webView:
+        case breez_sdk.InputProtocol.nodeID:
+        case breez_sdk.InputProtocol.appLink:
+        case breez_sdk.InputProtocol.webView:
           return InputState(
               protocol: command.protocol, inputData: command.decoded);
         default:
@@ -63,8 +63,8 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future<InputState?> handlePaymentRequest(
-      String raw, lntoolkit.ParsedInput command) async {
-    final lnInvoice = command.decoded as lntoolkit.LNInvoice;
+      String raw, breez_sdk.ParsedInput command) async {
+    final lnInvoice = command.decoded as breez_sdk.LNInvoice;
     var nodeState = await _lightningNode.nodeStateStream().first;
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
       return null;

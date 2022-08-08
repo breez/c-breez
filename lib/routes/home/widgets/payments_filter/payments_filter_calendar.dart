@@ -1,14 +1,14 @@
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/models/payment_type.dart';
 import 'package:c_breez/routes/home/widgets/payments_filter/calendar_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class PaymentsFilterCalendar extends StatelessWidget {
-  final List<PaymentType> filter;
+  final List<breez_sdk.PaymentType> filter;
 
   const PaymentsFilterCalendar(
     this.filter, {

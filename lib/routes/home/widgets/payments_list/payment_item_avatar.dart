@@ -1,10 +1,9 @@
-import 'package:c_breez/models/payment_info.dart';
-import 'package:c_breez/models/payment_type.dart';
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 
 class PaymentItemAvatar extends StatelessWidget {
-  final PaymentInfo paymentItem;
+  final breez_sdk.PaymentInfo paymentItem;
   final double radius;
 
   const PaymentItemAvatar(

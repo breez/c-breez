@@ -1,19 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
-import 'package:c_breez/bloc/account/models_extensions.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/models/payment_filter.dart';
-import 'package:c_breez/models/payment_info.dart';
-import 'package:c_breez/models/payment_type.dart';
-import 'package:c_breez/models/withdrawal.dart';
-import 'package:c_breez/repositories/app_storage.dart';
-import 'package:c_breez/repositories/dao/db.dart' as db;
 import 'package:c_breez/services/keychain.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:drift/drift.dart';
@@ -21,7 +13,7 @@ import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:breez_sdk/sdk.dart' as lntoolkit;
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -40,13 +32,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
   final _log = FimberLog("AccountBloc");
-  final AppStorage _appStorage;
-  final lntoolkit.LightningNode _lightningNode;
+  final breez_sdk.LightningNode _lightningNode;
   final KeyChain _keyChain;
   bool started = false;
-  lntoolkit.Signer? _signer;
+  breez_sdk.Signer? _signer;
 
-  AccountBloc(this._lightningNode, this._appStorage, this._keyChain) : super(AccountState.initial()) {
+  AccountBloc(this._lightningNode, this._keyChain) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
@@ -65,7 +56,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           _log.v("found account credentials: ${String.fromCharCodes(creds)}");
 
           // temporary fix for older versions that didn't save the seed in keychain
-          final nodeCreds = lntoolkit.NodeCredentials.fromBuffer(creds);
+          final nodeCreds = breez_sdk.NodeCredentials.fromBuffer(creds);
           await _keyChain.write(accountSeedKey, HEX.encode(nodeCreds.secret!));
 
           // create signer
@@ -123,11 +114,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // syncStateWithNode synchronized the node state with the local state.
   // This is required to assemble the account state (e.g liquidity, connected, etc...)
-  Future syncStateWithNode() async {        
-    await _syncNodeState();
-    await _syncPeers();
-    await _syncOutgoingPayments();
-    await _syncSettledInvoices();
+  Future syncStateWithNode() {        
+    return _lightningNode.syncState();
   }
 
   Future<LNURLPayResult> sendLNURLPayment(LNURLPayParams payParams,
@@ -189,8 +177,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  void changePaymentFilter(PaymentFilterModel filter) {
-    _appStorage.updateSettings(paymentFilterSettingsKey, json.encode(filter.toJson()));
+  void changePaymentFilter(breez_sdk.PaymentFilter filter) {
+    _lightningNode.setPaymentFilter(filter);
   }
 
   Future<Invoice> addInvoice(
@@ -208,93 +196,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   Stream<AccountState> _watchAccountChanges() {
-    return Rx.combineLatest3<List<PaymentInfo>, PaymentFilterModel, db.NodeState?,
+    return Rx.combineLatest3<List<breez_sdk.PaymentInfo>, breez_sdk.PaymentFilter, breez_sdk.NodeState?,
             AccountState>(
-        _paymentsStream(),
-        _paymentsFilterStream(),
-        _appStorage.watchNodeState(),        
+        _lightningNode.paymentsStream(),
+        _lightningNode.paymentFilterStream(),
+        _lightningNode.nodeStateStream(),        
         (payments, paymentsFilter, nodeInfo) {
       return assembleAccountState(payments, paymentsFilter, nodeInfo) ?? state;
     });
-  }
-
-  Stream<PaymentFilterModel> _paymentsFilterStream() {
-    return _appStorage
-        .watchSetting(paymentFilterSettingsKey)
-        .map((filter) => filter == null ? PaymentFilterModel.initial() : PaymentFilterModel.fromJson(json.decode(filter.value)));
-  }
-
-  // _paymentsStream subscribes to local storage changes and exposes a stream of both incoming and outgoing payments.
-  Stream<List<PaymentInfo>> _paymentsStream() {
-    // outgoing payments stream
-    var outgoingPaymentsStream = _appStorage.watchOutgoingPayments().map((pList) {
-      return true;
-    });
-
-    // incoming payments stream (settled invoices)
-    var incomingPaymentsStream = _appStorage.watchIncomingPayments().map((iList) {
-      return true;
-    });
-    return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream]).asyncMap((e) async {
-      var outgoing = await _appStorage.listOutgoingPayments();
-      var outgoingList = outgoing.map((p) {
-        return PaymentInfo(
-            type: PaymentType.sent,
-            amountMsat: Int64(p.amountMsats),
-            destination: p.destination,
-            shortTitle: "",
-            feeMsat: Int64(p.feeMsat),
-            creationTimestamp: Int64(p.createdAt),
-            pending: p.pending,
-            keySend: p.isKeySend,
-            paymentHash: p.paymentHash);
-      });
-
-      var incoming = await _appStorage.listIncomingPayments();
-      var incomingList = incoming.map((invoice) {
-        return PaymentInfo(
-            type: PaymentType.received,
-            amountMsat: Int64(invoice.amountMsat),
-            feeMsat: Int64.ZERO,
-            destination: state.id!,
-            shortTitle: "",
-            creationTimestamp: Int64(invoice.paymentTime),
-            pending: false,
-            keySend: false,
-            paymentHash: invoice.paymentHash);
-      });
-
-      return incomingList.toList()
-        ..addAll(outgoingList)
-        ..sort((p1, p2) => (p2.creationTimestamp - p1.creationTimestamp).toInt());
-    });
-  }
-
-  Future _syncNodeState() async {
-    _log.i("_syncNodeState started");
-    await _appStorage.setNodeState((await _lightningNode.getState()).toDbNodeState());
-    _log.i("_syncNodeState finished");
-  }
-
-  Future _syncPeers() async {
-    _log.i("_syncPeers started");
-    var peers = (await _lightningNode.getNodeAPI().listPeers()).map((p) => p.toDbPeer()).toList();
-    await _appStorage.setPeers(peers);
-    _log.i("_syncPeers finished");
-  }
-
-  Future _syncOutgoingPayments() async {
-    _log.i("_syncOutgoingPayments");
-    var outgoingPayments = await _lightningNode.getNodeAPI().getPayments();
-    await _appStorage.addOutgoingPayments(outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
-    _log.i("_syncOutgoingPayments finished");
-  }
-
-  Future _syncSettledInvoices() async {
-    _log.i("_syncSettledInvoices started");
-    var invoices = await _lightningNode.getNodeAPI().getInvoices();
-    await _appStorage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
-    _log.i("_syncSettledInvoices finished");
   }
 
   @override
@@ -311,6 +220,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     final docDir = await getApplicationDocumentsDirectory();
     final signerDir = Directory("${docDir.path}/signer");
     await signerDir.create(recursive: true);
-    _signer = lntoolkit.Signer(seed, signerDir.path);
+    _signer = breez_sdk.Signer(seed, signerDir.path);
   }
 }

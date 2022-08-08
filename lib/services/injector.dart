@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import 'package:breez_sdk/sdk.dart';
-import 'package:c_breez/repositories/app_storage.dart';
-import 'package:c_breez/repositories/dao/db.dart';
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
@@ -27,15 +24,15 @@ class ServiceInjector {
 
   // breez sdk
   LightningLinksService? _lightningLinksService;
-  LSPService? _lspService;
-  FiatService? _fiatService;
+  lntoolkit.LSPService? _lspService;
+  lntoolkit.FiatService? _fiatService;
 
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences =
       SharedPreferences.getInstance();
   BackgroundTaskService? _backgroundTaskService;
   LocalAuthenticationService? _localAuthService;
-  AppStorage? _appStorage;
+  lntoolkit.Storage? _appStorage;
   KeyChain? _keychain;
   Client? _client;
 
@@ -62,14 +59,14 @@ class ServiceInjector {
       return Future.value(_lightningService);
     }
 
-    return _lightningService ??= lntoolkit.LightningNode(lspService);
+    return _lightningService ??= lntoolkit.LightningNode(lspService, sdkStorage);
   }
 
-  LSPService get lspService {
+  lntoolkit.LSPService get lspService {
     return _lspService ??= lntoolkit.LSPService();
   }
 
-  FiatService get fiatService {
+  lntoolkit.FiatService get fiatService {
     return _fiatService ??= lntoolkit.FiatService();
   }
 
@@ -97,8 +94,8 @@ class ServiceInjector {
     return _client ??= Client();
   }
 
-  AppStorage get appStorage {
-    return _appStorage ??= AppDatabase();
+  lntoolkit.Storage get sdkStorage {
+    return _appStorage ??= lntoolkit.Storage.createDefault();
   }
 
   KeyChain get keychain {

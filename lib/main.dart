@@ -44,18 +44,17 @@ void main() async {
         () => runApp(MultiBlocProvider(
               providers: [
                 BlocProvider<LSPBloc>(
-                  create: (BuildContext context) => LSPBloc(injector.appStorage, lightningServices, injector.lspService),
+                  create: (BuildContext context) => LSPBloc(lightningServices, injector.lspService),
                 ),
                 BlocProvider<AccountBloc>(
                   create: (BuildContext context) => AccountBloc(
-                    lightningServices,
-                    injector.appStorage,
+                    lightningServices,                    
                     injector.keychain,
                   ),
                 ),
                 BlocProvider<InputBloc>(
                   create: (BuildContext context) =>
-                      InputBloc(injector.lightningLinks, injector.device, injector.appStorage, lightningServices),
+                      InputBloc(injector.lightningLinks, injector.device, lightningServices),
                 ),
                 BlocProvider<UserProfileBloc>(
                   create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),

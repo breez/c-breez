@@ -27,8 +27,8 @@ class SettingsDao extends DatabaseAccessor<AppDatabase>
     });
   }
 
-  Future<Setting> readSettings(String key) {
-    return (select(settings)..where((s) => s.key.equals(key))).getSingle();
+  Future<Setting?> readSettings(String key) {
+    return (select(settings)..where((s) => s.key.equals(key))).getSingleOrNull();
   }
 
   Future<List<Setting>> readAllSettings() {

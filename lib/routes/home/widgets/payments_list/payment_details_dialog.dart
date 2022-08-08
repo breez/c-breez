@@ -2,8 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/models/payment_info.dart';
-import 'package:c_breez/models/payment_type.dart';
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
@@ -20,7 +19,7 @@ final AutoSizeGroup _valueGroup = AutoSizeGroup();
 
 Future<void> showPaymentDetailsDialog(
   BuildContext context,
-  PaymentInfo paymentInfo,
+  breez_sdk.PaymentInfo paymentInfo,
 ) {
   final themeData = Theme.of(context);
   var mediaQuery = MediaQuery.of(context);
@@ -241,7 +240,7 @@ Future<void> showPaymentDetailsDialog(
 
 Widget _amountText(
   BitcoinCurrency currency,
-  PaymentInfo paymentInfo,
+  breez_sdk.PaymentInfo paymentInfo,
   AppLocalizations texts,
   ThemeData themeData,
 ) {
@@ -259,14 +258,14 @@ Widget _amountText(
 }
 
 List<Widget> _getPaymentInfoDetails(
-  PaymentInfo paymentInfo,
+  breez_sdk.PaymentInfo paymentInfo,
   AppLocalizations texts,
 ) {
   return _getSinglePaymentInfoDetails(paymentInfo, texts);
 }
 
 List<Widget> _getSinglePaymentInfoDetails(
-  PaymentInfo paymentInfo,
+  breez_sdk.PaymentInfo paymentInfo,
   AppLocalizations texts,
 ) {
   return List<Widget>.from({

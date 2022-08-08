@@ -1,3 +1,4 @@
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/payments_state.dart';
@@ -5,7 +6,6 @@ import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/models/payment_info.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
 import 'package:c_breez/routes/home/widgets/dashboard/wallet_dashboard_header_delegate.dart';
 import 'package:c_breez/routes/home/widgets/no_lsp_widget.dart';
@@ -63,8 +63,7 @@ class AccountPage extends StatelessWidget {
     UserProfileState userModel,
   ) {
     final payment = account.payments;
-    final payments = payment.paymentsList;
-    final nonFiltered = payment.nonFilteredItems;
+    final payments = payment.paymentsList;    
 
     List<Widget> slivers = [];
 
@@ -76,7 +75,9 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    if (nonFiltered.isNotEmpty) {
+    final bool showSliver = payments.isNotEmpty || !payment.filter.allowAll();
+
+    if (showSliver) {
       slivers.add(const PaymentsFilterSliver(_kFilterMaxSize));
     }
 
@@ -89,7 +90,7 @@ class AccountPage extends StatelessWidget {
       );
     }
 
-    if (nonFiltered.isNotEmpty) {
+    if (showSliver) {
       slivers.add(
         PaymentsList(
           payments,
@@ -132,7 +133,7 @@ class AccountPage extends StatelessWidget {
       key: const Key("account_sliver"),
       fit: StackFit.expand,
       children: [
-        nonFiltered.isEmpty
+        !showSliver
             ? CustomPaint(painter: BubblePainter(MediaQuery.of(context).size))
             : const SizedBox(),
         CustomScrollView(

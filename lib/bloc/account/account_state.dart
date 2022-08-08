@@ -105,6 +105,7 @@ class AccountState {
       "maxChanReserve": maxChanReserve.toInt(),
       "maxInboundLiquidity": maxInboundLiquidity.toInt(),
       "onChainFeeRate": onChainFeeRate.toInt(),
+      "payment_filter": payments.filter.toJson()
     };
   }
 
@@ -124,7 +125,7 @@ class AccountState {
         maxPaymentAmount: Int64(json["maxPaymentAmount"]),
         maxChanReserve: Int64(json["maxChanReserve"]),
         connectedPeers: <String>[],
-        maxInboundLiquidity: Int64(json["maxInboundLiquidity"] ?? 0),
+        maxInboundLiquidity: Int64(json["maxInboundLiquidity"] ?? 0),        
         onChainFeeRate: Int64(json["onChainFeeRate"]));
   }
 }

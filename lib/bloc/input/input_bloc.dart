@@ -4,7 +4,6 @@ import 'package:breez_sdk/sdk.dart' as lntoolkit;
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/repositories/app_storage.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/lnurl.dart';
@@ -15,14 +14,13 @@ import 'package:rxdart/rxdart.dart';
 
 class InputBloc extends Cubit<InputState> {
   final LightningLinksService _lightningLinks;
-  final Device _device;
-  final AppStorage _appStorage;
+  final Device _device;  
   final lntoolkit.LightningNode _lightningNode;
 
   final _decodeInvoiceController = StreamController<String>();
 
   InputBloc(
-      this._lightningLinks, this._device, this._appStorage, this._lightningNode)
+      this._lightningLinks, this._device, this._lightningNode)
       : super(InputState()) {
     _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
@@ -62,8 +60,8 @@ class InputBloc extends Cubit<InputState> {
   Future<InputState?> handlePaymentRequest(
       String raw, lntoolkit.ParsedInput command) async {
     final lnInvoice = command.decoded as lntoolkit.LNInvoice;
-    var nodeState = await _appStorage.watchNodeState().first;
-    if (nodeState == null || nodeState.nodeID == lnInvoice.payeePubkey) {
+    var nodeState = await _lightningNode.nodeStateStream().first;
+    if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
       return null;
     }
     var invoice = Invoice(

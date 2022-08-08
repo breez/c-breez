@@ -1,14 +1,11 @@
-import 'package:c_breez/models/payment_filter.dart';
-import 'package:c_breez/models/payment_info.dart';
+import 'package:breez_sdk/sdk.dart';
 
-class PaymentsState {
-  final List<PaymentInfo> nonFilteredItems;
+class PaymentsState {  
   final List<PaymentInfo> paymentsList;
-  final PaymentFilterModel filter;
+  final PaymentFilter filter;
   final DateTime? firstDate;
 
-  const PaymentsState(
-    this.nonFilteredItems,
+  const PaymentsState(    
     this.paymentsList,
     this.filter, [
     this.firstDate,
@@ -16,20 +13,18 @@ class PaymentsState {
 
   PaymentsState.initial()
       : this(
-          <PaymentInfo>[],
-          <PaymentInfo>[],
-          PaymentFilterModel.initial(),
+          <PaymentInfo>[],          
+          PaymentFilter.initial(),
           DateTime(DateTime.now().year),
         );
 
   PaymentsState copyWith({
     List<PaymentInfo>? nonFilteredItems,
     List<PaymentInfo>? paymentsList,
-    PaymentFilterModel? filter,
+    PaymentFilter? filter,
     DateTime? firstDate,
   }) {
-    return PaymentsState(
-      nonFilteredItems ?? this.nonFilteredItems,
+    return PaymentsState(      
       paymentsList ?? this.paymentsList,
       filter ?? this.filter,
       firstDate ?? this.firstDate,

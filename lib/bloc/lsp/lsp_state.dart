@@ -55,7 +55,7 @@ class LSPState {
   LSPInfo? get currentLSP {
     try {
       return availableLSPs.firstWhere((element) => element.lspID == selectedLSP);
-    } on Exception {
+    } catch(e) {
       return null;
     }
   }

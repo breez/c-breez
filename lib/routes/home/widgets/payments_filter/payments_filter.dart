@@ -1,7 +1,7 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/models/payment_type.dart';
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_calendar.dart';
 import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_dropdown.dart';
 import 'package:flutter/foundation.dart';
@@ -21,7 +21,7 @@ class PaymentsFilter extends StatefulWidget {
 
 class PaymentsFilterState extends State<PaymentsFilter> {
   String? _filter;
-  Map<String, List<PaymentType>> _filterMap = {};
+  Map<String, List<breez_sdk.PaymentType>> _filterMap = {};
 
   @override
   void didChangeDependencies() {
@@ -38,12 +38,12 @@ class PaymentsFilterState extends State<PaymentsFilter> {
         final payments = account.payments;
         if (_filter == null) {
           _filterMap = {
-            texts.payments_filter_option_all: PaymentType.values,
+            texts.payments_filter_option_all: breez_sdk.PaymentType.values,
             texts.payments_filter_option_sent: [
-              PaymentType.sent,
+              breez_sdk.PaymentType.sent,
             ],
             texts.payments_filter_option_received: [
-              PaymentType.received,
+              breez_sdk.PaymentType.received,
             ],
           };
           _filter = _getFilterTypeString(
@@ -75,13 +75,13 @@ class PaymentsFilterState extends State<PaymentsFilter> {
     );
   }
 
-  List<PaymentType> _getFilterType() {
-    return _filterMap[_filter] ?? PaymentType.values;
+  List<breez_sdk.PaymentType> _getFilterType() {
+    return _filterMap[_filter] ?? breez_sdk.PaymentType.values;
   }
 
   String _getFilterTypeString(
       BuildContext context,
-      List<PaymentType> filterList,
+      List<breez_sdk.PaymentType> filterList,
       ) {
     for (var entry in _filterMap.entries) {
       if (listEquals(filterList, entry.value)) {

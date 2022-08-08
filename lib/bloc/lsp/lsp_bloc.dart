@@ -1,30 +1,28 @@
 import 'dart:async';
-
-import 'package:c_breez/repositories/app_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:breez_sdk/sdk.dart' as lntoolkit;
 
 import 'lsp_state.dart';
 
-class LSPBloc extends Cubit<LSPState> with HydratedMixin {
-  final AppStorage _appStorage;
+class LSPBloc extends Cubit<LSPState> with HydratedMixin {  
   final lntoolkit.LightningNode _lightningNode;
   final lntoolkit.LSPService _lspService;
   String? nodeID;
   bool _lspFetched = false;
 
-  LSPBloc(this._appStorage, this._lightningNode, this._lspService) : super(LSPState.initial()) {
+  LSPBloc(this._lightningNode, this._lspService) : super(LSPState.initial()) {
     if (state.connectionStatus == LSPConnectionStatus.inProgress) {
       emit(state.copyWith(connectionStatus: LSPConnectionStatus.notActive));
     }
     
     // for every change in node state check if we have the current selected lsp as a peer.
     // If not instruct the sdk to connect.
-    _appStorage.watchNodeState().where((nodeState) => nodeState != null).listen((nodeState) async {
-      nodeID = nodeState!.nodeID;
+    
+    _lightningNode.nodeStateStream().where((nodeState) => nodeState != null).listen((nodeState) async {
+      nodeID = nodeState!.id;
       fetchLSPList();
       if (state.currentLSP != null) {
-        final shouldConnect = !nodeState.connectedPeers.split(",").contains(state.currentLSP!.pubKey);
+        final shouldConnect = !nodeState.connectedPeers.contains(state.currentLSP!.pubKey);
         await _lightningNode.setLSP(state.currentLSP!, connect: shouldConnect);
         return;
       }      

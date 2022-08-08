@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
-
+import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
+import 'package:breez_sdk/src/node/sync_state.dart';
 import 'package:breez_sdk/src/utils/retry.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
@@ -11,21 +11,105 @@ import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
+import 'package:rxdart/rxdart.dart';
 
+import 'models_extensions.dart';
 import 'node_api/node_api.dart';
 
-const _maxPaymentAmountMsats = 4294967000;
+const maxPaymentAmountMsats = 4294967000;
 const maxInboundLiquidityMsats = 4000000000;
 
 class LightningNode {
+  static const String paymentFilterSettingsKey = "payment_filter_settings";
+
   final _log = FimberLog("GreenlightService");
   final NodeAPI _nodeAPI = Greenlight();
   final LSPService _lspService;
   final _lnToolkit = getNativeToolkit();
+  final Storage _stroage;
+  late final NodeStateSyncer _syncer;
   LSPInfo? _currentLSP;
   Signer? _signer;
 
-  LightningNode(this._lspService);
+  LightningNode(this._lspService, this._stroage) {
+    _syncer = NodeStateSyncer(_nodeAPI, _stroage);
+    FGBGEvents.stream.listen((event) {
+      if (event == FGBGType.foreground) {
+        _syncer.syncState();
+      }
+    });
+  }
+
+  void setPaymentFilter(PaymentFilter filter) {
+    _stroage.updateSettings(paymentFilterSettingsKey, json.encode(filter.toJson()));
+  }
+
+  Stream<PaymentFilter> paymentFilterStream() {
+    return _stroage
+        .watchSetting(paymentFilterSettingsKey)
+        .map((s) => s == null ? PaymentFilter.initial() : PaymentFilter.fromJson(json.decode(s.value)));
+  }
+
+  Stream<NodeState?> nodeStateStream() {
+    return _stroage.watchNodeState().map((dbState) => dbState == null ? null : NodeStateAdapter.fromDbNodeState(dbState));
+  }
+
+  Stream<List<PaymentInfo>> paymentsStream() {
+    // outgoing payments stream
+    final outgoingPaymentsStream = _stroage.watchOutgoingPayments().map((pList) {
+      return true;
+    });
+
+    // incoming payments stream (settled invoices)
+    final incomingPaymentsStream = _stroage.watchIncomingPayments().map((iList) {
+      return true;
+    });
+
+    final paymentsFilterStream = _stroage.watchSetting(paymentFilterSettingsKey);
+
+    return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream, paymentsFilterStream]).asyncMap((e) async {
+      // node info
+      final nodeState = await _stroage.watchNodeState().first;
+      final rawFilter = await _stroage.readSettings(paymentFilterSettingsKey);
+      final paymentFilter = rawFilter == null || rawFilter.value.isEmpty
+          ? PaymentFilter.initial()
+          : PaymentFilter.fromJson(json.decode(rawFilter.value));
+
+      var outgoing = await _stroage.listOutgoingPayments();
+      var outgoingList = outgoing.map((p) {
+        return PaymentInfo(
+            type: PaymentType.sent,
+            amountMsat: Int64(p.amountMsats),
+            destination: p.destination,
+            shortTitle: "",
+            feeMsat: Int64(p.feeMsat),
+            creationTimestamp: Int64(p.createdAt),
+            pending: p.pending,
+            keySend: p.isKeySend,
+            paymentHash: p.paymentHash);
+      });
+
+      var incoming = await _stroage.listIncomingPayments();
+      var incomingList = incoming.map((invoice) {
+        return PaymentInfo(
+            type: PaymentType.received,
+            amountMsat: Int64(invoice.amountMsat),
+            feeMsat: Int64.ZERO,
+            destination: nodeState!.nodeID,
+            shortTitle: "",
+            creationTimestamp: Int64(invoice.paymentTime),
+            pending: false,
+            keySend: false,
+            paymentHash: invoice.paymentHash);
+      });
+
+      final unifiedList = incomingList.toList()
+        ..addAll(outgoingList)
+        ..sort((p1, p2) => (p2.creationTimestamp - p1.creationTimestamp).toInt());
+
+      return unifiedList.where((p) => paymentFilter.includes(p)).toList();
+    });
+  }
 
   Future<List<int>> newNodeFromSeed(Uint8List seed, Signer signer) async {
     final creds = await _nodeAPI.register(seed, signer);
@@ -48,6 +132,10 @@ class LightningNode {
     return _nodeAPI;
   }
 
+  Future syncState() {
+    return _syncer.syncState();
+  }
+
   Future setLSP(LSPInfo lspInfo, {required bool connect}) async {
     _currentLSP = lspInfo;
     if (connect) {
@@ -59,26 +147,13 @@ class LightningNode {
     }
   }
 
-  Future<NodeState> getState() async {
-    final peers = await _nodeAPI.listPeers();
-    final nodeInfo = await _nodeAPI.getNodeInfo();
-    final funds = await _nodeAPI.listFunds();
-    return _assembleAccountState(nodeInfo, funds.channelFunds, funds.onchainFunds, peers);
-  }
-
-  Future<List<OutgoingLightningPayment>> getOutgoingPaymentsSince(DateTime since) async {
-    final outgoingPayments = await _nodeAPI.getPayments();
-    return outgoingPayments.where((p) => DateTime.fromMillisecondsSinceEpoch(p.creationTimestamp).isAfter(since)).toList();
-  }
-
-  Future<List<Invoice>> getIncomingPaymentsSince() async {
-    final invoices = await _nodeAPI.getInvoices();
-    return invoices.where((i) => i.receivedMsats > 0).toList();
-  }
-
   Future<Invoice> requestPayment(Int64 amountSats, {String? description, Int64? expiry}) async {
-    final currentNodeState = await getState();
+    final currentNodeState = await nodeStateStream().first;
     final amountMSat = amountSats * 1000;
+
+    if (currentNodeState == null) {
+      throw Exception("Node is not ready");
+    }
 
     if (_currentLSP == null) {
       throw Exception("LSP is not set");
@@ -132,12 +207,13 @@ class LightningNode {
     // inject routing hints and sign the new invoice
     var routingHints = RouteHint(field0: List.from([lspHop]));
 
-    final bolt11WithHints = await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints], newAmount: amountSats.toInt() * 1000);
+    final bolt11WithHints =
+        await _signer!.addRoutingHints(invoice: invoice.bolt11, hints: [routingHints], newAmount: amountSats.toInt() * 1000);
     // register the payment at the lsp if needed.
     if (destinationInvoiceAmountSats < amountSats) {
       _log.i("requestPayment: need to register paymenet, parsing invoice");
       final lnInvoice = await _lnToolkit.parseInvoice(invoice: bolt11WithHints);
-      
+
       _log.i("requestPayment: registering payment in LSP");
       final destination = HEX.decode(lnInvoice.payeePubkey);
 
@@ -197,105 +273,15 @@ class LightningNode {
             : greenlight.FeeratePreset.NORMAL;
     return _nodeAPI.sweepAllCoinsTransactions(address, feerate);
   }
-}
 
-enum NodeStatus { connecting, connected, disconnecting, disconnected }
-
-class NodeState {
-  final String id;
-  final Int64 blockheight;
-  final Int64 channelsBalanceMsats;
-  final Int64 onchainBalanceMsats;
-  final NodeStatus status;
-  final Int64 maxAllowedToPayMsats;
-  final Int64 maxAllowedToReceiveMsats;
-  final Int64 maxPaymentAmountMsats;
-  final Int64 maxChanReserveMsats;
-  final List<String> connectedPeers;
-  final Int64 maxInboundLiquidityMsats;
-  final Int64 onChainFeeRate;
-
-  NodeState(
-      {required this.id,
-      required this.blockheight,
-      required this.channelsBalanceMsats,
-      required this.onchainBalanceMsats,
-      required this.status,
-      required this.maxAllowedToPayMsats,
-      required this.maxAllowedToReceiveMsats,
-      required this.maxPaymentAmountMsats,
-      required this.maxChanReserveMsats,
-      required this.connectedPeers,
-      required this.maxInboundLiquidityMsats,
-      required this.onChainFeeRate});
-}
-
-NodeState _assembleAccountState(
-    NodeInfo nodeInfo, List<ListFundsChannel> offChainFunds, List<ListFundsOutput> onChainFunds, List<Peer> peers) {
-  var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat);
-
-  // calculate the on-chain balance
-  var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsats);
-
-  // assemble the peers list and channels list.
-  var channels = List<Channel>.empty(growable: true);
-  List<String> peersList = List<String>.empty(growable: true);
-  for (var p in peers) {
-    peersList.add(p.id);
-    channels.addAll(p.channels);
+  int _parseShortChannelID(String idStr) {
+    var parts = idStr.split("x");
+    if (parts.length != 3) {
+      return 0;
+    }
+    var blockNum = int.parse(parts[0]);
+    var txNum = int.parse(parts[1]);
+    var txOut = int.parse(parts[2]);
+    return ((blockNum & 0xFFFFFF) << 40 | (txNum & 0xFFFFFF) << 16 | (txOut & 0xFFFF));
   }
-
-  // calculate the account status based on the channels status.
-  bool hasActive = channels.any((c) => c.state == ChannelState.OPEN);
-  bool hasPendingOpen = channels.any((c) => c.state == ChannelState.PENDING_OPEN);
-  bool hasPendingClose = channels.any((c) => c.state == ChannelState.PENDING_CLOSED);
-
-  NodeStatus accStatus = NodeStatus.disconnected;
-  if (hasActive) {
-    accStatus = NodeStatus.connected;
-  } else if (hasPendingOpen) {
-    accStatus = NodeStatus.connecting;
-  } else if (hasPendingClose) {
-    accStatus = NodeStatus.disconnecting;
-  }
-
-  // calculate incoming and outgoing liquidity
-  Int64 maxPayable = Int64(0);  
-  Int64 maxReceivableSingleChannel = Int64(0);
-  for (var c in channels) {
-    maxPayable += c.spendable;
-    Int64 channelReceivable = Int64(c.receivable);
-    if (channelReceivable > maxReceivableSingleChannel) {
-      maxReceivableSingleChannel = channelReceivable;
-    }    
-  }
-
-  final maxAllowedToReceiveMsats = max(maxInboundLiquidityMsats - channelsBalance.toInt(), 0);
-
-  // return the new account state
-  return NodeState(
-    blockheight: Int64(nodeInfo.blockheight),
-    id: nodeInfo.nodeID,
-    channelsBalanceMsats: channelsBalance,
-    onchainBalanceMsats: walletBalance,
-    status: accStatus,
-    maxAllowedToPayMsats: maxPayable,
-    maxAllowedToReceiveMsats: Int64(maxAllowedToReceiveMsats),
-    maxPaymentAmountMsats: Int64(_maxPaymentAmountMsats),
-    maxChanReserveMsats: channelsBalance - maxPayable,
-    connectedPeers: peersList,
-    onChainFeeRate: Int64(0),
-    maxInboundLiquidityMsats: maxReceivableSingleChannel,
-  );
-}
-
-int _parseShortChannelID(String idStr) {
-  var parts = idStr.split("x");
-  if (parts.length != 3) {
-    return 0;
-  }
-  var blockNum = int.parse(parts[0]);
-  var txNum = int.parse(parts[1]);
-  var txOut = int.parse(parts[2]);
-  return ((blockNum & 0xFFFFFF) << 40 | (txNum & 0xFFFFFF) << 16 | (txOut & 0xFFFF));
 }

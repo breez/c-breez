@@ -1,13 +1,12 @@
 import 'dart:io';
-
-import 'package:c_breez/repositories/app_storage.dart';
-import 'package:c_breez/repositories/dao/payments_dao.dart';
-import 'package:c_breez/repositories/dao/peers_dao.dart';
-import 'package:c_breez/repositories/dao/settings_dao.dart';
+import 'package:breez_sdk/src/storage/storage.dart';
+import 'package:breez_sdk/src/storage/dao/payments_dao.dart';
+import 'package:breez_sdk/src/storage/dao/peers_dao.dart';
+import 'package:breez_sdk/src/storage/dao/settings_dao.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 part 'db.g.dart';
 
@@ -125,10 +124,8 @@ class Settings extends Table {
 LazyDatabase _openConnection() {
   // the LazyDatabase util lets us find the right location for the file async.
   return LazyDatabase(() async {
-    // put the database file, called db.sqlite here, into the documents folder
-    // for your app.
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'db.sqlite'));
+    final folder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(folder.path, 'breez_sdk.sqlite'));
     return NativeDatabase(file);
   });
 }
@@ -147,7 +144,7 @@ LazyDatabase _openConnection() {
   SettingsDao,
   PeersDao,  
 ])
-class AppDatabase extends _$AppDatabase implements AppStorage {
+class AppDatabase extends _$AppDatabase implements Storage {
   // we tell the database where to store the data with this constructor
   AppDatabase({QueryExecutor? executor}) : super(executor ?? _openConnection());
 
@@ -249,7 +246,7 @@ class AppDatabase extends _$AppDatabase implements AppStorage {
   }
 
   @override
-  Future<Setting> readSettings(String key) {
+  Future<Setting?> readSettings(String key) {
     return settingsDao.readSettings(key);
   }
 

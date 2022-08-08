@@ -1,6 +1,11 @@
-import 'package:c_breez/repositories/dao/db.dart';
+import 'package:breez_sdk/src/storage/dao/db.dart';
 
-abstract class AppStorage {
+abstract class Storage {
+
+  static Storage createDefault() {
+    return AppDatabase();
+  }
+
   // lightning
   
   Future setNodeState(NodeState nodeSate);
@@ -14,12 +19,9 @@ abstract class AppStorage {
   Stream<List<Invoice>> watchIncomingPayments();
   Future<List<Invoice>> listIncomingPayments();
 
-  Future setPeers(List<PeerWithChannels> peers);
-  Stream<List<PeerWithChannels>> watchPeers();
-  
   // settings
   Future<int> updateSettings(String key, String value);
-  Future<Setting> readSettings(String key);
+  Future<Setting?> readSettings(String key);
   Stream<Setting?> watchSetting(String key);
   Future<List<Setting>> readAllSettings();
 }

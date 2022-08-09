@@ -174,7 +174,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                   ),
                   child: Scrollbar(
                     child: SingleChildScrollView(
-                      child: AutoSizeText(
+                      child: Text(
                         widget.withdrawParams.defaultDescription,
                         style: themeData.primaryTextTheme.headline3!
                             .copyWith(fontSize: 16),

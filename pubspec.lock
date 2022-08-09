@@ -803,21 +803,21 @@ packages:
       name: local_auth
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "1.1.11"
   local_auth_android:
     dependency: "direct main"
     description:
       name: local_auth_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.10"
+    version: "1.0.11"
   local_auth_ios:
     dependency: "direct main"
     description:
       name: local_auth_ios
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.8"
+    version: "1.0.9"
   local_auth_platform_interface:
     dependency: transitive
     description:
@@ -825,13 +825,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
-  local_auth_windows:
-    dependency: transitive
-    description:
-      name: local_auth_windows
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   logging:
     dependency: transitive
     description:

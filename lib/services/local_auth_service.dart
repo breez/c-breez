@@ -3,9 +3,8 @@ import 'dart:io';
 
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
+import 'package:local_auth/auth_strings.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_ios/local_auth_ios.dart';
 
 class LocalAuthenticationService {
   LocalAuthenticationService();
@@ -34,14 +33,10 @@ class LocalAuthenticationService {
   Future<bool> authenticate({String? localizedReason}) async {
     try {
       return await _auth.authenticate(
-        options: const AuthenticationOptions(
-            biometricOnly: true, useErrorDialogs: false),
-        localizedReason: localizedReason ?? 'Authenticate to Sign-In.',
-        authMessages: const <AuthMessages>[
-          AndroidAuthMessages(biometricHint: ""),
-          IOSAuthMessages(),
-        ],
-      );
+          biometricOnly: true,
+          localizedReason: localizedReason ?? 'Authenticate to Sign-In.',
+          useErrorDialogs: false,
+          androidAuthStrings: const AndroidAuthMessages(biometricHint: ""));
     } on PlatformException catch (error) {
       if (error.code == "LockedOut" || error.code == "PermanentlyLockedOut") {
         throw error.message!;

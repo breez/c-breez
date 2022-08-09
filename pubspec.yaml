@@ -58,7 +58,7 @@ dependencies:
   image_picker: ^0.8.5+3
   ini: ^2.1.0
   intl: ^0.17.0
-  local_auth: <2.0.0
+  local_auth: ^2.1.1
   local_auth_android: ^1.0.10
   local_auth_ios: ^1.0.8
   mobile_scanner: ^2.0.0

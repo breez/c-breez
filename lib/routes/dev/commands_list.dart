@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
@@ -24,6 +25,7 @@ class _CommandsListState extends State<CommandsList> {
   String _lastCommand = '';
   TextStyle _cliTextStyle = theme.smallTextStyle;
   bool _showDefaultCommands = true;
+  bool isLoading = false;
   var _richCliText = <TextSpan>[];
   late final nodeAPI;
 
@@ -148,6 +150,9 @@ class _CommandsListState extends State<CommandsList> {
   }
 
   Widget _renderBody() {
+    if (isLoading) {
+      return const Center(child: Loader());
+    }
     if (_showDefaultCommands) {
       return Theme(
         data: Theme.of(context).copyWith(
@@ -179,48 +184,54 @@ class _CommandsListState extends State<CommandsList> {
   }
 
   void _sendCommand(String command) async {
-    FocusScope.of(context).requestFocus(FocusNode());
-    _lastCommand = command;
-    var lightningServices = await ServiceInjector().lightningServices;
-    final nodeAPI = lightningServices.getNodeAPI();
-    const JsonEncoder encoder = JsonEncoder.withIndent('    ');
-    try {
-      late String reply;
-      switch (command) {
-        case 'getNodeInfo':
-          final nodeInfo = await nodeAPI.getNodeInfo();
-          reply = encoder.convert(nodeInfo.toJson());
-          break;
-        case 'listFunds':
-          final funds = await nodeAPI.listFunds();
-          reply = encoder.convert(funds.toJson());
-          break;
-        case 'listPeers':
-          final peers = await nodeAPI.listPeers();
-          reply = encoder.convert(peers);
-          break;
-        case 'getPayments':
-          final payments = await nodeAPI.getPayments();
-          reply = encoder.convert(payments);
-          break;
-        case 'getInvoices':
-          final invoices = await nodeAPI.getInvoices();
-          reply = encoder.convert(invoices);
-          break;
+    if (command.isNotEmpty) {
+      FocusScope.of(context).requestFocus(FocusNode());
+      setState(() {
+        _lastCommand = command;
+        isLoading = true;
+      });
+      const JsonEncoder encoder = JsonEncoder.withIndent('    ');
+      try {
+        late String reply;
+        switch (command) {
+          case 'getNodeInfo':
+            final nodeInfo = await nodeAPI.getNodeInfo();
+            reply = encoder.convert(nodeInfo.toJson());
+            break;
+          case 'listFunds':
+            final funds = await nodeAPI.listFunds();
+            reply = encoder.convert(funds.toJson());
+            break;
+          case 'listPeers':
+            final peers = await nodeAPI.listPeers();
+            reply = encoder.convert(peers);
+            break;
+          case 'getPayments':
+            final payments = await nodeAPI.getPayments();
+            reply = encoder.convert(payments);
+            break;
+          case 'getInvoices':
+            final invoices = await nodeAPI.getInvoices();
+            reply = encoder.convert(invoices);
+            break;
+        }
+        setState(() {
+          _showDefaultCommands = false;
+          _cliTextStyle = theme.smallTextStyle;
+          _cliText = reply;
+          _richCliText = <TextSpan>[TextSpan(text: _cliText)];
+          isLoading = false;
+        });
+      } catch (error) {
+        setState(() {
+          _showDefaultCommands = false;
+          _cliText = error.toString();
+          _cliTextStyle = theme.warningStyle;
+          _richCliText = <TextSpan>[TextSpan(text: _cliText)];
+          isLoading = false;
+        });
       }
-      setState(() {
-        _showDefaultCommands = false;
-        _cliTextStyle = theme.smallTextStyle;
-        _cliText = reply;
-        _richCliText = <TextSpan>[TextSpan(text: _cliText)];
-      });
-    } catch (error) {
-      setState(() {
-        _showDefaultCommands = false;
-        _cliText = error.toString();
-        _cliTextStyle = theme.warningStyle;
-        _richCliText = <TextSpan>[TextSpan(text: _cliText)];
-      });
+      setState(() => isLoading = false);
     }
   }
 

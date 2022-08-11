@@ -214,6 +214,8 @@ class _CommandsListState extends State<CommandsList> {
             final invoices = await nodeAPI.getInvoices();
             reply = encoder.convert(invoices);
             break;
+          default:
+            throw "This command is not supported yet.";
         }
         setState(() {
           _showDefaultCommands = false;

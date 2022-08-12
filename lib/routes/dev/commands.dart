@@ -11,6 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
 
+import 'commands_list.dart';
+
 bool allowRebroadcastRefunds = false;
 
 class Choice {
@@ -32,8 +34,11 @@ class DevelopersView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     final themeData = Theme.of(context);
+
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         leading: const back_button.BackButton(),
         actions: [
@@ -59,7 +64,7 @@ class DevelopersView extends StatelessWidget {
         ],
         title: const Text("Developers"),
       ),
-      body: Container(),
+      body: CommandsList(scaffoldKey: scaffoldKey),
     );
   }
 

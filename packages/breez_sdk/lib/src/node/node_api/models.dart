@@ -49,6 +49,12 @@ class Address {
   final int port;
 
   Address(this.type, this.addr, this.port);
+
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'addr': addr,
+        'port': port,
+      };
 }
 
 class NodeInfo {
@@ -60,14 +66,25 @@ class NodeInfo {
   final int blockheight;
   final String network;
 
-  NodeInfo(
-      {required this.nodeID,
-      required this.nodeAlias,
-      required this.numPeers,
-      required this.addresses,
-      required this.version,
-      required this.blockheight,
-      required this.network});
+  NodeInfo({
+    required this.nodeID,
+    required this.nodeAlias,
+    required this.numPeers,
+    required this.addresses,
+    required this.version,
+    required this.blockheight,
+    required this.network,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'nodeID': nodeID,
+        'nodeAlias': nodeAlias,
+        'numPeers': numPeers,
+        'addresses': addresses.map((a) => a.toJson()).toList(),
+        'version': version,
+        'blockheight': blockheight,
+        'network': network,
+      };
 }
 
 enum OutputStatus { CONFIRMED, UNCONFIRMED }
@@ -77,6 +94,11 @@ class Outpoint {
   final int outnum;
 
   Outpoint(this.txid, this.outnum);
+
+  Map<String, dynamic> toJson() => {
+        'txid': txid,
+        'outnum': outnum,
+      };
 }
 
 class ListFundsOutput {
@@ -85,7 +107,19 @@ class ListFundsOutput {
   final String address;
   final OutputStatus status;
 
-  ListFundsOutput({required this.outpoint, required this.amountMsats, required this.address, required this.status});
+  ListFundsOutput({
+    required this.outpoint,
+    required this.amountMsats,
+    required this.address,
+    required this.status,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'outpoint': outpoint.toJson(),
+        'amountMsats': amountMsats.toInt(),
+        'address': address,
+        'status': status.name
+      };
 }
 
 class ListFundsChannel {
@@ -97,14 +131,25 @@ class ListFundsChannel {
   final String fundingTxid;
   final int fundingOutput;
 
-  ListFundsChannel(
-      {required this.peerId,
-      required this.connected,
-      required this.shortChannelId,
-      required this.ourAmountMsat,
-      required this.amountMsat,
-      required this.fundingTxid,
-      required this.fundingOutput});
+  ListFundsChannel({
+    required this.peerId,
+    required this.connected,
+    required this.shortChannelId,
+    required this.ourAmountMsat,
+    required this.amountMsat,
+    required this.fundingTxid,
+    required this.fundingOutput,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'peerId': peerId,
+        'connected': connected,
+        'shortChannelId': shortChannelId.toInt(),
+        'ourAmountMsat': ourAmountMsat.toInt(),
+        'amountMsat': amountMsat.toInt(),
+        'fundingTxid': fundingTxid,
+        'fundingOutput': fundingOutput
+      };
 }
 
 class ListFunds {
@@ -112,6 +157,11 @@ class ListFunds {
   final List<ListFundsOutput> onchainFunds;
 
   ListFunds({required this.channelFunds, required this.onchainFunds});
+
+  Map<String, dynamic> toJson() => {
+        'channelFunds': channelFunds.map((c) => c.toJson()).toList(),
+        'onchainFunds': onchainFunds.map((o) => o.toJson()).toList(),
+      };
 }
 
 class Htlc {
@@ -123,14 +173,25 @@ class Htlc {
   final String state;
   final bool localTrimmed;
 
-  Htlc(
-      {required this.direction,
-      required this.id,
-      required this.amountMsat,
-      required this.expiry,
-      required this.paymentHash,
-      required this.state,
-      required this.localTrimmed});
+  Htlc({
+    required this.direction,
+    required this.id,
+    required this.amountMsat,
+    required this.expiry,
+    required this.paymentHash,
+    required this.state,
+    required this.localTrimmed,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'direction': direction,
+        'id': id.toInt(),
+        'amountMsat': amountMsat.toInt(),
+        'expiry': expiry,
+        'paymentHash': paymentHash,
+        'state': state,
+        'localTrimmed': localTrimmed
+      };
 }
 
 enum ChannelState { PENDING_OPEN, OPEN, PENDING_CLOSED, CLOSED }
@@ -152,22 +213,41 @@ class Channel {
   final int ourToSelfDelay;
   final List<Htlc> htlcs;
 
-  Channel(
-      {required this.state,
-      required this.shortChannelId,
-      required this.direction,
-      required this.channelId,
-      required this.fundingTxid,
-      required this.closeToAddr,
-      required this.closeTo,
-      required this.private,
-      required this.total,
-      required this.dustLimit,
-      required this.spendable,
-      required this.receivable,
-      required this.theirToSelfDelay,
-      required this.ourToSelfDelay,
-      required this.htlcs});
+  Channel({
+    required this.state,
+    required this.shortChannelId,
+    required this.direction,
+    required this.channelId,
+    required this.fundingTxid,
+    required this.closeToAddr,
+    required this.closeTo,
+    required this.private,
+    required this.total,
+    required this.dustLimit,
+    required this.spendable,
+    required this.receivable,
+    required this.theirToSelfDelay,
+    required this.ourToSelfDelay,
+    required this.htlcs,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'state': state.name,
+        'shortChannelId': shortChannelId,
+        'direction': direction,
+        'channelId': channelId,
+        'fundingTxid': fundingTxid,
+        'closeToAddr': closeToAddr,
+        'closeTo': closeTo,
+        'private': private,
+        'total': total,
+        'dustLimit': dustLimit,
+        'spendable': spendable,
+        'receivable': receivable,
+        'theirToSelfDelay': theirToSelfDelay,
+        'ourToSelfDelay': ourToSelfDelay,
+        'htlcs': htlcs.map((htlc) => htlc.toJson()).toList(),
+      };
 }
 
 class Peer {
@@ -177,7 +257,20 @@ class Peer {
   final String features;
   final List<Channel> channels;
 
-  Peer({required this.id, required this.connected, required this.addresses, required this.features, required this.channels});
+  Peer(
+      {required this.id,
+      required this.connected,
+      required this.addresses,
+      required this.features,
+      required this.channels});
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'connected': connected,
+        'addresses': addresses.map((a) => a.toJson()).toList(),
+        'features': features,
+        'channels': channels.map((c) => c.toJson()).toList()
+      };
 }
 
 enum InvoiceStatus { PAID, UNPAID, EXPIRED }
@@ -207,35 +300,53 @@ class Invoice {
   final String paymentPreimage;
   final String paymentHash;
 
-  Invoice(
-      {required this.amountMsats,
-      required this.label,
-      required this.description,
-      required this.receivedMsats,
-      required this.status,
-      required this.paymentTime,
-      required this.expiryTime,
-      required this.bolt11,
-      required this.paymentPreimage,
-      required this.paymentHash});
+  Invoice({
+    required this.amountMsats,
+    required this.label,
+    required this.description,
+    required this.receivedMsats,
+    required this.status,
+    required this.paymentTime,
+    required this.expiryTime,
+    required this.bolt11,
+    required this.paymentPreimage,
+    required this.paymentHash,
+  });
 
-  Invoice copyWithNewAmount({required Int64 amountMsats, required String bolt11}) {
+  Invoice copyWithNewAmount(
+      {required Int64 amountMsats, required String bolt11}) {
     return Invoice(
-        amountMsats: amountMsats,
-        label: label,
-        description: description,
-        receivedMsats: receivedMsats,
-        status: status,
-        paymentTime: paymentTime,
-        expiryTime: expiryTime,
-        bolt11: bolt11,
-        paymentPreimage: paymentPreimage,
-        paymentHash: paymentHash);
+      amountMsats: amountMsats,
+      label: label,
+      description: description,
+      receivedMsats: receivedMsats,
+      status: status,
+      paymentTime: paymentTime,
+      expiryTime: expiryTime,
+      bolt11: bolt11,
+      paymentPreimage: paymentPreimage,
+      paymentHash: paymentHash,
+    );
   }
 
   String get payeeImageURL => "";
+
   String get payeeName => "";
+
   Int64 get lspFee => Int64(0);
+
+  Map<String, dynamic> toJson() => {
+        'amountMsats': amountMsats.toInt(),
+        'label': label,
+        'description': description,
+        'receivedMsats': receivedMsats.toInt(),
+        'status': status.name,
+        'paymentTime': paymentTime,
+        'expiryTime': expiryTime,
+        'bolt11': bolt11,
+        'paymentPreimage': paymentPreimage,
+        'paymentHash': paymentHash,
+      };
 }
 
 class OutgoingLightningPayment {
@@ -250,17 +361,31 @@ class OutgoingLightningPayment {
   final bool pending;
   final String bolt11;
 
-  OutgoingLightningPayment(
-      {required this.creationTimestamp,
-      required this.paymentHash,
-      required this.destination,
-      required this.feeMsats,
-      required this.amountMsats,
-      required this.amountSentMsats,
-      required this.preimage,
-      required this.isKeySend,
-      required this.pending,
-      required this.bolt11});
+  OutgoingLightningPayment({
+    required this.creationTimestamp,
+    required this.paymentHash,
+    required this.destination,
+    required this.feeMsats,
+    required this.amountMsats,
+    required this.amountSentMsats,
+    required this.preimage,
+    required this.isKeySend,
+    required this.pending,
+    required this.bolt11,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'creationTimestamp': creationTimestamp,
+        'paymentHash': paymentHash,
+        'destination': destination,
+        'feeMsats': feeMsats.toInt(),
+        'amountMsats': amountMsats.toInt(),
+        'amountSentMsats': amountSentMsats.toInt(),
+        'preimage': preimage,
+        'isKeySend': isKeySend,
+        'pending': pending,
+        'bolt11': bolt11
+      };
 }
 
 class TlvField {
@@ -278,11 +403,12 @@ class IncomingLightningPayment {
   final String paymentHash;
   final String bolt11;
 
-  IncomingLightningPayment(
-      {required this.label,
-      required this.preimage,
-      required this.amountMsats,
-      required this.extratlvs,
-      required this.paymentHash,
-      required this.bolt11});
+  IncomingLightningPayment({
+    required this.label,
+    required this.preimage,
+    required this.amountMsats,
+    required this.extratlvs,
+    required this.paymentHash,
+    required this.bolt11,
+  });
 }

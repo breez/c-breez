@@ -166,7 +166,10 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                 ),
               )));
     }
-    return Text(widget.error.toString());
+    return Text(widget.error.toString(),
+        style: Theme.of(context).primaryTextTheme.headline3!.copyWith(
+              fontSize: 16,
+            ));
   }
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {

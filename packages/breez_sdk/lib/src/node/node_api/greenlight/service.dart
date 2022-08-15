@@ -44,6 +44,11 @@ class Greenlight implements NodeAPI {
     ]);
   }
 
+  @override
+  Future ensureScheduled() async {
+    await schedule();
+  }
+
   Future<scheduler.SchedulerClient> _createSchedulerClient() async {
     if (_schedulerChannel == null) {
       final NodeCredentials schedulerCredentials = NodeCredentials(caCert, nobodyCert, nobodyKey, null, null);
@@ -98,11 +103,6 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future waitReady() {
-    return _readyCompleter.future;
-  }
-
-  @override
   Stream<IncomingLightningPayment> incomingPaymentsStream() {
     return _incomingPaymentsStream.stream;
   }
@@ -147,19 +147,13 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Signer getSigner() {
-    return _signer!;
-  }
-
-  @override
   Future<Invoice> addInvoice(Int64 amount,
       {String? payeeName,
       String? payeeImageURL,
       String? payerName,
       String? payerImageURL,
       String? description,
-      Int64? expiry}) async {
-    await schedule();
+      Int64? expiry}) async {    
     var invoice = await _nodeClient!.createInvoice(greenlight.InvoiceRequest(
         label: "breez-${DateTime.now().millisecondsSinceEpoch}",
         amount: greenlight.Amount(satoshi: amount),
@@ -178,8 +172,7 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<NodeInfo> getNodeInfo() async {
-    await schedule();
+  Future<NodeInfo> getNodeInfo() async {    
     var info = await _nodeClient!.getInfo(greenlight.GetInfoRequest());
     return NodeInfo(
         nodeID: HEX.encode(info.nodeId),
@@ -192,8 +185,7 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<ListFunds> listFunds() async {
-    await schedule();
+  Future<ListFunds> listFunds() async {    
     var listFunds = await _nodeClient!.listFunds(greenlight.ListFundsRequest());
 
     var channelFunds = listFunds.channels.map((e) {
@@ -219,8 +211,7 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<List<Peer>> listPeers() async {
-    await schedule();
+  Future<List<Peer>> listPeers() async {    
     var peers = await _nodeClient!.listPeers(greenlight.ListPeersRequest());
     return peers.peers.map((e) {
       return Peer(
@@ -233,8 +224,14 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future connectPeer(String nodeID, String address) async {
-    await schedule();
+  Future<List<int>> closeChannel(List<int> nodeID) async {
+    var addressResp = await _nodeClient!.newAddr(greenlight.NewAddrRequest(addressType: greenlight.BtcAddressType.BECH32));
+    var closeResp = await _nodeClient!.closeChannel(greenlight.CloseChannelRequest(nodeId: nodeID, unilateraltimeout: greenlight.Timeout(seconds: 30), destination: greenlight.BitcoinAddress(address: addressResp.address)));
+    return closeResp.txid;
+  }
+
+  @override
+  Future connectPeer(String nodeID, String address) async {    
     await _nodeClient!.connectPeer(greenlight.ConnectRequest(nodeId: nodeID, addr: address));
   }
 
@@ -244,8 +241,7 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<List<OutgoingLightningPayment>> getPayments() async {
-    await schedule();
+  Future<List<OutgoingLightningPayment>> getPayments() async {    
     var payments = await _nodeClient!.listPayments(greenlight.ListPaymentsRequest());
     var paymentsList = payments.payments.map((p) {
       var sentMsats = amountToMSats(p.amountSent);
@@ -268,8 +264,7 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<List<Invoice>> getInvoices() async {
-    await schedule();
+  Future<List<Invoice>> getInvoices() async {    
     var invoices = await _nodeClient!.listInvoices(greenlight.ListInvoicesRequest());
     return invoices.invoices.map((p) {
       return Invoice(
@@ -305,8 +300,7 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
-    await schedule();
+  Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {    
     await _nodeClient!
         .pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: amount), timeout: 60));
   }

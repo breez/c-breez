@@ -21,7 +21,7 @@ class NodeStateSyncer {
   NodeStateSyncer(this._nodeAPI, this._stroage);  
 
   // Sync  
-  Future syncState() async {
+  Future syncState() async {    
     await _syncNodeInfo();
     await _syncOutgoingPayments();
     await _syncSettledInvoices();

@@ -10,6 +10,8 @@ abstract class NodeAPI {
   Future<List<int>> register(Uint8List seed, Signer signer,
       {String network = "bitcoin", String email});
 
+  Future ensureScheduled();
+
   Future<List<int>> recover(Uint8List seed, Signer signer);
   
   void initWithCredentials(List<int> credentials, Signer signer);  
@@ -25,6 +27,8 @@ abstract class NodeAPI {
   Future<ListFunds> listFunds();
 
   Future<List<Peer>> listPeers();
+
+  Future<List<int>> closeChannel(List<int> nodeID);
 
   Future connectPeer(String nodeID, String address);
 

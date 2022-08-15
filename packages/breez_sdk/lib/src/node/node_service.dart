@@ -31,9 +31,9 @@ class LightningNode {
 
   LightningNode(this._lspService, this._stroage) {
     _syncer = NodeStateSyncer(_nodeAPI, _stroage);
-    FGBGEvents.stream.listen((event) {
-      if (event == FGBGType.foreground) {
-        _syncer.syncState();
+    FGBGEvents.stream.throttleTime(const Duration(minutes: 2)).listen((event) async {
+      if (event == FGBGType.foreground && _signer != null) {
+        await syncState();
       }
     });
   }
@@ -130,8 +130,9 @@ class LightningNode {
     return _nodeAPI;
   }
 
-  Future syncState() {
-    return _syncer.syncState();
+  Future syncState() async{
+    await _nodeAPI.ensureScheduled();
+    return await _syncer.syncState();
   }
 
   Future setLSP(LSPInfo lspInfo, {required bool connect}) async {

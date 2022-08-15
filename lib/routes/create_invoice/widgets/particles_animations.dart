@@ -31,9 +31,10 @@ class ParticlesState extends State<Particles> {
 
   @override
   Widget build(BuildContext context) {
-    return LoopAnimation<int>(
+    return LoopAnimationBuilder<int>(
+      duration: const Duration(seconds: 1),
       tween: ConstantTween(1),
-      builder: (context, child, value) {
+      builder: (context, animation, child) {
         final time = DateTime.now().difference(startTime);
         _simulateParticles(time);
         return CustomPaint(
@@ -65,24 +66,24 @@ class ParticleModel {
     final endPosition = Offset(-0.2 + 1.4 * random.nextDouble(), -0.2);
     final duration = Duration(milliseconds: 3000 + random.nextInt(6000));
 
-    tween = MultiTween<MyAniPropsEnum>()
-      ..add(
+    tween = MovieTween()
+      ..tween(
         MyAniPropsEnum.X,
         Tween(
           begin: startPosition.dx,
           end: endPosition.dx,
         ),
-        duration,
-        Curves.easeInOutSine,
+        duration: duration,
+        curve: Curves.easeInOutSine,
       )
-      ..add(
+      ..tween(
         MyAniPropsEnum.Y,
         Tween(
           begin: startPosition.dy,
           end: endPosition.dy,
         ),
-        duration,
-        Curves.easeIn,
+        duration: duration,
+        curve: Curves.easeIn,
       );
     animationProgress = AnimationProgress(
       duration: duration,
@@ -115,7 +116,7 @@ class ParticlePainter extends CustomPainter {
 
     for (var particle in particles) {
       var progress = particle.animationProgress!.progress(time);
-      final MultiTweenValues animation = particle.tween!.transform(progress);
+      final Movie animation = particle.tween!.transform(progress);
       final position = Offset(
         animation.get(MyAniPropsEnum.X) * size.width,
         animation.get(MyAniPropsEnum.Y) * size.height,
@@ -135,15 +136,15 @@ class ParticlePainter extends CustomPainter {
 class AnimatedBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final tween = MultiTween()
-      ..add(
+    final tween = MovieTween()
+      ..tween(
         MyAniPropsEnum.COLOR1,
         ColorTween(
           begin: const Color(0xff8a113a),
           end: Colors.lightBlue.shade900,
         ),
       )
-      ..add(
+      ..tween(
         MyAniPropsEnum.COLOR2,
         ColorTween(
           begin: const Color(0xff440216),
@@ -151,11 +152,11 @@ class AnimatedBackground extends StatelessWidget {
         ),
       );
 
-    return CustomAnimation<dynamic>(
-      control: CustomAnimationControl.mirror,
+    return CustomAnimationBuilder<dynamic>(
+      control: Control.mirror,
       tween: tween,
       duration: tween.duration,
-      builder: (context, child, animation) {
+      builder: (context, animation, child) {
         return Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(

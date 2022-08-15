@@ -3,7 +3,7 @@
 part of 'db.dart';
 
 // **************************************************************************
-// MoorGenerator
+// DriftDatabaseGenerator
 // **************************************************************************
 
 // ignore_for_file: type=lint
@@ -20,7 +20,7 @@ class NodeState extends DataClass implements Insertable<NodeState> {
   final String connectedPeers;
   final int maxInboundLiquidityMsats;
   final int onChainFeeRate;
-  NodeState(
+  const NodeState(
       {required this.nodeID,
       required this.channelsBalanceMsats,
       required this.onchainBalanceMsats,
@@ -33,35 +33,6 @@ class NodeState extends DataClass implements Insertable<NodeState> {
       required this.connectedPeers,
       required this.maxInboundLiquidityMsats,
       required this.onChainFeeRate});
-  factory NodeState.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return NodeState(
-      nodeID: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}node_i_d'])!,
-      channelsBalanceMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}channels_balance_msats'])!,
-      onchainBalanceMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}onchain_balance_msats'])!,
-      blockHeight: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}block_height'])!,
-      connectionStatus: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}connection_status'])!,
-      maxAllowedToPayMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}max_allowed_to_pay_msats'])!,
-      maxAllowedToReceiveMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}max_allowed_to_receive_msats'])!,
-      maxPaymentAmountMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}max_payment_amount_msats'])!,
-      maxChanReserveMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}max_chan_reserve_msats'])!,
-      connectedPeers: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}connected_peers'])!,
-      maxInboundLiquidityMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}max_inbound_liquidity_msats'])!,
-      onChainFeeRate: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}on_chain_fee_rate'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -421,78 +392,78 @@ class $NodeStatesTable extends NodeStates
   $NodeStatesTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _nodeIDMeta = const VerificationMeta('nodeID');
   @override
-  late final GeneratedColumn<String?> nodeID = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> nodeID = GeneratedColumn<String>(
       'node_i_d', aliasedName, false,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 66, maxTextLength: 66),
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true);
   final VerificationMeta _channelsBalanceMsatsMeta =
       const VerificationMeta('channelsBalanceMsats');
   @override
-  late final GeneratedColumn<int?> channelsBalanceMsats = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> channelsBalanceMsats = GeneratedColumn<int>(
       'channels_balance_msats', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _onchainBalanceMsatsMeta =
       const VerificationMeta('onchainBalanceMsats');
   @override
-  late final GeneratedColumn<int?> onchainBalanceMsats = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> onchainBalanceMsats = GeneratedColumn<int>(
       'onchain_balance_msats', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _blockHeightMeta =
       const VerificationMeta('blockHeight');
   @override
-  late final GeneratedColumn<int?> blockHeight = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> blockHeight = GeneratedColumn<int>(
       'block_height', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _connectionStatusMeta =
       const VerificationMeta('connectionStatus');
   @override
-  late final GeneratedColumn<int?> connectionStatus = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> connectionStatus = GeneratedColumn<int>(
       'connection_status', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _maxAllowedToPayMsatsMeta =
       const VerificationMeta('maxAllowedToPayMsats');
   @override
-  late final GeneratedColumn<int?> maxAllowedToPayMsats = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> maxAllowedToPayMsats = GeneratedColumn<int>(
       'max_allowed_to_pay_msats', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _maxAllowedToReceiveMsatsMeta =
       const VerificationMeta('maxAllowedToReceiveMsats');
   @override
-  late final GeneratedColumn<int?> maxAllowedToReceiveMsats =
-      GeneratedColumn<int?>('max_allowed_to_receive_msats', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int> maxAllowedToReceiveMsats =
+      GeneratedColumn<int>('max_allowed_to_receive_msats', aliasedName, false,
+          type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _maxPaymentAmountMsatsMeta =
       const VerificationMeta('maxPaymentAmountMsats');
   @override
-  late final GeneratedColumn<int?> maxPaymentAmountMsats =
-      GeneratedColumn<int?>('max_payment_amount_msats', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int> maxPaymentAmountMsats = GeneratedColumn<int>(
+      'max_payment_amount_msats', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _maxChanReserveMsatsMeta =
       const VerificationMeta('maxChanReserveMsats');
   @override
-  late final GeneratedColumn<int?> maxChanReserveMsats = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> maxChanReserveMsats = GeneratedColumn<int>(
       'max_chan_reserve_msats', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _connectedPeersMeta =
       const VerificationMeta('connectedPeers');
   @override
-  late final GeneratedColumn<String?> connectedPeers = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> connectedPeers = GeneratedColumn<String>(
       'connected_peers', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _maxInboundLiquidityMsatsMeta =
       const VerificationMeta('maxInboundLiquidityMsats');
   @override
-  late final GeneratedColumn<int?> maxInboundLiquidityMsats =
-      GeneratedColumn<int?>('max_inbound_liquidity_msats', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int> maxInboundLiquidityMsats =
+      GeneratedColumn<int>('max_inbound_liquidity_msats', aliasedName, false,
+          type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _onChainFeeRateMeta =
       const VerificationMeta('onChainFeeRate');
   @override
-  late final GeneratedColumn<int?> onChainFeeRate = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> onChainFeeRate = GeneratedColumn<int>(
       'on_chain_fee_rate', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         nodeID,
@@ -620,8 +591,37 @@ class $NodeStatesTable extends NodeStates
   Set<GeneratedColumn> get $primaryKey => {nodeID};
   @override
   NodeState map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return NodeState.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NodeState(
+      nodeID: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}node_i_d'])!,
+      channelsBalanceMsats: attachedDatabase.options.types.read(
+          DriftSqlType.int, data['${effectivePrefix}channels_balance_msats'])!,
+      onchainBalanceMsats: attachedDatabase.options.types.read(
+          DriftSqlType.int, data['${effectivePrefix}onchain_balance_msats'])!,
+      blockHeight: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}block_height'])!,
+      connectionStatus: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}connection_status'])!,
+      maxAllowedToPayMsats: attachedDatabase.options.types.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}max_allowed_to_pay_msats'])!,
+      maxAllowedToReceiveMsats: attachedDatabase.options.types.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}max_allowed_to_receive_msats'])!,
+      maxPaymentAmountMsats: attachedDatabase.options.types.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}max_payment_amount_msats'])!,
+      maxChanReserveMsats: attachedDatabase.options.types.read(
+          DriftSqlType.int, data['${effectivePrefix}max_chan_reserve_msats'])!,
+      connectedPeers: attachedDatabase.options.types.read(
+          DriftSqlType.string, data['${effectivePrefix}connected_peers'])!,
+      maxInboundLiquidityMsats: attachedDatabase.options.types.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}max_inbound_liquidity_msats'])!,
+      onChainFeeRate: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}on_chain_fee_rate'])!,
+    );
   }
 
   @override
@@ -636,27 +636,12 @@ class NodeAddresse extends DataClass implements Insertable<NodeAddresse> {
   final String addr;
   final int port;
   final String nodeId;
-  NodeAddresse(
+  const NodeAddresse(
       {required this.id,
       required this.type,
       required this.addr,
       required this.port,
       required this.nodeId});
-  factory NodeAddresse.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return NodeAddresse(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      type: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}type'])!,
-      addr: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}addr'])!,
-      port: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}port'])!,
-      nodeId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}node_id'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -831,33 +816,33 @@ class $NodeAddressesTable extends NodeAddresses
   $NodeAddressesTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
-  late final GeneratedColumn<int?> type = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> type = GeneratedColumn<int>(
       'type', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _addrMeta = const VerificationMeta('addr');
   @override
-  late final GeneratedColumn<String?> addr = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> addr = GeneratedColumn<String>(
       'addr', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _portMeta = const VerificationMeta('port');
   @override
-  late final GeneratedColumn<int?> port = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> port = GeneratedColumn<int>(
       'port', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _nodeIdMeta = const VerificationMeta('nodeId');
   @override
-  late final GeneratedColumn<String?> nodeId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> nodeId = GeneratedColumn<String>(
       'node_id', aliasedName, false,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 66, maxTextLength: 66),
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, type, addr, port, nodeId];
@@ -904,8 +889,19 @@ class $NodeAddressesTable extends NodeAddresses
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   NodeAddresse map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return NodeAddresse.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NodeAddresse(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      type: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
+      addr: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}addr'])!,
+      port: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}port'])!,
+      nodeId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}node_id'])!,
+    );
   }
 
   @override
@@ -924,7 +920,7 @@ class Invoice extends DataClass implements Insertable<Invoice> {
   final String bolt11;
   final String paymentPreimage;
   final String paymentHash;
-  Invoice(
+  const Invoice(
       {required this.label,
       required this.amountMsat,
       required this.receivedMsat,
@@ -934,29 +930,6 @@ class Invoice extends DataClass implements Insertable<Invoice> {
       required this.bolt11,
       required this.paymentPreimage,
       required this.paymentHash});
-  factory Invoice.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Invoice(
-      label: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}label'])!,
-      amountMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount_msat'])!,
-      receivedMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}received_msat'])!,
-      status: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}status'])!,
-      paymentTime: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}payment_time'])!,
-      expiryTime: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}expiry_time'])!,
-      bolt11: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}bolt11'])!,
-      paymentPreimage: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}payment_preimage'])!,
-      paymentHash: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}payment_hash'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1216,53 +1189,53 @@ class $InvoicesTable extends Invoices with TableInfo<$InvoicesTable, Invoice> {
   $InvoicesTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
-  late final GeneratedColumn<String?> label = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
       'label', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _amountMsatMeta = const VerificationMeta('amountMsat');
   @override
-  late final GeneratedColumn<int?> amountMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> amountMsat = GeneratedColumn<int>(
       'amount_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _receivedMsatMeta =
       const VerificationMeta('receivedMsat');
   @override
-  late final GeneratedColumn<int?> receivedMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> receivedMsat = GeneratedColumn<int>(
       'received_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<int?> status = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
       'status', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _paymentTimeMeta =
       const VerificationMeta('paymentTime');
   @override
-  late final GeneratedColumn<int?> paymentTime = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> paymentTime = GeneratedColumn<int>(
       'payment_time', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _expiryTimeMeta = const VerificationMeta('expiryTime');
   @override
-  late final GeneratedColumn<int?> expiryTime = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> expiryTime = GeneratedColumn<int>(
       'expiry_time', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _bolt11Meta = const VerificationMeta('bolt11');
   @override
-  late final GeneratedColumn<String?> bolt11 = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> bolt11 = GeneratedColumn<String>(
       'bolt11', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _paymentPreimageMeta =
       const VerificationMeta('paymentPreimage');
   @override
-  late final GeneratedColumn<String?> paymentPreimage =
-      GeneratedColumn<String?>('payment_preimage', aliasedName, false,
-          type: const StringType(), requiredDuringInsert: true);
+  late final GeneratedColumn<String> paymentPreimage = GeneratedColumn<String>(
+      'payment_preimage', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _paymentHashMeta =
       const VerificationMeta('paymentHash');
   @override
-  late final GeneratedColumn<String?> paymentHash = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> paymentHash = GeneratedColumn<String>(
       'payment_hash', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         label,
@@ -1357,8 +1330,27 @@ class $InvoicesTable extends Invoices with TableInfo<$InvoicesTable, Invoice> {
   Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Invoice map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Invoice.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Invoice(
+      label: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
+      amountMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}amount_msat'])!,
+      receivedMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}received_msat'])!,
+      status: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}status'])!,
+      paymentTime: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}payment_time'])!,
+      expiryTime: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}expiry_time'])!,
+      bolt11: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}bolt11'])!,
+      paymentPreimage: attachedDatabase.options.types.read(
+          DriftSqlType.string, data['${effectivePrefix}payment_preimage'])!,
+      paymentHash: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}payment_hash'])!,
+    );
   }
 
   @override
@@ -1379,7 +1371,7 @@ class OutgoingLightningPayment extends DataClass
   final bool isKeySend;
   final bool pending;
   final String bolt11;
-  OutgoingLightningPayment(
+  const OutgoingLightningPayment(
       {required this.createdAt,
       required this.paymentHash,
       required this.destination,
@@ -1390,32 +1382,6 @@ class OutgoingLightningPayment extends DataClass
       required this.isKeySend,
       required this.pending,
       required this.bolt11});
-  factory OutgoingLightningPayment.fromData(Map<String, dynamic> data,
-      {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return OutgoingLightningPayment(
-      createdAt: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}created_at'])!,
-      paymentHash: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}payment_hash'])!,
-      destination: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}destination'])!,
-      feeMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}fee_msat'])!,
-      amountMsats: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount_msats'])!,
-      amountSentMsats: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}amount_sent_msats'])!,
-      preimage: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}preimage'])!,
-      isKeySend: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_key_send'])!,
-      pending: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}pending'])!,
-      bolt11: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}bolt11'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1697,65 +1663,65 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
   $OutgoingLightningPaymentsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
-  late final GeneratedColumn<int?> createdAt = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
       'created_at', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _paymentHashMeta =
       const VerificationMeta('paymentHash');
   @override
-  late final GeneratedColumn<String?> paymentHash = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> paymentHash = GeneratedColumn<String>(
       'payment_hash', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _destinationMeta =
       const VerificationMeta('destination');
   @override
-  late final GeneratedColumn<String?> destination = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> destination = GeneratedColumn<String>(
       'destination', aliasedName, false,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 66, maxTextLength: 66),
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true);
   final VerificationMeta _feeMsatMeta = const VerificationMeta('feeMsat');
   @override
-  late final GeneratedColumn<int?> feeMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> feeMsat = GeneratedColumn<int>(
       'fee_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _amountMsatsMeta =
       const VerificationMeta('amountMsats');
   @override
-  late final GeneratedColumn<int?> amountMsats = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> amountMsats = GeneratedColumn<int>(
       'amount_msats', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _amountSentMsatsMeta =
       const VerificationMeta('amountSentMsats');
   @override
-  late final GeneratedColumn<int?> amountSentMsats = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> amountSentMsats = GeneratedColumn<int>(
       'amount_sent_msats', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _preimageMeta = const VerificationMeta('preimage');
   @override
-  late final GeneratedColumn<String?> preimage = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> preimage = GeneratedColumn<String>(
       'preimage', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _isKeySendMeta = const VerificationMeta('isKeySend');
   @override
-  late final GeneratedColumn<bool?> isKeySend = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> isKeySend = GeneratedColumn<bool>(
       'is_key_send', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (is_key_send IN (0, 1))');
   final VerificationMeta _pendingMeta = const VerificationMeta('pending');
   @override
-  late final GeneratedColumn<bool?> pending = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> pending = GeneratedColumn<bool>(
       'pending', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (pending IN (0, 1))');
   final VerificationMeta _bolt11Meta = const VerificationMeta('bolt11');
   @override
-  late final GeneratedColumn<String?> bolt11 = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> bolt11 = GeneratedColumn<String>(
       'bolt11', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         createdAt,
@@ -1857,8 +1823,29 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
   @override
   OutgoingLightningPayment map(Map<String, dynamic> data,
       {String? tablePrefix}) {
-    return OutgoingLightningPayment.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OutgoingLightningPayment(
+      createdAt: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}created_at'])!,
+      paymentHash: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}payment_hash'])!,
+      destination: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}destination'])!,
+      feeMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}fee_msat'])!,
+      amountMsats: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}amount_msats'])!,
+      amountSentMsats: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}amount_sent_msats'])!,
+      preimage: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}preimage'])!,
+      isKeySend: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_key_send'])!,
+      pending: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}pending'])!,
+      bolt11: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}bolt11'])!,
+    );
   }
 
   @override
@@ -1871,18 +1858,8 @@ class Peer extends DataClass implements Insertable<Peer> {
   final String peerId;
   final bool connected;
   final String features;
-  Peer({required this.peerId, required this.connected, required this.features});
-  factory Peer.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Peer(
-      peerId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}peer_id'])!,
-      connected: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}connected'])!,
-      features: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}features'])!,
-    );
-  }
+  const Peer(
+      {required this.peerId, required this.connected, required this.features});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2017,24 +1994,24 @@ class $PeersTable extends Peers with TableInfo<$PeersTable, Peer> {
   $PeersTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _peerIdMeta = const VerificationMeta('peerId');
   @override
-  late final GeneratedColumn<String?> peerId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> peerId = GeneratedColumn<String>(
       'peer_id', aliasedName, false,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 66, maxTextLength: 66),
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true);
   final VerificationMeta _connectedMeta = const VerificationMeta('connected');
   @override
-  late final GeneratedColumn<bool?> connected = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> connected = GeneratedColumn<bool>(
       'connected', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (connected IN (0, 1))');
   final VerificationMeta _featuresMeta = const VerificationMeta('features');
   @override
-  late final GeneratedColumn<String?> features = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> features = GeneratedColumn<String>(
       'features', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [peerId, connected, features];
   @override
@@ -2071,8 +2048,15 @@ class $PeersTable extends Peers with TableInfo<$PeersTable, Peer> {
   Set<GeneratedColumn> get $primaryKey => {peerId};
   @override
   Peer map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Peer.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Peer(
+      peerId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}peer_id'])!,
+      connected: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}connected'])!,
+      features: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}features'])!,
+    );
   }
 
   @override
@@ -2097,7 +2081,7 @@ class Channel extends DataClass implements Insertable<Channel> {
   final int theirToSelfDelay;
   final int ourToSelfDelay;
   final String peerId;
-  Channel(
+  const Channel(
       {required this.channelState,
       this.shortChannelId,
       required this.direction,
@@ -2113,47 +2097,12 @@ class Channel extends DataClass implements Insertable<Channel> {
       required this.theirToSelfDelay,
       required this.ourToSelfDelay,
       required this.peerId});
-  factory Channel.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Channel(
-      channelState: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}channel_state'])!,
-      shortChannelId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}short_channel_id']),
-      direction: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}direction'])!,
-      channelId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}channel_id'])!,
-      fundingTxid: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}funding_txid'])!,
-      closeToAddr: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}close_to_addr'])!,
-      closeTo: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}close_to'])!,
-      private: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}private'])!,
-      totalMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}total_msat'])!,
-      dustLimitMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}dust_limit_msat'])!,
-      spendableMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}spendable_msat'])!,
-      receivableMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}receivable_msat'])!,
-      theirToSelfDelay: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}their_to_self_delay'])!,
-      ourToSelfDelay: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}our_to_self_delay'])!,
-      peerId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}peer_id'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['channel_state'] = Variable<int>(channelState);
     if (!nullToAbsent || shortChannelId != null) {
-      map['short_channel_id'] = Variable<String?>(shortChannelId);
+      map['short_channel_id'] = Variable<String>(shortChannelId);
     }
     map['direction'] = Variable<int>(direction);
     map['channel_id'] = Variable<String>(channelId);
@@ -2238,7 +2187,7 @@ class Channel extends DataClass implements Insertable<Channel> {
 
   Channel copyWith(
           {int? channelState,
-          String? shortChannelId,
+          Value<String?> shortChannelId = const Value.absent(),
           int? direction,
           String? channelId,
           String? fundingTxid,
@@ -2254,7 +2203,8 @@ class Channel extends DataClass implements Insertable<Channel> {
           String? peerId}) =>
       Channel(
         channelState: channelState ?? this.channelState,
-        shortChannelId: shortChannelId ?? this.shortChannelId,
+        shortChannelId:
+            shortChannelId.present ? shortChannelId.value : this.shortChannelId,
         direction: direction ?? this.direction,
         channelId: channelId ?? this.channelId,
         fundingTxid: fundingTxid ?? this.fundingTxid,
@@ -2394,7 +2344,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
         peerId = Value(peerId);
   static Insertable<Channel> custom({
     Expression<int>? channelState,
-    Expression<String?>? shortChannelId,
+    Expression<String>? shortChannelId,
     Expression<int>? direction,
     Expression<String>? channelId,
     Expression<String>? fundingTxid,
@@ -2470,7 +2420,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       map['channel_state'] = Variable<int>(channelState.value);
     }
     if (shortChannelId.present) {
-      map['short_channel_id'] = Variable<String?>(shortChannelId.value);
+      map['short_channel_id'] = Variable<String>(shortChannelId.value);
     }
     if (direction.present) {
       map['direction'] = Variable<int>(direction.value);
@@ -2545,91 +2495,91 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
   final VerificationMeta _channelStateMeta =
       const VerificationMeta('channelState');
   @override
-  late final GeneratedColumn<int?> channelState = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> channelState = GeneratedColumn<int>(
       'channel_state', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _shortChannelIdMeta =
       const VerificationMeta('shortChannelId');
   @override
-  late final GeneratedColumn<String?> shortChannelId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> shortChannelId = GeneratedColumn<String>(
       'short_channel_id', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
+      type: DriftSqlType.string, requiredDuringInsert: false);
   final VerificationMeta _directionMeta = const VerificationMeta('direction');
   @override
-  late final GeneratedColumn<int?> direction = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> direction = GeneratedColumn<int>(
       'direction', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _channelIdMeta = const VerificationMeta('channelId');
   @override
-  late final GeneratedColumn<String?> channelId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
       'channel_id', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _fundingTxidMeta =
       const VerificationMeta('fundingTxid');
   @override
-  late final GeneratedColumn<String?> fundingTxid = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> fundingTxid = GeneratedColumn<String>(
       'funding_txid', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _closeToAddrMeta =
       const VerificationMeta('closeToAddr');
   @override
-  late final GeneratedColumn<String?> closeToAddr = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> closeToAddr = GeneratedColumn<String>(
       'close_to_addr', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _closeToMeta = const VerificationMeta('closeTo');
   @override
-  late final GeneratedColumn<String?> closeTo = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> closeTo = GeneratedColumn<String>(
       'close_to', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _privateMeta = const VerificationMeta('private');
   @override
-  late final GeneratedColumn<bool?> private = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> private = GeneratedColumn<bool>(
       'private', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (private IN (0, 1))');
   final VerificationMeta _totalMsatMeta = const VerificationMeta('totalMsat');
   @override
-  late final GeneratedColumn<int?> totalMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> totalMsat = GeneratedColumn<int>(
       'total_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _dustLimitMsatMeta =
       const VerificationMeta('dustLimitMsat');
   @override
-  late final GeneratedColumn<int?> dustLimitMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> dustLimitMsat = GeneratedColumn<int>(
       'dust_limit_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _spendableMsatMeta =
       const VerificationMeta('spendableMsat');
   @override
-  late final GeneratedColumn<int?> spendableMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> spendableMsat = GeneratedColumn<int>(
       'spendable_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _receivableMsatMeta =
       const VerificationMeta('receivableMsat');
   @override
-  late final GeneratedColumn<int?> receivableMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> receivableMsat = GeneratedColumn<int>(
       'receivable_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _theirToSelfDelayMeta =
       const VerificationMeta('theirToSelfDelay');
   @override
-  late final GeneratedColumn<int?> theirToSelfDelay = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> theirToSelfDelay = GeneratedColumn<int>(
       'their_to_self_delay', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _ourToSelfDelayMeta =
       const VerificationMeta('ourToSelfDelay');
   @override
-  late final GeneratedColumn<int?> ourToSelfDelay = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> ourToSelfDelay = GeneratedColumn<int>(
       'our_to_self_delay', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _peerIdMeta = const VerificationMeta('peerId');
   @override
-  late final GeneratedColumn<String?> peerId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> peerId = GeneratedColumn<String>(
       'peer_id', aliasedName, false,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 66, maxTextLength: 66),
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       defaultConstraints: 'REFERENCES peers (peer_id)');
   @override
@@ -2772,8 +2722,39 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
   Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Channel map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Channel.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Channel(
+      channelState: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}channel_state'])!,
+      shortChannelId: attachedDatabase.options.types.read(
+          DriftSqlType.string, data['${effectivePrefix}short_channel_id']),
+      direction: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}direction'])!,
+      channelId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}channel_id'])!,
+      fundingTxid: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}funding_txid'])!,
+      closeToAddr: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}close_to_addr'])!,
+      closeTo: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}close_to'])!,
+      private: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}private'])!,
+      totalMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}total_msat'])!,
+      dustLimitMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}dust_limit_msat'])!,
+      spendableMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}spendable_msat'])!,
+      receivableMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}receivable_msat'])!,
+      theirToSelfDelay: attachedDatabase.options.types.read(
+          DriftSqlType.int, data['${effectivePrefix}their_to_self_delay'])!,
+      ourToSelfDelay: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}our_to_self_delay'])!,
+      peerId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}peer_id'])!,
+    );
   }
 
   @override
@@ -2791,7 +2772,7 @@ class Htlc extends DataClass implements Insertable<Htlc> {
   final String state;
   final bool localTrimmed;
   final String channelId;
-  Htlc(
+  const Htlc(
       {required this.direction,
       required this.id,
       required this.amountMsat,
@@ -2800,27 +2781,6 @@ class Htlc extends DataClass implements Insertable<Htlc> {
       required this.state,
       required this.localTrimmed,
       required this.channelId});
-  factory Htlc.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Htlc(
-      direction: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}direction'])!,
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      amountMsat: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount_msat'])!,
-      expiry: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}expiry'])!,
-      paymentHash: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}payment_hash'])!,
-      state: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}state'])!,
-      localTrimmed: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}local_trimmed'])!,
-      channelId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}channel_id'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3060,48 +3020,48 @@ class $HtlcsTable extends Htlcs with TableInfo<$HtlcsTable, Htlc> {
   $HtlcsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _directionMeta = const VerificationMeta('direction');
   @override
-  late final GeneratedColumn<int?> direction = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> direction = GeneratedColumn<int>(
       'direction', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _amountMsatMeta = const VerificationMeta('amountMsat');
   @override
-  late final GeneratedColumn<int?> amountMsat = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> amountMsat = GeneratedColumn<int>(
       'amount_msat', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _expiryMeta = const VerificationMeta('expiry');
   @override
-  late final GeneratedColumn<int?> expiry = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> expiry = GeneratedColumn<int>(
       'expiry', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _paymentHashMeta =
       const VerificationMeta('paymentHash');
   @override
-  late final GeneratedColumn<String?> paymentHash = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> paymentHash = GeneratedColumn<String>(
       'payment_hash', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _stateMeta = const VerificationMeta('state');
   @override
-  late final GeneratedColumn<String?> state = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> state = GeneratedColumn<String>(
       'state', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _localTrimmedMeta =
       const VerificationMeta('localTrimmed');
   @override
-  late final GeneratedColumn<bool?> localTrimmed = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> localTrimmed = GeneratedColumn<bool>(
       'local_trimmed', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (local_trimmed IN (0, 1))');
   final VerificationMeta _channelIdMeta = const VerificationMeta('channelId');
   @override
-  late final GeneratedColumn<String?> channelId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
       'channel_id', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       defaultConstraints: 'REFERENCES channels (channel_id)');
   @override
@@ -3184,8 +3144,25 @@ class $HtlcsTable extends Htlcs with TableInfo<$HtlcsTable, Htlc> {
   Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Htlc map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Htlc.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Htlc(
+      direction: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}direction'])!,
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      amountMsat: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}amount_msat'])!,
+      expiry: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}expiry'])!,
+      paymentHash: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}payment_hash'])!,
+      state: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}state'])!,
+      localTrimmed: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}local_trimmed'])!,
+      channelId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}channel_id'])!,
+    );
   }
 
   @override
@@ -3197,16 +3174,7 @@ class $HtlcsTable extends Htlcs with TableInfo<$HtlcsTable, Htlc> {
 class Setting extends DataClass implements Insertable<Setting> {
   final String key;
   final String value;
-  Setting({required this.key, required this.value});
-  factory Setting.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return Setting(
-      key: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}key'])!,
-      value: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}value'])!,
-    );
-  }
+  const Setting({required this.key, required this.value});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3318,14 +3286,14 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   $SettingsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _keyMeta = const VerificationMeta('key');
   @override
-  late final GeneratedColumn<String?> key = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
       'key', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
-  late final GeneratedColumn<String?> value = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
       'value', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [key, value];
   @override
@@ -3356,8 +3324,13 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   Set<GeneratedColumn> get $primaryKey => {key};
   @override
   Setting map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return Setting.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Setting(
+      key: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}key'])!,
+      value: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
+    );
   }
 
   @override
@@ -3367,7 +3340,7 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
 }
 
 abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$AppDatabase(QueryExecutor e) : super(e);
   late final $NodeStatesTable nodeStates = $NodeStatesTable(this);
   late final $NodeAddressesTable nodeAddresses = $NodeAddressesTable(this);
   late final $InvoicesTable invoices = $InvoicesTable(this);
@@ -3381,7 +3354,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
   late final PeersDao peersDao = PeersDao(this as AppDatabase);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, dynamic>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         nodeStates,

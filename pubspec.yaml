@@ -31,7 +31,7 @@ dependencies:
     git:
       url: https://github.com/mauriceraguseinit/DragAndDropLists
       ref: bb224b167574a35f722c9e9fbfa960dbee232ce5
-  drift: ^1.7.1
+  drift: ^2.0.0
   duration: ^3.0.11
   email_validator: ^2.1.17
   extended_image: ^6.2.1
@@ -83,7 +83,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.2.0
-  drift_dev: ^1.7.0
+  drift_dev: ^2.0.0
   flutter_lints: ^2.0.1
   mockito: ^5.3.0
   sqflite_common_ffi: ^2.1.1+1

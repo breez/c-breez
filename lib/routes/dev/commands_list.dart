@@ -5,8 +5,10 @@ import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
+import 'package:hex/hex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 
 class CommandsList extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -27,7 +29,7 @@ class _CommandsListState extends State<CommandsList> {
   bool _showDefaultCommands = true;
   bool isLoading = false;
   var _richCliText = <TextSpan>[];
-  late final nodeAPI;
+  late final breez_sdk.NodeAPI nodeAPI;
 
   @override
   void initState() {
@@ -192,8 +194,12 @@ class _CommandsListState extends State<CommandsList> {
       });
       const JsonEncoder encoder = JsonEncoder.withIndent('    ');
       try {
+        var commandArgs = command.split(RegExp(r"\s"));
+        if (commandArgs.isEmpty) {
+          return;
+        }
         late String reply;
-        switch (command) {
+        switch (commandArgs[0]) {
           case 'getNodeInfo':
             final nodeInfo = await nodeAPI.getNodeInfo();
             reply = encoder.convert(nodeInfo.toJson());
@@ -213,6 +219,14 @@ class _CommandsListState extends State<CommandsList> {
           case 'getInvoices':
             final invoices = await nodeAPI.getInvoices();
             reply = encoder.convert(invoices);
+            break;
+          case 'closeChannel':
+            if (commandArgs.length < 2) {
+              throw "Missing node id";
+            }
+            var nodeID = HEX.decode(commandArgs[1]);
+            final closedResponse = await nodeAPI.closeChannel(nodeID);
+            reply = encoder.convert(closedResponse);
             break;
           default:
             throw "This command is not supported yet.";
@@ -291,6 +305,7 @@ List<Widget> defaultCliCommandsText(Function(String command) onCommand) => [
           Command("listPeers", onCommand),
           Command("getPayments", onCommand),
           Command("getInvoices", onCommand),
+          Command("closeChannel", onCommand),
         ],
       ),
     ];

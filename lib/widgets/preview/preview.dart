@@ -1,7 +1,8 @@
+import 'package:c_breez/theme/theme_provider.dart';
 import 'package:c_breez/widgets/preview/fill_view_port_column_scroll_view.dart';
 import 'package:flutter/material.dart';
 
-class Preview extends StatelessWidget {
+class Preview extends StatefulWidget {
   final List<Widget> children;
 
   const Preview(
@@ -10,8 +11,16 @@ class Preview extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<Preview> createState() => _PreviewState();
+}
+
+class _PreviewState extends State<Preview> {
+  ThemeData? theme;
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: theme,
       home: Scaffold(
         body: SafeArea(
           child: Stack(
@@ -38,13 +47,44 @@ class Preview extends StatelessWidget {
                   );
                 },
               ),
-              FillViewPortColumnScrollView(
-                children: children,
+              Container(
+                height: 48.0,
+                color: theme?.appBarTheme.backgroundColor ?? Colors.white60,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Text("Theme:"),
+                    TextButton(
+                      onPressed: () => _changeTheme(null),
+                      child: const Text("None"),
+                    ),
+                    TextButton(
+                      onPressed: () => _changeTheme(breezLightTheme),
+                      child: const Text("Light"),
+                    ),
+                    TextButton(
+                      onPressed: () => _changeTheme(breezDarkTheme),
+                      child: const Text("Dark"),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 48.0),
+                child: FillViewPortColumnScrollView(
+                  children: widget.children,
+                ),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _changeTheme(ThemeData? theme) {
+    setState(() {
+      this.theme = theme;
+    });
   }
 }

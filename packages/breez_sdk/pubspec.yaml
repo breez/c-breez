@@ -15,14 +15,14 @@ dependencies:
     git:
       url: https://github.com/breez/dart_lnurl
   encrypt: ^5.0.1
-  sqlite3_flutter_libs: ^0.5.7
   drift: ^2.0.0
+  sqlite3_flutter_libs: ^0.5.9
   ffi: ^2.0.1
   fimber: ^0.6.6
   rxdart: ^0.27.5
   fimber_io: ^0.6.6
   fixnum: ^1.0.1
-  flutter_rust_bridge: ^1.40.0
+  flutter_rust_bridge: ^1.41.1
   freezed_annotation: ^2.1.0
   grpc: ^3.0.2
   hex: ^0.2.0

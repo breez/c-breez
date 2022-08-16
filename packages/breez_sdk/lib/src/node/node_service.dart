@@ -12,7 +12,6 @@ import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgr
 import 'package:rxdart/rxdart.dart';
 
 import 'models_extensions.dart';
-import 'node_api/node_api.dart';
 
 const maxPaymentAmountMsats = 4294967000;
 const maxInboundLiquidityMsats = 4000000000;
@@ -31,8 +30,8 @@ class LightningNode {
 
   LightningNode(this._lspService, this._stroage) {
     _syncer = NodeStateSyncer(_nodeAPI, _stroage);
-    FGBGEvents.stream.throttleTime(const Duration(minutes: 2)).listen((event) async {
-      if (event == FGBGType.foreground && _signer != null) {
+    FGBGEvents.stream.where((event) => event == FGBGType.foreground).throttleTime(const Duration(minutes: 2)).listen((event) async {
+      if (_signer != null) {
         await syncState();
       }
     });

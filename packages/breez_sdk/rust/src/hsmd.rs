@@ -124,7 +124,10 @@ impl Hsmd {
     ._inner
     .for_new_client(
      0,
-     optional_peer.ok_or(anyhow!("failed to get optional peer"))?,
+     optional_peer.ok_or(anyhow!(format!(
+      "failed to get optional peer messag={:?}",
+      m
+     )))?,
      db_id,
     )
     .handle(m),
@@ -169,6 +172,7 @@ impl Hsmd {
    Message::SignChannelAnnouncement(_msg) => true,
    Message::SignChannelAnnouncementReply(_msg) => true,
    Message::SignCommitmentTxReply(_msg) => true,
+   Message::SignCommitmentTx(_msg) => true,
    _ => false,
   }
  }

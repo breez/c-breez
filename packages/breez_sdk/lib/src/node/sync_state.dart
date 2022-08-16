@@ -84,7 +84,8 @@ class NodeStateSyncer {
     // calculate incoming and outgoing liquidity
     Int64 maxPayable = Int64(0);
     Int64 maxReceivableSingleChannel = Int64(0);
-    for (var c in channels) {
+    var openChannels = channels.where((c) => c.state == ChannelState.OPEN);
+    for (var c in openChannels) {
       maxPayable += c.spendable;
       Int64 channelReceivable = Int64(c.receivable);
       if (channelReceivable > maxReceivableSingleChannel) {

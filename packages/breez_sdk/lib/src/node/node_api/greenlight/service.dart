@@ -77,9 +77,9 @@ class Greenlight implements NodeAPI {
         // stream signer and wait for it to shut down.
         await SignerLoop(_signer!, _nodeClient!).start();
       } catch (e) {
-        _log.e("signer exited, waiting 5 seconds...", ex: e);
+        _log.e("signer exited, waiting 1 seconds...", ex: e);
       }
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 
@@ -88,13 +88,14 @@ class Greenlight implements NodeAPI {
     _log.i("scheduling node ${_nodeCredentials!.nodeId}");
     var schedulerClient = await _createSchedulerClient();
     try {
-      var res = await schedulerClient.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
-      var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
-      _nodeClient = greenlight.NodeClient(nodeChannel);
       if (!signerRunning) {
         signerRunning = true;
-        streamIncomingRequests(res.nodeId);
+        streamIncomingRequests(_nodeCredentials!.nodeId!);
       }
+
+      var res = await schedulerClient.schedule(scheduler.ScheduleRequest(nodeId: _nodeCredentials!.nodeId));
+      var nodeChannel = _createNodeChannel(_nodeCredentials!, res.grpcUri);
+      _nodeClient = greenlight.NodeClient(nodeChannel);      
       return res;
     } catch (e) {
       _log.e("error scheduling node ${e.toString()}");

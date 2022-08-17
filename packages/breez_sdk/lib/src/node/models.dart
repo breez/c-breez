@@ -135,13 +135,21 @@ class PaymentFilter {
           })
           .cast<PaymentType>()
           .toList(),
-      startDate: json["startDate"],
-      endDate: json["endDate"],
+      startDate: json["startDate"] != null
+          ? DateTime.parse(json["startDate"] as String)
+          : null,
+      endDate: json["endDate"] != null
+          ? DateTime.parse(json["endDate"] as String)
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {"paymentType": paymentType.map((e) => e.index).toList(), "startDate": startDate, "endDate": endDate};
+    return {
+      "paymentType": paymentType.map((e) => e.index).toList(),
+      "startDate": startDate?.toIso8601String(),
+      "endDate": endDate?.toIso8601String()
+    };
   }
 }
 

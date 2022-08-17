@@ -28,8 +28,7 @@ class BottomActionsBar extends StatelessWidget {
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, account) {
             final connected =
-                lsp.connectionStatus == LSPConnectionStatus.active &&
-                    account.status == AccountStatus.CONNECTED;
+                lsp.connectionStatus == LSPConnectionStatus.active;
 
             return BottomAppBar(
               child: SizedBox(

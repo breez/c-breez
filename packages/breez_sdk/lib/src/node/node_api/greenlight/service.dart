@@ -334,8 +334,7 @@ class Greenlight implements NodeAPI {
     var uri = Uri.parse(grpcUri);
     return ClientChannel(uri.host,
         port: uri.port,
-        options: ChannelOptions(
-            connectionTimeout: const Duration(seconds: 20),
+        options: ChannelOptions(            
             credentials: ClientCertificateChannelCredentials(
                 trustedRoots: Uint8List.fromList(utf8.encode(caCert)),
                 certificateChain: Uint8List.fromList(utf8.encode(credentials.deviceCert)),

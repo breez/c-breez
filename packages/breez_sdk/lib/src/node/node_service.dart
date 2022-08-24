@@ -181,8 +181,9 @@ class LightningNode {
       // not opening a channel so we need to get the real channel id into the routing hints
       final nodePeers = await _nodeAPI.listPeers();
       for (var p in nodePeers) {
-        if (p.id == _currentLSP!.pubKey && p.channels.isNotEmpty) {
-          shortChannelId = _parseShortChannelID(p.channels.first.shortChannelId);
+        if (p.id == _currentLSP!.pubKey && p.channels.isNotEmpty) {                    
+          var activeChannel  = p.channels.firstWhere((c) => c.state == ChannelState.OPEN);
+          shortChannelId = _parseShortChannelID(activeChannel.shortChannelId);
           break;
         }
       }
@@ -196,7 +197,7 @@ class LightningNode {
       srcNodeId: _currentLSP!.pubKey,
       shortChannelId: shortChannelId,
       feesBaseMsat: _currentLSP!.baseFeeMsat,
-      feesProportionalMillionths: 0,
+      feesProportionalMillionths: 10,
       cltvExpiryDelta: _currentLSP!.timeLockDelta,
       htlcMinimumMsat: _currentLSP!.minHtlcMsat,
       htlcMaximumMsat: 1000000000,

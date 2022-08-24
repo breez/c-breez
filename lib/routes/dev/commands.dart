@@ -103,7 +103,11 @@ class DevelopersView extends StatelessWidget {
     var zipFilePath = '${tempDir.path}/keys.zip';
     encoder.create(zipFilePath);
     keysDir.listSync().forEach((keyFile) {
-      encoder.addFile(keyFile as File);
+      if (keyFile is File) {
+        encoder.addFile(keyFile);
+      } else {
+        encoder.addDirectory(keyFile as Directory);
+      }
     });
     encoder.close();
     ShareExtend.share(zipFilePath, "file");

@@ -80,6 +80,28 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     for (var k in keys) {
       File(p.join(destDir.path, k.name)).writeAsBytesSync(k.content, flush: true);
     }
+    final docDir = await getApplicationDocumentsDirectory();
+    final signerDir = Directory("${docDir.path}/signer");
+    recursiveFolderCopySync(signerDir.path, destDir.path);    
+  }
+
+  void recursiveFolderCopySync(String path1, String path2) {
+    Directory dir1 = Directory(path1);  
+    Directory dir2 = Directory(path2);
+    if (!dir2.existsSync()) {
+      dir2.createSync(recursive: true);
+    }
+    
+    dir1.listSync().forEach((element) {  
+    String elementName = p.basename(element.path);
+        String newPath = "${dir2.path}/$elementName";
+        if (element is File) {
+          File newFile = File(newPath);
+          newFile.writeAsBytesSync(element.readAsBytesSync());
+        } else {
+          recursiveFolderCopySync(element.path, newPath);
+        }
+    });
   }
 
   // startNewNode register a new node and start it

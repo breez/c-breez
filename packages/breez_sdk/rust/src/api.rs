@@ -2,7 +2,9 @@ use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use anyhow::Result;
-use lightning_invoice::RawInvoice;
+use lightning_signer::lightning_invoice::RawInvoice;
+use std::fs::File;
+use std::io::Read;
 
 pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  let mut private_key_slice: [u8; 32] = [0; 32];
@@ -63,4 +65,23 @@ pub fn handle(
   Ok(hsmd) => hsmd.handle(msg, peer_id, db_id),
   Err(err) => Err(err),
  }
+}
+fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
+ let mut file = File::open(name).unwrap();
+
+ let mut data = Vec::new();
+ file.read_to_end(&mut data).unwrap();
+
+ return Ok(data);
+}
+
+#[test]
+fn test_hsmd_handle() {
+ let secret = read_a_file(String::from("/Users/roeierez/greenlight-keys/hsm_secret")).unwrap();
+ let msg =
+  hex::decode("000103e9a89bf95cc797a0c535234d79497a632bb17ae5b8520b67cb59b22ea1ce60d4").unwrap();
+ let peer_id =
+  Some(hex::decode("03f27b2fe75f44eeabdbb64ccfc759d3c2a540f6a7461673138d8cf425530d5bb4").unwrap());
+ let path = String::from("/Users/roeierez/greenlight-keys2");
+ handle(path, secret, msg, peer_id, 0).unwrap();
 }

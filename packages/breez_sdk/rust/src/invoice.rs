@@ -1,8 +1,9 @@
 use anyhow::{anyhow, Result};
-use bitcoin::secp256k1::PublicKey;
 use hex::ToHex;
-use lightning::routing::*;
-use lightning_invoice::*;
+use lightning_signer::bitcoin::secp256k1::PublicKey;
+use lightning_signer::lightning::routing::gossip::RoutingFees;
+use lightning_signer::lightning::routing::*;
+use lightning_signer::lightning_invoice::*;
 use std::str::FromStr;
 use std::time::UNIX_EPOCH;
 
@@ -47,7 +48,7 @@ impl RouteHint {
    let router_hop = router::RouteHintHop {
     src_node_id: pubkey_res,
     short_channel_id: hop.short_channel_id,
-    fees: gossip::RoutingFees {
+    fees: RoutingFees {
      base_msat: hop.fees_base_msat,
      proportional_millionths: hop.fees_proportional_millionths,
     },

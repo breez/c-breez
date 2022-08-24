@@ -1,8 +1,16 @@
 use anyhow::{anyhow, Result};
-use lightning_invoice::RawInvoice;
 use lightning_signer::bitcoin::bech32::ToBase32;
+use lightning_signer::bitcoin::Network;
+use lightning_signer::lightning_invoice::RawInvoice;
+use lightning_signer::node::NodeServices;
 use lightning_signer::persist::Persist;
-use lightning_signer_server::persist::persist_json::KVJsonPersister;
+use lightning_signer::policy::filter::PolicyFilter;
+use lightning_signer::policy::simple_validator::SimplePolicy;
+use lightning_signer::policy::simple_validator::SimpleValidatorFactory;
+use lightning_signer::signer::ClockStartingTimeFactory;
+use lightning_signer::util::clock::StandardClock;
+use lightning_signer::util::velocity::VelocityControlSpec;
+use lightning_signer_server::persist::kv_json::KVJsonPersister;
 use std::sync::Arc;
 use vls_protocol::model::Bip32KeyVersion;
 use vls_protocol::model::BlockId;
@@ -15,9 +23,35 @@ pub fn _new_hsmd(secret: [u8; 32], storage_path: &String) -> Result<Hsmd> {
  // TODO: use a file based storage instead
  let storage = KVJsonPersister::new(storage_path);
  let persister: Arc<dyn Persist> = Arc::new(storage);
+ let starting_time_factory = ClockStartingTimeFactory::new();
+ let clock = Arc::new(StandardClock());
+ let validator_factory = Arc::new(SimpleValidatorFactory::new_with_policy(SimplePolicy {
+  min_delay: 144,  // LDK min
+  max_delay: 2016, // LDK max
+  max_channel_size_sat: 1_000_000_001,
+  epsilon_sat: 10_000,
+  max_htlcs: 1000,
+  max_htlc_value_sat: 16_777_216,
+  use_chain_state: false,
+  min_feerate_per_kw: 253,    // mainnet observed
+  max_feerate_per_kw: 25_000, // equiv to 100 sat/vb
+  require_invoices: false,
+  enforce_balance: false,
+  max_routing_fee_msat: 10000,
+  dev_flags: None,
+  filter: PolicyFilter::new_permissive(),
+  global_velocity_control: VelocityControlSpec::UNLIMITED,
+ }));
+
+ let services = NodeServices {
+  validator_factory,
+  starting_time_factory,
+  persister,
+  clock,
+ };
 
  // create the root handler
- let root = handler::RootHandler::new(0, Some(secret), persister, Vec::new());
+ let root = handler::RootHandler::new(Network::Bitcoin, 0, Some(secret), Vec::new(), services);
 
  // construct the init message
  let init_message = HsmdInit {
@@ -62,9 +96,10 @@ impl Hsmd {
   // extract hrp & data parts
   let hrp_str = raw_invoice.hrp.to_string();
   let hrp_bytes = hrp_str.as_bytes().to_vec();
-  let invoice_data = raw_invoice.data.to_base32();
+  let base32 = raw_invoice.data.to_base32();
+  let invoice_data = base32.as_slice();
   // initialize a new hsmd for signing and sign the invoice
-  let sig = self._inner.node.sign_invoice(&hrp_bytes, &invoice_data);
+  let sig = self._inner.node.sign_invoice(&hrp_bytes, invoice_data);
   let signed_invoice = raw_invoice.sign(|_| sig);
   match signed_invoice {
    Ok(signed) => Ok(signed.to_string()),
@@ -117,10 +152,9 @@ impl Hsmd {
    )));
   }
   let m = m?;
-  let root = self.is_root_handler(&m);
-  let sign_res = match root {
-   true => self._inner.handle(m),
-   false => self
+  let sign_res = match db_id {
+   0 => self._inner.handle(m),
+   _ => self
     ._inner
     .for_new_client(
      0,
@@ -140,40 +174,6 @@ impl Hsmd {
     msgs::from_vec(msg.clone()).unwrap(),
     err
    ))),
-  }
- }
-
- fn is_root_handler(&self, m: &Message) -> bool {
-  match m {
-   Message::Ecdh(_msg) => true,
-   Message::Ping(_msg) => true,
-   Message::Pong(_msg) => true,
-   Message::NewChannel(_msg) => true,
-   Message::SignBolt12(_msg) => true,
-   Message::SignBolt12Reply(_msg) => true,
-   Message::Memleak(_msg) => true,
-   Message::MemleakReply(_msg) => true,
-   Message::HsmdInit(_msg) => true,
-   Message::HsmdInitReply(_msg) => true,
-   Message::HsmdInit2(_msg) => true,
-   Message::HsmdInit2Reply(_msg) => true,
-   Message::SignInvoice(_msg) => true,
-   Message::SignInvoiceReply(_msg) => true,
-   Message::SignWithdrawal(_msg) => true,
-   Message::SignWithdrawalReply(_msg) => true,
-   Message::SignMessage(_msg) => true,
-   Message::SignMessageReply(_msg) => true,
-   Message::GetChannelBasepoints(_msg) => true,
-   Message::GetChannelBasepointsReply(_msg) => true,
-   Message::SignNodeAnnouncement(_msg) => true,
-   Message::SignNodeAnnouncementReply(_msg) => true,
-   Message::SignChannelUpdate(_msg) => true,
-   Message::SignChannelUpdateReply(_msg) => true,
-   Message::SignChannelAnnouncement(_msg) => true,
-   Message::SignChannelAnnouncementReply(_msg) => true,
-   Message::SignCommitmentTxReply(_msg) => true,
-   Message::SignCommitmentTx(_msg) => true,
-   _ => false,
   }
  }
 }

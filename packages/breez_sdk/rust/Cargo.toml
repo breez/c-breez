@@ -9,16 +9,13 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 flutter_rust_bridge = "1"
-lightning-invoice = "0.16.0"
 anyhow = { version = "1.0.57", features = ["backtrace"] }
 hex = "*"
-bitcoin = "0.28.1"
-bitcoin_hashes = { version = "0.10.0", default-features = false }
 lightning-signer-core = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 lightning-signer-server = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 vls-protocol-signer = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 vls-protocol = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
-secp256k1 = "0.20.3"
+vls-persist = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
+vls-proxy = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 base64 = "0.13.0"
-lightning = "0.0.108"
 ecies = {version = "0.2", default-features = false, features = ["pure"]}

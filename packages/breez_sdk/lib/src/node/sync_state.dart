@@ -63,7 +63,9 @@ class NodeStateSyncer {
     var channels = List<Channel>.empty(growable: true);
     List<String> peersList = List<String>.empty(growable: true);
     for (var p in peers) {
-      peersList.add(p.id);
+      if (p.connected) {
+        peersList.add(p.id);
+      }
       channels.addAll(p.channels);
     }
 

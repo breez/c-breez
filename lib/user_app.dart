@@ -16,6 +16,7 @@ import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonic_seed
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/generate_mnemonic_seed_confirmation_page.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
+import 'package:c_breez/routes/security/security_page.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/locale.dart';
@@ -114,6 +115,11 @@ class UserApp extends StatelessWidget {
                                   accountBloc,
                                   userProfileBloc,
                                 ),
+                                settings: settings,
+                              );
+                            case '/security':
+                              return FadeInRoute(
+                                builder: (_) => const SecurityPage(),
                                 settings: settings,
                               );
                             case '/developers':

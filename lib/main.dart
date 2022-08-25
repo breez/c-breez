@@ -5,6 +5,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/firebase_options.dart';
@@ -62,6 +63,9 @@ void main() async {
                 ),
                 BlocProvider<CurrencyBloc>(
                   create: (BuildContext context) => CurrencyBloc(injector.fiatService),
+                ),
+                BlocProvider<SecurityBloc>(
+                  create: (BuildContext context) => SecurityBloc(),
                 ),
                 BlocProvider<WithdrawFudsBloc>(
                   create: (BuildContext context) => WithdrawFudsBloc(lightningServices),

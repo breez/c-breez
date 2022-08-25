@@ -51,7 +51,7 @@ class LightningNode {
     return _stroage.watchNodeState().map((dbState) => dbState == null ? null : NodeStateAdapter.fromDbNodeState(dbState));
   }
 
-  Stream<List<PaymentInfo>> paymentsStream() {
+  Stream<PaymentsState> paymentsStream() {
     // outgoing payments stream
     final outgoingPaymentsStream = _stroage.watchOutgoingPayments().map((pList) {
       return true;
@@ -104,7 +104,8 @@ class LightningNode {
         ..addAll(outgoingList)
         ..sort((p1, p2) => (p2.creationTimestamp - p1.creationTimestamp).toInt());
 
-      return unifiedList.where((p) => paymentFilter.includes(p)).toList();
+      var list = unifiedList.where((p) => paymentFilter.includes(p)).toList();
+      return PaymentsState(list, paymentFilter, DateTime.fromMillisecondsSinceEpoch(unifiedList.first.creationTimestamp.toInt() * 1000));
     });
   }
 

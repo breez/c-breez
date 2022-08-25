@@ -1,7 +1,6 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/account/payments_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -146,8 +145,8 @@ class AccountPage extends StatelessWidget {
 
   double _bottomPlaceholderSpace(
     BuildContext context,
-    PaymentsState payment,
-    List<PaymentInfo> payments,
+    breez_sdk.PaymentsState payment,
+    List<breez_sdk.PaymentInfo> payments,
   ) {
     if (payments.isEmpty) return 0.0;
     double listHeightSpace = MediaQuery.of(context).size.height -

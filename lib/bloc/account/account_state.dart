@@ -1,4 +1,4 @@
-import 'package:c_breez/bloc/account/payments_state.dart';
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:fixnum/fixnum.dart';
 
 const initialInboundCapacity = 4000000;
@@ -19,7 +19,7 @@ class AccountState {
   final List<String> connectedPeers;
   final Int64 maxInboundLiquidity;
   final Int64 onChainFeeRate;
-  final PaymentsState payments;
+  final breez_sdk.PaymentsState payments;
 
   const AccountState({
     required this.payments,
@@ -52,13 +52,13 @@ class AccountState {
           onChainFeeRate: Int64(0),
           balance: Int64(0),
           walletBalance: Int64(0),
-          payments: PaymentsState.initial(),
+          payments: breez_sdk.PaymentsState.initial(),
           initial: true,
         );
 
   AccountState copyWith({
     String? id,
-    PaymentsState? payments,
+    breez_sdk.PaymentsState? payments,
     bool? initial,
     Int64? blockheight,
     Int64? balance,
@@ -111,7 +111,7 @@ class AccountState {
 
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
-        payments: PaymentsState.initial(),
+        payments: breez_sdk.PaymentsState.initial(),
         id: json["id"],
         initial: json["initial"],
         blockheight: Int64(json["blockheight"]),

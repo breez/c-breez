@@ -90,7 +90,7 @@ class LightningNode {
       var incomingList = incoming.map((invoice) {
         return PaymentInfo(
             type: PaymentType.received,
-            amountMsat: Int64(invoice.amountMsat),
+            amountMsat: Int64(invoice.receivedMsat),
             feeMsat: Int64.ZERO,
             destination: nodeState!.nodeID,
             shortTitle: "",

@@ -184,7 +184,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future cancelPayment(String bolt11) async {
-    throw Exception("not implemented");
+    //throw Exception("not implemented");
   }
 
   Future sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {

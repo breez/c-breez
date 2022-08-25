@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_extend/share_extend.dart';
@@ -22,6 +23,9 @@ class Device {
       _lastClipping =
           preferences.getString(LAST_CLIPPING_PREFERENCES_KEY) ?? "";
       fetchClipboard(preferences);
+    });
+    FGBGEvents.stream.where((event) => event == FGBGType.foreground).listen((event) async {
+      fetchClipboard(await SharedPreferences.getInstance());
     });
   }
 

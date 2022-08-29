@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
@@ -30,7 +31,7 @@ class LightningNode {
 
   LightningNode(this._lspService, this._stroage) {
     _syncer = NodeStateSyncer(_nodeAPI, _stroage);
-    FGBGEvents.stream.where((event) => event == FGBGType.foreground).throttleTime(const Duration(minutes: 2)).listen((event) async {
+    FGBGEvents.stream.where((event) => event == FGBGType.foreground).throttleTime(const Duration(minutes: 1)).listen((event) async {
       if (_signer != null) {
         await syncState();
       }
@@ -105,7 +106,7 @@ class LightningNode {
         ..sort((p1, p2) => (p2.creationTimestamp - p1.creationTimestamp).toInt());
 
       var list = unifiedList.where((p) => paymentFilter.includes(p)).toList();
-      return PaymentsState(list, paymentFilter, DateTime.fromMillisecondsSinceEpoch(unifiedList.first.creationTimestamp.toInt() * 1000));
+      return PaymentsState(list, paymentFilter, unifiedList.isEmpty ? null : DateTime.fromMillisecondsSinceEpoch(unifiedList.first.creationTimestamp.toInt() * 1000));
     });
   }
 
@@ -190,7 +191,7 @@ class LightningNode {
       }
     }
 
-    final invoice = await _nodeAPI.addInvoice(destinationInvoiceAmountSats, description: description, expiry: expiry);
+    final invoice = await _nodeAPI.addInvoice(amountSats, description: description, expiry: expiry);
     _log.i("requestPayment: node returned a new invoice, adding routing hints");
 
     // create lsp routing hints

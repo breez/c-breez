@@ -64,3 +64,11 @@ enum LocalAuthenticationOption {
   TOUCH_ID,
   NONE,
 }
+
+extension LocalAuthenticationOptionExtension on LocalAuthenticationOption {
+  bool get isFacial => this == LocalAuthenticationOption.FACE ||
+      this == LocalAuthenticationOption.FACE_ID;
+
+  bool get isFingerprint => this == LocalAuthenticationOption.FINGERPRINT ||
+      this == LocalAuthenticationOption.TOUCH_ID;
+}

@@ -162,19 +162,30 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  Future<LNURLPayResult> sendLNURLPayment(LNURLPayParams payParams,
-      Map<String, String> qParams) async {
+  Future<bool> sendLNURLPayment(
+      LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
+    try {
+      bool isSent = await _lightningNode
+          .sendPaymentForRequest(lnurlPayResult.pr,
+              amount: Int64.parseInt(qParams['amount']!))
+          .timeout(
+            const Duration(minutes: 3),
+            onTimeout: () =>
+                throw Exception('Timed out waiting 3 minutes for payment.'),
+          );
+      if (isSent) {
+        await syncStateWithNode();
+      }
+      return isSent;
+    } catch (_) {
+      rethrow;
+    }
+  }
+
+  Future<LNURLPayResult> getPaymentResult(
+      LNURLPayParams payParams, Map<String, String> qParams) async {
     final LNURLPayResult lnurlPayResult =
         await _lnurlService.getPaymentResult(payParams, qParams);
-    await _lightningNode
-        .sendPaymentForRequest(lnurlPayResult.pr,
-            amount: Int64.parseInt(qParams['amount']!))
-        .timeout(
-          const Duration(minutes: 3),
-          onTimeout: () =>
-              throw Exception('Timed out waiting 3 minutes for payment.'),
-        );
-    await syncStateWithNode();
     return lnurlPayResult;
   }
 

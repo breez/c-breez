@@ -30,7 +30,10 @@ dependencies:
   ini: ^2.1.0
   path_provider: ^2.0.11
   protobuf: ^2.1.0
-  flutter_fgbg: ^0.2.0
+  flutter_fgbg:
+    git:
+      url: https://github.com/breez/flutter_fgbg.git
+      ref: 976b28ff3c299836f215b6deb2003838c49a8001
   json_annotation: ^4.6.0  
   url_launcher: ^6.1.5
   validators: ^3.0.0

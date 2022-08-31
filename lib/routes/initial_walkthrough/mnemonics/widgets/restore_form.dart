@@ -53,7 +53,9 @@ class RestoreFormPageState extends State<RestoreForm> {
                 textInputAction: TextInputAction.next,
                 onSubmitted: (text) {
                   widget.textEditingControllers[itemIndex].text = text;
-                  focusNodes[itemIndex + 1].requestFocus();
+                  if (itemIndex + 1 < focusNodes.length) {
+                    focusNodes[itemIndex + 1].requestFocus();
+                  }
                 },
                 focusNode: focusNodes[itemIndex],
                 decoration: InputDecoration(

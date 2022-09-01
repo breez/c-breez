@@ -90,13 +90,9 @@ class _CommandsListState extends State<CommandsList> {
           child: Container(
             padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
             child: Container(
-              padding: _showDefaultCommands
-                  ? const EdgeInsets.all(0.0)
-                  : const EdgeInsets.all(2.0),
+              padding: _showDefaultCommands ? const EdgeInsets.all(0.0) : const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
-                border: _showDefaultCommands
-                    ? null
-                    : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
+                border: _showDefaultCommands ? null : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -112,17 +108,14 @@ class _CommandsListState extends State<CommandsList> {
                               tooltip: 'Copy to Clipboard',
                               iconSize: 19.0,
                               onPressed: () {
-                                ServiceInjector()
-                                    .device
-                                    .setClipboardText(_cliText);
+                                ServiceInjector().device.setClipboardText(_cliText);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
                                       'Copied to clipboard.',
                                       style: theme.snackBarStyle,
                                     ),
-                                    backgroundColor:
-                                        theme.snackBarBackgroundColor,
+                                    backgroundColor: theme.snackBarBackgroundColor,
                                     duration: const Duration(seconds: 2),
                                   ),
                                 );
@@ -164,8 +157,7 @@ class _CommandsListState extends State<CommandsList> {
           children: defaultCliCommandsText(
             (command) {
               _cliInputController.text = command;
-              FocusScope.of(widget.scaffoldKey.currentState!.context)
-                  .requestFocus(
+              FocusScope.of(widget.scaffoldKey.currentState!.context).requestFocus(
                 _cliEntryFocusNode,
               );
             },
@@ -226,7 +218,16 @@ class _CommandsListState extends State<CommandsList> {
             }
             var nodeID = HEX.decode(commandArgs[1]);
             final closedResponse = await nodeAPI.closeChannel(nodeID);
-            reply = encoder.convert(closedResponse);
+            reply = HEX.encode(closedResponse);
+            break;
+          case 'closeAllChannels':
+            final peers = await nodeAPI.listPeers();
+            List<List<int>> closed = [];
+            await Future.wait(peers.map((p) => Future.wait(p.channels.map((e) async {
+                  final tx = await nodeAPI.closeChannel(HEX.decode(e.channelId));
+                  closed.add(tx);
+                }))));
+            reply = closed.map((e) => HEX.encode(e)).join("\n");
             break;
           default:
             throw "This command is not supported yet.";
@@ -306,6 +307,7 @@ List<Widget> defaultCliCommandsText(Function(String command) onCommand) => [
           Command("getPayments", onCommand),
           Command("getInvoices", onCommand),
           Command("closeChannel", onCommand),
+          Command("closeAllChannels", onCommand),
         ],
       ),
     ];

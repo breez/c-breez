@@ -1,5 +1,4 @@
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/payment_dialogs/processing_payment/processing_payment_content.dart';
 import 'package:flutter/material.dart';
 
 class ProcessingPaymentAnimatedContent extends StatelessWidget {

@@ -1,8 +1,9 @@
 import 'dart:io';
-import 'package:breez_sdk/src/storage/storage.dart';
+
 import 'package:breez_sdk/src/storage/dao/payments_dao.dart';
 import 'package:breez_sdk/src/storage/dao/peers_dao.dart';
 import 'package:breez_sdk/src/storage/dao/settings_dao.dart';
+import 'package:breez_sdk/src/storage/storage.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;

@@ -204,7 +204,7 @@ class Greenlight implements NodeAPI {
       return ListFundsOutput(
           amountMsats: amountToMSats(e.amount),
           address: e.address,
-          status: e.status.value as OutputStatus,
+          status: OutputStatus.values[e.status.value],
           outpoint: Outpoint(HEX.encode(e.output.txid), e.output.outnum));
     }).toList();
 

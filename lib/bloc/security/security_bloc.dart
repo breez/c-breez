@@ -16,6 +16,14 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
     ));
   }
 
+  Future<bool> testPin(String pin) async {
+    final storedPin = await _secureStorage.read(key: "pinCode");
+    if (storedPin == null) {
+      throw SecurityStorageException();
+    }
+    return storedPin == pin;
+  }
+
   Future clearPin() async {
     await _secureStorage.delete(key: "pinCode");
     emit(state.copyWith(
@@ -39,3 +47,5 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
     return state.toJson();
   }
 }
+
+class SecurityStorageException implements Exception {}

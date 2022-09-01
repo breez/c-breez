@@ -82,6 +82,7 @@ class _PinCodeWidgetState extends State<PinCodeWidget> with SingleTickerProvider
                 ),
                 Text(
                   errorMessage,
+                  textAlign: TextAlign.center,
                   style: theme.textTheme.headline4?.copyWith(
                     fontSize: 12,
                   ),

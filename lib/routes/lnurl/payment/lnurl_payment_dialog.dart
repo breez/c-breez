@@ -172,12 +172,25 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             };
             LNURLPayResult lnurlPayResult =
                 await accountBloc.getPaymentResult(widget.payParams, qParams);
-            await accountBloc
+            bool isSent = await accountBloc
                 .sendLNURLPayment(lnurlPayResult, qParams)
-                .whenComplete(
-                    () => handleSuccessAction(context, lnurlPayResult));
+                .onError(
+              (error, stackTrace) {
+                navigator.removeRoute(loaderRoute);
+                widget.onComplete();
+                return widget.onError(error.toString());
+              },
+            );
             navigator.removeRoute(loaderRoute);
             widget.onComplete();
+
+            if (isSent) {
+              handleSuccessAction(context, lnurlPayResult);
+            } else {
+              String error =
+                  texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
+              widget.onError(error);
+            }
           },
           child: Text(
             texts.spontaneous_payment_action_pay,

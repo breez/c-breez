@@ -13,3 +13,4 @@ export 'src/node/models.dart';
 export 'src/lnurl/lnurl_service.dart';
 export 'src/lsp/lsp_service.dart';
 export 'src/lsp/models.dart';
+export 'src/chain_service/chain_service.dart';

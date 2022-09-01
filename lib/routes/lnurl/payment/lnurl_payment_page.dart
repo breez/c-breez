@@ -203,26 +203,24 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             navigator.pop();
             var loaderRoute = createLoaderRoute(context);
             navigator.push(loaderRoute);
+            String errorMsg =
+                texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
             LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(
                 widget.payParams, payerDataMap);
             bool isSent = await accountBloc
                 .sendLNURLPayment(lnurlPayResult, payerDataMap)
                 .onError(
               (error, stackTrace) {
-                navigator.removeRoute(loaderRoute);
-                widget.onComplete();
-                return widget.onError(error.toString());
+                errorMsg = error.toString();
+                return false;
               },
             );
             navigator.removeRoute(loaderRoute);
             widget.onComplete();
-
             if (isSent) {
               handleSuccessAction(context, lnurlPayResult);
             } else {
-              String error =
-                  texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
-              widget.onError(error);
+              widget.onError(errorMsg);
             }
           }
         },

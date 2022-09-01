@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/routes/security/change_pin_page.dart';
 import 'package:c_breez/routes/security/widget/security_pin_interval.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
+import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -20,6 +22,7 @@ class SecurityPinManagement extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
+    final navigator = Navigator.of(context);
 
     return BlocBuilder<SecurityBloc, SecurityState>(
       builder: (context, state) {
@@ -58,9 +61,7 @@ class SecurityPinManagement extends StatelessWidget {
                   color: Colors.white,
                   size: 30.0,
                 ),
-                onTap: () => {
-                  // TODO: start pin change flow
-                },
+                onTap: () => navigator.push(FadeInRoute(builder: (_) => const ChangePinPage())),
               ),
               // TODO: add fingerprint/face option
             ],
@@ -79,10 +80,7 @@ class SecurityPinManagement extends StatelessWidget {
               color: Colors.white,
               size: 30.0,
             ),
-            onTap: () {
-              // TODO: real flow
-              context.read<SecurityBloc>().setPin();
-            },
+            onTap: () => navigator.push(FadeInRoute(builder: (_) => const ChangePinPage())),
           );
         }
       },

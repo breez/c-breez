@@ -49,7 +49,9 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase> with _$PaymentsDaoMixin 
   }
 
   Future<List<OutgoingLightningPayment>> listOutgoingPayments() {
-    return (select(outgoingLightningPayments)..orderBy([(p) => OrderingTerm(expression: p.createdAt, mode: OrderingMode.desc)]))
+    return (select(outgoingLightningPayments)
+    ..where((p) => p.amountSentMsats.isBiggerThan(const Constant(0)))
+    ..orderBy([(p) => OrderingTerm(expression: p.createdAt, mode: OrderingMode.desc)]))
         .get();
   }
 }

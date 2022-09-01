@@ -14,14 +14,13 @@ import 'node_api/models.dart';
 final _log = FimberLog("GreenlightService");
 
 class NodeStateSyncer {
-
   final NodeAPI _nodeAPI;
   final Storage _stroage;
 
-  NodeStateSyncer(this._nodeAPI, this._stroage);  
+  NodeStateSyncer(this._nodeAPI, this._stroage);
 
-  // Sync  
-  Future syncState() async {    
+  // Sync
+  Future syncState() async {
     await _syncNodeInfo();
     await _syncOutgoingPayments();
     await _syncSettledInvoices();
@@ -50,11 +49,22 @@ class NodeStateSyncer {
     var invoices = await _nodeAPI.getInvoices();
     await _stroage.addIncomingPayments(invoices.map((p) => p.toDbInvoice()).toList());
     _log.i("_syncSettledInvoices finished");
-  } 
+  }
 
   NodeState _assembleAccountState(
       NodeInfo nodeInfo, List<ListFundsChannel> offChainFunds, List<ListFundsOutput> onChainFunds, List<Peer> peers) {
-    var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.ourAmountMsat);
+    var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, lChannel) {
+      for (var p in peers) {
+        final foundIndex = p.channels
+            .where((c) => c.state == ChannelState.OPEN)
+            .toList()
+            .indexWhere((c) => c.fundingTxid == lChannel.fundingTxid);
+        if (foundIndex >= 0) {
+          return balance + lChannel.ourAmountMsat;
+        }
+      }
+      return balance;
+    });
 
     // calculate the on-chain balance
     var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsats);

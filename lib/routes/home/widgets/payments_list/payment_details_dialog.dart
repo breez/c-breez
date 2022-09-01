@@ -64,7 +64,7 @@ Future<void> showPaymentDetailsDialog(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              paymentInfo.longTitle.isEmpty
+              paymentInfo.shortTitle.isEmpty
                   ? Container()
                   : Padding(
                       padding: EdgeInsets.only(
@@ -73,7 +73,7 @@ Future<void> showPaymentDetailsDialog(
                         bottom: (paymentInfo.description.isEmpty) ? 16 : 8,
                       ),
                       child: AutoSizeText(
-                        paymentInfo.longTitle.replaceAll("\n", " "),
+                        paymentInfo.shortTitle.replaceAll("\n", " "),
                         style: themeData.primaryTextTheme.headline5,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,

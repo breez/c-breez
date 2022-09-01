@@ -1834,6 +1834,8 @@
     }
   },
   "lock_screen_enter_pin": "Entrez votre code PIN",
+  "lock_screen_pin_incorrect": "Incorrect PIN",
+  "lock_screen_pin_match_exception": "There was an error confirming your PIN, please try again. If this error persists, please contact Breez support.",
   "backup_phrase_generate": "Générer une phrase de sauvegarde",
   "backup_phrase_instructions": "Une liste de mots vous sera présentée. Notez ces mots et conservez-les dans un endroit sûr. Sans ces mots, vous ne pourrez pas restaurer à partir de la sauvegarde et vos fonds seront perdus. Breez ne pourra pas vous aider.",
   "backup_phrase_action_confirm": "JE COMPRENDS",

@@ -1371,6 +1371,7 @@ class OutgoingLightningPayment extends DataClass
   final bool isKeySend;
   final bool pending;
   final String bolt11;
+  final String description;
   const OutgoingLightningPayment(
       {required this.createdAt,
       required this.paymentHash,
@@ -1381,7 +1382,8 @@ class OutgoingLightningPayment extends DataClass
       required this.preimage,
       required this.isKeySend,
       required this.pending,
-      required this.bolt11});
+      required this.bolt11,
+      required this.description});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1395,6 +1397,7 @@ class OutgoingLightningPayment extends DataClass
     map['is_key_send'] = Variable<bool>(isKeySend);
     map['pending'] = Variable<bool>(pending);
     map['bolt11'] = Variable<String>(bolt11);
+    map['description'] = Variable<String>(description);
     return map;
   }
 
@@ -1410,6 +1413,7 @@ class OutgoingLightningPayment extends DataClass
       isKeySend: Value(isKeySend),
       pending: Value(pending),
       bolt11: Value(bolt11),
+      description: Value(description),
     );
   }
 
@@ -1427,6 +1431,7 @@ class OutgoingLightningPayment extends DataClass
       isKeySend: serializer.fromJson<bool>(json['isKeySend']),
       pending: serializer.fromJson<bool>(json['pending']),
       bolt11: serializer.fromJson<String>(json['bolt11']),
+      description: serializer.fromJson<String>(json['description']),
     );
   }
   @override
@@ -1443,6 +1448,7 @@ class OutgoingLightningPayment extends DataClass
       'isKeySend': serializer.toJson<bool>(isKeySend),
       'pending': serializer.toJson<bool>(pending),
       'bolt11': serializer.toJson<String>(bolt11),
+      'description': serializer.toJson<String>(description),
     };
   }
 
@@ -1456,7 +1462,8 @@ class OutgoingLightningPayment extends DataClass
           String? preimage,
           bool? isKeySend,
           bool? pending,
-          String? bolt11}) =>
+          String? bolt11,
+          String? description}) =>
       OutgoingLightningPayment(
         createdAt: createdAt ?? this.createdAt,
         paymentHash: paymentHash ?? this.paymentHash,
@@ -1468,6 +1475,7 @@ class OutgoingLightningPayment extends DataClass
         isKeySend: isKeySend ?? this.isKeySend,
         pending: pending ?? this.pending,
         bolt11: bolt11 ?? this.bolt11,
+        description: description ?? this.description,
       );
   @override
   String toString() {
@@ -1481,14 +1489,25 @@ class OutgoingLightningPayment extends DataClass
           ..write('preimage: $preimage, ')
           ..write('isKeySend: $isKeySend, ')
           ..write('pending: $pending, ')
-          ..write('bolt11: $bolt11')
+          ..write('bolt11: $bolt11, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(createdAt, paymentHash, destination, feeMsat,
-      amountMsats, amountSentMsats, preimage, isKeySend, pending, bolt11);
+  int get hashCode => Object.hash(
+      createdAt,
+      paymentHash,
+      destination,
+      feeMsat,
+      amountMsats,
+      amountSentMsats,
+      preimage,
+      isKeySend,
+      pending,
+      bolt11,
+      description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1502,7 +1521,8 @@ class OutgoingLightningPayment extends DataClass
           other.preimage == this.preimage &&
           other.isKeySend == this.isKeySend &&
           other.pending == this.pending &&
-          other.bolt11 == this.bolt11);
+          other.bolt11 == this.bolt11 &&
+          other.description == this.description);
 }
 
 class OutgoingLightningPaymentsCompanion
@@ -1517,6 +1537,7 @@ class OutgoingLightningPaymentsCompanion
   final Value<bool> isKeySend;
   final Value<bool> pending;
   final Value<String> bolt11;
+  final Value<String> description;
   const OutgoingLightningPaymentsCompanion({
     this.createdAt = const Value.absent(),
     this.paymentHash = const Value.absent(),
@@ -1528,6 +1549,7 @@ class OutgoingLightningPaymentsCompanion
     this.isKeySend = const Value.absent(),
     this.pending = const Value.absent(),
     this.bolt11 = const Value.absent(),
+    this.description = const Value.absent(),
   });
   OutgoingLightningPaymentsCompanion.insert({
     required int createdAt,
@@ -1540,6 +1562,7 @@ class OutgoingLightningPaymentsCompanion
     required bool isKeySend,
     required bool pending,
     required String bolt11,
+    required String description,
   })  : createdAt = Value(createdAt),
         paymentHash = Value(paymentHash),
         destination = Value(destination),
@@ -1549,7 +1572,8 @@ class OutgoingLightningPaymentsCompanion
         preimage = Value(preimage),
         isKeySend = Value(isKeySend),
         pending = Value(pending),
-        bolt11 = Value(bolt11);
+        bolt11 = Value(bolt11),
+        description = Value(description);
   static Insertable<OutgoingLightningPayment> custom({
     Expression<int>? createdAt,
     Expression<String>? paymentHash,
@@ -1561,6 +1585,7 @@ class OutgoingLightningPaymentsCompanion
     Expression<bool>? isKeySend,
     Expression<bool>? pending,
     Expression<String>? bolt11,
+    Expression<String>? description,
   }) {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
@@ -1573,6 +1598,7 @@ class OutgoingLightningPaymentsCompanion
       if (isKeySend != null) 'is_key_send': isKeySend,
       if (pending != null) 'pending': pending,
       if (bolt11 != null) 'bolt11': bolt11,
+      if (description != null) 'description': description,
     });
   }
 
@@ -1586,7 +1612,8 @@ class OutgoingLightningPaymentsCompanion
       Value<String>? preimage,
       Value<bool>? isKeySend,
       Value<bool>? pending,
-      Value<String>? bolt11}) {
+      Value<String>? bolt11,
+      Value<String>? description}) {
     return OutgoingLightningPaymentsCompanion(
       createdAt: createdAt ?? this.createdAt,
       paymentHash: paymentHash ?? this.paymentHash,
@@ -1598,6 +1625,7 @@ class OutgoingLightningPaymentsCompanion
       isKeySend: isKeySend ?? this.isKeySend,
       pending: pending ?? this.pending,
       bolt11: bolt11 ?? this.bolt11,
+      description: description ?? this.description,
     );
   }
 
@@ -1634,6 +1662,9 @@ class OutgoingLightningPaymentsCompanion
     if (bolt11.present) {
       map['bolt11'] = Variable<String>(bolt11.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     return map;
   }
 
@@ -1649,7 +1680,8 @@ class OutgoingLightningPaymentsCompanion
           ..write('preimage: $preimage, ')
           ..write('isKeySend: $isKeySend, ')
           ..write('pending: $pending, ')
-          ..write('bolt11: $bolt11')
+          ..write('bolt11: $bolt11, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
@@ -1722,6 +1754,12 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
   late final GeneratedColumn<String> bolt11 = GeneratedColumn<String>(
       'bolt11', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         createdAt,
@@ -1733,7 +1771,8 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
         preimage,
         isKeySend,
         pending,
-        bolt11
+        bolt11,
+        description
       ];
   @override
   String get aliasedName => _alias ?? 'outgoing_lightning_payments';
@@ -1815,6 +1854,14 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
     } else if (isInserting) {
       context.missing(_bolt11Meta);
     }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
     return context;
   }
 
@@ -1845,6 +1892,8 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
           .read(DriftSqlType.bool, data['${effectivePrefix}pending'])!,
       bolt11: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}bolt11'])!,
+      description: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
     );
   }
 

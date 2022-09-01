@@ -40,7 +40,11 @@ class NodeStateSyncer {
   Future _syncOutgoingPayments() async {
     _log.i("_syncOutgoingPayments");
     var outgoingPayments = await _nodeAPI.getPayments();
-    await _stroage.addOutgoingPayments(outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList());
+    await _stroage.addOutgoingPayments(
+      await Future.wait(
+        outgoingPayments.map((p) => p.toDbOutgoingLightningPayment()).toList(),
+      ),
+    );
     _log.i("_syncOutgoingPayments finished");
   }
 

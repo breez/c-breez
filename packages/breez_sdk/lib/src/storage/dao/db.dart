@@ -23,6 +23,7 @@ class OutgoingLightningPayments extends Table {
   BoolColumn get isKeySend => boolean()();
   BoolColumn get pending => boolean()();
   TextColumn get bolt11 => text()();
+  TextColumn get description => text()();
 }
 
 class NodeAddresses extends Table {
@@ -151,7 +152,7 @@ class AppDatabase extends _$AppDatabase implements Storage {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -180,6 +181,9 @@ class AppDatabase extends _$AppDatabase implements Storage {
         }
         if (from < 6) {
           await m.createTable(nodeStates);
+        }
+        if (from < 7) {
+          await m.addColumn(outgoingLightningPayments, outgoingLightningPayments.description);
         }
       },
     );

@@ -89,15 +89,13 @@ String getSuccessActionMessage(
 }
 
 handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
-  LNURLPaySuccessAction? successAction = payResult.successAction;
-  if (successAction != null) {
-    showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) => SuccessActionDialog(
-        getSuccessActionMessage(payResult, successAction),
-        url: successAction.url,
-      ),
-    );
-  }
+  LNURLPaySuccessAction successAction = payResult.successAction!;
+  showDialog(
+    useRootNavigator: false,
+    context: context,
+    builder: (_) => SuccessActionDialog(
+      getSuccessActionMessage(payResult, successAction),
+      url: successAction.url,
+    ),
+  );
 }

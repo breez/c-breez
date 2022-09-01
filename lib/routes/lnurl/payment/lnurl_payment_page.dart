@@ -70,94 +70,96 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
         actions: const [],
         title: const Text("LNURL Invoice"),
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 40.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (widget.payParams.domain.isNotEmpty) ...[
-                Center(
-                  child: Text(
-                    fixedAmount
-                        ? '${widget.payParams.domain} is requesting you to pay ${widget.payParams.maxSendable ~/ 1000} sats.'
-                        : widget.payParams.domain,
-                    style: Theme.of(context).textTheme.headline6,
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              ],
-              LNURLMetadata(
-                {
-                  for (var v in json.decode(widget.payParams.metadata))
-                    v[0] as String: v[1]
-                },
-              ),
-              if (widget.payParams.commentAllowed > 0) ...[
-                TextFormField(
-                  controller: _commentController,
-                  keyboardType: TextInputType.multiline,
-                  textInputAction: TextInputAction.done,
-                  maxLines: null,
-                  maxLength: widget.payParams.commentAllowed,
-                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                  decoration: InputDecoration(
-                    labelText: '${texts.payment_details_dialog_share_comment} (optional)',
-                  ),
-                )
-              ],
-              if (!fixedAmount) ...[
-                AmountFormField(
-                  context: context,
-                  texts: texts,
-                  bitcoinCurrency: currencyState.bitcoinCurrency,
-                  controller: _amountController,
-                  validatorFn: validatePayment,
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 40.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (widget.payParams.domain.isNotEmpty) ...[
+                  Center(
+                    child: Text(
+                      fixedAmount
+                          ? '${widget.payParams.domain} is requesting you to pay ${widget.payParams.maxSendable ~/ 1000} sats.'
+                          : widget.payParams.domain,
+                      style: Theme.of(context).textTheme.headline6,
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                ],
+                LNURLMetadata(
+                  {
+                    for (var v in json.decode(widget.payParams.metadata))
+                      v[0] as String: v[1]
+                  },
                 ),
-                ReceivableBTCBox(
-                  receiveLabel: '${texts.lnurl_fetch_invoice_limit(
-                    (widget.payParams.minSendable ~/ 1000).toString(),
-                    (widget.payParams.maxSendable ~/ 1000).toString(),
-                  )} sats.',
-                ),
+                if (widget.payParams.commentAllowed > 0) ...[
+                  TextFormField(
+                    controller: _commentController,
+                    keyboardType: TextInputType.multiline,
+                    textInputAction: TextInputAction.done,
+                    maxLines: null,
+                    maxLength: widget.payParams.commentAllowed,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                    decoration: InputDecoration(
+                      labelText: '${texts.payment_details_dialog_share_comment} (optional)',
+                    ),
+                  )
+                ],
+                if (!fixedAmount) ...[
+                  AmountFormField(
+                    context: context,
+                    texts: texts,
+                    bitcoinCurrency: currencyState.bitcoinCurrency,
+                    controller: _amountController,
+                    validatorFn: validatePayment,
+                  ),
+                  ReceivableBTCBox(
+                    receiveLabel: '${texts.lnurl_fetch_invoice_limit(
+                      (widget.payParams.minSendable ~/ 1000).toString(),
+                      (widget.payParams.maxSendable ~/ 1000).toString(),
+                    )} sats.',
+                  ),
+                ],
+                if (widget.payParams.payerData?.name?.mandatory == true) ...[
+                  TextFormField(
+                    controller: _nameController,
+                    keyboardType: TextInputType.name,
+                    validator: (value) => value != null
+                        ? null
+                        : texts.breez_avatar_dialog_your_name,
+                  )
+                ],
+                if (widget.payParams.payerData?.auth?.mandatory == true) ...[
+                  TextFormField(
+                    controller: _k1Controller,
+                    keyboardType: TextInputType.text,
+                    validator: (value) =>
+                        value != null ? null : "Please enter a k1",
+                  )
+                ],
+                if (widget.payParams.payerData?.email?.mandatory == true) ...[
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) => value != null
+                        ? EmailValidator.validate(value)
+                            ? null
+                            : texts.order_card_country_email_invalid
+                        : texts.order_card_country_email_empty,
+                  )
+                ],
+                if (widget.payParams.payerData?.identifier?.mandatory ==
+                    true) ...[
+                  TextFormField(
+                    controller: _identifierController,
+                  )
+                ],
               ],
-              if (widget.payParams.payerData?.name?.mandatory == true) ...[
-                TextFormField(
-                  controller: _nameController,
-                  keyboardType: TextInputType.name,
-                  validator: (value) => value != null
-                      ? null
-                      : texts.breez_avatar_dialog_your_name,
-                )
-              ],
-              if (widget.payParams.payerData?.auth?.mandatory == true) ...[
-                TextFormField(
-                  controller: _k1Controller,
-                  keyboardType: TextInputType.text,
-                  validator: (value) =>
-                      value != null ? null : "Please enter a k1",
-                )
-              ],
-              if (widget.payParams.payerData?.email?.mandatory == true) ...[
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) => value != null
-                      ? EmailValidator.validate(value)
-                          ? null
-                          : texts.order_card_country_email_invalid
-                      : texts.order_card_country_email_empty,
-                )
-              ],
-              if (widget.payParams.payerData?.identifier?.mandatory ==
-                  true) ...[
-                TextFormField(
-                  controller: _identifierController,
-                )
-              ],
-            ],
+            ),
           ),
         ),
       ),
@@ -201,26 +203,24 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             navigator.pop();
             var loaderRoute = createLoaderRoute(context);
             navigator.push(loaderRoute);
+            String errorMsg =
+                texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
             LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(
                 widget.payParams, payerDataMap);
             bool isSent = await accountBloc
                 .sendLNURLPayment(lnurlPayResult, payerDataMap)
                 .onError(
               (error, stackTrace) {
-                navigator.removeRoute(loaderRoute);
-                widget.onComplete();
-                return widget.onError(error.toString());
+                errorMsg = error.toString();
+                return false;
               },
             );
             navigator.removeRoute(loaderRoute);
             widget.onComplete();
-
             if (isSent) {
               handleSuccessAction(context, lnurlPayResult);
             } else {
-              String error =
-                  texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
-              widget.onError(error);
+              widget.onError(errorMsg);
             }
           }
         },

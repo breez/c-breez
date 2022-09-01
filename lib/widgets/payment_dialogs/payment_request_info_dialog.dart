@@ -278,7 +278,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         .validateOutgoing(
       amountToPay(currencyState),
     );
-    if (widget.invoice.amountMsat == 0) {
+    if (widget.invoice.amountMsat == 0 || validationError == null || validationError.isEmpty) {
       return null;
     }
 
@@ -287,7 +287,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
       child: AutoSizeText(
-        validationError ?? "",
+        validationError,
         maxLines: 3,
         textAlign: TextAlign.center,
         style: themeData.primaryTextTheme.headline3!.copyWith(

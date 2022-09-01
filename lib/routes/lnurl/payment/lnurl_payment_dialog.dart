@@ -170,26 +170,24 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             Map<String, String> qParams = {
               'amount': widget.payParams.maxSendable.toString()
             };
+            String errorMsg =
+                texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
             LNURLPayResult lnurlPayResult =
                 await accountBloc.getPaymentResult(widget.payParams, qParams);
             bool isSent = await accountBloc
                 .sendLNURLPayment(lnurlPayResult, qParams)
                 .onError(
               (error, stackTrace) {
-                navigator.removeRoute(loaderRoute);
-                widget.onComplete();
-                return widget.onError(error.toString());
+                errorMsg = error.toString();
+                return false;
               },
             );
             navigator.removeRoute(loaderRoute);
             widget.onComplete();
-
             if (isSent) {
               handleSuccessAction(context, lnurlPayResult);
             } else {
-              String error =
-                  texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
-              widget.onError(error);
+              widget.onError(errorMsg);
             }
           },
           child: Text(

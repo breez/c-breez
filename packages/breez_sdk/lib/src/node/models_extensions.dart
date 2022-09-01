@@ -3,6 +3,8 @@ import 'package:breez_sdk/src/node/node_api/models.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart' as db;
 import 'package:fixnum/fixnum.dart';
 
+import '../native_toolkit.dart';
+
 extension NodeStateAdapter on NodeState {
   db.NodeState toDbNodeState() {
     return db.NodeState(
@@ -39,7 +41,8 @@ extension NodeStateAdapter on NodeState {
 }
 
 extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
-  db.OutgoingLightningPayment toDbOutgoingLightningPayment() {
+  Future<db.OutgoingLightningPayment> toDbOutgoingLightningPayment() async {
+    final invoice = await getNativeToolkit().parseInvoice(invoice: bolt11);
     return db.OutgoingLightningPayment(
       createdAt: creationTimestamp,
       paymentHash: paymentHash,
@@ -51,6 +54,7 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
       isKeySend: isKeySend,
       pending: pending,
       bolt11: bolt11,
+      description: invoice.description,
     );
   }
 

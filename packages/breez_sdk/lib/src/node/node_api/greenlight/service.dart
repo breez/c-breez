@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart'
+    as greenlight;
+import 'package:breez_sdk/src/node/node_api/greenlight/generated/scheduler.pbgrpc.dart'
+    as scheduler;
 import 'package:breez_sdk/src/node/node_api/models.dart';
 import 'package:breez_sdk/src/node/node_api/node_api.dart';
 import 'package:breez_sdk/src/signer.dart';
 import 'package:fimber/fimber.dart';
-import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
-import 'package:breez_sdk/src/node/node_api/greenlight/generated/scheduler.pbgrpc.dart' as scheduler;
 import 'package:fixnum/fixnum.dart';
 import 'package:grpc/grpc.dart';
 import 'package:hex/hex.dart';

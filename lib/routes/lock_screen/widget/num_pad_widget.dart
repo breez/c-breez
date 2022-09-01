@@ -89,8 +89,8 @@ extension _ActionKeyIconExtension on ActionKey {
 }
 
 void main() {
-  final digitFun = (digit) => print("Digit pressed: $digit");
-  final actionKeyFun = (actionKey) => print("Action key pressed: $actionKey");
+  digitFun(digit) => debugPrint("Digit pressed: $digit");
+  actionKeyFun(actionKey) => debugPrint("Action key pressed: $actionKey");
 
   runApp(Preview([
     const Padding(

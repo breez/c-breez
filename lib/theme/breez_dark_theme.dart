@@ -117,7 +117,7 @@ final ThemeData calendarDarkTheme = ThemeData.dark().copyWith(
     onSurface: Colors.white, // body text color
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(primary: const Color(0xFF7aa5eb)),
+    style: TextButton.styleFrom(foregroundColor: const Color(0xFF7aa5eb)),
   ),
   dialogTheme: const DialogTheme(
     backgroundColor: Color(0xFF152a3d),

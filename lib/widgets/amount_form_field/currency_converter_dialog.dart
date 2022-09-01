@@ -157,7 +157,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
               child: ButtonTheme(
                 alignedDropdown: true,
                 child: BreezDropdownButton(
-                  onChanged: (value) => _selectFiatCurrency(value!.toString()),
+                  onChanged: (value) => _selectFiatCurrency(value.toString()),
                   value: currencyState.fiatShortName,
                   iconEnabledColor:
                       themeData.dialogTheme.titleTextStyle!.color!,

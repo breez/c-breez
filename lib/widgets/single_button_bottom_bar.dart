@@ -57,7 +57,7 @@ class SubmitButton extends StatelessWidget {
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).primaryColor,
           elevation: 0.0,
           shape: const StadiumBorder(),
         ),

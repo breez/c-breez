@@ -124,7 +124,7 @@ final ThemeData calendarLightTheme = ThemeData.light().copyWith(
     primary: Color.fromRGBO(5, 93, 235, 1.0),
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(primary: BreezColors.blue[500]),
+    style: TextButton.styleFrom(foregroundColor: BreezColors.blue[500]),
   ),
   dialogTheme: const DialogTheme(
     shape: RoundedRectangleBorder(

@@ -29,4 +29,8 @@ abstract class Storage {
   Future<Setting?> readSettings(String key);
   Stream<Setting?> watchSetting(String key);
   Future<List<Setting>> readAllSettings();
+
+  // peers
+  Future setPeers(List<PeerWithChannels> peersWithChannels);
+  Stream<List<PeerWithChannels>> watchPeers();
 }

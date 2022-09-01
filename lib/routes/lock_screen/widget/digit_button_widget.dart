@@ -51,7 +51,7 @@ void main() {
     10,
     (index) => DigitButtonWidget(
       digit: "$index",
-      onPressed: (digit) => print("Digit: $digit"),
+      onPressed: (digit) => debugPrint("Digit: $digit"),
     ),
   )));
 }

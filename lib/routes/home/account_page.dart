@@ -77,7 +77,13 @@ class AccountPage extends StatelessWidget {
     final bool showSliver = payments.isNotEmpty || !payment.filter.allowAll();
 
     if (showSliver) {
-      slivers.add(const PaymentsFilterSliver(_kFilterMaxSize));
+      slivers.add(
+        PaymentsFilterSliver(
+          maxSize: _kFilterMaxSize,
+          scrollController: scrollController,
+          hasFilter: !payment.filter.allowAll(),
+        ),
+      );
     }
 
     final paymentTypes = payment.filter.paymentType;

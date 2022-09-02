@@ -3,33 +3,66 @@ import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter.dart
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 
-class PaymentsFilterSliver extends StatelessWidget {
-  final double _size;
+class PaymentsFilterSliver extends StatefulWidget {
+  final double maxSize;
+  final bool hasFilter;
+  final ScrollController scrollController;
 
-  const PaymentsFilterSliver(
-    this._size, {
+  const PaymentsFilterSliver({
     Key? key,
+    required this.maxSize,
+    required this.hasFilter,
+    required this.scrollController,
   }) : super(key: key);
+
+  @override
+  State<PaymentsFilterSliver> createState() => _PaymentsFilterSliverState();
+}
+
+class _PaymentsFilterSliverState extends State<PaymentsFilterSliver> {
+  @override
+  void initState() {
+    super.initState();
+    widget.scrollController.addListener(onScroll);
+  }
+
+  @override
+  void dispose() {
+    widget.scrollController.removeListener(onScroll);
+    super.dispose();
+  }
+
+  void onScroll() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
     final customData = theme.customData[theme.themeId]!;
+    final scrollOffset = widget.scrollController.position.pixels;
 
     return SliverPersistentHeader(
       pinned: true,
       delegate: FixedSliverDelegate(
-        _size,
+        widget.hasFilter
+            ? widget.maxSize
+            : scrollOffset.clamp(
+                0,
+                widget.maxSize,
+              ),
         builder: (context, height, overlapContent) {
           return Container(
-            color: theme.themeId == "BLUE" ? themeData.backgroundColor : themeData.canvasColor,
+            color: theme.themeId == "BLUE"
+                ? themeData.backgroundColor
+                : themeData.canvasColor,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Container(
                   color: customData.paymentListBgColor,
-                  height: _size,
+                  height: widget.maxSize,
                   child: const PaymentsFilter(),
                 ),
               ),

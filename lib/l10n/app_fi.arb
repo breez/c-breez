@@ -781,6 +781,7 @@
   "security_and_backup_enable_biometric_option_face_id": "Ota kasvontunnistus käyttöön",
   "security_and_backup_enable_biometric_option_fingerprint": "Käytä sormenjälkeä",
   "security_and_backup_enable_biometric_option_touch_id": "Ota sormenjälkitunnistus käyttöön",
+  "security_and_backup_enable_biometric_option_other": "Enable Biometric",
   "security_and_backup_enable_biometric_option_none": "",
   "security_and_backup_validate_biometrics_reason": "Tämä asetus edellyttää tunnistautumista",
   "security_and_backup_pin_option_create": "Luo PIN-koodi",

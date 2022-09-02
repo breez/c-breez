@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/security/change_pin_page.dart';
+import 'package:c_breez/routes/security/widget/local_auth_switch.dart';
 import 'package:c_breez/routes/security/widget/security_pin_interval.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -23,6 +24,7 @@ class SecurityPinManagement extends StatelessWidget {
     final texts = context.texts();
     final themeData = Theme.of(context);
     final navigator = Navigator.of(context);
+    final securityBloc = context.read<SecurityBloc>();
 
     return BlocBuilder<SecurityBloc, SecurityState>(
       builder: (context, state) {
@@ -41,7 +43,7 @@ class SecurityPinManagement extends StatelessWidget {
                   value: true,
                   activeColor: Colors.white,
                   onChanged: (bool value) {
-                    context.read<SecurityBloc>().clearPin();
+                    securityBloc.clearPin();
                   },
                 ),
               ),
@@ -63,7 +65,7 @@ class SecurityPinManagement extends StatelessWidget {
                 ),
                 onTap: () => navigator.push(FadeInRoute(builder: (_) => const ChangePinPage())),
               ),
-              // TODO: add fingerprint/face option
+              const LocalAuthSwitch(),
             ],
           );
         } else {

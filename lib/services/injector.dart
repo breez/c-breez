@@ -4,7 +4,6 @@ import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
-import 'package:c_breez/services/local_auth_service.dart';
 import 'package:c_breez/services/notifications.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:http/http.dart';
@@ -32,7 +31,6 @@ class ServiceInjector {
   Future<SharedPreferences>? _sharedPreferences =
       SharedPreferences.getInstance();
   BackgroundTaskService? _backgroundTaskService;
-  LocalAuthenticationService? _localAuthService;
   breez_sdk.Storage? _appStorage;
   KeyChain? _keychain;
   Client? _client;
@@ -89,10 +87,6 @@ class ServiceInjector {
 
   BackgroundTaskService get backgroundTaskService {
     return _backgroundTaskService ??= BackgroundTaskService();
-  }
-
-  LocalAuthenticationService get localAuthService {
-    return _localAuthService ??= LocalAuthenticationService();
   }
 
   Client get client {

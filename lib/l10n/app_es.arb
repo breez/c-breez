@@ -781,6 +781,7 @@
   "security_and_backup_enable_biometric_option_face_id": "Habilitar Face ID",
   "security_and_backup_enable_biometric_option_fingerprint": "Habilitar Huella Digital",
   "security_and_backup_enable_biometric_option_touch_id": "Habilitar Touch ID",
+  "security_and_backup_enable_biometric_option_other": "Habilitar Biometria",
   "security_and_backup_enable_biometric_option_none": "",
   "security_and_backup_validate_biometrics_reason": "Autenticarse para habilitar esta opción",
   "security_and_backup_pin_option_create": "Crear PIN",

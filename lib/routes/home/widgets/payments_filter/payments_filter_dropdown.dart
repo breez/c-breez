@@ -16,6 +16,9 @@ class PaymentsFilterDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
+    final foregroundColor = theme.themeId == "BLUE"
+        ? Colors.black
+        : themeData.colorScheme.onSecondary;
 
     return Theme(
       data: themeData.copyWith(
@@ -25,10 +28,10 @@ class PaymentsFilterDropdown extends StatelessWidget {
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton(
-            iconEnabledColor: themeData.colorScheme.onSecondary,
             value: filter,
+            iconEnabledColor: foregroundColor,
             style: themeData.textTheme.subtitle2?.copyWith(
-              color: themeData.colorScheme.onSecondary,
+              color: foregroundColor,
             ),
             items: [
               texts.payments_filter_option_all,
@@ -41,7 +44,7 @@ class PaymentsFilterDropdown extends StatelessWidget {
                   child: Text(
                     value,
                     style: themeData.textTheme.subtitle2?.copyWith(
-                      color: themeData.colorScheme.onSecondary,
+                      color: foregroundColor,
                     ),
                   ),
                 ),

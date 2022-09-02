@@ -1,7 +1,7 @@
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +29,9 @@ class PaymentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
+    final foregroundColor = theme.themeId == "BLUE"
+        ? Colors.black
+        : themeData.colorScheme.onSecondary;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
@@ -63,7 +66,7 @@ class PaymentItem extends StatelessWidget {
                   child: Text(
                     _paymentInfo.shortTitle,
                     style: themeData.textTheme.subtitle2?.copyWith(
-                      color: themeData.colorScheme.onSecondary,
+                      color: foregroundColor,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -82,7 +85,7 @@ class PaymentItem extends StatelessWidget {
                           ),
                         ),
                         style: themeData.textTheme.caption?.copyWith(
-                          color: themeData.colorScheme.onSecondary,
+                          color: foregroundColor,
                         ),
                       ),
                       _pendingSuffix(context),
@@ -136,6 +139,10 @@ class PaymentItem extends StatelessWidget {
   ) {
     final texts = context.texts();
     final themeData = Theme.of(context);
+    final foregroundColor = theme.themeId == "BLUE"
+        ? Colors.black
+        : themeData.colorScheme.onSecondary;
+
     final amount = currencyState.bitcoinCurrency.format(
       _paymentInfo.amountSat,
       includeDisplayName: false,
@@ -148,7 +155,7 @@ class PaymentItem extends StatelessWidget {
               ? texts.wallet_dashboard_payment_item_balance_positive(amount)
               : texts.wallet_dashboard_payment_item_balance_negative(amount),
       style: themeData.textTheme.headline6?.copyWith(
-        color: themeData.colorScheme.onSecondary,
+        color: foregroundColor,
       ),
     );
   }
@@ -159,6 +166,9 @@ class PaymentItem extends StatelessWidget {
   ) {
     final texts = context.texts();
     final themeData = Theme.of(context);
+    final foregroundColor = theme.themeId == "BLUE"
+        ? Colors.black
+        : themeData.colorScheme.onSecondary;
 
     final fee = _paymentInfo.feeSat;
     if (fee == 0 || _paymentInfo.pending) return const SizedBox();
@@ -172,7 +182,7 @@ class PaymentItem extends StatelessWidget {
           ? texts.wallet_dashboard_payment_item_balance_hide
           : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
       style: themeData.textTheme.caption?.copyWith(
-        color: themeData.colorScheme.onSecondary,
+        color: foregroundColor,
       ),
     );
   }

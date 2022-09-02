@@ -3,6 +3,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/home/widgets/payments_filter/calendar_dialog.dart';
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -29,7 +30,9 @@ class PaymentsFilterCalendar extends StatelessWidget {
           child: IconButton(
             icon: SvgPicture.asset(
               "src/icon/calendar.svg",
-              color: themeData.colorScheme.onSecondary,
+              color: theme.themeId == "BLUE"
+                  ? Colors.black
+                  : themeData.colorScheme.onSecondary,
               width: 24.0,
               height: 24.0,
             ),

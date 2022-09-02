@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:c_breez/routes/lock_screen/widget/digit_masked_widget.dart';
-import 'package:c_breez/routes/lock_screen/widget/num_pad_widget.dart';
+import 'package:c_breez/routes/security/widget/digit_masked_widget.dart';
+import 'package:c_breez/routes/security/widget/num_pad_widget.dart';
 import 'package:c_breez/services/local_auth_service.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:c_breez/widgets/shake_widget.dart';

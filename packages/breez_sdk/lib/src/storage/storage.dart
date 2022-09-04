@@ -30,7 +30,6 @@ abstract class Storage {
   Stream<Setting?> watchSetting(String key);
   Future<List<Setting>> readAllSettings();
 
-  // peers
-  Future setPeers(List<PeerWithChannels> peersWithChannels);
-  Stream<List<PeerWithChannels>> watchPeers();
+  Future<List<Utxo>> listUtxos();
+  Future updateUtxos(List<Utxo> updatedUtxos);
 }

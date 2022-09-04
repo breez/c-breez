@@ -3388,6 +3388,295 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
   }
 }
 
+class Utxo extends DataClass implements Insertable<Utxo> {
+  final int id;
+  final String txid;
+  final bool confirmed;
+  final String spentTxid;
+  final bool spentConfirmed;
+  const Utxo(
+      {required this.id,
+      required this.txid,
+      required this.confirmed,
+      required this.spentTxid,
+      required this.spentConfirmed});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['txid'] = Variable<String>(txid);
+    map['confirmed'] = Variable<bool>(confirmed);
+    map['spent_txid'] = Variable<String>(spentTxid);
+    map['spent_confirmed'] = Variable<bool>(spentConfirmed);
+    return map;
+  }
+
+  UtxosCompanion toCompanion(bool nullToAbsent) {
+    return UtxosCompanion(
+      id: Value(id),
+      txid: Value(txid),
+      confirmed: Value(confirmed),
+      spentTxid: Value(spentTxid),
+      spentConfirmed: Value(spentConfirmed),
+    );
+  }
+
+  factory Utxo.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Utxo(
+      id: serializer.fromJson<int>(json['id']),
+      txid: serializer.fromJson<String>(json['txid']),
+      confirmed: serializer.fromJson<bool>(json['confirmed']),
+      spentTxid: serializer.fromJson<String>(json['spentTxid']),
+      spentConfirmed: serializer.fromJson<bool>(json['spentConfirmed']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'txid': serializer.toJson<String>(txid),
+      'confirmed': serializer.toJson<bool>(confirmed),
+      'spentTxid': serializer.toJson<String>(spentTxid),
+      'spentConfirmed': serializer.toJson<bool>(spentConfirmed),
+    };
+  }
+
+  Utxo copyWith(
+          {int? id,
+          String? txid,
+          bool? confirmed,
+          String? spentTxid,
+          bool? spentConfirmed}) =>
+      Utxo(
+        id: id ?? this.id,
+        txid: txid ?? this.txid,
+        confirmed: confirmed ?? this.confirmed,
+        spentTxid: spentTxid ?? this.spentTxid,
+        spentConfirmed: spentConfirmed ?? this.spentConfirmed,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Utxo(')
+          ..write('id: $id, ')
+          ..write('txid: $txid, ')
+          ..write('confirmed: $confirmed, ')
+          ..write('spentTxid: $spentTxid, ')
+          ..write('spentConfirmed: $spentConfirmed')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, txid, confirmed, spentTxid, spentConfirmed);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Utxo &&
+          other.id == this.id &&
+          other.txid == this.txid &&
+          other.confirmed == this.confirmed &&
+          other.spentTxid == this.spentTxid &&
+          other.spentConfirmed == this.spentConfirmed);
+}
+
+class UtxosCompanion extends UpdateCompanion<Utxo> {
+  final Value<int> id;
+  final Value<String> txid;
+  final Value<bool> confirmed;
+  final Value<String> spentTxid;
+  final Value<bool> spentConfirmed;
+  const UtxosCompanion({
+    this.id = const Value.absent(),
+    this.txid = const Value.absent(),
+    this.confirmed = const Value.absent(),
+    this.spentTxid = const Value.absent(),
+    this.spentConfirmed = const Value.absent(),
+  });
+  UtxosCompanion.insert({
+    this.id = const Value.absent(),
+    required String txid,
+    required bool confirmed,
+    required String spentTxid,
+    required bool spentConfirmed,
+  })  : txid = Value(txid),
+        confirmed = Value(confirmed),
+        spentTxid = Value(spentTxid),
+        spentConfirmed = Value(spentConfirmed);
+  static Insertable<Utxo> custom({
+    Expression<int>? id,
+    Expression<String>? txid,
+    Expression<bool>? confirmed,
+    Expression<String>? spentTxid,
+    Expression<bool>? spentConfirmed,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (txid != null) 'txid': txid,
+      if (confirmed != null) 'confirmed': confirmed,
+      if (spentTxid != null) 'spent_txid': spentTxid,
+      if (spentConfirmed != null) 'spent_confirmed': spentConfirmed,
+    });
+  }
+
+  UtxosCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? txid,
+      Value<bool>? confirmed,
+      Value<String>? spentTxid,
+      Value<bool>? spentConfirmed}) {
+    return UtxosCompanion(
+      id: id ?? this.id,
+      txid: txid ?? this.txid,
+      confirmed: confirmed ?? this.confirmed,
+      spentTxid: spentTxid ?? this.spentTxid,
+      spentConfirmed: spentConfirmed ?? this.spentConfirmed,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (txid.present) {
+      map['txid'] = Variable<String>(txid.value);
+    }
+    if (confirmed.present) {
+      map['confirmed'] = Variable<bool>(confirmed.value);
+    }
+    if (spentTxid.present) {
+      map['spent_txid'] = Variable<String>(spentTxid.value);
+    }
+    if (spentConfirmed.present) {
+      map['spent_confirmed'] = Variable<bool>(spentConfirmed.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UtxosCompanion(')
+          ..write('id: $id, ')
+          ..write('txid: $txid, ')
+          ..write('confirmed: $confirmed, ')
+          ..write('spentTxid: $spentTxid, ')
+          ..write('spentConfirmed: $spentConfirmed')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UtxosTable extends Utxos with TableInfo<$UtxosTable, Utxo> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UtxosTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  final VerificationMeta _txidMeta = const VerificationMeta('txid');
+  @override
+  late final GeneratedColumn<String> txid = GeneratedColumn<String>(
+      'txid', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _confirmedMeta = const VerificationMeta('confirmed');
+  @override
+  late final GeneratedColumn<bool> confirmed = GeneratedColumn<bool>(
+      'confirmed', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (confirmed IN (0, 1))');
+  final VerificationMeta _spentTxidMeta = const VerificationMeta('spentTxid');
+  @override
+  late final GeneratedColumn<String> spentTxid = GeneratedColumn<String>(
+      'spent_txid', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _spentConfirmedMeta =
+      const VerificationMeta('spentConfirmed');
+  @override
+  late final GeneratedColumn<bool> spentConfirmed = GeneratedColumn<bool>(
+      'spent_confirmed', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints: 'CHECK (spent_confirmed IN (0, 1))');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, txid, confirmed, spentTxid, spentConfirmed];
+  @override
+  String get aliasedName => _alias ?? 'utxos';
+  @override
+  String get actualTableName => 'utxos';
+  @override
+  VerificationContext validateIntegrity(Insertable<Utxo> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('txid')) {
+      context.handle(
+          _txidMeta, txid.isAcceptableOrUnknown(data['txid']!, _txidMeta));
+    } else if (isInserting) {
+      context.missing(_txidMeta);
+    }
+    if (data.containsKey('confirmed')) {
+      context.handle(_confirmedMeta,
+          confirmed.isAcceptableOrUnknown(data['confirmed']!, _confirmedMeta));
+    } else if (isInserting) {
+      context.missing(_confirmedMeta);
+    }
+    if (data.containsKey('spent_txid')) {
+      context.handle(_spentTxidMeta,
+          spentTxid.isAcceptableOrUnknown(data['spent_txid']!, _spentTxidMeta));
+    } else if (isInserting) {
+      context.missing(_spentTxidMeta);
+    }
+    if (data.containsKey('spent_confirmed')) {
+      context.handle(
+          _spentConfirmedMeta,
+          spentConfirmed.isAcceptableOrUnknown(
+              data['spent_confirmed']!, _spentConfirmedMeta));
+    } else if (isInserting) {
+      context.missing(_spentConfirmedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Utxo map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Utxo(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      txid: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}txid'])!,
+      confirmed: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}confirmed'])!,
+      spentTxid: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}spent_txid'])!,
+      spentConfirmed: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}spent_confirmed'])!,
+    );
+  }
+
+  @override
+  $UtxosTable createAlias(String alias) {
+    return $UtxosTable(attachedDatabase, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $NodeStatesTable nodeStates = $NodeStatesTable(this);
@@ -3399,8 +3688,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ChannelsTable channels = $ChannelsTable(this);
   late final $HtlcsTable htlcs = $HtlcsTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
+  late final $UtxosTable utxos = $UtxosTable(this);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDatabase);
   late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
+  late final UtxosDao utxosDao = UtxosDao(this as AppDatabase);
   late final PeersDao peersDao = PeersDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, dynamic>> get allTables =>
@@ -3414,6 +3705,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         peers,
         channels,
         htlcs,
-        settings
+        settings,
+        utxos
       ];
 }

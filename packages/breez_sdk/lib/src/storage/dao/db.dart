@@ -1,13 +1,13 @@
 import 'dart:io';
-
+import 'package:breez_sdk/src/storage/dao/utxos_dao.dart';
+import 'package:breez_sdk/src/storage/storage.dart';
 import 'package:breez_sdk/src/storage/dao/payments_dao.dart';
 import 'package:breez_sdk/src/storage/dao/peers_dao.dart';
 import 'package:breez_sdk/src/storage/dao/settings_dao.dart';
-import 'package:breez_sdk/src/storage/storage.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 part 'db.g.dart';
 
@@ -123,6 +123,16 @@ class Settings extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+class Utxos extends Table {  
+  TextColumn get txid => text()();
+  IntColumn get outnum => integer()();
+  BoolColumn get confirmed => boolean()();  
+  TextColumn get spentTxid => text()();
+  BoolColumn get spentConfirmed => boolean()();
+  @override
+  Set<Column> get primaryKey => {txid, outnum};
+}
+
 LazyDatabase _openConnection() {
   // the LazyDatabase util lets us find the right location for the file async.
   return LazyDatabase(() async {
@@ -140,11 +150,12 @@ LazyDatabase _openConnection() {
   Htlcs,
   Channels,
   Peers,
-  Settings
+  Settings,
+  Utxos,
 ], daos: [  
   PaymentsDao,
-  SettingsDao,
-  PeersDao,  
+  SettingsDao,  
+  UtxosDao,
 ])
 class AppDatabase extends _$AppDatabase implements Storage {
   // we tell the database where to store the data with this constructor
@@ -258,5 +269,15 @@ class AppDatabase extends _$AppDatabase implements Storage {
   @override
   Future<List<Setting>> readAllSettings() {
     return settingsDao.readAllSettings();
+  }
+
+  @override
+  Future updateUtxos(List<Utxo> updatedUtxos) {
+    return utxosDao.updateUtxos(updatedUtxos);
+  }
+
+  @override
+  Future<List<Utxo>> listUtxos() {
+    return utxosDao.listUtxos();
   }
 }

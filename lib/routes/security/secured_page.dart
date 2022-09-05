@@ -18,45 +18,61 @@ class SecuredPage<T> extends StatefulWidget {
 }
 
 class _SecuredPageState<T> extends State<SecuredPage<T>> {
-  bool _securedPageAllowed = false;
+  bool _allowed = false;
 
   @override
   Widget build(BuildContext context) {
-    return _securedPageAllowed
-        ? widget.securedWidget
-        : BlocBuilder<SecurityBloc, SecurityState>(
-            builder: (context, state) {
-              if (state.pinStatus == PinStatus.enabled) {
-                final texts = context.texts();
-                return Scaffold(
-                  appBar: AppBar(
-                    key: GlobalKey<ScaffoldState>(),
-                  ),
-                  body: PinCodeWidget(
-                    label: texts.lock_screen_enter_pin,
-                    testPinCodeFunction: (pin) async {
-                      bool pinMatches = false;
-                      try {
-                        pinMatches = await context.read<SecurityBloc>().testPin(pin);
-                      } catch (e) {
-                        return TestPinResult(false, errorMessage: texts.lock_screen_pin_match_exception);
-                      }
-                      if (pinMatches) {
-                        setState(() {
-                          _securedPageAllowed = true;
-                        });
-                        return const TestPinResult(true);
-                      } else {
-                        return TestPinResult(false, errorMessage: texts.lock_screen_pin_incorrect);
-                      }
-                    },
-                  ),
-                );
-              } else {
-                _securedPageAllowed = true;
-                return widget.securedWidget;
-              }
-            },
-          );
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 500),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+      child: _allowed
+          ? widget.securedWidget
+          : BlocBuilder<SecurityBloc, SecurityState>(
+              key: ValueKey(DateTime.now().millisecondsSinceEpoch),
+              builder: (context, state) {
+                if (state.pinStatus == PinStatus.enabled && !_allowed) {
+                  final texts = context.texts();
+                  return Scaffold(
+                    appBar: AppBar(
+                      key: GlobalKey<ScaffoldState>(),
+                    ),
+                    body: PinCodeWidget(
+                      label: texts.lock_screen_enter_pin,
+                      testPinCodeFunction: (pin) async {
+                        bool pinMatches = false;
+                        try {
+                          pinMatches = await context.read<SecurityBloc>().testPin(pin);
+                        } catch (e) {
+                          return TestPinResult(
+                            false,
+                            errorMessage: texts.lock_screen_pin_match_exception,
+                          );
+                        }
+                        if (pinMatches) {
+                          setState(() {
+                            _allowed = true;
+                          });
+                          return const TestPinResult(true);
+                        } else {
+                          return TestPinResult(
+                            false,
+                            errorMessage: texts.lock_screen_pin_incorrect,
+                          );
+                        }
+                      },
+                    ),
+                  );
+                } else {
+                  _allowed = true;
+                  return widget.securedWidget;
+                }
+              },
+            ),
+    );
   }
 }

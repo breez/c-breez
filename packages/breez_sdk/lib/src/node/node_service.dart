@@ -95,7 +95,7 @@ class LightningNode {
             amountMsat: Int64(invoice.receivedMsat),
             feeMsat: Int64.ZERO,
             destination: nodeState!.nodeID,
-            shortTitle: "",
+            shortTitle:  invoice.description,
             creationTimestamp: Int64(invoice.paymentTime),
             pending: false,
             keySend: false,

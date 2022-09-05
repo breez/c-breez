@@ -920,6 +920,7 @@ class Invoice extends DataClass implements Insertable<Invoice> {
   final String bolt11;
   final String paymentPreimage;
   final String paymentHash;
+  final String description;
   const Invoice(
       {required this.label,
       required this.amountMsat,
@@ -929,7 +930,8 @@ class Invoice extends DataClass implements Insertable<Invoice> {
       required this.expiryTime,
       required this.bolt11,
       required this.paymentPreimage,
-      required this.paymentHash});
+      required this.paymentHash,
+      required this.description});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -942,6 +944,7 @@ class Invoice extends DataClass implements Insertable<Invoice> {
     map['bolt11'] = Variable<String>(bolt11);
     map['payment_preimage'] = Variable<String>(paymentPreimage);
     map['payment_hash'] = Variable<String>(paymentHash);
+    map['description'] = Variable<String>(description);
     return map;
   }
 
@@ -956,6 +959,7 @@ class Invoice extends DataClass implements Insertable<Invoice> {
       bolt11: Value(bolt11),
       paymentPreimage: Value(paymentPreimage),
       paymentHash: Value(paymentHash),
+      description: Value(description),
     );
   }
 
@@ -972,6 +976,7 @@ class Invoice extends DataClass implements Insertable<Invoice> {
       bolt11: serializer.fromJson<String>(json['bolt11']),
       paymentPreimage: serializer.fromJson<String>(json['paymentPreimage']),
       paymentHash: serializer.fromJson<String>(json['paymentHash']),
+      description: serializer.fromJson<String>(json['description']),
     );
   }
   @override
@@ -987,6 +992,7 @@ class Invoice extends DataClass implements Insertable<Invoice> {
       'bolt11': serializer.toJson<String>(bolt11),
       'paymentPreimage': serializer.toJson<String>(paymentPreimage),
       'paymentHash': serializer.toJson<String>(paymentHash),
+      'description': serializer.toJson<String>(description),
     };
   }
 
@@ -999,7 +1005,8 @@ class Invoice extends DataClass implements Insertable<Invoice> {
           int? expiryTime,
           String? bolt11,
           String? paymentPreimage,
-          String? paymentHash}) =>
+          String? paymentHash,
+          String? description}) =>
       Invoice(
         label: label ?? this.label,
         amountMsat: amountMsat ?? this.amountMsat,
@@ -1010,6 +1017,7 @@ class Invoice extends DataClass implements Insertable<Invoice> {
         bolt11: bolt11 ?? this.bolt11,
         paymentPreimage: paymentPreimage ?? this.paymentPreimage,
         paymentHash: paymentHash ?? this.paymentHash,
+        description: description ?? this.description,
       );
   @override
   String toString() {
@@ -1022,14 +1030,24 @@ class Invoice extends DataClass implements Insertable<Invoice> {
           ..write('expiryTime: $expiryTime, ')
           ..write('bolt11: $bolt11, ')
           ..write('paymentPreimage: $paymentPreimage, ')
-          ..write('paymentHash: $paymentHash')
+          ..write('paymentHash: $paymentHash, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(label, amountMsat, receivedMsat, status,
-      paymentTime, expiryTime, bolt11, paymentPreimage, paymentHash);
+  int get hashCode => Object.hash(
+      label,
+      amountMsat,
+      receivedMsat,
+      status,
+      paymentTime,
+      expiryTime,
+      bolt11,
+      paymentPreimage,
+      paymentHash,
+      description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1042,7 +1060,8 @@ class Invoice extends DataClass implements Insertable<Invoice> {
           other.expiryTime == this.expiryTime &&
           other.bolt11 == this.bolt11 &&
           other.paymentPreimage == this.paymentPreimage &&
-          other.paymentHash == this.paymentHash);
+          other.paymentHash == this.paymentHash &&
+          other.description == this.description);
 }
 
 class InvoicesCompanion extends UpdateCompanion<Invoice> {
@@ -1055,6 +1074,7 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
   final Value<String> bolt11;
   final Value<String> paymentPreimage;
   final Value<String> paymentHash;
+  final Value<String> description;
   const InvoicesCompanion({
     this.label = const Value.absent(),
     this.amountMsat = const Value.absent(),
@@ -1065,6 +1085,7 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
     this.bolt11 = const Value.absent(),
     this.paymentPreimage = const Value.absent(),
     this.paymentHash = const Value.absent(),
+    this.description = const Value.absent(),
   });
   InvoicesCompanion.insert({
     required String label,
@@ -1076,6 +1097,7 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
     required String bolt11,
     required String paymentPreimage,
     required String paymentHash,
+    required String description,
   })  : label = Value(label),
         amountMsat = Value(amountMsat),
         receivedMsat = Value(receivedMsat),
@@ -1084,7 +1106,8 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
         expiryTime = Value(expiryTime),
         bolt11 = Value(bolt11),
         paymentPreimage = Value(paymentPreimage),
-        paymentHash = Value(paymentHash);
+        paymentHash = Value(paymentHash),
+        description = Value(description);
   static Insertable<Invoice> custom({
     Expression<String>? label,
     Expression<int>? amountMsat,
@@ -1095,6 +1118,7 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
     Expression<String>? bolt11,
     Expression<String>? paymentPreimage,
     Expression<String>? paymentHash,
+    Expression<String>? description,
   }) {
     return RawValuesInsertable({
       if (label != null) 'label': label,
@@ -1106,6 +1130,7 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
       if (bolt11 != null) 'bolt11': bolt11,
       if (paymentPreimage != null) 'payment_preimage': paymentPreimage,
       if (paymentHash != null) 'payment_hash': paymentHash,
+      if (description != null) 'description': description,
     });
   }
 
@@ -1118,7 +1143,8 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
       Value<int>? expiryTime,
       Value<String>? bolt11,
       Value<String>? paymentPreimage,
-      Value<String>? paymentHash}) {
+      Value<String>? paymentHash,
+      Value<String>? description}) {
     return InvoicesCompanion(
       label: label ?? this.label,
       amountMsat: amountMsat ?? this.amountMsat,
@@ -1129,6 +1155,7 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
       bolt11: bolt11 ?? this.bolt11,
       paymentPreimage: paymentPreimage ?? this.paymentPreimage,
       paymentHash: paymentHash ?? this.paymentHash,
+      description: description ?? this.description,
     );
   }
 
@@ -1162,6 +1189,9 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
     if (paymentHash.present) {
       map['payment_hash'] = Variable<String>(paymentHash.value);
     }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
     return map;
   }
 
@@ -1176,7 +1206,8 @@ class InvoicesCompanion extends UpdateCompanion<Invoice> {
           ..write('expiryTime: $expiryTime, ')
           ..write('bolt11: $bolt11, ')
           ..write('paymentPreimage: $paymentPreimage, ')
-          ..write('paymentHash: $paymentHash')
+          ..write('paymentHash: $paymentHash, ')
+          ..write('description: $description')
           ..write(')'))
         .toString();
   }
@@ -1236,6 +1267,12 @@ class $InvoicesTable extends Invoices with TableInfo<$InvoicesTable, Invoice> {
   late final GeneratedColumn<String> paymentHash = GeneratedColumn<String>(
       'payment_hash', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         label,
@@ -1246,7 +1283,8 @@ class $InvoicesTable extends Invoices with TableInfo<$InvoicesTable, Invoice> {
         expiryTime,
         bolt11,
         paymentPreimage,
-        paymentHash
+        paymentHash,
+        description
       ];
   @override
   String get aliasedName => _alias ?? 'invoices';
@@ -1323,6 +1361,14 @@ class $InvoicesTable extends Invoices with TableInfo<$InvoicesTable, Invoice> {
     } else if (isInserting) {
       context.missing(_paymentHashMeta);
     }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
     return context;
   }
 
@@ -1350,6 +1396,8 @@ class $InvoicesTable extends Invoices with TableInfo<$InvoicesTable, Invoice> {
           DriftSqlType.string, data['${effectivePrefix}payment_preimage'])!,
       paymentHash: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}payment_hash'])!,
+      description: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
     );
   }
 
@@ -3389,22 +3437,22 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
 }
 
 class Utxo extends DataClass implements Insertable<Utxo> {
-  final int id;
   final String txid;
+  final int outnum;
   final bool confirmed;
   final String spentTxid;
   final bool spentConfirmed;
   const Utxo(
-      {required this.id,
-      required this.txid,
+      {required this.txid,
+      required this.outnum,
       required this.confirmed,
       required this.spentTxid,
       required this.spentConfirmed});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
     map['txid'] = Variable<String>(txid);
+    map['outnum'] = Variable<int>(outnum);
     map['confirmed'] = Variable<bool>(confirmed);
     map['spent_txid'] = Variable<String>(spentTxid);
     map['spent_confirmed'] = Variable<bool>(spentConfirmed);
@@ -3413,8 +3461,8 @@ class Utxo extends DataClass implements Insertable<Utxo> {
 
   UtxosCompanion toCompanion(bool nullToAbsent) {
     return UtxosCompanion(
-      id: Value(id),
       txid: Value(txid),
+      outnum: Value(outnum),
       confirmed: Value(confirmed),
       spentTxid: Value(spentTxid),
       spentConfirmed: Value(spentConfirmed),
@@ -3425,8 +3473,8 @@ class Utxo extends DataClass implements Insertable<Utxo> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Utxo(
-      id: serializer.fromJson<int>(json['id']),
       txid: serializer.fromJson<String>(json['txid']),
+      outnum: serializer.fromJson<int>(json['outnum']),
       confirmed: serializer.fromJson<bool>(json['confirmed']),
       spentTxid: serializer.fromJson<String>(json['spentTxid']),
       spentConfirmed: serializer.fromJson<bool>(json['spentConfirmed']),
@@ -3436,8 +3484,8 @@ class Utxo extends DataClass implements Insertable<Utxo> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
       'txid': serializer.toJson<String>(txid),
+      'outnum': serializer.toJson<int>(outnum),
       'confirmed': serializer.toJson<bool>(confirmed),
       'spentTxid': serializer.toJson<String>(spentTxid),
       'spentConfirmed': serializer.toJson<bool>(spentConfirmed),
@@ -3445,14 +3493,14 @@ class Utxo extends DataClass implements Insertable<Utxo> {
   }
 
   Utxo copyWith(
-          {int? id,
-          String? txid,
+          {String? txid,
+          int? outnum,
           bool? confirmed,
           String? spentTxid,
           bool? spentConfirmed}) =>
       Utxo(
-        id: id ?? this.id,
         txid: txid ?? this.txid,
+        outnum: outnum ?? this.outnum,
         confirmed: confirmed ?? this.confirmed,
         spentTxid: spentTxid ?? this.spentTxid,
         spentConfirmed: spentConfirmed ?? this.spentConfirmed,
@@ -3460,8 +3508,8 @@ class Utxo extends DataClass implements Insertable<Utxo> {
   @override
   String toString() {
     return (StringBuffer('Utxo(')
-          ..write('id: $id, ')
           ..write('txid: $txid, ')
+          ..write('outnum: $outnum, ')
           ..write('confirmed: $confirmed, ')
           ..write('spentTxid: $spentTxid, ')
           ..write('spentConfirmed: $spentConfirmed')
@@ -3471,51 +3519,52 @@ class Utxo extends DataClass implements Insertable<Utxo> {
 
   @override
   int get hashCode =>
-      Object.hash(id, txid, confirmed, spentTxid, spentConfirmed);
+      Object.hash(txid, outnum, confirmed, spentTxid, spentConfirmed);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Utxo &&
-          other.id == this.id &&
           other.txid == this.txid &&
+          other.outnum == this.outnum &&
           other.confirmed == this.confirmed &&
           other.spentTxid == this.spentTxid &&
           other.spentConfirmed == this.spentConfirmed);
 }
 
 class UtxosCompanion extends UpdateCompanion<Utxo> {
-  final Value<int> id;
   final Value<String> txid;
+  final Value<int> outnum;
   final Value<bool> confirmed;
   final Value<String> spentTxid;
   final Value<bool> spentConfirmed;
   const UtxosCompanion({
-    this.id = const Value.absent(),
     this.txid = const Value.absent(),
+    this.outnum = const Value.absent(),
     this.confirmed = const Value.absent(),
     this.spentTxid = const Value.absent(),
     this.spentConfirmed = const Value.absent(),
   });
   UtxosCompanion.insert({
-    this.id = const Value.absent(),
     required String txid,
+    required int outnum,
     required bool confirmed,
     required String spentTxid,
     required bool spentConfirmed,
   })  : txid = Value(txid),
+        outnum = Value(outnum),
         confirmed = Value(confirmed),
         spentTxid = Value(spentTxid),
         spentConfirmed = Value(spentConfirmed);
   static Insertable<Utxo> custom({
-    Expression<int>? id,
     Expression<String>? txid,
+    Expression<int>? outnum,
     Expression<bool>? confirmed,
     Expression<String>? spentTxid,
     Expression<bool>? spentConfirmed,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
       if (txid != null) 'txid': txid,
+      if (outnum != null) 'outnum': outnum,
       if (confirmed != null) 'confirmed': confirmed,
       if (spentTxid != null) 'spent_txid': spentTxid,
       if (spentConfirmed != null) 'spent_confirmed': spentConfirmed,
@@ -3523,14 +3572,14 @@ class UtxosCompanion extends UpdateCompanion<Utxo> {
   }
 
   UtxosCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? txid,
+      {Value<String>? txid,
+      Value<int>? outnum,
       Value<bool>? confirmed,
       Value<String>? spentTxid,
       Value<bool>? spentConfirmed}) {
     return UtxosCompanion(
-      id: id ?? this.id,
       txid: txid ?? this.txid,
+      outnum: outnum ?? this.outnum,
       confirmed: confirmed ?? this.confirmed,
       spentTxid: spentTxid ?? this.spentTxid,
       spentConfirmed: spentConfirmed ?? this.spentConfirmed,
@@ -3540,11 +3589,11 @@ class UtxosCompanion extends UpdateCompanion<Utxo> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
     if (txid.present) {
       map['txid'] = Variable<String>(txid.value);
+    }
+    if (outnum.present) {
+      map['outnum'] = Variable<int>(outnum.value);
     }
     if (confirmed.present) {
       map['confirmed'] = Variable<bool>(confirmed.value);
@@ -3561,8 +3610,8 @@ class UtxosCompanion extends UpdateCompanion<Utxo> {
   @override
   String toString() {
     return (StringBuffer('UtxosCompanion(')
-          ..write('id: $id, ')
           ..write('txid: $txid, ')
+          ..write('outnum: $outnum, ')
           ..write('confirmed: $confirmed, ')
           ..write('spentTxid: $spentTxid, ')
           ..write('spentConfirmed: $spentConfirmed')
@@ -3576,18 +3625,16 @@ class $UtxosTable extends Utxos with TableInfo<$UtxosTable, Utxo> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $UtxosTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _txidMeta = const VerificationMeta('txid');
   @override
   late final GeneratedColumn<String> txid = GeneratedColumn<String>(
       'txid', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _outnumMeta = const VerificationMeta('outnum');
+  @override
+  late final GeneratedColumn<int> outnum = GeneratedColumn<int>(
+      'outnum', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _confirmedMeta = const VerificationMeta('confirmed');
   @override
   late final GeneratedColumn<bool> confirmed = GeneratedColumn<bool>(
@@ -3610,7 +3657,7 @@ class $UtxosTable extends Utxos with TableInfo<$UtxosTable, Utxo> {
       defaultConstraints: 'CHECK (spent_confirmed IN (0, 1))');
   @override
   List<GeneratedColumn> get $columns =>
-      [id, txid, confirmed, spentTxid, spentConfirmed];
+      [txid, outnum, confirmed, spentTxid, spentConfirmed];
   @override
   String get aliasedName => _alias ?? 'utxos';
   @override
@@ -3620,14 +3667,17 @@ class $UtxosTable extends Utxos with TableInfo<$UtxosTable, Utxo> {
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
     if (data.containsKey('txid')) {
       context.handle(
           _txidMeta, txid.isAcceptableOrUnknown(data['txid']!, _txidMeta));
     } else if (isInserting) {
       context.missing(_txidMeta);
+    }
+    if (data.containsKey('outnum')) {
+      context.handle(_outnumMeta,
+          outnum.isAcceptableOrUnknown(data['outnum']!, _outnumMeta));
+    } else if (isInserting) {
+      context.missing(_outnumMeta);
     }
     if (data.containsKey('confirmed')) {
       context.handle(_confirmedMeta,
@@ -3653,15 +3703,15 @@ class $UtxosTable extends Utxos with TableInfo<$UtxosTable, Utxo> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {txid, outnum};
   @override
   Utxo map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Utxo(
-      id: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       txid: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}txid'])!,
+      outnum: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}outnum'])!,
       confirmed: attachedDatabase.options.types
           .read(DriftSqlType.bool, data['${effectivePrefix}confirmed'])!,
       spentTxid: attachedDatabase.options.types
@@ -3692,7 +3742,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDatabase);
   late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
   late final UtxosDao utxosDao = UtxosDao(this as AppDatabase);
-  late final PeersDao peersDao = PeersDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, dynamic>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

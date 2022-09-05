@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:breez_sdk/src/storage/dao/utxos_dao.dart';
 import 'package:breez_sdk/src/storage/storage.dart';
 import 'package:breez_sdk/src/storage/dao/payments_dao.dart';
-import 'package:breez_sdk/src/storage/dao/peers_dao.dart';
 import 'package:breez_sdk/src/storage/dao/settings_dao.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -24,7 +23,7 @@ class OutgoingLightningPayments extends Table {
   BoolColumn get isKeySend => boolean()();
   BoolColumn get pending => boolean()();
   TextColumn get bolt11 => text()();
-  TextColumn get description => text()();
+  TextColumn get description => text().withDefault(const Constant(""))();
 }
 
 class NodeAddresses extends Table {
@@ -114,6 +113,7 @@ class Invoices extends Table {
   TextColumn get bolt11 => text()();
   TextColumn get paymentPreimage => text()();
   TextColumn get paymentHash => text()();
+  TextColumn get description => text()();
 }
 
 class Settings extends Table {
@@ -164,7 +164,7 @@ class AppDatabase extends _$AppDatabase implements Storage {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration {
@@ -195,7 +195,11 @@ class AppDatabase extends _$AppDatabase implements Storage {
           await m.createTable(nodeStates);
         }
         if (from < 7) {
-          await m.addColumn(outgoingLightningPayments, outgoingLightningPayments.description);
+          await m.alterTable(TableMigration(outgoingLightningPayments));
+        }
+        if (from < 12) {
+          await m.deleteTable("invoices");
+          await m.createTable(invoices);          
         }
       },
     );
@@ -239,16 +243,6 @@ class AppDatabase extends _$AppDatabase implements Storage {
   @override
   Future<List<Invoice>> listIncomingPayments() {
     return paymentsDao.listIncomingPayments();
-  }
-
-  @override
-  Future setPeers(List<PeerWithChannels> peersWithChannels) async {
-    return peersDao.setPeers(peersWithChannels);
-  }
-
-  @override
-  Stream<List<PeerWithChannels>> watchPeers() {
-    return peersDao.watchPeers();
   }
 
   @override

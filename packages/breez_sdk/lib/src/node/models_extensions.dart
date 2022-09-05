@@ -74,16 +74,17 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
   }
 }
 
-extension InvoiceAdapter on Invoice {
-  db.Invoice toDbInvoice() {
-    return db.Invoice(
-      label: label,
+extension InvoiceAdapter on Invoice {  
+  db.Invoice toDbInvoice() {        
+    return db.Invoice(      
+      label: label,      
       amountMsat: amountMsats.toInt(),
       receivedMsat: receivedMsats.toInt(),
       status: status.index,
       paymentTime: paymentTime,
       expiryTime: expiryTime,
       bolt11: bolt11,
+      description: description,
       paymentPreimage: paymentPreimage,
       paymentHash: paymentHash,
     );

@@ -23,6 +23,7 @@ dependencies:
   breez_sdk:
     path: ./packages/breez_sdk
   cryptography: ^2.0.5
+  connectivity_plus: ^2.3.6+1
   cupertino_icons: ^1.0.5
   dart_lnurl:
     git:

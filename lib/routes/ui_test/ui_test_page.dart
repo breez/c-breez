@@ -190,14 +190,6 @@ class UITestPage extends StatelessWidget {
               },
             ),
           ),
-          Card(
-            child: ListTile(
-              title: const Text("NoConnectionDialog"),
-              onTap: () {
-                showNoConnectionDialog(context).then((retry) {});
-              },
-            ),
-          ),
         ],
       ),
     );

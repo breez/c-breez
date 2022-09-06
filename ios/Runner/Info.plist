@@ -58,5 +58,7 @@
     <string>Required for selecting user avatar image.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Enable secure access to Breez wallet</string>
 </dict>
 </plist>

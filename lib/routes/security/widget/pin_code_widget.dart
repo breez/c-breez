@@ -133,6 +133,17 @@ class _PinCodeWidgetState extends State<PinCodeWidget> with SingleTickerProvider
                   } else if (action == ActionKey.Backspace && pinCode.isNotEmpty) {
                     pinCode = pinCode.substring(0, pinCode.length - 1);
                     errorMessage = "";
+                  } else if (action == ActionKey.Fingerprint || action == ActionKey.FaceId) {
+                    widget.testBiometricsFunction?.call().then((result) {
+                      if (!result.success) {
+                        pinCode = "";
+                        errorMessage = result.errorMessage!;
+                        _digitsShakeController.shake();
+                      } else if (result.clearOnSuccess) {
+                        pinCode = "";
+                        errorMessage = "";
+                      }
+                    });
                   }
                 });
               },

@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:c_breez/handlers/check_version_handler.dart';
+import 'package:c_breez/handlers/connectivity_handler.dart';
 import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/routes/home/account_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/home_app_bar.dart';
@@ -9,9 +8,6 @@ import 'package:c_breez/routes/home/widgets/close_popup.dart';
 import 'package:c_breez/routes/home/widgets/drawer/home_drawer.dart';
 import 'package:c_breez/routes/home/widgets/fade_in_widget.dart';
 import 'package:c_breez/routes/home/widgets/qr_action_button.dart';
-import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/widgets/no_connection_dialog.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -34,11 +30,10 @@ class HomeState extends State<Home> {
   final GlobalKey firstPaymentItemKey = GlobalKey();
   final ScrollController scrollController = ScrollController();
 
-
   @override
   void initState() {
     super.initState();
-    final connectivityService = ServiceInjector().connectivityService;
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       InputHandler(
         context,
@@ -47,16 +42,7 @@ class HomeState extends State<Home> {
         _scaffoldKey,
       );
       checkVersionDialog(context, context.read());
-      connectivityService.connectivityEventStream.listen((connectionStatus) {
-        if (connectionStatus == ConnectivityResult.none) {
-          showNoConnectionDialog(context, connectivityService).then((retry) {
-            if (retry == true) {
-              Future.delayed(const Duration(seconds: 1),
-                  () => connectivityService.checkConnectivity());
-            }
-          });
-        }
-      });
+      ConnectivityHandler(context);
     });
   }
 

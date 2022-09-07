@@ -1,11 +1,13 @@
-import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:another_flushbar/flushbar.dart';
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Flushbar showFlushbar(
   BuildContext context, {
   String? title,
+  Icon? icon,
+  bool isDismissible = true,
   String? message,
   Widget? messageWidget,
   String? buttonText,
@@ -18,6 +20,7 @@ Flushbar showFlushbar(
 
   Flushbar? flush;
   flush = Flushbar(
+    isDismissible: isDismissible,
     flushbarPosition: position,
     titleText: title == null
         ? null
@@ -25,6 +28,7 @@ Flushbar showFlushbar(
             title,
             style: const TextStyle(height: 0.0),
           ),
+    icon: icon,
     duration: duration == Duration.zero ? null : duration,
     messageText: messageWidget ??
         Text(
@@ -33,20 +37,22 @@ Flushbar showFlushbar(
           textAlign: TextAlign.left,
         ),
     backgroundColor: theme.snackBarBackgroundColor,
-    mainButton: TextButton(
-      onPressed: () {
-        bool dismiss = onDismiss != null ? onDismiss() : true;
-        if (dismiss) {
-          flush!.dismiss(true);
-        }
-      },
-      child: Text(
-        buttonText ?? texts.flushbar_default_action,
-        style: theme.snackBarStyle.copyWith(
-          color: themeData.errorColor,
-        ),
-      ),
-    ),
+    mainButton: !isDismissible
+        ? null
+        : TextButton(
+            onPressed: () {
+              bool dismiss = onDismiss != null ? onDismiss() : true;
+              if (dismiss) {
+                flush!.dismiss(true);
+              }
+            },
+            child: Text(
+              buttonText ?? texts.flushbar_default_action,
+              style: theme.snackBarStyle.copyWith(
+                color: themeData.errorColor,
+              ),
+            ),
+          ),
   )..show(context);
 
   return flush;

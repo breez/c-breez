@@ -4,7 +4,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/utils/lnurl.dart';
+import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
@@ -21,15 +21,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/lnurl_metadata.dart';
 
 class LNURLPaymentPage extends StatefulWidget {
-  final LNURLPayParams payParams;
-  final Function() onComplete;
-  final Function(String error) onError;
+  final LNURLPayParams payParams;  
 
   const LNURLPaymentPage(
     this.payParams, {
-    Key? key,
-    required this.onComplete,
-    required this.onError,
+    Key? key,    
   }) : super(key: key);
 
   @override
@@ -199,28 +195,17 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               "payerData": json.encode(payerData.toJson()),
             };
             // Create loader and process payment
-            final navigator = Navigator.of(context);
-            navigator.pop();
+            final navigator = Navigator.of(context);            
             var loaderRoute = createLoaderRoute(context);
-            navigator.push(loaderRoute);
-            String errorMsg =
-                texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
-            LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(
-                widget.payParams, payerDataMap);
-            bool isSent = await accountBloc
-                .sendLNURLPayment(lnurlPayResult, payerDataMap)
-                .onError(
-              (error, stackTrace) {
-                errorMsg = error.toString();
-                return false;
-              },
-            );
-            navigator.removeRoute(loaderRoute);
-            widget.onComplete();
-            if (isSent) {
-              handleSuccessAction(context, lnurlPayResult);
-            } else {
-              widget.onError(errorMsg);
+            navigator.push(loaderRoute);            
+            try {
+              LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(widget.payParams, payerDataMap);
+              await accountBloc.sendLNURLPayment(lnurlPayResult, payerDataMap);
+              navigator.removeRoute(loaderRoute);
+              navigator.pop(LNURLPaymentPageResult(result: lnurlPayResult));    
+            } catch (e) {
+              navigator.removeRoute(loaderRoute);
+              navigator.pop(LNURLPaymentPageResult(error: e));              
             }
           }
         },

@@ -27,7 +27,7 @@ class Greenlight implements NodeAPI {
 
   final _log = FimberLog("GreenlightService");
   final _incomingPaymentsStream = StreamController<IncomingLightningPayment>.broadcast();
-  final Completer _readyCompleter = Completer();
+  DateTime _lastScheduledTime = DateTime.now().subtract(const Duration(hours: 1));
 
   Greenlight();
 
@@ -45,11 +45,20 @@ class Greenlight implements NodeAPI {
       FileData("device-key.pem", _nodeCredentials!.deviceKey.codeUnits),
       FileData("hsm_secret", _nodeCredentials!.secret!),
     ]);
-  }
+  }  
 
   @override
   Future ensureScheduled() async {
-    await schedule();
+    final lastScheduled = _lastScheduledTime;
+    if (_lastScheduledTime.add(const Duration(minutes: 2)).isBefore(DateTime.now())) {
+      _lastScheduledTime = DateTime.now();
+      try {
+        return await schedule();
+      } catch(e) {
+        _lastScheduledTime = lastScheduled;
+        rethrow;
+      }
+    } 
   }
 
   Future<scheduler.SchedulerClient> _createSchedulerClient() async {
@@ -63,7 +72,7 @@ class Greenlight implements NodeAPI {
   Future streamIncomingRequests(List<int> nodeID) async {
     while (true) {
       try {
-        _log.i("streaming signer requests");
+        _log.i("streaming signer requests");        
         var schedulerClient = await _createSchedulerClient();
         var nodeInfo = await schedulerClient.getNodeInfo(scheduler.NodeInfoRequest()
           ..nodeId = nodeID
@@ -80,7 +89,7 @@ class Greenlight implements NodeAPI {
         // stream signer and wait for it to shut down.
         await SignerLoop(_signer!, _nodeClient!).start();
       } catch (e) {
-        _log.e("signer exited, waiting 1 seconds...", ex: e);
+        _log.e("signer exited, waiting 1 seconds...", ex: e);        
       }
       await Future.delayed(const Duration(seconds: 1));
     }
@@ -113,7 +122,7 @@ class Greenlight implements NodeAPI {
 
   @override
   Future<List<int>> recover(Uint8List seed, Signer signer) async {
-    final init = await signer.init();
+    await signer.init();
     final nodePubkey = await signer.getNodePubkey();
     var schedulerClient = await _createSchedulerClient();
     var challengeResponse = await schedulerClient
@@ -157,7 +166,8 @@ class Greenlight implements NodeAPI {
       String? payerName,
       String? payerImageURL,
       String? description,
-      Int64? expiry}) async {    
+      Int64? expiry}) async {
+    await ensureScheduled();
     var invoice = await _nodeClient!.createInvoice(greenlight.InvoiceRequest(
         label: "breez-${DateTime.now().millisecondsSinceEpoch}",
         amount: greenlight.Amount(satoshi: amount),
@@ -176,7 +186,8 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<NodeInfo> getNodeInfo() async {    
+  Future<NodeInfo> getNodeInfo() async {
+    await ensureScheduled(); 
     var info = await _nodeClient!.getInfo(greenlight.GetInfoRequest());
     return NodeInfo(
         nodeID: HEX.encode(info.nodeId),
@@ -189,7 +200,8 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<ListFunds> listFunds() async {    
+  Future<ListFunds> listFunds() async {
+    await ensureScheduled(); 
     var listFunds = await _nodeClient!.listFunds(greenlight.ListFundsRequest());
 
     var channelFunds = listFunds.channels.map((e) {
@@ -215,7 +227,8 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<List<Peer>> listPeers() async {    
+  Future<List<Peer>> listPeers() async { 
+    await ensureScheduled();   
     var peers = await _nodeClient!.listPeers(greenlight.ListPeersRequest());
     return peers.peers.map((e) {
       return Peer(
@@ -229,13 +242,15 @@ class Greenlight implements NodeAPI {
 
   @override
   Future<List<int>> closeChannel(List<int> nodeID) async {
+    await ensureScheduled();
     var addressResp = await _nodeClient!.newAddr(greenlight.NewAddrRequest(addressType: greenlight.BtcAddressType.BECH32));
     var closeResp = await _nodeClient!.closeChannel(greenlight.CloseChannelRequest(nodeId: nodeID, unilateraltimeout: greenlight.Timeout(seconds: 30), destination: greenlight.BitcoinAddress(address: addressResp.address)));
     return closeResp.txid;
   }
 
   @override
-  Future connectPeer(String nodeID, String address) async {    
+  Future connectPeer(String nodeID, String address) async {   
+    await ensureScheduled(); 
     await _nodeClient!.connectPeer(greenlight.ConnectRequest(nodeId: nodeID, addr: address));
   }
 
@@ -246,6 +261,7 @@ class Greenlight implements NodeAPI {
 
   @override
   Future<List<OutgoingLightningPayment>> getPayments() async {    
+    await ensureScheduled();
     var payments = await _nodeClient!.listPayments(greenlight.ListPaymentsRequest());
     var paymentsList = payments.payments.map((p) {
       var sentMsats = amountToMSats(p.amountSent);
@@ -268,7 +284,8 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<List<Invoice>> getInvoices() async {    
+  Future<List<Invoice>> getInvoices() async {
+    await ensureScheduled();
     var invoices = await _nodeClient!.listInvoices(greenlight.ListInvoicesRequest());
     return invoices.invoices.map((p) {
       return Invoice(
@@ -304,7 +321,8 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {    
+  Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
+    await ensureScheduled();    
     await _nodeClient!
         .pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: amount), timeout: 60));
   }
@@ -318,6 +336,7 @@ class Greenlight implements NodeAPI {
 
   @override
   Future<Withdrawal> sweepAllCoinsTransactions(String address, greenlight.FeeratePreset feerate) async {
+    await ensureScheduled();
     final response = await _nodeClient!.withdraw(greenlight.WithdrawRequest(
       destination: address,
       amount: greenlight.Amount(
@@ -335,7 +354,7 @@ class Greenlight implements NodeAPI {
 
   ClientChannel _createNodeChannel(NodeCredentials credentials, String grpcUri) {
     var uri = Uri.parse(grpcUri);
-    return ClientChannel(uri.host,
+    return ClientChannel(uri.host,    
         port: uri.port,
         options: ChannelOptions(            
             credentials: ClientCertificateChannelCredentials(

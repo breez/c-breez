@@ -58,7 +58,7 @@ class UserApp extends StatelessWidget {
                 child: child!,
               );
             },
-            initialRoute: "/splash",
+            initialRoute: "splash",
             onGenerateRoute: (RouteSettings settings) {
               switch (settings.name) {
                 case '/intro':
@@ -66,7 +66,7 @@ class UserApp extends StatelessWidget {
                     builder: (_) => InitialWalkthroughPage(),
                     settings: settings,
                   );
-                case '/splash':
+                case 'splash':
                   return FadeInRoute(
                     builder: (_) => const SplashPage(),
                     settings: settings,

@@ -1,6 +1,9 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/security/security_bloc.dart';
+import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/l10n/locales.dart';
@@ -14,6 +17,7 @@ import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonic_seed
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/generate_mnemonic_seed_confirmation_page.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
+import 'package:c_breez/routes/security/lock_screen.dart';
 import 'package:c_breez/routes/security/secured_page.dart';
 import 'package:c_breez/routes/security/security_page.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
@@ -40,8 +44,8 @@ class UserApp extends StatelessWidget {
         SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
         ));
-        return BlocBuilder<AccountBloc, AccountState>(
-            builder: (context, accState) {
+        return BlocBuilder2<AccountBloc, AccountState, SecurityBloc, SecurityState>(
+            builder: (context, accState, securityState) {
           return MaterialApp(
             key: _appKey,
             title: getSystemAppLocalizations().app_name,
@@ -59,7 +63,7 @@ class UserApp extends StatelessWidget {
                 child: child!,
               );
             },
-            initialRoute: "/splash",
+            initialRoute: securityState.pinStatus == PinStatus.enabled ? "/lockscreen" : "/splash",
             onGenerateRoute: (RouteSettings settings) {
               switch (settings.name) {
                 case '/intro':
@@ -70,6 +74,13 @@ class UserApp extends StatelessWidget {
                 case '/splash':
                   return FadeInRoute(
                     builder: (_) => const SplashPage(),
+                    settings: settings,
+                  );
+                case '/lockscreen':
+                  return NoTransitionRoute(
+                    builder: (_) => const LockScreen(
+                        authorizedAction: AuthorizedAction.launchHome,
+                    ),
                     settings: settings,
                   );
                 case '/mnemonics':

@@ -1,15 +1,14 @@
 import 'dart:async';
 
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/services/breez_server/server.dart';
-import 'package:c_breez/services/connectivity_service.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
+import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/services/local_auth_service.dart';
 import 'package:c_breez/services/notifications.dart';
-import 'package:c_breez/services/keychain.dart';
 import 'package:http/http.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'background_task.dart';
@@ -22,7 +21,6 @@ class ServiceInjector {
   FirebaseNotifications? _notifications;
   breez_sdk.LightningNode? _lightningService;
   DeepLinksService? _deepLinksService;
-  ConnectivityService? _connectivityService;
 
   // breez sdk
   LightningLinksService? _lightningLinksService;
@@ -82,8 +80,6 @@ class ServiceInjector {
   }
 
   DeepLinksService get deepLinks => _deepLinksService ??= DeepLinksService();
-
-  ConnectivityService get connectivityService => _connectivityService ??= ConnectivityService();
 
   LightningLinksService get lightningLinks =>
       _lightningLinksService ??= LightningLinksService();

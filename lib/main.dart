@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
@@ -69,6 +70,9 @@ void main() async {
                 ),
                 BlocProvider<WithdrawFudsBloc>(
                   create: (BuildContext context) => WithdrawFudsBloc(lightningServices),
+                ),
+                BlocProvider<ConnectivityBloc>(
+                  create: (BuildContext context) => ConnectivityBloc(),
                 ),
               ],
               child: UserApp(),

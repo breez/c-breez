@@ -4,33 +4,24 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ConnectivityService {
-  final _log = FimberLog("ConnectivityService");
+class ConnectivityBloc extends Cubit<ConnectivityResult?> {
+  final _log = FimberLog("ConnectivityBloc");
 
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
-  final _connectivityEventController = BehaviorSubject<ConnectivityResult>();
-
-  Stream<ConnectivityResult> get connectivityEventStream =>
-      _connectivityEventController.stream;
-
-  Sink<ConnectivityResult> get _connectivityEventSink =>
-      _connectivityEventController.sink;
-
-  ConnectivityService() {
-    Timer(const Duration(seconds: 4), listen);
+  ConnectivityBloc() : super(null) {
+    _watchConnectivityChanges()
+        .listen((connectivityResult) => emit(connectivityResult));
   }
 
-  void listen() async {
-    await checkConnectivity();
-    _connectivitySubscription =
-        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  Stream<ConnectivityResult> _watchConnectivityChanges() {
+    return _connectivity.onConnectivityChanged
+        .asyncMap((status) async => await _updateConnectionStatus(status));
   }
 
-  Future<void> checkConnectivity() async {
+  Future<ConnectivityResult> checkConnectivity() async {
     late ConnectivityResult result;
     try {
       result = await _connectivity.checkConnectivity();
@@ -41,20 +32,19 @@ class ConnectivityService {
     return _updateConnectionStatus(result);
   }
 
-  Future<void> _updateConnectionStatus(
+  Future<ConnectivityResult> _updateConnectionStatus(
       ConnectivityResult connectionStatus) async {
     _log.i("Connection status changed to: ${connectionStatus.name}");
     if (connectionStatus != ConnectivityResult.none) {
-      bool isDeviceConnected = await isConnected();
+      bool isDeviceConnected = await _isConnected();
       if (!isDeviceConnected) {
-        _connectivityEventSink.add(ConnectivityResult.none);
-        return;
+        return connectionStatus;
       }
     }
-    _connectivityEventSink.add(connectionStatus);
+    return connectionStatus;
   }
 
-  Future<bool> isConnected() async {
+  Future<bool> _isConnected() async {
     try {
       List<InternetAddress> result =
           await InternetAddress.lookup('scheduler.gl.blckstrm.com')
@@ -70,10 +60,5 @@ class ConnectivityService {
       _log.e("Socket operation failed: ${e.message}");
       return false;
     }
-  }
-
-  close() {
-    _connectivitySubscription.cancel();
-    _connectivityEventController.close();
   }
 }

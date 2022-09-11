@@ -18,6 +18,7 @@ use flutter_rust_bridge::*;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
+use crate::swap::SwapKeys;
 
 // Section: wire functions
 
@@ -37,6 +38,49 @@ pub extern "C" fn wire_init_hsmd(
             let api_storage_path = storage_path.wire2api();
             let api_secret = secret.wire2api();
             move |task_callback| init_hsmd(api_storage_path, api_secret)
+        },
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_create_swap(port_: i64) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_swap",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| create_swap(),
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn wire_create_submaring_swap_script(
+    port_: i64,
+    hash: *mut wire_uint_8_list,
+    swapper_pub_key: *mut wire_uint_8_list,
+    payer_pub_key: *mut wire_uint_8_list,
+    lock_height: i64,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_submaring_swap_script",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_hash = hash.wire2api();
+            let api_swapper_pub_key = swapper_pub_key.wire2api();
+            let api_payer_pub_key = payer_pub_key.wire2api();
+            let api_lock_height = lock_height.wire2api();
+            move |task_callback| {
+                create_submaring_swap_script(
+                    api_hash,
+                    api_swapper_pub_key,
+                    api_payer_pub_key,
+                    api_lock_height,
+                )
+            }
         },
     )
 }
@@ -309,6 +353,12 @@ impl Wire2Api<u64> for *mut u64 {
     }
 }
 
+impl Wire2Api<i64> for i64 {
+    fn wire2api(self) -> i64 {
+        self
+    }
+}
+
 impl Wire2Api<Vec<RouteHint>> for *mut wire_list_route_hint {
     fn wire2api(self) -> Vec<RouteHint> {
         let vec = unsafe {
@@ -451,6 +501,19 @@ impl support::IntoDart for RouteHintHop {
     }
 }
 impl support::IntoDartExceptPrimitive for RouteHintHop {}
+
+impl support::IntoDart for SwapKeys {
+    fn into_dart(self) -> support::DartCObject {
+        vec![
+            self.privkey.into_dart(),
+            self.pubkey.into_dart(),
+            self.preimage.into_dart(),
+            self.hash.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SwapKeys {}
 
 // Section: executor
 

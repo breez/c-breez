@@ -45,6 +45,14 @@ void wire_init_hsmd(int64_t port_,
                     struct wire_uint_8_list *storage_path,
                     struct wire_uint_8_list *secret);
 
+void wire_create_swap(int64_t port_);
+
+void wire_create_submaring_swap_script(int64_t port_,
+                                       struct wire_uint_8_list *hash,
+                                       struct wire_uint_8_list *swapper_pub_key,
+                                       struct wire_uint_8_list *payer_pub_key,
+                                       int64_t lock_height);
+
 void wire_encrypt(int64_t port_, struct wire_uint_8_list *key, struct wire_uint_8_list *msg);
 
 void wire_decrypt(int64_t port_, struct wire_uint_8_list *key, struct wire_uint_8_list *msg);
@@ -89,6 +97,8 @@ void store_dart_post_cobject(DartPostCObjectFnType ptr);
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_init_hsmd);
+    dummy_var ^= ((int64_t) (void*) wire_create_swap);
+    dummy_var ^= ((int64_t) (void*) wire_create_submaring_swap_script);
     dummy_var ^= ((int64_t) (void*) wire_encrypt);
     dummy_var ^= ((int64_t) (void*) wire_decrypt);
     dummy_var ^= ((int64_t) (void*) wire_parse_invoice);

@@ -1,6 +1,7 @@
 use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
+use crate::swap::*;
 use anyhow::Result;
 use lightning_signer::lightning_invoice::RawInvoice;
 use std::fs::File;
@@ -10,6 +11,19 @@ pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  let mut private_key_slice: [u8; 32] = [0; 32];
  private_key_slice.copy_from_slice(&secret[0..32]);
  _new_hsmd(private_key_slice, &storage_path).map(|hsmd| hsmd.init)
+}
+
+pub fn create_swap() -> Result<SwapKeys> {
+ return _create_swap();
+}
+
+pub fn create_submaring_swap_script(
+ hash: Vec<u8>,
+ swapper_pub_key: Vec<u8>,
+ payer_pub_key: Vec<u8>,
+ lock_height: i64,
+) -> Result<Vec<u8>> {
+ return _create_submaring_swap_script(hash, swapper_pub_key, payer_pub_key, lock_height);
 }
 
 pub fn encrypt(key: Vec<u8>, msg: Vec<u8>) -> Result<Vec<u8>> {

@@ -1,7 +1,159 @@
-import 'package:breez_sdk/src/node/node_service.dart';
+import 'dart:async';
+import 'dart:math';
+
+import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/src/breez_server/generated/breez.pbgrpc.dart';
+import 'package:breez_sdk/src/breez_server/server.dart';
+import 'package:breez_sdk/src/btc_swapper/swap_address.dart';
+import 'package:breez_sdk/src/native_toolkit.dart';
+import 'package:breez_sdk/src/storage/dao/db.dart' as db;
+import 'package:drift/drift.dart';
+import 'package:fixnum/fixnum.dart';
+
+import 'package:flutter_fgbg/flutter_fgbg.dart';
 
 class BTCSwapper {
-  final LightningNode _node;
+  static const maxDepositAmount = 4000000;
 
-  BTCSwapper(this._node);
+  final _lnToolkit = getNativeToolkit();
+  final LightningNode _node;
+  final Storage _storage;
+  final ChainService _chainService;
+
+  BTCSwapper(this._node, this._storage, this._chainService);
+
+  // Start tracking all swaps and trigger redeem every 10 minutes interval
+  // or when app is going to foreground
+  startTrackSwaps() {
+    Timer.periodic(const Duration(minutes: 10), (timer) {
+      redeemPendingSwaps();
+    });
+
+    FGBGEvents.stream.listen((event) {
+      if (event == FGBGType.foreground) {
+        redeemPendingSwaps();
+      }
+    });
+  }
+
+  // Creating a new swap address
+  Future<String> createSwap() async {
+    if (_node.currentLSP == null) {
+      throw Exception("lsp is not set");
+    }
+    final currentLSP = _node.currentLSP!;
+
+    // create swap keys
+    final swapKeys = await _lnToolkit.createSwap();
+    final nodeInfo = await _node.getNodeAPI().getNodeInfo();
+
+    // call breez server to get a sub swap address
+    final server = await BreezServer.createWithDefaultConfig();
+    var channel = await server.createServerChannel();
+    var fundingClient = FundManagerClient(channel, options: server.defaultCallOptions);
+    final createSwapInitRequest = AddFundInitRequest()
+      ..hash = swapKeys.hash
+      ..nodeID = nodeInfo.nodeID
+      ..pubkey = swapKeys.pubkey;
+    final createSwapInitReply = await fundingClient.addFundInit(createSwapInitRequest);
+    final script = await _lnToolkit.createSubmaringSwapScript(
+        hash: swapKeys.hash,
+        swapperPubKey: Uint8List.fromList(createSwapInitReply.pubkey),
+        payerPubKey: swapKeys.pubkey,
+        lockHeight: createSwapInitReply.lockHeight.toInt());
+
+    final swap = db.Swap(
+      createdTimestamp: DateTime.now().millisecondsSinceEpoch,
+      lspid: currentLSP.lspID,
+      lockHeight: createSwapInitReply.lockHeight.toInt(),
+      bitcoinAddress: createSwapInitReply.address,
+      paymentHash: swapKeys.hash,
+      preimage: swapKeys.preimage,
+      privateKey: swapKeys.privkey,
+      publicKey: swapKeys.pubkey,
+      paidSats: 0,
+      confirmedSats: 0,
+      script: script,
+    );
+
+    return swap.bitcoinAddress;
+  }
+
+  // Fetch all swaps
+  Future getSwaps() async {
+    return _storage.listSwaps();
+  }
+
+  // Redeem a pending swap. This means we create an invoice and ask from the
+  // swapper to pay us in exchange to the preimage for spending the onchain utxo
+  Future redeem(SwapLiveData liveSwap) async {
+    var s = liveSwap.swap;
+    try {
+      if (s.paymentRequest == null) {
+        final invoice = await _createSwapInvoice(s);
+        s = await _storage.updateSwap(s.bitcoinAddress, payreq: invoice.bolt11);
+      }
+      final invoice = await _lnToolkit.parseInvoice(invoice: s.paymentRequest!);
+      if (invoice.amount != null && invoice.amount! != s.confirmedSats) {
+        throw Exception("Funds were added after invoice was created");
+      }
+
+      final server = await BreezServer.createWithDefaultConfig();
+      var channel = await server.createServerChannel();
+      var swapper = SwapperClient(channel, options: server.defaultCallOptions);
+      final swapResponse = await swapper.getSwapPayment(GetSwapPaymentRequest()..paymentRequest = s.paymentRequest!);
+      s = await _storage.updateSwap(s.bitcoinAddress, error: swapResponse.paymentError);
+    } catch (e) {
+      s = await _storage.updateSwap(s.bitcoinAddress, error: e.toString());
+    }
+  }
+
+  // Refund
+  Future refund(db.Swap s) async {}
+
+  Future redeemPendingSwaps() async {
+    final liveSwaps = await _refreshSwapsStatuses();
+    return Future.wait(liveSwaps.map(redeem));
+  }
+
+  Future<Invoice> _createSwapInvoice(db.Swap s) async {
+    final nodeState = await _node.getNodeState();
+    if (nodeState == null) {
+      throw Exception("node is not ready");
+    }
+    final int maxReceive = max(nodeState.maxAllowedToReceiveMsats.toInt() ~/ 1000, maxDepositAmount);
+
+    if (s.confirmedSats > maxReceive || s.confirmedSats > maxReceive) {
+      throw Exception("invoice limit exceeded");
+    }
+
+    return _node.requestPayment(Int64(s.confirmedSats), description: "", expiry: Int64(60 * 60 * 24 * 30));
+  }
+
+  Future<List<SwapLiveData>> _refreshSwapsStatuses() async {
+    final swaps = await _storage.listSwaps();
+    final liveSwaps = List<SwapLiveData>.empty(growable: true);
+    for (var s in swaps) {
+      if (s.paidSats == 0 && s.refundTxIds == null) {
+        final txs = await _chainService.fetchTransactionsForAddress(s.bitcoinAddress);
+        final liveData = SwapLiveData(s, txs);
+        if (liveData.redeemable) {
+          liveSwaps.add(liveData);
+        }
+      }
+    }
+    return liveSwaps;
+  }
 }
+
+// class SwapperException implements Exception {
+//   final String errorMessage;
+//   final SwapErrorCode errorCode;
+
+//   SwapperException(this.errorMessage, this.errorCode);
+
+//   @override
+//   String toString() {
+//     return "Error in swap: $errorMessage code:$errorCode";
+//   }
+//}

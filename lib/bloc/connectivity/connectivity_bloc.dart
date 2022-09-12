@@ -5,11 +5,21 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ConnectivityBloc extends Cubit<ConnectivityResult?> {
   final _log = FimberLog("ConnectivityBloc");
 
   final Connectivity _connectivity = Connectivity();
+
+  final BehaviorSubject<ConnectivityResult?> _checkConnectivityController =
+      BehaviorSubject<ConnectivityResult?>();
+
+  Stream<ConnectivityResult?> get checkConnectivityStream =>
+      _checkConnectivityController.stream;
+
+  Sink<ConnectivityResult?> get checkConnectivitySink =>
+      _checkConnectivityController.sink;
 
   ConnectivityBloc() : super(null) {
     checkConnectivity();
@@ -23,17 +33,16 @@ class ConnectivityBloc extends Cubit<ConnectivityResult?> {
   }
 
   void checkConnectivity() async {
-    // If connection status has not changed, emitting the same status would be filtered out and won't be registered by listeners
-    // We're emitting null first to override this behavior
-    emit(null);
     late ConnectivityResult result;
     try {
-      result = await _connectivity.checkConnectivity();
+      result = await _updateConnectionStatus(
+          await _connectivity.checkConnectivity());
     } on PlatformException catch (e) {
       _log.e("Failed to check connectivity: $e");
       rethrow;
     }
-    emit(await _updateConnectionStatus(result));
+    emit(result);
+    checkConnectivitySink.add(result);
   }
 
   Future<ConnectivityResult> _updateConnectionStatus(
@@ -64,5 +73,11 @@ class ConnectivityBloc extends Cubit<ConnectivityResult?> {
       _log.e("Socket operation failed: ${e.message}");
       return false;
     }
+  }
+
+  @override
+  close() async {
+    super.close();
+    _checkConnectivityController.close();
   }
 }

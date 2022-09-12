@@ -45,21 +45,37 @@ class ConnectivityHandler {
         style: theme.snackBarStyle,
         textAlign: TextAlign.center,
       ),
-      mainButton: TextButton(
-        onPressed: () {
-          noConnectionFlushbar!.dismiss(true);
-          const closeAnimDur = Duration(seconds: 1);
-          Future.delayed(
-            closeAnimDur,
-            () async => connectivityBloc.checkConnectivity(),
-          );
-        },
-        child: Text(
-          texts.invoice_btc_address_action_retry,
-          style: theme.snackBarStyle.copyWith(
-            color: Theme.of(context).errorColor,
-          ),
-        ),
+      mainButton: SizedBox(
+        width: 64,
+        child: StreamBuilder<ConnectivityResult?>(
+            stream: connectivityBloc.checkConnectivityStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return TextButton(
+                  onPressed: () {
+                    connectivityBloc.checkConnectivitySink.add(null);
+                    Future.delayed(const Duration(seconds: 1),
+                        () => connectivityBloc.checkConnectivity());
+                  },
+                  child: Text(
+                    texts.invoice_btc_address_action_retry,
+                    style: theme.snackBarStyle.copyWith(
+                      color: Theme.of(context).errorColor,
+                    ),
+                  ),
+                );
+              } else {
+                return Center(
+                  child: SizedBox(
+                    height: 24.0,
+                    width: 24.0,
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).errorColor,
+                    ),
+                  ),
+                );
+              }
+            }),
       ),
       backgroundColor: theme.snackBarBackgroundColor,
     );

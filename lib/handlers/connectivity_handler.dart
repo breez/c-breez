@@ -66,9 +66,18 @@ class ConnectivityHandler {
               }
               return TextButton(
                 onPressed: () {
-                  connectivityBloc.addIsConnectingState();
-                  Future.delayed(const Duration(seconds: 1),
-                      () => connectivityBloc.checkConnectivity());
+                  connectivityBloc.setIsConnecting(true);
+                  Future.delayed(
+                    const Duration(seconds: 1),
+                    () => connectivityBloc
+                        .checkConnectivity()
+                        .whenComplete(
+                            () => connectivityBloc.setIsConnecting(false))
+                        .onError((error, stackTrace) {
+                      connectivityBloc.setIsConnecting(false);
+                      throw error.toString();
+                    }),
+                  );
                 },
                 child: Text(
                   texts.invoice_btc_address_action_retry,

@@ -24,7 +24,7 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
         .asyncMap((status) async => await _updateConnectionStatus(status));
   }
 
-  void checkConnectivity() async {
+  Future<ConnectivityState> checkConnectivity() async {
     late ConnectivityResult result;
     try {
       result = await _updateConnectionStatus(
@@ -33,7 +33,9 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
       _log.e("Failed to check connectivity: $e");
       rethrow;
     }
-    emit(ConnectivityState(lastStatus: result));
+    final connectivityState = ConnectivityState(lastStatus: result);
+    emit(connectivityState);
+    return connectivityState;
   }
 
   Future<ConnectivityResult> _updateConnectionStatus(
@@ -66,7 +68,8 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
     }
   }
 
-  void addIsConnectingState() async {
-    emit(ConnectivityState(lastStatus: state.lastStatus, isConnecting: true));
+  void setIsConnecting(bool isConnecting) async {
+    emit(ConnectivityState(
+        lastStatus: state.lastStatus, isConnecting: isConnecting));
   }
 }

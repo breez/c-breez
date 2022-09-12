@@ -42,7 +42,7 @@ class HomeState extends State<Home> {
         _scaffoldKey,
       );
       checkVersionDialog(context, context.read());
-      ConnectivityHandler(context);
+      ConnectivityHandler(context, context.read());
     });
   }
 

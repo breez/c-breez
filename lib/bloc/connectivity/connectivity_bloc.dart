@@ -12,7 +12,7 @@ class ConnectivityBloc extends Cubit<ConnectivityResult?> {
   final Connectivity _connectivity = Connectivity();
 
   ConnectivityBloc() : super(null) {
-    _checkConnectivity();
+    checkConnectivity();
     _watchConnectivityChanges()
         .listen((connectivityResult) => emit(connectivityResult));
   }
@@ -22,7 +22,10 @@ class ConnectivityBloc extends Cubit<ConnectivityResult?> {
         .asyncMap((status) async => await _updateConnectionStatus(status));
   }
 
-  void _checkConnectivity() async {
+  void checkConnectivity() async {
+    // If connection status has not changed, emitting the same status would be filtered out and won't be registered by listeners
+    // We're emitting null first to override this behavior
+    emit(null);
     late ConnectivityResult result;
     try {
       result = await _connectivity.checkConnectivity();

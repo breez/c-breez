@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
+import 'package:c_breez/bloc/connectivity/connectivity_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,10 @@ class ConnectivityHandler {
 
   ConnectivityHandler(this.context, this.connectivityBloc) {
     flushbar = _getNoConnectionFlushbar();
-    connectivityBloc.stream.listen((connectionStatus) {
-      if (connectionStatus == ConnectivityResult.none) {
+    connectivityBloc.stream
+        .distinct((previous, next) => previous.lastStatus == next.lastStatus)
+        .listen((connectionStatus) {
+      if (connectionStatus.lastStatus == ConnectivityResult.none) {
         showNoInternetConnectionFlushbar();
       } else if (flushbar.isShowing() || flushbar.isAppearing()) {
         flushbar.dismiss(true);
@@ -47,24 +50,10 @@ class ConnectivityHandler {
       ),
       mainButton: SizedBox(
         width: 64,
-        child: StreamBuilder<ConnectivityResult?>(
-            stream: connectivityBloc.checkConnectivityStream,
+        child: StreamBuilder<ConnectivityState>(
+            stream: connectivityBloc.stream,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return TextButton(
-                  onPressed: () {
-                    connectivityBloc.checkConnectivitySink.add(null);
-                    Future.delayed(const Duration(seconds: 1),
-                        () => connectivityBloc.checkConnectivity());
-                  },
-                  child: Text(
-                    texts.invoice_btc_address_action_retry,
-                    style: theme.snackBarStyle.copyWith(
-                      color: Theme.of(context).errorColor,
-                    ),
-                  ),
-                );
-              } else {
+              if (snapshot.hasData && snapshot.data?.isConnecting == true) {
                 return Center(
                   child: SizedBox(
                     height: 24.0,
@@ -75,6 +64,19 @@ class ConnectivityHandler {
                   ),
                 );
               }
+              return TextButton(
+                onPressed: () {
+                  connectivityBloc.addIsConnectingState();
+                  Future.delayed(const Duration(seconds: 1),
+                      () => connectivityBloc.checkConnectivity());
+                },
+                child: Text(
+                  texts.invoice_btc_address_action_retry,
+                  style: theme.snackBarStyle.copyWith(
+                    color: Theme.of(context).errorColor,
+                  ),
+                ),
+              );
             }),
       ),
       backgroundColor: theme.snackBarBackgroundColor,

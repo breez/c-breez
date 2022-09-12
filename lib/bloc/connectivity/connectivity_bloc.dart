@@ -5,26 +5,18 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rxdart/rxdart.dart';
 
-class ConnectivityBloc extends Cubit<ConnectivityResult?> {
+import 'connectivity_state.dart';
+
+class ConnectivityBloc extends Cubit<ConnectivityState> {
   final _log = FimberLog("ConnectivityBloc");
 
   final Connectivity _connectivity = Connectivity();
 
-  final BehaviorSubject<ConnectivityResult?> _checkConnectivityController =
-      BehaviorSubject<ConnectivityResult?>();
-
-  Stream<ConnectivityResult?> get checkConnectivityStream =>
-      _checkConnectivityController.stream;
-
-  Sink<ConnectivityResult?> get checkConnectivitySink =>
-      _checkConnectivityController.sink;
-
-  ConnectivityBloc() : super(null) {
+  ConnectivityBloc() : super(ConnectivityState()) {
     checkConnectivity();
     _watchConnectivityChanges()
-        .listen((connectivityResult) => emit(connectivityResult));
+        .listen((status) => emit(ConnectivityState(lastStatus: status)));
   }
 
   Stream<ConnectivityResult> _watchConnectivityChanges() {
@@ -41,8 +33,7 @@ class ConnectivityBloc extends Cubit<ConnectivityResult?> {
       _log.e("Failed to check connectivity: $e");
       rethrow;
     }
-    emit(result);
-    checkConnectivitySink.add(result);
+    emit(ConnectivityState(lastStatus: result));
   }
 
   Future<ConnectivityResult> _updateConnectionStatus(
@@ -75,9 +66,7 @@ class ConnectivityBloc extends Cubit<ConnectivityResult?> {
     }
   }
 
-  @override
-  close() async {
-    super.close();
-    _checkConnectivityController.close();
+  void addIsConnectingState() async {
+    emit(ConnectivityState(lastStatus: state.lastStatus, isConnecting: true));
   }
 }

@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
+import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/services/notifications.dart';
-import 'package:c_breez/services/keychain.dart';
 import 'package:http/http.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'background_task.dart';

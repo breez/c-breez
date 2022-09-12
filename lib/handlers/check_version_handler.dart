@@ -2,7 +2,6 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:c_breez/widgets/no_connection_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,15 +13,7 @@ void checkVersionDialog(BuildContext context,
   final texts = AppLocalizations.of(context)!;
 
   userProfileBloc.checkVersion().catchError((err) {
-    if (err.contains('connection error')) {
-      showNoConnectionDialog(context).then((retry) {
-        if (retry == true) {
-          Future.delayed(const Duration(seconds: 1), () {
-            checkVersionDialog(context, userProfileBloc);
-          });
-        }
-      });
-    } else if (err.contains('bad version')) {
+    if (err.contains('bad version')) {
       showFlushbar(
         context,
         buttonText: texts.handler_check_version_action_update,

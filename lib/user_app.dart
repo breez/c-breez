@@ -63,7 +63,7 @@ class UserApp extends StatelessWidget {
                 child: child!,
               );
             },
-            initialRoute: securityState.pinStatus == PinStatus.enabled ? "/lockscreen" : "/splash",
+            initialRoute: securityState.pinStatus == PinStatus.enabled ? "lockscreen" : "splash",
             onGenerateRoute: (RouteSettings settings) {
               switch (settings.name) {
                 case '/intro':
@@ -71,12 +71,12 @@ class UserApp extends StatelessWidget {
                     builder: (_) => InitialWalkthroughPage(),
                     settings: settings,
                   );
-                case '/splash':
+                case 'splash':
                   return FadeInRoute(
                     builder: (_) => const SplashPage(),
                     settings: settings,
                   );
-                case '/lockscreen':
+                case 'lockscreen':
                   return NoTransitionRoute(
                     builder: (_) => const LockScreen(
                         authorizedAction: AuthorizedAction.launchHome,

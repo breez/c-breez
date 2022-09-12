@@ -1,4 +1,5 @@
 import 'package:c_breez/handlers/check_version_handler.dart';
+import 'package:c_breez/handlers/connectivity_handler.dart';
 import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/routes/home/account_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/home_app_bar.dart';
@@ -32,6 +33,7 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       InputHandler(
         context,
@@ -40,6 +42,7 @@ class HomeState extends State<Home> {
         _scaffoldKey,
       );
       checkVersionDialog(context, context.read());
+      ConnectivityHandler(context, context.read());
     });
   }
 

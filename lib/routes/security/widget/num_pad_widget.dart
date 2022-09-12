@@ -1,4 +1,4 @@
-import 'package:c_breez/routes/lock_screen/widget/digit_button_widget.dart';
+import 'package:c_breez/routes/security/widget/digit_button_widget.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:flutter/material.dart';
 

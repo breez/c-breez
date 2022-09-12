@@ -781,6 +781,7 @@
   "security_and_backup_enable_biometric_option_face_id": "Habilitar Face ID",
   "security_and_backup_enable_biometric_option_fingerprint": "Habilitar Huella Digital",
   "security_and_backup_enable_biometric_option_touch_id": "Habilitar Touch ID",
+  "security_and_backup_enable_biometric_option_other": "Habilitar Biometria",
   "security_and_backup_enable_biometric_option_none": "",
   "security_and_backup_validate_biometrics_reason": "Autenticarse para habilitar esta opción",
   "security_and_backup_pin_option_create": "Crear PIN",
@@ -1833,6 +1834,8 @@
     }
   },
   "lock_screen_enter_pin": "Introduce tu PIN",
+  "lock_screen_pin_incorrect": "PIN Incorrecto",
+  "lock_screen_pin_match_exception": "Hubo un error al confirmar su PIN. Por favor, inténtalo de nuevo. Si el error persiste, por favor, comuníquese con el soporte de Breez.",
   "backup_phrase_generate": "Cifrar copia de seguridad en la nube",
   "backup_phrase_instructions": "Usted verá una lista de palabras. Escriba las palabras y guárdelas en un lugar seguro. Sin estas palabras, no podrá restaurar sus fondos desde la copia de seguridad y sus fondos se perderán y Breez no podrá ayudarlo. Estas palabras no son una semilla para tu billetera. Estas palabras se utilizan para cifrar los datos en la copia de seguridad almacenada en la nube.",
   "backup_phrase_action_confirm": "ENTIENDO",

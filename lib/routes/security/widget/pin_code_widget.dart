@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:c_breez/routes/lock_screen/widget/digit_masked_widget.dart';
-import 'package:c_breez/routes/lock_screen/widget/num_pad_widget.dart';
-import 'package:c_breez/services/local_auth_service.dart';
+import 'package:c_breez/bloc/security/security_state.dart';
+import 'package:c_breez/routes/security/widget/digit_masked_widget.dart';
+import 'package:c_breez/routes/security/widget/num_pad_widget.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:c_breez/widgets/shake_widget.dart';
 import 'package:flutter/foundation.dart';
@@ -22,7 +22,7 @@ class PinCodeWidget extends StatefulWidget {
     required this.label,
     required this.testPinCodeFunction,
     this.testBiometricsFunction,
-    this.localAuthenticationOption = LocalAuthenticationOption.NONE,
+    this.localAuthenticationOption = LocalAuthenticationOption.none,
   }) : super(key: key);
 
   @override
@@ -82,6 +82,7 @@ class _PinCodeWidgetState extends State<PinCodeWidget> with SingleTickerProvider
                 ),
                 Text(
                   errorMessage,
+                  textAlign: TextAlign.center,
                   style: theme.textTheme.headline4?.copyWith(
                     fontSize: 12,
                   ),
@@ -97,7 +98,8 @@ class _PinCodeWidgetState extends State<PinCodeWidget> with SingleTickerProvider
                   ? ActionKey.Backspace
                   : widget.localAuthenticationOption.isFacial
                       ? ActionKey.FaceId
-                      : widget.localAuthenticationOption.isFingerprint
+                      : widget.localAuthenticationOption.isFingerprint ||
+                              widget.localAuthenticationOption.isOtherBiometric
                           ? ActionKey.Fingerprint
                           : ActionKey.Backspace,
               onDigitPressed: (digit) {
@@ -131,6 +133,17 @@ class _PinCodeWidgetState extends State<PinCodeWidget> with SingleTickerProvider
                   } else if (action == ActionKey.Backspace && pinCode.isNotEmpty) {
                     pinCode = pinCode.substring(0, pinCode.length - 1);
                     errorMessage = "";
+                  } else if (action == ActionKey.Fingerprint || action == ActionKey.FaceId) {
+                    widget.testBiometricsFunction?.call().then((result) {
+                      if (!result.success) {
+                        pinCode = "";
+                        errorMessage = result.errorMessage!;
+                        _digitsShakeController.shake();
+                      } else if (result.clearOnSuccess) {
+                        pinCode = "";
+                        errorMessage = "";
+                      }
+                    });
                   }
                 });
               },
@@ -164,7 +177,7 @@ void main() {
       height: 280, // anything smaller than this will overflow some pixels
       child: PinCodeWidget(
         label: "First example",
-        localAuthenticationOption: LocalAuthenticationOption.FACE_ID,
+        localAuthenticationOption: LocalAuthenticationOption.faceId,
         testPinCodeFunction: (pin) => SynchronousFuture(
           const TestPinResult(false, errorMessage: "Wrong pin code"),
         ),
@@ -181,7 +194,7 @@ void main() {
       height: 400,
       child: PinCodeWidget(
         label: "Second example",
-        localAuthenticationOption: LocalAuthenticationOption.FINGERPRINT,
+        localAuthenticationOption: LocalAuthenticationOption.fingerprint,
         testPinCodeFunction: (pin) => SynchronousFuture(
           const TestPinResult(true),
         ),
@@ -198,7 +211,7 @@ void main() {
       height: 600,
       child: PinCodeWidget(
         label: "Third example",
-        localAuthenticationOption: LocalAuthenticationOption.NONE,
+        localAuthenticationOption: LocalAuthenticationOption.none,
         testPinCodeFunction: (pin) async {
           return TestPinResult(Random().nextBool(), errorMessage: "A random error");
         },

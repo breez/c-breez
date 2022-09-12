@@ -31,16 +31,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String accountSeedKey = "account_seed_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
-  final _log = FimberLog("AccountBloc");  
+  final _log = FimberLog("AccountBloc");
   final breez_sdk.LightningNode _lightningNode;
   final breez_sdk.LNURLService _lnurlService;
   final KeyChain _keyChain;
   bool started = false;
   breez_sdk.Signer? _signer;
 
-  AccountBloc(
-      this._lightningNode, this._lnurlService, this._keyChain)
-      : super(AccountState.initial()) {
+  AccountBloc(this._lightningNode, this._lnurlService, this._keyChain) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
@@ -63,8 +61,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           await _keyChain.write(accountSeedKey, HEX.encode(nodeCreds.secret!));
 
           // create signer
-          final seedHex = await _keyChain.read(accountSeedKey);          
-          await _createSignerFromSeed(Uint8List.fromList(HEX.decode(seedHex!)));         
+          final seedHex = await _keyChain.read(accountSeedKey);
+          await _createSignerFromSeed(Uint8List.fromList(HEX.decode(seedHex!)));
 
           // init service with credentials
           _lightningNode.connectWithCredentials(creds, _signer!);
@@ -72,7 +70,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         }
       });
     }
-  }  
+  }
 
   // Export the user keys to a file
   Future exportKeyFiles(Directory destDir) async {
@@ -82,25 +80,25 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
     final docDir = await getApplicationDocumentsDirectory();
     final signerDir = Directory("${docDir.path}/signer");
-    recursiveFolderCopySync(signerDir.path, destDir.path);    
+    recursiveFolderCopySync(signerDir.path, destDir.path);
   }
 
   void recursiveFolderCopySync(String path1, String path2) {
-    Directory dir1 = Directory(path1);  
+    Directory dir1 = Directory(path1);
     Directory dir2 = Directory(path2);
     if (!dir2.existsSync()) {
       dir2.createSync(recursive: true);
     }
-    
-    dir1.listSync().forEach((element) {  
-    String elementName = p.basename(element.path);
-        String newPath = "${dir2.path}/$elementName";
-        if (element is File) {
-          File newFile = File(newPath);
-          newFile.writeAsBytesSync(element.readAsBytesSync());
-        } else {
-          recursiveFolderCopySync(element.path, newPath);
-        }
+
+    dir1.listSync().forEach((element) {
+      String elementName = p.basename(element.path);
+      String newPath = "${dir2.path}/$elementName";
+      if (element is File) {
+        File newFile = File(newPath);
+        newFile.writeAsBytesSync(element.readAsBytesSync());
+      } else {
+        recursiveFolderCopySync(element.path, newPath);
+      }
     });
   }
 
@@ -112,7 +110,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _createSignerFromSeed(seed);
     var creds = await _lightningNode.newNodeFromSeed(seed, _signer!);
     _log.i("node registered successfully");
-    await _keyChain.write(accountSeedKey,HEX.encode(seed));
+    await _keyChain.write(accountSeedKey, HEX.encode(seed));
     await _keyChain.write(accountCredsKey, HEX.encode(creds));
     emit(state.copyWith(initial: false));
     await _startNode();
@@ -132,60 +130,41 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return creds;
   }
 
-  Future _startNode() async {    
+  Future _startNode() async {
     await syncStateWithNode();
     started = true;
   }
 
   // syncStateWithNode synchronized the node state with the local state.
   // This is required to assemble the account state (e.g liquidity, connected, etc...)
-  Future syncStateWithNode() {        
+  Future syncStateWithNode() {
     return _lightningNode.syncState();
   }
 
-  Future<bool> processLNURLWithdraw(
-      LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
+  Future<bool> processLNURLWithdraw(LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
+    bool isSent = await _lnurlService.processWithdrawRequest(withdrawParams, qParams).timeout(
+          const Duration(minutes: 3),
+          onTimeout: () => throw Exception('Timed out waiting 3 minutes for payment.'),
+        );
+    if (isSent) {
+      await syncStateWithNode();
+    }
+    return isSent;
+  }
+
+  Future sendLNURLPayment(LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
     try {
-      bool isSent = await _lnurlService
-          .processWithdrawRequest(withdrawParams, qParams)
-          .timeout(
+      await _lightningNode.sendPaymentForRequest(lnurlPayResult.pr, amount: Int64.parseInt(qParams['amount']!)).timeout(
             const Duration(minutes: 3),
-            onTimeout: () =>
-                throw Exception('Timed out waiting 3 minutes for payment.'),
+            onTimeout: () => throw Exception('Timed out waiting 3 minutes for payment.'),
           );
-      if (isSent) {
-        await syncStateWithNode();
-      }
-      return isSent;
-    } catch (_) {
-      rethrow;
+    } finally {
+      syncStateWithNode();
     }
   }
 
-  Future<bool> sendLNURLPayment(
-      LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
-    try {
-      bool isSent = await _lightningNode
-          .sendPaymentForRequest(lnurlPayResult.pr,
-              amount: Int64.parseInt(qParams['amount']!))
-          .timeout(
-            const Duration(minutes: 3),
-            onTimeout: () =>
-                throw Exception('Timed out waiting 3 minutes for payment.'),
-          );
-      if (isSent) {
-        await syncStateWithNode();
-      }
-      return isSent;
-    } catch (_) {
-      rethrow;
-    }
-  }
-
-  Future<LNURLPayResult> getPaymentResult(
-      LNURLPayParams payParams, Map<String, String> qParams) async {
-    final LNURLPayResult lnurlPayResult =
-        await _lnurlService.getPaymentResult(payParams, qParams);
+  Future<LNURLPayResult> getPaymentResult(LNURLPayParams payParams, Map<String, String> qParams) async {
+    final LNURLPayResult lnurlPayResult = await _lnurlService.getPaymentResult(payParams, qParams);
     return lnurlPayResult;
   }
 
@@ -226,9 +205,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
 
     if (!outgoing) {
-      if (channelMinimumFee != null &&
-          (amount > accState.maxInboundLiquidity &&
-              amount <= channelMinimumFee)) {
+      if (channelMinimumFee != null && (amount > accState.maxInboundLiquidity && amount <= channelMinimumFee)) {
         throw PaymentBelowSetupFeesError(channelMinimumFee);
       }
       if (amount > accState.maxAllowedToReceive) {
@@ -250,7 +227,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future<Invoice> addInvoice(
       {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
-    var invoice = await _lightningNode.requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));    
+    var invoice =
+        await _lightningNode.requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
     syncStateWithNode();
 
     return Invoice(
@@ -263,11 +241,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   Stream<AccountState> _watchAccountChanges() {
-    return Rx.combineLatest3<breez_sdk.PaymentsState, breez_sdk.PaymentFilter, breez_sdk.NodeState?,
-            AccountState>(
-        _lightningNode.paymentsStream(),
-        _lightningNode.paymentFilterStream(),
-        _lightningNode.nodeStateStream(),        
+    return Rx.combineLatest3<breez_sdk.PaymentsState, breez_sdk.PaymentFilter, breez_sdk.NodeState?, AccountState>(
+        _lightningNode.paymentsStream(), _lightningNode.paymentFilterStream(), _lightningNode.nodeStateStream(),
         (payments, paymentsFilter, nodeInfo) {
       return assembleAccountState(payments, paymentsFilter, nodeInfo) ?? state;
     });

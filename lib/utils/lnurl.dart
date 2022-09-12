@@ -88,10 +88,10 @@ String getSuccessActionMessage(
   return '';
 }
 
-handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
+Future handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
   LNURLPaySuccessAction? successAction = payResult.successAction;
   if (successAction != null) {
-    showDialog(
+    return showDialog(
       useRootNavigator: false,
       context: context,
       builder: (_) => SuccessActionDialog(
@@ -100,4 +100,5 @@ handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
       ),
     );
   }
+  return Future.value(null);
 }

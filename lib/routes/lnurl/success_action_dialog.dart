@@ -32,13 +32,16 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
     final texts = context.texts();
 
     return AlertDialog(
-      content: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Message(widget.message),
-          if (widget.url != null) ...[URLText(widget.url!)]
-        ],
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Message(widget.message),
+            if (widget.url != null) ...[URLText(widget.url!)]
+          ],
+        ),
       ),
       actions: [
         TextButton(

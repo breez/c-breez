@@ -781,6 +781,7 @@
   "security_and_backup_enable_biometric_option_face_id": "Ota kasvontunnistus käyttöön",
   "security_and_backup_enable_biometric_option_fingerprint": "Käytä sormenjälkeä",
   "security_and_backup_enable_biometric_option_touch_id": "Ota sormenjälkitunnistus käyttöön",
+  "security_and_backup_enable_biometric_option_other": "Enable Biometric",
   "security_and_backup_enable_biometric_option_none": "",
   "security_and_backup_validate_biometrics_reason": "Tämä asetus edellyttää tunnistautumista",
   "security_and_backup_pin_option_create": "Luo PIN-koodi",
@@ -1833,6 +1834,8 @@
     }
   },
   "lock_screen_enter_pin": "Syötä PIN-koodisi",
+  "lock_screen_pin_incorrect": "Incorrect PIN",
+  "lock_screen_pin_match_exception": "There was an error confirming your PIN, please try again. If this error persists, please contact Breez support.",
   "backup_phrase_generate": "Luo varmuuskopion salauslause",
   "backup_phrase_instructions": "Sinulle näytetään lista sanoja. Kirjoita sanat numerojärjestyksessä ylös ja talleta ne turvalliseen paikkaan. Mikäli joudut palauttamaan varmuuskopion, eikä sinulla ole sanoja tallessa, ei palautus onnistu ja menetät kaikki varasi. Tällöin Breez eikä kukaan muukaan  voi auttaa sinua palautuksessa.",
   "backup_phrase_action_confirm": "YMMÄRRÄN",

@@ -781,6 +781,7 @@
   "security_and_backup_enable_biometric_option_face_id": "Activer Face ID",
   "security_and_backup_enable_biometric_option_fingerprint": "Activer l'empreinte digitale",
   "security_and_backup_enable_biometric_option_touch_id": "Activer Touch ID",
+  "security_and_backup_enable_biometric_option_other": "Enable Biometric",
   "security_and_backup_enable_biometric_option_none": "",
   "security_and_backup_validate_biometrics_reason": "Authentifiez-vous pour activer ce paramètre",
   "security_and_backup_pin_option_create": "Créer un code PIN",
@@ -1833,6 +1834,8 @@
     }
   },
   "lock_screen_enter_pin": "Entrez votre code PIN",
+  "lock_screen_pin_incorrect": "Incorrect PIN",
+  "lock_screen_pin_match_exception": "There was an error confirming your PIN, please try again. If this error persists, please contact Breez support.",
   "backup_phrase_generate": "Générer une phrase de sauvegarde",
   "backup_phrase_instructions": "Une liste de mots vous sera présentée. Notez ces mots et conservez-les dans un endroit sûr. Sans ces mots, vous ne pourrez pas restaurer à partir de la sauvegarde et vos fonds seront perdus. Breez ne pourra pas vous aider.",
   "backup_phrase_action_confirm": "JE COMPRENDS",

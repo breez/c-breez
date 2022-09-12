@@ -781,6 +781,7 @@
     "security_and_backup_enable_biometric_option_face_id": "Abilita il Face ID",
     "security_and_backup_enable_biometric_option_fingerprint": "Abilita impronta",
     "security_and_backup_enable_biometric_option_touch_id": "Abilita Touch ID",
+    "security_and_backup_enable_biometric_option_other": "Enable Biometric",
     "security_and_backup_enable_biometric_option_none": "security_and_backup_enable_biometric_option_none",
     "security_and_backup_validate_biometrics_reason": "Autenticati per abilitare questa impostazione",
     "security_and_backup_pin_option_create": "Crea PIN",
@@ -1833,6 +1834,8 @@
         }
     },
     "lock_screen_enter_pin": "Inserisci il tuo PIN",
+    "lock_screen_pin_incorrect": "Incorrect PIN",
+    "lock_screen_pin_match_exception": "There was an error confirming your PIN, please try again. If this error persists, please contact Breez support.",
     "backup_phrase_generate": "Crittografa il backup su cloud",
     "backup_phrase_instructions": "Ti verrà mostrato un elenco di parole. Annota le parole e conservale in un luogo sicuro. Senza queste parole, non sarai in grado di ripristinare dal backup e i tuoi fondi andranno persi. Breez non sarà in grado di aiutare. Nota che queste parole non sono i seed del wallet. Vengono utilizzati per crittografare i dati di backup archiviati nel cloud.",
     "backup_phrase_action_confirm": "Capisco",

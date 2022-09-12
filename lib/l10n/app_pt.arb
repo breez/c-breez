@@ -781,6 +781,7 @@
   "security_and_backup_enable_biometric_option_face_id": "Habilitar o Face ID",
   "security_and_backup_enable_biometric_option_fingerprint": "Habilitar a impressão digital",
   "security_and_backup_enable_biometric_option_touch_id": "Habilitar o Touch ID",
+  "security_and_backup_enable_biometric_option_other": "Habilitar Biometria",
   "security_and_backup_enable_biometric_option_none": "",
   "security_and_backup_validate_biometrics_reason": "Autentique-se para habilitar esta configuração",
   "security_and_backup_pin_option_create": "Criar um PIN",
@@ -1833,6 +1834,8 @@
     }
   },
   "lock_screen_enter_pin": "Insira seu PIN",
+  "lock_screen_pin_incorrect": "PIN Incorreto",
+  "lock_screen_pin_match_exception": "Ocorreu um erro ao confirmar seu PIN. Por favor, tente novamente. Se o erro persistir, por favor, entre em contato com o suporte da Breez.",
   "backup_phrase_generate": "Encriptar o backup na nuvem",
   "backup_phrase_instructions": "Você verá uma lista de palavras. Anote as palavras e guarde-as em um lugar seguro. Sem essas palavras você não poderá restaurar os seus fundos a partir do backup e seus fundos serão perdidos e a Breez não poderá te ajudar. Esta chave não é uma semente de carteira. Ele é usado para criptografar os dados de backup armazenados na nuvem. Estas palavras não são uma semente para a sua carteira. Estas palavras são usadas para criptografar os dados no backup armazenado na nuvem.",
   "backup_phrase_action_confirm": "EU ENTENDO",

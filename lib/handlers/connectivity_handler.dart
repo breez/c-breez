@@ -80,7 +80,7 @@ class ConnectivityHandler {
                   );
                 },
                 child: Text(
-                  texts.invoice_btc_address_action_retry,
+                  texts.no_connection_flushbar_action_retry,
                   style: theme.snackBarStyle.copyWith(
                     color: Theme.of(context).errorColor,
                   ),

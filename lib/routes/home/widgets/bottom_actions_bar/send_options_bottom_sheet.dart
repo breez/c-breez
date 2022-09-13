@@ -100,22 +100,20 @@ class SendOptionsBottomSheet extends StatelessWidget {
         Navigator.of(context).push(
           FadeInRoute(
             builder: (_) => SpontaneousPaymentPage(
-                clipboardData!.data, firstPaymentItemKey),
+              clipboardData!.data,
+              firstPaymentItemKey,
+            ),
           ),
         );
         return;
       case ClipboardDataType.unrecognized:
       default:
         await showDialog(
-          useRootNavigator: false,
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => EnterPaymentInfoDialog(
-            context,
-            inputBloc,
-            firstPaymentItemKey,
-          ),
-        );
+            useRootNavigator: false,
+            context: context,
+            barrierDismissible: false,
+            builder: (_) =>
+                EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey));
         return;
     }
   }

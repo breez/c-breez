@@ -1,4 +1,3 @@
-import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/lnurl.dart';
@@ -8,17 +7,10 @@ import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class EnterPaymentInfoDialog extends StatefulWidget {
-  final BuildContext context;
-  final InputBloc inputBloc;
-  final GlobalKey firstPaymentItemKey;
+  final GlobalKey paymentItemKey;
 
-  const EnterPaymentInfoDialog(
-    this.context,
-    this.inputBloc,
-    this.firstPaymentItemKey,
-  );
+  const EnterPaymentInfoDialog({required this.paymentItemKey});
 
   @override
   State<StatefulWidget> createState() {
@@ -155,27 +147,31 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     ];
 
     if (_paymentInfoController.text.isNotEmpty) {
-      actions.add(SimpleDialogOption(
-        onPressed: (() async {
-          if (_formKey.currentState!.validate()) {
-            Navigator.of(context).pop();
-            var nodeID = parseNodeId(_paymentInfoController.text);
-            Navigator.of(context).push(FadeInRoute(
-              builder: (_) => SpontaneousPaymentPage(
-                nodeID,
-                widget.firstPaymentItemKey,
-              ),
-            ));
-            return;
-
-            // widget.inputBloc.addIncomingInput(_paymentInfoController.text);
-          }
-        }),
-        child: Text(
-          texts.payment_info_dialog_action_approve,
-          style: themeData.primaryTextTheme.button,
+      actions.add(
+        SimpleDialogOption(
+          onPressed: (() async {
+            if (_formKey.currentState!.validate()) {
+              Navigator.of(context).pop();
+              var nodeID = parseNodeId(_paymentInfoController.text);
+              Navigator.of(context).push(
+                FadeInRoute(
+                  builder: (_) => SpontaneousPaymentPage(
+                    nodeID,
+                    widget.paymentItemKey,
+                  ),
+                ),
+              );
+              return;
+              // final InputBloc inputBloc = context.read<InputBloc>();
+              // inputBloc.addIncomingInput(_paymentInfoController.text);
+            }
+          }),
+          child: Text(
+            texts.payment_info_dialog_action_approve,
+            style: themeData.primaryTextTheme.button,
+          ),
         ),
-      ));
+      );
     }
     return actions;
   }

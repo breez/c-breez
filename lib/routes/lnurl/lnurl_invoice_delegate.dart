@@ -59,7 +59,7 @@ Future handleWithdrawRequest(
   LNURLWithdrawParams withdrawParams,
 ) async {
   LNURLWithdrawPageResult? pageResult;
-  pageResult = await showDialog(
+  pageResult = await showDialog<LNURLWithdrawPageResult>(
     useRootNavigator: false,
     context: context,
     barrierDismissible: false,

@@ -190,7 +190,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               )
             ]),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 16.0),
+      contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
       actions: [
         TextButton(
           style: ButtonStyle(

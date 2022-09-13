@@ -14,10 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LNURLPaymentDialog extends StatefulWidget {
-  final LNURLPayParams payParams;  
+  final LNURLPayParams payParams;
 
   const LNURLPaymentDialog(
-    this.payParams, {    
+    this.payParams, {
     Key? key,
   }) : super(key: key);
 
@@ -40,70 +40,84 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
     final themeData = Theme.of(context);
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
-    final metadataMap = {for (var v in json.decode(widget.payParams.metadata)) v[0] as String: v[1]};
-    final description = metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
+    final metadataMap = {
+      for (var v in json.decode(widget.payParams.metadata)) v[0] as String: v[1]
+    };
+    final description =
+        metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
     FiatConversion? fiatConversion;
     if (currencyState.fiatEnabled) {
-      fiatConversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+      fiatConversion = FiatConversion(
+          currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     }
 
     return AlertDialog(
       title: Text(
         widget.payParams.domain,
-        style: Theme.of(context).primaryTextTheme.headline4!.copyWith(fontSize: 16),
+        style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
-      content: Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-        Text(
-          texts.payment_request_dialog_requesting,
-          style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-        GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onLongPressStart: (_) {
-            setState(() {
-              _showFiatCurrency = true;
-            });
-          },
-          onLongPressEnd: (_) {
-            setState(() {
-              _showFiatCurrency = false;
-            });
-          },
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: double.infinity,
-            ),
-            child: Text(
-              _showFiatCurrency && fiatConversion != null
-                  ? fiatConversion.format(Int64(widget.payParams.maxSendable ~/ 1000))
-                  : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                      .format(Int64(widget.payParams.maxSendable ~/ 1000)),
-              style: themeData.primaryTextTheme.headline5,
+      content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              texts.payment_request_dialog_requesting,
+              style:
+                  themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
               textAlign: TextAlign.center,
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
-          child: Container(
-            constraints: const BoxConstraints(
-              maxHeight: 200,
-              minWidth: double.infinity,
-            ),
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                child: AutoSizeText(
-                  description,
-                  style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
-                  textAlign: description.length > 40 && !description.contains("\n") ? TextAlign.start : TextAlign.center,
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onLongPressStart: (_) {
+                setState(() {
+                  _showFiatCurrency = true;
+                });
+              },
+              onLongPressEnd: (_) {
+                setState(() {
+                  _showFiatCurrency = false;
+                });
+              },
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: double.infinity,
+                ),
+                child: Text(
+                  _showFiatCurrency && fiatConversion != null
+                      ? fiatConversion
+                          .format(Int64(widget.payParams.maxSendable ~/ 1000))
+                      : BitcoinCurrency.fromTickerSymbol(
+                              currencyState.bitcoinTicker)
+                          .format(Int64(widget.payParams.maxSendable ~/ 1000)),
+                  style: themeData.primaryTextTheme.headline5,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
-          ),
-        )
-      ]),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxHeight: 200,
+                  minWidth: double.infinity,
+                ),
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    child: AutoSizeText(
+                      description,
+                      style: themeData.primaryTextTheme.headline3!
+                          .copyWith(fontSize: 16),
+                      textAlign:
+                          description.length > 40 && !description.contains("\n")
+                              ? TextAlign.start
+                              : TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ]),
       actions: [
         TextButton(
           style: ButtonStyle(
@@ -111,11 +125,12 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               if (states.contains(MaterialState.pressed)) {
                 return Colors.transparent;
               }
-              return Theme.of(context).textTheme.button!.color!; // Defer to the widget's default.
+              // Defer to the widget's default.
+              return themeData.textTheme.button!.color!;
             }),
           ),
           onPressed: () {
-            Navigator.of(context).pop();            
+            Navigator.of(context).pop();
           },
           child: Text(
             texts.payment_request_dialog_action_cancel,
@@ -128,7 +143,8 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               if (states.contains(MaterialState.pressed)) {
                 return Colors.transparent;
               }
-              return Theme.of(context).textTheme.button!.color!; // Defer to the widget's default.
+              // Defer to the widget's default.
+              return themeData.textTheme.button!.color!;
             }),
           ),
           onPressed: () async {
@@ -138,16 +154,19 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             final navigator = Navigator.of(context);
             var loaderRoute = createLoaderRoute(context);
             navigator.push(loaderRoute);
-            Map<String, String> qParams = {'amount': widget.payParams.maxSendable.toString()};                                  
+            Map<String, String> qParams = {
+              'amount': widget.payParams.maxSendable.toString(),
+            };
             try {
-              LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(widget.payParams, qParams);
+              LNURLPayResult lnurlPayResult =
+                  await accountBloc.getPaymentResult(widget.payParams, qParams);
               await accountBloc.sendLNURLPayment(lnurlPayResult, qParams);
-              navigator.removeRoute(loaderRoute);              
-              navigator.pop(LNURLPaymentPageResult(result: lnurlPayResult));    
+              navigator.removeRoute(loaderRoute);
+              navigator.pop(LNURLPaymentPageResult(result: lnurlPayResult));
             } catch (e) {
-              navigator.removeRoute(loaderRoute);              
-              navigator.pop(LNURLPaymentPageResult(error: e));              
-            }           
+              navigator.removeRoute(loaderRoute);
+              navigator.pop(LNURLPaymentPageResult(error: e));
+            }
           },
           child: Text(
             texts.spontaneous_payment_action_pay,

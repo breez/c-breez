@@ -1,4 +1,3 @@
-
 import 'package:dart_lnurl/dart_lnurl.dart';
 
 class LNURLPaymentPageResult {

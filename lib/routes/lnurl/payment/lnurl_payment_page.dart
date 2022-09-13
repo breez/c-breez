@@ -21,11 +21,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/lnurl_metadata.dart';
 
 class LNURLPaymentPage extends StatefulWidget {
-  final LNURLPayParams payParams;  
+  final LNURLPayParams payParams;
 
   const LNURLPaymentPage(
     this.payParams, {
-    Key? key,    
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -50,7 +50,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     super.initState();
     fixedAmount = widget.payParams.minSendable == widget.payParams.maxSendable;
     if (fixedAmount) {
-      _amountController.text = (widget.payParams.maxSendable ~/ 1000).toString();
+      _amountController.text =
+          (widget.payParams.maxSendable ~/ 1000).toString();
     }
   }
 
@@ -101,7 +102,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     maxLength: widget.payParams.commentAllowed,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
-                      labelText: '${texts.payment_details_dialog_share_comment} (optional)',
+                      labelText:
+                          '${texts.payment_details_dialog_share_comment} (optional)',
                     ),
                   )
                 ],
@@ -195,17 +197,18 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               "payerData": json.encode(payerData.toJson()),
             };
             // Create loader and process payment
-            final navigator = Navigator.of(context);            
+            final navigator = Navigator.of(context);
             var loaderRoute = createLoaderRoute(context);
-            navigator.push(loaderRoute);            
+            navigator.push(loaderRoute);
             try {
-              LNURLPayResult lnurlPayResult = await accountBloc.getPaymentResult(widget.payParams, payerDataMap);
+              LNURLPayResult lnurlPayResult = await accountBloc
+                  .getPaymentResult(widget.payParams, payerDataMap);
               await accountBloc.sendLNURLPayment(lnurlPayResult, payerDataMap);
               navigator.removeRoute(loaderRoute);
-              navigator.pop(LNURLPaymentPageResult(result: lnurlPayResult));    
+              navigator.pop(LNURLPaymentPageResult(result: lnurlPayResult));
             } catch (e) {
               navigator.removeRoute(loaderRoute);
-              navigator.pop(LNURLPaymentPageResult(error: e));              
+              navigator.pop(LNURLPaymentPageResult(error: e));
             }
           }
         },

@@ -10,14 +10,14 @@ import 'withdraw/lnurl_withdraw_dialog.dart';
 
 Future handleLNURL(
   BuildContext context,
-  LNURLParseResult lnurlParseResult,  
+  LNURLParseResult lnurlParseResult,
 ) {
   if (lnurlParseResult.payParams != null) {
-    return handlePayRequest(context, lnurlParseResult.payParams!);    
+    return handlePayRequest(context, lnurlParseResult.payParams!);
   }
   if (lnurlParseResult.withdrawalParams != null) {
     return handleWithdrawRequest(
-        context, lnurlParseResult.withdrawalParams!, ()=>{}, (s)=>{});
+        context, lnurlParseResult.withdrawalParams!, () => {}, (s) => {});
   }
 
   throw "Unsupported lnurl";
@@ -25,7 +25,7 @@ Future handleLNURL(
 
 Future<LNURLPayResult?> handlePayRequest(
   BuildContext context,
-  LNURLPayParams payParams,  
+  LNURLPayParams payParams,
 ) async {
   bool fixedAmount = payParams.minSendable == payParams.maxSendable;
   LNURLPaymentPageResult? pageResult;
@@ -35,16 +35,12 @@ Future<LNURLPayResult?> handlePayRequest(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => LNURLPaymentDialog(
-        payParams,        
-      ),
+      builder: (_) => LNURLPaymentDialog(payParams),
     );
   } else {
     pageResult = await Navigator.of(context).push<LNURLPaymentPageResult>(
       FadeInRoute(
-        builder: (_) => LNURLPaymentPage(
-          payParams,          
-        ),
+        builder: (_) => LNURLPaymentPage(payParams),
       ),
     );
   }
@@ -54,8 +50,8 @@ Future<LNURLPayResult?> handlePayRequest(
   }
   if (pageResult.error != null) {
     throw pageResult.error.toString();
-  }  
-  return await handleSuccessAction(context, pageResult.result!);  
+  }
+  return await handleSuccessAction(context, pageResult.result!);
 }
 
 Future handleWithdrawRequest(

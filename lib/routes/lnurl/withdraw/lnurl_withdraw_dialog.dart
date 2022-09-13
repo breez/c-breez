@@ -46,7 +46,8 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
     fixedAmount = widget.withdrawParams.minWithdrawable ==
         widget.withdrawParams.maxWithdrawable;
     if (fixedAmount) {
-      _amountController.text = (widget.withdrawParams.minWithdrawable ~/ 1000).toString();
+      _amountController.text =
+          (widget.withdrawParams.minWithdrawable ~/ 1000).toString();
     }
     super.initState();
   }
@@ -66,10 +67,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
     return AlertDialog(
       title: Text(
         widget.withdrawParams.domain,
-        style: Theme.of(context)
-            .primaryTextTheme
-            .headline4!
-            .copyWith(fontSize: 16),
+        style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
       content: Form(
@@ -200,10 +198,8 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               if (states.contains(MaterialState.pressed)) {
                 return Colors.transparent;
               }
-              return Theme.of(context)
-                  .textTheme
-                  .button!
-                  .color!; // Defer to the widget's default.
+              // Defer to the widget's default.
+              return themeData.textTheme.button!.color!;
             }),
           ),
           onPressed: () {
@@ -221,10 +217,8 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               if (states.contains(MaterialState.pressed)) {
                 return Colors.transparent;
               }
-              return Theme.of(context)
-                  .textTheme
-                  .button!
-                  .color!; // Defer to the widget's default.
+              // Defer to the widget's default.
+              return themeData.textTheme.button!.color!;
             }),
           ),
           onPressed: () async {

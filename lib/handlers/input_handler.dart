@@ -50,9 +50,12 @@ class InputHandler {
       case InputProtocol.lnurl:
         handleLNURL(
           _context,
-          inputState.inputData,          
-        ).onError((error, stackTrace) {showFlushbar(_context, message: error.toString());})
-        .whenComplete(() {_handlingRequest = false;});
+          inputState.inputData,
+        ).onError((error, stackTrace) {
+          showFlushbar(_context, message: error.toString());
+        }).whenComplete(() {
+          _handlingRequest = false;
+        });
         return;
       case InputProtocol.nodeID:
         handleNodeID(inputState.inputData);

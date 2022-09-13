@@ -1,4 +1,5 @@
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
+import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
@@ -16,8 +17,7 @@ Future handleLNURL(
     return handlePayRequest(context, lnurlParseResult.payParams!);
   }
   if (lnurlParseResult.withdrawalParams != null) {
-    return handleWithdrawRequest(
-        context, lnurlParseResult.withdrawalParams!, () => {}, (s) => {});
+    return handleWithdrawRequest(context, lnurlParseResult.withdrawalParams!);
   }
 
   throw "Unsupported lnurl";
@@ -57,17 +57,18 @@ Future<LNURLPayResult?> handlePayRequest(
 Future handleWithdrawRequest(
   BuildContext context,
   LNURLWithdrawParams withdrawParams,
-  Function() onComplete,
-  Function(String error) onError,
-) {
-  return showDialog(
+) async {
+  LNURLWithdrawPageResult? pageResult;
+  pageResult = await showDialog(
     useRootNavigator: false,
     context: context,
     barrierDismissible: false,
-    builder: (_) => LNURLWithdrawDialog(
-      withdrawParams,
-      onComplete: onComplete,
-      onError: onError,
-    ),
+    builder: (_) => LNURLWithdrawDialog(withdrawParams),
   );
+  if (pageResult == null) {
+    return Future.value();
+  }
+  if (pageResult.error != null) {
+    throw pageResult.error.toString();
+  }
 }

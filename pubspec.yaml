@@ -12,11 +12,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  another_flushbar: ^1.10.29
+  another_flushbar: ^1.12.29
   app_settings: ^4.1.8
   archive: ^3.3.1
   auto_size_text: ^3.0.0
-  basic_utils: ^5.2.0
+  basic_utils: ^5.2.2
   bip32: ^2.0.0
   bip39: ^1.0.6
   bolt11_decoder: ^1.0.1
@@ -36,9 +36,9 @@ dependencies:
   ffi: ^2.0.1
   fimber: ^0.6.6
   fimber_io: ^0.6.6
-  firebase_core: ^1.21.1
-  firebase_dynamic_links: ^4.3.6
-  firebase_messaging: ^13.0.0
+  firebase_core: ^1.22.0
+  firebase_dynamic_links: ^4.3.7
+  firebase_messaging: ^13.0.1
   fixnum: ^1.0.1
   flutter_bloc: ^8.1.1
   flutter_fgbg:
@@ -46,7 +46,7 @@ dependencies:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
   flutter_secure_storage: ^6.0.0
-  flutter_svg: ^1.1.4
+  flutter_svg: ^1.1.5
   flutter_typeahead:
     git:
       url: https://github.com/breez/flutter_typeahead.git
@@ -61,13 +61,13 @@ dependencies:
   ini: ^2.1.0
   intl: ^0.17.0
   local_auth: ^2.1.2
-  local_auth_android: ^1.0.11
+  local_auth_android: ^1.0.12
   local_auth_ios: ^1.0.9
   mobile_scanner: ^2.0.0
   package_info_plus: ^1.4.3+1
   path: ^1.8.2
   path_provider: ^2.0.11
-  pointycastle: ^3.6.1
+  pointycastle: ^3.6.2
   protobuf: ^2.1.0
   qr_flutter: ^4.0.0
   rxdart: ^0.27.5
@@ -90,10 +90,10 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   mockito: ^5.3.0
   sqflite_common_ffi: ^2.1.1+1
-  test: ^1.21.5
+  test: ^1.21.6
 
 dependency_overrides:
-  test_api: ^0.4.13
+  test_api: ^0.4.14
   path: ^1.8.2
   vector_math: ^2.1.3
 

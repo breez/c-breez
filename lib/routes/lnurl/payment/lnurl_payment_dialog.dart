@@ -136,7 +136,6 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
 
             // Create loader and process payment
             final navigator = Navigator.of(context);
-            navigator.pop();
             var loaderRoute = createLoaderRoute(context);
             navigator.push(loaderRoute);
             Map<String, String> qParams = {'amount': widget.payParams.maxSendable.toString()};                                  

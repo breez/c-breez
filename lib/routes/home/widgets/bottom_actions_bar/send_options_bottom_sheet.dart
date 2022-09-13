@@ -90,26 +90,33 @@ class SendOptionsBottomSheet extends StatelessWidget {
     GlobalKey firstPaymentItemKey,
   ) async {
     Navigator.of(context).pop();
-    if (clipboardData != null) {
-      final data = clipboardData.data;
-      if (clipboardData.type == ClipboardDataType.paymentRequest) {
-        inputBloc.addIncomingInput(data ?? "");
-      } else if (clipboardData.type == ClipboardDataType.nodeID) {
-        Navigator.of(context).push(FadeInRoute(
-          builder: (_) => SpontaneousPaymentPage(data, firstPaymentItemKey),
-        ));
-      }
-    } else {
-      await showDialog(
-        useRootNavigator: false,
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => EnterPaymentInfoDialog(
-          context,
-          inputBloc,
-          firstPaymentItemKey,
-        ),
-      );
+    switch (clipboardData?.type) {
+      case ClipboardDataType.lnurl:
+      case ClipboardDataType.lightningAddress:
+      case ClipboardDataType.paymentRequest:
+        inputBloc.addIncomingInput(clipboardData!.data ?? "");
+        return;
+      case ClipboardDataType.nodeID:
+        Navigator.of(context).push(
+          FadeInRoute(
+            builder: (_) => SpontaneousPaymentPage(
+                clipboardData!.data, firstPaymentItemKey),
+          ),
+        );
+        return;
+      case ClipboardDataType.unrecognized:
+      default:
+        await showDialog(
+          useRootNavigator: false,
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => EnterPaymentInfoDialog(
+            context,
+            inputBloc,
+            firstPaymentItemKey,
+          ),
+        );
+        return;
     }
   }
 

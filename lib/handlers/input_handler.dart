@@ -36,13 +36,7 @@ class InputHandler {
       if (_handlingRequest) {
         return;
       }
-      // Display a loader while input is being parsed
-      // Remove loader if input can't be parsed
-      if (inputState.inputData == null) {
-        _setLoading(inputState.isLoading!);
-        return;
-      }
-      _setLoading(false);
+      _setLoading(inputState.isLoading);
       _handlingRequest = true;
       handleInput(inputState).whenComplete(() => _handlingRequest = false);
     }).onError((error) {

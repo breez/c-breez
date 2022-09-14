@@ -321,7 +321,7 @@ class Greenlight implements NodeAPI {
     final response = await _nodeClient!.keysend(greenlight.KeysendRequest(
       nodeId: HEX.decode(destNode),
       amount: greenlight.Amount(satoshi: amount),
-      label: "",
+      label: "breez-${DateTime.now().millisecondsSinceEpoch}",
       extratlvs: tlv.keys.map((key) => greenlight.TlvField(type: key, value: tlv[key]!.codeUnits))
     ));  
     return fromGreenlightPayment(response);

@@ -89,16 +89,13 @@ String getSuccessActionMessage(
 }
 
 Future handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
-  LNURLPaySuccessAction? successAction = payResult.successAction;
-  if (successAction != null) {
-    return showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) => SuccessActionDialog(
-        getSuccessActionMessage(payResult, successAction),
-        url: successAction.url,
-      ),
-    );
-  }
-  return Future.value(null);
+  LNURLPaySuccessAction successAction = payResult.successAction!;
+  return showDialog(
+    useRootNavigator: false,
+    context: context,
+    builder: (_) => SuccessActionDialog(
+      getSuccessActionMessage(payResult, successAction),
+      url: successAction.url,
+    ),
+  );
 }

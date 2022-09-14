@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
@@ -13,7 +14,6 @@ import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -264,4 +264,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await signerDir.create(recursive: true);
     _signer = breez_sdk.Signer(seed, signerDir.path);
   }
+
+  final StreamController<LNURLPayResult> _lnurlPayResultStreamController =
+      StreamController<LNURLPayResult>();
+
+  Stream<LNURLPayResult> get lnurlPayResultStream =>
+      _lnurlPayResultStreamController.stream;
+
+  Sink<LNURLPayResult> get lnurlPayResultSink =>
+      _lnurlPayResultStreamController.sink;
 }

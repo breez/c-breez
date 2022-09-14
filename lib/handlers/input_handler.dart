@@ -1,12 +1,15 @@
 import 'package:breez_sdk/sdk.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
+import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
     as payment_request;
+import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,6 +50,11 @@ class InputHandler {
       _setLoading(false);
       showFlushbar(_context, message: error.toString());
     });
+    // Handle LNURL Success Action
+    final AccountBloc accountBloc = _context.read<AccountBloc>();
+    accountBloc.lnurlPayResultStream.listen((payResult) {
+      handleSuccessAction(_context, payResult);
+    });
   }
 
   void handleInput(InputState inputState) {
@@ -60,6 +68,14 @@ class InputHandler {
           inputState.inputData,
         ).onError((error, stackTrace) {
           showFlushbar(_context, message: error.toString());
+        }).then((pageResult) {
+          if (pageResult is LNURLPayResult) {
+            final AccountBloc accountBloc = _context.read<AccountBloc>();
+            LNURLPaySuccessAction? successAction = pageResult.successAction;
+            if (successAction != null) {
+              accountBloc.lnurlPayResultSink.add(pageResult);
+            }
+          }
         }).whenComplete(() {
           _handlingRequest = false;
         });

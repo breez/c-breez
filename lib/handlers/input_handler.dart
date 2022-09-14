@@ -9,7 +9,6 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
     as payment_request;
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -52,8 +51,8 @@ class InputHandler {
     });
     // Handle LNURL Success Action
     final AccountBloc accountBloc = _context.read<AccountBloc>();
-    accountBloc.lnurlPayResultStream.listen((payResult) {
-      handleSuccessAction(_context, payResult);
+    accountBloc.successActionStream.listen((successActionData) {
+      handleSuccessAction(_context, successActionData);
     });
   }
 
@@ -68,14 +67,6 @@ class InputHandler {
           inputState.inputData,
         ).onError((error, stackTrace) {
           showFlushbar(_context, message: error.toString());
-        }).then((pageResult) {
-          if (pageResult is LNURLPayResult) {
-            final AccountBloc accountBloc = _context.read<AccountBloc>();
-            LNURLPaySuccessAction? successAction = pageResult.successAction;
-            if (successAction != null) {
-              accountBloc.lnurlPayResultSink.add(pageResult);
-            }
-          }
         }).whenComplete(() {
           _handlingRequest = false;
         });

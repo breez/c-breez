@@ -88,14 +88,20 @@ String getSuccessActionMessage(
   return '';
 }
 
-Future handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
-  LNURLPaySuccessAction successAction = payResult.successAction!;
-  return showDialog(
+class SuccessActionData {
+  final String message;
+  final String? url;
+
+  SuccessActionData(this.message, this.url);
+}
+
+Future handleSuccessAction(
+  BuildContext context,
+  SuccessActionData successActionData,
+) async {
+  return await showDialog(
     useRootNavigator: false,
     context: context,
-    builder: (_) => SuccessActionDialog(
-      getSuccessActionMessage(payResult, successAction),
-      url: successAction.url,
-    ),
+    builder: (_) => SuccessActionDialog(successActionData),
   );
 }

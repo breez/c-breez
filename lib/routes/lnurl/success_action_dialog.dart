@@ -1,18 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class SuccessActionDialog extends StatefulWidget {
-  final String message;
-  final String? url;
+  final SuccessActionData successActionData;
 
-  const SuccessActionDialog(
-    this.message, {
-    this.url,
-    Key? key,
-  }) : super(key: key);
+  const SuccessActionDialog(this.successActionData);
 
   @override
   State<StatefulWidget> createState() {
@@ -21,9 +17,14 @@ class SuccessActionDialog extends StatefulWidget {
 }
 
 class SuccessActionDialogState extends State<SuccessActionDialog> {
+  late final String message;
+  late final String? url;
+
   @override
   void initState() {
     super.initState();
+    message = widget.successActionData.message;
+    url = widget.successActionData.url;
   }
 
   @override
@@ -38,8 +39,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Message(widget.message),
-            if (widget.url != null) ...[URLText(widget.url!)]
+            Message(message),
+            if (url != null) ...[URLText(url!)]
           ],
         ),
       ),
@@ -50,10 +51,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
               if (states.contains(MaterialState.pressed)) {
                 return Colors.transparent;
               }
-              return Theme.of(context)
-                  .textTheme
-                  .button!
-                  .color!; // Defer to the widget's default.
+              // Defer to the widget's default.
+              return Theme.of(context).textTheme.button!.color!;
             }),
           ),
           onPressed: () {
@@ -64,7 +63,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             style: themeData.primaryTextTheme.button,
           ),
         ),
-        if (widget.url != null) ...[
+        if (url != null) ...[
           TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>(
@@ -72,10 +71,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                   if (states.contains(MaterialState.pressed)) {
                     return Colors.transparent;
                   }
-                  return Theme.of(context)
-                      .textTheme
-                      .button!
-                      .color!; // Defer to the widget's default.
+                  // Defer to the widget's default.
+                  return Theme.of(context).textTheme.button!.color!;
                 },
               ),
             ),
@@ -84,10 +81,9 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
               style: Theme.of(context).primaryTextTheme.button,
             ),
             onPressed: () async {
-              final String url = widget.url!;
               final navigator = Navigator.of(context);
-              if (await canLaunchUrlString(url)) {
-                await launchUrlString(url);
+              if (await canLaunchUrlString(url!)) {
+                await launchUrlString(url!);
                 navigator.pop();
               } else {
                 navigator.pop();

@@ -8,6 +8,7 @@ import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/keychain.dart';
+import 'package:c_breez/utils/lnurl.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
@@ -160,6 +161,15 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           );
     } finally {
       syncStateWithNode();
+      LNURLPaySuccessAction? successAction = lnurlPayResult.successAction;
+      if (successAction != null) {
+        _successActionStreamController.add(
+          SuccessActionData(
+            getSuccessActionMessage(lnurlPayResult, successAction),
+            successAction.url,
+          ),
+        );
+      }
     }
   }
 
@@ -265,12 +275,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _signer = breez_sdk.Signer(seed, signerDir.path);
   }
 
-  final StreamController<LNURLPayResult> _lnurlPayResultStreamController =
-      StreamController<LNURLPayResult>();
+  final StreamController<SuccessActionData> _successActionStreamController =
+      StreamController<SuccessActionData>();
 
-  Stream<LNURLPayResult> get lnurlPayResultStream =>
-      _lnurlPayResultStreamController.stream;
-
-  Sink<LNURLPayResult> get lnurlPayResultSink =>
-      _lnurlPayResultStreamController.sink;
+  Stream<SuccessActionData> get successActionStream =>
+      _successActionStreamController.stream;
 }

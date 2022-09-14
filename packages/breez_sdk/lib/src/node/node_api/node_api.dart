@@ -36,7 +36,7 @@ abstract class NodeAPI {
       String destNode, Int64 amount, String description,
       {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv});
 
-  Future sendPaymentForRequest(
+  Future<OutgoingLightningPayment> sendPaymentForRequest(
       String blankInvoicePaymentRequest,
       {Int64? amount});
 

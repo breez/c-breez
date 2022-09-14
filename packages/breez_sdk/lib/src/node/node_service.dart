@@ -79,7 +79,7 @@ class LightningNode {
           : PaymentFilter.fromJson(json.decode(rawFilter.value));
 
       var outgoing = await _stroage.listOutgoingPayments();
-      var outgoingList = outgoing.map((p) {
+      var outgoingList = outgoing.map((p) {        
         return PaymentInfo(
             type: PaymentType.sent,
             amountMsat: Int64(p.amountMsats),
@@ -242,13 +242,15 @@ class LightningNode {
     return invoice.copyWithNewAmount(amountMsats: amountMSat, bolt11: bolt11WithHints);
   }
 
-  Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) {
-    return _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
+  Future<PaymentInfo> sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
+    final outgoingPayment = await _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
+    return outgoingPayment.toPaymentInfo();
   }
 
-  Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, Int64 amount, String description,
+  Future<PaymentInfo> sendSpontaneousPayment(String destNode, Int64 amount, String description,
   {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) async {
-    return _nodeAPI.sendSpontaneousPayment(destNode, amount, description, feeLimitMsat: feeLimitMsat, tlv: tlv);
+    final outgoingPayment = await _nodeAPI.sendSpontaneousPayment(destNode, amount, description, feeLimitMsat: feeLimitMsat, tlv: tlv);
+    return outgoingPayment.toPaymentInfo();
   }
 
   Future<Withdrawal> sweepAllCoinsTransactions(String address, TransactionCostSpeed speed) {

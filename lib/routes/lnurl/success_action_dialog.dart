@@ -17,16 +17,6 @@ class SuccessActionDialog extends StatefulWidget {
 }
 
 class SuccessActionDialogState extends State<SuccessActionDialog> {
-  late final String message;
-  late final String? url;
-
-  @override
-  void initState() {
-    super.initState();
-    message = widget.successActionData.message;
-    url = widget.successActionData.url;
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
@@ -39,8 +29,10 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Message(message),
-            if (url != null) ...[URLText(url!)]
+            Message(widget.successActionData.message),
+            if (widget.successActionData.url != null) ...[
+              URLText(widget.successActionData.url!)
+            ]
           ],
         ),
       ),
@@ -63,7 +55,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             style: themeData.primaryTextTheme.button,
           ),
         ),
-        if (url != null) ...[
+        if (widget.successActionData.url != null) ...[
           TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>(
@@ -82,8 +74,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             ),
             onPressed: () async {
               final navigator = Navigator.of(context);
-              if (await canLaunchUrlString(url!)) {
-                await launchUrlString(url!);
+              if (await canLaunchUrlString(widget.successActionData.url!)) {
+                await launchUrlString(widget.successActionData.url!);
                 navigator.pop();
               } else {
                 navigator.pop();

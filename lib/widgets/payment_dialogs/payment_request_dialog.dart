@@ -23,13 +23,11 @@ class PaymentRequestDialog extends StatefulWidget {
   final Invoice invoice;
   final GlobalKey firstPaymentItemKey;
   final ScrollController scrollController;
-  final Function() onComplete;
 
   const PaymentRequestDialog(
     this.invoice,
     this.firstPaymentItemKey,
-    this.scrollController,
-    this.onComplete, {
+    this.scrollController, {
     Key? key,
   }) : super(key: key);
 
@@ -121,13 +119,11 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
   void _onStateChange(BuildContext context, PaymentRequestState state) {
     if (state == PaymentRequestState.PAYMENT_COMPLETED) {
       Navigator.of(context).removeRoute(_currentRoute!);
-      widget.onComplete();
       return;
     }
     if (state == PaymentRequestState.USER_CANCELLED) {
       Navigator.of(context).removeRoute(_currentRoute!);
       context.read<AccountBloc>().cancelPayment(widget.invoice.bolt11);
-      widget.onComplete();
       return;
     }
     setState(() {

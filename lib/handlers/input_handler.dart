@@ -44,7 +44,7 @@ class InputHandler {
       }
       _setLoading(false);
       _handlingRequest = true;
-      handleInput(inputState);
+      handleInput(inputState).whenComplete(() => _handlingRequest = false);
     }).onError((error) {
       _handlingRequest = false;
       _setLoading(false);
@@ -57,13 +57,12 @@ class InputHandler {
     });
   }
 
-  void handleInput(InputState inputState) {
+  Future handleInput(InputState inputState) async {
     switch (inputState.protocol) {
       case InputProtocol.paymentRequest:
-        handleInvoice(inputState.inputData);
-        return;
+        return handleInvoice(inputState.inputData);
       case InputProtocol.lnurl:
-        handleLNURL(
+        return handleLNURL(
           _context,
           inputState.inputData,
         ).onError((error, stackTrace) {
@@ -71,21 +70,18 @@ class InputHandler {
         }).whenComplete(() {
           _handlingRequest = false;
         });
-        return;
       case InputProtocol.nodeID:
-        handleNodeID(inputState.inputData);
-        return;
+        return handleNodeID(inputState.inputData);
       case InputProtocol.appLink:
       case InputProtocol.webView:
-        handleWebAddress(inputState.inputData);
-        return;
+        return handleWebAddress(inputState.inputData);
       default:
         break;
     }
   }
 
-  void handleInvoice(dynamic invoice) {
-    showDialog(
+  Future handleInvoice(dynamic invoice) async {
+    return await showDialog(
       useRootNavigator: false,
       context: _context,
       barrierDismissible: false,
@@ -93,14 +89,12 @@ class InputHandler {
         invoice,
         firstPaymentItemKey,
         scrollController,
-        () => _handlingRequest = false,
       ),
     );
   }
 
-  void handleNodeID(String nodeID) {
-    _handlingRequest = false;
-    Navigator.of(_context).push(
+  Future handleNodeID(String nodeID) async {
+    return await Navigator.of(_context).push(
       FadeInRoute(
         builder: (_) => SpontaneousPaymentPage(
           nodeID,
@@ -110,9 +104,8 @@ class InputHandler {
     );
   }
 
-  void handleWebAddress(String url) {
-    _handlingRequest = false;
-    showDialog(
+  Future handleWebAddress(String url) async {
+    return await showDialog(
       useRootNavigator: false,
       context: _context,
       barrierDismissible: false,

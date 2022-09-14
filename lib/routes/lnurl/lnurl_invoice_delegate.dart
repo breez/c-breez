@@ -1,6 +1,5 @@
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
-import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +50,7 @@ Future<LNURLPayResult?> handlePayRequest(
   if (pageResult.error != null) {
     throw pageResult.error.toString();
   }
-  return await handleSuccessAction(context, pageResult.result!);
+  return pageResult.result;
 }
 
 Future handleWithdrawRequest(

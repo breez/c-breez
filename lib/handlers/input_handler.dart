@@ -1,7 +1,10 @@
 import 'package:breez_sdk/sdk.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
+import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
+import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -46,6 +49,11 @@ class InputHandler {
       _handlingRequest = false;
       _setLoading(false);
       showFlushbar(_context, message: error.toString());
+    });
+    // Handle LNURL Success Action
+    final AccountBloc accountBloc = _context.read<AccountBloc>();
+    accountBloc.successActionStream.listen((successActionData) {
+      handleSuccessAction(_context, successActionData);
     });
   }
 
@@ -109,6 +117,17 @@ class InputHandler {
       context: _context,
       barrierDismissible: false,
       builder: (_) => OpenLinkDialog(url),
+    );
+  }
+
+  Future handleSuccessAction(
+    BuildContext context,
+    SuccessActionData successActionData,
+  ) async {
+    return await showDialog(
+      useRootNavigator: false,
+      context: context,
+      builder: (_) => SuccessActionDialog(successActionData),
     );
   }
 

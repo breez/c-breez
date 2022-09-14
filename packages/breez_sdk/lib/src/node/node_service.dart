@@ -246,6 +246,11 @@ class LightningNode {
     return _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
   }
 
+  Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, Int64 amount, String description,
+  {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) async {
+    return _nodeAPI.sendSpontaneousPayment(destNode, amount, description, feeLimitMsat: feeLimitMsat, tlv: tlv);
+  }
+
   Future<Withdrawal> sweepAllCoinsTransactions(String address, TransactionCostSpeed speed) {
     final feerate = speed == TransactionCostSpeed.priority
         ? greenlight.FeeratePreset.URGENT

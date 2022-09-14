@@ -178,7 +178,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
-    await _lightningNode.getNodeAPI().sendSpontaneousPayment(nodeID, amountSat, description);
+    await _lightningNode.sendSpontaneousPayment(nodeID, amountSat, description);
     await syncStateWithNode();
   }
 

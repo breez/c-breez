@@ -72,18 +72,17 @@ parseLightningAddress(String? uri) {
   return result;
 }
 
-String getSuccessActionMessage(
-    LNURLPayResult lnurlPayResult, LNURLPaySuccessAction successAction) {
-  switch (successAction.tag) {
+String getSuccessActionMessage(LNURLPayResult lnurlPayResult) {
+  switch (lnurlPayResult.successAction!.tag) {
     case 'aes':
       return decryptSuccessActionAesPayload(
         preimage: lnurlPayResult.pr,
-        successAction: successAction,
+        successAction: lnurlPayResult.successAction!,
       );
     case 'url':
-      return successAction.description!;
+      return lnurlPayResult.successAction!.description!;
     case 'message':
-      return successAction.message!;
+      return lnurlPayResult.successAction!.message!;
   }
   return '';
 }

@@ -161,12 +161,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           );
     } finally {
       syncStateWithNode();
-      LNURLPaySuccessAction? successAction = lnurlPayResult.successAction;
-      if (successAction != null) {
+      if (lnurlPayResult.successAction != null) {
         _successActionStreamController.add(
           SuccessActionData(
-            getSuccessActionMessage(lnurlPayResult, successAction),
-            successAction.url,
+            getSuccessActionMessage(lnurlPayResult),
+            lnurlPayResult.successAction!.url,
           ),
         );
       }

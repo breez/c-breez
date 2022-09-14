@@ -30,9 +30,16 @@ class InputHandler {
   ) {
     final InputBloc inputBloc = _context.read<InputBloc>();
     inputBloc.stream.listen((inputState) {
-      if (_handlingRequest || inputState.inputData == null) {
+      if (_handlingRequest) {
         return;
       }
+      // Display a loader while input is being parsed
+      // Remove loader if input can't be parsed
+      if (inputState.inputData == null) {
+        _setLoading(inputState.isLoading!);
+        return;
+      }
+      _setLoading(false);
       _handlingRequest = true;
       handleInput(inputState);
     }).onError((error) {

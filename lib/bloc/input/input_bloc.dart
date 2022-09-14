@@ -43,21 +43,27 @@ class InputBloc extends Cubit<InputState> {
       _lightningLinks.linksNotifications,
       _device.distinctClipboardStream
     ]).asyncMap((s) async {
-      final command = await breez_sdk.InputParser().parse(s);
-      switch (command.protocol) {
-        case breez_sdk.InputProtocol.paymentRequest:
-          return handlePaymentRequest(s, command);
-        case breez_sdk.InputProtocol.lnurl:
-          return InputState(
-              protocol: command.protocol,
-              inputData: command.decoded as LNURLParseResult);
-        case breez_sdk.InputProtocol.nodeID:
-        case breez_sdk.InputProtocol.appLink:
-        case breez_sdk.InputProtocol.webView:
-          return InputState(
-              protocol: command.protocol, inputData: command.decoded);
-        default:
-          return null;
+      // Emit an empty InputState with isLoading to display a loader on UI layer
+      emit(InputState(isLoading: true));
+      try {
+        final command = await breez_sdk.InputParser().parse(s);
+        switch (command.protocol) {
+          case breez_sdk.InputProtocol.paymentRequest:
+            return handlePaymentRequest(s, command);
+          case breez_sdk.InputProtocol.lnurl:
+            return InputState(
+                protocol: command.protocol,
+                inputData: command.decoded as LNURLParseResult);
+          case breez_sdk.InputProtocol.nodeID:
+          case breez_sdk.InputProtocol.appLink:
+          case breez_sdk.InputProtocol.webView:
+            return InputState(
+                protocol: command.protocol, inputData: command.decoded);
+          default:
+            return InputState(isLoading: false);
+        }
+      } catch (e) {
+        return InputState(isLoading: false);
       }
     }).where((inputState) => inputState != null);
   }

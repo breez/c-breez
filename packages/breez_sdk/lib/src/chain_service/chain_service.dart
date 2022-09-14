@@ -1,11 +1,23 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'mempool_space.dart';
 
 part 'chain_service.g.dart';
 
+enum ChainServiceType {
+  mempoolSpace
+}
+
 abstract class ChainService {
-  static final defaulService = MempoolSpace("mempool.space");
+  static ChainService createChainService({ChainServiceType type=ChainServiceType.mempoolSpace}) {
+    switch(type) {
+      case ChainServiceType.mempoolSpace:
+        return MempoolSpace("mempool.space");
+    }
+  }
 
   Future<List<OnchainTransaction>> fetchTransactionsForAddress(String address);
 
@@ -64,9 +76,9 @@ class UTXOStatus {
 }
 
 void main() async {
-  final txs = await ChainService.defaulService.fetchTransactionsForAddress("bc1qgd7f60mfjn24vuv6uvatlez2tuu4a6zkyf86lev77eh8vdu6xlhs7nz6wh");
-  print(txs[0].toJson());
+  final txs = await ChainService.createChainService().fetchTransactionsForAddress("bc1qgd7f60mfjn24vuv6uvatlez2tuu4a6zkyf86lev77eh8vdu6xlhs7nz6wh");
+  debugPrint(json.encode(txs[0].toJson()));
   final status =
-      await ChainService.defaulService.fetchUtxoStatus("07c9d3fbffc20f96ea7c93ef3bcdf346c8a8456c25850ea76be62b24a7cf690c");
-  print(status.toJson());
+      await ChainService.createChainService().fetchUtxoStatus("07c9d3fbffc20f96ea7c93ef3bcdf346c8a8456c25850ea76be62b24a7cf690c");
+  debugPrint(json.encode(status.toJson()));
 }

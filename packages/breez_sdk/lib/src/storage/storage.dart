@@ -14,6 +14,7 @@ abstract class Storage {
   // lightning
   
   Future setNodeState(NodeState nodeSate);
+  Future<NodeState?> getNodeState();
   Stream<NodeState?> watchNodeState();
 
   addOutgoingPayments(List<OutgoingLightningPayment> payments);
@@ -32,4 +33,7 @@ abstract class Storage {
 
   Future<List<Utxo>> listUtxos();
   Future updateUtxos(List<Utxo> updatedUtxos);
+
+  Future<Swap> updateSwap(String bitcoinAddress, {String? payreq, int? confirmedSats, int? paidSats, String? error});
+  Future<List<Swap>> listSwaps();
 }

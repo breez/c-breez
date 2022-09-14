@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:breez_sdk/src/storage/dao/swaps_dao.dart';
 import 'package:breez_sdk/src/storage/dao/utxos_dao.dart';
 import 'package:breez_sdk/src/storage/storage.dart';
 import 'package:breez_sdk/src/storage/dao/payments_dao.dart';
@@ -133,6 +134,26 @@ class Utxos extends Table {
   Set<Column> get primaryKey => {txid, outnum};
 }
 
+class Swaps extends Table {
+  TextColumn get lspid => text()();
+  TextColumn get bitcoinAddress => text()();
+  IntColumn get createdTimestamp => integer()();
+  TextColumn get paymentRequest => text().nullable()();  
+  BlobColumn get paymentHash => blob()();
+  BlobColumn get preimage => blob()();
+  BlobColumn get privateKey => blob()();
+  BlobColumn get publicKey => blob()();
+  BlobColumn get script => blob()();
+
+  // tracked data    
+  IntColumn get paidSats => integer().withDefault(const Constant(0))();
+  IntColumn get lockHeight => integer()();
+  IntColumn get confirmedSats => integer().withDefault(const Constant(0))();
+
+  TextColumn get errorMessage => text().nullable()();
+  TextColumn get refundTxIds => text().nullable()();
+}
+
 LazyDatabase _openConnection() {
   // the LazyDatabase util lets us find the right location for the file async.
   return LazyDatabase(() async {
@@ -152,10 +173,12 @@ LazyDatabase _openConnection() {
   Peers,
   Settings,
   Utxos,
+  Swaps
 ], daos: [  
   PaymentsDao,
   SettingsDao,  
   UtxosDao,
+  SwapsDao
 ])
 class AppDatabase extends _$AppDatabase implements Storage {
   // we tell the database where to store the data with this constructor
@@ -216,6 +239,11 @@ class AppDatabase extends _$AppDatabase implements Storage {
   }
 
   @override
+  Future<NodeState?> getNodeState() {
+    return select(nodeStates).getSingleOrNull();
+  }
+
+  @override
   addOutgoingPayments(List<OutgoingLightningPayment> payments) async {
     return paymentsDao.addOutgoingPayments(payments);
   }
@@ -273,5 +301,16 @@ class AppDatabase extends _$AppDatabase implements Storage {
   @override
   Future<List<Utxo>> listUtxos() {
     return utxosDao.listUtxos();
+  }
+  
+  @override
+  Future<List<Swap>> listSwaps() {
+    return swapsDao.listSwaps();
+  }
+  
+  @override
+  Future<Swap> updateSwap(String bitcoinAddress, {String? payreq, int? confirmedSats, int? paidSats, String? error}) {
+    return swapsDao.updateSwap(bitcoinAddress, payreq: payreq, 
+    confirmedSats: confirmedSats, paidSats: paidSats, error: error);
   }
 }

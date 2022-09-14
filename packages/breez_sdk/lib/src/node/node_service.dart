@@ -52,6 +52,11 @@ class LightningNode {
     return _stroage.watchNodeState().map((dbState) => dbState == null ? null : NodeStateAdapter.fromDbNodeState(dbState));
   }
 
+  Future<NodeState?> getNodeState() async {
+    final dbState = await _stroage.getNodeState();
+    return dbState == null ? null : NodeStateAdapter.fromDbNodeState(dbState);
+  }
+
   Stream<PaymentsState> paymentsStream() {
     // outgoing payments stream
     final outgoingPaymentsStream = _stroage.watchOutgoingPayments().map((pList) {
@@ -136,6 +141,8 @@ class LightningNode {
     await _nodeAPI.ensureScheduled();
     return await _syncer.syncState();
   }
+
+  LSPInfo? get currentLSP => _currentLSP;
 
   Future setLSP(LSPInfo lspInfo, {required bool connect}) async {
     _currentLSP = lspInfo;
@@ -237,6 +244,11 @@ class LightningNode {
 
   Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) {
     return _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
+  }
+
+  Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, Int64 amount, String description,
+  {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) async {
+    return _nodeAPI.sendSpontaneousPayment(destNode, amount, description, feeLimitMsat: feeLimitMsat, tlv: tlv);
   }
 
   Future<Withdrawal> sweepAllCoinsTransactions(String address, TransactionCostSpeed speed) {

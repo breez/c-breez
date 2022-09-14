@@ -15,6 +15,15 @@ abstract class LightningToolkit {
   Future<Uint8List> initHsmd(
       {required String storagePath, required Uint8List secret, dynamic hint});
 
+  Future<SwapKeys> createSwap({dynamic hint});
+
+  Future<Uint8List> createSubmaringSwapScript(
+      {required Uint8List hash,
+      required Uint8List swapperPubKey,
+      required Uint8List payerPubKey,
+      required int lockHeight,
+      dynamic hint});
+
   Future<Uint8List> encrypt(
       {required Uint8List key, required Uint8List msg, dynamic hint});
 
@@ -110,6 +119,20 @@ class RouteHintHop {
   });
 }
 
+class SwapKeys {
+  final Uint8List privkey;
+  final Uint8List pubkey;
+  final Uint8List preimage;
+  final Uint8List hash;
+
+  SwapKeys({
+    required this.privkey,
+    required this.pubkey,
+    required this.preimage,
+    required this.hash,
+  });
+}
+
 class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
     implements LightningToolkit {
   factory LightningToolkitImpl(ffi.DynamicLibrary dylib) =>
@@ -130,6 +153,40 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
           argNames: ["storagePath", "secret"],
         ),
         argValues: [storagePath, secret],
+        hint: hint,
+      ));
+
+  Future<SwapKeys> createSwap({dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_create_swap(port_),
+        parseSuccessData: _wire2api_swap_keys,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "create_swap",
+          argNames: [],
+        ),
+        argValues: [],
+        hint: hint,
+      ));
+
+  Future<Uint8List> createSubmaringSwapScript(
+          {required Uint8List hash,
+          required Uint8List swapperPubKey,
+          required Uint8List payerPubKey,
+          required int lockHeight,
+          dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => inner.wire_create_submaring_swap_script(
+            port_,
+            _api2wire_uint_8_list(hash),
+            _api2wire_uint_8_list(swapperPubKey),
+            _api2wire_uint_8_list(payerPubKey),
+            _api2wire_i64(lockHeight)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: const FlutterRustBridgeTaskConstMeta(
+          debugName: "create_submaring_swap_script",
+          argNames: ["hash", "swapperPubKey", "payerPubKey", "lockHeight"],
+        ),
+        argValues: [hash, swapperPubKey, payerPubKey, lockHeight],
         hint: hint,
       ));
 
@@ -267,6 +324,10 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
     return inner.new_box_autoadd_u64(raw);
   }
 
+  int _api2wire_i64(int raw) {
+    return raw;
+  }
+
   ffi.Pointer<wire_list_route_hint> _api2wire_list_route_hint(
       List<RouteHint> raw) {
     final ans = inner.new_list_route_hint(raw.length);
@@ -393,6 +454,18 @@ RouteHintHop _wire2api_route_hint_hop(dynamic raw) {
   );
 }
 
+SwapKeys _wire2api_swap_keys(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 4)
+    throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+  return SwapKeys(
+    privkey: _wire2api_uint_8_list(arr[0]),
+    pubkey: _wire2api_uint_8_list(arr[1]),
+    preimage: _wire2api_uint_8_list(arr[2]),
+    hash: _wire2api_uint_8_list(arr[3]),
+  );
+}
+
 int _wire2api_u32(dynamic raw) {
   return raw as int;
 }
@@ -450,6 +523,53 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_init_hsmd = _wire_init_hsmdPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_create_swap(
+    int port_,
+  ) {
+    return _wire_create_swap(
+      port_,
+    );
+  }
+
+  late final _wire_create_swapPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_create_swap');
+  late final _wire_create_swap =
+      _wire_create_swapPtr.asFunction<void Function(int)>();
+
+  void wire_create_submaring_swap_script(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> hash,
+    ffi.Pointer<wire_uint_8_list> swapper_pub_key,
+    ffi.Pointer<wire_uint_8_list> payer_pub_key,
+    int lock_height,
+  ) {
+    return _wire_create_submaring_swap_script(
+      port_,
+      hash,
+      swapper_pub_key,
+      payer_pub_key,
+      lock_height,
+    );
+  }
+
+  late final _wire_create_submaring_swap_scriptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Int64)>>('wire_create_submaring_swap_script');
+  late final _wire_create_submaring_swap_script =
+      _wire_create_submaring_swap_scriptPtr.asFunction<
+          void Function(
+              int,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>,
+              int)>();
 
   void wire_encrypt(
     int port_,

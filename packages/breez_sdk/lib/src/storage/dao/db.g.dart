@@ -1610,7 +1610,7 @@ class OutgoingLightningPaymentsCompanion
     required bool isKeySend,
     required bool pending,
     required String bolt11,
-    required String description,
+    this.description = const Value.absent(),
   })  : createdAt = Value(createdAt),
         paymentHash = Value(paymentHash),
         destination = Value(destination),
@@ -1620,8 +1620,7 @@ class OutgoingLightningPaymentsCompanion
         preimage = Value(preimage),
         isKeySend = Value(isKeySend),
         pending = Value(pending),
-        bolt11 = Value(bolt11),
-        description = Value(description);
+        bolt11 = Value(bolt11);
   static Insertable<OutgoingLightningPayment> custom({
     Expression<int>? createdAt,
     Expression<String>? paymentHash,
@@ -1807,7 +1806,9 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(""));
   @override
   List<GeneratedColumn> get $columns => [
         createdAt,
@@ -1907,8 +1908,6 @@ class $OutgoingLightningPaymentsTable extends OutgoingLightningPayments
           _descriptionMeta,
           description.isAcceptableOrUnknown(
               data['description']!, _descriptionMeta));
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
     }
     return context;
   }
@@ -3727,6 +3726,660 @@ class $UtxosTable extends Utxos with TableInfo<$UtxosTable, Utxo> {
   }
 }
 
+class Swap extends DataClass implements Insertable<Swap> {
+  final String lspid;
+  final String bitcoinAddress;
+  final int createdTimestamp;
+  final String? paymentRequest;
+  final Uint8List paymentHash;
+  final Uint8List preimage;
+  final Uint8List privateKey;
+  final Uint8List publicKey;
+  final Uint8List script;
+  final int paidSats;
+  final int lockHeight;
+  final int confirmedSats;
+  final String? errorMessage;
+  final String? refundTxIds;
+  const Swap(
+      {required this.lspid,
+      required this.bitcoinAddress,
+      required this.createdTimestamp,
+      this.paymentRequest,
+      required this.paymentHash,
+      required this.preimage,
+      required this.privateKey,
+      required this.publicKey,
+      required this.script,
+      required this.paidSats,
+      required this.lockHeight,
+      required this.confirmedSats,
+      this.errorMessage,
+      this.refundTxIds});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['lspid'] = Variable<String>(lspid);
+    map['bitcoin_address'] = Variable<String>(bitcoinAddress);
+    map['created_timestamp'] = Variable<int>(createdTimestamp);
+    if (!nullToAbsent || paymentRequest != null) {
+      map['payment_request'] = Variable<String>(paymentRequest);
+    }
+    map['payment_hash'] = Variable<Uint8List>(paymentHash);
+    map['preimage'] = Variable<Uint8List>(preimage);
+    map['private_key'] = Variable<Uint8List>(privateKey);
+    map['public_key'] = Variable<Uint8List>(publicKey);
+    map['script'] = Variable<Uint8List>(script);
+    map['paid_sats'] = Variable<int>(paidSats);
+    map['lock_height'] = Variable<int>(lockHeight);
+    map['confirmed_sats'] = Variable<int>(confirmedSats);
+    if (!nullToAbsent || errorMessage != null) {
+      map['error_message'] = Variable<String>(errorMessage);
+    }
+    if (!nullToAbsent || refundTxIds != null) {
+      map['refund_tx_ids'] = Variable<String>(refundTxIds);
+    }
+    return map;
+  }
+
+  SwapsCompanion toCompanion(bool nullToAbsent) {
+    return SwapsCompanion(
+      lspid: Value(lspid),
+      bitcoinAddress: Value(bitcoinAddress),
+      createdTimestamp: Value(createdTimestamp),
+      paymentRequest: paymentRequest == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentRequest),
+      paymentHash: Value(paymentHash),
+      preimage: Value(preimage),
+      privateKey: Value(privateKey),
+      publicKey: Value(publicKey),
+      script: Value(script),
+      paidSats: Value(paidSats),
+      lockHeight: Value(lockHeight),
+      confirmedSats: Value(confirmedSats),
+      errorMessage: errorMessage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorMessage),
+      refundTxIds: refundTxIds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refundTxIds),
+    );
+  }
+
+  factory Swap.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Swap(
+      lspid: serializer.fromJson<String>(json['lspid']),
+      bitcoinAddress: serializer.fromJson<String>(json['bitcoinAddress']),
+      createdTimestamp: serializer.fromJson<int>(json['createdTimestamp']),
+      paymentRequest: serializer.fromJson<String?>(json['paymentRequest']),
+      paymentHash: serializer.fromJson<Uint8List>(json['paymentHash']),
+      preimage: serializer.fromJson<Uint8List>(json['preimage']),
+      privateKey: serializer.fromJson<Uint8List>(json['privateKey']),
+      publicKey: serializer.fromJson<Uint8List>(json['publicKey']),
+      script: serializer.fromJson<Uint8List>(json['script']),
+      paidSats: serializer.fromJson<int>(json['paidSats']),
+      lockHeight: serializer.fromJson<int>(json['lockHeight']),
+      confirmedSats: serializer.fromJson<int>(json['confirmedSats']),
+      errorMessage: serializer.fromJson<String?>(json['errorMessage']),
+      refundTxIds: serializer.fromJson<String?>(json['refundTxIds']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'lspid': serializer.toJson<String>(lspid),
+      'bitcoinAddress': serializer.toJson<String>(bitcoinAddress),
+      'createdTimestamp': serializer.toJson<int>(createdTimestamp),
+      'paymentRequest': serializer.toJson<String?>(paymentRequest),
+      'paymentHash': serializer.toJson<Uint8List>(paymentHash),
+      'preimage': serializer.toJson<Uint8List>(preimage),
+      'privateKey': serializer.toJson<Uint8List>(privateKey),
+      'publicKey': serializer.toJson<Uint8List>(publicKey),
+      'script': serializer.toJson<Uint8List>(script),
+      'paidSats': serializer.toJson<int>(paidSats),
+      'lockHeight': serializer.toJson<int>(lockHeight),
+      'confirmedSats': serializer.toJson<int>(confirmedSats),
+      'errorMessage': serializer.toJson<String?>(errorMessage),
+      'refundTxIds': serializer.toJson<String?>(refundTxIds),
+    };
+  }
+
+  Swap copyWith(
+          {String? lspid,
+          String? bitcoinAddress,
+          int? createdTimestamp,
+          Value<String?> paymentRequest = const Value.absent(),
+          Uint8List? paymentHash,
+          Uint8List? preimage,
+          Uint8List? privateKey,
+          Uint8List? publicKey,
+          Uint8List? script,
+          int? paidSats,
+          int? lockHeight,
+          int? confirmedSats,
+          Value<String?> errorMessage = const Value.absent(),
+          Value<String?> refundTxIds = const Value.absent()}) =>
+      Swap(
+        lspid: lspid ?? this.lspid,
+        bitcoinAddress: bitcoinAddress ?? this.bitcoinAddress,
+        createdTimestamp: createdTimestamp ?? this.createdTimestamp,
+        paymentRequest:
+            paymentRequest.present ? paymentRequest.value : this.paymentRequest,
+        paymentHash: paymentHash ?? this.paymentHash,
+        preimage: preimage ?? this.preimage,
+        privateKey: privateKey ?? this.privateKey,
+        publicKey: publicKey ?? this.publicKey,
+        script: script ?? this.script,
+        paidSats: paidSats ?? this.paidSats,
+        lockHeight: lockHeight ?? this.lockHeight,
+        confirmedSats: confirmedSats ?? this.confirmedSats,
+        errorMessage:
+            errorMessage.present ? errorMessage.value : this.errorMessage,
+        refundTxIds: refundTxIds.present ? refundTxIds.value : this.refundTxIds,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Swap(')
+          ..write('lspid: $lspid, ')
+          ..write('bitcoinAddress: $bitcoinAddress, ')
+          ..write('createdTimestamp: $createdTimestamp, ')
+          ..write('paymentRequest: $paymentRequest, ')
+          ..write('paymentHash: $paymentHash, ')
+          ..write('preimage: $preimage, ')
+          ..write('privateKey: $privateKey, ')
+          ..write('publicKey: $publicKey, ')
+          ..write('script: $script, ')
+          ..write('paidSats: $paidSats, ')
+          ..write('lockHeight: $lockHeight, ')
+          ..write('confirmedSats: $confirmedSats, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('refundTxIds: $refundTxIds')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      lspid,
+      bitcoinAddress,
+      createdTimestamp,
+      paymentRequest,
+      paymentHash,
+      preimage,
+      privateKey,
+      publicKey,
+      script,
+      paidSats,
+      lockHeight,
+      confirmedSats,
+      errorMessage,
+      refundTxIds);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Swap &&
+          other.lspid == this.lspid &&
+          other.bitcoinAddress == this.bitcoinAddress &&
+          other.createdTimestamp == this.createdTimestamp &&
+          other.paymentRequest == this.paymentRequest &&
+          other.paymentHash == this.paymentHash &&
+          other.preimage == this.preimage &&
+          other.privateKey == this.privateKey &&
+          other.publicKey == this.publicKey &&
+          other.script == this.script &&
+          other.paidSats == this.paidSats &&
+          other.lockHeight == this.lockHeight &&
+          other.confirmedSats == this.confirmedSats &&
+          other.errorMessage == this.errorMessage &&
+          other.refundTxIds == this.refundTxIds);
+}
+
+class SwapsCompanion extends UpdateCompanion<Swap> {
+  final Value<String> lspid;
+  final Value<String> bitcoinAddress;
+  final Value<int> createdTimestamp;
+  final Value<String?> paymentRequest;
+  final Value<Uint8List> paymentHash;
+  final Value<Uint8List> preimage;
+  final Value<Uint8List> privateKey;
+  final Value<Uint8List> publicKey;
+  final Value<Uint8List> script;
+  final Value<int> paidSats;
+  final Value<int> lockHeight;
+  final Value<int> confirmedSats;
+  final Value<String?> errorMessage;
+  final Value<String?> refundTxIds;
+  const SwapsCompanion({
+    this.lspid = const Value.absent(),
+    this.bitcoinAddress = const Value.absent(),
+    this.createdTimestamp = const Value.absent(),
+    this.paymentRequest = const Value.absent(),
+    this.paymentHash = const Value.absent(),
+    this.preimage = const Value.absent(),
+    this.privateKey = const Value.absent(),
+    this.publicKey = const Value.absent(),
+    this.script = const Value.absent(),
+    this.paidSats = const Value.absent(),
+    this.lockHeight = const Value.absent(),
+    this.confirmedSats = const Value.absent(),
+    this.errorMessage = const Value.absent(),
+    this.refundTxIds = const Value.absent(),
+  });
+  SwapsCompanion.insert({
+    required String lspid,
+    required String bitcoinAddress,
+    required int createdTimestamp,
+    this.paymentRequest = const Value.absent(),
+    required Uint8List paymentHash,
+    required Uint8List preimage,
+    required Uint8List privateKey,
+    required Uint8List publicKey,
+    required Uint8List script,
+    this.paidSats = const Value.absent(),
+    required int lockHeight,
+    this.confirmedSats = const Value.absent(),
+    this.errorMessage = const Value.absent(),
+    this.refundTxIds = const Value.absent(),
+  })  : lspid = Value(lspid),
+        bitcoinAddress = Value(bitcoinAddress),
+        createdTimestamp = Value(createdTimestamp),
+        paymentHash = Value(paymentHash),
+        preimage = Value(preimage),
+        privateKey = Value(privateKey),
+        publicKey = Value(publicKey),
+        script = Value(script),
+        lockHeight = Value(lockHeight);
+  static Insertable<Swap> custom({
+    Expression<String>? lspid,
+    Expression<String>? bitcoinAddress,
+    Expression<int>? createdTimestamp,
+    Expression<String>? paymentRequest,
+    Expression<Uint8List>? paymentHash,
+    Expression<Uint8List>? preimage,
+    Expression<Uint8List>? privateKey,
+    Expression<Uint8List>? publicKey,
+    Expression<Uint8List>? script,
+    Expression<int>? paidSats,
+    Expression<int>? lockHeight,
+    Expression<int>? confirmedSats,
+    Expression<String>? errorMessage,
+    Expression<String>? refundTxIds,
+  }) {
+    return RawValuesInsertable({
+      if (lspid != null) 'lspid': lspid,
+      if (bitcoinAddress != null) 'bitcoin_address': bitcoinAddress,
+      if (createdTimestamp != null) 'created_timestamp': createdTimestamp,
+      if (paymentRequest != null) 'payment_request': paymentRequest,
+      if (paymentHash != null) 'payment_hash': paymentHash,
+      if (preimage != null) 'preimage': preimage,
+      if (privateKey != null) 'private_key': privateKey,
+      if (publicKey != null) 'public_key': publicKey,
+      if (script != null) 'script': script,
+      if (paidSats != null) 'paid_sats': paidSats,
+      if (lockHeight != null) 'lock_height': lockHeight,
+      if (confirmedSats != null) 'confirmed_sats': confirmedSats,
+      if (errorMessage != null) 'error_message': errorMessage,
+      if (refundTxIds != null) 'refund_tx_ids': refundTxIds,
+    });
+  }
+
+  SwapsCompanion copyWith(
+      {Value<String>? lspid,
+      Value<String>? bitcoinAddress,
+      Value<int>? createdTimestamp,
+      Value<String?>? paymentRequest,
+      Value<Uint8List>? paymentHash,
+      Value<Uint8List>? preimage,
+      Value<Uint8List>? privateKey,
+      Value<Uint8List>? publicKey,
+      Value<Uint8List>? script,
+      Value<int>? paidSats,
+      Value<int>? lockHeight,
+      Value<int>? confirmedSats,
+      Value<String?>? errorMessage,
+      Value<String?>? refundTxIds}) {
+    return SwapsCompanion(
+      lspid: lspid ?? this.lspid,
+      bitcoinAddress: bitcoinAddress ?? this.bitcoinAddress,
+      createdTimestamp: createdTimestamp ?? this.createdTimestamp,
+      paymentRequest: paymentRequest ?? this.paymentRequest,
+      paymentHash: paymentHash ?? this.paymentHash,
+      preimage: preimage ?? this.preimage,
+      privateKey: privateKey ?? this.privateKey,
+      publicKey: publicKey ?? this.publicKey,
+      script: script ?? this.script,
+      paidSats: paidSats ?? this.paidSats,
+      lockHeight: lockHeight ?? this.lockHeight,
+      confirmedSats: confirmedSats ?? this.confirmedSats,
+      errorMessage: errorMessage ?? this.errorMessage,
+      refundTxIds: refundTxIds ?? this.refundTxIds,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (lspid.present) {
+      map['lspid'] = Variable<String>(lspid.value);
+    }
+    if (bitcoinAddress.present) {
+      map['bitcoin_address'] = Variable<String>(bitcoinAddress.value);
+    }
+    if (createdTimestamp.present) {
+      map['created_timestamp'] = Variable<int>(createdTimestamp.value);
+    }
+    if (paymentRequest.present) {
+      map['payment_request'] = Variable<String>(paymentRequest.value);
+    }
+    if (paymentHash.present) {
+      map['payment_hash'] = Variable<Uint8List>(paymentHash.value);
+    }
+    if (preimage.present) {
+      map['preimage'] = Variable<Uint8List>(preimage.value);
+    }
+    if (privateKey.present) {
+      map['private_key'] = Variable<Uint8List>(privateKey.value);
+    }
+    if (publicKey.present) {
+      map['public_key'] = Variable<Uint8List>(publicKey.value);
+    }
+    if (script.present) {
+      map['script'] = Variable<Uint8List>(script.value);
+    }
+    if (paidSats.present) {
+      map['paid_sats'] = Variable<int>(paidSats.value);
+    }
+    if (lockHeight.present) {
+      map['lock_height'] = Variable<int>(lockHeight.value);
+    }
+    if (confirmedSats.present) {
+      map['confirmed_sats'] = Variable<int>(confirmedSats.value);
+    }
+    if (errorMessage.present) {
+      map['error_message'] = Variable<String>(errorMessage.value);
+    }
+    if (refundTxIds.present) {
+      map['refund_tx_ids'] = Variable<String>(refundTxIds.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SwapsCompanion(')
+          ..write('lspid: $lspid, ')
+          ..write('bitcoinAddress: $bitcoinAddress, ')
+          ..write('createdTimestamp: $createdTimestamp, ')
+          ..write('paymentRequest: $paymentRequest, ')
+          ..write('paymentHash: $paymentHash, ')
+          ..write('preimage: $preimage, ')
+          ..write('privateKey: $privateKey, ')
+          ..write('publicKey: $publicKey, ')
+          ..write('script: $script, ')
+          ..write('paidSats: $paidSats, ')
+          ..write('lockHeight: $lockHeight, ')
+          ..write('confirmedSats: $confirmedSats, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('refundTxIds: $refundTxIds')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SwapsTable extends Swaps with TableInfo<$SwapsTable, Swap> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SwapsTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _lspidMeta = const VerificationMeta('lspid');
+  @override
+  late final GeneratedColumn<String> lspid = GeneratedColumn<String>(
+      'lspid', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _bitcoinAddressMeta =
+      const VerificationMeta('bitcoinAddress');
+  @override
+  late final GeneratedColumn<String> bitcoinAddress = GeneratedColumn<String>(
+      'bitcoin_address', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _createdTimestampMeta =
+      const VerificationMeta('createdTimestamp');
+  @override
+  late final GeneratedColumn<int> createdTimestamp = GeneratedColumn<int>(
+      'created_timestamp', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _paymentRequestMeta =
+      const VerificationMeta('paymentRequest');
+  @override
+  late final GeneratedColumn<String> paymentRequest = GeneratedColumn<String>(
+      'payment_request', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  final VerificationMeta _paymentHashMeta =
+      const VerificationMeta('paymentHash');
+  @override
+  late final GeneratedColumn<Uint8List> paymentHash =
+      GeneratedColumn<Uint8List>('payment_hash', aliasedName, false,
+          type: DriftSqlType.blob, requiredDuringInsert: true);
+  final VerificationMeta _preimageMeta = const VerificationMeta('preimage');
+  @override
+  late final GeneratedColumn<Uint8List> preimage = GeneratedColumn<Uint8List>(
+      'preimage', aliasedName, false,
+      type: DriftSqlType.blob, requiredDuringInsert: true);
+  final VerificationMeta _privateKeyMeta = const VerificationMeta('privateKey');
+  @override
+  late final GeneratedColumn<Uint8List> privateKey = GeneratedColumn<Uint8List>(
+      'private_key', aliasedName, false,
+      type: DriftSqlType.blob, requiredDuringInsert: true);
+  final VerificationMeta _publicKeyMeta = const VerificationMeta('publicKey');
+  @override
+  late final GeneratedColumn<Uint8List> publicKey = GeneratedColumn<Uint8List>(
+      'public_key', aliasedName, false,
+      type: DriftSqlType.blob, requiredDuringInsert: true);
+  final VerificationMeta _scriptMeta = const VerificationMeta('script');
+  @override
+  late final GeneratedColumn<Uint8List> script = GeneratedColumn<Uint8List>(
+      'script', aliasedName, false,
+      type: DriftSqlType.blob, requiredDuringInsert: true);
+  final VerificationMeta _paidSatsMeta = const VerificationMeta('paidSats');
+  @override
+  late final GeneratedColumn<int> paidSats = GeneratedColumn<int>(
+      'paid_sats', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  final VerificationMeta _lockHeightMeta = const VerificationMeta('lockHeight');
+  @override
+  late final GeneratedColumn<int> lockHeight = GeneratedColumn<int>(
+      'lock_height', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _confirmedSatsMeta =
+      const VerificationMeta('confirmedSats');
+  @override
+  late final GeneratedColumn<int> confirmedSats = GeneratedColumn<int>(
+      'confirmed_sats', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  final VerificationMeta _errorMessageMeta =
+      const VerificationMeta('errorMessage');
+  @override
+  late final GeneratedColumn<String> errorMessage = GeneratedColumn<String>(
+      'error_message', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  final VerificationMeta _refundTxIdsMeta =
+      const VerificationMeta('refundTxIds');
+  @override
+  late final GeneratedColumn<String> refundTxIds = GeneratedColumn<String>(
+      'refund_tx_ids', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        lspid,
+        bitcoinAddress,
+        createdTimestamp,
+        paymentRequest,
+        paymentHash,
+        preimage,
+        privateKey,
+        publicKey,
+        script,
+        paidSats,
+        lockHeight,
+        confirmedSats,
+        errorMessage,
+        refundTxIds
+      ];
+  @override
+  String get aliasedName => _alias ?? 'swaps';
+  @override
+  String get actualTableName => 'swaps';
+  @override
+  VerificationContext validateIntegrity(Insertable<Swap> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('lspid')) {
+      context.handle(
+          _lspidMeta, lspid.isAcceptableOrUnknown(data['lspid']!, _lspidMeta));
+    } else if (isInserting) {
+      context.missing(_lspidMeta);
+    }
+    if (data.containsKey('bitcoin_address')) {
+      context.handle(
+          _bitcoinAddressMeta,
+          bitcoinAddress.isAcceptableOrUnknown(
+              data['bitcoin_address']!, _bitcoinAddressMeta));
+    } else if (isInserting) {
+      context.missing(_bitcoinAddressMeta);
+    }
+    if (data.containsKey('created_timestamp')) {
+      context.handle(
+          _createdTimestampMeta,
+          createdTimestamp.isAcceptableOrUnknown(
+              data['created_timestamp']!, _createdTimestampMeta));
+    } else if (isInserting) {
+      context.missing(_createdTimestampMeta);
+    }
+    if (data.containsKey('payment_request')) {
+      context.handle(
+          _paymentRequestMeta,
+          paymentRequest.isAcceptableOrUnknown(
+              data['payment_request']!, _paymentRequestMeta));
+    }
+    if (data.containsKey('payment_hash')) {
+      context.handle(
+          _paymentHashMeta,
+          paymentHash.isAcceptableOrUnknown(
+              data['payment_hash']!, _paymentHashMeta));
+    } else if (isInserting) {
+      context.missing(_paymentHashMeta);
+    }
+    if (data.containsKey('preimage')) {
+      context.handle(_preimageMeta,
+          preimage.isAcceptableOrUnknown(data['preimage']!, _preimageMeta));
+    } else if (isInserting) {
+      context.missing(_preimageMeta);
+    }
+    if (data.containsKey('private_key')) {
+      context.handle(
+          _privateKeyMeta,
+          privateKey.isAcceptableOrUnknown(
+              data['private_key']!, _privateKeyMeta));
+    } else if (isInserting) {
+      context.missing(_privateKeyMeta);
+    }
+    if (data.containsKey('public_key')) {
+      context.handle(_publicKeyMeta,
+          publicKey.isAcceptableOrUnknown(data['public_key']!, _publicKeyMeta));
+    } else if (isInserting) {
+      context.missing(_publicKeyMeta);
+    }
+    if (data.containsKey('script')) {
+      context.handle(_scriptMeta,
+          script.isAcceptableOrUnknown(data['script']!, _scriptMeta));
+    } else if (isInserting) {
+      context.missing(_scriptMeta);
+    }
+    if (data.containsKey('paid_sats')) {
+      context.handle(_paidSatsMeta,
+          paidSats.isAcceptableOrUnknown(data['paid_sats']!, _paidSatsMeta));
+    }
+    if (data.containsKey('lock_height')) {
+      context.handle(
+          _lockHeightMeta,
+          lockHeight.isAcceptableOrUnknown(
+              data['lock_height']!, _lockHeightMeta));
+    } else if (isInserting) {
+      context.missing(_lockHeightMeta);
+    }
+    if (data.containsKey('confirmed_sats')) {
+      context.handle(
+          _confirmedSatsMeta,
+          confirmedSats.isAcceptableOrUnknown(
+              data['confirmed_sats']!, _confirmedSatsMeta));
+    }
+    if (data.containsKey('error_message')) {
+      context.handle(
+          _errorMessageMeta,
+          errorMessage.isAcceptableOrUnknown(
+              data['error_message']!, _errorMessageMeta));
+    }
+    if (data.containsKey('refund_tx_ids')) {
+      context.handle(
+          _refundTxIdsMeta,
+          refundTxIds.isAcceptableOrUnknown(
+              data['refund_tx_ids']!, _refundTxIdsMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  @override
+  Swap map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Swap(
+      lspid: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}lspid'])!,
+      bitcoinAddress: attachedDatabase.options.types.read(
+          DriftSqlType.string, data['${effectivePrefix}bitcoin_address'])!,
+      createdTimestamp: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}created_timestamp'])!,
+      paymentRequest: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}payment_request']),
+      paymentHash: attachedDatabase.options.types
+          .read(DriftSqlType.blob, data['${effectivePrefix}payment_hash'])!,
+      preimage: attachedDatabase.options.types
+          .read(DriftSqlType.blob, data['${effectivePrefix}preimage'])!,
+      privateKey: attachedDatabase.options.types
+          .read(DriftSqlType.blob, data['${effectivePrefix}private_key'])!,
+      publicKey: attachedDatabase.options.types
+          .read(DriftSqlType.blob, data['${effectivePrefix}public_key'])!,
+      script: attachedDatabase.options.types
+          .read(DriftSqlType.blob, data['${effectivePrefix}script'])!,
+      paidSats: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}paid_sats'])!,
+      lockHeight: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}lock_height'])!,
+      confirmedSats: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}confirmed_sats'])!,
+      errorMessage: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}error_message']),
+      refundTxIds: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}refund_tx_ids']),
+    );
+  }
+
+  @override
+  $SwapsTable createAlias(String alias) {
+    return $SwapsTable(attachedDatabase, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $NodeStatesTable nodeStates = $NodeStatesTable(this);
@@ -3739,9 +4392,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $HtlcsTable htlcs = $HtlcsTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final $UtxosTable utxos = $UtxosTable(this);
+  late final $SwapsTable swaps = $SwapsTable(this);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDatabase);
   late final SettingsDao settingsDao = SettingsDao(this as AppDatabase);
   late final UtxosDao utxosDao = UtxosDao(this as AppDatabase);
+  late final SwapsDao swapsDao = SwapsDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, dynamic>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3755,6 +4410,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         channels,
         htlcs,
         settings,
-        utxos
+        utxos,
+        swaps
       ];
 }

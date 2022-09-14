@@ -263,21 +263,8 @@ class Greenlight implements NodeAPI {
   Future<List<OutgoingLightningPayment>> getPayments() async {    
     await ensureScheduled();
     var payments = await _nodeClient!.listPayments(greenlight.ListPaymentsRequest());
-    var paymentsList = payments.payments.map((p) {
-      var sentMsats = amountToMSats(p.amountSent);
-      var requestedMsats = amountToMSats(p.amount);
-
-      return OutgoingLightningPayment(
-          creationTimestamp: p.createdAt.toInt(),
-          amountMsats: requestedMsats,
-          amountSentMsats: sentMsats,
-          paymentHash: HEX.encode(p.paymentHash),
-          destination: HEX.encode(p.destination),
-          feeMsats: sentMsats - requestedMsats,
-          preimage: HEX.encode(p.paymentPreimage),
-          isKeySend: p.bolt11.isNotEmpty == true,
-          pending: p.status == greenlight.PayStatus.PENDING,
-          bolt11: p.bolt11);
+    var paymentsList = payments.payments.map((p) {      
+      return fromGreenlightPayment(p);      
     }).toList();
 
     return paymentsList;
@@ -329,9 +316,15 @@ class Greenlight implements NodeAPI {
 
   @override
   Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, Int64 amount, String description,
-      {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) {
-    // TODO: implement sendSpontaneousPayment
-    throw UnimplementedError();
+      {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) async {
+    await ensureScheduled();  
+    final response = await _nodeClient!.keysend(greenlight.KeysendRequest(
+      nodeId: HEX.decode(destNode),
+      amount: greenlight.Amount(satoshi: amount),
+      label: "breez-${DateTime.now().millisecondsSinceEpoch}",
+      extratlvs: tlv.keys.map((key) => greenlight.TlvField(type: key, value: tlv[key]!.codeUnits))
+    ));  
+    return fromGreenlightPayment(response);
   }
 
   @override
@@ -401,6 +394,23 @@ InvoiceStatus _convertInvoiceStatus(greenlight.InvoiceStatus s) {
     default:
       return InvoiceStatus.UNPAID;
   }
+}
+
+OutgoingLightningPayment fromGreenlightPayment(greenlight.Payment p) {
+  final amountMsats = amountToMSats(p.amount);
+  final amountSentMsats = amountToMSats(p.amountSent);
+
+  return OutgoingLightningPayment(
+          creationTimestamp: p.createdAt.toInt(),
+          amountMsats:amountMsats,
+          amountSentMsats: amountSentMsats,
+          paymentHash: HEX.encode(p.paymentHash),
+          destination: HEX.encode(p.destination),
+          feeMsats: amountSentMsats - amountMsats,
+          preimage: HEX.encode(p.paymentPreimage),
+          isKeySend: p.bolt11.isNotEmpty == true,
+          pending: p.status == greenlight.PayStatus.PENDING,
+          bolt11: p.bolt11);
 }
 
 Address _convertAddress(greenlight.Address a) {

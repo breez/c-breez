@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
@@ -19,14 +20,10 @@ import '../../../utils/payment_validator.dart';
 
 class LNURLWithdrawDialog extends StatefulWidget {
   final LNURLWithdrawParams withdrawParams;
-  final Function() onComplete;
-  final Function(String error) onError;
 
   const LNURLWithdrawDialog(
     this.withdrawParams, {
     Key? key,
-    required this.onComplete,
-    required this.onError,
   }) : super(key: key);
 
   @override
@@ -190,7 +187,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               )
             ]),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 16.0),
+      contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
       actions: [
         TextButton(
           style: ButtonStyle(
@@ -204,7 +201,6 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
-            widget.onComplete();
           },
           child: Text(
             texts.lnurl_withdraw_dialog_action_close,
@@ -227,7 +223,6 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
 
               // Create loader and process payment
               final navigator = Navigator.of(context);
-              navigator.pop();
               var loaderRoute = createLoaderRoute(context);
               navigator.push(loaderRoute);
               Invoice invoice = await accountBloc.addInvoice(
@@ -238,21 +233,20 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                 'k1': widget.withdrawParams.k1.toString(),
                 'pr': invoice.bolt11
               };
-              bool isSent = await accountBloc
-                  .processLNURLWithdraw(widget.withdrawParams, qParams)
-                  .onError(
-                (error, stackTrace) {
-                  navigator.removeRoute(loaderRoute);
-                  widget.onComplete();
-                  return widget.onError(error.toString());
-                },
-              );
-              navigator.removeRoute(loaderRoute);
-              widget.onComplete();
-              if (!isSent) {
-                String error =
-                    texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
-                widget.onError(error);
+              try {
+                bool isSent = await accountBloc.processLNURLWithdraw(
+                    widget.withdrawParams, qParams);
+                navigator.removeRoute(loaderRoute);
+                if (!isSent) {
+                  String error =
+                      texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
+                  navigator.pop(LNURLWithdrawPageResult(error: error));
+                } else {
+                  navigator.pop();
+                }
+              } catch (e) {
+                navigator.removeRoute(loaderRoute);
+                navigator.pop(LNURLWithdrawPageResult(error: e.toString()));
               }
             }
           },

@@ -20,7 +20,9 @@ class OpenLinkDialogState extends State<OpenLinkDialog> {
   @override
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
-    final dialogTheme = Theme.of(context).dialogTheme;
+    final themeData = Theme.of(context);
+    final dialogTheme = themeData.dialogTheme;
+    final navigator = Navigator.of(context);
 
     return AlertDialog(
       scrollable: true,
@@ -70,18 +72,16 @@ class OpenLinkDialogState extends State<OpenLinkDialog> {
                 if (states.contains(MaterialState.pressed)) {
                   return Colors.transparent;
                 }
-                return Theme.of(context)
-                    .textTheme
-                    .button!
-                    .color!; // Defer to the widget's default.
+                // Defer to the widget's default.
+                return themeData.textTheme.button!.color!;
               },
             ),
           ),
           child: Text(
             texts.qr_action_button_open_link_confirmation_no,
-            style: Theme.of(context).primaryTextTheme.button,
+            style: themeData.primaryTextTheme.button,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => navigator.pop(),
         ),
         TextButton(
           style: ButtonStyle(
@@ -90,19 +90,16 @@ class OpenLinkDialogState extends State<OpenLinkDialog> {
                 if (states.contains(MaterialState.pressed)) {
                   return Colors.transparent;
                 }
-                return Theme.of(context)
-                    .textTheme
-                    .button!
-                    .color!; // Defer to the widget's default.
+                // Defer to the widget's default.
+                return themeData.textTheme.button!.color!;
               },
             ),
           ),
           child: Text(
             texts.qr_action_button_open_link_confirmation_yes,
-            style: Theme.of(context).primaryTextTheme.button,
+            style: themeData.primaryTextTheme.button,
           ),
           onPressed: () async {
-            final navigator = Navigator.of(context);
             await launchUrlString(widget.url);
             navigator.pop();
           },

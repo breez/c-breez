@@ -2,18 +2,20 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/services/keychain.dart';
+import 'package:c_breez/utils/lnurl.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -160,6 +162,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           );
     } finally {
       syncStateWithNode();
+      if (lnurlPayResult.successAction != null) {
+        _successActionStreamController.add(
+          SuccessActionData(
+            getSuccessActionMessage(lnurlPayResult),
+            lnurlPayResult.successAction!.url,
+          ),
+        );
+      }
     }
   }
 
@@ -266,4 +276,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await signerDir.create(recursive: true);
     _signer = breez_sdk.Signer(seed, signerDir.path);
   }
+
+  final StreamController<SuccessActionData> _successActionStreamController =
+      StreamController<SuccessActionData>();
+
+  Stream<SuccessActionData> get successActionStream =>
+      _successActionStreamController.stream;
 }

@@ -1,8 +1,6 @@
-import 'package:c_breez/routes/lnurl/success_action_dialog.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fimber/fimber.dart';
-import 'package:flutter/material.dart';
 
 RegExp _lnurlPrefix = RegExp(",*?((lnurl)([0-9]{1,}[a-z0-9]+){1})");
 
@@ -51,7 +49,7 @@ bool isLightningAddressURI(String uri) {
   return result;
 }
 
-parseLightningAddress(String? uri) {
+String? parseLightningAddress(String? uri) {
   // Ref. https://github.com/andrerfneves/lightning-address/blob/master/DIY.md
   _log.i('parseLightningAddress: given "$uri"');
 
@@ -72,33 +70,17 @@ parseLightningAddress(String? uri) {
   return result;
 }
 
-String getSuccessActionMessage(
-    LNURLPayResult lnurlPayResult, LNURLPaySuccessAction successAction) {
-  switch (successAction.tag) {
+String getSuccessActionMessage(LNURLPayResult lnurlPayResult) {
+  switch (lnurlPayResult.successAction!.tag) {
     case 'aes':
       return decryptSuccessActionAesPayload(
         preimage: lnurlPayResult.pr,
-        successAction: successAction,
+        successAction: lnurlPayResult.successAction!,
       );
     case 'url':
-      return successAction.description!;
+      return lnurlPayResult.successAction!.description!;
     case 'message':
-      return successAction.message!;
+      return lnurlPayResult.successAction!.message!;
   }
   return '';
-}
-
-Future handleSuccessAction(BuildContext context, LNURLPayResult payResult) {
-  LNURLPaySuccessAction? successAction = payResult.successAction;
-  if (successAction != null) {
-    return showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) => SuccessActionDialog(
-        getSuccessActionMessage(payResult, successAction),
-        url: successAction.url,
-      ),
-    );
-  }
-  return Future.value(null);
 }

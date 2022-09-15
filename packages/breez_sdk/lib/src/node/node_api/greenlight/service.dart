@@ -308,10 +308,11 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
+  Future<OutgoingLightningPayment> sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
     await ensureScheduled();    
-    await _nodeClient!
+    final p = await _nodeClient!
         .pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: amount), timeout: 60));
+    return fromGreenlightPayment(p);
   }
 
   @override

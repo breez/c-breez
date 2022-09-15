@@ -154,9 +154,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return isSent;
   }
 
-  Future sendLNURLPayment(LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
+  Future<breez_sdk.PaymentInfo> sendLNURLPayment(LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
     try {
-      await _lightningNode.sendPaymentForRequest(lnurlPayResult.pr, amount: Int64.parseInt(qParams['amount']!)).timeout(
+      return await _lightningNode.sendPaymentForRequest(lnurlPayResult.pr, amount: Int64.parseInt(qParams['amount']!)).timeout(
             const Duration(minutes: 3),
             onTimeout: () => throw Exception('Timed out waiting 3 minutes for payment.'),
           );
@@ -178,18 +178,20 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return lnurlPayResult;
   }
 
-  Future sendPayment(String bolt11, Int64 amountSat) async {
-    await _lightningNode.sendPaymentForRequest(bolt11, amount: amountSat);
+  Future<breez_sdk.PaymentInfo> sendPayment(String bolt11, Int64 amountSat) async {
+    final result = await _lightningNode.sendPaymentForRequest(bolt11, amount: amountSat);
     await syncStateWithNode();
+    return result;
   }
 
   Future cancelPayment(String bolt11) async {
     //throw Exception("not implemented");
   }
 
-  Future sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
-    await _lightningNode.sendSpontaneousPayment(nodeID, amountSat, description);
+  Future<breez_sdk.PaymentInfo> sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
+    final paymentInfo = await _lightningNode.sendSpontaneousPayment(nodeID, amountSat, description);
     await syncStateWithNode();
+    return paymentInfo;
   }
 
   Future publishTransaction(List<int> tx) async {

@@ -58,6 +58,21 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
     );
   }
 
+  Future<PaymentInfo> toPaymentInfo() async {
+    final invoice = await getNativeToolkit().parseInvoice(invoice: bolt11);
+    return PaymentInfo(
+            type: PaymentType.sent,
+            amountMsat: amountMsats,
+            destination: destination,
+            shortTitle: invoice.description,
+            description: invoice.description,
+            feeMsat: feeMsats,
+            creationTimestamp: Int64(creationTimestamp),
+            pending: pending,
+            keySend: isKeySend,
+            paymentHash: paymentHash);
+  }
+
   static OutgoingLightningPayment fromDbOutgoingLightningPayment(db.OutgoingLightningPayment dbPayment) {
     return OutgoingLightningPayment(
       creationTimestamp: dbPayment.createdAt,
@@ -88,6 +103,19 @@ extension InvoiceAdapter on Invoice {
       paymentPreimage: paymentPreimage,
       paymentHash: paymentHash,
     );
+  }
+
+  Future<PaymentInfo> toPaymentInfo(String thisNodeID) async {    
+    return PaymentInfo(
+            type: PaymentType.received,
+            amountMsat: receivedMsats,
+            feeMsat: Int64.ZERO,
+            destination: thisNodeID,
+            shortTitle:  description,
+            creationTimestamp: Int64(paymentTime),
+            pending: false,
+            keySend: false,
+            paymentHash: paymentHash);
   }
 
   static Invoice fromDbInvoice(db.Invoice dbInvoice) {

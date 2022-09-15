@@ -56,14 +56,7 @@ class InputHandler {
       case InputProtocol.paymentRequest:
         return handleInvoice(inputState.inputData);
       case InputProtocol.lnurl:
-        return handleLNURL(
-          _context,
-          inputState.inputData,
-        ).onError((error, stackTrace) {
-          showFlushbar(_context, message: error.toString());
-        }).whenComplete(() {
-          _handlingRequest = false;
-        });
+        return handleLNURL(_context, inputState.inputData);
       case InputProtocol.nodeID:
         return handleNodeID(inputState.inputData);
       case InputProtocol.appLink:

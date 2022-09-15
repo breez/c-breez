@@ -44,7 +44,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return Theme.of(context).textTheme.button!.color!;
+              return themeData.textTheme.button!.color!;
             }),
           ),
           onPressed: () {
@@ -64,13 +64,13 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                     return Colors.transparent;
                   }
                   // Defer to the widget's default.
-                  return Theme.of(context).textTheme.button!.color!;
+                  return themeData.textTheme.button!.color!;
                 },
               ),
             ),
             child: Text(
               "OPEN LINK",
-              style: Theme.of(context).primaryTextTheme.button,
+              style: themeData.primaryTextTheme.button,
             ),
             onPressed: () async {
               final navigator = Navigator.of(context);

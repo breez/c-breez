@@ -113,10 +113,8 @@ class PaymentConfirmationDialog extends StatelessWidget {
             if (states.contains(MaterialState.pressed)) {
               return Colors.transparent;
             }
-            return Theme.of(context)
-                .textTheme
-                .button!
-                .color!; // Defer to the widget's default.
+            // Defer to the widget's default.
+            return Theme.of(context).textTheme.button!.color!;
           }),
         ),
         child: Text(
@@ -131,10 +129,8 @@ class PaymentConfirmationDialog extends StatelessWidget {
             if (states.contains(MaterialState.pressed)) {
               return Colors.transparent;
             }
-            return Theme.of(context)
-                .textTheme
-                .button!
-                .color!; // Defer to the widget's default.
+            // Defer to the widget's default.
+            return themeData.textTheme.button!.color!;
           }),
         ),
         child: Text(

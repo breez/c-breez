@@ -12,10 +12,10 @@ enum ChainServiceType {
 }
 
 abstract class ChainService {
-  static ChainService createChainService({ChainServiceType type=ChainServiceType.mempoolSpace}) {
+  static ChainService createChainService({ChainServiceType type=ChainServiceType.mempoolSpace, String? domain}) {
     switch(type) {
       case ChainServiceType.mempoolSpace:
-        return MempoolSpace("mempool.space");
+        return MempoolSpace(domain ?? "mempool.space");
     }
   }
 

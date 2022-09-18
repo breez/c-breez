@@ -53,24 +53,12 @@ class ServiceInjector {
     return _breezServer ??= BreezServer();
   }
 
-  Future<breez_sdk.LightningNode> get lightningServices async {
+  breez_sdk.LightningNode get lightningServices {
     if (_lightningService != null) {
-      return Future.value(_lightningService);
+      return _lightningService!;
     }
 
-    return _lightningService ??= breez_sdk.LightningNode(lspService, sdkStorage);
-  }
-
-  breez_sdk.LSPService get lspService {
-    return _lspService ??= breez_sdk.LSPService();
-  }
-
-  breez_sdk.LNURLService get lnurlService {
-    return _lnurlService ??= breez_sdk.LNURLService();
-  }
-
-  breez_sdk.FiatService get fiatService {
-    return _fiatService ??= breez_sdk.FiatService();
+    return _lightningService ??= breez_sdk.LightningNode();
   }
 
   Device get device {

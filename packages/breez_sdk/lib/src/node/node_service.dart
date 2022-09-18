@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:breez_sdk/src/btc_swapper/btc_swapper.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
@@ -19,66 +20,84 @@ const maxInboundLiquidityMsats = 4000000000;
 
 class LightningNode {
   static const String paymentFilterSettingsKey = "payment_filter_settings";
-
   final _log = FimberLog("GreenlightService");
+  
   final NodeAPI _nodeAPI = Greenlight();
-  final LSPService _lspService;
+  final LSPService _lspService = LSPService();
+  final LNURLService _lnurlService = LNURLService();
+  final FiatService _fiatService = FiatService();    
   final _lnToolkit = getNativeToolkit();
-  final Storage _stroage;
+
+  final _storage = Storage.createDefault();
+  late final ChainService _chainService;
+  late final BTCSwapper _subswapService;
   late final NodeStateSyncer _syncer;
   LSPInfo? _currentLSP;
   Signer? _signer;
 
-  LightningNode(this._lspService, this._stroage) {
-    _syncer = NodeStateSyncer(_nodeAPI, _stroage);
+  LightningNode() {
+    _syncer = NodeStateSyncer(_nodeAPI, _storage);
+    _chainService = ChainService.createChainService();
+    _subswapService = BTCSwapper(this, _storage, _chainService);
     FGBGEvents.stream.where((event) => event == FGBGType.foreground).throttleTime(const Duration(minutes: 1)).listen((event) async {
       if (_signer != null) {
-        await syncState();
+        await syncState();   
+        await _subswapService.redeemPendingSwaps();     
       }
+    });
+
+    Timer.periodic(const Duration(minutes: 10), (timer) {
+      _subswapService.redeemPendingSwaps();
     });
   }
 
+  LSPService get lspService => _lspService;
+
+  LNURLService get lnurlService => _lnurlService;
+
+  FiatService get fiatService => _fiatService;
+
   void setPaymentFilter(PaymentFilter filter) {
-    _stroage.updateSettings(paymentFilterSettingsKey, json.encode(filter.toJson()));
+    _storage.updateSettings(paymentFilterSettingsKey, json.encode(filter.toJson()));
   }
 
   Stream<PaymentFilter> paymentFilterStream() {
-    return _stroage
+    return _storage
         .watchSetting(paymentFilterSettingsKey)
         .map((s) => s == null ? PaymentFilter.initial() : PaymentFilter.fromJson(json.decode(s.value)));
   }
 
   Stream<NodeState?> nodeStateStream() {
-    return _stroage.watchNodeState().map((dbState) => dbState == null ? null : NodeStateAdapter.fromDbNodeState(dbState));
+    return _storage.watchNodeState().map((dbState) => dbState == null ? null : NodeStateAdapter.fromDbNodeState(dbState));
   }
 
   Future<NodeState?> getNodeState() async {
-    final dbState = await _stroage.getNodeState();
+    final dbState = await _storage.getNodeState();
     return dbState == null ? null : NodeStateAdapter.fromDbNodeState(dbState);
   }
 
   Stream<PaymentsState> paymentsStream() {
     // outgoing payments stream
-    final outgoingPaymentsStream = _stroage.watchOutgoingPayments().map((pList) {
+    final outgoingPaymentsStream = _storage.watchOutgoingPayments().map((pList) {
       return true;
     });
 
     // incoming payments stream (settled invoices)
-    final incomingPaymentsStream = _stroage.watchIncomingPayments().map((iList) {
+    final incomingPaymentsStream = _storage.watchIncomingPayments().map((iList) {
       return true;
     });
 
-    final paymentsFilterStream = _stroage.watchSetting(paymentFilterSettingsKey);
+    final paymentsFilterStream = _storage.watchSetting(paymentFilterSettingsKey);
 
     return Rx.merge([outgoingPaymentsStream, incomingPaymentsStream, paymentsFilterStream]).asyncMap((e) async {
       // node info
-      final nodeState = await _stroage.watchNodeState().first;
-      final rawFilter = await _stroage.readSettings(paymentFilterSettingsKey);
+      final nodeState = await _storage.watchNodeState().first;
+      final rawFilter = await _storage.readSettings(paymentFilterSettingsKey);
       final paymentFilter = rawFilter == null || rawFilter.value.isEmpty
           ? PaymentFilter.initial()
           : PaymentFilter.fromJson(json.decode(rawFilter.value));
 
-      var outgoing = await _stroage.listOutgoingPayments();
+      var outgoing = await _storage.listOutgoingPayments();
       var outgoingList = outgoing.map((p) {        
         return PaymentInfo(
             type: PaymentType.sent,
@@ -93,7 +112,7 @@ class LightningNode {
             paymentHash: p.paymentHash);
       });
 
-      var incoming = await _stroage.listIncomingPayments();
+      var incoming = await _storage.listIncomingPayments();
       var incomingList = incoming.map((invoice) {
         return PaymentInfo(
             type: PaymentType.received,

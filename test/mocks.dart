@@ -89,12 +89,12 @@ class InjectorMock extends Mock implements ServiceInjector {
   LightningNode? _lightningService;
 
   @override
-  Future<LightningNode> get lightningServices async {
+  LightningNode get lightningServices {
     if (_lightningService != null) {
-      return Future.value(_lightningService);
+      return _lightningService!;
     }
 
-    return _lightningService ??= LightningNode(lspService, Storage.createDefault());
+    return _lightningService ??= LightningNode();
   }
 
   @override

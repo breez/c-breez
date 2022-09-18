@@ -11,7 +11,6 @@ import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 
-import 'package:flutter_fgbg/flutter_fgbg.dart';
 
 class BTCSwapper {
   static const maxDepositAmount = 4000000;
@@ -22,21 +21,7 @@ class BTCSwapper {
   final Storage _storage;
   final ChainService _chainService;
 
-  BTCSwapper(this._node, this._storage, this._chainService);
-
-  // Start tracking all swaps and trigger redeem every 10 minutes interval
-  // or when app is going to foreground
-  startTrackSwaps() {
-    Timer.periodic(const Duration(minutes: 10), (timer) {
-      redeemPendingSwaps();
-    });
-
-    FGBGEvents.stream.listen((event) {
-      if (event == FGBGType.foreground) {
-        redeemPendingSwaps();
-      }
-    });
-  }
+  BTCSwapper(this._node, this._storage, this._chainService);  
 
   // Creating a new swap address
   Future<String> createSwap() async {
@@ -136,7 +121,7 @@ class BTCSwapper {
   Future<List<SwapLiveData>> _refreshSwapsStatuses() async {
     final swaps = await _storage.listSwaps();
     final liveSwaps = List<SwapLiveData>.empty(growable: true);
-    _log.i("going over ${liveSwaps.length} swaps addresses");
+    _log.i("list swaps returned ${liveSwaps.length} swaps addresses");
     for (var s in swaps) {      
       if (s.paidSats == 0 && s.refundTxIds == null) {
         _log.i("now fetching ${s.bitcoinAddress} adress"); 

@@ -42,7 +42,11 @@ extension NodeStateAdapter on NodeState {
 
 extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
   Future<db.OutgoingLightningPayment> toDbOutgoingLightningPayment() async {
-    final invoice = await getNativeToolkit().parseInvoice(invoice: bolt11);
+    var description = "";
+    if (bolt11.isNotEmpty) {
+      final invoice = await getNativeToolkit().parseInvoice(invoice: bolt11);
+      description = invoice.description;
+    }
     return db.OutgoingLightningPayment(
       createdAt: creationTimestamp,
       paymentHash: paymentHash,
@@ -54,18 +58,22 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
       isKeySend: isKeySend,
       pending: pending,
       bolt11: bolt11,
-      description: invoice.description,
+      description: description,
     );
   }
 
   Future<PaymentInfo> toPaymentInfo() async {
-    final invoice = await getNativeToolkit().parseInvoice(invoice: bolt11);
+    var description = "";
+    if (bolt11.isNotEmpty) {
+      final invoice = await getNativeToolkit().parseInvoice(invoice: bolt11);
+      description = invoice.description;
+    }    
     return PaymentInfo(
             type: PaymentType.sent,
             amountMsat: amountMsats,
             destination: destination,
-            shortTitle: invoice.description,
-            description: invoice.description,
+            shortTitle: description,
+            description: description,
             feeMsat: feeMsats,
             creationTimestamp: Int64(creationTimestamp),
             pending: pending,

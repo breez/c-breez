@@ -38,7 +38,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     var injector = ServiceInjector();
-    final lightningServices = await injector.lightningServices;
+    final lightningServices = injector.lightningServices;
     var appDir = await getApplicationDocumentsDirectory();
 
     final storage = await HydratedStorage.build(storageDirectory: Directory(p.join(appDir.path, "bloc_storage")));
@@ -46,12 +46,12 @@ void main() async {
         () => runApp(MultiBlocProvider(
               providers: [
                 BlocProvider<LSPBloc>(
-                  create: (BuildContext context) => LSPBloc(lightningServices, injector.lspService),
+                  create: (BuildContext context) => LSPBloc(lightningServices, injector.lightningServices.lspService),
                 ),
                 BlocProvider<AccountBloc>(
                   create: (BuildContext context) => AccountBloc(
                     lightningServices,
-                    injector.lnurlService,                    
+                    injector.lightningServices.lnurlService,                    
                     injector.keychain,
                   ),
                 ),
@@ -63,7 +63,7 @@ void main() async {
                   create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
                 ),
                 BlocProvider<CurrencyBloc>(
-                  create: (BuildContext context) => CurrencyBloc(injector.fiatService),
+                  create: (BuildContext context) => CurrencyBloc(injector.lightningServices.fiatService),
                 ),
                 BlocProvider<SecurityBloc>(
                   create: (BuildContext context) => SecurityBloc(),

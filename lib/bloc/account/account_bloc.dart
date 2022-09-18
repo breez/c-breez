@@ -189,7 +189,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<breez_sdk.PaymentInfo> sendSpontaneousPayment(String nodeID, String description, Int64 amountSat) async {
-    final paymentInfo = await _lightningNode.sendSpontaneousPayment(nodeID, amountSat, description);
+    final paymentInfo = await _lightningNode.sendSpontaneousPayment(nodeID, amountSat, description);    
     await syncStateWithNode();
     return paymentInfo;
   }

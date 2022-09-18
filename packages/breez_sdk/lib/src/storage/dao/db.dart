@@ -187,7 +187,7 @@ class AppDatabase extends _$AppDatabase implements Storage {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration {
@@ -223,6 +223,9 @@ class AppDatabase extends _$AppDatabase implements Storage {
         if (from < 12) {
           await m.deleteTable("invoices");
           await m.createTable(invoices);          
+        }
+        if (from < 13) {
+          await m.createTable(swaps);          
         }
       },
     );

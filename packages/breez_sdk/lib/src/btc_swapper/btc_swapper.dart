@@ -8,13 +8,15 @@ import 'package:breez_sdk/src/btc_swapper/swap_address.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart' as db;
 import 'package:drift/drift.dart';
+import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 
 class BTCSwapper {
   static const maxDepositAmount = 4000000;
-
+  
+  final _log = FimberLog("BTCSwapper");
   final _lnToolkit = getNativeToolkit();
   final LightningNode _node;
   final Storage _storage;
@@ -87,6 +89,7 @@ class BTCSwapper {
   // Redeem a pending swap. This means we create an invoice and ask from the
   // swapper to pay us in exchange to the preimage for spending the onchain utxo
   Future redeem(SwapLiveData liveSwap) async {
+    await _node.getNodeAPI().ensureScheduled();
     var s = liveSwap.swap;
     try {
       if (s.paymentRequest == null) {
@@ -133,10 +136,14 @@ class BTCSwapper {
   Future<List<SwapLiveData>> _refreshSwapsStatuses() async {
     final swaps = await _storage.listSwaps();
     final liveSwaps = List<SwapLiveData>.empty(growable: true);
-    for (var s in swaps) {
+    _log.i("going over ${liveSwaps.length} swaps addresses");
+    for (var s in swaps) {      
       if (s.paidSats == 0 && s.refundTxIds == null) {
+        _log.i("now fetching ${s.bitcoinAddress} adress"); 
         final txs = await _chainService.fetchTransactionsForAddress(s.bitcoinAddress);
+        _log.i("fetched ${txs.length} transactions for address: ${s.bitcoinAddress}"); 
         final liveData = SwapLiveData(s, txs);
+        _log.i("address: ${s.bitcoinAddress} redeemable = ${liveData.redeemable}"); 
         if (liveData.redeemable) {
           liveSwaps.add(liveData);
         }

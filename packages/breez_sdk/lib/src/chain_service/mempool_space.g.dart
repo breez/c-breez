@@ -23,11 +23,11 @@ Map<String, dynamic> _$MSpaceUTXOStatusToJson(MSpaceUTXOStatus instance) =>
 MSpaceTxStatus _$MSpaceTxStatusFromJson(Map<String, dynamic> json) {
   $checkKeys(
     json,
-    requiredKeys: const ['confirmed', 'block_height'],
+    requiredKeys: const ['confirmed'],
   );
   return MSpaceTxStatus(
     json['confirmed'] as bool,
-    json['block_height'] as int,
+    json['block_height'] as int?,
   );
 }
 

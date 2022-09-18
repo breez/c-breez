@@ -41,14 +41,16 @@ class LightningNode {
     _subswapService = BTCSwapper(this, _storage, _chainService);
     FGBGEvents.stream.where((event) => event == FGBGType.foreground).throttleTime(const Duration(minutes: 1)).listen((event) async {
       if (_signer != null) {
-        await syncState();   
-        await _subswapService.redeemPendingSwaps();     
+        await syncState();           
       }
     });
 
+    FGBGEvents.stream.where((event) => event == FGBGType.foreground).listen((event) async {
+      await _subswapService.redeemPendingSwaps();     
+    });
     Timer.periodic(const Duration(minutes: 10), (timer) {
       _subswapService.redeemPendingSwaps();
-    });
+    });    
   }
 
   LSPService get lspService => _lspService;
@@ -56,6 +58,8 @@ class LightningNode {
   LNURLService get lnurlService => _lnurlService;
 
   FiatService get fiatService => _fiatService;
+
+  BTCSwapper get subwapService => _subswapService;
 
   void setPaymentFilter(PaymentFilter filter) {
     _storage.updateSettings(paymentFilterSettingsKey, json.encode(filter.toJson()));
@@ -149,7 +153,7 @@ class LightningNode {
 
   connectWithCredentials(List<int> credentials, Signer signer) {
     _nodeAPI.initWithCredentials(credentials, signer);
-    _signer = signer;
+    _signer = signer;  
   }
 
   NodeAPI getNodeAPI() {
@@ -171,7 +175,7 @@ class LightningNode {
         //final nodeInfo = await _nodeAPI.getNodeInfo();
         //await _lspService.openLSPChannel(lspInfo.lspID, nodeInfo.nodeID);
       }, tryLimit: 3, interval: const Duration(seconds: 2));
-    }
+    }    
   }
 
   Future<Invoice> requestPayment(Int64 amountSats, {String? description, Int64? expiry}) async {

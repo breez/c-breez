@@ -9,7 +9,7 @@ part of 'chain_service.dart';
 OnchainTransaction _$OnchainTransactionFromJson(Map<String, dynamic> json) =>
     OnchainTransaction(
       json['confirmed'] as bool,
-      json['blockHeight'] as int,
+      json['blockHeight'] as int?,
       (json['inputs'] as List<dynamic>)
           .map((e) => VIn.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -56,7 +56,7 @@ UTXOStatus _$UTXOStatusFromJson(Map<String, dynamic> json) => UTXOStatus(
       json['spent'] as bool,
       json['txid'] as String,
       json['confirmed'] as bool,
-      json['blockHeight'] as int,
+      json['blockHeight'] as int?,
     );
 
 Map<String, dynamic> _$UTXOStatusToJson(UTXOStatus instance) =>

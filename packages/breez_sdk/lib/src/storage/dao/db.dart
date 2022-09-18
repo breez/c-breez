@@ -305,6 +305,11 @@ class AppDatabase extends _$AppDatabase implements Storage {
   Future<List<Utxo>> listUtxos() {
     return utxosDao.listUtxos();
   }
+
+  @override
+  Future addSwap(Swap s) {
+    return swapsDao.addSwap(s);
+  }
   
   @override
   Future<List<Swap>> listSwaps() {

@@ -50,7 +50,7 @@ class MSpaceUTXOStatus implements UTXOStatus {
   Map<String, dynamic> toJson() => _$MSpaceUTXOStatusToJson(this);
   
   @override
-  int get blockHeight => status.blockHeight;
+  int? get blockHeight => status.blockHeight;
   
   @override  
   bool get confirmed => status.confirmed;
@@ -62,8 +62,8 @@ class MSpaceTxStatus {
   @JsonKey(required: true, name: "confirmed")  
   final bool confirmed;
 
-  @JsonKey(required: true, name: "block_height")
-  final int blockHeight;
+  @JsonKey(name: "block_height")
+  final int? blockHeight;
   
   MSpaceTxStatus(this.confirmed, this.blockHeight);
 
@@ -99,14 +99,14 @@ class MSpaceOnchainTransaction implements OnchainTransaction{
   List<VIn> get inputs => mspaceInputs.map((e) => e as VIn).toList();
 
   @override  
-  int get blockHeight => status.blockHeight;
+  int? get blockHeight => status.blockHeight;
 
   @override  
   bool get confirmed => status.confirmed;
 }
 
 @JsonSerializable()
-class MSpaceVOut {
+class MSpaceVOut implements VOut {
   final String scriptpubkey;
 
   @JsonKey(name: "scriptpubkey_type")
@@ -123,7 +123,7 @@ class MSpaceVOut {
 }
 
 @JsonSerializable(explicitToJson: true)
-class MSpaceVIn {
+class MSpaceVIn implements VIn {
   @JsonKey(name: "txid")
   final String txID;
   

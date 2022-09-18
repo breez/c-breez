@@ -27,7 +27,7 @@ abstract class ChainService {
 @JsonSerializable(explicitToJson: true)
 class OnchainTransaction {
   final bool confirmed;
-  final int blockHeight;
+  final int? blockHeight;
   final List<VIn> inputs;
   final List<VOut> outputs;
 
@@ -67,7 +67,7 @@ class UTXOStatus {
   final bool spent;
   final String txid;
   final bool confirmed;
-  final int blockHeight;
+  final int? blockHeight;
 
   UTXOStatus(this.spent, this.txid, this.confirmed, this.blockHeight);
 

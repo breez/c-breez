@@ -34,6 +34,7 @@ abstract class Storage {
   Future<List<Utxo>> listUtxos();
   Future updateUtxos(List<Utxo> updatedUtxos);
 
+  Future addSwap(Swap s);
   Future<Swap> updateSwap(String bitcoinAddress, {String? payreq, int? confirmedSats, int? paidSats, String? error});
   Future<List<Swap>> listSwaps();
 }

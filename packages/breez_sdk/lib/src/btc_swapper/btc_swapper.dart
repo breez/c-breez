@@ -32,7 +32,7 @@ class BTCSwapper {
 
     // create swap keys
     final swapKeys = await _lnToolkit.createSwap();
-    final nodeInfo = await _node.getNodeAPI().getNodeInfo();
+    final nodeInfo = await _node.getNodeState();
 
     // call breez server to get a sub swap address
     final server = await BreezServer.createWithDefaultConfig();
@@ -40,7 +40,7 @@ class BTCSwapper {
     var fundingClient = FundManagerClient(channel, options: server.defaultCallOptions);
     final createSwapInitRequest = AddFundInitRequest()
       ..hash = swapKeys.hash
-      ..nodeID = nodeInfo.nodeID
+      ..nodeID = nodeInfo!.id
       ..pubkey = swapKeys.pubkey;
     final createSwapInitReply = await fundingClient.addFundInit(createSwapInitRequest);
     final script = await _lnToolkit.createSubmaringSwapScript(
@@ -62,6 +62,7 @@ class BTCSwapper {
       confirmedSats: 0,
       script: script,
     );
+    await _storage.addSwap(swap);
 
     return swap.bitcoinAddress;
   }
@@ -78,11 +79,15 @@ class BTCSwapper {
     var s = liveSwap.swap;
     try {
       if (s.paymentRequest == null) {
-        final invoice = await _createSwapInvoice(s);
+        _log.i("creating payment request for address: ${s.bitcoinAddress}");
+        final invoice = await _createSwapInvoice(liveSwap.confirmedAmount);
         s = await _storage.updateSwap(s.bitcoinAddress, payreq: invoice.bolt11);
+      } else {
+        _log.i("found payment request for address: ${s.bitcoinAddress}");
       }
       final invoice = await _lnToolkit.parseInvoice(invoice: s.paymentRequest!);
-      if (invoice.amount != null && invoice.amount! != s.confirmedSats) {
+      if (invoice.amount != null && invoice.amount! ~/ 1000 != liveSwap.confirmedAmount) {
+        _log.e("Funds were added after invoice was created for address: ${s.bitcoinAddress}");
         throw Exception("Funds were added after invoice was created");
       }
 
@@ -91,7 +96,10 @@ class BTCSwapper {
       var swapper = SwapperClient(channel, options: server.defaultCallOptions);
       final swapResponse = await swapper.getSwapPayment(GetSwapPaymentRequest()..paymentRequest = s.paymentRequest!);
       s = await _storage.updateSwap(s.bitcoinAddress, error: swapResponse.paymentError);
+      _log.i("swap finished successfully for address: ${s.bitcoinAddress}");
+      _node.syncState();
     } catch (e) {
+      _log.i("error in completing swap for address: ${s.bitcoinAddress} error=${e.toString()}");
       s = await _storage.updateSwap(s.bitcoinAddress, error: e.toString());
     }
   }
@@ -104,24 +112,24 @@ class BTCSwapper {
     return Future.wait(liveSwaps.map(redeem));
   }
 
-  Future<Invoice> _createSwapInvoice(db.Swap s) async {
+  Future<Invoice> _createSwapInvoice(int confirmedSats) async {
     final nodeState = await _node.getNodeState();
     if (nodeState == null) {
       throw Exception("node is not ready");
     }
     final int maxReceive = max(nodeState.maxAllowedToReceiveMsats.toInt() ~/ 1000, maxDepositAmount);
 
-    if (s.confirmedSats > maxReceive || s.confirmedSats > maxReceive) {
+    if (confirmedSats > maxReceive || confirmedSats > maxReceive) {
       throw Exception("invoice limit exceeded");
     }
 
-    return _node.requestPayment(Int64(s.confirmedSats), description: "", expiry: Int64(60 * 60 * 24 * 30));
+    return _node.requestPayment(Int64(confirmedSats), description: "", expiry: Int64(60 * 60 * 24 * 30));
   }
 
   Future<List<SwapLiveData>> _refreshSwapsStatuses() async {
     final swaps = await _storage.listSwaps();
     final liveSwaps = List<SwapLiveData>.empty(growable: true);
-    _log.i("list swaps returned ${liveSwaps.length} swaps addresses");
+    _log.i("list swaps returned ${swaps.length} swaps addresses");
     for (var s in swaps) {      
       if (s.paidSats == 0 && s.refundTxIds == null) {
         _log.i("now fetching ${s.bitcoinAddress} adress"); 

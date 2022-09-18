@@ -1,7 +1,10 @@
 import 'package:breez_sdk/sdk.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
+import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
+import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -30,44 +33,42 @@ class InputHandler {
   ) {
     final InputBloc inputBloc = _context.read<InputBloc>();
     inputBloc.stream.listen((inputState) {
-      if (_handlingRequest || inputState.inputData == null) {
+      if (_handlingRequest) {
         return;
       }
+      _setLoading(inputState.isLoading);
       _handlingRequest = true;
-      handleInput(inputState);
+      handleInput(inputState).whenComplete(() => _handlingRequest = false);
     }).onError((error) {
       _handlingRequest = false;
       _setLoading(false);
       showFlushbar(_context, message: error.toString());
     });
+    // Handle LNURL Success Action
+    final AccountBloc accountBloc = _context.read<AccountBloc>();
+    accountBloc.successActionStream.listen((successActionData) {
+      handleSuccessAction(_context, successActionData);
+    });
   }
 
-  void handleInput(InputState inputState) {
+  Future handleInput(InputState inputState) async {
     switch (inputState.protocol) {
       case InputProtocol.paymentRequest:
-        handleInvoice(inputState.inputData);
-        return;
+        return handleInvoice(inputState.inputData);
       case InputProtocol.lnurl:
-        handleLNURL(
-          _context,
-          inputState.inputData,          
-        ).onError((error, stackTrace) {showFlushbar(_context, message: error.toString());})
-        .whenComplete(() {_handlingRequest = false;});
-        return;
+        return handleLNURL(_context, inputState.inputData);
       case InputProtocol.nodeID:
-        handleNodeID(inputState.inputData);
-        return;
+        return handleNodeID(inputState.inputData);
       case InputProtocol.appLink:
       case InputProtocol.webView:
-        handleWebAddress(inputState.inputData);
-        return;
+        return handleWebAddress(inputState.inputData);
       default:
         break;
     }
   }
 
-  void handleInvoice(dynamic invoice) {
-    showDialog(
+  Future handleInvoice(dynamic invoice) async {
+    return await showDialog(
       useRootNavigator: false,
       context: _context,
       barrierDismissible: false,
@@ -75,14 +76,12 @@ class InputHandler {
         invoice,
         firstPaymentItemKey,
         scrollController,
-        () => _handlingRequest = false,
       ),
     );
   }
 
-  void handleNodeID(String nodeID) {
-    _handlingRequest = false;
-    Navigator.of(_context).push(
+  Future handleNodeID(String nodeID) async {
+    return await Navigator.of(_context).push(
       FadeInRoute(
         builder: (_) => SpontaneousPaymentPage(
           nodeID,
@@ -92,13 +91,23 @@ class InputHandler {
     );
   }
 
-  void handleWebAddress(String url) {
-    _handlingRequest = false;
-    showDialog(
+  Future handleWebAddress(String url) async {
+    return await showDialog(
       useRootNavigator: false,
       context: _context,
       barrierDismissible: false,
       builder: (_) => OpenLinkDialog(url),
+    );
+  }
+
+  Future handleSuccessAction(
+    BuildContext context,
+    SuccessActionData successActionData,
+  ) async {
+    return await showDialog(
+      useRootNavigator: false,
+      context: context,
+      builder: (_) => SuccessActionDialog(successActionData),
     );
   }
 

@@ -1,18 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class SuccessActionDialog extends StatefulWidget {
-  final String message;
-  final String? url;
+  final SuccessActionData successActionData;
 
-  const SuccessActionDialog(
-    this.message, {
-    this.url,
-    Key? key,
-  }) : super(key: key);
+  const SuccessActionDialog(this.successActionData);
 
   @override
   State<StatefulWidget> createState() {
@@ -21,11 +17,6 @@ class SuccessActionDialog extends StatefulWidget {
 }
 
 class SuccessActionDialogState extends State<SuccessActionDialog> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
@@ -38,8 +29,10 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Message(widget.message),
-            if (widget.url != null) ...[URLText(widget.url!)]
+            Message(widget.successActionData.message),
+            if (widget.successActionData.url != null) ...[
+              URLText(widget.successActionData.url!)
+            ]
           ],
         ),
       ),
@@ -50,10 +43,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
               if (states.contains(MaterialState.pressed)) {
                 return Colors.transparent;
               }
-              return Theme.of(context)
-                  .textTheme
-                  .button!
-                  .color!; // Defer to the widget's default.
+              // Defer to the widget's default.
+              return themeData.textTheme.button!.color!;
             }),
           ),
           onPressed: () {
@@ -64,7 +55,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             style: themeData.primaryTextTheme.button,
           ),
         ),
-        if (widget.url != null) ...[
+        if (widget.successActionData.url != null) ...[
           TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>(
@@ -72,22 +63,19 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                   if (states.contains(MaterialState.pressed)) {
                     return Colors.transparent;
                   }
-                  return Theme.of(context)
-                      .textTheme
-                      .button!
-                      .color!; // Defer to the widget's default.
+                  // Defer to the widget's default.
+                  return themeData.textTheme.button!.color!;
                 },
               ),
             ),
             child: Text(
               "OPEN LINK",
-              style: Theme.of(context).primaryTextTheme.button,
+              style: themeData.primaryTextTheme.button,
             ),
             onPressed: () async {
-              final String url = widget.url!;
               final navigator = Navigator.of(context);
-              if (await canLaunchUrlString(url)) {
-                await launchUrlString(url);
+              if (await canLaunchUrlString(widget.successActionData.url!)) {
+                await launchUrlString(widget.successActionData.url!);
                 navigator.pop();
               } else {
                 navigator.pop();

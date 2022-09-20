@@ -8,6 +8,7 @@ import 'package:c_breez/routes/home/widgets/close_popup.dart';
 import 'package:c_breez/routes/home/widgets/drawer/home_drawer.dart';
 import 'package:c_breez/routes/home/widgets/fade_in_widget.dart';
 import 'package:c_breez/routes/home/widgets/qr_action_button.dart';
+import 'package:c_breez/routes/security/auto_lock_mixin.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -24,7 +25,7 @@ class Home extends StatefulWidget {
   }
 }
 
-class HomeState extends State<Home> {
+class HomeState extends State<Home> with AutoLockMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<HomeDrawerState> _drawerKey = GlobalKey<HomeDrawerState>();
   final GlobalKey firstPaymentItemKey = GlobalKey();

@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+2
 
 environment:
-  sdk: ">=2.18.0 <3.0.0"
+  sdk: ">=2.18.1 <3.0.0"
 
 dependencies:
   flutter:
@@ -16,14 +16,14 @@ dependencies:
   app_settings: ^4.1.8
   archive: ^3.3.1
   auto_size_text: ^3.0.0
-  basic_utils: ^5.2.2
+  basic_utils: ^5.3.0
   bip32: ^2.0.0
   bip39: ^1.0.6
   bolt11_decoder: ^1.0.1
   breez_sdk:
     path: ./packages/breez_sdk
   cryptography: ^2.0.5
-  connectivity_plus: ^2.3.6+1
+  connectivity_plus: ^2.3.7
   cupertino_icons: ^1.0.5
   dart_lnurl:
     git:
@@ -32,13 +32,13 @@ dependencies:
   drift: ^2.1.0
   duration: ^3.0.11
   email_validator: ^2.1.17
-  extended_image: ^6.3.0
+  extended_image: ^6.3.1
   ffi: ^2.0.1
   fimber: ^0.6.6
   fimber_io: ^0.6.6
   firebase_core: ^1.22.0
   firebase_dynamic_links: ^4.3.7
-  firebase_messaging: ^13.0.1
+  firebase_messaging: ^13.0.2
   fixnum: ^1.0.1
   flutter_bloc: ^8.1.1
   flutter_fgbg:
@@ -75,7 +75,7 @@ dependencies:
   share_extend: ^2.0.0
   shared_preferences: ^2.0.15
   simple_animations: ^5.0.0+2
-  sqlite3_flutter_libs: ^0.5.9
+  sqlite3_flutter_libs: ^0.5.10
   timeago: ^3.3.0
   uni_links: ^0.5.1
   url_launcher: ^6.1.5
@@ -85,16 +85,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.2.0
+  build_runner: ^2.2.1
   drift_dev: ^2.1.0
   flutter_lints: ^2.0.1
-  mockito: ^5.3.0
+  mockito: ^5.3.1
   sqflite_common_ffi: ^2.1.1+1
   test: ^1.21.6
 
 dependency_overrides:
   test_api: ^0.4.14
-  path: ^1.8.2
   vector_math: ^2.1.3
 
 flutter:

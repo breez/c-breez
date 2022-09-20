@@ -17,6 +17,14 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kInitHsmdConstMeta;
 
+  Future<void> validateMnemonic({required String phrase, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kValidateMnemonicConstMeta;
+
+  Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta;
+
   Future<SwapKeys> createSwap({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateSwapConstMeta;
@@ -177,6 +185,38 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "init_hsmd",
         argNames: ["storagePath", "secret"],
+      );
+
+  Future<void> validateMnemonic({required String phrase, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            inner.wire_validate_mnemonic(port_, _api2wire_String(phrase)),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kValidateMnemonicConstMeta,
+        argValues: [phrase],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kValidateMnemonicConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "validate_mnemonic",
+        argNames: ["phrase"],
+      );
+
+  Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            inner.wire_mnemonic_to_seed(port_, _api2wire_String(phrase)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: kMnemonicToSeedConstMeta,
+        argValues: [phrase],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "mnemonic_to_seed",
+        argNames: ["phrase"],
       );
 
   Future<SwapKeys> createSwap({dynamic hint}) =>
@@ -532,6 +572,10 @@ Uint8List _wire2api_uint_8_list(dynamic raw) {
   return raw as Uint8List;
 }
 
+void _wire2api_unit(dynamic raw) {
+  return;
+}
+
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
 
 // AUTO GENERATED FILE, DO NOT EDIT.
@@ -573,6 +617,40 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_init_hsmd = _wire_init_hsmdPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_validate_mnemonic(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> phrase,
+  ) {
+    return _wire_validate_mnemonic(
+      port_,
+      phrase,
+    );
+  }
+
+  late final _wire_validate_mnemonicPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_validate_mnemonic');
+  late final _wire_validate_mnemonic = _wire_validate_mnemonicPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_mnemonic_to_seed(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> phrase,
+  ) {
+    return _wire_mnemonic_to_seed(
+      port_,
+      phrase,
+    );
+  }
+
+  late final _wire_mnemonic_to_seedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_mnemonic_to_seed');
+  late final _wire_mnemonic_to_seed = _wire_mnemonic_to_seedPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_create_swap(
     int port_,
@@ -869,7 +947,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       .asFunction<void Function(WireSyncReturnStruct)>();
 
   void store_dart_post_cobject(
-    DartPostCObjectFnType ptr,
+    int ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -877,10 +955,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
-      .asFunction<void Function(DartPostCObjectFnType)>();
+  late final _store_dart_post_cobject =
+      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
 }
 
 class wire_uint_8_list extends ffi.Struct {
@@ -927,7 +1005,3 @@ class wire_list_route_hint extends ffi.Struct {
   @ffi.Int32()
   external int len;
 }
-
-typedef DartPostCObjectFnType = ffi.Pointer<
-    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
-typedef DartPort = ffi.Int64;

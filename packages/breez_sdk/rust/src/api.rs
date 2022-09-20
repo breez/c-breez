@@ -18,10 +18,10 @@ pub fn validate_mnemonic(phrase: String) -> Result<()> {
  Mnemonic::validate(&phrase, Language::English)
 }
 
-pub fn mnemonic_to_seed(phrase: String) -> Vec<u8> {
+pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
  let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
  let seed = Seed::new(&mnemonic, "");
- seed.as_bytes().to_vec()
+ Ok(seed.as_bytes().to_vec())
 }
 
 pub fn create_swap() -> Result<SwapKeys> {

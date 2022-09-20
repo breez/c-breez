@@ -45,8 +45,6 @@ void wire_init_hsmd(int64_t port_,
                     struct wire_uint_8_list *storage_path,
                     struct wire_uint_8_list *secret);
 
-void wire_validate_mnemonic(int64_t port_, struct wire_uint_8_list *phrase);
-
 void wire_mnemonic_to_seed(int64_t port_, struct wire_uint_8_list *phrase);
 
 void wire_create_swap(int64_t port_);
@@ -101,7 +99,6 @@ void store_dart_post_cobject(DartPostCObjectFnType ptr);
 static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_init_hsmd);
-    dummy_var ^= ((int64_t) (void*) wire_validate_mnemonic);
     dummy_var ^= ((int64_t) (void*) wire_mnemonic_to_seed);
     dummy_var ^= ((int64_t) (void*) wire_create_swap);
     dummy_var ^= ((int64_t) (void*) wire_create_submaring_swap_script);

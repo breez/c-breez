@@ -92,8 +92,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
         .toList()
         .join(" ");
     try {
-      _lnToolkit.validateMnemonic(phrase: mnemonic);
-      Navigator.pop(context, _lnToolkit.mnemonicToSeed(phrase: mnemonic));
+      Navigator.pop(context, await _lnToolkit.mnemonicToSeed(phrase: mnemonic));
     } catch (e) {
       setState(() {
         _hasError = true;

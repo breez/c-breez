@@ -14,10 +14,9 @@ pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  _new_hsmd(private_key_slice, &storage_path).map(|hsmd| hsmd.init)
 }
 
-pub fn validate_mnemonic(phrase: String) -> Result<()> {
- Mnemonic::validate(&phrase, Language::English)
-}
-
+/// Attempts to convert the phrase to a mnemonic, then to a seed.
+///
+/// If the phrase is not a valid mnemonic, an error is returned.
 pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
  let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
  let seed = Seed::new(&mnemonic, "");

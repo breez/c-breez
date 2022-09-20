@@ -17,10 +17,9 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kInitHsmdConstMeta;
 
-  Future<void> validateMnemonic({required String phrase, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kValidateMnemonicConstMeta;
-
+  /// Attempts to convert the phrase to a mnemonic, then to a seed.
+  ///
+  /// If the phrase is not a valid mnemonic, an error is returned.
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta;
@@ -185,22 +184,6 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "init_hsmd",
         argNames: ["storagePath", "secret"],
-      );
-
-  Future<void> validateMnemonic({required String phrase, dynamic hint}) =>
-      executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) =>
-            inner.wire_validate_mnemonic(port_, _api2wire_String(phrase)),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kValidateMnemonicConstMeta,
-        argValues: [phrase],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kValidateMnemonicConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "validate_mnemonic",
-        argNames: ["phrase"],
       );
 
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) =>
@@ -572,10 +555,6 @@ Uint8List _wire2api_uint_8_list(dynamic raw) {
   return raw as Uint8List;
 }
 
-void _wire2api_unit(dynamic raw) {
-  return;
-}
-
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
 
 // AUTO GENERATED FILE, DO NOT EDIT.
@@ -617,23 +596,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_init_hsmd = _wire_init_hsmdPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
-
-  void wire_validate_mnemonic(
-    int port_,
-    ffi.Pointer<wire_uint_8_list> phrase,
-  ) {
-    return _wire_validate_mnemonic(
-      port_,
-      phrase,
-    );
-  }
-
-  late final _wire_validate_mnemonicPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_validate_mnemonic');
-  late final _wire_validate_mnemonic = _wire_validate_mnemonicPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_mnemonic_to_seed(
     int port_,

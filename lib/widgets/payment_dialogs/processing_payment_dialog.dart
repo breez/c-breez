@@ -13,7 +13,6 @@ class ProcessingPaymentDialog extends StatefulWidget {
   final bool popOnCompletion;
   final Future Function() paymentFunc;
   final Function(PaymentRequestState state)? onStateChange;
-  final Function(dynamic error)? onError;
 
   const ProcessingPaymentDialog({
     this.firstPaymentItemKey,
@@ -21,7 +20,6 @@ class ProcessingPaymentDialog extends StatefulWidget {
     this.popOnCompletion = false,
     required this.paymentFunc,
     this.onStateChange,
-    this.onError,
     Key? key,
   }) : super(key: key);
 
@@ -86,7 +84,6 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with S
         Navigator.of(context).removeRoute(_currentRoute!);
       }
       widget.onStateChange?.call(PaymentRequestState.PAYMENT_COMPLETED);
-      widget.onError?.call(err);
     });
   }
 

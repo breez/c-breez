@@ -155,9 +155,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return isSent;
   }
 
-  Future<breez_sdk.PaymentInfo> sendLNURLPayment(
+  Future<breez_sdk.PaymentInfo?> sendLNURLPayment(
       LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
-    late breez_sdk.PaymentInfo paymentInfo;
+    late breez_sdk.PaymentInfo? paymentInfo;
     try {
       paymentInfo = await _lightningNode
           .sendPaymentForRequest(
@@ -194,9 +194,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return lnurlPayResult;
   }
 
-  Future<breez_sdk.PaymentInfo> sendPayment(
+  Future<breez_sdk.PaymentInfo?> sendPayment(
       String bolt11, Int64 amountSat) async {
-    late breez_sdk.PaymentInfo paymentInfo;
+    late breez_sdk.PaymentInfo?paymentInfo;
     try {
       paymentInfo =
           await _lightningNode.sendPaymentForRequest(bolt11, amount: amountSat);
@@ -216,9 +216,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     //throw Exception("not implemented");
   }
 
-  Future<breez_sdk.PaymentInfo> sendSpontaneousPayment(
+  Future<breez_sdk.PaymentInfo?> sendSpontaneousPayment(
       String nodeID, String description, Int64 amountSat) async {
-    late breez_sdk.PaymentInfo paymentInfo;
+    late breez_sdk.PaymentInfo? paymentInfo;
     try {
       paymentInfo = await _lightningNode.sendSpontaneousPayment(
           nodeID, amountSat, description);

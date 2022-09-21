@@ -4,11 +4,13 @@ class SecurityState {
   final PinStatus pinStatus;
   final Duration lockInterval;
   final LocalAuthenticationOption localAuthenticationOption;
+  final LockState lockState;
 
   const SecurityState(
     this.pinStatus,
     this.lockInterval,
     this.localAuthenticationOption,
+    this.lockState,
   );
 
   const SecurityState.initial()
@@ -16,17 +18,20 @@ class SecurityState {
           PinStatus.initial,
           const Duration(seconds: _kDefaultLockInterval),
           LocalAuthenticationOption.none,
+          LockState.initial,
         );
 
   SecurityState copyWith({
     PinStatus? pinStatus,
     Duration? lockInterval,
     LocalAuthenticationOption? localAuthenticationOption,
+    LockState? lockState,
   }) {
     return SecurityState(
       pinStatus ?? this.pinStatus,
       lockInterval ?? this.lockInterval,
       localAuthenticationOption ?? this.localAuthenticationOption,
+      lockState ?? this.lockState,
     );
   }
 
@@ -34,12 +39,14 @@ class SecurityState {
       : pinStatus = PinStatus.values.byName(json["pinStatus"] ?? PinStatus.initial.name),
         lockInterval = Duration(seconds: json["lockInterval"] ?? _kDefaultLockInterval),
         localAuthenticationOption = LocalAuthenticationOption.values
-            .byName(json["localAuthenticationOption"] ?? LocalAuthenticationOption.none.name);
+            .byName(json["localAuthenticationOption"] ?? LocalAuthenticationOption.none.name),
+        lockState = LockState.values.byName(json["lockState"] ?? LockState.unlocked.name);
 
   Map<String, dynamic> toJson() => {
         "pinStatus": pinStatus.name,
         "lockInterval": lockInterval.inSeconds,
         "localAuthenticationOption": localAuthenticationOption.name,
+        "lockState": lockState.name,
       };
 }
 
@@ -64,4 +71,10 @@ extension LocalAuthenticationOptionExtension on LocalAuthenticationOption {
   bool get isFingerprint => this == LocalAuthenticationOption.fingerprint || this == LocalAuthenticationOption.touchId;
 
   bool get isOtherBiometric => this == LocalAuthenticationOption.other;
+}
+
+enum LockState {
+  initial,
+  locked,
+  unlocked,
 }

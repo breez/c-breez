@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:local_auth/local_auth.dart';
@@ -14,8 +15,24 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   final _log = FimberLog("LocalAuthenticationService");
   final _auth = LocalAuthentication();
   final _secureStorage = const FlutterSecureStorage();
+  Timer? _autoLock;
 
-  SecurityBloc() : super(const SecurityState.initial());
+  SecurityBloc() : super(const SecurityState.initial()) {
+    FGBGEvents.stream.listen((event) {
+      final lockInterval = state.lockInterval;
+      if (event == FGBGType.foreground) {
+        _autoLock?.cancel();
+        _autoLock = null;
+      } else {
+        if (state.pinStatus == PinStatus.enabled) {
+          _autoLock = Timer(lockInterval, () {
+            _setLockState(LockState.locked);
+            _autoLock = null;
+          });
+        }
+      }
+    });
+  }
 
   Future setPin(String pin) async {
     await _secureStorage.write(key: "pinCode", value: pin);
@@ -27,9 +44,12 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   Future<bool> testPin(String pin) async {
     final storedPin = await _secureStorage.read(key: "pinCode");
     if (storedPin == null) {
+      _setLockState(LockState.locked);
       throw SecurityStorageException();
     }
-    return storedPin == pin;
+    final authenticated = storedPin == pin;
+    _setLockState(authenticated ? LockState.unlocked : LockState.locked);
+    return authenticated;
   }
 
   Future clearPin() async {
@@ -37,24 +57,28 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
     emit(state.copyWith(
       pinStatus: PinStatus.disabled,
     ));
+    _setLockState(LockState.unlocked);
   }
 
   Future setLockInterval(Duration lockInterval) async {
     emit(state.copyWith(
       lockInterval: lockInterval,
     ));
+    _setLockState(LockState.unlocked);
   }
 
   Future clearLocalAuthentication() async {
     emit(state.copyWith(
       localAuthenticationOption: LocalAuthenticationOption.none,
     ));
+    _setLockState(LockState.unlocked);
   }
 
   Future enableLocalAuthentication() async {
     emit(state.copyWith(
       localAuthenticationOption: await localAuthenticationOption(),
     ));
+    _setLockState(LockState.unlocked);
   }
 
   Future<LocalAuthenticationOption> localAuthenticationOption() async {
@@ -71,7 +95,7 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
 
   Future<bool> localAuthentication(String localizedReason) async {
     try {
-      return await _auth.authenticate(
+      final authenticated = await _auth.authenticate(
         options: const AuthenticationOptions(
           biometricOnly: true,
           useErrorDialogs: false,
@@ -82,19 +106,30 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
           IOSAuthMessages(),
         ],
       );
+      _setLockState(authenticated ? LockState.unlocked : LockState.locked);
+      return authenticated;
     } on PlatformException catch (error) {
       if (error.code == "LockedOut" || error.code == "PermanentlyLockedOut") {
         throw error.message!;
       }
       _log.e("Error Code: ${error.code} - Message: ${error.message}", ex: error);
       await _auth.stopAuthentication();
+      _setLockState(LockState.locked);
       return false;
     }
   }
 
+  void _setLockState(LockState lockState) {
+    emit(state.copyWith(
+      lockState: lockState,
+    ));
+  }
+
   @override
   SecurityState? fromJson(Map<String, dynamic> json) {
-    return SecurityState.fromJson(json);
+    final state = SecurityState.fromJson(json);
+    _setLockState(state.pinStatus == PinStatus.enabled ? LockState.locked : LockState.unlocked);
+    return state;
   }
 
   @override

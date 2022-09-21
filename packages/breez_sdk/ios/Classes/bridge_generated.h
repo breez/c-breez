@@ -82,13 +82,13 @@ void wire_handle(int64_t port_,
                  struct wire_uint_8_list *peer_id,
                  uint64_t db_id);
 
-uint64_t *new_box_autoadd_u64(uint64_t value);
+uint64_t *new_box_autoadd_u64_0(uint64_t value);
 
-struct wire_list_route_hint *new_list_route_hint(int32_t len);
+struct wire_list_route_hint *new_list_route_hint_0(int32_t len);
 
-struct wire_list_route_hint_hop *new_list_route_hint_hop(int32_t len);
+struct wire_list_route_hint_hop *new_list_route_hint_hop_0(int32_t len);
 
-struct wire_uint_8_list *new_uint_8_list(int32_t len);
+struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
 void free_WireSyncReturnStruct(struct WireSyncReturnStruct val);
 
@@ -106,10 +106,10 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_add_routing_hints);
     dummy_var ^= ((int64_t) (void*) wire_sign_message);
     dummy_var ^= ((int64_t) (void*) wire_handle);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64);
-    dummy_var ^= ((int64_t) (void*) new_list_route_hint);
-    dummy_var ^= ((int64_t) (void*) new_list_route_hint_hop);
-    dummy_var ^= ((int64_t) (void*) new_uint_8_list);
+    dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64_0);
+    dummy_var ^= ((int64_t) (void*) new_list_route_hint_0);
+    dummy_var ^= ((int64_t) (void*) new_list_route_hint_hop_0);
+    dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);
     return dummy_var;

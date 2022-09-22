@@ -155,11 +155,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return isSent;
   }
 
-  Future<breez_sdk.PaymentInfo?> sendLNURLPayment(
+  Future<breez_sdk.PaymentInfo> sendLNURLPayment(
       LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
-    late breez_sdk.PaymentInfo? paymentInfo;
     try {
-      paymentInfo = await _lightningNode
+      final paymentInfo = await _lightningNode
           .sendPaymentForRequest(
             lnurlPayResult.pr,
             amount: Int64.parseInt(qParams['amount']!),
@@ -169,11 +168,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
             onTimeout: () =>
                 throw Exception('Timed out waiting 3 minutes for payment.'),
           );
-      return paymentInfo;
-    } catch (e) {
-      _paymentResultStreamController.add(PaymentResultData(error: e));
-      return Future.error(e);
-    } finally {
       await syncStateWithNode();
       if (lnurlPayResult.successAction != null) {
         _paymentResultStreamController.add(
@@ -186,6 +180,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           ),
         );
       }
+      return paymentInfo;
+    } catch (e) {
+      _paymentResultStreamController.add(PaymentResultData(error: e));
+      return Future.error(e);
     }
   }
 
@@ -194,21 +192,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return lnurlPayResult;
   }
 
-  Future<breez_sdk.PaymentInfo?> sendPayment(
+  Future<breez_sdk.PaymentInfo> sendPayment(
       String bolt11, Int64 amountSat) async {
-    late breez_sdk.PaymentInfo?paymentInfo;
     try {
-      paymentInfo =
+      final paymentInfo =
           await _lightningNode.sendPaymentForRequest(bolt11, amount: amountSat);
-      return paymentInfo;
-    } catch (e) {
-      _paymentResultStreamController.add(PaymentResultData(error: e));
-      return Future.error(e);
-    } finally {
       await syncStateWithNode();
       _paymentResultStreamController.add(
         PaymentResultData(paymentInfo: paymentInfo),
       );
+      return paymentInfo;
+    } catch (e) {
+      _paymentResultStreamController.add(PaymentResultData(error: e));
+      return Future.error(e);
     }
   }
 
@@ -216,21 +212,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     //throw Exception("not implemented");
   }
 
-  Future<breez_sdk.PaymentInfo?> sendSpontaneousPayment(
+  Future<breez_sdk.PaymentInfo> sendSpontaneousPayment(
       String nodeID, String description, Int64 amountSat) async {
-    late breez_sdk.PaymentInfo? paymentInfo;
     try {
-      paymentInfo = await _lightningNode.sendSpontaneousPayment(
+      final paymentInfo = await _lightningNode.sendSpontaneousPayment(
           nodeID, amountSat, description);
-      return paymentInfo;
-    } catch (e) {
-      _paymentResultStreamController.add(PaymentResultData(error: e));
-      return Future.error(e);
-    } finally {
       await syncStateWithNode();
       _paymentResultStreamController.add(
         PaymentResultData(paymentInfo: paymentInfo),
       );
+      return paymentInfo;
+    } catch (e) {
+      _paymentResultStreamController.add(PaymentResultData(error: e));
+      return Future.error(e);
     }
   }
 

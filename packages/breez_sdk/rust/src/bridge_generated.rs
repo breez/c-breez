@@ -43,6 +43,21 @@ pub extern "C" fn wire_init_hsmd(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_mnemonic_to_seed(port_: i64, phrase: *mut wire_uint_8_list) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "mnemonic_to_seed",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_phrase = phrase.wire2api();
+            move |task_callback| Ok(mnemonic_to_seed(api_phrase))
+        },
+    )
+}
+
+#[no_mangle]
 pub extern "C" fn wire_create_swap(port_: i64) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

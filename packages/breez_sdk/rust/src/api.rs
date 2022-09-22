@@ -3,6 +3,7 @@ use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
 use anyhow::Result;
+use bip39::*;
 use lightning_signer::lightning_invoice::RawInvoice;
 use std::fs::File;
 use std::io::Read;
@@ -11,6 +12,15 @@ pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  let mut private_key_slice: [u8; 32] = [0; 32];
  private_key_slice.copy_from_slice(&secret[0..32]);
  _new_hsmd(private_key_slice, &storage_path).map(|hsmd| hsmd.init)
+}
+
+/// Attempts to convert the phrase to a mnemonic, then to a seed.
+///
+/// If the phrase is not a valid mnemonic, an error is returned.
+pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
+ let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
+ let seed = Seed::new(&mnemonic, "");
+ Ok(seed.as_bytes().to_vec())
 }
 
 pub fn create_swap() -> Result<SwapKeys> {

@@ -137,3 +137,11 @@ const TextStyle warningStyle = TextStyle(
   color: Color(0xffffe685),
   fontSize: 16.0,
 );
+
+extension ThemeLight on ThemeData {
+  bool get isBreezLight => primaryColor == breezLightTheme.primaryColor;
+}
+
+extension ThemeCustomData on ThemeData {
+  CustomData get customData => isBreezLight ? blueThemeCustomData : darkThemeCustomData;
+}

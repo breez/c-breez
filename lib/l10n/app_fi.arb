@@ -1668,6 +1668,7 @@
     }
   },
   "wallet_dashboard_payment_item_balance_pending_suffix": " (Odottaa)",
+  "wallet_dashboard_payment_item_no_title": "No description",
   "status_text_loading_begin": "Sovellus on ",
   "status_text_loading_middle": "avaamassa turvallista kanavaa",
   "status_text_loading_end": " palvelimeemme. Tämä saattaa kestää jonkin aikaa. Sovellus antaa ilmoituksen kun maksujen vastaanotto ja lähetys ovat jälleen mahdollisia.",

@@ -48,15 +48,9 @@ class UserApp extends StatelessWidget {
         if (savedTheme != null) {
           controller.setTheme(savedTheme);
         } else {
-          final prefs = await SharedPreferences.getInstance();
-          String themeId = prefs.getString(THEME_ID_PREFERENCE_KEY) ?? "light";
-          controller.setTheme(themeId);
+          controller.setTheme('light');
           controller.forgetSavedTheme();
         }
-      },
-      onThemeChanged: (oldTheme, newTheme) async {
-        final prefs = await SharedPreferences.getInstance();
-        prefs.setString(THEME_ID_PREFERENCE_KEY, newTheme.id);
       },
       themes: <AppTheme>[
         AppTheme(

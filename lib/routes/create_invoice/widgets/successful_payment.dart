@@ -108,7 +108,7 @@ class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute>
             child: Image(
               image: const AssetImage("src/icon/ic_done.png"),
               height: 48.0,
-              color: theme.themeId == "BLUE"
+              color: Theme.of(context).isLightTheme
                   ? const Color.fromRGBO(0, 133, 251, 1.0)
                   : Colors.white,
             ),

@@ -38,7 +38,7 @@ class ProcessingPaymentAnimatedContent extends StatelessWidget {
                 height: startHeight,
                 width: queryData.size.width,
                 decoration: ShapeDecoration(
-                  color: theme.themeId == "BLUE"
+                  color: themeData.isLightTheme
                       ? color
                       : moment >= 0.25
                           ? themeData.backgroundColor

@@ -173,6 +173,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {
+    final themeData = Theme.of(context);
     String message = "";
 
     message = "";
@@ -190,8 +191,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     return WarningBox(
       boxPadding: const EdgeInsets.symmetric(horizontal: 20),
       contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      backgroundColor: theme.themeId == "BLUE" ? const Color(0xFFf3f8fc) : null,
-      borderColor: theme.themeId == "BLUE" ? const Color(0xFF0085fb) : null,
+      backgroundColor: themeData.isLightTheme ? const Color(0xFFf3f8fc) : null,
+      borderColor: themeData.isLightTheme ? const Color(0xFF0085fb) : null,
       child: Text(
         message,
         textAlign: TextAlign.center,

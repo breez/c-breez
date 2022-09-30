@@ -22,15 +22,15 @@ class HeaderFilterChip extends SliverPadding {
             delegate: FixedSliverDelegate(
               maxHeight / 1.2,
               builder: (context, height, overlap) {
+                final customData = Theme.of(context).customData;
                 return Container(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
                   height: maxHeight / 1.2,
-                  color: theme.customData[theme.themeId]!.dashboardBgColor,
+                  color: customData.dashboardBgColor,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: Container(
-                      color:
-                          theme.customData[theme.themeId]!.paymentListBgColor,
+                      color: customData.paymentListBgColor,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,

@@ -15,6 +15,7 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:theme_provider/theme_provider.dart';
 
 class UITestPage extends StatelessWidget {
   const UITestPage({Key? key}) : super(key: key);
@@ -198,9 +199,9 @@ class UITestPage extends StatelessWidget {
     BuildContext context,
     UserProfileSettings user,
   ) {
+    final themeData = Theme.of(context);
     return GestureDetector(
-      onTap: () => _changeTheme(user.themeId == "BLUE" ? "DARK" : "BLUE",
-          context.read<UserProfileBloc>()),
+      onTap: () => ThemeProvider.controllerOf(context).nextTheme(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -222,8 +223,7 @@ class UITestPage extends StatelessWidget {
                     "src/icon/ic_lightmode.png",
                     height: 24,
                     width: 24,
-                    color:
-                        user.themeId == "BLUE" ? Colors.white : Colors.white30,
+                    color: themeData.switchThemeIconColor,
                   ),
                   const SizedBox(
                     height: 20,
@@ -234,8 +234,7 @@ class UITestPage extends StatelessWidget {
                   ),
                   ImageIcon(
                     const AssetImage("src/icon/ic_darkmode.png"),
-                    color:
-                        user.themeId == "DARK" ? Colors.white : Colors.white30,
+                    color: themeData.switchThemeIconColor,
                     size: 24.0,
                   ),
                 ],
@@ -245,12 +244,5 @@ class UITestPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future _changeTheme(
-    String themeId,
-    UserProfileBloc userProfileBloc,
-  ) async {
-    userProfileBloc.updateProfile(themeId: themeId);
   }
 }

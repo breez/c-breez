@@ -33,7 +33,7 @@ class WarningBox extends StatelessWidget {
         decoration: BoxDecoration(
           color: _backgroundColor(),
           borderRadius: const BorderRadius.all(Radius.circular(6)),
-          border: Border.all(color: _borderColor()),
+          border: Border.all(color: borderColor ?? Theme.of(context).warningBoxBorderColor),
         ),
         child: child,
       ),
@@ -41,10 +41,4 @@ class WarningBox extends StatelessWidget {
   }
 
   Color _backgroundColor() => backgroundColor ?? theme.warningBoxColor;
-
-  Color _borderColor() =>
-      borderColor ??
-      (theme.themeId == "BLUE"
-          ? const Color.fromRGBO(250, 239, 188, 0.6)
-          : const Color.fromRGBO(227, 180, 47, 0.6));
 }

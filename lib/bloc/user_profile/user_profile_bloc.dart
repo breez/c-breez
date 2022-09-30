@@ -41,7 +41,6 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     String? color,
     String? animal,
     String? image,
-    String? themeId,
     bool? registrationRequested,
     bool? hideBalance,
   }) {
@@ -50,7 +49,6 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
         name: name ?? profile.name,
         color: color ?? profile.color,
         animal: animal ?? profile.animal,
-        themeId: themeId ?? profile.themeId,
         image: image ?? profile.image,
         registrationRequested:
             registrationRequested ?? profile.registrationRequested,

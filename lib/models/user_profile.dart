@@ -5,7 +5,6 @@ class UserProfileSettings {
   final String? animal;
   final String? image;
   final String token;
-  final String themeId;
   final bool registrationRequested;
   final bool hideBalance;
 
@@ -16,7 +15,6 @@ class UserProfileSettings {
     this.animal,
     this.image,
     this.token = '',
-    this.themeId = "BLUE",
     this.registrationRequested = false,
     this.hideBalance = false,
   });
@@ -31,7 +29,6 @@ class UserProfileSettings {
     String? image,
     String? token,
     String? userID,
-    String? themeId,
     bool? registrationRequested,
     bool? hideBalance,
   }) {
@@ -42,7 +39,6 @@ class UserProfileSettings {
       animal: animal ?? this.animal,
       image: image ?? this.image,
       token: token ?? this.token,
-      themeId: themeId ?? this.themeId,
       registrationRequested:
           registrationRequested ?? this.registrationRequested,
       hideBalance: hideBalance ?? this.hideBalance,
@@ -66,7 +62,6 @@ class UserProfileSettings {
         color = json['color'],
         animal = json['animal'],
         image = json['image'],
-        themeId = json['themeId'] ?? "BLUE",
         registrationRequested =
             json['registrationRequested'] ?? json['token'] != null,
         hideBalance = json['hideBalance'] ?? false;
@@ -78,7 +73,6 @@ class UserProfileSettings {
         'color': color,
         'animal': animal,
         'image': image,
-        'themeId': themeId,
         'registrationRequested': registrationRequested,
         'hideBalance': hideBalance,
       };

@@ -40,7 +40,7 @@ class AccountPage extends StatelessWidget {
             return BlocBuilder<UserProfileBloc, UserProfileState>(
               builder: (context, userModel) {
                 return Container(
-                  color: theme.customData[theme.themeId]!.dashboardBgColor,
+                  color: Theme.of(context).customData.dashboardBgColor,
                   child: _build(
                     context,
                     lspState,
@@ -140,7 +140,7 @@ class AccountPage extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         !showSliver
-            ? CustomPaint(painter: BubblePainter(MediaQuery.of(context).size))
+            ? CustomPaint(painter: BubblePainter(context))
             : const SizedBox(),
         CustomScrollView(
           controller: scrollController,

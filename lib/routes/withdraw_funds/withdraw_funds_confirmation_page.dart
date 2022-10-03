@@ -31,7 +31,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
   @override
   void initState() {
     super.initState();
-    context.read<WithdrawFudsBloc>().fetchTransactionConst();
+    context.read<WithdrawFundsBloc>().fetchTransactionConst();
   }
 
   @override
@@ -43,7 +43,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
           texts.sweep_all_coins_speed,
         ),
       ),
-      body: BlocBuilder<WithdrawFudsBloc, WithdrawFudsState>(
+      body: BlocBuilder<WithdrawFundsBloc, WithdrawFudsState>(
         builder: (context, transaction) {
           if (transaction is WithdrawFudsInfoState) {
             final selected = _speed == TransactionCostSpeed.regular

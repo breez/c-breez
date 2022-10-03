@@ -5,20 +5,19 @@ import 'package:fixnum/fixnum.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:breez_sdk/sdk.dart';
 
-class WithdrawFudsBloc extends Cubit<WithdrawFudsState> {
+class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
   final LightningNode _lightningNode;
 
-  WithdrawFudsBloc(
+  WithdrawFundsBloc(
     this._lightningNode,
   ) : super(WithdrawFudsState.initial());
 
   Future fetchTransactionConst() async {
-    // TODO: fetch real transaction costs, this is a mock
-    await Future.delayed(const Duration(seconds: 3));
+    final recommendedFees = await _lightningNode.fetchRecommendedFees();
     emit(WithdrawFudsState.info(
-      TransactionCost(const Duration(minutes: 10), Int64(10)),
-      TransactionCost(const Duration(minutes: 20), Int64(60)),
-      TransactionCost(const Duration(minutes: 30), Int64(120)),
+      TransactionCost(const Duration(minutes: 10), Int64(recommendedFees.fastestFee)),
+      TransactionCost(const Duration(minutes: 30), Int64(recommendedFees.halfHourFee)),
+      TransactionCost(const Duration(minutes: 60), Int64(recommendedFees.hourFee)),
     ));
   }
 

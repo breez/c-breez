@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:breez_sdk/src/chain_service/payload/recommended_fee_payload.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -22,6 +23,8 @@ abstract class ChainService {
   Future<List<OnchainTransaction>> fetchTransactionsForAddress(String address);
 
   Future<UTXOStatus> fetchUtxoStatus(String txid);
+
+  Future<RecommendedFeePayload> fetchRecommendedFees();
 }
 
 @JsonSerializable(explicitToJson: true)

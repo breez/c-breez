@@ -68,8 +68,8 @@ void main() async {
                 BlocProvider<SecurityBloc>(
                   create: (BuildContext context) => SecurityBloc(),
                 ),
-                BlocProvider<WithdrawFudsBloc>(
-                  create: (BuildContext context) => WithdrawFudsBloc(lightningServices),
+                BlocProvider<WithdrawFundsBloc>(
+                  create: (BuildContext context) => WithdrawFundsBloc(lightningServices),
                 ),
                 BlocProvider<ConnectivityBloc>(
                   create: (BuildContext context) => ConnectivityBloc(),

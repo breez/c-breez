@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:breez_sdk/src/chain_service/chain_service.dart';
+import 'package:breez_sdk/src/chain_service/payload/recommended_fee_payload.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:http/http.dart' as http;
 part 'mempool_space.g.dart';
@@ -31,6 +32,12 @@ class MempoolSpace extends ChainService {
     final response = await http.read(url);
     final Map<String, dynamic> firstOutput = json.decode(response);
     return MSpaceUTXOStatus.fromJson(firstOutput);
+  }
+
+  @override
+  Future<RecommendedFeePayload> fetchRecommendedFees() async {
+    final response = await http.read(_getUrl('v1/fees/recommended'));
+    return RecommendedFeePayload.fromJson(json.decode(response));
   }
 }
 

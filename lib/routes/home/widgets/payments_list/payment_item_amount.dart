@@ -6,6 +6,7 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart';
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,21 +55,7 @@ class PaymentItemAmount extends StatelessWidget {
                     : _paymentInfo.type.isIncome
                         ? texts.wallet_dashboard_payment_item_balance_positive(amount)
                         : texts.wallet_dashboard_payment_item_balance_negative(amount),
-                style: themeData.isBreezLight
-                    ? const TextStyle(
-                        color: Colors.black,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w500,
-                        height: 1.2,
-                        letterSpacing: 0.5,
-                      )
-                    : const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w500,
-                        height: 1.28,
-                        letterSpacing: 0.5,
-                      ),
+                style: themeData.paymentItemAmountTextStyle,
               ),
               (fee == 0 || _paymentInfo.pending)
                   ? const SizedBox()
@@ -76,21 +63,7 @@ class PaymentItemAmount extends StatelessWidget {
                       _hideBalance
                           ? texts.wallet_dashboard_payment_item_balance_hide
                           : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
-                      style: themeData.isBreezLight
-                          ? const TextStyle(
-                              color: Color(0xb3303234),
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w400,
-                              height: 1.16,
-                              letterSpacing: 0.39,
-                            )
-                          : TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w400,
-                              height: 1.16,
-                              letterSpacing: 0.39,
-                            ),
+                      style: themeData.paymentItemFeeTextStyle,
                     ),
             ],
           );

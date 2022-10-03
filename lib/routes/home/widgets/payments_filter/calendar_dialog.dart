@@ -64,7 +64,7 @@ class CalendarDialogState extends State<CalendarDialog> {
             texts.pos_transactions_range_dialog_clear,
             style: theme.cancelButtonStyle.copyWith(
               color:
-                  theme.themeId == "BLUE" ? Colors.red : themeData.errorColor,
+                  themeData.isLightTheme ? Colors.red : themeData.errorColor,
             ),
           ),
         ),
@@ -107,7 +107,7 @@ class CalendarDialogState extends State<CalendarDialog> {
       },
       behavior: HitTestBehavior.translucent,
       child: Theme(
-        data: theme.themeId == "BLUE"
+        data: themeData.isLightTheme
             ? themeData
             : themeData.copyWith(
                 disabledColor: themeData.backgroundColor,
@@ -135,7 +135,7 @@ class CalendarDialogState extends State<CalendarDialog> {
       lastDate: DateTime.now(),
       builder: (context, child) {
         return Theme(
-          data: theme.calendarTheme,
+          data: Theme.of(context).calendarTheme,
           child: child!,
         );
       },

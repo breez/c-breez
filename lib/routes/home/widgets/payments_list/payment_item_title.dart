@@ -1,6 +1,6 @@
 import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/theme/theme_provider.dart';
+import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
@@ -15,25 +15,9 @@ class PaymentItemTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-
     return Text(
       _title(context).replaceAll("\n", " "),
-      style: themeData.isBreezLight
-          ? const TextStyle(
-              color: Colors.black,
-              fontSize: 13.5,
-              fontWeight: FontWeight.w500,
-              height: 1.2,
-              letterSpacing: 0.25,
-            )
-          : const TextStyle(
-              color: Colors.white,
-              fontSize: 12.25,
-              fontWeight: FontWeight.w400,
-              height: 1.2,
-              letterSpacing: 0.25,
-            ),
+      style: Theme.of(context).paymentItemTitleTextStyle,
       overflow: TextOverflow.ellipsis,
     );
   }

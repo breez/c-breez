@@ -36,7 +36,7 @@ Future<void> showPaymentDetailsDialog(
                 top: Radius.circular(12.0),
               ),
             ),
-            color: theme.themeId == "BLUE"
+            color: themeData.isLightTheme
                 ? themeData.primaryColorDark
                 : themeData.canvasColor,
           ),

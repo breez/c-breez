@@ -124,7 +124,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                       primary: themeData.textTheme.button!.color!,
                     ),
                     primaryColor: themeData.textTheme.button!.color!,
-                    errorColor: theme.themeId == "BLUE"
+                    errorColor: themeData.isLightTheme
                         ? Colors.red
                         : themeData.errorColor,
                   ),

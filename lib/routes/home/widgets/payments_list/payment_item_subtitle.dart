@@ -19,21 +19,7 @@ class PaymentItemSubtitle extends StatelessWidget {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
-    final caption = themeData.isBreezLight
-        ? const TextStyle(
-            color: Color(0xb3303234),
-            fontSize: 10.5,
-            fontWeight: FontWeight.w400,
-            height: 1.16,
-            letterSpacing: 0.39,
-          )
-        : TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 10.5,
-            fontWeight: FontWeight.w400,
-            height: 1.16,
-            letterSpacing: 0.39,
-          );
+    final subtitleTextStyle = themeData.paymentItemSubtitleTextStyle;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -46,13 +32,13 @@ class PaymentItemSubtitle extends StatelessWidget {
               _paymentInfo.creationTimestamp.toInt() * 1000,
             ),
           ),
-          style: caption,
+          style: subtitleTextStyle,
         ),
         _paymentInfo.pending
             ? Text(
                 texts.wallet_dashboard_payment_item_balance_pending_suffix,
-                style: caption.copyWith(
-                  color: theme.customData[theme.themeId]?.pendingTextColor,
+                style: subtitleTextStyle.copyWith(
+                  color: themeData.customData.pendingTextColor,
                 ),
               )
             : const SizedBox(),

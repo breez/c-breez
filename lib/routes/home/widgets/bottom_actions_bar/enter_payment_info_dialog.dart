@@ -62,7 +62,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
           primary: themeData.textTheme.button!.color!,
         ),
         primaryColor: themeData.textTheme.button!.color,
-        errorColor: theme.themeId == "BLUE" ? Colors.red : themeData.errorColor,
+        errorColor: themeData.isLightTheme ? Colors.red : themeData.errorColor,
       ),
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -119,7 +119,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
                   texts.payment_info_dialog_hint_expanded,
                   style: theme.FieldTextStyle.labelStyle.copyWith(
                     fontSize: 13.0,
-                    color: theme.themeId == "BLUE"
+                    color: themeData.isLightTheme
                         ? theme.BreezColors.grey[500]
                         : theme.BreezColors.white[200],
                   ),

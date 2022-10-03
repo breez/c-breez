@@ -18,6 +18,7 @@ class ProcessingPaymentContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
     final themeData = Theme.of(context);
+    final customData = themeData.customData;
     final queryData = MediaQuery.of(context);
 
     return Column(
@@ -46,9 +47,9 @@ class ProcessingPaymentContent extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 24.0),
           child: Image.asset(
-            theme.customData[theme.themeId]!.loaderAssetPath,
+            customData.loaderAssetPath,
             height: 64.0,
-            colorBlendMode: theme.customData[theme.themeId]!.loaderColorBlendMode,
+            colorBlendMode: customData.loaderColorBlendMode,
             color: color,
             gaplessPlayback: true,
           ),

@@ -22,3 +22,4 @@ base64 = "0.13.0"
 ecies = {version = "0.2", default-features = false, features = ["pure"]}
 ripemd = "*"
 rand = "*"
+tiny-bip39 = "*"

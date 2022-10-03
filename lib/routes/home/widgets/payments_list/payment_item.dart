@@ -1,16 +1,13 @@
 import 'package:breez_sdk/sdk.dart' as breez_sdk;
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/flip_transition.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/payment_details_dialog.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/payment_item_amount.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/payment_item_avatar.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/payment_item_subtitle.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/payment_item_title.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/success_avatar.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/date.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'flip_transition.dart';
-import 'payment_details_dialog.dart';
-import 'payment_item_avatar.dart';
-import 'success_avatar.dart';
 
 class PaymentItem extends StatelessWidget {
   final breez_sdk.PaymentInfo _paymentInfo;
@@ -28,17 +25,12 @@ class PaymentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-    final foregroundColor = theme.themeId == "BLUE"
-        ? Colors.black
-        : themeData.colorScheme.onSecondary;
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: Container(
-          color: theme.customData[theme.themeId]!.paymentListBgColor,
+          color: Theme.of(context).customData.paymentListBgColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -58,58 +50,27 @@ class PaymentItem extends StatelessWidget {
                           ],
                         )
                       : null,
-                  child: _buildPaymentItemAvatar(),
+                  child: _createdWithin(const Duration(seconds: 10))
+                      ? PaymentItemAvatar(_paymentInfo, radius: 16)
+                      : FlipTransition(
+                          PaymentItemAvatar(
+                            _paymentInfo,
+                            radius: 16,
+                          ),
+                          const SuccessAvatar(radius: 16),
+                          radius: 16,
+                        ),
                 ),
                 key: _firstItem ? firstPaymentItemKey : null,
                 title: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: Text(
-                    _paymentInfo.shortTitle,
-                    style: themeData.textTheme.subtitle2?.copyWith(
-                      color: foregroundColor,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  child: PaymentItemTitle(_paymentInfo),
                 ),
                 subtitle: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        BreezDateUtils.formatTimelineRelative(
-                          DateTime.fromMillisecondsSinceEpoch(
-                            _paymentInfo.creationTimestamp.toInt() * 1000,
-                          ),
-                        ),
-                        style: themeData.textTheme.caption?.copyWith(
-                          color: foregroundColor,
-                        ),
-                      ),
-                      _pendingSuffix(context),
-                    ],
-                  ),
+                  child: PaymentItemSubtitle(_paymentInfo),
                 ),
-                trailing: SizedBox(
-                  height: 44,
-                  child: BlocBuilder<CurrencyBloc, CurrencyState>(
-                    builder: (context, currencyState) {
-                      return Column(
-                        mainAxisAlignment:
-                            _paymentInfo.feeSat == 0 || _paymentInfo.pending
-                                ? MainAxisAlignment.center
-                                : MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          _paymentAmount(context, currencyState),
-                          _paymentFee(context, currencyState),
-                        ],
-                      );
-                    },
-                  ),
-                ),
+                trailing: PaymentItemAmount(_paymentInfo, _hideBalance),
                 onTap: () => _showDetail(context),
               ),
             ],
@@ -117,89 +78,6 @@ class PaymentItem extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _pendingSuffix(BuildContext context) {
-    final texts = context.texts();
-    final themeData = Theme.of(context);
-
-    return _paymentInfo.pending
-        ? Text(
-            texts.wallet_dashboard_payment_item_balance_pending_suffix,
-            style: themeData.textTheme.caption!.copyWith(
-              color: theme.customData[theme.themeId]!.pendingTextColor,
-            ),
-          )
-        : const SizedBox();
-  }
-
-  Widget _paymentAmount(
-    BuildContext context,
-    CurrencyState currencyState,
-  ) {
-    final texts = context.texts();
-    final themeData = Theme.of(context);
-    final foregroundColor = theme.themeId == "BLUE"
-        ? Colors.black
-        : themeData.colorScheme.onSecondary;
-
-    final amount = currencyState.bitcoinCurrency.format(
-      _paymentInfo.amountSat,
-      includeDisplayName: false,
-    );
-
-    return Text(
-      _hideBalance
-          ? texts.wallet_dashboard_payment_item_balance_hide
-          : _paymentInfo.type.isIncome
-              ? texts.wallet_dashboard_payment_item_balance_positive(amount)
-              : texts.wallet_dashboard_payment_item_balance_negative(amount),
-      style: themeData.textTheme.headline6?.copyWith(
-        color: foregroundColor,
-      ),
-    );
-  }
-
-  Widget _paymentFee(
-    BuildContext context,
-    CurrencyState currencyState,
-  ) {
-    final texts = context.texts();
-    final themeData = Theme.of(context);
-    final foregroundColor = theme.themeId == "BLUE"
-        ? Colors.black
-        : themeData.colorScheme.onSecondary;
-
-    final fee = _paymentInfo.feeSat;
-    if (fee == 0 || _paymentInfo.pending) return const SizedBox();
-    final feeFormatted = currencyState.bitcoinCurrency.format(
-      fee,
-      includeDisplayName: false,
-    );
-
-    return Text(
-      _hideBalance
-          ? texts.wallet_dashboard_payment_item_balance_hide
-          : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
-      style: themeData.textTheme.caption?.copyWith(
-        color: foregroundColor,
-      ),
-    );
-  }
-
-  Widget _buildPaymentItemAvatar() {
-    if (_createdWithin(const Duration(seconds: 10))) {
-      return PaymentItemAvatar(_paymentInfo, radius: 16);
-    } else {
-      return FlipTransition(
-        PaymentItemAvatar(
-          _paymentInfo,
-          radius: 16,
-        ),
-        const SuccessAvatar(radius: 16),
-        radius: 16,
-      );
-    }
   }
 
   bool _createdWithin(Duration duration) {

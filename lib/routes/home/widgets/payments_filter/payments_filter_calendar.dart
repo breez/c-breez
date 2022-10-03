@@ -30,7 +30,7 @@ class PaymentsFilterCalendar extends StatelessWidget {
           child: IconButton(
             icon: SvgPicture.asset(
               "src/icon/calendar.svg",
-              color: theme.themeId == "BLUE"
+              color: themeData.isLightTheme
                   ? Colors.black
                   : themeData.colorScheme.onSecondary,
               width: 24.0,

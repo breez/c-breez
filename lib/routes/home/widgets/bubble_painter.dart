@@ -4,20 +4,21 @@ import 'package:flutter/material.dart';
 const double _kBubbleRadius = 12;
 
 class BubblePainter extends CustomPainter {
-  final Size size;
+  final BuildContext context;
 
-  final bubblePaint = Paint()
-    ..color = theme.themeId == "BLUE"
-        ? const Color(0xFF0085fb).withOpacity(0.1)
-        : const Color(0xff4D88EC).withOpacity(0.1)
-    ..style = PaintingStyle.fill;
+  late Paint bubblePaint;
 
   BubblePainter(
-    this.size,
-  );
+    this.context,
+  ) {
+    bubblePaint = Paint()
+      ..color = Theme.of(context).bubblePaintColor
+      ..style = PaintingStyle.fill;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
+    size = MediaQuery.of(context).size;
     double height = (size.height - kToolbarHeight);
     canvas.drawCircle(
       Offset(size.width / 2, height * 0.4),

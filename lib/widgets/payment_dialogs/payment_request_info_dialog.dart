@@ -177,7 +177,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           ),
           primaryColor: themeData.textTheme.button!.color!,
           errorColor:
-              theme.themeId == "BLUE" ? Colors.red : themeData.errorColor,
+              themeData.isLightTheme ? Colors.red : themeData.errorColor,
         ),
         child: Form(
           autovalidateMode: AutovalidateMode.always,
@@ -292,7 +292,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         textAlign: TextAlign.center,
         style: themeData.primaryTextTheme.headline3!.copyWith(
           fontSize: 16,
-          color: theme.themeId == "BLUE" ? Colors.red : themeData.errorColor,
+          color: themeData.isLightTheme ? Colors.red : themeData.errorColor,
         ),
       ),
     );

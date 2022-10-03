@@ -16,13 +16,13 @@ class PaymentsFilterDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
-    final foregroundColor = theme.themeId == "BLUE"
+    final foregroundColor = themeData.isLightTheme
         ? Colors.black
         : themeData.colorScheme.onSecondary;
 
     return Theme(
       data: themeData.copyWith(
-        canvasColor: theme.customData[theme.themeId]!.paymentListBgColor,
+        canvasColor: themeData.customData.paymentListBgColor,
       ),
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(

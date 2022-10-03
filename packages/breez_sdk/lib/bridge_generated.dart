@@ -17,6 +17,13 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kInitHsmdConstMeta;
 
+  /// Attempts to convert the phrase to a mnemonic, then to a seed.
+  ///
+  /// If the phrase is not a valid mnemonic, an error is returned.
+  Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta;
+
   Future<SwapKeys> createSwap({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCreateSwapConstMeta;
@@ -177,6 +184,22 @@ class LightningToolkitImpl extends FlutterRustBridgeBase<LightningToolkitWire>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "init_hsmd",
         argNames: ["storagePath", "secret"],
+      );
+
+  Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) =>
+      executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            inner.wire_mnemonic_to_seed(port_, _api2wire_String(phrase)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: kMnemonicToSeedConstMeta,
+        argValues: [phrase],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "mnemonic_to_seed",
+        argNames: ["phrase"],
       );
 
   Future<SwapKeys> createSwap({dynamic hint}) =>
@@ -573,6 +596,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_init_hsmd = _wire_init_hsmdPtr.asFunction<
       void Function(
           int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_mnemonic_to_seed(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> phrase,
+  ) {
+    return _wire_mnemonic_to_seed(
+      port_,
+      phrase,
+    );
+  }
+
+  late final _wire_mnemonic_to_seedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_mnemonic_to_seed');
+  late final _wire_mnemonic_to_seed = _wire_mnemonic_to_seedPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_create_swap(
     int port_,

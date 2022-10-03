@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bip39/bip39.dart' as bip39;
+import 'package:breez_sdk/src/native_toolkit.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/restore_form.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -22,6 +22,7 @@ class RestoreFormPage extends StatefulWidget {
 
 class RestoreFormPageState extends State<RestoreFormPage> {
   final _formKey = GlobalKey<FormState>();
+  final _lnToolkit = getNativeToolkit();
 
   List<TextEditingController> textEditingControllers =
       List<TextEditingController>.generate(12, (_) => TextEditingController());
@@ -91,13 +92,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
         .toList()
         .join(" ");
     try {
-      if (bip39.validateMnemonic(mnemonic)) {
-        Navigator.pop(context, bip39.mnemonicToSeed(mnemonic));
-      } else {
-        setState(() {
-          _hasError = true;
-        });
-      }
+      Navigator.pop(context, await _lnToolkit.mnemonicToSeed(phrase: mnemonic));
     } catch (e) {
       setState(() {
         _hasError = true;

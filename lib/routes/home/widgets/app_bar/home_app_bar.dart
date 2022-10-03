@@ -43,8 +43,8 @@ class HomeAppBar extends AppBar {
           iconTheme: const IconThemeData(
             color: Color.fromARGB(255, 0, 133, 251),
           ),
-          backgroundColor: theme.customData[theme.themeId]?.dashboardBgColor,
-          systemOverlayStyle: theme.themeId == "BLUE"
+          backgroundColor: themeData.customData.dashboardBgColor,
+          systemOverlayStyle: themeData.isLightTheme
               ? SystemUiOverlayStyle.dark
               : SystemUiOverlayStyle.light,
         );

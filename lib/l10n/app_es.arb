@@ -1668,6 +1668,7 @@
     }
   },
   "wallet_dashboard_payment_item_balance_pending_suffix": " (Pendiente)",
+  "wallet_dashboard_payment_item_no_title": "Sin descripción",
   "status_text_loading_begin": "Breez está ",
   "status_text_loading_middle": "abriendo un canal seguro",
   "status_text_loading_end": " con nuestros servidores. Esto puede demorar un tiempo pero no se preocupe, le notificaremos cuando la aplicación esté lista para enviar y recibir pagos.",

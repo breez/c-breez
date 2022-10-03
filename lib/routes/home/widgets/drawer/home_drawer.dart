@@ -4,7 +4,6 @@ import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/user_profile.dart';
-import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,33 +59,29 @@ class HomeDrawerState extends State<HomeDrawer> {
     BuildContext context,
     UserProfileSettings settings,
   ) {
-    final themeData = Theme.of(context);
     final texts = context.texts();
 
-    return Theme(
-      data: theme.themeMap[settings.themeId] ?? themeData,
-      child: NavigationDrawer(
-        [
-          DrawerItemConfigGroup(
-            _filterItems(_drawerConfigToFilter(context)),
-            groupTitle: texts.home_drawer_item_title_preferences,
-            groupAssetImage: "",
-          ),
-        ],
-        (screenName) {
-          if (_screens.map((sc) => sc.name).contains(screenName)) {
-            setState(() {
-              _activeScreen = screenName;
-            });
-          } else {
-            Navigator.of(context).pushNamed(screenName).then((message) {
-              if (message != null && message is String) {
-                showFlushbar(context, message: message);
-              }
-            });
-          }
-        },
-      ),
+    return NavigationDrawer(
+      [
+        DrawerItemConfigGroup(
+          _filterItems(_drawerConfigToFilter(context)),
+          groupTitle: texts.home_drawer_item_title_preferences,
+          groupAssetImage: "",
+        ),
+      ],
+      (screenName) {
+        if (_screens.map((sc) => sc.name).contains(screenName)) {
+          setState(() {
+            _activeScreen = screenName;
+          });
+        } else {
+          Navigator.of(context).pushNamed(screenName).then((message) {
+            if (message != null && message is String) {
+              showFlushbar(context, message: message);
+            }
+          });
+        }
+      },
     );
   }
 

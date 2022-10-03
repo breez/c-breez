@@ -39,7 +39,6 @@ class _PaymentsFilterSliverState extends State<PaymentsFilterSliver> {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final customData = theme.customData[theme.themeId]!;
     final scrollOffset = widget.scrollController.position.pixels;
 
     return SliverPersistentHeader(
@@ -53,7 +52,7 @@ class _PaymentsFilterSliverState extends State<PaymentsFilterSliver> {
               ),
         builder: (context, height, overlapContent) {
           return Container(
-            color: theme.themeId == "BLUE"
+            color: themeData.isLightTheme
                 ? themeData.backgroundColor
                 : themeData.canvasColor,
             child: Padding(
@@ -61,7 +60,7 @@ class _PaymentsFilterSliverState extends State<PaymentsFilterSliver> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Container(
-                  color: customData.paymentListBgColor,
+                  color: themeData.customData.paymentListBgColor,
                   height: widget.maxSize,
                   child: const PaymentsFilter(),
                 ),

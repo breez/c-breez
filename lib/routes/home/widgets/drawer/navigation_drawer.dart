@@ -9,6 +9,7 @@ import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:theme_provider/theme_provider.dart';
 
 import 'breez_avatar_dialog.dart';
 import 'breez_drawer_header.dart';
@@ -81,7 +82,7 @@ class NavigationDrawer extends StatelessWidget {
 
       return Theme(
         data: themeData.copyWith(
-          canvasColor: theme.customData[theme.themeId]!.navigationDrawerBgColor,
+          canvasColor: themeData.customData.navigationDrawerBgColor,
         ),
         child: Drawer(
           child: ListView(
@@ -140,7 +141,7 @@ class NavigationDrawer extends StatelessWidget {
     UserProfileSettings user,
   ) {
     return Container(
-      color: theme.customData[theme.themeId]!.navigationDrawerHeaderBgColor,
+      color: Theme.of(context).customData.navigationDrawerHeaderBgColor,
       child: BreezDrawerHeader(
         padding: const EdgeInsets.only(left: 16.0),
         child: _buildDrawerHeaderContent(user, context),
@@ -185,9 +186,9 @@ GestureDetector _buildThemeSwitch(
   BuildContext context,
   UserProfileSettings user,
 ) {
+  final themeData = Theme.of(context);
   return GestureDetector(
-    onTap: () => _changeTheme(user.themeId == "BLUE" ? "DARK" : "BLUE",
-        context.read<UserProfileBloc>()),
+    onTap: () => ThemeProvider.controllerOf(context).nextTheme(),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -209,7 +210,7 @@ GestureDetector _buildThemeSwitch(
                   "src/icon/ic_lightmode.png",
                   height: 24,
                   width: 24,
-                  color: user.themeId == "BLUE" ? Colors.white : Colors.white30,
+                  color: themeData.switchThemeIconColor,
                 ),
                 const SizedBox(
                   height: 20,
@@ -220,7 +221,7 @@ GestureDetector _buildThemeSwitch(
                 ),
                 ImageIcon(
                   const AssetImage("src/icon/ic_darkmode.png"),
-                  color: user.themeId == "DARK" ? Colors.white : Colors.white30,
+                  color: themeData.switchThemeIconColor,
                   size: 24.0,
                 ),
               ],
@@ -230,13 +231,6 @@ GestureDetector _buildThemeSwitch(
       ],
     ),
   );
-}
-
-Future _changeTheme(
-  String themeId,
-  UserProfileBloc userProfileBloc,
-) async {
-  userProfileBloc.updateProfile(themeId: themeId);
 }
 
 Row _buildAvatarButton(UserProfileSettings user) {

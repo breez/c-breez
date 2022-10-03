@@ -66,7 +66,7 @@ class WalletDashboard extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             height: _height,
             decoration: BoxDecoration(
-              color: theme.themeId == "BLUE" ? themeData.backgroundColor : themeData.canvasColor,
+              color: themeData.customData.dashboardBgColor,
             ),
           ),
           Positioned(
@@ -74,7 +74,7 @@ class WalletDashboard extends StatelessWidget {
             child: Center(
               child: !accountState.initial
                   ? TextButton(
-                      style: _balanceStyle(),
+                      style: _balanceStyle(themeData),
                       onPressed: () {
                         if (profileSettings.hideBalance == true) {
                           _onPrivacyChanged(context, false);
@@ -114,16 +114,14 @@ class WalletDashboard extends StatelessWidget {
     );
   }
 
-  ButtonStyle _balanceStyle() {
+  ButtonStyle _balanceStyle(ThemeData themeData) {
     return ButtonStyle(
       overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
-        final customData = theme.customData[theme.themeId];
-        if (customData == null) return null;
         if (states.contains(MaterialState.focused)) {
-          return customData.paymentListBgColor;
+          return themeData.customData.paymentListBgColor;
         }
         if (states.contains(MaterialState.hovered)) {
-          return customData.paymentListBgColor;
+          return themeData.customData.paymentListBgColor;
         }
         return null;
       }),
@@ -139,7 +137,7 @@ class WalletDashboard extends StatelessWidget {
     const fiatConversionTextStyle = theme.balanceFiatConversionTextStyle;
 
     return TextButton(
-      style: _balanceStyle(),
+      style: _balanceStyle(themeData),
       onPressed: () {
         final newFiatConversion = nextValidFiatConversion(
           currencyState,

@@ -2,8 +2,6 @@
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'breez_colors.dart';
-
 class FieldTextStyle {
   FieldTextStyle._();
 
@@ -137,3 +135,88 @@ const TextStyle warningStyle = TextStyle(
   color: Color(0xffffe685),
   fontSize: 16.0,
 );
+
+extension ThemeExtensions on ThemeData {
+  bool get isLightTheme => primaryColor == breezLightTheme.primaryColor;
+
+  ThemeData get calendarTheme =>
+      isLightTheme ? calendarLightTheme : calendarDarkTheme;
+
+  CustomData get customData =>
+      isLightTheme ? blueThemeCustomData : darkThemeCustomData;
+
+  Color get warningBoxBorderColor => isLightTheme
+      ? const Color.fromRGBO(250, 239, 188, 0.6)
+      : const Color.fromRGBO(227, 180, 47, 0.6);
+
+  Color get bubblePaintColor => isLightTheme
+      ? const Color(0xFF0085fb).withOpacity(0.1)
+      : const Color(0xff4D88EC).withOpacity(0.1);
+
+  Color get switchThemeIconColor =>
+      isLightTheme ? Colors.white30 : Colors.white;
+
+  TextStyle get paymentItemTitleTextStyle => isLightTheme
+      ? const TextStyle(
+          color: Colors.black,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w500,
+          height: 1.2,
+          letterSpacing: 0.25,
+        )
+      : const TextStyle(
+          color: Colors.white,
+          fontSize: 12.25,
+          fontWeight: FontWeight.w400,
+          height: 1.2,
+          letterSpacing: 0.25,
+        );
+
+  TextStyle get paymentItemAmountTextStyle => isLightTheme
+      ? const TextStyle(
+          color: Colors.black,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w500,
+          height: 1.2,
+          letterSpacing: 0.5,
+        )
+      : const TextStyle(
+          color: Colors.white,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w500,
+          height: 1.28,
+          letterSpacing: 0.5,
+        );
+
+  TextStyle get paymentItemFeeTextStyle => isLightTheme
+      ? const TextStyle(
+          color: Color(0xb3303234),
+          fontSize: 10.5,
+          fontWeight: FontWeight.w400,
+          height: 1.16,
+          letterSpacing: 0.39,
+        )
+      : TextStyle(
+          color: Colors.white.withOpacity(0.7),
+          fontSize: 10.5,
+          fontWeight: FontWeight.w400,
+          height: 1.16,
+          letterSpacing: 0.39,
+        );
+
+  TextStyle get paymentItemSubtitleTextStyle => isLightTheme
+      ? const TextStyle(
+          color: Color(0xb3303234),
+          fontSize: 10.5,
+          fontWeight: FontWeight.w400,
+          height: 1.16,
+          letterSpacing: 0.39,
+        )
+      : TextStyle(
+          color: Colors.white.withOpacity(0.7),
+          fontSize: 10.5,
+          fontWeight: FontWeight.w400,
+          height: 1.16,
+          letterSpacing: 0.39,
+        );
+}

@@ -16,6 +16,7 @@ import 'package:c_breez/routes/home/widgets/status_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fixnum/fixnum.dart';
 
 const _kFilterMaxSize = 64.0;
 const _kPaymentListItemHeight = 72.0;
@@ -39,7 +40,7 @@ class AccountPage extends StatelessWidget {
             return BlocBuilder<UserProfileBloc, UserProfileState>(
               builder: (context, userModel) {
                 return Container(
-                  color: theme.customData[theme.themeId]!.dashboardBgColor,
+                  color: Theme.of(context).customData.dashboardBgColor,
                   child: _build(
                     context,
                     lspState,
@@ -139,7 +140,7 @@ class AccountPage extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         !showSliver
-            ? CustomPaint(painter: BubblePainter(MediaQuery.of(context).size))
+            ? CustomPaint(painter: BubblePainter(context))
             : const SizedBox(),
         CustomScrollView(
           controller: scrollController,

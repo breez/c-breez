@@ -57,7 +57,7 @@ class FlipTransitionState extends State<FlipTransition>
       builder: (BuildContext context, Widget? child) {
         return CircleAvatar(
           radius: widget.radius,
-          backgroundColor: theme.customData[theme.themeId]!.paymentListBgColor,
+          backgroundColor: Theme.of(context).customData.paymentListBgColor,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(widget.radius),
             child: Transform(

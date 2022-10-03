@@ -43,7 +43,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
 
-
   @override
   void initState() {
     super.initState();
@@ -178,7 +177,8 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
         currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
 
     final int fractionSize = currencyState.fiatCurrency!.fractionSize;
-    final isBlue = theme.themeId == "BLUE";
+    final borderColor =
+        themeData.isLightTheme ? Colors.red : themeData.errorColor;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -195,17 +195,17 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
               ),
               errorBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: isBlue ? Colors.red : themeData.errorColor,
+                  color: borderColor,
                 ),
               ),
               focusedErrorBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: isBlue ? Colors.red : themeData.errorColor,
+                  color: borderColor,
                 ),
               ),
               errorMaxLines: 2,
               errorStyle: themeData.primaryTextTheme.caption!.copyWith(
-                color: isBlue ? Colors.red : themeData.errorColor,
+                color: borderColor,
               ),
               prefix: Text(
                 currencyState.fiatCurrency!.symbol,
@@ -226,7 +226,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             onEditingComplete: () => _fiatAmountFocusNode.unfocus(),
             controller: _fiatAmountController,
             validator: (_) {
-              return widget.validatorFn(_convertedSatoshies(currencyState));              
+              return widget.validatorFn(_convertedSatoshies(currencyState));
             },
             style: themeData.dialogTheme.contentTextStyle,
           ),
@@ -343,7 +343,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
               ),
               fiatConversion.currencyData.shortName,
             ),
-            style: themeData.primaryTextTheme.subtitle2!
+            style: themeData.primaryTextTheme.subtitle2!,
           );
   }
 

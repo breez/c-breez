@@ -180,7 +180,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     var lspFee = widget._invoice!.lspFee;
     if (lspFee != 0) {
       String conversionText = "";
-      if (currencyState.fiatCurrency != null && currencyState.fiatExchangeRate != null) {
+      if (currencyState.fiatEnabled) {
         FiatConversion conversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
         conversionText = " (${conversion.format(Int64(lspFee))})";
       }

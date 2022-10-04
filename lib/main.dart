@@ -46,12 +46,13 @@ void main() async {
         () => runApp(MultiBlocProvider(
               providers: [
                 BlocProvider<LSPBloc>(
-                  create: (BuildContext context) => LSPBloc(lightningServices, injector.lightningServices.lspService),
+                  create: (BuildContext context) =>
+                      LSPBloc(lightningServices, injector.lspService),
                 ),
                 BlocProvider<AccountBloc>(
                   create: (BuildContext context) => AccountBloc(
                     lightningServices,
-                    injector.lightningServices.lnurlService,                    
+                    injector.lnurlService,
                     injector.keychain,
                   ),
                 ),
@@ -63,7 +64,8 @@ void main() async {
                   create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
                 ),
                 BlocProvider<CurrencyBloc>(
-                  create: (BuildContext context) => CurrencyBloc(injector.lightningServices.fiatService),
+                  create: (BuildContext context) =>
+                      CurrencyBloc(injector.fiatService),
                 ),
                 BlocProvider<SecurityBloc>(
                   create: (BuildContext context) => SecurityBloc(),

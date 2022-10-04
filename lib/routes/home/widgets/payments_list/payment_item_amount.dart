@@ -79,7 +79,8 @@ void main() async {
     () => runApp(MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) => CurrencyBloc(ServiceInjector().lightningServices.fiatService),
+          create: (BuildContext context) =>
+              CurrencyBloc(ServiceInjector().fiatService),
         ),
       ],
       child: MaterialApp(

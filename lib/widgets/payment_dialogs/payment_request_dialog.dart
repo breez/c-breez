@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_confirmation_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_info_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
@@ -71,8 +69,6 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
 
   Widget showPaymentRequestDialog(BuildContext context) {
     const double minHeight = 220;
-    final texts = context.texts();
-    final themeData = Theme.of(context);
 
     if (_state == PaymentRequestState.PROCESSING_PAYMENT) {
       return ProcessingPaymentDialog(
@@ -80,14 +76,6 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
         minHeight: minHeight,
         paymentFunc: () => context.read<AccountBloc>().sendPayment(widget.invoice.bolt11, _amountToPay!),
         onStateChange: (state) => _onStateChange(context, state),
-        onError: (error) => promptError(
-          context,
-          texts.spontaneous_payment_error_title,
-          Text(
-            error.toString(),
-            style: themeData.dialogTheme.contentTextStyle,
-          ),
-        ),
       );
     } else if (_state == PaymentRequestState.WAITING_FOR_CONFIRMATION) {
       return PaymentConfirmationDialog(

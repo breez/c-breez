@@ -218,8 +218,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
       cancelText: texts.spontaneous_payment_action_pay,
     );
     if (ok == true) {
-      try {
-
         Future sendFuture = Future.value(null);
         showDialog(
           useRootNavigator: false,
@@ -244,30 +242,11 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
               return sendPayment;
             },
-            onError: (error) => promptError(
-              context,
-              texts.spontaneous_payment_error_title,
-              Text(
-                error.toString(),
-                style: themeData.dialogTheme.contentTextStyle,
-              ),
-            ),
           ),
         );
         if (!mounted) return;
         Navigator.of(context).removeRoute(_currentRoute!);
         await sendFuture;
-      } catch (err) {
-        if (!mounted) return;
-        promptError(
-          context,
-          texts.spontaneous_payment_error_title,
-          Text(
-            err.toString(),
-            style: themeData.dialogTheme.contentTextStyle,
-          ),
-        );
-      }
     }
   }
 }

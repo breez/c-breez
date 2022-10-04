@@ -70,6 +70,15 @@ class ServiceInjector {
   LightningLinksService get lightningLinks =>
       _lightningLinksService ??= LightningLinksService();
 
+  breez_sdk.LSPService get lspService =>
+      _lspService ??= lightningServices.lspService;
+
+  breez_sdk.LNURLService get lnurlService =>
+      _lnurlService ??= lightningServices.lnurlService;
+
+  breez_sdk.FiatService get fiatService =>
+      _fiatService ??= lightningServices.fiatService;
+
   Future<SharedPreferences> get sharedPreferences =>
       _sharedPreferences ??= SharedPreferences.getInstance();
 

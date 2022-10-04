@@ -4,8 +4,9 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
@@ -151,6 +152,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget buildLoadingOrError() {
+    final themeData = Theme.of(context);
     if (widget.error == null) {
       return SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -161,15 +163,36 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                 height: 80.0,
                 width: 80.0,
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryTextTheme.button!.color!),
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    themeData.primaryTextTheme.button!.color!,
+                  ),
+                  backgroundColor: themeData.backgroundColor,
                 ),
               )));
     }
-    return Text(widget.error.toString(),
-        style: Theme.of(context).primaryTextTheme.headline3!.copyWith(
-              fontSize: 16,
-            ));
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Text(
+        displayErrorMessage,
+        style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+      ),
+    );
+  }
+
+  String get displayErrorMessage {
+    final texts = context.texts();
+    const osErrorRegex = r'((?<=\(OS Error\: )(.*?)(?=\,))';
+    const rpcErrorRegex = r'((?<=message\: \")(.*?)(?=\"))';
+    const defaultErrorRegex = r'((?<=message\: )(.*?)(?=\:))';
+    final grouped = RegExp('($osErrorRegex|$rpcErrorRegex|$defaultErrorRegex)');
+
+    String? displayMessage = widget.error?.toString();
+    if (displayMessage != null) {
+      displayMessage = grouped.hasMatch(displayMessage)
+          ? grouped.allMatches(displayMessage).last[0]
+          : null;
+    }
+    return displayMessage ??= texts.qr_code_dialog_warning_message_error;
   }
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {
@@ -180,7 +203,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     var lspFee = widget._invoice!.lspFee;
     if (lspFee != 0) {
       String conversionText = "";
-      if (currencyState.fiatCurrency != null && currencyState.fiatExchangeRate != null) {
+      if (currencyState.fiatEnabled) {
         FiatConversion conversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
         conversionText = " (${conversion.format(Int64(lspFee))})";
       }

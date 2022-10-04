@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:validators/validators.dart';
 
 import '../bridge_generated.dart';
-import 'native_toolkit.dart';
+import '../native_toolkit.dart';
 
 const NODE_URI_SEPARATOR = "@";
 const NODE_ID_LENGTH = 66;

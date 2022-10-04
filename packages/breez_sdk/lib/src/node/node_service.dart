@@ -5,7 +5,7 @@ import 'package:breez_sdk/src/btc_swapper/btc_swapper.dart';
 import 'package:breez_sdk/src/chain_service/payload/recommended_fee_payload.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:breez_sdk/sdk.dart';
-import 'package:breez_sdk/src/native_toolkit.dart';
+import 'package:breez_sdk/native_toolkit.dart';
 import 'package:breez_sdk/src/node/sync_state.dart';
 import 'package:breez_sdk/src/utils/retry.dart';
 import 'package:fimber/fimber.dart';

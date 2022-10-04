@@ -27,7 +27,6 @@ import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 const String THEME_ID_PREFERENCE_KEY = "themeID";

@@ -27,12 +27,14 @@ import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 const String THEME_ID_PREFERENCE_KEY = "themeID";
 
 class UserApp extends StatelessWidget {
   final GlobalKey _appKey = GlobalKey();
+  final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -124,10 +126,11 @@ class UserApp extends StatelessWidget {
                       return FadeInRoute(
                         builder: (_) => WillPopScope(
                           onWillPop: () async {
-                            return true;
+                            return !await _homeNavigatorKey.currentState!.maybePop();
                           },
                           child: Navigator(
                             initialRoute: "/",
+                            key: _homeNavigatorKey,
                             onGenerateRoute: (RouteSettings settings) {
                               switch (settings.name) {
                                 case '/':

@@ -12,23 +12,27 @@ class PaymentResultHandler {
   final CurrencyBloc currencyBloc;
 
   PaymentResultHandler(this.context, this.accountBloc, this.currencyBloc) {
-    accountBloc.paymentResultStream.listen((paymentResult) async {
-      if (paymentResult.successActionData != null) {
-        handleSuccessAction(context, paymentResult.successActionData!);
-      } else if (paymentResult.paymentInfo != null) {
-        showFlushbar(
-          context,
-          messageWidget: SingleChildScrollView(
-            child: Text(context.texts().home_payment_sent),
-          ),
-        );
-      } else if (paymentResult.error != null) {
-        showFlushbar(
-          context,
-          message: paymentResult.errorMessage(currencyBloc.state),
-        );
-      }
-    });
+    accountBloc.paymentResultStream.listen(
+      (paymentResult) async {
+        Future.delayed(const Duration(seconds: 1), () {
+          if (paymentResult.successActionData != null) {
+            handleSuccessAction(context, paymentResult.successActionData!);
+          } else if (paymentResult.paymentInfo != null) {
+            showFlushbar(
+              context,
+              messageWidget: SingleChildScrollView(
+                child: Text(context.texts().home_payment_sent),
+              ),
+            );
+          } else if (paymentResult.error != null) {
+            showFlushbar(
+              context,
+              message: paymentResult.errorMessage(currencyBloc.state),
+            );
+          }
+        });
+      },
+    );
   }
 
   Future handleSuccessAction(

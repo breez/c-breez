@@ -28,7 +28,7 @@ class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
         () async {
           final navigator = Navigator.of(context);
           navigator.push(createLoaderRoute(context));
-          context.read<WithdrawFudsBloc>().sweepAllCoins(address, speed).then(
+          context.read<WithdrawFundsBloc>().sweepAllCoins(address, speed).then(
                 (_) => _sweepCoinsFinished(context),
                 onError: (e) => _sweepCoinsError(context, e),
               );

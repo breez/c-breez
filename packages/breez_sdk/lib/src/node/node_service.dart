@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:breez_sdk/src/btc_swapper/btc_swapper.dart';
+import 'package:breez_sdk/src/chain_service/payload/recommended_fee_payload.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/native_toolkit.dart';
@@ -295,4 +296,6 @@ class LightningNode {
     var txOut = int.parse(parts[2]);
     return ((blockNum & 0xFFFFFF) << 40 | (txNum & 0xFFFFFF) << 16 | (txOut & 0xFFFF));
   }
+
+  Future<RecommendedFeePayload> fetchRecommendedFees() => _chainService.fetchRecommendedFees();
 }

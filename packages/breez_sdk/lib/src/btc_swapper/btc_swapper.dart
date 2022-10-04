@@ -5,7 +5,7 @@ import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/breez_server/generated/breez.pbgrpc.dart';
 import 'package:breez_sdk/src/breez_server/server.dart';
 import 'package:breez_sdk/src/btc_swapper/swap_address.dart';
-import 'package:breez_sdk/src/native_toolkit.dart';
+import 'package:breez_sdk/native_toolkit.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart' as db;
 import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';

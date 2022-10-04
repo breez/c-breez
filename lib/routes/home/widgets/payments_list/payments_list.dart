@@ -63,7 +63,8 @@ void main() async {
       MultiBlocProvider(
         providers: [
           BlocProvider<CurrencyBloc>(
-            create: (BuildContext context) => CurrencyBloc(injector.lightningServices.fiatService),
+            create: (BuildContext context) =>
+                CurrencyBloc(injector.fiatService),
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),

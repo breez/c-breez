@@ -37,9 +37,8 @@ class _CommandsListState extends State<CommandsList> {
     initializeNodeAPI();
   }
 
-  void initializeNodeAPI() async {
-    var lightningServices = await ServiceInjector().lightningServices;
-    nodeAPI = lightningServices.getNodeAPI();
+  void initializeNodeAPI() {
+    nodeAPI = ServiceInjector().lightningServices.getNodeAPI();
   }
 
   @override

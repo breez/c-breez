@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import '../bridge_generated.dart';
-import 'native_toolkit.dart';
+import '../native_toolkit.dart';
 
 class Signer {
   final Uint8List privateKey;

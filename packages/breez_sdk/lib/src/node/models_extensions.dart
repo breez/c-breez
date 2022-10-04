@@ -3,7 +3,7 @@ import 'package:breez_sdk/src/node/node_api/models.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart' as db;
 import 'package:fixnum/fixnum.dart';
 
-import '../native_toolkit.dart';
+import '../../native_toolkit.dart';
 
 extension NodeStateAdapter on NodeState {
   db.NodeState toDbNodeState() {

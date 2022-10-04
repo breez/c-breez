@@ -4,8 +4,8 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
@@ -151,6 +151,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget buildLoadingOrError() {
+    final themeData = Theme.of(context);
     if (widget.error == null) {
       return SizedBox(
           width: MediaQuery.of(context).size.width,
@@ -161,15 +162,20 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                 height: 80.0,
                 width: 80.0,
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryTextTheme.button!.color!),
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    themeData.primaryTextTheme.button!.color!,
+                  ),
+                  backgroundColor: themeData.backgroundColor,
                 ),
               )));
     }
-    return Text(widget.error.toString(),
-        style: Theme.of(context).primaryTextTheme.headline3!.copyWith(
-              fontSize: 16,
-            ));
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Text(
+        widget.error.toString(),
+        style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+      ),
+    );
   }
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {

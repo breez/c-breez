@@ -7,7 +7,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/routes/lnurl/payment/payment_result_data.dart';
+import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/utils/lnurl.dart';

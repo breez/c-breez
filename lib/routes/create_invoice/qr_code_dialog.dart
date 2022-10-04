@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/injector.dart';
@@ -172,10 +173,26 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Text(
-        widget.error.toString(),
+        displayErrorMessage,
         style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
       ),
     );
+  }
+
+  String get displayErrorMessage {
+    final texts = context.texts();
+    const osErrorRegex = r'((?<=\(OS Error\: )(.*?)(?=\,))';
+    const rpcErrorRegex = r'((?<=message\: \")(.*?)(?=\"))';
+    const defaultErrorRegex = r'((?<=message\: )(.*?)(?=\:))';
+    final grouped = RegExp('($osErrorRegex|$rpcErrorRegex|$defaultErrorRegex)');
+
+    String? displayMessage = widget.error?.toString();
+    if (displayMessage != null) {
+      displayMessage = grouped.hasMatch(displayMessage)
+          ? grouped.allMatches(displayMessage).last[0]
+          : null;
+    }
+    return displayMessage ??= texts.qr_code_dialog_warning_message_error;
   }
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {

@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:breez_sdk/src/breez_server/generated/breez.pbgrpc.dart';
 import 'package:breez_sdk/src/breez_server/server.dart';
 import 'package:breez_sdk/src/lsp/models.dart';
-import 'package:breez_sdk/src/native_toolkit.dart';
+import 'package:breez_sdk/native_toolkit.dart';
 import 'package:grpc/grpc.dart';
 import 'package:fixnum/fixnum.dart';
 

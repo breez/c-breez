@@ -15,6 +15,7 @@ import 'package:c_breez/routes/initial_walkthrough/initial_walkthrough.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonic_seed_page.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/generate_mnemonic_seed_confirmation_page.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
+import 'package:c_breez/routes/network/network_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
 import 'package:c_breez/routes/security/lock_screen.dart';
 import 'package:c_breez/routes/security/secured_page.dart';
@@ -163,6 +164,11 @@ class UserApp extends StatelessWidget {
                                     builder: (_) => const SecuredPage(
                                       securedWidget: SecurityPage(),
                                     ),
+                                    settings: settings,
+                                  );
+                                case '/network':
+                                  return FadeInRoute(
+                                    builder: (_) => const NetworkPage(),
                                     settings: settings,
                                   );
                                 case '/developers':

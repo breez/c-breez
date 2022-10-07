@@ -96,6 +96,11 @@ class HomeDrawerState extends State<HomeDrawer> {
         "src/icon/fiat_currencies.png",
       ),
       DrawerItemConfig(
+        "/network",
+        texts.home_drawer_item_title_network,
+        "src/icon/network.png",
+      ),
+      DrawerItemConfig(
         "/security",
         texts.home_drawer_item_title_security,
         "src/icon/security.png",

@@ -1,12 +1,24 @@
+use std::fs::File;
+use std::io::Read;
+
+use anyhow::Result;
+use bip39::*;
+use gl_client::pb;
+use gl_client::scheduler::Scheduler;
+use gl_client::signer::Signer;
+use gl_client::tls::TlsConfig;
+use lightning_signer::bitcoin::Network;
+use lightning_signer::lightning_invoice::RawInvoice;
+
 use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
-use anyhow::Result;
-use bip39::*;
-use lightning_signer::lightning_invoice::RawInvoice;
-use std::fs::File;
-use std::io::Read;
+
+struct GreenlightCredentials {
+ device_key: Vec<u8>,
+ device_cert: Vec<u8>
+}
 
 pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  let mut private_key_slice: [u8; 32] = [0; 32];
@@ -21,6 +33,17 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
  let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
  let seed = Seed::new(&mnemonic, "");
  Ok(seed.as_bytes().to_vec())
+}
+
+pub async fn new_node_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
+ let signer = Signer::new(seed, network, TlsConfig::new()?)?;
+ let scheduler = Scheduler::new(signer.node_id(), network).await?;
+ let resp : pb::RegistrationResponse = scheduler.register(&signer).await?;
+
+ let key_data = read_a_file(resp.device_key)?;
+ let cert_data = read_a_file(resp.device_cert)?;
+
+ Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
 }
 
 pub fn create_swap() -> Result<SwapKeys> {

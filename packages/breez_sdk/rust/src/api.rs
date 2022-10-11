@@ -38,10 +38,21 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 pub async fn new_node_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
  let signer = Signer::new(seed, network, TlsConfig::new()?)?;
  let scheduler = Scheduler::new(signer.node_id(), network).await?;
- let resp : pb::RegistrationResponse = scheduler.register(&signer).await?;
+ let register_res: pb::RegistrationResponse = scheduler.register(&signer).await?;
 
- let key_data = read_a_file(resp.device_key)?;
- let cert_data = read_a_file(resp.device_cert)?;
+ let key_data = read_a_file(register_res.device_key)?;
+ let cert_data = read_a_file(register_res.device_cert)?;
+
+ Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
+}
+
+pub async fn recover_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
+ let signer = Signer::new(seed, network, TlsConfig::new()?)?;
+ let scheduler = Scheduler::new(signer.node_id(), network).await?;
+ let recover_res: pb::RecoveryResponse = scheduler.recover(&signer).await?;
+
+ let key_data = read_a_file(recover_res.device_key)?;
+ let cert_data = read_a_file(recover_res.device_cert)?;
 
  Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
 }

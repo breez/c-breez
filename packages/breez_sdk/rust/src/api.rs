@@ -10,6 +10,7 @@ use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
 use lightning_signer::lightning_invoice::RawInvoice;
 use once_cell::sync::Lazy;
+use tokio::sync::mpsc;
 
 use crate::crypto::*;
 use crate::hsmd::*;
@@ -81,6 +82,15 @@ pub async fn recover_from_seed(seed: Vec<u8>, network: Network) -> Result<Greenl
  let cert_data = read_a_file(recover_res.device_cert)?;
 
  Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
+}
+
+pub async fn start_node(seed: Vec<u8>, creds: GreenlightCredentials, network: Network) -> Result<()> {
+ let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
+ let signer = Signer::new(seed, network, tls_config)?;
+
+ // Start loop to ensure the node is always running
+ let (_, recv) = mpsc::channel(1);
+ signer.run_forever(recv).await
 }
 
 pub fn create_swap() -> Result<SwapKeys> {

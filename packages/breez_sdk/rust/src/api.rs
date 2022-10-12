@@ -1,12 +1,35 @@
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::Read;
+use std::sync::Mutex;
+
+use anyhow::Result;
+use bip39::*;
+use lightning_signer::lightning_invoice::RawInvoice;
+use once_cell::sync::Lazy;
+
 use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
-use anyhow::Result;
-use bip39::*;
-use lightning_signer::lightning_invoice::RawInvoice;
-use std::fs::File;
-use std::io::Read;
+
+/// Internal SDK state. Stored in memory, not persistent across restarts.
+/// Available only internally, not exposed to callers of SDK.
+static STATE: Lazy<Mutex<HashMap<String, NodeState>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+
+#[derive(Clone, Debug, PartialEq)]
+struct NodeState {
+ test_field: String
+}
+
+fn get_state(key: &str) -> Option<NodeState> {
+ STATE.lock().unwrap().get(key).cloned()
+}
+
+fn set_state(key: String, state: NodeState) {
+ let mut data_store = STATE.lock().unwrap();
+ data_store.insert(key, state);
+}
 
 pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  let mut private_key_slice: [u8; 32] = [0; 32];
@@ -108,4 +131,19 @@ fn test_hsmd_handle() {
   Some(hex::decode("03f27b2fe75f44eeabdbb64ccfc759d3c2a540f6a7461673138d8cf425530d5bb4").unwrap());
  let path = String::from("/Users/roeierez/greenlight-keys2");
  handle(path, secret, msg, peer_id, 0).unwrap();
+}
+
+#[test]
+fn test_state() {
+ let n1 = NodeState { test_field: "abc".to_string() };
+
+ let key = "k1";
+ set_state(key.to_string(), n1.clone());
+
+ assert_eq!(get_state(key), Some(n1));
+ assert_eq!(get_state("invalid_key"), None);
+
+ let n2 = NodeState { test_field: "def".to_string() };
+ set_state(key.to_string(), n2.clone());
+ assert_eq!(get_state(key), Some(n2));
 }

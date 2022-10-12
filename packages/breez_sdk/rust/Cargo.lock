@@ -1182,6 +1182,7 @@ dependencies = [
  "hex",
  "lightning-signer-core",
  "lightning-signer-server",
+ "once_cell",
  "rand",
  "ripemd",
  "tiny-bip39",

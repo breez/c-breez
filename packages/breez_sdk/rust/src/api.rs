@@ -15,20 +15,19 @@ use crate::swap::*;
 
 /// Internal SDK state. Stored in memory, not persistent across restarts.
 /// Available only internally, not exposed to callers of SDK.
-static STATE: Lazy<Mutex<HashMap<String, NodeState>>> = Lazy::new(|| Mutex::new(HashMap::new()));
+static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new( NodeState::default() ));
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 struct NodeState {
- test_field: String
+ test_field: Option<String>
 }
 
-fn get_state(key: &str) -> Option<NodeState> {
- STATE.lock().unwrap().get(key).cloned()
+fn get_state() -> NodeState {
+ STATE.lock().unwrap().clone()
 }
 
-fn set_state(key: String, state: NodeState) {
- let mut data_store = STATE.lock().unwrap();
- data_store.insert(key, state);
+fn set_state(state: NodeState) {
+ *STATE.lock().unwrap() = state;
 }
 
 pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
@@ -135,15 +134,14 @@ fn test_hsmd_handle() {
 
 #[test]
 fn test_state() {
- let n1 = NodeState { test_field: "abc".to_string() };
+ assert_eq!(get_state(), NodeState::default());
 
- let key = "k1";
- set_state(key.to_string(), n1.clone());
+ let n1 = NodeState { test_field: Some("abc".to_string()) };
+ set_state(n1.clone());
+ assert_eq!(get_state(), n1);
 
- assert_eq!(get_state(key), Some(n1));
- assert_eq!(get_state("invalid_key"), None);
-
- let n2 = NodeState { test_field: "def".to_string() };
- set_state(key.to_string(), n2.clone());
- assert_eq!(get_state(key), Some(n2));
+ let mut n2 = n1;
+ n2.test_field = Some("def".to_string());
+ set_state(n2.clone());
+ assert_eq!(get_state(), n2);
 }

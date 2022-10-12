@@ -24,6 +24,7 @@ vls-persist = { git="https://gitlab.com/lightning-signer/validating-lightning-si
 vls-proxy = { git="https://gitlab.com/lightning-signer/validating-lightning-signer.git", branch="main" }
 base64 = "0.13.0"
 ecies = {version = "0.2", default-features = false, features = ["pure"]}
+once_cell = "*"
 ripemd = "*"
 rand = "*"
 tiny-bip39 = "*"

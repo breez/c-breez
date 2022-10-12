@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::Read;
+use std::sync::Mutex;
 
 use anyhow::Result;
 use bip39::*;
@@ -9,11 +10,29 @@ use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
 use lightning_signer::bitcoin::Network;
 use lightning_signer::lightning_invoice::RawInvoice;
+use once_cell::sync::Lazy;
 
 use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
+
+/// Internal SDK state. Stored in memory, not persistent across restarts.
+/// Available only internally, not exposed to callers of SDK.
+static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new( NodeState::default() ));
+
+#[derive(Clone, Debug, Default, PartialEq)]
+struct NodeState {
+ test_field: Option<String>
+}
+
+fn get_state() -> NodeState {
+ STATE.lock().unwrap().clone()
+}
+
+fn set_state(state: NodeState) {
+ *STATE.lock().unwrap() = state;
+}
 
 struct GreenlightCredentials {
  device_key: Vec<u8>,
@@ -131,4 +150,18 @@ fn test_hsmd_handle() {
   Some(hex::decode("03f27b2fe75f44eeabdbb64ccfc759d3c2a540f6a7461673138d8cf425530d5bb4").unwrap());
  let path = String::from("/Users/roeierez/greenlight-keys2");
  handle(path, secret, msg, peer_id, 0).unwrap();
+}
+
+#[test]
+fn test_state() {
+ assert_eq!(get_state(), NodeState::default());
+
+ let n1 = NodeState { test_field: Some("abc".to_string()) };
+ set_state(n1.clone());
+ assert_eq!(get_state(), n1);
+
+ let mut n2 = n1;
+ n2.test_field = Some("def".to_string());
+ set_state(n2.clone());
+ assert_eq!(get_state(), n2);
 }

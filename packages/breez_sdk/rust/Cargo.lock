@@ -106,45 +106,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4c527152e37cf757a3f78aae5a06fbeefdb07ccc535c980a3208ee3060dd544"
 
 [[package]]
-name = "asn1-rs"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30ff05a702273012438132f449575dbc804e27b2f3cbe3069aa237d26c98fa33"
-dependencies = [
- "asn1-rs-derive",
- "asn1-rs-impl",
- "displaydoc",
- "nom",
- "num-traits",
- "rusticata-macros",
- "thiserror",
- "time 0.3.13",
-]
-
-[[package]]
-name = "asn1-rs-derive"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db8b7511298d5b7784b40b092d9e9dcd3a627a5707e4b5e507931ab0d44eeebf"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
- "synstructure",
-]
-
-[[package]]
-name = "asn1-rs-impl"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2777730b2039ac0f95f093556e61b6d26cebed5393ca6f152717777cec3a42ed"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "async-stream"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -201,51 +162,6 @@ name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
-
-[[package]]
-name = "axum"
-version = "0.5.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9e3356844c4d6a6d6467b8da2cffb4a2820be256f50a3a386c9d152bab31043"
-dependencies = [
- "async-trait",
- "axum-core",
- "bitflags",
- "bytes",
- "futures-util",
- "http",
- "http-body",
- "hyper",
- "itoa",
- "matchit",
- "memchr",
- "mime",
- "percent-encoding",
- "pin-project-lite",
- "serde",
- "sync_wrapper",
- "tokio",
- "tower",
- "tower-http",
- "tower-layer",
- "tower-service",
-]
-
-[[package]]
-name = "axum-core"
-version = "0.2.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9f0c0a60006f2a293d82d571f635042a72edf927539b7685bd62d361963839b"
-dependencies = [
- "async-trait",
- "bytes",
- "futures-util",
- "http",
- "http-body",
- "mime",
- "tower-layer",
- "tower-service",
-]
 
 [[package]]
 name = "backtrace"
@@ -323,7 +239,7 @@ source = "git+https://gitlab.com/lightning-signer/validating-lightning-signer.gi
 dependencies = [
  "async-trait",
  "jsonrpc-async",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
  "log",
  "serde",
  "serde_json",
@@ -358,16 +274,6 @@ dependencies = [
 name = "bolt-derive"
 version = "0.1.0"
 source = "git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main#86552cd078cc4d423a175e9df5d5abc503096601"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "bolt-derive"
-version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#4d1c580e0589385f80163c0795242bcfb98d6a44"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -454,7 +360,7 @@ version = "3.0.0-beta.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b15c6b4f786ffb6192ffe65a36855bc1fc2444bcd0945ae16748dcd6ed7d0d3"
 dependencies = [
- "heck 0.3.3",
+ "heck",
  "proc-macro-error",
  "proc-macro2",
  "quote",
@@ -617,12 +523,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "data-encoding"
-version = "2.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ee2393c4a91429dffb4bedf19f4d6abf27d8a732c8ce4980305d782e5426d57"
-
-[[package]]
 name = "delegate"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -631,20 +531,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "der-parser"
-version = "7.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe398ac75057914d7d07307bf67dc7f3f574a26783b4fc7805a20ffa9f506e82"
-dependencies = [
- "asn1-rs",
- "displaydoc",
- "nom",
- "num-bigint",
- "num-traits",
- "rusticata-macros",
 ]
 
 [[package]]
@@ -672,17 +558,6 @@ name = "discard"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "212d0f5754cb6769937f4501cc0e67f4f4483c8d2c3e1e922ee9edbe4ab4c7c0"
-
-[[package]]
-name = "displaydoc"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bf95dc3f046b9da4f2d51833c0d3547d8564ef6910f5c1ed130306a75b92886"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "ecies"
@@ -899,38 +774,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "22030e2c5a68ec659fde1e949a745124b48e6fa8b045b7ed5bd1fe4ccc5c4e5d"
 
 [[package]]
-name = "gl-client"
-version = "0.1.4"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#4d1c580e0589385f80163c0795242bcfb98d6a44"
-dependencies = [
- "anyhow",
- "base64",
- "bitcoin",
- "bytes",
- "hex",
- "http",
- "http-body",
- "lightning-signer-core 0.1.0-5 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
- "lightning-signer-server 0.1.0-5 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
- "log",
- "pin-project",
- "prost 0.11.0",
- "rcgen",
- "ring",
- "rustls-pemfile",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "tonic 0.8.2",
- "tonic-build 0.8.2",
- "tower",
- "vls-persist 0.1.0 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
- "vls-protocol 0.1.0 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
- "vls-protocol-signer 0.1.0 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
-]
-
-[[package]]
 name = "h2"
 version = "0.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -972,12 +815,6 @@ checksum = "6d621efb26863f0e9924c6ac577e8275e5e6b77455db64ffa6c65c904e9e132c"
 dependencies = [
  "unicode-segmentation",
 ]
-
-[[package]]
-name = "heck"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2540771e65fc8cb83cd6e8a237f70c319bd5c29f78ed1084ba5d50eeac86f7f9"
 
 [[package]]
 name = "hermit-abi"
@@ -1065,12 +902,6 @@ dependencies = [
  "http",
  "pin-project-lite",
 ]
-
-[[package]]
-name = "http-range-header"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0bfe8eed0a9285ef776bb792479ea3834e8b94e13d615c2f66d03dd50a435a29"
 
 [[package]]
 name = "httparse"
@@ -1324,22 +1155,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "lightning-signer-core"
-version = "0.1.0-5"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#4d1c580e0589385f80163c0795242bcfb98d6a44"
-dependencies = [
- "anyhow",
- "bitcoin",
- "env_logger",
- "hashbrown 0.11.2",
- "itertools",
- "lightning",
- "lightning-invoice",
- "log",
- "scopeguard",
-]
-
-[[package]]
 name = "lightning-signer-server"
 version = "0.1.0-5"
 source = "git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main#86552cd078cc4d423a175e9df5d5abc503096601"
@@ -1347,27 +1162,12 @@ dependencies = [
  "anyhow",
  "async-trait",
  "hex",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
  "log",
  "time 0.2.27",
- "tonic-build 0.6.2",
+ "tonic-build",
  "vls-frontend",
- "vls-persist 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
-]
-
-[[package]]
-name = "lightning-signer-server"
-version = "0.1.0-5"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#4d1c580e0589385f80163c0795242bcfb98d6a44"
-dependencies = [
- "anyhow",
- "async-trait",
- "hex",
- "lightning-signer-core 0.1.0-5 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
- "log",
- "time 0.2.27",
- "tonic-build 0.6.2",
- "vls-persist 0.1.0 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
+ "vls-persist",
 ]
 
 [[package]]
@@ -1379,16 +1179,16 @@ dependencies = [
  "bitcoin_hashes",
  "ecies",
  "flutter_rust_bridge",
- "gl-client",
  "hex",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
- "lightning-signer-server 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
+ "lightning-signer-server",
+ "once_cell",
  "rand",
  "ripemd",
  "tiny-bip39",
- "vls-persist 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
- "vls-protocol 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
- "vls-protocol-signer 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "vls-persist",
+ "vls-protocol",
+ "vls-protocol-signer",
  "vls-proxy",
 ]
 
@@ -1418,12 +1218,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 
 [[package]]
-name = "matchit"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73cbba799671b762df5a175adf59ce145165747bb891505c43d09aefbbf38beb"
-
-[[package]]
 name = "memchr"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1437,18 +1231,6 @@ checksum = "5aa361d4faea93603064a027415f07bd8e1d5c88c9fbf68bf56a285428fd79ce"
 dependencies = [
  "autocfg",
 ]
-
-[[package]]
-name = "mime"
-version = "0.3.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a60c7ce501c71e03a9c9c0d35b861413ae925bd979cc7a4e30d060069aaac8d"
-
-[[package]]
-name = "minimal-lexical"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 
 [[package]]
 name = "miniz_oxide"
@@ -1503,27 +1285,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nom"
-version = "7.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8903e5a29a317527874d0402f867152a3d21c908bb0b933e416c65e301d4c36"
-dependencies = [
- "memchr",
- "minimal-lexical",
-]
-
-[[package]]
-name = "num-bigint"
-version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f93ab6289c7b344a8a9f60f88d80aa20032336fe78da341afc91c8a2341fc75f"
-dependencies = [
- "autocfg",
- "num-integer",
- "num-traits",
-]
-
-[[package]]
 name = "num-integer"
 version = "0.1.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1568,15 +1329,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "21158b2c33aa6d4561f1c0a6ea283ca92bc54802a93b263e910746d679a7eb53"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "oid-registry"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38e20717fa0541f39bd146692035c37bedfa532b3e5071b35761082407546b2a"
-dependencies = [
- "asn1-rs",
 ]
 
 [[package]]
@@ -1655,15 +1407,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pem"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03c64931a1a212348ec4f3b4362585eca7159d0d09cbdf4a7f74f02173596fd4"
-dependencies = [
- "base64",
-]
-
-[[package]]
 name = "percent-encoding"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1730,16 +1473,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
 
 [[package]]
-name = "prettyplease"
-version = "0.1.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83fead41e178796ef8274dc612a7d8ce4c7e10ca35cd2c5b5ad24cac63aeb6c0"
-dependencies = [
- "proc-macro2",
- "syn",
-]
-
-[[package]]
 name = "proc-macro-error"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1785,17 +1518,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "444879275cb4fd84958b1a1d5420d15e6fcf7c235fe47f053c9c2a80aceb6001"
 dependencies = [
  "bytes",
- "prost-derive 0.9.0",
-]
-
-[[package]]
-name = "prost"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "399c3c31cdec40583bb68f0b18403400d01ec4289c383aa047560439952c4dd7"
-dependencies = [
- "bytes",
- "prost-derive 0.11.0",
+ "prost-derive",
 ]
 
 [[package]]
@@ -1805,34 +1528,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62941722fb675d463659e49c4f3fe1fe792ff24fe5bbaa9c08cd3b98a1c354f5"
 dependencies = [
  "bytes",
- "heck 0.3.3",
+ "heck",
  "itertools",
  "lazy_static",
  "log",
  "multimap",
  "petgraph",
- "prost 0.9.0",
- "prost-types 0.9.0",
- "regex",
- "tempfile",
- "which",
-]
-
-[[package]]
-name = "prost-build"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f835c582e6bd972ba8347313300219fed5bfa52caf175298d860b61ff6069bb"
-dependencies = [
- "bytes",
- "heck 0.4.0",
- "itertools",
- "lazy_static",
- "log",
- "multimap",
- "petgraph",
- "prost 0.11.0",
- "prost-types 0.11.1",
+ "prost",
+ "prost-types",
  "regex",
  "tempfile",
  "which",
@@ -1852,36 +1555,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "prost-derive"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7345d5f0e08c0536d7ac7229952590239e77abf0a0100a1b1d890add6ea96364"
-dependencies = [
- "anyhow",
- "itertools",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "prost-types"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "534b7a0e836e3c482d2693070f982e39e7611da9695d4d1f5a4b186b51faef0a"
 dependencies = [
  "bytes",
- "prost 0.9.0",
-]
-
-[[package]]
-name = "prost-types"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4dfaa718ad76a44b3415e6c4d53b17c8f99160dcb3a99b10470fce8ad43f6e3e"
-dependencies = [
- "bytes",
- "prost 0.11.0",
+ "prost",
 ]
 
 [[package]]
@@ -1924,19 +1604,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rcgen"
-version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6413f3de1edee53342e6138e75b56d32e7bc6e332b3bd62d497b1929d4cfbcdd"
-dependencies = [
- "pem",
- "ring",
- "time 0.3.13",
- "x509-parser",
- "yasna",
-]
-
-[[package]]
 name = "redox_syscall"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1972,21 +1639,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ring"
-version = "0.16.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3053cf52e236a3ed746dfc745aa9cacf1b791d846bdaf412f60a8d7d6e17c8fc"
-dependencies = [
- "cc",
- "libc",
- "once_cell",
- "spin",
- "untrusted",
- "web-sys",
- "winapi",
-]
-
-[[package]]
 name = "ripemd"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2017,36 +1669,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rusticata-macros"
-version = "4.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "faf0c4a6ece9950b9abdb62b1cfcf2a68b3b67a10ba445b3bb85be2a293d0632"
-dependencies = [
- "nom",
-]
-
-[[package]]
-name = "rustls"
-version = "0.20.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5aab8ee6c7097ed6057f43c187a62418d0c05a4bd5f18b3571db50ee0f9ce033"
-dependencies = [
- "log",
- "ring",
- "sct",
- "webpki",
-]
-
-[[package]]
-name = "rustls-pemfile"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0864aeff53f8c05aa08d86e5ef839d3dfcf07aeba2db32f12db0ef716e87bd55"
-dependencies = [
- "base64",
-]
-
-[[package]]
 name = "ryu"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2057,16 +1679,6 @@ name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
-
-[[package]]
-name = "sct"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d53dcdb7c9f8158937a7981b48accfd39a43af418591a5d008c7b22b5e1b7ca4"
-dependencies = [
- "ring",
- "untrusted",
-]
 
 [[package]]
 name = "secp256k1"
@@ -2262,12 +1874,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "spin"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
-
-[[package]]
 name = "standback"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2347,12 +1953,6 @@ dependencies = [
  "quote",
  "unicode-ident",
 ]
-
-[[package]]
-name = "sync_wrapper"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20518fe4a4c9acf048008599e464deb21beeae3d3578418951a189c235a7a9a8"
 
 [[package]]
 name = "synstructure"
@@ -2448,7 +2048,7 @@ dependencies = [
  "libc",
  "standback",
  "stdweb",
- "time-macros 0.1.1",
+ "time-macros",
  "version_check",
  "winapi",
 ]
@@ -2459,10 +2059,8 @@ version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db76ff9fa4b1458b3c7f077f3ff9887394058460d21e634355b273aaf11eea45"
 dependencies = [
- "itoa",
  "libc",
  "num_threads",
- "time-macros 0.2.4",
 ]
 
 [[package]]
@@ -2474,12 +2072,6 @@ dependencies = [
  "proc-macro-hack",
  "time-macros-impl",
 ]
-
-[[package]]
-name = "time-macros"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42657b1a6f4d817cda8e7a0ace261fe0cc946cf3a80314390b22cc61ae080792"
 
 [[package]]
 name = "time-macros-impl"
@@ -2571,17 +2163,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tokio-rustls"
-version = "0.23.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c43ee83903113e03984cb9e5cebe6c04a5116269e900e3ddba8f068a62adda59"
-dependencies = [
- "rustls",
- "tokio",
- "webpki",
-]
-
-[[package]]
 name = "tokio-stream"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2648,45 +2229,11 @@ dependencies = [
  "hyper-timeout",
  "percent-encoding",
  "pin-project",
- "prost 0.9.0",
- "prost-derive 0.9.0",
+ "prost",
+ "prost-derive",
  "tokio",
  "tokio-stream",
  "tokio-util 0.6.10",
- "tower",
- "tower-layer",
- "tower-service",
- "tracing",
- "tracing-futures",
-]
-
-[[package]]
-name = "tonic"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55b9af819e54b8f33d453655bef9b9acc171568fb49523078d0cc4e7484200ec"
-dependencies = [
- "async-stream",
- "async-trait",
- "axum",
- "base64",
- "bytes",
- "futures-core",
- "futures-util",
- "h2",
- "http",
- "http-body",
- "hyper",
- "hyper-timeout",
- "percent-encoding",
- "pin-project",
- "prost 0.11.0",
- "prost-derive 0.11.0",
- "rustls-pemfile",
- "tokio",
- "tokio-rustls",
- "tokio-stream",
- "tokio-util 0.7.3",
  "tower",
  "tower-layer",
  "tower-service",
@@ -2701,20 +2248,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9403f1bafde247186684b230dc6f38b5cd514584e8bec1dd32514be4745fa757"
 dependencies = [
  "proc-macro2",
- "prost-build 0.9.0",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "tonic-build"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48c6fd7c2581e36d63388a9e04c350c21beb7a8b059580b2e93993c526899ddc"
-dependencies = [
- "prettyplease",
- "proc-macro2",
- "prost-build 0.11.1",
+ "prost-build",
  "quote",
  "syn",
 ]
@@ -2737,25 +2271,6 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
-]
-
-[[package]]
-name = "tower-http"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c530c8675c1dbf98facee631536fa116b5fb6382d7dd6dc1b118d970eafe3ba"
-dependencies = [
- "bitflags",
- "bytes",
- "futures-core",
- "futures-util",
- "http",
- "http-body",
- "http-range-header",
- "pin-project-lite",
- "tower",
- "tower-layer",
- "tower-service",
 ]
 
 [[package]]
@@ -2881,12 +2396,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "untrusted"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a156c684c91ea7d62626509bce3cb4e1d9ed5c4d978f7b4352658f96a4c26b4a"
-
-[[package]]
 name = "url"
 version = "2.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2917,7 +2426,7 @@ source = "git+https://gitlab.com/lightning-signer/validating-lightning-signer.gi
 dependencies = [
  "async-trait",
  "bitcoind-client",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
  "log",
  "tokio",
  "url",
@@ -2930,22 +2439,9 @@ source = "git+https://gitlab.com/lightning-signer/validating-lightning-signer.gi
 dependencies = [
  "hex",
  "kv",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
  "log",
  "serde",
- "serde_with",
-]
-
-[[package]]
-name = "vls-persist"
-version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#4d1c580e0589385f80163c0795242bcfb98d6a44"
-dependencies = [
- "hex",
- "lightning-signer-core 0.1.0-5 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
- "log",
- "serde",
- "serde_json",
  "serde_with",
 ]
 
@@ -2954,19 +2450,7 @@ name = "vls-protocol"
 version = "0.1.0"
 source = "git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main#86552cd078cc4d423a175e9df5d5abc503096601"
 dependencies = [
- "bolt-derive 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
- "log",
- "serde",
- "serde_bolt",
- "serde_derive",
-]
-
-[[package]]
-name = "vls-protocol"
-version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#4d1c580e0589385f80163c0795242bcfb98d6a44"
-dependencies = [
- "bolt-derive 0.1.0 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
+ "bolt-derive",
  "log",
  "serde",
  "serde_bolt",
@@ -2982,9 +2466,9 @@ dependencies = [
  "async-trait",
  "bit-vec",
  "delegate",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
  "log",
- "vls-protocol 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "vls-protocol",
 ]
 
 [[package]]
@@ -2993,22 +2477,10 @@ version = "0.1.0"
 source = "git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main#86552cd078cc4d423a175e9df5d5abc503096601"
 dependencies = [
  "bit-vec",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
  "log",
  "serde",
- "vls-protocol 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
-]
-
-[[package]]
-name = "vls-protocol-signer"
-version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#4d1c580e0589385f80163c0795242bcfb98d6a44"
-dependencies = [
- "bit-vec",
- "lightning-signer-core 0.1.0-5 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
- "log",
- "serde",
- "vls-protocol 0.1.0 (git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1)",
+ "vls-protocol",
 ]
 
 [[package]]
@@ -3027,22 +2499,22 @@ dependencies = [
  "futures",
  "http",
  "hyper",
- "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
- "lightning-signer-server 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "lightning-signer-core",
+ "lightning-signer-server",
  "log",
  "nix 0.22.3",
- "prost 0.9.0",
+ "prost",
  "serde",
  "tokio",
  "tokio-stream",
- "tonic 0.6.2",
- "tonic-build 0.6.2",
+ "tonic",
+ "tonic-build",
  "triggered",
  "url",
  "vls-frontend",
- "vls-protocol 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "vls-protocol",
  "vls-protocol-client",
- "vls-protocol-signer 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
+ "vls-protocol-signer",
 ]
 
 [[package]]
@@ -3120,26 +2592,6 @@ name = "wasm-bindgen-shared"
 version = "0.2.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6598dd0bd3c7d51095ff6531a5b23e02acdc81804e30d8f07afb77b7215a140a"
-
-[[package]]
-name = "web-sys"
-version = "0.3.59"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed055ab27f941423197eb86b2035720b1a3ce40504df082cac2ecc6ed73335a1"
-dependencies = [
- "js-sys",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "webpki"
-version = "0.22.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f095d78192e208183081cc07bc5515ef55216397af48b873e5edcd72637fa1bd"
-dependencies = [
- "ring",
- "untrusted",
-]
 
 [[package]]
 name = "which"
@@ -3225,34 +2677,6 @@ name = "windows_x86_64_msvc"
 version = "0.36.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c811ca4a8c853ef420abd8592ba53ddbbac90410fab6903b3e79972a631f7680"
-
-[[package]]
-name = "x509-parser"
-version = "0.13.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fb9bace5b5589ffead1afb76e43e34cff39cd0f3ce7e170ae0c29e53b88eb1c"
-dependencies = [
- "asn1-rs",
- "base64",
- "data-encoding",
- "der-parser",
- "lazy_static",
- "nom",
- "oid-registry",
- "ring",
- "rusticata-macros",
- "thiserror",
- "time 0.3.13",
-]
-
-[[package]]
-name = "yasna"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "346d34a236c9d3e5f3b9b74563f238f955bbd05fa0b8b4efa53c130c43982f4c"
-dependencies = [
- "time 0.3.13",
-]
 
 [[package]]
 name = "zeroize"

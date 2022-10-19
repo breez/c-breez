@@ -44,7 +44,6 @@ class GenerateMnemonicSeedConfirmationPageState
               });
             },
           ),
-          SizedBox(height: _isUnderstood ? 0 : 48)
         ],
       ),
       bottomNavigationBar: ConfirmButton(isUnderstood: _isUnderstood),
@@ -147,27 +146,24 @@ class ConfirmButton extends StatelessWidget {
     final texts = context.texts();
     return Padding(
       padding: const EdgeInsets.only(top: 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _isUnderstood
-              ? SingleButtonBottomBar(
-                  text: texts.backup_phrase_action_next,
-                  onPressed: () {
-                    String mnemonics = bip39.generateMnemonic(
-                      strength: 128,
-                    );
-                    Navigator.pushReplacement(
-                      context,
-                      FadeInRoute(
-                        builder: (context) =>
-                            GenerateMnemonicSeedPage(mnemonics: mnemonics),
-                      ),
-                    );
-                  },
-                )
-              : Container(),
-        ],
+      child: SizedBox(
+        height: 88,
+        child: _isUnderstood
+            ? SingleButtonBottomBar(
+                text: texts.backup_phrase_action_next,
+                onPressed: () {
+                  String mnemonics = bip39.generateMnemonic(
+                    strength: 128,
+                  );
+                  Navigator.pushReplacement(
+                    context,
+                    FadeInRoute(
+                      builder: (context) => GenerateMnemonicSeedPage(mnemonics: mnemonics),
+                    ),
+                  );
+                },
+              )
+            : Container(),
       ),
     );
   }

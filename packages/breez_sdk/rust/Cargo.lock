@@ -1387,6 +1387,7 @@ dependencies = [
  "rand",
  "ripemd",
  "tiny-bip39",
+ "tokio",
  "vls-persist 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
  "vls-protocol 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
  "vls-protocol-signer 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",

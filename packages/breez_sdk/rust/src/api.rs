@@ -4,12 +4,13 @@ use std::sync::Mutex;
 
 use anyhow::Result;
 use bip39::*;
-use gl_client::pb;
+use gl_client::{node, pb};
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
 use lightning_signer::lightning_invoice::RawInvoice;
 use once_cell::sync::Lazy;
+use tokio::sync::mpsc;
 
 use crate::crypto::*;
 use crate::hsmd::*;
@@ -28,9 +29,9 @@ pub enum Network {
 /// Available only internally, not exposed to callers of SDK.
 static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new( NodeState::default() ));
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Default)]
 struct NodeState {
- test_field: Option<String>
+ client: Option<node::Client>
 }
 
 fn get_state() -> NodeState {
@@ -41,7 +42,7 @@ fn set_state(state: NodeState) {
  *STATE.lock().unwrap() = state;
 }
 
-struct GreenlightCredentials {
+pub struct GreenlightCredentials {
  device_key: Vec<u8>,
  device_cert: Vec<u8>
 }
@@ -81,6 +82,22 @@ pub async fn recover_from_seed(seed: Vec<u8>, network: Network) -> Result<Greenl
  let cert_data = read_a_file(recover_res.device_cert)?;
 
  Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
+}
+
+pub async fn start_node(seed: Vec<u8>, creds: GreenlightCredentials, network: Network) -> Result<()> {
+ let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
+ let signer = Signer::new(seed, parse_network(&network), tls_config.clone())?;
+
+ let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
+ let client : node::Client = scheduler.schedule(tls_config).await?;
+
+ // Start loop to ensure the node is always running
+ let (_, recv) = mpsc::channel(1);
+ signer.run_forever(recv).await?;
+
+ set_state(NodeState { client: Some(client) });
+
+ Ok(())
 }
 
 pub fn create_swap() -> Result<SwapKeys> {
@@ -181,14 +198,6 @@ fn test_hsmd_handle() {
 
 #[test]
 fn test_state() {
- assert_eq!(get_state(), NodeState::default());
-
- let n1 = NodeState { test_field: Some("abc".to_string()) };
- set_state(n1.clone());
- assert_eq!(get_state(), n1);
-
- let mut n2 = n1;
- n2.test_field = Some("def".to_string());
- set_state(n2.clone());
- assert_eq!(get_state(), n2);
+ // By default, the state is initialized with None values
+ assert!(get_state().client.is_none());
 }

@@ -16,7 +16,7 @@ use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
 
-pub enum GreenlightNetwork {
+pub enum Network {
  /// Mainnet
  Bitcoin,
  Testnet,
@@ -61,7 +61,7 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
  Ok(seed.as_bytes().to_vec())
 }
 
-pub async fn new_node_from_seed(seed: Vec<u8>, network: GreenlightNetwork) -> Result<GreenlightCredentials> {
+pub async fn new_node_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
  let signer = Signer::new(seed, parse_network(&network), TlsConfig::new()?)?;
  let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
  let register_res: pb::RegistrationResponse = scheduler.register(&signer).await?;
@@ -72,7 +72,7 @@ pub async fn new_node_from_seed(seed: Vec<u8>, network: GreenlightNetwork) -> Re
  Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
 }
 
-pub async fn recover_from_seed(seed: Vec<u8>, network: GreenlightNetwork) -> Result<GreenlightCredentials> {
+pub async fn recover_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
  let signer = Signer::new(seed, parse_network(&network), TlsConfig::new()?)?;
  let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
  let recover_res: pb::RecoveryResponse = scheduler.recover(&signer).await?;
@@ -159,12 +159,12 @@ fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
  return Ok(data);
 }
 
-fn parse_network(gn: &GreenlightNetwork) -> lightning_signer::bitcoin::Network {
+fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
  match gn {
-  GreenlightNetwork::Bitcoin => lightning_signer::bitcoin::Network::Bitcoin,
-  GreenlightNetwork::Testnet => lightning_signer::bitcoin::Network::Testnet,
-  GreenlightNetwork::Signet => lightning_signer::bitcoin::Network::Signet,
-  GreenlightNetwork::Regtest => lightning_signer::bitcoin::Network::Regtest
+  Network::Bitcoin => lightning_signer::bitcoin::Network::Bitcoin,
+  Network::Testnet => lightning_signer::bitcoin::Network::Testnet,
+  Network::Signet => lightning_signer::bitcoin::Network::Signet,
+  Network::Regtest => lightning_signer::bitcoin::Network::Regtest
  }
 }
 

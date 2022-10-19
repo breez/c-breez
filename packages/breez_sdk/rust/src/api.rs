@@ -8,7 +8,6 @@ use gl_client::pb;
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
-use lightning_signer::bitcoin::Network;
 use lightning_signer::lightning_invoice::RawInvoice;
 use once_cell::sync::Lazy;
 
@@ -16,6 +15,14 @@ use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
+
+pub enum Network {
+ /// Mainnet
+ Bitcoin,
+ Testnet,
+ Signet,
+ Regtest
+}
 
 /// Internal SDK state. Stored in memory, not persistent across restarts.
 /// Available only internally, not exposed to callers of SDK.
@@ -55,12 +62,23 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 pub async fn new_node_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
- let signer = Signer::new(seed, network, TlsConfig::new()?)?;
- let scheduler = Scheduler::new(signer.node_id(), network).await?;
- let resp : pb::RegistrationResponse = scheduler.register(&signer).await?;
+ let signer = Signer::new(seed, parse_network(&network), TlsConfig::new()?)?;
+ let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
+ let register_res: pb::RegistrationResponse = scheduler.register(&signer).await?;
 
- let key_data = read_a_file(resp.device_key)?;
- let cert_data = read_a_file(resp.device_cert)?;
+ let key_data = read_a_file(register_res.device_key)?;
+ let cert_data = read_a_file(register_res.device_cert)?;
+
+ Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
+}
+
+pub async fn recover_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
+ let signer = Signer::new(seed, parse_network(&network), TlsConfig::new()?)?;
+ let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
+ let recover_res: pb::RecoveryResponse = scheduler.recover(&signer).await?;
+
+ let key_data = read_a_file(recover_res.device_key)?;
+ let cert_data = read_a_file(recover_res.device_cert)?;
 
  Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
 }
@@ -139,6 +157,15 @@ fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
  file.read_to_end(&mut data).unwrap();
 
  return Ok(data);
+}
+
+fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
+ match gn {
+  Network::Bitcoin => lightning_signer::bitcoin::Network::Bitcoin,
+  Network::Testnet => lightning_signer::bitcoin::Network::Testnet,
+  Network::Signet => lightning_signer::bitcoin::Network::Signet,
+  Network::Regtest => lightning_signer::bitcoin::Network::Regtest
+ }
 }
 
 #[test]

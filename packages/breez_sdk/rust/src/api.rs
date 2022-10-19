@@ -7,13 +7,17 @@ use gl_client::pb;
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
-use lightning_signer::bitcoin::Network;
 use lightning_signer::lightning_invoice::RawInvoice;
 
 use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
+
+pub struct SdkNetwork {
+ pub bitcoin_network: lightning_signer::bitcoin::Network
+}
+
 
 struct GreenlightCredentials {
  device_key: Vec<u8>,
@@ -35,9 +39,9 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
  Ok(seed.as_bytes().to_vec())
 }
 
-pub async fn new_node_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
- let signer = Signer::new(seed, network, TlsConfig::new()?)?;
- let scheduler = Scheduler::new(signer.node_id(), network).await?;
+pub async fn new_node_from_seed(seed: Vec<u8>, network: SdkNetwork) -> Result<GreenlightCredentials> {
+ let signer = Signer::new(seed, network.bitcoin_network, TlsConfig::new()?)?;
+ let scheduler = Scheduler::new(signer.node_id(), network.bitcoin_network).await?;
  let register_res: pb::RegistrationResponse = scheduler.register(&signer).await?;
 
  let key_data = read_a_file(register_res.device_key)?;
@@ -46,9 +50,9 @@ pub async fn new_node_from_seed(seed: Vec<u8>, network: Network) -> Result<Green
  Ok( GreenlightCredentials{device_key: key_data, device_cert: cert_data} )
 }
 
-pub async fn recover_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
- let signer = Signer::new(seed, network, TlsConfig::new()?)?;
- let scheduler = Scheduler::new(signer.node_id(), network).await?;
+pub async fn recover_from_seed(seed: Vec<u8>, network: SdkNetwork) -> Result<GreenlightCredentials> {
+ let signer = Signer::new(seed, network.bitcoin_network, TlsConfig::new()?)?;
+ let scheduler = Scheduler::new(signer.node_id(), network.bitcoin_network).await?;
  let recover_res: pb::RecoveryResponse = scheduler.recover(&signer).await?;
 
  let key_data = read_a_file(recover_res.device_key)?;

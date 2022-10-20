@@ -126,7 +126,7 @@ class AccountPage extends StatelessWidget {
               }
               return const Padding(
                 padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                child: StatusText(message: ""),
+                child: StatusText(),
               );
             },
           ),

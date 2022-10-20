@@ -28,6 +28,8 @@ flutter build ios
 ```
 flutter run
 ```
+## Tests
+A testing framework for this project is being developed [here](https://github.com/breez/lntest).
 
 # Breez SDK
 

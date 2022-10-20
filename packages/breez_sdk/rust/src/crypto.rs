@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use ecies::{decrypt, encrypt, SecpError};
+use ecies::{decrypt, encrypt};
 
 pub fn _encrypt(key: Vec<u8>, msg: Vec<u8>) -> Result<Vec<u8>> {
  match encrypt(key.as_slice(), msg.as_slice()) {

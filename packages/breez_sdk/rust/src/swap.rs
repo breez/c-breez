@@ -1,11 +1,11 @@
 //use lightning_signer::bitcoin::{secp256k1};
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use bitcoin_hashes::sha256;
 use lightning_signer::bitcoin::blockdata::opcodes;
 use lightning_signer::bitcoin::blockdata::script::Builder;
 use lightning_signer::bitcoin::secp256k1::{Message, PublicKey, Secp256k1, SecretKey};
 use rand::Rng;
-use ripemd::{Digest, Ripemd160, Ripemd320};
+use ripemd::{Digest, Ripemd160};
 
 pub struct SwapKeys {
  pub privkey: Vec<u8>,

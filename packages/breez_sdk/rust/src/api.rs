@@ -1,34 +1,11 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::Read;
-use std::sync::Mutex;
-
 use anyhow::Result;
 use bip39::*;
 use lightning_signer::lightning_invoice::RawInvoice;
-use once_cell::sync::Lazy;
 
 use crate::crypto::*;
 use crate::hsmd::*;
 use crate::invoice::*;
 use crate::swap::*;
-
-/// Internal SDK state. Stored in memory, not persistent across restarts.
-/// Available only internally, not exposed to callers of SDK.
-static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new( NodeState::default() ));
-
-#[derive(Clone, Debug, Default, PartialEq)]
-struct NodeState {
- test_field: Option<String>
-}
-
-fn get_state() -> NodeState {
- STATE.lock().unwrap().clone()
-}
-
-fn set_state(state: NodeState) {
- *STATE.lock().unwrap() = state;
-}
 
 pub fn init_hsmd(storage_path: String, secret: Vec<u8>) -> Result<Vec<u8>> {
  let mut private_key_slice: [u8; 32] = [0; 32];
@@ -112,36 +89,73 @@ pub fn handle(
   Err(err) => Err(err),
  }
 }
-fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
- let mut file = File::open(name).unwrap();
 
- let mut data = Vec::new();
- file.read_to_end(&mut data).unwrap();
+#[cfg(test)]
+mod tests {
+    use std::sync::Mutex;
+    use std::{fs::File, io::Read};
 
- return Ok(data);
-}
+    use once_cell::sync::Lazy;
 
-#[test]
-fn test_hsmd_handle() {
- let secret = read_a_file(String::from("/Users/roeierez/greenlight-keys/hsm_secret")).unwrap();
- let msg =
-  hex::decode("000103e9a89bf95cc797a0c535234d79497a632bb17ae5b8520b67cb59b22ea1ce60d4").unwrap();
- let peer_id =
-  Some(hex::decode("03f27b2fe75f44eeabdbb64ccfc759d3c2a540f6a7461673138d8cf425530d5bb4").unwrap());
- let path = String::from("/Users/roeierez/greenlight-keys2");
- handle(path, secret, msg, peer_id, 0).unwrap();
-}
+    use super::handle;
 
-#[test]
-fn test_state() {
- assert_eq!(get_state(), NodeState::default());
+    /// Internal SDK state. Stored in memory, not persistent across restarts.
+    /// Available only internally, not exposed to callers of SDK.
+    static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new( NodeState::default() ));
 
- let n1 = NodeState { test_field: Some("abc".to_string()) };
- set_state(n1.clone());
- assert_eq!(get_state(), n1);
+    #[derive(Clone, Debug, Default, PartialEq)]
+    struct NodeState {
+        test_field: Option<String>
+    }
 
- let mut n2 = n1;
- n2.test_field = Some("def".to_string());
- set_state(n2.clone());
- assert_eq!(get_state(), n2);
+    fn get_state() -> NodeState {
+        STATE.lock().unwrap().clone()
+    }
+
+    fn set_state(state: NodeState) {
+        *STATE.lock().unwrap() = state;
+    }
+
+    fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
+        match File::open(name) {
+            Ok(mut file) => {
+                let mut data = Vec::new();
+                match file.read_to_end(&mut data) {
+                    Ok(_) => Ok(data),
+                    Err(err) => Err(err),
+                }
+            },
+            Err(err) => Err(err),
+        }
+    }
+
+    #[test]
+    fn test_hsmd_handle() {
+        let secret_file = read_a_file(String::from("/Users/roeierez/greenlight-keys/hsm_secret"));
+        if secret_file.is_err() {
+            println!("Secret file not found, skipping test");
+            return;
+        }
+        let secret = secret_file.unwrap();
+        let msg =
+        hex::decode("000103e9a89bf95cc797a0c535234d79497a632bb17ae5b8520b67cb59b22ea1ce60d4").unwrap();
+        let peer_id =
+        Some(hex::decode("03f27b2fe75f44eeabdbb64ccfc759d3c2a540f6a7461673138d8cf425530d5bb4").unwrap());
+        let path = String::from("/Users/roeierez/greenlight-keys2");
+        handle(path, secret, msg, peer_id, 0).unwrap();
+    }
+
+    #[test]
+    fn test_state() {
+        assert_eq!(get_state(), NodeState::default());
+
+        let n1 = NodeState { test_field: Some("abc".to_string()) };
+        set_state(n1.clone());
+        assert_eq!(get_state(), n1);
+
+        let mut n2 = n1;
+        n2.test_field = Some("def".to_string());
+        set_state(n2.clone());
+        assert_eq!(get_state(), n2);
+    }
 }

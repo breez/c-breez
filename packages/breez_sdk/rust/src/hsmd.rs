@@ -127,7 +127,7 @@ impl Hsmd {
 
   // deserialize the message
   let m = msgs::from_vec(msg.clone());
-  if let Err(e) = m {
+  if let Err(_) = m {
    return Err(anyhow!("failed to deserialize message"));
   }
   let m = m?;

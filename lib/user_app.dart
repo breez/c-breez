@@ -147,6 +147,18 @@ class UserApp extends StatelessWidget {
                                     builder: (_) => const CreateInvoicePage(),
                                     settings: settings,
                                   );
+                                case '/get_refund':
+                                  return FadeInRoute(
+                                    builder: (_) => GetRefundPage(
+                                      refundBloc: refundBloc,
+                                    ),
+                                    settings: settings,
+                                  );
+                                case '/swap_page':
+                                  return FadeInRoute(
+                                    builder: (_) => const SwapPage(),
+                                    settings: settings,
+                                  );
                                 case '/fiat_currency':
                                   return FadeInRoute(
                                     builder: (_) =>
@@ -178,7 +190,8 @@ class UserApp extends StatelessWidget {
                                   );
                                 case '/withdraw_funds':
                                   return FadeInRoute(
-                                    builder: (_) => const WithdrawFundsAddressPage(),
+                                    builder: (_) =>
+                                        const WithdrawFundsAddressPage(),
                                     settings: settings,
                                   );
                               }

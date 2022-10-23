@@ -4,6 +4,7 @@ use std::sync::Mutex;
 
 use anyhow::Result;
 use bip39::*;
+use config::{Config, FileFormat, Map, Value, ValueKind};
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
@@ -118,8 +119,34 @@ fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
     }
 }
 
+/// Parses the breez.conf config file and extracts a key-value map of the available configs
+fn parse_config_ini() -> Map<String, Value> {
+    let breez_conf_file = config::File::with_name("../../../conf/breez.conf")
+        .format(FileFormat::Ini);
+
+    Config::builder()
+        .add_source(breez_conf_file)
+        .build()
+        .expect("Failed to parse breez.conf")
+        .get_table("Application Options")
+        .expect("Failed to load Application Options section of the INI config")
+}
+
+/// Looks up config value in the breez.conf file
+fn get_config(key: &str) -> Option<ValueKind> {
+    parse_config_ini()
+        .get(key)
+        .map(|v| v.kind.clone())
+}
+
 #[test]
 fn test_state() {
     // By default, the state is initialized with None values
     assert!(get_state().client.is_none());
+}
+
+#[test]
+fn test_config() {
+    assert_eq!(get_config("breezserver"), Some(ValueKind::String("<address to breez server>".to_string())));
+    assert!(get_config("non-existing-key").is_none());
 }

@@ -26,6 +26,12 @@ static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new(NodeState::defaul
 #[derive(Clone, Default)]
 struct NodeState {
     client: Option<node::Client>,
+    config: Config
+}
+
+#[derive(Clone, Default)]
+pub struct Config {
+    pub breezserver: String
 }
 
 fn get_state() -> NodeState {
@@ -95,6 +101,7 @@ pub async fn start_node(
 
     set_state(NodeState {
         client: Some(client),
+        config: get_default_config()
     });
 
     Ok(())
@@ -118,8 +125,27 @@ fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
     }
 }
 
+fn get_default_config() -> Config {
+    Config {
+        breezserver: "https://bs1-st.breez.technology:443".to_string()
+    }
+}
+
 #[test]
 fn test_state() {
     // By default, the state is initialized with None values
     assert!(get_state().client.is_none());
+
+}
+
+#[test]
+fn test_config() {
+    // Before the state is initialized, the config defaults to using ::default() for its values
+    assert_eq!(get_state().config.breezserver, "");
+
+    set_state(NodeState {
+        client: None,
+        config: get_default_config()
+    });
+    assert_eq!(get_state().config.breezserver, "https://bs1-st.breez.technology:443");
 }

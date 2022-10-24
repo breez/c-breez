@@ -1,15 +1,23 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
+use std::str::FromStr;
 use std::sync::Mutex;
 
 use anyhow::Result;
 use bip39::*;
+use gl_client::{node, pb};
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
-use gl_client::{node, pb};
 use once_cell::sync::Lazy;
 use tokio::sync::mpsc;
+use tonic::metadata::MetadataValue;
+use tonic::Request;
+use tonic::transport::{Channel, Uri};
+
+use crate::grpc::breez::{LspInformation, LspListRequest};
+use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
 
 pub enum Network {
     /// Mainnet
@@ -107,6 +115,26 @@ pub async fn start_node(
     Ok(())
 }
 
+pub async fn list_lsps() -> Result<HashMap<String, LspInformation>> {
+    let config: Config = get_state().config;
+    let channel = Channel::builder(Uri::from_str(&config.breezserver)?).connect().await?;
+
+    // TODO Remove token as grpc client arg, once breez server merges latest PR
+    let token: MetadataValue<_> = "Bearer <lsp_token>".parse()?;
+
+    let mut client = ChannelOpenerClient::with_interceptor(channel, move |mut req: Request<()>| {
+        req.metadata_mut().insert("authorization", token.clone());
+        Ok(req)
+    });
+
+    let request = tonic::Request::new(LspListRequest {
+        pubkey: "".into()
+    });
+
+    let response = client.lsp_list(request).await?;
+    Ok(response.into_inner().lsps)
+}
+
 fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
     let mut file = File::open(name).unwrap();
 
@@ -131,6 +159,14 @@ fn get_default_config() -> Config {
     }
 }
 
+/// Initialize the SDK config to its defaults, for use in tests
+fn test_setup_init_config() {
+    set_state(NodeState {
+        client: None,
+        config: get_default_config()
+    });
+}
+
 #[test]
 fn test_state() {
     // By default, the state is initialized with None values
@@ -143,9 +179,17 @@ fn test_config() {
     // Before the state is initialized, the config defaults to using ::default() for its values
     assert_eq!(get_state().config.breezserver, "");
 
-    set_state(NodeState {
-        client: None,
-        config: get_default_config()
-    });
+    test_setup_init_config();
     assert_eq!(get_state().config.breezserver, "https://bs1-st.breez.technology:443");
+}
+
+#[tokio::test]
+async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>>  {
+    test_setup_init_config();
+
+    let lsps = list_lsps().await?;
+
+    assert!(! lsps.is_empty());
+
+    Ok(())
 }

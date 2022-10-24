@@ -143,9 +143,8 @@ fn filter_to_where_clause(
 
 #[test]
 fn test_ln_transactions() {
-    if std::path::Path::new("test.sql").exists() {
-        std::fs::remove_file("test.sql").unwrap();
-    }
+    use crate::persist::test_utils;
+
     let txs = [
         LightningTransaction {
             payment_type: "sent".to_string(),
@@ -176,7 +175,7 @@ fn test_ln_transactions() {
             description: Some("desc".to_string()),
         },
     ];
-    let storage = &mut SqliteStorage::open(String::from("test.sql")).unwrap();
+    let storage = &mut SqliteStorage::open(test_utils::create_test_sql_file()).unwrap();
     storage.insert_ln_transactions(&txs).unwrap();
 
     // retrieve all

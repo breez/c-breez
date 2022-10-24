@@ -28,11 +28,9 @@ impl SqliteStorage {
 
 #[test]
 fn test_cached_items() {
-    if std::path::Path::new("test.sql").exists() {
-        std::fs::remove_file("test.sql").unwrap();
-    }
+    use crate::persist::test_utils;
 
-    let storage = &mut SqliteStorage::open(String::from("test.sql")).unwrap();
+    let storage = &mut SqliteStorage::open(test_utils::create_test_sql_file()).unwrap();
     storage
         .update_cached_item("key1".to_string(), "val1".to_string())
         .unwrap();

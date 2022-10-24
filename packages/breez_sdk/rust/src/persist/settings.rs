@@ -9,7 +9,7 @@ pub struct SettingItem {
 impl SqliteStorage {
     pub fn update_setting(&mut self, key: String, value: String) -> Result<()> {
         self.conn.execute(
-            "INSERT OR REPLACE INTO settings (key, value) values (?1,?2)",
+            "INSERT OR REPLACE INTO settings (key, value) VALUES (?1,?2)",
             (key, value),
         )?;
         Ok(())

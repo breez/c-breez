@@ -13,7 +13,7 @@ impl SqliteStorage {
 
     pub fn update_cached_item(&mut self, key: String, value: String) -> Result<()> {
         self.conn.execute(
-            "INSERT OR REPLACE INTO cached_items (key, value) values (?1,?2)",
+            "INSERT OR REPLACE INTO cached_items (key, value) VALUES (?1,?2)",
             (key, value),
         )?;
         Ok(())
@@ -21,7 +21,7 @@ impl SqliteStorage {
 
     pub fn delete_cached_item(&mut self, key: String) -> Result<()> {
         self.conn
-            .execute("DELETE FROM cached_items where key = ?1", [key])?;
+            .execute("DELETE FROM cached_items WHERE key = ?1", [key])?;
         Ok(())
     }
 }

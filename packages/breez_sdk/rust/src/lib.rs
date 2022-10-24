@@ -2,6 +2,7 @@ mod binding;
 mod chain;
 mod crypto;
 mod greenlight;
+mod grpc;
 mod invoice;
 mod models;
 mod node_service;

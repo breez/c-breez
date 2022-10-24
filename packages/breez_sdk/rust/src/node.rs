@@ -176,9 +176,6 @@ fn test_state() {
 
 #[test]
 fn test_config() {
-    // Before the state is initialized, the config defaults to using ::default() for its values
-    assert_eq!(get_state().config.breezserver, "");
-
     test_setup_init_config();
     assert_eq!(get_state().config.breezserver, "https://bs1-st.breez.technology:443");
 }

@@ -1,3 +1,4 @@
+mod chain;
 mod crypto;
 mod invoice;
 mod node;

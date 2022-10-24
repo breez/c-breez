@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::Read;
 use std::sync::Mutex;
 
+use crate::chain::MempoolSpace;
 use anyhow::Result;
 use bip39::*;
 use gl_client::scheduler::Scheduler;
@@ -25,13 +26,29 @@ static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new(NodeState::defaul
 
 #[derive(Clone, Default)]
 struct NodeState {
+    config: Config,
     client: Option<node::Client>,
-    config: Config
+    chain_service: MempoolSpace,
+}
+
+impl NodeState {
+    pub fn new(config: Config, client: Option<node::Client>) -> NodeState {
+        let chain_service = MempoolSpace {
+            base_url: config.clone().mempoolspace_url,
+        };
+
+        NodeState {
+            config,
+            client,
+            chain_service,
+        }
+    }
 }
 
 #[derive(Clone, Default)]
 pub struct Config {
-    pub breezserver: String
+    pub breezserver: String,
+    pub mempoolspace_url: String,
 }
 
 fn get_state() -> NodeState {
@@ -99,10 +116,7 @@ pub async fn start_node(
     let (_, recv) = mpsc::channel(1);
     signer.run_forever(recv).await?;
 
-    set_state(NodeState {
-        client: Some(client),
-        config: get_default_config()
-    });
+    set_state(NodeState::new(create_default_config(), Some(client)));
 
     Ok(())
 }
@@ -125,9 +139,10 @@ fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
     }
 }
 
-fn get_default_config() -> Config {
+fn create_default_config() -> Config {
     Config {
-        breezserver: "https://bs1-st.breez.technology:443".to_string()
+        breezserver: "https://bs1-st.breez.technology:443".to_string(),
+        mempoolspace_url: "https://mempool.space".to_string(),
     }
 }
 
@@ -135,7 +150,6 @@ fn get_default_config() -> Config {
 fn test_state() {
     // By default, the state is initialized with None values
     assert!(get_state().client.is_none());
-
 }
 
 #[test]
@@ -143,9 +157,10 @@ fn test_config() {
     // Before the state is initialized, the config defaults to using ::default() for its values
     assert_eq!(get_state().config.breezserver, "");
 
-    set_state(NodeState {
-        client: None,
-        config: get_default_config()
-    });
-    assert_eq!(get_state().config.breezserver, "https://bs1-st.breez.technology:443");
+    set_state(NodeState::new(create_default_config(), None));
+    assert_eq!(
+        get_state().config.breezserver,
+        "https://bs1-st.breez.technology:443"
+    );
+    assert_eq!(get_state().config.mempoolspace_url, "https://mempool.space");
 }

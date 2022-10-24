@@ -34,7 +34,8 @@ static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new(NodeState::defaul
 #[derive(Clone, Default)]
 struct NodeState {
     client: Option<node::Client>,
-    config: Config
+    config: Config,
+    chosen_lsp_id: Option<String>
 }
 
 #[derive(Clone, Default)]
@@ -109,7 +110,8 @@ pub async fn start_node(
 
     set_state(NodeState {
         client: Some(client),
-        config: get_default_config()
+        config: get_default_config(),
+        chosen_lsp_id: None
     });
 
     Ok(())
@@ -133,6 +135,14 @@ pub async fn list_lsps() -> Result<HashMap<String, LspInformation>> {
 
     let response = client.lsp_list(request).await?;
     Ok(response.into_inner().lsps)
+}
+
+pub fn set_lsp_id(lsp_id: String) {
+    STATE.lock().unwrap().chosen_lsp_id = Some(lsp_id);
+}
+
+pub fn get_lsp_id() -> Option<String> {
+    STATE.lock().unwrap().chosen_lsp_id.clone()
 }
 
 fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
@@ -163,7 +173,8 @@ fn get_default_config() -> Config {
 fn test_setup_init_config() {
     set_state(NodeState {
         client: None,
-        config: get_default_config()
+        config: get_default_config(),
+        chosen_lsp_id: None
     });
 }
 
@@ -187,6 +198,22 @@ async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>>  {
     let lsps = list_lsps().await?;
 
     assert!(! lsps.is_empty());
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn test_get_set_lsp_id() -> Result<(), Box<dyn std::error::Error>>  {
+    test_setup_init_config();
+
+    let lsps = list_lsps().await?;
+
+    assert!(get_lsp_id().is_none());
+
+    let first_lsp = lsps.keys().next().expect("No LSPs found").to_string();
+
+    set_lsp_id(first_lsp.clone());
+    assert_eq!(first_lsp, get_lsp_id().unwrap());
 
     Ok(())
 }

@@ -29,5 +29,11 @@ ripemd = "*"
 rand = "*"
 tiny-bip39 = "*"
 tokio = "*"
+prost = "^0.11"
 rusqlite = { version = "0.28.0", features = ["bundled"] }
 rusqlite_migration = "*"
+tonic = { version = "^0.8", features = ["default", "tls", "tls-roots", "transport"] }
+serde = "*"
+
+[build-dependencies]
+tonic-build = "^0.8"

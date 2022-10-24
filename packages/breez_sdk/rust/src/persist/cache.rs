@@ -4,7 +4,7 @@ use rusqlite::Result;
 impl SqliteStorage {
     pub fn get_cached_item(&mut self, key: String) -> Result<Option<String>> {
         let res = self.conn.query_row(
-            "select value from cached_items where key = ?1",
+            "SELECT value FROM cached_items WHERE key = ?1",
             [key],
             |row| row.get(0),
         );
@@ -13,7 +13,7 @@ impl SqliteStorage {
 
     pub fn update_cached_item(&mut self, key: String, value: String) -> Result<()> {
         self.conn.execute(
-            "insert or replace into cached_items (key, value) values (?1,?2)",
+            "INSERT OR REPLACE INTO cached_items (key, value) values (?1,?2)",
             (key, value),
         )?;
         Ok(())
@@ -21,7 +21,7 @@ impl SqliteStorage {
 
     pub fn delete_cached_item(&mut self, key: String) -> Result<()> {
         self.conn
-            .execute("delete from cached_items where key = ?1", [key])?;
+            .execute("DELETE FROM cached_items where key = ?1", [key])?;
         Ok(())
     }
 }

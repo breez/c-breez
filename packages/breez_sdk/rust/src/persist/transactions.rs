@@ -27,7 +27,7 @@ impl SqliteStorage {
     pub fn insert_ln_transactions(&mut self, transactions: &[LightningTransaction]) -> Result<()> {
         let mut prep_statment = self.conn.prepare(
             "
-               insert into ln_transactions (
+               INSERT INTO ln_transactions (
                  payment_type,
                  payment_hash, 
                  payment_time,
@@ -74,7 +74,7 @@ impl SqliteStorage {
         let mut stmt = self.conn.prepare(
             format!(
                 "
-               select * from ln_transactions
+               SELECT * FROM ln_transactions
                {where_clause}
              "
             )

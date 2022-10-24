@@ -8,30 +8,30 @@ pub struct SqliteStorage {
 impl SqliteStorage {
     pub fn open(file: String) -> Result<SqliteStorage> {
         let migrations = Migrations::new(vec![M::up(
-            "create table if not exists ln_transactions (
-               payment_type text not null check( payment_type in('sent', 'received')),
-               payment_hash text not null primary key,
-               payment_time integer not null,
-               label text,
-               destination_pubkey text not null,
-               amount_msats integer not null,
-               fee_msat integer not null,
-               payment_preimage text,
-               keysend integer not null,                    
-               bolt11 text,
-               pending integer not null,
-               description text
-             );  
+            "CREATE TABLE IF NOT EXISTS ln_transactions (
+               payment_type TEXT NOT NULL check( payment_type in('sent', 'received')),
+               payment_hash TEXT NOT NULL PRIMARY KEY,
+               payment_time INTEGER NOT NULL,
+               label TEXT,
+               destination_pubkey TEXT NOT NULL,
+               amount_msats INTEGER NOT NULL,
+               fee_msat INTEGER NOT NULL,
+               payment_preimage TEXT,
+               keysend INTEGER NOT NULL,                  
+               bolt11 TEXT,
+               pending INTEGER NOT NULL,
+               description TEXT
+             ) STRICT;  
              
-             create table if not exists settings (
-              key text not null primary key,
-              value text not null
-             );
+             CREATE TABLE IF NOT EXISTS settings (
+              key TEXT NOT NULL PRIMARY KEY,
+              value TEXT NOT NULL
+             ) STRICT;
 
-             create table if not exists cached_items (
-              key text not null primary key,
-              value text not null
-             );                
+             CREATE TABLE IF NOT EXISTS cached_items (
+              key TEXT NOT NULL PRIMARY KEY,
+              value TEXT NOT NULL
+             ) STRICT;                
         ",
         )]);
 

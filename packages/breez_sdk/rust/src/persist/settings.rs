@@ -9,7 +9,7 @@ pub struct SettingItem {
 impl SqliteStorage {
     pub fn update_setting(&mut self, key: String, value: String) -> Result<()> {
         self.conn.execute(
-            "insert or replace into settings (key, value) values (?1,?2)",
+            "INSERT OR REPLACE INTO settings (key, value) values (?1,?2)",
             (key, value),
         )?;
         Ok(())
@@ -17,12 +17,12 @@ impl SqliteStorage {
 
     pub fn delete_setting(&mut self, key: String) -> Result<()> {
         self.conn
-            .execute("delete from settings where key = ?1", [key])?;
+            .execute("DELETE FROM settings WHERE key = ?1", [key])?;
         Ok(())
     }
 
     pub fn list_settings(&mut self) -> Result<Vec<SettingItem>> {
-        let mut stmt = self.conn.prepare("select * from settings order by key")?;
+        let mut stmt = self.conn.prepare("SELECT * FROM settings ORDER BY key")?;
         let vec = stmt
             .query_map([], |row| {
                 Ok(SettingItem {

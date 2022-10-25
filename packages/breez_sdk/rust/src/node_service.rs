@@ -1,9 +1,11 @@
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Read;
 use std::sync::Mutex;
 
 use crate::chain::MempoolSpace;
-use anyhow::Result;
+use crate::persist;
+use anyhow::{anyhow, Result};
 use bip39::*;
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
@@ -20,28 +22,66 @@ pub enum Network {
     Regtest,
 }
 
-/// Internal SDK state. Stored in memory, not persistent across restarts.
-/// Available only internally, not exposed to callers of SDK.
-static STATE: Lazy<Mutex<NodeState>> = Lazy::new(|| Mutex::new(NodeState::default()));
-
-#[derive(Clone, Default)]
-struct NodeState {
-    config: Config,
-    client: Option<node::Client>,
-    chain_service: MempoolSpace,
+#[derive(Serialize, Deserialize)]
+pub struct NodeState {
+    id: String,
+    block_height: u32,
+    channels_balance_msat: u64,
+    onchain_balance_msat: u64,
+    max_payable_msat: u64,
+    max_receivable_msat: u64,
+    max_single_payment_amount_msat: u64,
+    max_chan_reserve_msats: u64,
+    connected_peers: Vec<String>,
+    inbound_liquidity_msats: u64,
 }
 
-impl NodeState {
-    pub fn new(config: Config, client: Option<node::Client>) -> NodeState {
+pub struct NodeService {
+    config: Config,
+    client: node::Client,
+    chain_service: MempoolSpace,
+    persister: persist::db::SqliteStorage,
+}
+
+impl NodeService {
+    pub fn new(config: Config, client: node::Client) -> NodeService {
         let chain_service = MempoolSpace {
             base_url: config.clone().mempoolspace_url,
         };
 
-        NodeState {
+        NodeService {
             config,
             client,
             chain_service,
+            persister: persist::db::SqliteStorage::open("".to_string()).unwrap(),
         }
+    }
+
+    pub fn get_node_state(&self) -> Result<Option<NodeState>> {
+        let state_str = self.persister.get_cached_item("node_state".to_string())?;
+        Ok(match state_str {
+            Some(str) => serde_json::from_str(str.as_str())?,
+            None => None,
+        })
+    }
+
+    fn set_node_state(&self, state: &NodeState) -> Result<()> {
+        let serialized_state = serde_json::to_string(state)?;
+        self.persister
+            .update_cached_item("node_state".to_string(), serialized_state.to_string())
+            .map_err(|err| anyhow!(err))
+    }
+
+    fn get_lsp_id(&self) -> Result<Option<String>> {
+        self.persister
+            .get_setting("lsp".to_string())
+            .map_err(|err| anyhow!(err))
+    }
+
+    fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
+        self.persister
+            .update_setting("lsp".to_string(), lsp_id)
+            .map_err(|err| anyhow!(err))
     }
 }
 
@@ -49,14 +89,6 @@ impl NodeState {
 pub struct Config {
     pub breezserver: String,
     pub mempoolspace_url: String,
-}
-
-fn get_state() -> NodeState {
-    STATE.lock().unwrap().clone()
-}
-
-fn set_state(state: NodeState) {
-    *STATE.lock().unwrap() = state;
 }
 
 pub struct GreenlightCredentials {
@@ -105,7 +137,7 @@ pub async fn start_node(
     seed: Vec<u8>,
     creds: GreenlightCredentials,
     network: Network,
-) -> Result<()> {
+) -> Result<(NodeService)> {
     let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
     let signer = Signer::new(seed, parse_network(&network), tls_config.clone())?;
 
@@ -116,9 +148,7 @@ pub async fn start_node(
     let (_, recv) = mpsc::channel(1);
     signer.run_forever(recv).await?;
 
-    set_state(NodeState::new(create_default_config(), Some(client)));
-
-    Ok(())
+    Ok(NodeService::new(create_default_config(), client))
 }
 
 fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
@@ -147,20 +177,11 @@ fn create_default_config() -> Config {
 }
 
 #[test]
-fn test_state() {
-    // By default, the state is initialized with None values
-    assert!(get_state().client.is_none());
-}
-
-#[test]
 fn test_config() {
     // Before the state is initialized, the config defaults to using ::default() for its values
-    assert_eq!(get_state().config.breezserver, "");
-
-    set_state(NodeState::new(create_default_config(), None));
-    assert_eq!(
-        get_state().config.breezserver,
-        "https://bs1-st.breez.technology:443"
-    );
-    assert_eq!(get_state().config.mempoolspace_url, "https://mempool.space");
+    let config = create_default_config();
+    assert_eq!(config.breezserver, "https://bs1-st.breez.technology:443");
+    assert_eq!(config.mempoolspace_url, "https://mempool.space");
 }
+
+fn test_node_state() {}

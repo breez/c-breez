@@ -24,7 +24,7 @@ pub struct LightningTransaction {
 }
 
 impl SqliteStorage {
-    pub fn insert_ln_transactions(&mut self, transactions: &[LightningTransaction]) -> Result<()> {
+    pub fn insert_ln_transactions(&self, transactions: &[LightningTransaction]) -> Result<()> {
         let mut prep_statment = self.conn.prepare(
             "
                INSERT INTO ln_transactions (
@@ -65,7 +65,7 @@ impl SqliteStorage {
     }
 
     pub fn list_ln_transactions(
-        &mut self,
+        &self,
         type_filter: PaymentTypeFilter,
         from_timestamp: Option<i64>,
         to_timestamp: Option<i64>,

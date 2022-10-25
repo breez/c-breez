@@ -7,7 +7,7 @@ pub struct SettingItem {
 }
 
 impl SqliteStorage {
-    pub fn update_setting(&mut self, key: String, value: String) -> Result<()> {
+    pub fn update_setting(&self, key: String, value: String) -> Result<()> {
         self.conn.execute(
             "INSERT OR REPLACE INTO settings (key, value) VALUES (?1,?2)",
             (key, value),
@@ -15,13 +15,22 @@ impl SqliteStorage {
         Ok(())
     }
 
-    pub fn delete_setting(&mut self, key: String) -> Result<()> {
+    pub fn get_setting(&self, key: String) -> Result<Option<String>> {
+        let res = self
+            .conn
+            .query_row("SELECT value FROM settings WHERE key = ?1", [key], |row| {
+                row.get(0)
+            });
+        Ok(res.ok())
+    }
+
+    pub fn delete_setting(&self, key: String) -> Result<()> {
         self.conn
             .execute("DELETE FROM settings WHERE key = ?1", [key])?;
         Ok(())
     }
 
-    pub fn list_settings(&mut self) -> Result<Vec<SettingItem>> {
+    pub fn list_settings(&self) -> Result<Vec<SettingItem>> {
         let mut stmt = self.conn.prepare("SELECT * FROM settings ORDER BY key")?;
         let vec = stmt
             .query_map([], |row| {
@@ -41,7 +50,7 @@ impl SqliteStorage {
 fn test_settings() {
     use crate::persist::test_utils;
 
-    let storage = &mut SqliteStorage::open(test_utils::create_test_sql_file()).unwrap();
+    let storage = &SqliteStorage::open(test_utils::create_test_sql_file()).unwrap();
     storage
         .update_setting("key1".to_string(), "val1".to_string())
         .unwrap();
@@ -56,6 +65,8 @@ fn test_settings() {
         .unwrap();
     storage.delete_setting("key4".to_string()).unwrap();
 
+    let setting_item = storage.get_setting("key1".to_string()).unwrap().unwrap();
+    assert_eq!(setting_item, "val1");
     let settings = storage.list_settings().unwrap();
     assert_eq!(settings.len(), 2);
     assert_eq!(settings[0].key, "key1");

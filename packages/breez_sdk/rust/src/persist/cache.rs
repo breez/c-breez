@@ -2,7 +2,7 @@ use super::db::SqliteStorage;
 use rusqlite::Result;
 
 impl SqliteStorage {
-    pub fn get_cached_item(&mut self, key: String) -> Result<Option<String>> {
+    pub fn get_cached_item(&self, key: String) -> Result<Option<String>> {
         let res = self.conn.query_row(
             "SELECT value FROM cached_items WHERE key = ?1",
             [key],
@@ -11,7 +11,7 @@ impl SqliteStorage {
         Ok(res.ok())
     }
 
-    pub fn update_cached_item(&mut self, key: String, value: String) -> Result<()> {
+    pub fn update_cached_item(&self, key: String, value: String) -> Result<()> {
         self.conn.execute(
             "INSERT OR REPLACE INTO cached_items (key, value) VALUES (?1,?2)",
             (key, value),
@@ -19,7 +19,7 @@ impl SqliteStorage {
         Ok(())
     }
 
-    pub fn delete_cached_item(&mut self, key: String) -> Result<()> {
+    pub fn delete_cached_item(&self, key: String) -> Result<()> {
         self.conn
             .execute("DELETE FROM cached_items WHERE key = ?1", [key])?;
         Ok(())

@@ -7,6 +7,30 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 #[tonic::async_trait]
 pub trait NodeAPI {
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
+    async fn start(&mut self) -> Result<()>;
+    async fn run_signer(&self) -> Result<()>;
+}
+
+#[derive(Clone)]
+pub struct Config {
+    pub breezserver: String,
+    pub mempoolspace_url: String,
+    pub working_dir: String,
+    pub network: Network,
+}
+
+pub struct GreenlightCredentials {
+    pub device_key: Vec<u8>,
+    pub device_cert: Vec<u8>,
+}
+
+#[derive(Clone)]
+pub enum Network {
+    /// Mainnet
+    Bitcoin,
+    Testnet,
+    Signet,
+    Regtest,
 }
 
 pub enum PaymentTypeFilter {

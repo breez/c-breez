@@ -1,24 +1,8 @@
-use std::fs::File;
-use std::io::Read;
-
 use crate::chain::MempoolSpace;
-use crate::models::{LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
-use crate::{greenlight, persist};
+use crate::models::{Config, LightningTransaction, Network, NodeAPI, NodeState, PaymentTypeFilter};
+use crate::persist;
 use anyhow::{anyhow, Result};
 use bip39::*;
-use gl_client::scheduler::Scheduler;
-use gl_client::signer::Signer;
-use gl_client::tls::TlsConfig;
-use gl_client::{node, pb};
-use tokio::sync::mpsc;
-
-pub enum Network {
-    /// Mainnet
-    Bitcoin,
-    Testnet,
-    Signet,
-    Regtest,
-}
 
 pub struct NodeService {
     config: Config,
@@ -42,6 +26,14 @@ impl NodeService {
         }
     }
 
+    pub async fn start_node(&mut self) -> Result<()> {
+        self.client.start().await
+    }
+
+    pub async fn run_signer(&self) -> Result<()> {
+        self.client.run_signer().await
+    }
+
     pub async fn sync(&self) -> Result<()> {
         let since_timestamp = self
             .persister
@@ -58,7 +50,7 @@ impl NodeService {
         Ok(())
     }
 
-    pub fn list_transactions(
+    pub async fn list_transactions(
         &self,
         filter: PaymentTypeFilter,
         from_timestamp: Option<i64>,
@@ -96,18 +88,6 @@ impl NodeService {
     }
 }
 
-#[derive(Clone, Default)]
-pub struct Config {
-    pub breezserver: String,
-    pub mempoolspace_url: String,
-    pub working_dir: String,
-}
-
-pub struct GreenlightCredentials {
-    device_key: Vec<u8>,
-    device_cert: Vec<u8>,
-}
-
 /// Attempts to convert the phrase to a mnemonic, then to a seed.
 ///
 /// If the phrase is not a valid mnemonic, an error is returned.
@@ -117,78 +97,12 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
     Ok(seed.as_bytes().to_vec())
 }
 
-pub async fn new_node_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
-    let signer = Signer::new(seed, parse_network(&network), TlsConfig::new()?)?;
-    let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
-    let register_res: pb::RegistrationResponse = scheduler.register(&signer).await?;
-
-    let key_data = read_a_file(register_res.device_key)?;
-    let cert_data = read_a_file(register_res.device_cert)?;
-
-    Ok(GreenlightCredentials {
-        device_key: key_data,
-        device_cert: cert_data,
-    })
-}
-
-pub async fn recover_from_seed(seed: Vec<u8>, network: Network) -> Result<GreenlightCredentials> {
-    let signer = Signer::new(seed, parse_network(&network), TlsConfig::new()?)?;
-    let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
-    let recover_res: pb::RecoveryResponse = scheduler.recover(&signer).await?;
-
-    let key_data = read_a_file(recover_res.device_key)?;
-    let cert_data = read_a_file(recover_res.device_cert)?;
-
-    Ok(GreenlightCredentials {
-        device_key: key_data,
-        device_cert: cert_data,
-    })
-}
-
-pub async fn start_node(
-    seed: Vec<u8>,
-    creds: GreenlightCredentials,
-    network: Network,
-) -> Result<(NodeService)> {
-    let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
-    let signer = Signer::new(seed, parse_network(&network), tls_config.clone())?;
-
-    let scheduler = Scheduler::new(signer.node_id(), parse_network(&network)).await?;
-    let client: node::Client = scheduler.schedule(tls_config).await?;
-
-    // Start loop to ensure the node is always running
-    let (_, recv) = mpsc::channel(1);
-    signer.run_forever(recv).await?;
-
-    Ok(NodeService::new(
-        create_default_config(),
-        Box::new(greenlight::Greenlight::from_client(client)),
-    ))
-}
-
-fn read_a_file(name: String) -> std::io::Result<Vec<u8>> {
-    let mut file = File::open(name).unwrap();
-
-    let mut data = Vec::new();
-    file.read_to_end(&mut data).unwrap();
-
-    return Ok(data);
-}
-
-fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
-    match gn {
-        Network::Bitcoin => lightning_signer::bitcoin::Network::Bitcoin,
-        Network::Testnet => lightning_signer::bitcoin::Network::Testnet,
-        Network::Signet => lightning_signer::bitcoin::Network::Signet,
-        Network::Regtest => lightning_signer::bitcoin::Network::Regtest,
-    }
-}
-
-fn create_default_config() -> Config {
+pub(crate) fn create_default_config() -> Config {
     Config {
         breezserver: "https://bs1-st.breez.technology:443".to_string(),
         mempoolspace_url: "https://mempool.space".to_string(),
         working_dir: ".".to_string(),
+        network: Network::Bitcoin,
     }
 }
 
@@ -266,16 +180,19 @@ mod test {
 
         let all = node_service
             .list_transactions(PaymentTypeFilter::All, None, None)
+            .await
             .unwrap();
         assert_eq!(dummy_transactions, all);
 
         let received = node_service
             .list_transactions(PaymentTypeFilter::Received, None, None)
+            .await
             .unwrap();
         assert_eq!(received, vec![all[0].clone()]);
 
         let sent = node_service
             .list_transactions(PaymentTypeFilter::Sent, None, None)
+            .await
             .unwrap();
         assert_eq!(sent, vec![all[1].clone()]);
     }

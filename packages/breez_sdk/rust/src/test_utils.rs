@@ -8,6 +8,14 @@ pub struct MockNodeAPI {
 
 #[tonic::async_trait]
 impl NodeAPI for MockNodeAPI {
+    async fn start(&mut self) -> Result<()> {
+        Ok(())
+    }
+
+    async fn run_signer(&self) -> Result<()> {
+        Ok(())
+    }
+
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse> {
         Ok(SyncResponse {
             node_state: self.node_state.clone(),

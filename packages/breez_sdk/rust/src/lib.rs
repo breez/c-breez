@@ -1,3 +1,4 @@
+mod binding;
 mod chain;
 mod crypto;
 mod greenlight;

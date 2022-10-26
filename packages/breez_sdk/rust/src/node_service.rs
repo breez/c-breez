@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
-use tonic::transport::{Uri};
+use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
 use crate::grpc::breez::{LspInformation, LspListRequest};
@@ -14,20 +14,22 @@ use crate::persist;
 pub struct NodeService {
     config: Config,
     client: Box<dyn NodeAPI>,
+    client_grpc: ChannelOpenerClient<Channel>,
     chain_service: MempoolSpace,
     persister: persist::db::SqliteStorage,
 }
 
 impl NodeService {
-    pub fn new(config: Config, client: Box<dyn NodeAPI>) -> NodeService {
+    pub async fn new(config: Config, client: Box<dyn NodeAPI>) -> NodeService {
         let chain_service = MempoolSpace {
             base_url: config.clone().mempoolspace_url,
         };
 
         let persist_file = format!("{}/storage.sql", config.working_dir);
         NodeService {
-            config,
+            config: config.clone(),
             client,
+            client_grpc: ChannelOpenerClient::connect(Uri::from_str(&config.breezserver).unwrap()).await.unwrap(),
             chain_service,
             persister: persist::db::SqliteStorage::open(persist_file).unwrap(),
         }
@@ -94,8 +96,8 @@ impl NodeService {
         Ok(())
     }
 
-    async fn list_lsps(&self) -> Result<HashMap<String, LspInformation>> {
-        let mut client = ChannelOpenerClient::connect(Uri::from_str(&self.config.breezserver)?).await?;
+    async fn list_lsps(&mut self) -> Result<HashMap<String, LspInformation>> {
+        let client = &mut self.client_grpc;
 
         let request = tonic::Request::new(
             LspListRequest { pubkey: "".into() }
@@ -169,7 +171,7 @@ mod test {
                 node_state: dummy_node_state.clone(),
                 transactions: dummy_transactions.clone(),
             }),
-        );
+        ).await;
 
         node_service.sync().await.unwrap();
         let fetched_state = node_service.get_node_state().unwrap().unwrap();
@@ -196,13 +198,13 @@ mod test {
 
     #[tokio::test]
     async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>>  {
-        let node_service = NodeService::new(
+        let mut node_service = NodeService::new(
             Config::default(),
             Box::new(MockNodeAPI {
                 node_state: get_dummy_node_state(),
                 transactions: vec![],
             }),
-        );
+        ).await;
 
         let lsps = node_service.list_lsps().await?;
         assert!(! lsps.is_empty());

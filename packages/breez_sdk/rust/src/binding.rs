@@ -21,19 +21,19 @@ pub async fn create_node_services(
 ) -> Result<NodeService> {
     let greenlight = Greenlight::new(network, seed, creds).await?;
     *STATE.lock().unwrap() = Some(greenlight);
-    build_services()
+    build_services().await
 }
 
 pub async fn start_node() -> Result<()> {
-    build_services()?.start_node().await
+    build_services().await?.start_node().await
 }
 
 pub async fn run_signer() -> Result<()> {
-    build_services()?.run_signer().await
+    build_services().await?.run_signer().await
 }
 
 pub async fn sync() -> Result<()> {
-    build_services()?.sync().await
+    build_services().await?.sync().await
 }
 
 pub async fn list_transactions(
@@ -41,12 +41,13 @@ pub async fn list_transactions(
     from_timestamp: Option<i64>,
     to_timestamp: Option<i64>,
 ) -> Result<Vec<LightningTransaction>> {
-    build_services()?
+    build_services()
+        .await?
         .list_transactions(filter, from_timestamp, to_timestamp)
         .await
 }
 
-fn build_services() -> Result<NodeService> {
+async fn build_services() -> Result<NodeService> {
     let g = STATE.lock().unwrap().clone();
     let greenlight = g
         .ok_or("greenlight is not initialized")
@@ -54,5 +55,5 @@ fn build_services() -> Result<NodeService> {
     Ok(NodeService::new(
         Config::default(),
         Box::new(greenlight),
-    ))
+    ).await)
 }

@@ -30,7 +30,8 @@ impl SqliteStorage {
 fn test_cached_items() {
     use crate::persist::test_utils;
 
-    let storage = &mut SqliteStorage::open(test_utils::create_test_sql_file()).unwrap();
+    let storage =
+        &mut SqliteStorage::open(test_utils::create_test_sql_file("cache".to_string())).unwrap();
     storage
         .update_cached_item("key1".to_string(), "val1".to_string())
         .unwrap();

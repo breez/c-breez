@@ -155,7 +155,9 @@ fn test_ln_transactions() {
             description: Some("desc".to_string()),
         },
     ];
-    let storage = &mut SqliteStorage::open(test_utils::create_test_sql_file()).unwrap();
+    let storage =
+        &mut SqliteStorage::open(test_utils::create_test_sql_file("transactions".to_string()))
+            .unwrap();
     storage.insert_ln_transactions(&txs).unwrap();
 
     // retrieve all

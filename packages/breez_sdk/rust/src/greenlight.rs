@@ -1,28 +1,90 @@
 use crate::invoice::parse_invoice;
-use crate::models::{LightningTransaction, NodeAPI, NodeState, SyncResponse};
+use crate::models::{
+    GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse,
+};
 use anyhow::Result;
+use gl_client::node::Client;
+use gl_client::scheduler::Scheduler;
+use gl_client::signer::Signer;
+use gl_client::tls::TlsConfig;
 use gl_client::{node, pb};
 use hex;
 use std::cmp::max;
+use tokio::sync::mpsc;
 
 const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
 const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
 
+#[derive(Clone)]
 pub(crate) struct Greenlight {
-    client: node::Client,
+    tls_config: TlsConfig,
+    scheduler: Scheduler,
+    signer: Signer,
+    client: Option<Client>,
 }
 
 impl Greenlight {
-    pub(crate) fn from_client(client: node::Client) -> Greenlight {
-        Greenlight { client }
+    pub(crate) async fn new(
+        network: Network,
+        seed: Vec<u8>,
+        creds: GreenlightCredentials,
+    ) -> Result<Greenlight> {
+        let greenlight_network = parse_network(&network);
+        let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
+        let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
+        let scheduler = Scheduler::new(signer.node_id(), greenlight_network).await?;
+        Ok(Greenlight {
+            tls_config,
+            scheduler,
+            signer,
+            client: None,
+        })
+    }
+
+    pub(crate) async fn register(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+        let greenlight_network = parse_network(&network);
+        let tls_config = TlsConfig::new()?;
+        let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
+        let scheduler = Scheduler::new(signer.node_id(), greenlight_network).await?;
+        let recover_res: pb::RegistrationResponse = scheduler.register(&signer).await?;
+
+        Ok(GreenlightCredentials {
+            device_key: recover_res.device_key.as_bytes().to_vec(),
+            device_cert: recover_res.device_cert.as_bytes().to_vec(),
+        })
+    }
+
+    pub(crate) async fn recover(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+        let greenlight_network = parse_network(&network);
+        let tls_config = TlsConfig::new()?;
+        let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
+        let scheduler = Scheduler::new(signer.node_id(), greenlight_network).await?;
+        let recover_res: pb::RecoveryResponse = scheduler.recover(&signer).await?;
+
+        Ok(GreenlightCredentials {
+            device_key: recover_res.device_key.as_bytes().to_vec(),
+            device_cert: recover_res.device_cert.as_bytes().to_vec(),
+        })
     }
 }
 
 #[tonic::async_trait]
 impl NodeAPI for Greenlight {
+    async fn start(&mut self) -> Result<()> {
+        let client: node::Client = self.scheduler.schedule(self.tls_config.clone()).await?;
+        self.client = Some(client.clone());
+        Ok(())
+    }
+
+    async fn run_signer(&self) -> Result<()> {
+        let (_, recv) = mpsc::channel(1);
+        self.signer.run_forever(recv).await?;
+        Ok(())
+    }
+
     // implemenet pull changes from greenlight
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse> {
-        let client = &mut self.client.clone();
+        let client = &mut self.client.clone().unwrap();
 
         // list all peers
         let peers = client
@@ -117,12 +179,8 @@ impl NodeAPI for Greenlight {
         };
         Ok(SyncResponse {
             node_state,
-            transactions: pull_transactions(
-                node_pubkey.clone(),
-                since_timestamp,
-                self.client.clone(),
-            )
-            .await?,
+            transactions: pull_transactions(node_pubkey.clone(), since_timestamp, client.clone())
+                .await?,
         })
     }
 }
@@ -260,13 +318,11 @@ fn parse_amount(amount_str: String) -> Result<pb::Amount> {
     Ok(pb::Amount { unit: Some(unit) })
 }
 
-// Int64 _amountStringToMsat(String amount) {
-//  if (amount.endsWith("msat")) {
-//    return Int64.parseInt(amount.replaceAll("msat", ""));
-//  }
-//  if (amount.endsWith("sat")) {
-//    return Int64.parseInt(amount.replaceAll("sat", "")) * 1000;
-//  }
-//  if (amount.isEmpty) {
-//    return Int64.ZERO;
-//  }
+fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
+    match gn {
+        Network::Bitcoin => lightning_signer::bitcoin::Network::Bitcoin,
+        Network::Testnet => lightning_signer::bitcoin::Network::Testnet,
+        Network::Signet => lightning_signer::bitcoin::Network::Signet,
+        Network::Regtest => lightning_signer::bitcoin::Network::Regtest,
+    }
+}

@@ -1,8 +1,15 @@
-use crate::chain::MempoolSpace;
-use crate::models::{Config, LightningTransaction, Network, NodeAPI, NodeState, PaymentTypeFilter};
-use crate::persist;
+use std::collections::HashMap;
+use std::str::FromStr;
+
 use anyhow::{anyhow, Result};
 use bip39::*;
+use tonic::transport::{Uri};
+
+use crate::chain::MempoolSpace;
+use crate::grpc::breez::{LspInformation, LspListRequest};
+use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
+use crate::models::{Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
+use crate::persist;
 
 pub struct NodeService {
     config: Config,
@@ -86,6 +93,16 @@ impl NodeService {
         self.persister.update_setting("lsp".to_string(), lsp_id)?;
         Ok(())
     }
+
+    async fn list_lsps(&self) -> Result<HashMap<String, LspInformation>> {
+        let mut client = ChannelOpenerClient::connect(Uri::from_str(&self.config.breezserver)?).await?;
+
+        let request = tonic::Request::new(
+            LspListRequest { pubkey: "".into() }
+        );
+        let response = client.lsp_list(request).await?;
+        Ok(response.into_inner().lsps)
+    }
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.
@@ -113,18 +130,7 @@ mod test {
     #[tokio::test]
     async fn test_node_state() {
         std::fs::remove_file("./storage.sql").ok();
-        let dummy_node_state = NodeState {
-            id: "tx1".to_string(),
-            block_height: 1,
-            channels_balance_msat: 100,
-            onchain_balance_msat: 1000,
-            max_payable_msat: 95,
-            max_receivable_msat: 1000,
-            max_single_payment_amount_msat: 1000,
-            max_chan_reserve_msats: 0,
-            connected_peers: vec!["1111".to_string()],
-            inbound_liquidity_msats: 2000,
-        };
+        let dummy_node_state = get_dummy_node_state();
 
         let dummy_transactions = vec![
             LightningTransaction {
@@ -186,5 +192,37 @@ mod test {
             .await
             .unwrap();
         assert_eq!(sent, vec![all[1].clone()]);
+    }
+
+    #[tokio::test]
+    async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>>  {
+        let node_service = NodeService::new(
+            Config::default(),
+            Box::new(MockNodeAPI {
+                node_state: get_dummy_node_state(),
+                transactions: vec![],
+            }),
+        );
+
+        let lsps = node_service.list_lsps().await?;
+        assert!(! lsps.is_empty());
+
+        Ok(())
+    }
+
+    /// Build dummy NodeState for tests
+    fn get_dummy_node_state() -> NodeState {
+        NodeState {
+            id: "tx1".to_string(),
+            block_height: 1,
+            channels_balance_msat: 100,
+            onchain_balance_msat: 1000,
+            max_payable_msat: 95,
+            max_receivable_msat: 1000,
+            max_single_payment_amount_msat: 1000,
+            max_chan_reserve_msats: 0,
+            connected_peers: vec!["1111".to_string()],
+            inbound_liquidity_msats: 2000,
+        }
     }
 }

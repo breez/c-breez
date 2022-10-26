@@ -1,27 +1,7 @@
 use super::db::SqliteStorage;
+use crate::models::LightningTransaction;
+use crate::models::PaymentTypeFilter;
 use rusqlite::Result;
-
-pub enum PaymentTypeFilter {
-    Sent,
-    Received,
-    All,
-}
-
-#[derive(PartialEq, Eq, Debug)]
-pub struct LightningTransaction {
-    payment_type: String,
-    payment_hash: String,
-    payment_time: i64,
-    label: String,
-    destination_pubkey: String,
-    amount_msat: i32,
-    fees_msat: i32,
-    payment_preimage: String,
-    keysend: bool,
-    bolt11: String,
-    pending: bool,
-    description: Option<String>,
-}
 
 impl SqliteStorage {
     pub fn insert_ln_transactions(&self, transactions: &[LightningTransaction]) -> Result<()> {

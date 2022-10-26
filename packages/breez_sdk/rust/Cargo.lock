@@ -1481,6 +1481,7 @@ dependencies = [
  "serde_json",
  "tiny-bip39",
  "tokio",
+ "tonic 0.6.2",
  "vls-persist 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
  "vls-protocol 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
  "vls-protocol-signer 0.1.0 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",

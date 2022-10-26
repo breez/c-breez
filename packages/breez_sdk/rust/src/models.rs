@@ -1,5 +1,6 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use crate::models::Network::Bitcoin;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
 pub const PAYMENT_TYPE_RECEIVED: &str = "received";
@@ -17,6 +18,17 @@ pub struct Config {
     pub mempoolspace_url: String,
     pub working_dir: String,
     pub network: Network,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            breezserver: "https://bs1-st.breez.technology:443".to_string(),
+            mempoolspace_url: "https://mempool.space".to_string(),
+            working_dir: ".".to_string(),
+            network: Bitcoin
+        }
+    }
 }
 
 pub struct GreenlightCredentials {

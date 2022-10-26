@@ -1,7 +1,4 @@
-use crate::models::{
-    GreenlightCredentials, LightningTransaction, Network, NodeAPI, PaymentTypeFilter,
-};
-use crate::node_service::create_default_config;
+use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, PaymentTypeFilter};
 use crate::{greenlight::Greenlight, node_service::NodeService};
 use anyhow::{anyhow, Result};
 use once_cell::sync::Lazy;
@@ -55,7 +52,7 @@ fn build_services() -> Result<NodeService> {
         .ok_or("greenlight is not initialized")
         .map_err(|e| anyhow!(e))?;
     Ok(NodeService::new(
-        create_default_config(),
+        Config::default(),
         Box::new(greenlight),
     ))
 }

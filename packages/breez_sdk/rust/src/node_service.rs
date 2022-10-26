@@ -97,24 +97,15 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
     Ok(seed.as_bytes().to_vec())
 }
 
-pub(crate) fn create_default_config() -> Config {
-    Config {
-        breezserver: "https://bs1-st.breez.technology:443".to_string(),
-        mempoolspace_url: "https://mempool.space".to_string(),
-        working_dir: ".".to_string(),
-        network: Network::Bitcoin,
-    }
-}
-
 mod test {
     use crate::models::{LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
-    use crate::node_service::{create_default_config, NodeService};
+    use crate::node_service::{Config, NodeService};
     use crate::test_utils::MockNodeAPI;
 
     #[test]
     fn test_config() {
         // Before the state is initialized, the config defaults to using ::default() for its values
-        let config = create_default_config();
+        let config = Config::default();
         assert_eq!(config.breezserver, "https://bs1-st.breez.technology:443");
         assert_eq!(config.mempoolspace_url, "https://mempool.space");
     }
@@ -167,7 +158,7 @@ mod test {
         ];
 
         let node_service = NodeService::new(
-            create_default_config(),
+            Config::default(),
             Box::new(MockNodeAPI {
                 node_state: dummy_node_state.clone(),
                 transactions: dummy_transactions.clone(),

@@ -1471,7 +1471,6 @@ dependencies = [
  "hex",
  "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
  "lightning-signer-server 0.1.0-5 (git+https://gitlab.com/lightning-signer/validating-lightning-signer.git?branch=main)",
- "once_cell",
  "rand",
  "reqwest",
  "ripemd",

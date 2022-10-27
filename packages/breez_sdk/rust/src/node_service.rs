@@ -149,12 +149,10 @@ impl BreezServerAPIProd {
 
 #[tonic::async_trait]
 impl BreezServerAPI for BreezServerAPIProd {
-    async fn list_lsps(&mut self) -> Result<HashMap<String, LspInformation>> {
+    async fn list_lsps(&mut self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
         let client = &mut self.client_grpc;
 
-        let request = tonic::Request::new(
-            LspListRequest { pubkey: "".into() }
-        );
+        let request = tonic::Request::new(LspListRequest { pubkey });
         let response = client.lsp_list(request).await?;
         Ok(response.into_inner().lsps)
     }
@@ -263,7 +261,8 @@ mod test {
             .build()
             .await;
 
-        let lsps = node_service.client_grpc.list_lsps().await?;
+        let node_pubkey = node_service.get_node_state()?.unwrap().id;
+        let lsps = node_service.client_grpc.list_lsps(node_pubkey).await?;
         assert!(lsps.is_empty()); // The mock returns an empty list
 
         Ok(())

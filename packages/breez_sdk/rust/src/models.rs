@@ -16,7 +16,7 @@ pub trait NodeAPI {
 
 #[tonic::async_trait]
 pub trait BreezServerAPI {
-    async fn list_lsps(&mut self) -> Result<HashMap<String, LspInformation>>;
+    async fn list_lsps(&mut self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
 }
 
 #[derive(Clone)]

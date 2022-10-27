@@ -1,8 +1,12 @@
-use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, PaymentTypeFilter};
-use crate::{greenlight::Greenlight, node_service::NodeService};
+use std::sync::Mutex;
+
 use anyhow::{anyhow, Result};
 use once_cell::sync::Lazy;
-use std::sync::Mutex;
+
+use crate::{greenlight::Greenlight, node_service::NodeService};
+use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, PaymentTypeFilter};
+use crate::node_service::{BreezServerAPIProd, NodeServiceBuilder};
+use crate::test_utils::MockNodeAPI;
 
 static STATE: Lazy<Mutex<Option<Greenlight>>> = Lazy::new(|| Mutex::new(None));
 
@@ -52,8 +56,11 @@ async fn build_services() -> Result<NodeService> {
     let greenlight = g
         .ok_or("greenlight is not initialized")
         .map_err(|e| anyhow!(e))?;
-    Ok(NodeService::new(
-        Config::default(),
-        Box::new(greenlight),
-    ).await)
+
+    Ok(NodeServiceBuilder::default()
+        .config(Config::default())
+        .client(Box::new(greenlight))
+        .client_grpc_init_from_config().await
+        .build().await
+    )
 }

@@ -1,7 +1,9 @@
 use std::collections::HashMap;
+
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use crate::grpc::breez::LspInformation;
+
+use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
 use crate::models::Network::Bitcoin;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
@@ -17,6 +19,7 @@ pub trait NodeAPI {
 #[tonic::async_trait]
 pub trait LspAPI {
     async fn list_lsps(&mut self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
+    async fn register_payment(&mut self, lsp: &LspInformation, payment_info: PaymentInformation) -> Result<RegisterPaymentReply>;
 }
 
 #[derive(Clone)]
@@ -58,6 +61,25 @@ pub enum PaymentTypeFilter {
     All,
 }
 
+/// Wrapper struct that encapsulates payment infos for register_payment(). Serializable to binary.
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct PaymentInformation {
+    #[prost(string, tag="1")]
+    payment_hash: String,
+
+    #[prost(bytes="vec", tag="2")]
+    payment_secret: Vec<u8>,
+
+    #[prost(string, tag="3")]
+    destination: String,
+
+    #[prost(uint64, tag="4")]
+    incoming_amount_msat: u64,
+
+    #[prost(uint64, tag="5")]
+    outgoing_amount_msat: u64
+}
+
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Debug)]
 pub struct NodeState {
     pub id: String,
@@ -91,4 +113,34 @@ pub struct LightningTransaction {
     pub bolt11: String,
     pub pending: bool,
     pub description: Option<String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use prost::Message;
+    use rand::random;
+
+    use crate::models::PaymentInformation;
+    use crate::test_utils::{rand_string, rand_vec_u8};
+
+    #[test]
+    fn test_payment_information_ser_de() -> Result<(), Box<dyn std::error::Error>>  {
+        let dummy_payment_info = PaymentInformation {
+            payment_hash: rand_string(10),
+            payment_secret: rand_vec_u8(10),
+            destination: rand_string(10),
+            incoming_amount_msat: random(),
+            outgoing_amount_msat: random()
+        };
+
+        let mut buf = Vec::new();
+        buf.reserve(dummy_payment_info.encoded_len());
+        dummy_payment_info.encode(&mut buf)?;
+
+        let decoded_payment_info : PaymentInformation = PaymentInformation::decode(&*buf)?;
+
+        assert_eq!(dummy_payment_info, decoded_payment_info);
+
+        Ok(())
+    }
 }

@@ -1,7 +1,11 @@
 use std::collections::HashMap;
-use crate::models::{LspAPI, LightningTransaction, NodeAPI, NodeState, SyncResponse};
+
 use anyhow::Result;
-use crate::grpc::breez::LspInformation;
+use rand::distributions::{Alphanumeric, DistString, Standard};
+use rand::Rng;
+
+use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
+use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentInformation, SyncResponse};
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,
@@ -33,4 +37,16 @@ impl LspAPI for MockBreezLSP {
     async fn list_lsps(&mut self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
         Ok(HashMap::new())
     }
+
+    async fn register_payment(&mut self, _lsp: &LspInformation, _payment_info: PaymentInformation) -> Result<RegisterPaymentReply> {
+        Ok(RegisterPaymentReply { })
+    }
+}
+
+pub fn rand_string(len: usize) -> String {
+    Alphanumeric.sample_string(&mut rand::thread_rng(), len)
+}
+
+pub fn rand_vec_u8(len: usize) -> Vec<u8> {
+    rand::thread_rng().sample_iter(Standard).take(len).collect()
 }

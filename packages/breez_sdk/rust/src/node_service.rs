@@ -80,6 +80,20 @@ impl NodeService {
         self.persister.update_setting("lsp".to_string(), lsp_id)?;
         Ok(())
     }
+
+    /// Convenience method to look up LSP info based on current LSP ID
+    async fn get_lsp(&mut self) -> Result<LspInformation> {
+        let lsp_id = self.get_lsp_id()
+            .expect("Failed to lookup LSP ID")
+            .expect("LSP ID not set");
+
+        let node_pubkey = self.get_node_state()?.unwrap().id;
+        self.client_grpc.list_lsps(node_pubkey).await?
+            .get(&lsp_id)
+            .ok_or("Invalid LSP ID")
+            .map_err(|err| anyhow!(err))
+            .cloned()
+    }
 }
 
 #[derive(Default)]

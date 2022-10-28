@@ -12,8 +12,8 @@ use hex;
 use std::cmp::max;
 use tokio::sync::mpsc;
 
-const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
-const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
+pub(crate) const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
+pub(crate) const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
 
 #[derive(Clone)]
 pub(crate) struct Greenlight {

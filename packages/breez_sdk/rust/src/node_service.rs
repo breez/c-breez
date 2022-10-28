@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -6,6 +7,7 @@ use bip39::*;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
+use crate::greenlight::MAX_INBOUND_LIQUIDITY_MSAT;
 use crate::grpc::breez::{LspInformation, LspListRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
 use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
@@ -78,6 +80,68 @@ impl NodeService {
 
     fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
         self.persister.update_setting("lsp".to_string(), lsp_id)?;
+        Ok(())
+    }
+
+    /// Convenience method to look up LSP info based on current LSP ID
+    async fn get_lsp(&mut self) -> Result<LspInformation> {
+        let lsp_id = self.get_lsp_id()
+            .expect("Failed to lookup LSP ID")
+            .expect("LSP ID not set");
+
+        let node_pubkey = self.get_node_state()?.unwrap().id;
+        self.client_grpc.list_lsps(node_pubkey).await?
+            .get(&lsp_id)
+            .ok_or("Invalid LSP ID")
+            .map_err(|err| anyhow!(err))
+            .cloned()
+    }
+
+    // TODO Returns invoice. New struct? Or return as bolt11?
+    async fn request_payment(&mut self, amount_sats: u64) -> Result<()> {
+        let lsp_info = &self.get_lsp().await?;
+
+        let amount_msats = amount_sats * 1000;
+
+        // TODO int shortChannelId = ((1 & 0xFFFFFF) << 40 | (0 & 0xFFFFFF) << 16 | (0 & 0xFFFF));
+        let mut destination_invoice_amount_sats = amount_msats;
+
+        // check if we need to open channel
+        if MAX_INBOUND_LIQUIDITY_MSAT < amount_msats {
+            // TODO logging
+
+            // we need to open channel so we are calculating the fees for the LSP
+            let channel_fees_msat_calculated = amount_msats * lsp_info.channel_fee_permyriad as u64 / 10_000 / 1_000_000;
+            let channel_fees_msat = max(channel_fees_msat_calculated, lsp_info.channel_minimum_fee_msat as u64);
+
+            if amount_msats < channel_fees_msat + 1000 {
+                return Err(anyhow!("requestPayment: Amount should be more than the minimum fees {} sats", lsp_info.channel_minimum_fee_msat / 1000));
+            }
+
+            // remove the fees from the amount to get the small amount on the current node invoice.
+            destination_invoice_amount_sats = amount_sats - channel_fees_msat / 1000;
+        }
+        else {
+            // not opening a channel so we need to get the real channel id into the routing hints
+
+            // TODO nodeAPI.listPeers();
+        }
+
+        // TODO nodeAPI.addInvoice();
+
+        // TODO create RouteHintHop
+
+        // TODO Create bolt11 via signer?
+        // TODO bolt11WithHints =   await _signer!.addRoutingHints
+
+        // register the payment at the lsp if needed
+        if destination_invoice_amount_sats < amount_sats {
+            // TODO lspService.registerPayment
+        }
+
+        // return the converted invoice
+        // TODO invoice.copyWithNewAmount(amountMsats: amountMSat, bolt11: bolt11WithHints);
+
         Ok(())
     }
 }
@@ -168,7 +232,7 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
-    use crate::models::{LspAPI, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
+    use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
     use crate::test_utils::{MockBreezLSP, MockNodeAPI};
 

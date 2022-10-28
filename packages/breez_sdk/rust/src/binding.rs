@@ -1,8 +1,12 @@
-use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, PaymentTypeFilter};
-use crate::{greenlight::Greenlight, node_service::NodeService};
+use std::sync::Mutex;
+
 use anyhow::{anyhow, Result};
 use once_cell::sync::Lazy;
-use std::sync::Mutex;
+
+use crate::{greenlight::Greenlight, node_service::NodeService};
+use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, PaymentTypeFilter};
+use crate::node_service::{BreezLSP, NodeServiceBuilder};
+use crate::test_utils::MockNodeAPI;
 
 static STATE: Lazy<Mutex<Option<Greenlight>>> = Lazy::new(|| Mutex::new(None));
 
@@ -21,19 +25,19 @@ pub async fn create_node_services(
 ) -> Result<NodeService> {
     let greenlight = Greenlight::new(network, seed, creds).await?;
     *STATE.lock().unwrap() = Some(greenlight);
-    build_services()
+    build_services().await
 }
 
 pub async fn start_node() -> Result<()> {
-    build_services()?.start_node().await
+    build_services().await?.start_node().await
 }
 
 pub async fn run_signer() -> Result<()> {
-    build_services()?.run_signer().await
+    build_services().await?.run_signer().await
 }
 
 pub async fn sync() -> Result<()> {
-    build_services()?.sync().await
+    build_services().await?.sync().await
 }
 
 pub async fn list_transactions(
@@ -41,18 +45,22 @@ pub async fn list_transactions(
     from_timestamp: Option<i64>,
     to_timestamp: Option<i64>,
 ) -> Result<Vec<LightningTransaction>> {
-    build_services()?
+    build_services()
+        .await?
         .list_transactions(filter, from_timestamp, to_timestamp)
         .await
 }
 
-fn build_services() -> Result<NodeService> {
+async fn build_services() -> Result<NodeService> {
     let g = STATE.lock().unwrap().clone();
     let greenlight = g
         .ok_or("greenlight is not initialized")
         .map_err(|e| anyhow!(e))?;
-    Ok(NodeService::new(
-        Config::default(),
-        Box::new(greenlight),
-    ))
+
+    Ok(NodeServiceBuilder::default()
+        .config(Config::default())
+        .client(Box::new(greenlight))
+        .client_grpc_init_from_config().await
+        .build().await
+    )
 }

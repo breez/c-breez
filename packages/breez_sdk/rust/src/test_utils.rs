@@ -1,5 +1,7 @@
-use crate::models::{LightningTransaction, NodeAPI, NodeState, SyncResponse};
+use std::collections::HashMap;
+use crate::models::{LspAPI, LightningTransaction, NodeAPI, NodeState, SyncResponse};
 use anyhow::Result;
+use crate::grpc::breez::LspInformation;
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,
@@ -21,5 +23,14 @@ impl NodeAPI for MockNodeAPI {
             node_state: self.node_state.clone(),
             transactions: self.transactions.clone(),
         })
+    }
+}
+
+pub struct MockBreezLSP {}
+
+#[tonic::async_trait]
+impl LspAPI for MockBreezLSP {
+    async fn list_lsps(&mut self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
+        Ok(HashMap::new())
     }
 }

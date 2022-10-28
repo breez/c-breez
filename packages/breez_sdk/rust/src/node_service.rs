@@ -8,13 +8,13 @@ use tonic::transport::{Channel, Uri};
 use crate::chain::MempoolSpace;
 use crate::grpc::breez::{LspInformation, LspListRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
-use crate::models::{BreezServerAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
+use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
 use crate::persist;
 
 pub struct NodeService {
     config: Config,
     client: Box<dyn NodeAPI>,
-    client_grpc: Box<dyn BreezServerAPI>,
+    client_grpc: Box<dyn LspAPI>,
     chain_service: MempoolSpace,
     persister: persist::db::SqliteStorage,
 }
@@ -86,7 +86,7 @@ impl NodeService {
 pub struct NodeServiceBuilder {
     config: Option<Config>,
     client: Option<Box<dyn NodeAPI>>,
-    client_grpc: Option<Box<dyn BreezServerAPI>>,
+    client_grpc: Option<Box<dyn LspAPI>>,
 }
 
 impl NodeServiceBuilder {
@@ -101,14 +101,14 @@ impl NodeServiceBuilder {
     }
 
     /// Initialize the Breez gRPC Client to a custom implementation
-    pub fn client_grpc(mut self, client_grpc: Box<dyn BreezServerAPI>) -> Self {
+    pub fn client_grpc(mut self, client_grpc: Box<dyn LspAPI>) -> Self {
         self.client_grpc = Some(client_grpc);
         self
     }
 
     /// Initializes the Breez gRPC Client based on the configured Breez endpoint in the config
     pub async fn client_grpc_init_from_config(mut self) -> Self {
-        let breez_server_endpoint = BreezServerAPIProd::new(
+        let breez_server_endpoint = BreezLSP::new(
             &self.config.as_ref()
                 .expect("Config not set. Please set config before calling this method in the builder.")
                 .breezserver
@@ -135,11 +135,11 @@ impl NodeServiceBuilder {
     }
 }
 
-pub struct BreezServerAPIProd {
+pub struct BreezLSP {
     client_grpc: ChannelOpenerClient<Channel>,
 }
 
-impl BreezServerAPIProd {
+impl BreezLSP {
     pub async fn new(breezserver: &str) -> Self {
         Self {
             client_grpc: ChannelOpenerClient::connect(Uri::from_str(breezserver).unwrap()).await.unwrap()
@@ -148,7 +148,7 @@ impl BreezServerAPIProd {
 }
 
 #[tonic::async_trait]
-impl BreezServerAPI for BreezServerAPIProd {
+impl LspAPI for BreezLSP {
     async fn list_lsps(&mut self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
         let client = &mut self.client_grpc;
 
@@ -168,9 +168,9 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
-    use crate::models::{BreezServerAPI, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
+    use crate::models::{LspAPI, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
-    use crate::test_utils::{MockBreezServerAPI, MockNodeAPI};
+    use crate::test_utils::{MockBreezLSP, MockNodeAPI};
 
     #[test]
     fn test_config() {
@@ -222,7 +222,7 @@ mod test {
                 node_state: dummy_node_state.clone(),
                 transactions: dummy_transactions.clone(),
             }))
-            .client_grpc(Box::new(MockBreezServerAPI {}))
+            .client_grpc(Box::new(MockBreezLSP {}))
             .build()
             .await;
 
@@ -257,7 +257,7 @@ mod test {
                 node_state: get_dummy_node_state(),
                 transactions: vec![],
             }))
-            .client_grpc(Box::new(MockBreezServerAPI {}))
+            .client_grpc(Box::new(MockBreezLSP {}))
             .build()
             .await;
 

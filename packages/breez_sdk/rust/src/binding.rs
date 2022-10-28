@@ -5,7 +5,7 @@ use once_cell::sync::Lazy;
 
 use crate::{greenlight::Greenlight, node_service::NodeService};
 use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, PaymentTypeFilter};
-use crate::node_service::{BreezServerAPIProd, NodeServiceBuilder};
+use crate::node_service::{BreezLSP, NodeServiceBuilder};
 use crate::test_utils::MockNodeAPI;
 
 static STATE: Lazy<Mutex<Option<Greenlight>>> = Lazy::new(|| Mutex::new(None));

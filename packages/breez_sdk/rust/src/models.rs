@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use anyhow::Result;
+use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
 use crate::grpc::breez::LspInformation;
 use crate::models::Network::Bitcoin;
@@ -12,6 +13,7 @@ pub trait NodeAPI {
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     async fn start(&mut self) -> Result<()>;
     async fn run_signer(&self) -> Result<()>;
+    async fn list_peers(&self) -> Result<Vec<Peer>>;
 }
 
 #[tonic::async_trait]
@@ -91,4 +93,16 @@ pub struct LightningTransaction {
     pub bolt11: String,
     pub pending: bool,
     pub description: Option<String>,
+}
+
+pub fn parse_short_channel_id(id_str: &str) -> i64 {
+    let parts : Vec<&str> = id_str.split('x').collect();
+    if parts.len() != 3 {
+        return 0;
+    }
+    let block_num = parts[0].parse::<i64>().unwrap();
+    let tx_num = parts[1].parse::<i64>().unwrap();
+    let tx_out = parts[2].parse::<i64>().unwrap();
+    
+    (block_num & 0xFFFFFF) << 40 | (tx_num & 0xFFFFFF) << 16 | (tx_out & 0xFFFF)
 }

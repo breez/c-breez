@@ -10,7 +10,7 @@ use crate::chain::MempoolSpace;
 use crate::greenlight::MAX_INBOUND_LIQUIDITY_MSAT;
 use crate::grpc::breez::{LspInformation, LspListRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
-use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter};
+use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter, parse_short_channel_id};
 use crate::persist;
 
 pub struct NodeService {
@@ -123,8 +123,13 @@ impl NodeService {
         }
         else {
             // not opening a channel so we need to get the real channel id into the routing hints
-
-            // TODO nodeAPI.listPeers();
+            for peer in self.client.list_peers().await? {
+                if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
+                    let active_channel = peer.channels.iter().find(|&c| c.state == "OPEN").expect("No open channel found");
+                    let short_channel_id = parse_short_channel_id(&active_channel.short_channel_id);
+                    break;
+                }
+            }
         }
 
         // TODO nodeAPI.addInvoice();

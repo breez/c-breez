@@ -10,6 +10,7 @@ use gl_client::tls::TlsConfig;
 use gl_client::{node, pb};
 use hex;
 use std::cmp::max;
+use gl_client::pb::Peer;
 use tokio::sync::mpsc;
 
 pub(crate) const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
@@ -182,6 +183,15 @@ impl NodeAPI for Greenlight {
             transactions: pull_transactions(node_pubkey.clone(), since_timestamp, client.clone())
                 .await?,
         })
+    }
+
+    async fn list_peers(&self) -> Result<Vec<Peer>> {
+        let client = &mut self.client.clone().unwrap();
+        Ok(client
+            .list_peers(pb::ListPeersRequest::default())
+            .await?
+            .into_inner()
+            .peers)
     }
 }
 

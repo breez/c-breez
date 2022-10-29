@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use crate::models::{LspAPI, LightningTransaction, NodeAPI, NodeState, SyncResponse};
 use anyhow::Result;
+use gl_client::pb::Peer;
 use crate::grpc::breez::LspInformation;
 
 pub struct MockNodeAPI {
@@ -23,6 +24,10 @@ impl NodeAPI for MockNodeAPI {
             node_state: self.node_state.clone(),
             transactions: self.transactions.clone(),
         })
+    }
+
+    async fn list_peers(&self) -> Result<Vec<Peer>> {
+        Ok(vec![])
     }
 }
 

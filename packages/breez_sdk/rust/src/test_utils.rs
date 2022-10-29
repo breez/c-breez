@@ -5,7 +5,8 @@ use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
 use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
-use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentInformation, SyncResponse};
+use crate::grpc::lspd::PaymentInformation;
+use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,

@@ -11,7 +11,8 @@ use crate::chain::MempoolSpace;
 use crate::crypto::encrypt;
 use crate::grpc::breez::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
-use crate::models::{Config, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentInformation, PaymentTypeFilter};
+use crate::grpc::lspd::PaymentInformation;
+use crate::models::{Config, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter};
 use crate::persist;
 
 pub struct NodeService {

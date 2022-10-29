@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use rand::distributions::{Alphanumeric, DistString, Standard};
-use rand::Rng;
+use rand::{random, Rng};
 
-use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
+use crate::grpc::breez::{GetNodeInfoResponse, LspInformation, RegisterPaymentReply};
 use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentInformation, SyncResponse};
 
 pub struct MockNodeAPI {
@@ -34,6 +34,14 @@ pub struct MockBreezLSP {}
 
 #[tonic::async_trait]
 impl LspAPI for MockBreezLSP {
+    async fn get_node_info(&mut self, _pubkey: String, _key: String) -> Result<GetNodeInfoResponse> {
+        Ok(GetNodeInfoResponse {
+            timestamp: random(),
+            value: rand_vec_u8(5),
+            signature: rand_vec_u8(5)
+        })
+    }
+
     async fn list_lsps(&mut self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
         Ok(HashMap::new())
     }

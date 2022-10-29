@@ -9,8 +9,9 @@ use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
 use crate::crypto::encrypt;
-use crate::grpc::breez::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
+use crate::grpc::breez::{GetNodeInfoRequest, GetNodeInfoResponse, LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
+use crate::grpc::breez::node_info_client::NodeInfoClient;
 use crate::models::{Config, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentInformation, PaymentTypeFilter};
 use crate::persist;
 
@@ -140,18 +141,32 @@ impl NodeServiceBuilder {
 
 pub struct BreezLSP {
     client_grpc: ChannelOpenerClient<Channel>,
+    client_grpc_node: NodeInfoClient<Channel>
 }
 
 impl BreezLSP {
     pub async fn new(breezserver: &str) -> Self {
+        let channel = Channel::builder(breezserver.parse().unwrap()).connect().await.unwrap();
         Self {
-            client_grpc: ChannelOpenerClient::connect(Uri::from_str(breezserver).unwrap()).await.unwrap()
+            client_grpc: ChannelOpenerClient::new(channel.clone()),
+            client_grpc_node: NodeInfoClient::new(channel)
         }
     }
 }
 
 #[tonic::async_trait]
 impl LspAPI for BreezLSP {
+    async fn get_node_info(&mut self, pubkey: String, key: String) -> Result<GetNodeInfoResponse> {
+        let client = &mut self.client_grpc_node;
+
+        let request = Request::new(GetNodeInfoRequest {
+            pubkey: pubkey.into_bytes(),
+            key
+        });
+        let response = client.get_node_info(request).await?;
+        Ok(response.into_inner())
+    }
+
     async fn list_lsps(&mut self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
         let client = &mut self.client_grpc;
 

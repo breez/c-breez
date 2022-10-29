@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
-use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
+use crate::grpc::breez::{GetNodeInfoResponse, LspInformation, RegisterPaymentReply};
 use crate::models::Network::Bitcoin;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
@@ -18,6 +18,7 @@ pub trait NodeAPI {
 
 #[tonic::async_trait]
 pub trait LspAPI {
+    async fn get_node_info(&mut self, pubkey: String, key: String) -> Result<GetNodeInfoResponse>;
     async fn list_lsps(&mut self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
     async fn register_payment(&mut self, lsp: &LspInformation, payment_info: PaymentInformation) -> Result<RegisterPaymentReply>;
 }

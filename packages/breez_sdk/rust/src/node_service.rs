@@ -4,13 +4,15 @@ use std::str::FromStr;
 use anyhow::{anyhow, Result};
 use bip39::*;
 use prost::Message;
-use tonic::Request;
 use tonic::transport::{Channel, Uri};
+use tonic::Request;
 
 use crate::chain::MempoolSpace;
 use crate::crypto::encrypt;
-use crate::grpc::breez::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
+use crate::grpc::breez::{
+    LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest,
+};
 use crate::grpc::lspd::PaymentInformation;
 use crate::models::{Config, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter};
 use crate::persist;
@@ -113,10 +115,15 @@ impl NodeServiceBuilder {
     /// Initializes the Breez gRPC Client based on the configured Breez endpoint in the config
     pub async fn client_grpc_init_from_config(mut self) -> Self {
         let breez_server_endpoint = BreezLSP::new(
-            &self.config.as_ref()
-                .expect("Config not set. Please set config before calling this method in the builder.")
-                .breezserver
-        ).await;
+            &self
+                .config
+                .as_ref()
+                .expect(
+                    "Config not set. Please set config before calling this method in the builder.",
+                )
+                .breezserver,
+        )
+        .await;
         self.client_grpc = Some(Box::new(breez_server_endpoint));
         self
     }
@@ -146,7 +153,9 @@ pub struct BreezLSP {
 impl BreezLSP {
     pub async fn new(breezserver: &str) -> Self {
         Self {
-            client_grpc: ChannelOpenerClient::connect(Uri::from_str(breezserver).unwrap()).await.unwrap()
+            client_grpc: ChannelOpenerClient::connect(Uri::from_str(breezserver).unwrap())
+                .await
+                .unwrap(),
         }
     }
 }
@@ -161,7 +170,11 @@ impl LspAPI for BreezLSP {
         Ok(response.into_inner().lsps)
     }
 
-    async fn register_payment(&mut self, lsp: &LspInformation, payment_info: PaymentInformation) -> Result<RegisterPaymentReply> {
+    async fn register_payment(
+        &mut self,
+        lsp: &LspInformation,
+        payment_info: PaymentInformation,
+    ) -> Result<RegisterPaymentReply> {
         let client = &mut self.client_grpc;
 
         let mut buf = Vec::new();
@@ -170,7 +183,7 @@ impl LspAPI for BreezLSP {
 
         let request = Request::new(RegisterPaymentRequest {
             lsp_id: lsp.name.clone(),
-            blob: encrypt(lsp.lsp_pubkey.clone(), buf)?
+            blob: encrypt(lsp.lsp_pubkey.clone(), buf)?,
         });
         let response = client.register_payment(request).await?;
 
@@ -270,7 +283,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>>  {
+    async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>> {
         let mut node_service = NodeServiceBuilder::default()
             .config(Config::default())
             .client(Box::new(MockNodeAPI {
@@ -281,6 +294,7 @@ mod test {
             .build()
             .await;
 
+        node_service.sync().await?;
         let node_pubkey = node_service.get_node_state()?.unwrap().id;
         let lsps = node_service.client_grpc.list_lsps(node_pubkey).await?;
         assert!(lsps.is_empty()); // The mock returns an empty list

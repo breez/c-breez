@@ -1,8 +1,11 @@
 use std::collections::HashMap;
+
 use anyhow::Result;
 use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
-use crate::grpc::breez::LspInformation;
+
+use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
+use crate::grpc::lspd::PaymentInformation;
 use crate::models::Network::Bitcoin;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
@@ -19,6 +22,7 @@ pub trait NodeAPI {
 #[tonic::async_trait]
 pub trait LspAPI {
     async fn list_lsps(&mut self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
+    async fn register_payment(&mut self, lsp: &LspInformation, payment_info: PaymentInformation) -> Result<RegisterPaymentReply>;
 }
 
 #[derive(Clone)]
@@ -103,6 +107,35 @@ pub fn parse_short_channel_id(id_str: &str) -> i64 {
     let block_num = parts[0].parse::<i64>().unwrap();
     let tx_num = parts[1].parse::<i64>().unwrap();
     let tx_out = parts[2].parse::<i64>().unwrap();
-    
+
     (block_num & 0xFFFFFF) << 40 | (tx_num & 0xFFFFFF) << 16 | (tx_out & 0xFFFF)
+}
+#[cfg(test)]
+mod tests {
+    use prost::Message;
+    use rand::random;
+    use crate::grpc::lspd::PaymentInformation;
+
+    use crate::test_utils::{rand_vec_u8};
+
+    #[test]
+    fn test_payment_information_ser_de() -> Result<(), Box<dyn std::error::Error>>  {
+        let dummy_payment_info = PaymentInformation {
+            payment_hash: rand_vec_u8(10),
+            payment_secret: rand_vec_u8(10),
+            destination: rand_vec_u8(10),
+            incoming_amount_msat: random(),
+            outgoing_amount_msat: random()
+        };
+
+        let mut buf = Vec::new();
+        buf.reserve(dummy_payment_info.encoded_len());
+        dummy_payment_info.encode(&mut buf)?;
+
+        let decoded_payment_info : PaymentInformation = PaymentInformation::decode(&*buf)?;
+
+        assert_eq!(dummy_payment_info, decoded_payment_info);
+
+        Ok(())
+    }
 }

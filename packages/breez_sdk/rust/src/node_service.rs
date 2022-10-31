@@ -4,13 +4,17 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
+use prost::Message;
+use tonic::Request;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
 use crate::greenlight::MAX_INBOUND_LIQUIDITY_MSAT;
-use crate::grpc::breez::{LspInformation, LspListRequest};
+use crate::crypto::encrypt;
+use crate::grpc::breez::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
 use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter, parse_short_channel_id};
+use crate::grpc::lspd::PaymentInformation;
 use crate::persist;
 
 pub struct NodeService {
@@ -221,9 +225,25 @@ impl LspAPI for BreezLSP {
     async fn list_lsps(&mut self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
         let client = &mut self.client_grpc;
 
-        let request = tonic::Request::new(LspListRequest { pubkey });
+        let request = Request::new(LspListRequest { pubkey });
         let response = client.lsp_list(request).await?;
         Ok(response.into_inner().lsps)
+    }
+
+    async fn register_payment(&mut self, lsp: &LspInformation, payment_info: PaymentInformation) -> Result<RegisterPaymentReply> {
+        let client = &mut self.client_grpc;
+
+        let mut buf = Vec::new();
+        buf.reserve(payment_info.encoded_len());
+        payment_info.encode(&mut buf)?;
+
+        let request = Request::new(RegisterPaymentRequest {
+            lsp_id: lsp.name.clone(),
+            blob: encrypt(lsp.lsp_pubkey.clone(), buf)?
+        });
+        let response = client.register_payment(request).await?;
+
+        Ok(response.into_inner())
     }
 }
 

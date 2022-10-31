@@ -5,6 +5,7 @@ use std::str::FromStr;
 use anyhow::{anyhow, Result};
 use bip39::*;
 use prost::Message;
+use rand::random;
 use tonic::Request;
 use tonic::transport::{Channel, Uri};
 
@@ -16,6 +17,7 @@ use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
 use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter, parse_short_channel_id};
 use crate::grpc::lspd::PaymentInformation;
 use crate::persist;
+use crate::test_utils::rand_vec_u8;
 
 pub struct NodeService {
     config: Config,
@@ -145,7 +147,18 @@ impl NodeService {
 
         // register the payment at the lsp if needed
         if destination_invoice_amount_sats < amount_sats {
-            // TODO lspService.registerPayment
+
+            // TODO Find / build args for PaymentInformation
+            self.client_grpc.register_payment(
+                lsp_info,
+                PaymentInformation {
+                    payment_hash: rand_vec_u8(10),
+                    payment_secret: rand_vec_u8(10),
+                    destination: rand_vec_u8(10),
+                    incoming_amount_msat: random(),
+                    outgoing_amount_msat: random()
+                }).await
+                .expect("Failed to register payment");
         }
 
         // return the converted invoice

@@ -16,7 +16,7 @@ pub fn register_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCreden
     block_on(Greenlight::register(network, seed))
 }
 
-pub async fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
     block_on(Greenlight::recover(network, seed))
 }
 

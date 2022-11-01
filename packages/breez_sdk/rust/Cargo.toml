@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "lightning_toolkit"
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["staticlib", "cdylib", "lib"]
 
 [dependencies]
 flutter_rust_bridge = "1"

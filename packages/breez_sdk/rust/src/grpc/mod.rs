@@ -1,2 +1,1 @@
-pub mod breez;
-pub mod lspd;
+tonic::include_proto!("breez");

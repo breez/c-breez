@@ -4,8 +4,8 @@ use anyhow::Result;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
-use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
-use crate::grpc::lspd::PaymentInformation;
+use crate::grpc::PaymentInformation;
+use crate::grpc::{LspInformation, RegisterPaymentReply};
 use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 
 pub struct MockNodeAPI {
@@ -39,8 +39,12 @@ impl LspAPI for MockBreezLSP {
         Ok(HashMap::new())
     }
 
-    async fn register_payment(&mut self, _lsp: &LspInformation, _payment_info: PaymentInformation) -> Result<RegisterPaymentReply> {
-        Ok(RegisterPaymentReply { })
+    async fn register_payment(
+        &mut self,
+        _lsp: &LspInformation,
+        _payment_info: PaymentInformation,
+    ) -> Result<RegisterPaymentReply> {
+        Ok(RegisterPaymentReply {})
     }
 }
 

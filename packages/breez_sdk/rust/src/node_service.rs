@@ -9,11 +9,9 @@ use tonic::Request;
 
 use crate::chain::MempoolSpace;
 use crate::crypto::encrypt;
-use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
-use crate::grpc::breez::{
-    LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest,
-};
-use crate::grpc::lspd::PaymentInformation;
+use crate::grpc::channel_opener_client::ChannelOpenerClient;
+use crate::grpc::PaymentInformation;
+use crate::grpc::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::models::{Config, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter};
 use crate::persist;
 

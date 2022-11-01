@@ -1,11 +1,11 @@
-mod binding;
+pub mod binding;
 mod chain;
 mod crypto;
 mod greenlight;
 mod grpc;
 mod invoice;
-mod models;
-mod node_service;
+pub mod models;
+pub mod node_service;
 mod persist;
 mod swap;
 mod test_utils;

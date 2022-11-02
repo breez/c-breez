@@ -25,6 +25,7 @@ pub trait LspAPI {
         lsp: &LspInformation,
         payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply>;
+    async fn rates(&mut self) -> Result<HashMap<String, f64>>;
 }
 
 #[derive(Clone)]

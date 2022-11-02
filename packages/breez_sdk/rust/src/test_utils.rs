@@ -46,6 +46,13 @@ impl LspAPI for MockBreezLSP {
     ) -> Result<RegisterPaymentReply> {
         Ok(RegisterPaymentReply {})
     }
+
+    async fn rates(&mut self) -> Result<HashMap<String, f64>> {
+        Ok(HashMap::from_iter(vec![(
+            "USD".to_string(),
+            20_000.00,
+        )]))
+    }
 }
 
 pub fn rand_string(len: usize) -> String {

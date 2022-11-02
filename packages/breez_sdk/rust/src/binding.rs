@@ -27,46 +27,44 @@ pub fn create_node_services(
 ) -> Result<NodeService> {
     let greenlight = block_on(Greenlight::new(network, seed, creds))?;
     *STATE.lock().unwrap() = Some(greenlight);
-    block_on(build_services())
+    build_services()
 }
 
-pub async fn start_node() -> Result<()> {
-    block_on(build_services().await?.start_node())
+pub fn start_node() -> Result<()> {
+    block_on(build_services()?.start_node())
 }
 
-pub async fn run_signer() -> Result<()> {
-    block_on(build_services().await?.run_signer())
+pub fn run_signer() -> Result<()> {
+    block_on(build_services()?.run_signer())
 }
 
-pub async fn sync() -> Result<()> {
-    block_on(build_services().await?.sync())
+pub fn sync() -> Result<()> {
+    block_on(build_services()?.sync())
 }
 
-pub async fn list_transactions(
+pub fn list_transactions(
     filter: PaymentTypeFilter,
     from_timestamp: Option<i64>,
     to_timestamp: Option<i64>,
 ) -> Result<Vec<LightningTransaction>> {
-    block_on(
-        build_services()
-            .await?
-            .list_transactions(filter, from_timestamp, to_timestamp),
-    )
+    block_on(build_services()?.list_transactions(filter, from_timestamp, to_timestamp))
 }
 
-async fn build_services() -> Result<NodeService> {
+fn build_services() -> Result<NodeService> {
     let g = STATE.lock().unwrap().clone();
     let greenlight = g
         .ok_or("greenlight is not initialized")
         .map_err(|e| anyhow!(e))?;
 
-    Ok(NodeServiceBuilder::default()
-        .config(Config::default())
-        .client(Box::new(greenlight))
-        .client_grpc_init_from_config()
-        .await
-        .build()
-        .await)
+    Ok(block_on(
+        block_on(
+            NodeServiceBuilder::default()
+                .config(Config::default())
+                .client(Box::new(greenlight))
+                .client_grpc_init_from_config(),
+        )
+        .build(),
+    ))
 }
 
 fn block_on<F: Future>(future: F) -> F::Output {

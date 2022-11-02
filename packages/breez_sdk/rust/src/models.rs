@@ -13,7 +13,7 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 #[tonic::async_trait]
 pub trait NodeAPI {
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
-    async fn start(&mut self) -> Result<()>;
+    async fn start(&self) -> Result<()>;
     async fn run_signer(&self) -> Result<()>;
 }
 

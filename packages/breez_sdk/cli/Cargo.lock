@@ -389,6 +389,7 @@ dependencies = [
  "hex",
  "lightning_toolkit",
  "rustyline",
+ "serde_json",
  "tiny-bip39",
 ]
 
@@ -1738,9 +1739,9 @@ dependencies = [
  "flutter_rust_bridge",
  "gl-client",
  "hex",
+ "lazy_static",
  "lightning-signer-core 0.1.0-5 (git+https://gitlab.com/cdecker/vls.git?branch=main)",
  "lightning-signer-server 0.1.0-5 (git+https://gitlab.com/cdecker/vls.git?branch=main)",
- "once_cell",
  "prost 0.11.0",
  "rand",
  "reqwest",

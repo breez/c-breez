@@ -82,6 +82,19 @@ fn main() -> Result<()> {
                         Ok(()) => println!("Synchronizing with node state has finished"),
                         Err(err) => println!("Error synchronizing node state {}", err),
                     },
+                    Some("get_node_state") => match binding::get_node_state() {
+                        Ok(state) => {
+                            println!(
+                                "NodeState = {}",
+                                serde_json::to_string(&state.unwrap()).unwrap()
+                            )
+                        }
+                        Err(err) => println!("Error getting node state {}", err),
+                    },
+                    Some("run_signer") => match binding::run_signer() {
+                        Ok(()) => println!("Signer exited  with success"),
+                        Err(err) => println!("Signer exited  with error {}", err),
+                    },
                     Some(_) => {
                         println!("Unrecognized command: {}", line.as_str());
                     }

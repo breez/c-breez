@@ -15,7 +15,7 @@ pub struct MockNodeAPI {
 
 #[tonic::async_trait]
 impl NodeAPI for MockNodeAPI {
-    async fn start(&mut self) -> Result<()> {
+    async fn start(&self) -> Result<()> {
         Ok(())
     }
 

@@ -11,3 +11,4 @@ tiny-bip39 = "*"
 hex = "*"
 lightning_toolkit = { path = "../rust"}
 serde_json = "1.0"
+anyhow = { version = "1.0.57", features = ["backtrace"] }

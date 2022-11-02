@@ -1,9 +1,10 @@
+use anyhow::{anyhow, Context, Result};
 use bip39::{Language, Mnemonic, MnemonicType, Seed};
 use hex;
 use lightning_toolkit::binding;
 use lightning_toolkit::models::{self, GreenlightCredentials};
 use rustyline::error::ReadlineError;
-use rustyline::{Editor, Result};
+use rustyline::Editor;
 use std::fs;
 use std::io;
 use std::str::SplitWhitespace;
@@ -29,7 +30,6 @@ fn main() -> Result<()> {
     let seed = get_seed();
     let mut greenlight_credentials: Option<GreenlightCredentials> = None;
 
-    // `()` can be used when no completer is required
     let mut rl = Editor::<()>::new()?;
     if rl.load_history("history.txt").is_err() {
         println!("No previous history.");
@@ -74,27 +74,11 @@ fn main() -> Result<()> {
                             Err(err) => println!("Error creating node services {}", err),
                         }
                     }
-                    Some("start_node") => match binding::start_node() {
-                        Ok(()) => println!("Node started"),
-                        Err(err) => println!("Error starting node {}", err),
-                    },
-                    Some("sync") => match binding::sync() {
-                        Ok(()) => println!("Synchronizing with node state has finished"),
-                        Err(err) => println!("Error synchronizing node state {}", err),
-                    },
-                    Some("get_node_state") => match binding::get_node_state() {
-                        Ok(state) => {
-                            println!(
-                                "NodeState = {}",
-                                serde_json::to_string(&state.unwrap()).unwrap()
-                            )
-                        }
-                        Err(err) => println!("Error getting node state {}", err),
-                    },
-                    Some("run_signer") => match binding::run_signer() {
-                        Ok(()) => println!("Signer exited  with success"),
-                        Err(err) => println!("Signer exited  with error {}", err),
-                    },
+                    Some("start_node") => show_results(binding::start_node()),
+                    Some("sync") => show_results(binding::sync()),
+                    Some("list_lsps") => show_results(binding::list_lsps()),
+                    Some("get_node_state") => show_results(binding::get_node_state()),
+                    Some("run_signer") => show_results(binding::run_signer()),
                     Some(_) => {
                         println!("Unrecognized command: {}", line.as_str());
                     }
@@ -116,5 +100,17 @@ fn main() -> Result<()> {
             }
         }
     }
-    rl.save_history("history.txt")
+    rl.save_history("history.txt").map_err(|e| anyhow!(e))
+}
+
+fn show_results<T>(res: Result<T>)
+where
+    T: core::fmt::Debug,
+{
+    match res {
+        Ok(inner) => {
+            println!("response: {:?}", inner);
+        }
+        Err(err) => println!("Error: {}", err),
+    }
 }

@@ -46,6 +46,7 @@ impl Default for Config {
     }
 }
 
+#[derive(Clone)]
 pub struct GreenlightCredentials {
     pub device_key: Vec<u8>,
     pub device_cert: Vec<u8>,

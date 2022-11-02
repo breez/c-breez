@@ -1,6 +1,7 @@
 pub mod binding;
 mod chain;
 mod crypto;
+mod fiat;
 mod greenlight;
 mod grpc;
 mod invoice;

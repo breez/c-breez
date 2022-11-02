@@ -1,4 +1,6 @@
+use crate::grpc::LspInformation;
 use lazy_static::lazy_static;
+use std::collections::HashMap;
 use std::future::Future;
 use std::sync::Mutex;
 
@@ -42,6 +44,10 @@ pub fn run_signer() -> Result<()> {
 
 pub fn sync() -> Result<()> {
     block_on(async { build_services().await?.sync().await })
+}
+
+pub fn list_lsps() -> Result<HashMap<std::string::String, LspInformation>> {
+    block_on(async { build_services().await?.list_lsps().await })
 }
 
 pub fn get_node_state() -> Result<Option<NodeState>> {

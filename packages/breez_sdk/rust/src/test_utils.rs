@@ -35,7 +35,7 @@ pub struct MockBreezLSP {}
 
 #[tonic::async_trait]
 impl LspAPI for MockBreezLSP {
-    async fn list_lsps(&mut self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
+    async fn list_lsps(&self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
         Ok(HashMap::new())
     }
 

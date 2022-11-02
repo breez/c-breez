@@ -19,7 +19,7 @@ pub trait NodeAPI {
 
 #[tonic::async_trait]
 pub trait LspAPI {
-    async fn list_lsps(&mut self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
+    async fn list_lsps(&self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
     async fn register_payment(
         &mut self,
         lsp: &LspInformation,

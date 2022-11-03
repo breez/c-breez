@@ -109,7 +109,7 @@ impl NodeService {
     }
 
     // TODO Returns invoice. New struct? Or return as bolt11?
-    async fn request_payment(&mut self, amount_sats: u64) -> Result<()> {
+    async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<()> {
         let lsp_info = &self.get_lsp().await?;
         let node_state = self.get_node_state()?.expect("Failed to retrieve node state");
 
@@ -144,7 +144,7 @@ impl NodeService {
             }
         }
 
-        // TODO nodeAPI.addInvoice();
+        self.client.create_invoice(amount_sats, description).await?;
 
         // TODO create RouteHintHop
 

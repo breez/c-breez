@@ -6,8 +6,8 @@ use gl_client::pb::amount::Unit;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
-use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
-use crate::grpc::lspd::PaymentInformation;
+use crate::grpc::{LspInformation, RegisterPaymentReply};
+use crate::grpc::PaymentInformation;
 use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 use gl_client::pb::Peer;
 

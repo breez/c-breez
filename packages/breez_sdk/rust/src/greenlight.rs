@@ -7,7 +7,7 @@ use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
 use gl_client::{node, pb};
-use hex;
+
 use std::cmp::max;
 use gl_client::pb::Peer;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -192,7 +192,7 @@ impl NodeAPI for Greenlight {
     }
 
     async fn list_peers(&self) -> Result<Vec<Peer>> {
-        let client = &mut self.client.clone().unwrap();
+        let mut client = self.get_client().await?;
         Ok(client
             .list_peers(pb::ListPeersRequest::default())
             .await?

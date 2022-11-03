@@ -11,10 +11,7 @@ use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
 use crate::crypto::encrypt;
-use crate::grpc::breez::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
-use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
 use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter, parse_short_channel_id};
-use crate::grpc::lspd::PaymentInformation;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
@@ -104,7 +101,7 @@ impl NodeService {
             .expect("LSP ID not set");
 
         let node_pubkey = self.get_node_state()?.unwrap().id;
-        self.client_grpc.list_lsps(node_pubkey).await?
+        self.lsp.list_lsps(node_pubkey).await?
             .get(&lsp_id)
             .ok_or("Invalid LSP ID")
             .map_err(|err| anyhow!(err))
@@ -158,7 +155,7 @@ impl NodeService {
         if destination_invoice_amount_sats < amount_sats {
 
             // TODO Find / build args for PaymentInformation
-            self.client_grpc.register_payment(
+            self.lsp.register_payment(
                 lsp_info,
                 PaymentInformation {
                     payment_hash: rand_vec_u8(10),

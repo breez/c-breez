@@ -15,9 +15,8 @@ use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, Pa
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
-use crate::invoice::{add_routing_hints, RouteHint, RouteHintHop};
+use crate::invoice::{add_routing_hints, parse_invoice, RouteHint, RouteHintHop};
 use crate::persist;
-use crate::test_utils::rand_vec_u8;
 
 pub struct NodeService {
     config: Config,
@@ -148,11 +147,11 @@ impl NodeService {
         let invoice = self.client.create_invoice(amount_sats, description).await?;
 
         let lsp_hop = RouteHintHop {
-            src_node_id: node_state.id, // TODO correct?
+            src_node_id: lsp_info.pubkey.clone(), // TODO correct?
             short_channel_id: short_channel_id as u64,
             fees_base_msat: lsp_info.base_fee_msat as u32,
             fees_proportional_millionths: 100, // TODO
-            cltv_expiry_delta: 2000, // TODO // invoice.expiry_time ?
+            cltv_expiry_delta: lsp_info.time_lock_delta as u64,
             htlc_minimum_msat: Some(lsp_info.min_htlc_msat as u64), // TODO correct?
             htlc_maximum_msat: Some(4000), // TODO ?
         };
@@ -167,16 +166,16 @@ impl NodeService {
 
         // register the payment at the lsp if needed
         if destination_invoice_amount_sats < amount_sats {
+            let parsed_invoice = parse_invoice(&invoice.bolt11)?; // TODO use bolt11WithHints
 
-            // TODO Find / build args for PaymentInformation
             self.lsp.register_payment(
                 lsp_info,
                 PaymentInformation {
-                    payment_hash: rand_vec_u8(10),
-                    payment_secret: rand_vec_u8(10),
-                    destination: rand_vec_u8(10),
-                    incoming_amount_msat: random(),
-                    outgoing_amount_msat: random()
+                    payment_hash: Vec::from(parsed_invoice.payment_hash),
+                    payment_secret: parsed_invoice.payment_secret,
+                    destination: Vec::from(parsed_invoice.payee_pubkey),
+                    incoming_amount_msat: amount_msats as i64,
+                    outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64
                 }).await
                 .expect("Failed to register payment");
         }

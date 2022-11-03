@@ -18,7 +18,7 @@ use crate::persist;
 pub struct NodeService {
     config: Config,
     client: Box<dyn NodeAPI>,
-    client_grpc: Box<dyn LspAPI>,
+    lsp: Box<dyn LspAPI>,
     chain_service: MempoolSpace,
     persister: persist::db::SqliteStorage,
 }
@@ -67,6 +67,12 @@ impl NodeService {
         })
     }
 
+    pub async fn list_lsps(&self) -> Result<HashMap<std::string::String, LspInformation>> {
+        self.lsp
+            .list_lsps(self.get_node_state()?.ok_or(anyhow!("err"))?.id)
+            .await
+    }
+
     fn set_node_state(&self, state: &NodeState) -> Result<()> {
         let serialized_state = serde_json::to_string(state)?;
         self.persister
@@ -90,7 +96,7 @@ impl NodeService {
 pub struct NodeServiceBuilder {
     config: Option<Config>,
     client: Option<Box<dyn NodeAPI>>,
-    client_grpc: Option<Box<dyn LspAPI>>,
+    lsp: Option<Box<dyn LspAPI>>,
 }
 
 impl NodeServiceBuilder {
@@ -105,24 +111,24 @@ impl NodeServiceBuilder {
     }
 
     /// Initialize the Breez gRPC Client to a custom implementation
-    pub fn client_grpc(mut self, client_grpc: Box<dyn LspAPI>) -> Self {
-        self.client_grpc = Some(client_grpc);
+    pub fn client_grpc(mut self, lsp: Box<dyn LspAPI>) -> Self {
+        self.lsp = Some(lsp);
         self
     }
 
     /// Initializes the Breez gRPC Client based on the configured Breez endpoint in the config
     pub async fn client_grpc_init_from_config(mut self) -> Self {
         let breez_server_endpoint = BreezLSP::new(
-            &self
-                .config
+            self.config
                 .as_ref()
                 .expect(
                     "Config not set. Please set config before calling this method in the builder.",
                 )
-                .breezserver,
+                .breezserver
+                .clone(),
         )
         .await;
-        self.client_grpc = Some(Box::new(breez_server_endpoint));
+        self.lsp = Some(Box::new(breez_server_endpoint));
         self
     }
 
@@ -137,7 +143,7 @@ impl NodeServiceBuilder {
         NodeService {
             config,
             client: self.client.unwrap(),
-            client_grpc: self.client_grpc.unwrap(),
+            lsp: self.lsp.unwrap(),
             chain_service,
             persister: persist::db::SqliteStorage::open(persist_file).unwrap(),
         }
@@ -145,23 +151,25 @@ impl NodeServiceBuilder {
 }
 
 pub struct BreezLSP {
-    client_grpc: ChannelOpenerClient<Channel>,
+    server_url: String,
 }
 
 impl BreezLSP {
-    pub async fn new(breezserver: &str) -> Self {
-        Self {
-            client_grpc: ChannelOpenerClient::connect(Uri::from_str(breezserver).unwrap())
-                .await
-                .unwrap(),
-        }
+    pub async fn new(server_url: String) -> Self {
+        Self { server_url }
+    }
+
+    async fn get_channel_opener_client(&self) -> Result<ChannelOpenerClient<Channel>> {
+        ChannelOpenerClient::connect(Uri::from_str(&self.server_url).unwrap())
+            .await
+            .map_err(|e| anyhow!(e))
     }
 }
 
 #[tonic::async_trait]
 impl LspAPI for BreezLSP {
-    async fn list_lsps(&mut self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
-        let client = &mut self.client_grpc;
+    async fn list_lsps(&self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
+        let mut client = self.get_channel_opener_client().await?;
 
         let request = Request::new(LspListRequest { pubkey });
         let response = client.lsp_list(request).await?;
@@ -173,7 +181,7 @@ impl LspAPI for BreezLSP {
         lsp: &LspInformation,
         payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply> {
-        let client = &mut self.client_grpc;
+        let mut client = self.get_channel_opener_client().await?;
 
         let mut buf = Vec::new();
         buf.reserve(payment_info.encoded_len());
@@ -294,7 +302,7 @@ mod test {
 
         node_service.sync().await?;
         let node_pubkey = node_service.get_node_state()?.unwrap().id;
-        let lsps = node_service.client_grpc.list_lsps(node_pubkey).await?;
+        let lsps = node_service.lsp.list_lsps(node_pubkey).await?;
         assert!(lsps.is_empty()); // The mock returns an empty list
 
         Ok(())

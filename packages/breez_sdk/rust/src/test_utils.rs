@@ -15,7 +15,7 @@ pub struct MockNodeAPI {
 
 #[tonic::async_trait]
 impl NodeAPI for MockNodeAPI {
-    async fn start(&mut self) -> Result<()> {
+    async fn start(&self) -> Result<()> {
         Ok(())
     }
 
@@ -35,7 +35,7 @@ pub struct MockBreezLSP {}
 
 #[tonic::async_trait]
 impl LspAPI for MockBreezLSP {
-    async fn list_lsps(&mut self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
+    async fn list_lsps(&self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
         Ok(HashMap::new())
     }
 

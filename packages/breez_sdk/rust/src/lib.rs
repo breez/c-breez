@@ -3,7 +3,7 @@ mod chain;
 mod crypto;
 mod fiat;
 mod greenlight;
-mod grpc;
+pub mod grpc;
 mod invoice;
 pub mod models;
 pub mod node_service;

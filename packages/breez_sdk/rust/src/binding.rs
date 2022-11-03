@@ -1,22 +1,26 @@
+use crate::grpc::LspInformation;
+use lazy_static::lazy_static;
+use std::collections::HashMap;
 use std::future::Future;
 use std::sync::Mutex;
 
 use anyhow::{anyhow, Result};
-use once_cell::sync::Lazy;
 
 use crate::models::{
-    Config, GreenlightCredentials, LightningTransaction, Network, PaymentTypeFilter,
+    Config, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter,
 };
 use crate::node_service::NodeServiceBuilder;
 use crate::{greenlight::Greenlight, node_service::NodeService};
 
-static STATE: Lazy<Mutex<Option<Greenlight>>> = Lazy::new(|| Mutex::new(None));
+lazy_static! {
+    static ref STATE: Mutex<Option<Greenlight>> = Mutex::new(None);
+}
 
 pub fn register_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
     block_on(Greenlight::register(network, seed))
 }
 
-pub async fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
     block_on(Greenlight::recover(network, seed))
 }
 
@@ -26,32 +30,41 @@ pub fn create_node_services(
     creds: GreenlightCredentials,
 ) -> Result<NodeService> {
     let greenlight = block_on(Greenlight::new(network, seed, creds))?;
-    *STATE.lock().unwrap() = Some(greenlight);
+    *STATE.lock().unwrap() = Some(greenlight.clone());
     block_on(build_services())
 }
 
-pub async fn start_node() -> Result<()> {
-    block_on(build_services().await?.start_node())
+pub fn start_node() -> Result<()> {
+    block_on(async { build_services().await?.start_node().await })
 }
 
-pub async fn run_signer() -> Result<()> {
-    block_on(build_services().await?.run_signer())
+pub fn run_signer() -> Result<()> {
+    block_on(async { build_services().await?.run_signer().await })
 }
 
-pub async fn sync() -> Result<()> {
-    block_on(build_services().await?.sync())
+pub fn sync() -> Result<()> {
+    block_on(async { build_services().await?.sync().await })
 }
 
-pub async fn list_transactions(
+pub fn list_lsps() -> Result<HashMap<std::string::String, LspInformation>> {
+    block_on(async { build_services().await?.list_lsps().await })
+}
+
+pub fn get_node_state() -> Result<Option<NodeState>> {
+    block_on(async { build_services().await?.get_node_state() })
+}
+
+pub fn list_transactions(
     filter: PaymentTypeFilter,
     from_timestamp: Option<i64>,
     to_timestamp: Option<i64>,
 ) -> Result<Vec<LightningTransaction>> {
-    block_on(
+    block_on(async {
         build_services()
             .await?
-            .list_transactions(filter, from_timestamp, to_timestamp),
-    )
+            .list_transactions(filter, from_timestamp, to_timestamp)
+            .await
+    })
 }
 
 async fn build_services() -> Result<NodeService> {

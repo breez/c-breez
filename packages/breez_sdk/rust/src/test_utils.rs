@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use gl_client::pb::{Amount, Invoice};
 use gl_client::pb::amount::Unit;
+use gl_client::pb::{Amount, Invoice};
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
@@ -37,14 +37,16 @@ impl NodeAPI for MockNodeAPI {
         Ok(Invoice {
             label: "".to_string(),
             description,
-            amount: Some(Amount{ unit: Some(Unit::Satoshi(amount_sats))}),
+            amount: Some(Amount {
+                unit: Some(Unit::Satoshi(amount_sats)),
+            }),
             received: None,
             status: 0,
             payment_time: 0,
             expiry_time: 0,
             bolt11: "".to_string(),
             payment_hash: vec![],
-            payment_preimage: vec![]
+            payment_preimage: vec![],
         })
     }
 }
@@ -68,12 +70,12 @@ impl LspAPI for MockBreezLSP {
 
 #[tonic::async_trait]
 impl FiatAPI for MockBreezLSP {
-    fn list_fiat_currencies() -> Result<HashMap<std::string::String, FiatCurrency>> {
-        Ok(HashMap::new())
+    fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> {
+        Ok(vec![])
     }
 
-    async fn fetch_rates(&self) -> Result<HashMap<String, f64>> {
-        Ok(HashMap::from_iter(vec![("USD".to_string(), 20_000.00)]))
+    async fn fetch_rates(&self) -> Result<Vec<(String, f64)>> {
+        Ok(vec![("USD".to_string(), 20_000.00)])
     }
 }
 

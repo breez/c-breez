@@ -33,8 +33,8 @@ pub trait LspAPI {
 
 #[tonic::async_trait]
 pub trait FiatAPI {
-    fn list_fiat_currencies() -> Result<HashMap<std::string::String, FiatCurrency>>;
-    async fn fetch_rates(&self) -> Result<HashMap<String, f64>>;
+    fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>>;
+    async fn fetch_rates(&self) -> Result<Vec<(String, f64)>>;
 }
 
 #[derive(Clone)]

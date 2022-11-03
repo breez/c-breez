@@ -3,7 +3,7 @@ use crate::models::FiatAPI;
 use crate::node_service::BreezLSP;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs};
+use std::collections::HashMap;
 use tonic::Request;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -35,8 +35,7 @@ pub struct FiatCurrency {
 impl FiatAPI for BreezLSP {
     // retrieve all available fiat currencies from a local configuration file
     fn list_fiat_currencies() -> Result<HashMap<std::string::String, FiatCurrency>> {
-        // Perhaps use https://doc.rust-lang.org/std/macro.include_bytes.html instead of loading the file this way
-        let data = fs::read_to_string("./assets/json/currencies.json").expect("Can't read file");
+        let data = include_str!("../assets/json/currencies.json");
         Ok(serde_json::from_str(&data).unwrap())
     }
 

@@ -4,8 +4,8 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
+use lightning_signer::lightning_invoice::RawInvoice;
 use prost::Message;
-use rand::random;
 use tonic::Request;
 use tonic::transport::{Channel, Uri};
 
@@ -108,8 +108,7 @@ impl NodeService {
             .cloned()
     }
 
-    // TODO Returns invoice. New struct? Or return as bolt11?
-    async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<()> {
+    async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<RawInvoice> {
         let lsp_info = &self.get_lsp().await?;
         let node_state = self.get_node_state()?.expect("Failed to retrieve node state");
 
@@ -155,14 +154,13 @@ impl NodeService {
             htlc_minimum_msat: Some(lsp_info.min_htlc_msat as u64), // TODO correct?
             htlc_maximum_msat: Some(4000), // TODO ?
         };
-        let raw_invoice = add_routing_hints(
+        let raw_invoice_with_hint = add_routing_hints(
             &invoice.bolt11,
             vec![ RouteHint(vec![lsp_hop]) ],
             amount_sats
         )?;
 
-        // TODO Create bolt11 via signer?
-        // TODO bolt11WithHints =   await _signer!.addRoutingHints
+        // TODO Sign raw_invoice_with_hint
 
         // register the payment at the lsp if needed
         if destination_invoice_amount_sats < amount_sats {
@@ -181,9 +179,7 @@ impl NodeService {
         }
 
         // return the converted invoice
-        // TODO invoice.copyWithNewAmount(amountMsats: amountMSat, bolt11: bolt11WithHints);
-
-        Ok(())
+        Ok(raw_invoice_with_hint)
     }
 }
 

@@ -109,7 +109,7 @@ impl NodeService {
 
         let amount_msats = amount_sats * 1000;
 
-        // TODO int shortChannelId = ((1 & 0xFFFFFF) << 40 | (0 & 0xFFFFFF) << 16 | (0 & 0xFFFF));
+        let mut short_channel_id = parse_short_channel_id("1x0x0");
         let mut destination_invoice_amount_sats = amount_msats;
 
         // check if we need to open channel
@@ -132,7 +132,7 @@ impl NodeService {
             for peer in self.client.list_peers().await? {
                 if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
                     let active_channel = peer.channels.iter().find(|&c| c.state == "OPEN").expect("No open channel found");
-                    let short_channel_id = parse_short_channel_id(&active_channel.short_channel_id);
+                    short_channel_id = parse_short_channel_id(&active_channel.short_channel_id);
                     break;
                 }
             }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:breez_sdk/src/chain_service/chain_service_mempool_space_settings.dart';
 import 'package:breez_sdk/src/storage/dao/swaps_dao.dart';
 import 'package:breez_sdk/src/storage/dao/utxos_dao.dart';
 import 'package:breez_sdk/src/storage/storage.dart';
@@ -173,12 +174,12 @@ LazyDatabase _openConnection() {
   Peers,
   Settings,
   Utxos,
-  Swaps
+  Swaps,
 ], daos: [  
   PaymentsDao,
   SettingsDao,  
   UtxosDao,
-  SwapsDao
+  SwapsDao,
 ])
 class AppDatabase extends _$AppDatabase implements Storage {
   // we tell the database where to store the data with this constructor
@@ -187,7 +188,7 @@ class AppDatabase extends _$AppDatabase implements Storage {
   // you should bump this number whenever you change or add a table definition. Migrations
   // are covered later in this readme.
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration {
@@ -320,5 +321,33 @@ class AppDatabase extends _$AppDatabase implements Storage {
   Future<Swap> updateSwap(String bitcoinAddress, {String? payreq, int? confirmedSats, int? paidSats, String? error}) {
     return swapsDao.updateSwap(bitcoinAddress, payreq: payreq, 
     confirmedSats: confirmedSats, paidSats: paidSats, error: error);
+  }
+
+  @override
+  Future<ChainServiceMempoolSpaceSettings> getMempoolSpaceSettings() {
+    return settingsDao.readSettings(mempoolSpaceSettingsKey).then((s) {
+      final jsonData = s?.value;
+      if (jsonData != null) {
+        return ChainServiceMempoolSpaceSettings.fromJson(jsonData);
+      } else {
+        return ChainServiceMempoolSpaceSettings.defaults();
+      }
+    });
+  }
+
+  @override
+  Future<int> setMempoolSpaceSettings(String scheme, String host, String? port) {
+    return settingsDao.updateSettings(
+      mempoolSpaceSettingsKey,
+      ChainServiceMempoolSpaceSettings(scheme: scheme, host: host, port: port).toJson(),
+    );
+  }
+
+  @override
+  Future<void> resetMempoolSpaceSettings() {
+    return settingsDao.updateSettings(
+      mempoolSpaceSettingsKey,
+      ChainServiceMempoolSpaceSettings.defaults().toJson(),
+    );
   }
 }

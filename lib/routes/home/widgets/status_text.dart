@@ -61,24 +61,14 @@ class StatusText extends StatelessWidget {
       );
     }
 
-    if (account.status == AccountStatus.CONNECTED) {
-      return AutoSizeText(
-        texts.status_text_ready,
-        style: themeData.textTheme.bodyText2?.copyWith(
-          color: themeData.colorScheme.onSecondary,
-        ),
-        textAlign: TextAlign.center,
-        minFontSize: MinFontSize(context).minFontSize,
-        stepGranularity: 0.1,
-      );
-    }
-
-    return Text(
-      texts.status_opening_secure_connection,
+    return AutoSizeText(
+      texts.status_text_ready,
       style: themeData.textTheme.bodyText2?.copyWith(
         color: themeData.colorScheme.onSecondary,
       ),
       textAlign: TextAlign.center,
+      minFontSize: MinFontSize(context).minFontSize,
+      stepGranularity: 0.1,
     );
   }
 }

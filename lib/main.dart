@@ -24,6 +24,8 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'bloc/network/network_settings_bloc.dart';
+
 final _log = FimberLog("Main");
 
 void main() async {
@@ -69,6 +71,9 @@ void main() async {
                 ),
                 BlocProvider<SecurityBloc>(
                   create: (BuildContext context) => SecurityBloc(),
+                ),
+                BlocProvider<NetworkSettingsBloc>(
+                  create: (BuildContext context) => NetworkSettingsBloc(lightningServices),
                 ),
                 BlocProvider<WithdrawFundsBloc>(
                   create: (BuildContext context) => WithdrawFundsBloc(lightningServices),

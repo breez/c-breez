@@ -1,3 +1,4 @@
+import 'package:breez_sdk/src/chain_service/chain_service_mempool_space_settings.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart';
 import 'package:drift/native.dart';
 
@@ -37,4 +38,8 @@ abstract class Storage {
   Future addSwap(Swap s);
   Future<Swap> updateSwap(String bitcoinAddress, {String? payreq, int? confirmedSats, int? paidSats, String? error});
   Future<List<Swap>> listSwaps();
+
+  Future<ChainServiceMempoolSpaceSettings> getMempoolSpaceSettings();
+  Future<int> setMempoolSpaceSettings(String scheme, String host, String? port);
+  Future<void> resetMempoolSpaceSettings();
 }

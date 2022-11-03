@@ -3,7 +3,6 @@ use crate::models::{
     GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse,
 };
 use anyhow::Result;
-use gl_client::node::Client;
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
@@ -18,9 +17,7 @@ const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
 #[derive(Clone)]
 pub(crate) struct Greenlight {
     tls_config: TlsConfig,
-    scheduler: Scheduler,
     signer: Signer,
-    client: Option<Client>,
 }
 
 impl Greenlight {
@@ -32,12 +29,9 @@ impl Greenlight {
         let greenlight_network = parse_network(&network);
         let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
         let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
-        let scheduler = Scheduler::new(signer.node_id(), greenlight_network).await?;
         Ok(Greenlight {
-            tls_config,
-            scheduler,
-            signer,
-            client: None,
+            tls_config: tls_config.clone(),
+            signer: signer.clone(),
         })
     }
 
@@ -49,8 +43,8 @@ impl Greenlight {
         let recover_res: pb::RegistrationResponse = scheduler.register(&signer).await?;
 
         Ok(GreenlightCredentials {
-            device_key: recover_res.device_key.as_bytes().to_vec(),
-            device_cert: recover_res.device_cert.as_bytes().to_vec(),
+            device_key: recover_res.device_key.into(),
+            device_cert: recover_res.device_cert.into(),
         })
     }
 
@@ -66,13 +60,22 @@ impl Greenlight {
             device_cert: recover_res.device_cert.as_bytes().to_vec(),
         })
     }
+
+    async fn get_client(&self) -> Result<node::Client> {
+        let scheduler = Scheduler::new(
+            self.signer.node_id(),
+            lightning_signer::bitcoin::Network::Bitcoin,
+        )
+        .await?;
+        let client: node::Client = scheduler.schedule(self.tls_config.clone()).await?;
+        Ok(client)
+    }
 }
 
 #[tonic::async_trait]
 impl NodeAPI for Greenlight {
-    async fn start(&mut self) -> Result<()> {
-        let client: node::Client = self.scheduler.schedule(self.tls_config.clone()).await?;
-        self.client = Some(client.clone());
+    async fn start(&self) -> Result<()> {
+        self.get_client().await?;
         Ok(())
     }
 
@@ -84,7 +87,7 @@ impl NodeAPI for Greenlight {
 
     // implemenet pull changes from greenlight
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse> {
-        let client = &mut self.client.clone().unwrap();
+        let mut client = self.get_client().await?;
 
         // list all peers
         let peers = client

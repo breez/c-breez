@@ -13,13 +13,13 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 #[tonic::async_trait]
 pub trait NodeAPI {
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
-    async fn start(&mut self) -> Result<()>;
+    async fn start(&self) -> Result<()>;
     async fn run_signer(&self) -> Result<()>;
 }
 
 #[tonic::async_trait]
 pub trait LspAPI {
-    async fn list_lsps(&mut self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
+    async fn list_lsps(&self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
     async fn register_payment(
         &mut self,
         lsp: &LspInformation,
@@ -46,6 +46,7 @@ impl Default for Config {
     }
 }
 
+#[derive(Clone)]
 pub struct GreenlightCredentials {
     pub device_key: Vec<u8>,
     pub device_cert: Vec<u8>,

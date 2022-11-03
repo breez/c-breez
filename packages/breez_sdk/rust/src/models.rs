@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use gl_client::pb::Invoice;
 use serde::{Deserialize, Serialize};
 
 use crate::fiat::FiatCurrency;
@@ -13,6 +14,7 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 
 #[tonic::async_trait]
 pub trait NodeAPI {
+    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     async fn start(&self) -> Result<()>;
     async fn run_signer(&self) -> Result<()>;

@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use gl_client::pb::{Amount, Invoice};
+use gl_client::pb::amount::Unit;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
@@ -16,7 +18,7 @@ pub struct MockNodeAPI {
 
 #[tonic::async_trait]
 impl NodeAPI for MockNodeAPI {
-    async fn start(&mut self) -> Result<()> {
+    async fn start(&self) -> Result<()> {
         Ok(())
     }
 
@@ -34,18 +36,37 @@ impl NodeAPI for MockNodeAPI {
     async fn list_peers(&self) -> Result<Vec<Peer>> {
         Ok(vec![])
     }
+
+    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
+        Ok(Invoice {
+            label: "".to_string(),
+            description,
+            amount: Some(Amount{ unit: Some(Unit::Satoshi(amount_sats))}),
+            received: None,
+            status: 0,
+            payment_time: 0,
+            expiry_time: 0,
+            bolt11: "".to_string(),
+            payment_hash: vec![],
+            payment_preimage: vec![]
+        })
+    }
 }
 
 pub struct MockBreezLSP {}
 
 #[tonic::async_trait]
 impl LspAPI for MockBreezLSP {
-    async fn list_lsps(&mut self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
+    async fn list_lsps(&self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
         Ok(HashMap::new())
     }
 
-    async fn register_payment(&mut self, _lsp: &LspInformation, _payment_info: PaymentInformation) -> Result<RegisterPaymentReply> {
-        Ok(RegisterPaymentReply { })
+    async fn register_payment(
+        &mut self,
+        _lsp: &LspInformation,
+        _payment_info: PaymentInformation,
+    ) -> Result<RegisterPaymentReply> {
+        Ok(RegisterPaymentReply {})
     }
 }
 

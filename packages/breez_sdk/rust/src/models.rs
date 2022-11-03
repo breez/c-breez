@@ -2,10 +2,11 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use gl_client::pb::Peer;
+use gl_client::pb::Invoice;
 use serde::{Deserialize, Serialize};
 
-use crate::grpc::breez::{LspInformation, RegisterPaymentReply};
-use crate::grpc::lspd::PaymentInformation;
+use crate::grpc::PaymentInformation;
+use crate::grpc::{LspInformation, RegisterPaymentReply};
 use crate::models::Network::Bitcoin;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
@@ -13,16 +14,21 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 
 #[tonic::async_trait]
 pub trait NodeAPI {
+    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
-    async fn start(&mut self) -> Result<()>;
+    async fn start(&self) -> Result<()>;
     async fn run_signer(&self) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;
 }
 
 #[tonic::async_trait]
 pub trait LspAPI {
-    async fn list_lsps(&mut self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
-    async fn register_payment(&mut self, lsp: &LspInformation, payment_info: PaymentInformation) -> Result<RegisterPaymentReply>;
+    async fn list_lsps(&self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
+    async fn register_payment(
+        &mut self,
+        lsp: &LspInformation,
+        payment_info: PaymentInformation,
+    ) -> Result<RegisterPaymentReply>;
 }
 
 #[derive(Clone)]
@@ -39,11 +45,12 @@ impl Default for Config {
             breezserver: "https://bs1-st.breez.technology:443".to_string(),
             mempoolspace_url: "https://mempool.space".to_string(),
             working_dir: ".".to_string(),
-            network: Bitcoin
+            network: Bitcoin,
         }
     }
 }
 
+#[derive(Clone)]
 pub struct GreenlightCredentials {
     pub device_key: Vec<u8>,
     pub device_cert: Vec<u8>,
@@ -112,27 +119,27 @@ pub fn parse_short_channel_id(id_str: &str) -> i64 {
 }
 #[cfg(test)]
 mod tests {
+    use crate::grpc::PaymentInformation;
     use prost::Message;
     use rand::random;
-    use crate::grpc::lspd::PaymentInformation;
 
-    use crate::test_utils::{rand_vec_u8};
+    use crate::test_utils::rand_vec_u8;
 
     #[test]
-    fn test_payment_information_ser_de() -> Result<(), Box<dyn std::error::Error>>  {
+    fn test_payment_information_ser_de() -> Result<(), Box<dyn std::error::Error>> {
         let dummy_payment_info = PaymentInformation {
             payment_hash: rand_vec_u8(10),
             payment_secret: rand_vec_u8(10),
             destination: rand_vec_u8(10),
             incoming_amount_msat: random(),
-            outgoing_amount_msat: random()
+            outgoing_amount_msat: random(),
         };
 
         let mut buf = Vec::new();
         buf.reserve(dummy_payment_info.encoded_len());
         dummy_payment_info.encode(&mut buf)?;
 
-        let decoded_payment_info : PaymentInformation = PaymentInformation::decode(&*buf)?;
+        let decoded_payment_info: PaymentInformation = PaymentInformation::decode(&*buf)?;
 
         assert_eq!(dummy_payment_info, decoded_payment_info);
 

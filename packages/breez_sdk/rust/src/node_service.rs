@@ -221,7 +221,7 @@ mod test {
 
     #[tokio::test]
     async fn test_node_state() {
-        std::fs::remove_file("./storage.sql").ok();
+        std::fs::remove_file("./storage.sql").expect("Failed to delete file");
         let dummy_node_state = get_dummy_node_state();
 
         let dummy_transactions = vec![

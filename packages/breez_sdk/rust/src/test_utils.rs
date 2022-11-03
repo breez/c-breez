@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use gl_client::pb::{Amount, Invoice};
+use gl_client::pb::amount::Unit;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
@@ -27,6 +29,21 @@ impl NodeAPI for MockNodeAPI {
         Ok(SyncResponse {
             node_state: self.node_state.clone(),
             transactions: self.transactions.clone(),
+        })
+    }
+
+    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
+        Ok(Invoice {
+            label: "".to_string(),
+            description,
+            amount: Some(Amount{ unit: Some(Unit::Satoshi(amount_sats))}),
+            received: None,
+            status: 0,
+            payment_time: 0,
+            expiry_time: 0,
+            bolt11: "".to_string(),
+            payment_hash: vec![],
+            payment_preimage: vec![]
         })
     }
 }

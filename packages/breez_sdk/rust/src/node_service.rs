@@ -12,9 +12,7 @@ use crate::crypto::encrypt;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
-use crate::grpc::{
-    LspInformation, LspListRequest, RatesRequest, RegisterPaymentReply, RegisterPaymentRequest,
-};
+use crate::grpc::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::models::{Config, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter};
 use crate::persist;
 
@@ -168,7 +166,7 @@ impl BreezLSP {
             .map_err(|e| anyhow!(e))
     }
 
-    async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
+    pub async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
         InformationClient::connect(Uri::from_str(&self.server_url).unwrap())
             .await
             .map_err(|e| anyhow!(e))
@@ -203,19 +201,6 @@ impl LspAPI for BreezLSP {
         let response = client.register_payment(request).await?;
 
         Ok(response.into_inner())
-    }
-
-    async fn rates(&mut self) -> Result<HashMap<String, f64>> {
-        let mut client = self.get_information_client().await?;
-
-        let request = Request::new(RatesRequest {});
-        let response = client.rates(request).await?;
-        Ok(response
-            .into_inner()
-            .rates
-            .into_iter()
-            .map(|r| (r.coin, r.value))
-            .collect())
     }
 }
 

@@ -1,6 +1,10 @@
-use std::{collections::HashMap, fs};
-
+use crate::grpc::RatesRequest;
+use crate::models::FiatAPI;
+use crate::node_service::BreezLSP;
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, fs};
+use tonic::Request;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Symbol {
@@ -27,15 +31,26 @@ pub struct FiatCurrency {
     localized_name: Option<HashMap<String, String>>,
     locale_overrides: Option<HashMap<String, LocaleOverrides>>,
 }
+#[tonic::async_trait]
+impl FiatAPI for BreezLSP {
+    // retrieve all available fiat currencies from a local configuration file
+    fn list_fiat_currencies() -> Result<HashMap<std::string::String, FiatCurrency>> {
+        // Perhaps use https://doc.rust-lang.org/std/macro.include_bytes.html instead of loading the file this way
+        let data = fs::read_to_string("./assets/json/currencies.json").expect("Can't read file");
+        Ok(serde_json::from_str(&data).unwrap())
+    }
 
-// retrieve all available fiat currencies from a local configuration file
-pub fn list_fiat_currencies() -> HashMap<std::string::String, FiatCurrency> {
-    // Perhaps use https://doc.rust-lang.org/std/macro.include_bytes.html instead of loading the file this way
-    let data = fs::read_to_string("./assets/json/currencies.json").expect("Can't read file");
-    serde_json::from_str(&data).unwrap()
-}
+    // get the live rates from the server
+    async fn fetch_rates(&self) -> Result<HashMap<String, f64>> {
+        let mut client = self.get_information_client().await?;
 
-// get the live rates from the server
-pub fn fetch_rates() {
-    todo!();
+        let request = Request::new(RatesRequest {});
+        let response = client.rates(request).await?;
+        Ok(response
+            .into_inner()
+            .rates
+            .into_iter()
+            .map(|r| (r.coin, r.value))
+            .collect())
+    }
 }

@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
+use crate::fiat::FiatCurrency;
 use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, RegisterPaymentReply};
 use crate::models::Network::Bitcoin;
@@ -25,7 +26,13 @@ pub trait LspAPI {
         lsp: &LspInformation,
         payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply>;
-    async fn rates(&mut self) -> Result<HashMap<String, f64>>;
+}
+
+
+#[tonic::async_trait]
+pub trait FiatAPI {
+    fn list_fiat_currencies() -> Result<HashMap<std::string::String, FiatCurrency>>;
+    async fn fetch_rates(&self) -> Result<HashMap<String, f64>>;
 }
 
 #[derive(Clone)]

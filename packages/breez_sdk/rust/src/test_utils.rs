@@ -4,9 +4,10 @@ use anyhow::Result;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
+use crate::fiat::FiatCurrency;
 use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, RegisterPaymentReply};
-use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
+use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,
@@ -46,12 +47,16 @@ impl LspAPI for MockBreezLSP {
     ) -> Result<RegisterPaymentReply> {
         Ok(RegisterPaymentReply {})
     }
+}
 
-    async fn rates(&mut self) -> Result<HashMap<String, f64>> {
-        Ok(HashMap::from_iter(vec![(
-            "USD".to_string(),
-            20_000.00,
-        )]))
+#[tonic::async_trait]
+impl FiatAPI for MockBreezLSP {
+    fn list_fiat_currencies() -> Result<HashMap<std::string::String, FiatCurrency>> {
+        Ok(HashMap::new())
+    }
+
+    async fn fetch_rates(&self) -> Result<HashMap<String, f64>> {
+        Ok(HashMap::from_iter(vec![("USD".to_string(), 20_000.00)]))
     }
 }
 

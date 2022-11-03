@@ -13,8 +13,8 @@ use std::cmp::max;
 use gl_client::pb::Peer;
 use tokio::sync::mpsc;
 
-pub(crate) const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
-pub(crate) const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
+const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
+const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
 
 #[derive(Clone)]
 pub(crate) struct Greenlight {

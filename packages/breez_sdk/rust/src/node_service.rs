@@ -10,7 +10,6 @@ use tonic::Request;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
-use crate::greenlight::MAX_INBOUND_LIQUIDITY_MSAT;
 use crate::crypto::encrypt;
 use crate::grpc::breez::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::grpc::breez::channel_opener_client::ChannelOpenerClient;
@@ -106,6 +105,7 @@ impl NodeService {
     // TODO Returns invoice. New struct? Or return as bolt11?
     async fn request_payment(&mut self, amount_sats: u64) -> Result<()> {
         let lsp_info = &self.get_lsp().await?;
+        let node_state = self.get_node_state()?.expect("Failed to retrieve node state");
 
         let amount_msats = amount_sats * 1000;
 
@@ -113,7 +113,7 @@ impl NodeService {
         let mut destination_invoice_amount_sats = amount_msats;
 
         // check if we need to open channel
-        if MAX_INBOUND_LIQUIDITY_MSAT < amount_msats {
+        if node_state.inbound_liquidity_msats < amount_msats {
             // TODO logging
 
             // we need to open channel so we are calculating the fees for the LSP

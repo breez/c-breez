@@ -15,6 +15,7 @@ use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, Pa
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
+use crate::invoice::{add_routing_hints, RouteHint, RouteHintHop};
 use crate::persist;
 use crate::test_utils::rand_vec_u8;
 
@@ -144,9 +145,22 @@ impl NodeService {
             }
         }
 
-        self.client.create_invoice(amount_sats, description).await?;
+        let invoice = self.client.create_invoice(amount_sats, description).await?;
 
-        // TODO create RouteHintHop
+        let lsp_hop = RouteHintHop {
+            src_node_id: node_state.id, // TODO correct?
+            short_channel_id: short_channel_id as u64,
+            fees_base_msat: lsp_info.base_fee_msat as u32,
+            fees_proportional_millionths: 100, // TODO
+            cltv_expiry_delta: 2000, // TODO // invoice.expiry_time ?
+            htlc_minimum_msat: Some(lsp_info.min_htlc_msat as u64), // TODO correct?
+            htlc_maximum_msat: Some(4000), // TODO ?
+        };
+        let raw_invoice = add_routing_hints(
+            &invoice.bolt11,
+            vec![ RouteHint(vec![lsp_hop]) ],
+            amount_sats
+        )?;
 
         // TODO Create bolt11 via signer?
         // TODO bolt11WithHints =   await _signer!.addRoutingHints

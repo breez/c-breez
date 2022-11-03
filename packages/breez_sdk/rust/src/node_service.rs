@@ -166,7 +166,7 @@ impl BreezLSP {
             .map_err(|e| anyhow!(e))
     }
 
-    pub async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
+    pub(crate) async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
         InformationClient::connect(Uri::from_str(&self.server_url).unwrap())
             .await
             .map_err(|e| anyhow!(e))

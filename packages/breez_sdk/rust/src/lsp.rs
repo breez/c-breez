@@ -6,13 +6,13 @@ use crate::grpc::{
     RegisterPaymentRequest,
 };
 use crate::models::LspAPI;
-use crate::node_service::BreezLSP;
+use crate::node_service::BreezServer;
 use anyhow::Result;
 use prost::Message;
 use tonic::Request;
 
 #[tonic::async_trait]
-impl LspAPI for BreezLSP {
+impl LspAPI for BreezServer {
     async fn list_lsps(&self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
         let mut client = self.get_channel_opener_client().await?;
 

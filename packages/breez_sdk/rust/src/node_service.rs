@@ -120,7 +120,7 @@ impl NodeServiceBuilder {
 
     /// Initializes the Breez gRPC Client based on the configured Breez endpoint in the config
     pub async fn client_grpc_init_from_config(mut self) -> Self {
-        let breez_server_endpoint = BreezLSP::new(
+        let breez_server_endpoint = BreezServer::new(
             self.config
                 .as_ref()
                 .expect(
@@ -153,11 +153,11 @@ impl NodeServiceBuilder {
     }
 }
 
-pub struct BreezLSP {
+pub struct BreezServer {
     server_url: String,
 }
 
-impl BreezLSP {
+impl BreezServer {
     pub async fn new(server_url: String) -> Self {
         Self { server_url }
     }
@@ -189,7 +189,7 @@ mod test {
 
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
-    use crate::test_utils::{MockBreezLSP, MockNodeAPI};
+    use crate::test_utils::{MockBreezServer, MockNodeAPI};
 
     #[test]
     fn test_config() {
@@ -241,7 +241,7 @@ mod test {
                 node_state: dummy_node_state.clone(),
                 transactions: dummy_transactions.clone(),
             }))
-            .client_grpc(Box::new(MockBreezLSP {}), Box::new(MockBreezLSP {}))
+            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
             .build()
             .await;
 
@@ -300,7 +300,7 @@ mod test {
                 node_state: get_dummy_node_state(),
                 transactions: vec![],
             }))
-            .client_grpc(Box::new(MockBreezLSP {}), Box::new(MockBreezLSP {}))
+            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
             .build()
             .await
     }

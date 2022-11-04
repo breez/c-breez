@@ -50,10 +50,10 @@ impl NodeAPI for MockNodeAPI {
     }
 }
 
-pub struct MockBreezLSP {}
+pub struct MockBreezServer {}
 
 #[tonic::async_trait]
-impl LspAPI for MockBreezLSP {
+impl LspAPI for MockBreezServer {
     async fn list_lsps(&self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
         Ok(HashMap::new())
     }
@@ -68,7 +68,7 @@ impl LspAPI for MockBreezLSP {
 }
 
 #[tonic::async_trait]
-impl FiatAPI for MockBreezLSP {
+impl FiatAPI for MockBreezServer {
     fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> {
         Ok(vec![])
     }

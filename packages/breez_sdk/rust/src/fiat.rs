@@ -1,6 +1,6 @@
 use crate::grpc::RatesRequest;
 use crate::models::FiatAPI;
-use crate::node_service::BreezLSP;
+use crate::node_service::BreezServer;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use tonic::Request;
@@ -31,7 +31,7 @@ pub struct FiatCurrency {
     locale_overrides: Option<Vec<(String, LocaleOverrides)>>,
 }
 #[tonic::async_trait]
-impl FiatAPI for BreezLSP {
+impl FiatAPI for BreezServer {
     // retrieve all available fiat currencies from a local configuration file
     fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> {
         let data = include_str!("../assets/json/currencies.json");

@@ -7,8 +7,7 @@ use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
 use crate::fiat::FiatCurrency;
-use crate::grpc::PaymentInformation;
-use crate::grpc::{LspInformation, RegisterPaymentReply};
+use crate::grpc::{LspInformation, PaymentInformation, RegisterPaymentReply};
 use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 
 pub struct MockNodeAPI {

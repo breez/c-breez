@@ -89,7 +89,7 @@ impl NodeService {
             .map_err(|err| anyhow!(err))
     }
 
-    fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
+    pub fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
         self.persister.update_setting("lsp".to_string(), lsp_id)?;
         Ok(())
     }
@@ -108,7 +108,7 @@ impl NodeService {
             .cloned()
     }
 
-    async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<RawInvoice> {
+    pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<RawInvoice> {
         let lsp_info = &self.get_lsp().await?;
         let node_state = self.get_node_state()?.expect("Failed to retrieve node state");
 
@@ -120,6 +120,7 @@ impl NodeService {
         // check if we need to open channel
         if node_state.inbound_liquidity_msats < amount_msats {
             // TODO logging
+            println!("We need to open a channel");
 
             // we need to open channel so we are calculating the fees for the LSP
             let channel_fees_msat_calculated = amount_msats * lsp_info.channel_fee_permyriad as u64 / 10_000 / 1_000_000;
@@ -134,17 +135,22 @@ impl NodeService {
         }
         else {
             // not opening a channel so we need to get the real channel id into the routing hints
+            println!("Finding channel ID for routing hint");
             for peer in self.client.list_peers().await? {
                 if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
                     let active_channel = peer.channels.iter().find(|&c| c.state == "OPEN").expect("No open channel found");
                     short_channel_id = parse_short_channel_id(&active_channel.short_channel_id);
+                    println!("Found channel ID: {}", short_channel_id);
                     break;
                 }
             }
         }
 
-        let invoice = self.client.create_invoice(amount_sats, description).await?;
+        println!("Creating invoice on NodeAPI");
+        let invoice = &self.client.create_invoice(amount_sats, description).await?;
+        println!("Invoice created");
 
+        println!("Adding routing hint");
         let lsp_hop = RouteHintHop {
             src_node_id: lsp_info.pubkey.clone(), // TODO correct?
             short_channel_id: short_channel_id as u64,
@@ -159,6 +165,7 @@ impl NodeService {
             vec![ RouteHint(vec![lsp_hop]) ],
             amount_sats
         )?;
+        println!("Routing hint added");
 
         // TODO Sign raw_invoice_with_hint
 
@@ -166,6 +173,7 @@ impl NodeService {
         if destination_invoice_amount_sats < amount_sats {
             let parsed_invoice = parse_invoice(&invoice.bolt11)?; // TODO use bolt11WithHints
 
+            println!("Registering payment with LSP");
             self.lsp.register_payment(
                 lsp_info,
                 PaymentInformation {
@@ -176,6 +184,7 @@ impl NodeService {
                     outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64
                 }).await
                 .expect("Failed to register payment");
+            println!("Payment registered");
         }
 
         // return the converted invoice

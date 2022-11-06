@@ -5,6 +5,7 @@ use std::future::Future;
 use std::sync::Mutex;
 
 use anyhow::{anyhow, Result};
+use lightning_signer::lightning_invoice::RawInvoice;
 
 use crate::models::{
     Config, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter,
@@ -50,6 +51,10 @@ pub fn list_lsps() -> Result<HashMap<std::string::String, LspInformation>> {
     block_on(async { build_services().await?.list_lsps().await })
 }
 
+pub fn set_lsp_id(lsp_id: String) -> Result<()> {
+    block_on(async { build_services().await?.set_lsp_id(lsp_id) })
+}
+
 pub fn get_node_state() -> Result<Option<NodeState>> {
     block_on(async { build_services().await?.get_node_state() })
 }
@@ -63,6 +68,18 @@ pub fn list_transactions(
         build_services()
             .await?
             .list_transactions(filter, from_timestamp, to_timestamp)
+            .await
+    })
+}
+
+pub fn request_payment(
+    amount_sats: u64,
+    description: String
+) -> Result<RawInvoice> {
+    block_on(async {
+        build_services()
+            .await?
+            .request_payment(amount_sats, description.to_string())
             .await
     })
 }

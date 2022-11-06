@@ -1,10 +1,11 @@
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, Result};
 use bip39::{Language, Mnemonic, MnemonicType, Seed};
-use hex;
 use lightning_toolkit::binding;
+use lightning_toolkit::grpc::LspInformation;
 use lightning_toolkit::models::{self, GreenlightCredentials};
 use rustyline::error::ReadlineError;
 use rustyline::Editor;
+use std::collections::HashMap;
 use std::fs;
 use std::io;
 use std::str::SplitWhitespace;
@@ -51,6 +52,13 @@ fn main() -> Result<()> {
                             hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
                         );
                     }
+                    Some("request_payment") => {
+                        let amount_sats = 2001;
+                        let description = "Test requested payment";
+
+                        let r = binding::request_payment(amount_sats, description.to_string());
+                        println!("Requested payment: {:#?}", r);
+                    }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
                         greenlight_credentials = Some(r.unwrap());
@@ -77,6 +85,14 @@ fn main() -> Result<()> {
                     Some("start_node") => show_results(binding::start_node()),
                     Some("sync") => show_results(binding::sync()),
                     Some("list_lsps") => show_results(binding::list_lsps()),
+                    Some("init_lsp") => {
+                        let lsps : HashMap<String, LspInformation> = binding::list_lsps()?;
+                        let first_lsp_id = lsps.keys().nth(1).expect("No LSP IDs found");
+                        let first_lsp: &LspInformation = lsps.get(first_lsp_id).expect("Error in LSP lookup");
+                        binding::set_lsp_id(first_lsp_id.to_string())?;
+
+                        println!("Set LSP ID: {} / LSP Name: {}", first_lsp_id, first_lsp.name);
+                    }
                     Some("get_node_state") => show_results(binding::get_node_state()),
                     Some("run_signer") => show_results(binding::run_signer()),
                     Some(_) => {

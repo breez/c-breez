@@ -28,10 +28,12 @@ pub fn create_node_services(
     network: Network,
     seed: Vec<u8>,
     creds: GreenlightCredentials,
-) -> Result<NodeService> {
+) -> Result<()> {
     let greenlight = block_on(Greenlight::new(network, seed, creds))?;
     *STATE.lock().unwrap() = Some(greenlight.clone());
     block_on(build_services())
+        .map(|_| ())
+        .map_err(|e| anyhow!(e))
 }
 
 pub fn start_node() -> Result<()> {
@@ -46,8 +48,9 @@ pub fn sync() -> Result<()> {
     block_on(async { build_services().await?.sync().await })
 }
 
-pub fn list_lsps() -> Result<HashMap<std::string::String, LspInformation>> {
-    block_on(async { build_services().await?.list_lsps().await })
+pub fn list_lsps() -> Result<Vec<LspInformation>> {
+    let lsps_map = block_on(async { build_services().await?.list_lsps().await });
+    Ok(lsps_map?.values().cloned().collect())
 }
 
 pub fn get_node_state() -> Result<Option<NodeState>> {

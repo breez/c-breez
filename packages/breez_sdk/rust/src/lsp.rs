@@ -48,11 +48,11 @@ impl From<grpc::LspInformation> for LspInformation {
     }
 }
 trait AddID {
-    fn add_id(lsp_id: String, lsp_info: grpc::LspInformation) -> LspInformation;
+    fn add_id(lsp_id: String, lsp_info: LspInformation) -> LspInformation;
 }
 
 impl AddID for LspInformation {
-    fn add_id(lsp_id: String, mut lsp_info: grpc::LspInformation) -> LspInformation {
+    fn add_id(lsp_id: String, mut lsp_info: LspInformation) -> LspInformation {
         lsp_info.id = Some(lsp_id);
         lsp_info
     }
@@ -67,7 +67,7 @@ impl LspAPI for BreezServer {
         let response = client.lsp_list(request).await?;
         let mut lsp_list: Vec<LspInformation> = Vec::new();
         for (key, value) in response.into_inner().lsps.into_iter() {
-            lsp_list.push(LspInformation::add_id(key, value));
+            lsp_list.push(LspInformation::add_id(key, LspInformation::from(value)));
         }
         Ok(lsp_list)
     }

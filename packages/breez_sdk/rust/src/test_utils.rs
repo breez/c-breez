@@ -7,8 +7,7 @@ use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
 use crate::fiat::FiatCurrency;
-use crate::grpc::PaymentInformation;
-use crate::grpc::{LspInformation, RegisterPaymentReply};
+use crate::grpc::{LspInformation, PaymentInformation, RegisterPaymentReply};
 use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 
 pub struct MockNodeAPI {
@@ -51,10 +50,10 @@ impl NodeAPI for MockNodeAPI {
     }
 }
 
-pub struct MockBreezLSP {}
+pub struct MockBreezServer {}
 
 #[tonic::async_trait]
-impl LspAPI for MockBreezLSP {
+impl LspAPI for MockBreezServer {
     async fn list_lsps(&self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
         Ok(HashMap::new())
     }
@@ -69,7 +68,7 @@ impl LspAPI for MockBreezLSP {
 }
 
 #[tonic::async_trait]
-impl FiatAPI for MockBreezLSP {
+impl FiatAPI for MockBreezServer {
     fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> {
         Ok(vec![])
     }

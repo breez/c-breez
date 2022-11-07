@@ -590,36 +590,41 @@
       "grapheme": "€",
       "rtl": false
     },
-    "localeOverrides": {
-      "de-AT": {
-        "symbol": {
-          "position": 0
-        }
-      },
-      "el-CY": {
-        "spacing": 0,
-        "symbol": {
-          "position": 0
-        }
-      },
-      "en": {
-        "spacing": 0,
-        "symbol": {
-          "position": 0
-        }
-      },
-      "nl": {
-        "symbol": {
-          "position": 0
-        }
-      },
-      "tr": {
-        "spacing": 0,
-        "symbol": {
-          "position": 0
-        }
-      }
-    }
+    "localeOverrides": [
+			{
+				"locale":"de-AT",
+				"symbol":{
+					"position":0
+				}
+			},
+			{
+				"locale":"el-CY",
+				"spacing":0,
+				"symbol":{
+					"position":0
+				}
+			},
+			{
+				"locale":"en",
+				"spacing":0,
+				"symbol":{
+					"position":0
+				}
+			},
+			{
+				"locale":"nl",
+				"symbol":{
+					"position":0
+				}
+			},
+			{
+			  "locale":"tr",
+				"spacing":0,
+				"symbol":{
+					"position":0
+				}
+			}
+		]
   },
   "FJD": {
     "name": "Fiji Dollar",

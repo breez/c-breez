@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use crate::grpc::RatesRequest;
 use crate::models::FiatAPI;
-use crate::node_service::BreezLSP;
+use crate::node_service::BreezServer;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use tonic::Request;
@@ -15,6 +17,7 @@ struct Symbol {
 
 #[derive(Serialize, Deserialize, Debug)]
 struct LocaleOverrides {
+    locale: String,
     spacing: Option<u32>,
     symbol: Symbol,
 }
@@ -28,14 +31,16 @@ pub struct FiatCurrency {
     symbol: Option<Symbol>,
     uniq_symbol: Option<Symbol>,
     localized_name: Option<Vec<(String, String)>>,
-    locale_overrides: Option<Vec<(String, LocaleOverrides)>>,
+    locale_overrides: Option<Vec<LocaleOverrides>>,
 }
+
 #[tonic::async_trait]
-impl FiatAPI for BreezLSP {
+impl FiatAPI for BreezServer {
     // retrieve all available fiat currencies from a local configuration file
     fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> {
         let data = include_str!("../assets/json/currencies.json");
-        Ok(serde_json::from_str(&data).unwrap())
+        let fiat_currency_map : HashMap<String, FiatCurrency> = serde_json::from_str(&data).unwrap();
+        Ok(fiat_currency_map.into_iter().collect())
     }
 
     // get the live rates from the server

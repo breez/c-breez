@@ -4,7 +4,7 @@ use gl_client::pb::{Amount, Invoice};
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
-use crate::fiat::FiatCurrency;
+use crate::fiat::{FiatCurrency, Rate};
 
 use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
@@ -74,8 +74,11 @@ impl FiatAPI for MockBreezServer {
         Ok(vec![])
     }
 
-    async fn fetch_rates(&self) -> Result<Vec<(String, f64)>> {
-        Ok(vec![("USD".to_string(), 20_000.00)])
+    async fn fetch_rates(&self) -> Result<Vec<Rate>> {
+        Ok(vec![Rate {
+            coin: "USD".to_string(),
+            value: 20_000.00,
+        }])
     }
 }
 

@@ -96,6 +96,8 @@ fn main() -> Result<()> {
                         println!("Set LSP ID: {} / LSP Name: {}", first_lsp_id, first_lsp.name);
                     }
                     Some("get_node_state") => show_results(binding::get_node_state()),
+                    Some("list_fiat") => show_results(binding::list_fiat_currencies()),
+                    Some("fetch_rates") => show_results(binding::fetch_rates()),
                     Some("run_signer") => show_results(binding::run_signer()),
                     Some("stop_signer") => show_results(binding::stop_signer()),
                     Some(_) => {

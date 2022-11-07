@@ -8,6 +8,7 @@ use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
+use crate::fiat::FiatCurrency;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
@@ -48,6 +49,14 @@ impl NodeService {
             .insert_ln_transactions(&new_data.transactions)?;
 
         Ok(())
+    }
+
+    pub async fn fetch_rates(&self) -> Result<Vec<(String, f64)>> {
+        self.fiat.fetch_rates().await
+    }
+
+    pub fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>> {
+        self.fiat.list_fiat_currencies()
     }
 
     pub async fn list_transactions(
@@ -238,7 +247,8 @@ impl NodeServiceBuilder {
                 .clone(),
         )
         .await;
-        self.lsp = Some(Box::new(breez_server_endpoint));
+        self.lsp = Some(Box::new(breez_server_endpoint.clone()));
+        self.fiat = Some(Box::new(breez_server_endpoint.clone()));
         self
     }
 
@@ -261,6 +271,7 @@ impl NodeServiceBuilder {
     }
 }
 
+#[derive(Clone)]
 pub struct BreezServer {
     server_url: String,
 }

@@ -8,6 +8,7 @@ use anyhow::Result;
 use prost::Message;
 use tonic::Request;
 
+#[derive(Debug)]
 pub struct LspInformation {
     pub id: String,
     pub name: String,

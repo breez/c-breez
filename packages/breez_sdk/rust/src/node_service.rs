@@ -1,27 +1,25 @@
-use std::cmp::max;
-use std::collections::HashMap;
 use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
-use lightning_signer::lightning_invoice::RawInvoice;
-use prost::Message;
-use tonic::Request;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
 use crate::crypto::encrypt;
-use crate::models::{LspAPI, Config, LightningTransaction, NodeAPI, NodeState, PaymentTypeFilter, parse_short_channel_id};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
-use crate::grpc::PaymentInformation;
-use crate::grpc::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
-use crate::invoice::{add_routing_hints, parse_invoice, RouteHint, RouteHintHop};
+use crate::grpc::information_client::InformationClient;
+use crate::lsp::LspInformation;
+use crate::models::{
+    Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter,
+};
 use crate::persist;
+use tokio::sync::mpsc;
 
 pub struct NodeService {
     config: Config,
     client: Box<dyn NodeAPI>,
     lsp: Box<dyn LspAPI>,
+    fiat: Box<dyn FiatAPI>,
     chain_service: MempoolSpace,
     persister: persist::db::SqliteStorage,
 }
@@ -31,8 +29,8 @@ impl NodeService {
         self.client.start().await
     }
 
-    pub async fn run_signer(&self) -> Result<()> {
-        self.client.run_signer().await
+    pub async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+        self.client.run_signer(shutdown).await
     }
 
     pub async fn sync(&self) -> Result<()> {
@@ -70,7 +68,7 @@ impl NodeService {
         })
     }
 
-    pub async fn list_lsps(&self) -> Result<HashMap<std::string::String, LspInformation>> {
+    pub async fn list_lsps(&self) -> Result<Vec<LspInformation>> {
         self.lsp
             .list_lsps(self.get_node_state()?.ok_or(anyhow!("err"))?.id)
             .await
@@ -197,6 +195,7 @@ pub struct NodeServiceBuilder {
     config: Option<Config>,
     client: Option<Box<dyn NodeAPI>>,
     lsp: Option<Box<dyn LspAPI>>,
+    fiat: Option<Box<dyn FiatAPI>>,
 }
 
 impl NodeServiceBuilder {
@@ -211,14 +210,15 @@ impl NodeServiceBuilder {
     }
 
     /// Initialize the Breez gRPC Client to a custom implementation
-    pub fn client_grpc(mut self, lsp: Box<dyn LspAPI>) -> Self {
+    pub fn client_grpc(mut self, lsp: Box<dyn LspAPI>, fiat: Box<dyn FiatAPI>) -> Self {
         self.lsp = Some(lsp);
+        self.fiat = Some(fiat);
         self
     }
 
     /// Initializes the Breez gRPC Client based on the configured Breez endpoint in the config
     pub async fn client_grpc_init_from_config(mut self) -> Self {
-        let breez_server_endpoint = BreezLSP::new(
+        let breez_server_endpoint = BreezServer::new(
             self.config
                 .as_ref()
                 .expect(
@@ -244,56 +244,32 @@ impl NodeServiceBuilder {
             config,
             client: self.client.unwrap(),
             lsp: self.lsp.unwrap(),
+            fiat: self.fiat.unwrap(),
             chain_service,
             persister: persist::db::SqliteStorage::open(persist_file).unwrap(),
         }
     }
 }
 
-pub struct BreezLSP {
+pub struct BreezServer {
     server_url: String,
 }
 
-impl BreezLSP {
+impl BreezServer {
     pub async fn new(server_url: String) -> Self {
         Self { server_url }
     }
 
-    async fn get_channel_opener_client(&self) -> Result<ChannelOpenerClient<Channel>> {
+    pub(crate) async fn get_channel_opener_client(&self) -> Result<ChannelOpenerClient<Channel>> {
         ChannelOpenerClient::connect(Uri::from_str(&self.server_url).unwrap())
             .await
             .map_err(|e| anyhow!(e))
     }
-}
 
-#[tonic::async_trait]
-impl LspAPI for BreezLSP {
-    async fn list_lsps(&self, pubkey: String) -> Result<HashMap<String, LspInformation>> {
-        let mut client = self.get_channel_opener_client().await?;
-
-        let request = Request::new(LspListRequest { pubkey });
-        let response = client.lsp_list(request).await?;
-        Ok(response.into_inner().lsps)
-    }
-
-    async fn register_payment(
-        &mut self,
-        lsp: &LspInformation,
-        payment_info: PaymentInformation,
-    ) -> Result<RegisterPaymentReply> {
-        let mut client = self.get_channel_opener_client().await?;
-
-        let mut buf = Vec::new();
-        buf.reserve(payment_info.encoded_len());
-        payment_info.encode(&mut buf)?;
-
-        let request = Request::new(RegisterPaymentRequest {
-            lsp_id: lsp.name.clone(),
-            blob: encrypt(lsp.lsp_pubkey.clone(), buf)?,
-        });
-        let response = client.register_payment(request).await?;
-
-        Ok(response.into_inner())
+    pub(crate) async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
+        InformationClient::connect(Uri::from_str(&self.server_url).unwrap())
+            .await
+            .map_err(|e| anyhow!(e))
     }
 }
 
@@ -307,9 +283,9 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
-    use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter};
+    use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
-    use crate::test_utils::{MockBreezLSP, MockNodeAPI};
+    use crate::test_utils::{MockBreezServer, MockNodeAPI};
 
     #[test]
     fn test_config() {
@@ -361,7 +337,7 @@ mod test {
                 node_state: dummy_node_state.clone(),
                 transactions: dummy_transactions.clone(),
             }))
-            .client_grpc(Box::new(MockBreezLSP {}))
+            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
             .build()
             .await;
 
@@ -390,15 +366,7 @@ mod test {
 
     #[tokio::test]
     async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>> {
-        let mut node_service = NodeServiceBuilder::default()
-            .config(Config::default())
-            .client(Box::new(MockNodeAPI {
-                node_state: get_dummy_node_state(),
-                transactions: vec![],
-            }))
-            .client_grpc(Box::new(MockBreezLSP {}))
-            .build()
-            .await;
+        let node_service = node_service().await;
 
         node_service.sync().await?;
         let node_pubkey = node_service.get_node_state()?.unwrap().id;
@@ -406,6 +374,31 @@ mod test {
         assert!(lsps.is_empty()); // The mock returns an empty list
 
         Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_fetch_rates() -> Result<(), Box<dyn std::error::Error>> {
+        let node_service = node_service().await;
+
+        node_service.sync().await?;
+        let rates = node_service.fiat.fetch_rates().await?;
+        assert_eq!(rates.len(), 1);
+        assert_eq!(rates, vec![("USD".to_string(), 20_000.00)]);
+
+        Ok(())
+    }
+
+    /// build node service for tests
+    async fn node_service() -> NodeService {
+        NodeServiceBuilder::default()
+            .config(Config::default())
+            .client(Box::new(MockNodeAPI {
+                node_state: get_dummy_node_state(),
+                transactions: vec![],
+            }))
+            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
+            .build()
+            .await
     }
 
     /// Build dummy NodeState for tests

@@ -1,9 +1,9 @@
 use anyhow::{anyhow, Result};
+use bitcoin::secp256k1::PublicKey;
 use hex::ToHex;
-use lightning_signer::bitcoin::secp256k1::PublicKey;
-use lightning_signer::lightning::routing::gossip::RoutingFees;
-use lightning_signer::lightning::routing::*;
-use lightning_signer::lightning_invoice::*;
+use lightning::routing::gossip::RoutingFees;
+use lightning::routing::*;
+use lightning_invoice::*;
 use std::str::FromStr;
 use std::time::UNIX_EPOCH;
 

@@ -1,5 +1,7 @@
 use anyhow::{anyhow, Result};
 use bip39::{Language, Mnemonic, MnemonicType, Seed};
+use env_logger::Env;
+use hex;
 use lightning_toolkit::binding;
 use lightning_toolkit::grpc::LspInformation;
 use lightning_toolkit::models::{self, GreenlightCredentials};
@@ -28,6 +30,7 @@ fn get_seed() -> Vec<u8> {
 }
 
 fn main() -> Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("debug,rustyline=warn")).init();
     let seed = get_seed();
     let mut greenlight_credentials: Option<GreenlightCredentials> = None;
 
@@ -95,6 +98,7 @@ fn main() -> Result<()> {
                     }
                     Some("get_node_state") => show_results(binding::get_node_state()),
                     Some("run_signer") => show_results(binding::run_signer()),
+                    Some("stop_signer") => show_results(binding::stop_signer()),
                     Some(_) => {
                         println!("Unrecognized command: {}", line.as_str());
                     }

@@ -1,8 +1,8 @@
-use crate::grpc::LspInformation;
+use crate::lsp::LspInformation;
 use lazy_static::lazy_static;
-use std::collections::HashMap;
 use std::future::Future;
 use std::sync::Mutex;
+use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
 use lightning_signer::lightning_invoice::RawInvoice;
@@ -15,6 +15,7 @@ use crate::{greenlight::Greenlight, node_service::NodeService};
 
 lazy_static! {
     static ref STATE: Mutex<Option<Greenlight>> = Mutex::new(None);
+    static ref SIGNER_SHUTDOWN: Mutex<Option<mpsc::Sender::<()>>> = Mutex::new(None);
 }
 
 pub fn register_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
@@ -29,10 +30,12 @@ pub fn create_node_services(
     network: Network,
     seed: Vec<u8>,
     creds: GreenlightCredentials,
-) -> Result<NodeService> {
+) -> Result<()> {
     let greenlight = block_on(Greenlight::new(network, seed, creds))?;
     *STATE.lock().unwrap() = Some(greenlight.clone());
     block_on(build_services())
+        .map(|_| ())
+        .map_err(|e| anyhow!(e))
 }
 
 pub fn start_node() -> Result<()> {
@@ -40,14 +43,38 @@ pub fn start_node() -> Result<()> {
 }
 
 pub fn run_signer() -> Result<()> {
-    block_on(async { build_services().await?.run_signer().await })
+    let shutdown = SIGNER_SHUTDOWN.lock().unwrap().clone();
+    match shutdown {
+        Some(_) => Err(anyhow!("Signer is already running")),
+        None => {
+            let (tx, rec) = mpsc::channel::<()>(1);
+            *SIGNER_SHUTDOWN.lock().unwrap() = Some(tx);
+            std::thread::spawn(move || {
+                block_on(async move { build_services().await?.run_signer(rec).await })
+            });
+
+            Ok(())
+        }
+    }
+}
+
+pub fn stop_signer() -> Result<()> {
+    let shutdown = SIGNER_SHUTDOWN.lock().unwrap().clone();
+    match shutdown {
+        None => Err(anyhow!("Signer is not running")),
+        Some(s) => {
+            block_on(async move { s.send(()).await })?;
+            *SIGNER_SHUTDOWN.lock().unwrap() = None;
+            Ok(())
+        }
+    }
 }
 
 pub fn sync() -> Result<()> {
     block_on(async { build_services().await?.sync().await })
 }
 
-pub fn list_lsps() -> Result<HashMap<std::string::String, LspInformation>> {
+pub fn list_lsps() -> Result<Vec<LspInformation>> {
     block_on(async { build_services().await?.list_lsps().await })
 }
 

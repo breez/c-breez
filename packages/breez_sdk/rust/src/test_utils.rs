@@ -6,10 +6,12 @@ use gl_client::pb::amount::Unit;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
-use crate::grpc::{LspInformation, RegisterPaymentReply};
-use crate::grpc::PaymentInformation;
-use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
-use gl_client::pb::Peer;
+use crate::fiat::FiatCurrency;
+
+use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
+use crate::lsp::LspInformation;
+use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
+use tokio::sync::mpsc;
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,
@@ -22,7 +24,7 @@ impl NodeAPI for MockNodeAPI {
         Ok(())
     }
 
-    async fn run_signer(&self) -> Result<()> {
+    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
         Ok(())
     }
 
@@ -41,32 +43,45 @@ impl NodeAPI for MockNodeAPI {
         Ok(Invoice {
             label: "".to_string(),
             description,
-            amount: Some(Amount{ unit: Some(Unit::Satoshi(amount_sats))}),
+            amount: Some(Amount {
+                unit: Some(Unit::Satoshi(amount_sats)),
+            }),
             received: None,
             status: 0,
             payment_time: 0,
             expiry_time: 0,
             bolt11: "".to_string(),
             payment_hash: vec![],
-            payment_preimage: vec![]
+            payment_preimage: vec![],
         })
     }
 }
 
-pub struct MockBreezLSP {}
+pub struct MockBreezServer {}
 
 #[tonic::async_trait]
-impl LspAPI for MockBreezLSP {
-    async fn list_lsps(&self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
-        Ok(HashMap::new())
+impl LspAPI for MockBreezServer {
+    async fn list_lsps(&self, _node_pubkey: String) -> Result<Vec<LspInformation>> {
+        Ok(Vec::new())
     }
 
     async fn register_payment(
         &mut self,
-        _lsp: &LspInformation,
+        _lsp: &grpc::LspInformation,
         _payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply> {
         Ok(RegisterPaymentReply {})
+    }
+}
+
+#[tonic::async_trait]
+impl FiatAPI for MockBreezServer {
+    fn list_fiat_currencies() -> Result<Vec<FiatCurrency>> {
+        Ok(vec![])
+    }
+
+    async fn fetch_rates(&self) -> Result<Vec<(String, f64)>> {
+        Ok(vec![("USD".to_string(), 20_000.00)])
     }
 }
 

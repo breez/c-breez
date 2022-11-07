@@ -69,7 +69,7 @@ impl LspAPI for MockBreezServer {
 
 #[tonic::async_trait]
 impl FiatAPI for MockBreezServer {
-    fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> {
+    fn list_fiat_currencies() -> Result<Vec<FiatCurrency>> {
         Ok(vec![])
     }
 

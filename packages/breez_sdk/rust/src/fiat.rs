@@ -25,6 +25,7 @@ struct LocaleOverrides {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct FiatCurrency {
+    id: Option<String>,
     name: String,
     fraction_size: u32,
     spacing: Option<u32>,
@@ -34,13 +35,28 @@ pub struct FiatCurrency {
     locale_overrides: Option<Vec<LocaleOverrides>>,
 }
 
+trait AddID {
+    fn add_id(fiat_id: String, fiat_info: FiatCurrency) -> FiatCurrency;
+}
+
+impl AddID for FiatCurrency {
+    fn add_id(id: String, mut fiat_currency: FiatCurrency) -> FiatCurrency {
+        fiat_currency.id = Some(id);
+        fiat_currency
+    }
+}
+
 #[tonic::async_trait]
 impl FiatAPI for BreezServer {
     // retrieve all available fiat currencies from a local configuration file
-    fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> {
+    fn list_fiat_currencies() -> Result<Vec<FiatCurrency>> {
         let data = include_str!("../assets/json/currencies.json");
-        let fiat_currency_map : HashMap<String, FiatCurrency> = serde_json::from_str(&data).unwrap();
-        Ok(fiat_currency_map.into_iter().collect())
+        let fiat_currency_map: HashMap<String, FiatCurrency> = serde_json::from_str(&data).unwrap();
+        let mut fiat_currency_list: Vec<FiatCurrency> = Vec::new();
+        for (key, value) in fiat_currency_map {
+            fiat_currency_list.push(FiatCurrency::add_id(key, value));
+        }
+        Ok(fiat_currency_list)
     }
 
     // get the live rates from the server

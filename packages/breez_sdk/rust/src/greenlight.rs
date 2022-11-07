@@ -78,9 +78,8 @@ impl NodeAPI for Greenlight {
         Ok(())
     }
 
-    async fn run_signer(&self) -> Result<()> {
-        let (_, recv) = mpsc::channel(1);
-        self.signer.run_forever(recv).await?;
+    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+        self.signer.run_forever(shutdown).await?;
         Ok(())
     }
 

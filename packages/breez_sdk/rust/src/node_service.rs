@@ -14,6 +14,7 @@ use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, LspListRequest, RegisterPaymentReply, RegisterPaymentRequest};
 use crate::models::{Config, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter};
 use crate::persist;
+use tokio::sync::mpsc;
 
 pub struct NodeService {
     config: Config,
@@ -28,8 +29,8 @@ impl NodeService {
         self.client.start().await
     }
 
-    pub async fn run_signer(&self) -> Result<()> {
-        self.client.run_signer().await
+    pub async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+        self.client.run_signer(shutdown).await
     }
 
     pub async fn sync(&self) -> Result<()> {

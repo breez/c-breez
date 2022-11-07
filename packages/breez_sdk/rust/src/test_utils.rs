@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{Amount, Invoice};
@@ -7,7 +5,9 @@ use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
 use crate::fiat::FiatCurrency;
-use crate::grpc::{LspInformation, PaymentInformation, RegisterPaymentReply};
+
+use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
+use crate::lsp::LspInformation;
 use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 
 pub struct MockNodeAPI {
@@ -54,13 +54,13 @@ pub struct MockBreezServer {}
 
 #[tonic::async_trait]
 impl LspAPI for MockBreezServer {
-    async fn list_lsps(&self, _node_pubkey: String) -> Result<HashMap<String, LspInformation>> {
-        Ok(HashMap::new())
+    async fn list_lsps(&self, _node_pubkey: String) -> Result<Vec<LspInformation>> {
+        Ok(Vec::new())
     }
 
     async fn register_payment(
         &mut self,
-        _lsp: &LspInformation,
+        _lsp: &grpc::LspInformation,
         _payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply> {
         Ok(RegisterPaymentReply {})

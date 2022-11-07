@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
@@ -8,7 +7,7 @@ use tonic::transport::{Channel, Uri};
 use crate::chain::MempoolSpace;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
-use crate::grpc::LspInformation;
+use crate::lsp::LspInformation;
 use crate::models::{
     Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter,
 };
@@ -67,7 +66,7 @@ impl NodeService {
         })
     }
 
-    pub async fn list_lsps(&self) -> Result<HashMap<String, LspInformation>> {
+    pub async fn list_lsps(&self) -> Result<Vec<LspInformation>> {
         self.lsp
             .list_lsps(self.get_node_state()?.ok_or(anyhow!("err"))?.id)
             .await
@@ -185,8 +184,6 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
-    use std::collections::HashMap;
-
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
     use crate::test_utils::{MockBreezServer, MockNodeAPI};

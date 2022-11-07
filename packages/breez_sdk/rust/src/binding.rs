@@ -1,6 +1,5 @@
-use crate::grpc::LspInformation;
+use crate::lsp::LspInformation;
 use lazy_static::lazy_static;
-use std::collections::HashMap;
 use std::future::Future;
 use std::sync::Mutex;
 
@@ -46,7 +45,7 @@ pub fn sync() -> Result<()> {
     block_on(async { build_services().await?.sync().await })
 }
 
-pub fn list_lsps() -> Result<HashMap<std::string::String, LspInformation>> {
+pub fn list_lsps() -> Result<Vec<LspInformation>> {
     block_on(async { build_services().await?.list_lsps().await })
 }
 

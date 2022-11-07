@@ -5,8 +5,8 @@ use gl_client::pb::Invoice;
 use serde::{Deserialize, Serialize};
 
 use crate::fiat::FiatCurrency;
-use crate::grpc::PaymentInformation;
-use crate::grpc::{LspInformation, RegisterPaymentReply};
+use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
+use crate::lsp::LspInformation;
 use crate::models::Network::Bitcoin;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
@@ -22,17 +22,19 @@ pub trait NodeAPI {
 
 #[tonic::async_trait]
 pub trait LspAPI {
-    async fn list_lsps(&self, node_pubkey: String) -> Result<HashMap<String, LspInformation>>;
+    async fn list_lsps(&self, node_pubkey: String) -> Result<Vec<LspInformation>>;
     async fn register_payment(
         &mut self,
-        lsp: &LspInformation,
+        lsp: &grpc::LspInformation,
         payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply>;
 }
 
 #[tonic::async_trait]
 pub trait FiatAPI {
-    fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>> where Self: Sized;
+    fn list_fiat_currencies() -> Result<Vec<(String, FiatCurrency)>>
+    where
+        Self: Sized;
     async fn fetch_rates(&self) -> Result<Vec<(String, f64)>>;
 }
 

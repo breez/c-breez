@@ -33,9 +33,7 @@ pub trait LspAPI {
 
 #[tonic::async_trait]
 pub trait FiatAPI {
-    fn list_fiat_currencies() -> Result<Vec<FiatCurrency>>
-    where
-        Self: Sized;
+    fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>>;
     async fn fetch_rates(&self) -> Result<Vec<(String, f64)>>;
 }
 

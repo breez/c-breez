@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, RegisterPaymentReply};
 use crate::models::Network::Bitcoin;
+use tokio::sync::mpsc;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
 pub const PAYMENT_TYPE_RECEIVED: &str = "received";
@@ -16,7 +17,7 @@ pub trait NodeAPI {
     async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     async fn start(&self) -> Result<()>;
-    async fn run_signer(&self) -> Result<()>;
+    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
 }
 
 #[tonic::async_trait]

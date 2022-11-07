@@ -12,3 +12,4 @@ hex = "*"
 lightning_toolkit = { path = "../rust"}
 serde_json = "1.0"
 anyhow = { version = "1.0.57", features = ["backtrace"] }
+env_logger = "*"

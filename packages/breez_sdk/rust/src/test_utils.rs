@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use gl_client::pb::{Amount, Invoice};
 use gl_client::pb::amount::Unit;
+use gl_client::pb::{Amount, Invoice};
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
 use crate::grpc::PaymentInformation;
 use crate::grpc::{LspInformation, RegisterPaymentReply};
 use crate::models::{LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
+use tokio::sync::mpsc;
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,
@@ -21,7 +22,7 @@ impl NodeAPI for MockNodeAPI {
         Ok(())
     }
 
-    async fn run_signer(&self) -> Result<()> {
+    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
         Ok(())
     }
 
@@ -36,14 +37,16 @@ impl NodeAPI for MockNodeAPI {
         Ok(Invoice {
             label: "".to_string(),
             description,
-            amount: Some(Amount{ unit: Some(Unit::Satoshi(amount_sats))}),
+            amount: Some(Amount {
+                unit: Some(Unit::Satoshi(amount_sats)),
+            }),
             received: None,
             status: 0,
             payment_time: 0,
             expiry_time: 0,
             bolt11: "".to_string(),
             payment_hash: vec![],
-            payment_preimage: vec![]
+            payment_preimage: vec![],
         })
     }
 }

@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
@@ -5,15 +6,15 @@ use bip39::*;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
-use crate::crypto::encrypt;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::lsp::LspInformation;
-use crate::models::{
-    Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter,
-};
+use crate::models::{Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, parse_short_channel_id, PaymentTypeFilter};
 use crate::persist;
 use tokio::sync::mpsc;
+use lightning_invoice::RawInvoice;
+use crate::grpc::PaymentInformation;
+use crate::invoice::{add_routing_hints, parse_invoice, RouteHint, RouteHintHop};
 
 pub struct NodeService {
     config: Config,
@@ -100,8 +101,9 @@ impl NodeService {
 
         let node_pubkey = self.get_node_state()?.unwrap().id;
         self.lsp.list_lsps(node_pubkey).await?
-            .get(&lsp_id)
-            .ok_or("Invalid LSP ID")
+            .iter()
+            .find(|&lsp| lsp.id == lsp_id)
+            .ok_or("No LSO found for given LSP ID")
             .map_err(|err| anyhow!(err))
             .cloned()
     }
@@ -173,7 +175,8 @@ impl NodeService {
 
             println!("Registering payment with LSP");
             self.lsp.register_payment(
-                lsp_info,
+                lsp_info.id.clone(),
+                lsp_info.lsp_pubkey.clone(),
                 PaymentInformation {
                     payment_hash: Vec::from(parsed_invoice.payment_hash),
                     payment_secret: parsed_invoice.payment_secret,
@@ -366,9 +369,9 @@ mod test {
 
     #[tokio::test]
     async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>> {
-        let node_service = node_service().await;
-
+        let node_service = build_mock_node_service().await;
         node_service.sync().await?;
+
         let node_pubkey = node_service.get_node_state()?.unwrap().id;
         let lsps = node_service.lsp.list_lsps(node_pubkey).await?;
         assert!(lsps.is_empty()); // The mock returns an empty list
@@ -379,8 +382,8 @@ mod test {
     #[tokio::test]
     async fn test_fetch_rates() -> Result<(), Box<dyn std::error::Error>> {
         let node_service = node_service().await;
-
         node_service.sync().await?;
+
         let rates = node_service.fiat.fetch_rates().await?;
         assert_eq!(rates.len(), 1);
         assert_eq!(rates, vec![("USD".to_string(), 20_000.00)]);
@@ -415,5 +418,17 @@ mod test {
             connected_peers: vec!["1111".to_string()],
             inbound_liquidity_msats: 2000,
         }
+    }
+
+    async fn build_mock_node_service() -> NodeService {
+        NodeServiceBuilder::default()
+            .config(Config::default())
+            .client(Box::new(MockNodeAPI {
+                node_state: get_dummy_node_state(),
+                transactions: vec![],
+            }))
+            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
+            .build()
+            .await
     }
 }

@@ -1,12 +1,10 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
 use gl_client::pb::Peer;
 use gl_client::pb::Invoice;
 use serde::{Deserialize, Serialize};
 
 use crate::fiat::FiatCurrency;
-use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
+use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::Network::Bitcoin;
 use tokio::sync::mpsc;
@@ -28,7 +26,8 @@ pub trait LspAPI {
     async fn list_lsps(&self, node_pubkey: String) -> Result<Vec<LspInformation>>;
     async fn register_payment(
         &mut self,
-        lsp: &grpc::LspInformation,
+        lsp_id: String,
+        lsp_pubkey: Vec<u8>,
         payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply>;
 }

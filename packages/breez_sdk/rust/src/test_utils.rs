@@ -1,14 +1,12 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
-use gl_client::pb::{Amount, Invoice};
+use gl_client::pb::{Amount, Invoice, Peer};
 use gl_client::pb::amount::Unit;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
 use crate::fiat::FiatCurrency;
 
-use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
+use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 use tokio::sync::mpsc;
@@ -67,7 +65,8 @@ impl LspAPI for MockBreezServer {
 
     async fn register_payment(
         &mut self,
-        _lsp: &grpc::LspInformation,
+        _lsp_id: String,
+        _lsp_pubkey: Vec<u8>,
         _payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply> {
         Ok(RegisterPaymentReply {})

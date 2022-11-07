@@ -1,16 +1,15 @@
-use anyhow::{anyhow, Result};
-use bip39::{Language, Mnemonic, MnemonicType, Seed};
-use env_logger::Env;
-use hex;
-use lightning_toolkit::binding;
-use lightning_toolkit::grpc::LspInformation;
-use lightning_toolkit::models::{self, GreenlightCredentials};
-use rustyline::error::ReadlineError;
-use rustyline::Editor;
-use std::collections::HashMap;
 use std::fs;
 use std::io;
 use std::str::SplitWhitespace;
+
+use anyhow::{anyhow, Result};
+use bip39::{Language, Mnemonic, MnemonicType, Seed};
+use env_logger::Env;
+use lightning_toolkit::binding;
+use lightning_toolkit::lsp::LspInformation;
+use lightning_toolkit::models::{self, GreenlightCredentials};
+use rustyline::Editor;
+use rustyline::error::ReadlineError;
 
 fn get_seed() -> Vec<u8> {
     let filename = "phrase";
@@ -89,9 +88,9 @@ fn main() -> Result<()> {
                     Some("sync") => show_results(binding::sync()),
                     Some("list_lsps") => show_results(binding::list_lsps()),
                     Some("init_lsp") => {
-                        let lsps : HashMap<String, LspInformation> = binding::list_lsps()?;
-                        let first_lsp_id = lsps.keys().nth(1).expect("No LSP IDs found");
-                        let first_lsp: &LspInformation = lsps.get(first_lsp_id).expect("Error in LSP lookup");
+                        let lsps : Vec<LspInformation> = binding::list_lsps()?;
+                        let first_lsp: &LspInformation = &lsps[0];
+                        let first_lsp_id = &first_lsp.id;
                         binding::set_lsp_id(first_lsp_id.to_string())?;
 
                         println!("Set LSP ID: {} / LSP Name: {}", first_lsp_id, first_lsp.name);

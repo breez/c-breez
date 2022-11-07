@@ -5,7 +5,7 @@ use std::sync::Mutex;
 use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
-use lightning_signer::lightning_invoice::RawInvoice;
+use lightning_invoice::RawInvoice;
 
 use crate::models::{
     Config, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter,

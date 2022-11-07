@@ -1,4 +1,4 @@
-use crate::grpc::LspInformation;
+use crate::lsp::LspInformation;
 use lazy_static::lazy_static;
 use std::future::Future;
 use std::sync::Mutex;
@@ -74,8 +74,7 @@ pub fn sync() -> Result<()> {
 }
 
 pub fn list_lsps() -> Result<Vec<LspInformation>> {
-    let lsps_map = block_on(async { build_services().await?.list_lsps().await });
-    Ok(lsps_map?.values().cloned().collect())
+    block_on(async { build_services().await?.list_lsps().await })
 }
 
 pub fn get_node_state() -> Result<Option<NodeState>> {

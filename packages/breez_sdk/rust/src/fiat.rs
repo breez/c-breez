@@ -48,7 +48,7 @@ impl FiatAPI for BreezServer {
     // retrieve all available fiat currencies from a local configuration file
     fn list_fiat_currencies() -> Result<Vec<FiatCurrency>> {
         let data = include_str!("../assets/json/currencies.json");
-        let fiat_currency_map: HashMap<String, FiatCurrency> = serde_json::from_str(&data).unwrap();
+        let fiat_currency_map: HashMap<String, FiatCurrency> = serde_json::from_str(&data)?;
         let mut fiat_currency_list: Vec<FiatCurrency> = Vec::new();
         for (key, value) in fiat_currency_map {
             fiat_currency_list.push(convert_to_fiat_currency_with_id(key, value));

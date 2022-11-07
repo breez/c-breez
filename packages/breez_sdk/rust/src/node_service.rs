@@ -99,7 +99,10 @@ impl NodeService {
             .ok_or("No LSP ID found")
             .map_err(|err| anyhow!(err))?;
 
-        let node_pubkey = self.get_node_state()?.unwrap().id;
+        let node_pubkey = self.get_node_state()?
+            .ok_or("No NodeState found")
+            .map_err(|err| anyhow!(err))?
+            .id;
         self.lsp.list_lsps(node_pubkey).await?
             .iter()
             .find(|&lsp| lsp.id == lsp_id)
@@ -116,7 +119,7 @@ impl NodeService {
 
         let amount_msats = amount_sats * 1000;
 
-        let mut short_channel_id = parse_short_channel_id("1x0x0");
+        let mut short_channel_id = parse_short_channel_id("1x0x0")?;
         let mut destination_invoice_amount_sats = amount_msats;
 
         // check if we need to open channel
@@ -144,7 +147,7 @@ impl NodeService {
                         .find(|&c| c.state == "OPEN")
                         .ok_or("No open channel found")
                         .map_err(|err| anyhow!(err))?;
-                    short_channel_id = parse_short_channel_id(&active_channel.short_channel_id);
+                    short_channel_id = parse_short_channel_id(&active_channel.short_channel_id)?;
                     println!("Found channel ID: {}", short_channel_id);
                     break;
                 }
@@ -268,13 +271,13 @@ impl BreezServer {
     }
 
     pub(crate) async fn get_channel_opener_client(&self) -> Result<ChannelOpenerClient<Channel>> {
-        ChannelOpenerClient::connect(Uri::from_str(&self.server_url).unwrap())
+        ChannelOpenerClient::connect(Uri::from_str(&self.server_url)?)
             .await
             .map_err(|e| anyhow!(e))
     }
 
     pub(crate) async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
-        InformationClient::connect(Uri::from_str(&self.server_url).unwrap())
+        InformationClient::connect(Uri::from_str(&self.server_url)?)
             .await
             .map_err(|e| anyhow!(e))
     }
@@ -290,6 +293,7 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
+    use anyhow::anyhow;
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
     use crate::test_utils::{MockBreezServer, MockNodeAPI};
@@ -303,7 +307,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_node_state() {
+    async fn test_node_state() -> Result<(), Box<dyn std::error::Error>> {
         std::fs::remove_file("./storage.sql").expect("Failed to delete file");
         let dummy_node_state = get_dummy_node_state();
 
@@ -348,27 +352,28 @@ mod test {
             .build()
             .await;
 
-        node_service.sync().await.unwrap();
-        let fetched_state = node_service.get_node_state().unwrap().unwrap();
+        node_service.sync().await?;
+        let fetched_state = node_service.get_node_state()?
+            .ok_or("No NodeState found")
+            .map_err(|err| anyhow!(err))?;
         assert_eq!(fetched_state, dummy_node_state);
 
         let all = node_service
             .list_transactions(PaymentTypeFilter::All, None, None)
-            .await
-            .unwrap();
+            .await?;
         assert_eq!(dummy_transactions, all);
 
         let received = node_service
             .list_transactions(PaymentTypeFilter::Received, None, None)
-            .await
-            .unwrap();
+            .await?;
         assert_eq!(received, vec![all[0].clone()]);
 
         let sent = node_service
             .list_transactions(PaymentTypeFilter::Sent, None, None)
-            .await
-            .unwrap();
+            .await?;
         assert_eq!(sent, vec![all[1].clone()]);
+
+        Ok(())
     }
 
     #[tokio::test]
@@ -376,7 +381,11 @@ mod test {
         let node_service = build_mock_node_service().await;
         node_service.sync().await?;
 
-        let node_pubkey = node_service.get_node_state()?.unwrap().id;
+        let node_pubkey = node_service
+            .get_node_state()?
+            .ok_or("No NodeState found")
+            .map_err(|err| anyhow!(err))?
+            .id;
         let lsps = node_service.lsp.list_lsps(node_pubkey).await?;
         assert!(lsps.is_empty()); // The mock returns an empty list
 

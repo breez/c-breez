@@ -115,16 +115,16 @@ pub struct LightningTransaction {
     pub description: Option<String>,
 }
 
-pub fn parse_short_channel_id(id_str: &str) -> i64 {
+pub fn parse_short_channel_id(id_str: &str) -> Result<i64> {
     let parts : Vec<&str> = id_str.split('x').collect();
     if parts.len() != 3 {
-        return 0;
+        return Ok(0);
     }
-    let block_num = parts[0].parse::<i64>().unwrap();
-    let tx_num = parts[1].parse::<i64>().unwrap();
-    let tx_out = parts[2].parse::<i64>().unwrap();
+    let block_num = parts[0].parse::<i64>()?;
+    let tx_num = parts[1].parse::<i64>()?;
+    let tx_out = parts[2].parse::<i64>()?;
 
-    (block_num & 0xFFFFFF) << 40 | (tx_num & 0xFFFFFF) << 16 | (tx_out & 0xFFFF)
+    Ok((block_num & 0xFFFFFF) << 40 | (tx_num & 0xFFFFFF) << 16 | (tx_out & 0xFFFF))
 }
 #[cfg(test)]
 mod tests {

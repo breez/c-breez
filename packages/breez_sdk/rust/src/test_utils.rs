@@ -9,6 +9,7 @@ use crate::fiat::FiatCurrency;
 use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
+use tokio::sync::mpsc;
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,
@@ -21,7 +22,7 @@ impl NodeAPI for MockNodeAPI {
         Ok(())
     }
 
-    async fn run_signer(&self) -> Result<()> {
+    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
         Ok(())
     }
 

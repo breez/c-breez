@@ -25,7 +25,7 @@ pub struct LocaleOverrides {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct FiatCurrency {
-    pub id: Option<String>,
+    pub id: String,
     pub name: String,
     pub fraction_size: u32,
     pub spacing: Option<u32>,
@@ -35,15 +35,12 @@ pub struct FiatCurrency {
     pub locale_overrides: Option<Vec<LocaleOverrides>>,
 }
 
-trait AddID {
-    fn add_id(fiat_id: String, fiat_info: FiatCurrency) -> FiatCurrency;
-}
-
-impl AddID for FiatCurrency {
-    fn add_id(id: String, mut fiat_currency: FiatCurrency) -> FiatCurrency {
-        fiat_currency.id = Some(id);
-        fiat_currency
-    }
+fn convert_to_fiat_currency_with_id(
+    fiat_id: String,
+    mut fiat_currency: FiatCurrency,
+) -> FiatCurrency {
+    fiat_currency.id = fiat_id;
+    fiat_currency
 }
 
 #[tonic::async_trait]
@@ -54,7 +51,7 @@ impl FiatAPI for BreezServer {
         let fiat_currency_map: HashMap<String, FiatCurrency> = serde_json::from_str(&data).unwrap();
         let mut fiat_currency_list: Vec<FiatCurrency> = Vec::new();
         for (key, value) in fiat_currency_map {
-            fiat_currency_list.push(FiatCurrency::add_id(key, value));
+            fiat_currency_list.push(convert_to_fiat_currency_with_id(key, value));
         }
         Ok(fiat_currency_list)
     }

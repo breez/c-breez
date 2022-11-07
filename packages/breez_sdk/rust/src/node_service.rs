@@ -133,8 +133,7 @@ impl NodeService {
 
         // check if we need to open channel
         if node_state.inbound_liquidity_msats < amount_msats {
-            // TODO logging
-            println!("We need to open a channel");
+            info!("We need to open a channel");
 
             // we need to open channel so we are calculating the fees for the LSP
             let channel_fees_msat_calculated = amount_msats * lsp_info.channel_fee_permyriad as u64 / 10_000 / 1_000_000;
@@ -149,7 +148,7 @@ impl NodeService {
         }
         else {
             // not opening a channel so we need to get the real channel id into the routing hints
-            println!("Finding channel ID for routing hint");
+            info!("Finding channel ID for routing hint");
             for peer in self.client.list_peers().await? {
                 if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
                     let active_channel = peer.channels.iter()
@@ -157,17 +156,17 @@ impl NodeService {
                         .ok_or("No open channel found")
                         .map_err(|err| anyhow!(err))?;
                     short_channel_id = parse_short_channel_id(&active_channel.short_channel_id)?;
-                    println!("Found channel ID: {}", short_channel_id);
+                    info!("Found channel ID: {}", short_channel_id);
                     break;
                 }
             }
         }
 
-        println!("Creating invoice on NodeAPI");
+        info!("Creating invoice on NodeAPI");
         let invoice = &self.client.create_invoice(amount_sats, description).await?;
-        println!("Invoice created");
+        info!("Invoice created");
 
-        println!("Adding routing hint");
+        info!("Adding routing hint");
         let lsp_hop = RouteHintHop {
             src_node_id: lsp_info.pubkey.clone(), // TODO correct?
             short_channel_id: short_channel_id as u64,
@@ -182,7 +181,7 @@ impl NodeService {
             vec![ RouteHint(vec![lsp_hop]) ],
             amount_sats
         )?;
-        println!("Routing hint added");
+        info!("Routing hint added");
 
         // TODO Sign raw_invoice_with_hint
 
@@ -190,7 +189,7 @@ impl NodeService {
         if destination_invoice_amount_sats < amount_sats {
             let parsed_invoice = parse_invoice(&invoice.bolt11)?; // TODO use bolt11WithHints
 
-            println!("Registering payment with LSP");
+            info!("Registering payment with LSP");
             self.lsp.register_payment(
                 lsp_info.id.clone(),
                 lsp_info.lsp_pubkey.clone(),
@@ -201,7 +200,7 @@ impl NodeService {
                     incoming_amount_msat: amount_msats as i64,
                     outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64
                 }).await?;
-            println!("Payment registered");
+            info!("Payment registered");
         }
 
         // return the converted invoice
@@ -305,6 +304,7 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 
 mod test {
     use anyhow::anyhow;
+
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
     use crate::test_utils::{MockBreezServer, MockNodeAPI};

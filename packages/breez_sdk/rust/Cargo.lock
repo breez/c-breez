@@ -1338,6 +1338,7 @@ dependencies = [
  "lazy_static",
  "lightning 0.0.112",
  "lightning-invoice 0.20.0",
+ "log",
  "prost 0.11.0",
  "rand",
  "reqwest",

@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 use std::fs;
 use std::io;
 use std::str::SplitWhitespace;
@@ -35,7 +38,7 @@ fn main() -> Result<()> {
 
     let mut rl = Editor::<()>::new()?;
     if rl.load_history("history.txt").is_err() {
-        println!("No previous history.");
+        info!("No previous history.");
     }
 
     loop {
@@ -48,7 +51,7 @@ fn main() -> Result<()> {
                     Some("register_node") => {
                         let r = binding::register_node(models::Network::Bitcoin, seed.to_vec());
                         greenlight_credentials = Some(r.unwrap());
-                        println!(
+                        info!(
                             "device_cert: {}; device_key: {}",
                             hex::encode(greenlight_credentials.clone().unwrap().device_cert),
                             hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
@@ -59,12 +62,12 @@ fn main() -> Result<()> {
                         let description = "Test requested payment";
 
                         let r = binding::request_payment(amount_sats, description.to_string());
-                        println!("Requested payment: {:#?}", r);
+                        info!("Requested payment: {:#?}", r);
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
                         greenlight_credentials = Some(r.unwrap());
-                        println!(
+                        info!(
                             "device_cert: {}; device_key: {}",
                             hex::encode(greenlight_credentials.clone().unwrap().device_cert),
                             hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
@@ -80,20 +83,32 @@ fn main() -> Result<()> {
                             seed.to_vec(),
                             greenlight_credentials.clone().unwrap(),
                         ) {
-                            Ok(_) => println!("Node services has been created!"),
-                            Err(err) => println!("Error creating node services {}", err),
+                            Ok(_) => info!("Node services has been created!"),
+                            Err(err) => info!("Error creating node services {}", err),
                         }
                     }
                     Some("start_node") => show_results(binding::start_node()),
                     Some("sync") => show_results(binding::sync()),
-                    Some("list_lsps") => show_results(binding::list_lsps()),
-                    Some("init_lsp") => {
+                    Some("list_lsps") => {
                         let lsps : Vec<LspInformation> = binding::list_lsps()?;
-                        let first_lsp: &LspInformation = &lsps[0];
-                        let first_lsp_id = &first_lsp.id;
-                        binding::set_lsp_id(first_lsp_id.to_string())?;
+                        info!("The available LSPs are:");
+                        for lsp in lsps {
+                            info!("[{}] {}", lsp.id, lsp.name);
+                        }
+                        info!("Please choose an LSP with `set_lsp id`");
+                    },
+                    Some("set_lsp") => {
+                        let lsps : Vec<LspInformation> = binding::list_lsps()?;
+                        let chosen_lsp_id = command.next()
+                            .ok_or("Expected LSP ID arg")
+                            .map_err(|err| anyhow!(err))?;
+                        let chosen_lsp: &LspInformation = lsps.iter()
+                            .find(|lsp| lsp.id == chosen_lsp_id)
+                            .ok_or("No LSO found for given LSP ID")
+                            .map_err(|err| anyhow!(err))?;
+                        binding::set_lsp_id(chosen_lsp_id.to_string())?;
 
-                        println!("Set LSP ID: {} / LSP Name: {}", first_lsp_id, first_lsp.name);
+                        info!("Set LSP ID: {} / LSP Name: {}", chosen_lsp_id, chosen_lsp.name);
                     }
                     Some("get_node_state") => show_results(binding::get_node_state()),
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),
@@ -101,22 +116,22 @@ fn main() -> Result<()> {
                     Some("run_signer") => show_results(binding::run_signer()),
                     Some("stop_signer") => show_results(binding::stop_signer()),
                     Some(_) => {
-                        println!("Unrecognized command: {}", line.as_str());
+                        info!("Unrecognized command: {}", line.as_str());
                     }
                     None => (),
                 }
-                //println!("Line: {}", line);
+                //info!("Line: {}", line);
             }
             Err(ReadlineError::Interrupted) => {
-                println!("CTRL-C");
+                info!("CTRL-C");
                 break;
             }
             Err(ReadlineError::Eof) => {
-                println!("CTRL-D");
+                info!("CTRL-D");
                 break;
             }
             Err(err) => {
-                println!("Error: {:?}", err);
+                error!("Error: {:?}", err);
                 break;
             }
         }
@@ -130,8 +145,8 @@ where
 {
     match res {
         Ok(inner) => {
-            println!("response: {:?}", inner);
+            info!("response: {:?}", inner);
         }
-        Err(err) => println!("Error: {}", err),
+        Err(err) => error!("Error: {}", err),
     }
 }

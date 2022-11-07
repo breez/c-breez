@@ -32,6 +32,7 @@ tonic = { version = "^0.8", features = ["default", "tls", "tls-roots", "transpor
 lazy_static = "^1.4.0"
 lightning = "*"
 lightning-invoice = "*"
+log = "*"
 
 [build-dependencies]
 tonic-build = "^0.8"

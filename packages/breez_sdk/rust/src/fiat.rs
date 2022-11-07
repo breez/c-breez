@@ -8,31 +8,31 @@ use serde::{Deserialize, Serialize};
 use tonic::Request;
 
 #[derive(Serialize, Deserialize, Debug)]
-struct Symbol {
-    grapheme: Option<String>,
-    template: Option<String>,
-    rtl: Option<bool>,
-    position: Option<u32>,
+pub struct Symbol {
+    pub grapheme: Option<String>,
+    pub template: Option<String>,
+    pub rtl: Option<bool>,
+    pub position: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct LocaleOverrides {
-    locale: String,
-    spacing: Option<u32>,
-    symbol: Symbol,
+pub struct LocaleOverrides {
+    pub locale: String,
+    pub spacing: Option<u32>,
+    pub symbol: Symbol,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct FiatCurrency {
-    id: Option<String>,
-    name: String,
-    fraction_size: u32,
-    spacing: Option<u32>,
-    symbol: Option<Symbol>,
-    uniq_symbol: Option<Symbol>,
-    localized_name: Option<Vec<(String, String)>>,
-    locale_overrides: Option<Vec<LocaleOverrides>>,
+    pub id: Option<String>,
+    pub name: String,
+    pub fraction_size: u32,
+    pub spacing: Option<u32>,
+    pub symbol: Option<Symbol>,
+    pub uniq_symbol: Option<Symbol>,
+    pub localized_name: Option<Vec<(String, String)>>,
+    pub locale_overrides: Option<Vec<LocaleOverrides>>,
 }
 
 trait AddID {

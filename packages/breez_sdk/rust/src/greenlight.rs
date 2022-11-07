@@ -3,6 +3,8 @@ use crate::models::{
     GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse,
 };
 use anyhow::Result;
+use gl_client::pb::amount::Unit;
+use gl_client::pb::{Amount, Invoice, InvoiceRequest};
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
@@ -10,8 +12,6 @@ use gl_client::{node, pb};
 use hex;
 use std::cmp::max;
 use std::time::{SystemTime, UNIX_EPOCH};
-use gl_client::pb::{Amount, Invoice, InvoiceRequest};
-use gl_client::pb::amount::Unit;
 use tokio::sync::mpsc;
 
 const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
@@ -65,11 +65,7 @@ impl Greenlight {
     }
 
     async fn get_client(&self) -> Result<node::Client> {
-        let scheduler = Scheduler::new(
-            self.signer.node_id(),
-            lightning_signer::bitcoin::Network::Bitcoin,
-        )
-        .await?;
+        let scheduler = Scheduler::new(self.signer.node_id(), bitcoin::Network::Bitcoin).await?;
         let client: node::Client = scheduler.schedule(self.tls_config.clone()).await?;
         Ok(client)
     }
@@ -82,9 +78,8 @@ impl NodeAPI for Greenlight {
         Ok(())
     }
 
-    async fn run_signer(&self) -> Result<()> {
-        let (_, recv) = mpsc::channel(1);
-        self.signer.run_forever(recv).await?;
+    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+        self.signer.run_forever(shutdown).await?;
         Ok(())
     }
 
@@ -194,16 +189,21 @@ impl NodeAPI for Greenlight {
         let mut client = self.get_client().await?;
 
         let request = InvoiceRequest {
-            amount: Some(Amount { unit: Some(Unit::Satoshi(amount_sats)) }),
-            label: format!("breez-{}", SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis()),
+            amount: Some(Amount {
+                unit: Some(Unit::Satoshi(amount_sats)),
+            }),
+            label: format!(
+                "breez-{}",
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_millis()
+            ),
             description,
-            preimage: vec![]
+            preimage: vec![],
         };
 
-        Ok(client
-            .create_invoice(request)
-            .await?
-            .into_inner())
+        Ok(client.create_invoice(request).await?.into_inner())
     }
 }
 
@@ -340,11 +340,11 @@ fn parse_amount(amount_str: String) -> Result<pb::Amount> {
     Ok(pb::Amount { unit: Some(unit) })
 }
 
-fn parse_network(gn: &Network) -> lightning_signer::bitcoin::Network {
+fn parse_network(gn: &Network) -> bitcoin::Network {
     match gn {
-        Network::Bitcoin => lightning_signer::bitcoin::Network::Bitcoin,
-        Network::Testnet => lightning_signer::bitcoin::Network::Testnet,
-        Network::Signet => lightning_signer::bitcoin::Network::Signet,
-        Network::Regtest => lightning_signer::bitcoin::Network::Regtest,
+        Network::Bitcoin => bitcoin::Network::Bitcoin,
+        Network::Testnet => bitcoin::Network::Testnet,
+        Network::Signet => bitcoin::Network::Signet,
+        Network::Regtest => bitcoin::Network::Regtest,
     }
 }

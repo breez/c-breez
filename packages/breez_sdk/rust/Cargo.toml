@@ -12,16 +12,11 @@ flutter_rust_bridge = "1"
 anyhow = { version = "1.0.57", features = ["backtrace"] }
 hex = "*"
 bitcoin_hashes = "*"
+bitcoin = "^0"
 # Note: private repo, might need git credentials helper to be setup
 # If so, see https://techexpertise.medium.com/storing-git-credentials-with-git-credential-helper-33d22a6b5ce7
 # Using vls-v0.11.0.1 branch for VLS integration
 gl-client = { git = "https://github.com/Blockstream/greenlight", branch="vls-v0.11.0.1" }
-lightning-signer-core = { git="https://gitlab.com/cdecker/vls.git", branch="main" }
-lightning-signer-server = { git="https://gitlab.com/cdecker/vls.git", branch="main" }
-vls-protocol-signer = { git="https://gitlab.com/cdecker/vls.git", branch="main" }
-vls-protocol = { git="https://gitlab.com/cdecker/vls.git", branch="main" }
-vls-persist = { git="https://gitlab.com/cdecker/vls.git", branch="main" }
-vls-proxy = { git="https://gitlab.com/cdecker/vls.git", branch="main" }
 base64 = "0.13.0"
 ecies = {version = "0.2", default-features = false, features = ["pure"]}
 ripemd = "*"
@@ -36,6 +31,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tonic = { version = "^0.8", features = ["default", "tls", "tls-roots", "transport"] }
 lazy_static = "^1.4.0"
+lightning = "*"
+lightning-invoice = "*"
 
 [build-dependencies]
 tonic-build = "^0.8"

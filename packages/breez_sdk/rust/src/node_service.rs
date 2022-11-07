@@ -3,18 +3,18 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
+use lightning_invoice::RawInvoice;
+use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
+use crate::grpc::PaymentInformation;
+use crate::invoice::{add_routing_hints, parse_invoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, parse_short_channel_id, PaymentTypeFilter};
 use crate::persist;
-use tokio::sync::mpsc;
-use lightning_invoice::RawInvoice;
-use crate::grpc::PaymentInformation;
-use crate::invoice::{add_routing_hints, parse_invoice, RouteHint, RouteHintHop};
 
 pub struct NodeService {
     config: Config,
@@ -95,9 +95,9 @@ impl NodeService {
 
     /// Convenience method to look up LSP info based on current LSP ID
     async fn get_lsp(&mut self) -> Result<LspInformation> {
-        let lsp_id = self.get_lsp_id()
-            .expect("Failed to lookup LSP ID")
-            .expect("LSP ID not set");
+        let lsp_id = self.get_lsp_id()?
+            .ok_or("No LSP ID found")
+            .map_err(|err| anyhow!(err))?;
 
         let node_pubkey = self.get_node_state()?.unwrap().id;
         self.lsp.list_lsps(node_pubkey).await?
@@ -110,7 +110,9 @@ impl NodeService {
 
     pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<RawInvoice> {
         let lsp_info = &self.get_lsp().await?;
-        let node_state = self.get_node_state()?.expect("Failed to retrieve node state");
+        let node_state = self.get_node_state()?
+            .ok_or("Failed to retrieve node state")
+            .map_err(|err| anyhow!(err))?;
 
         let amount_msats = amount_sats * 1000;
 
@@ -138,7 +140,10 @@ impl NodeService {
             println!("Finding channel ID for routing hint");
             for peer in self.client.list_peers().await? {
                 if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
-                    let active_channel = peer.channels.iter().find(|&c| c.state == "OPEN").expect("No open channel found");
+                    let active_channel = peer.channels.iter()
+                        .find(|&c| c.state == "OPEN")
+                        .ok_or("No open channel found")
+                        .map_err(|err| anyhow!(err))?;
                     short_channel_id = parse_short_channel_id(&active_channel.short_channel_id);
                     println!("Found channel ID: {}", short_channel_id);
                     break;
@@ -183,8 +188,7 @@ impl NodeService {
                     destination: Vec::from(parsed_invoice.payee_pubkey),
                     incoming_amount_msat: amount_msats as i64,
                     outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64
-                }).await
-                .expect("Failed to register payment");
+                }).await?;
             println!("Payment registered");
         }
 

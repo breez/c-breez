@@ -205,8 +205,7 @@ impl NodeAPI for Greenlight {
             label: format!(
                 "breez-{}",
                 SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
+                    .duration_since(UNIX_EPOCH)?
                     .as_millis()
             ),
             description,

@@ -1,13 +1,13 @@
 use anyhow::Result;
-use gl_client::pb::Peer;
 use gl_client::pb::Invoice;
+use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
 use crate::fiat::FiatCurrency;
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::Network::Bitcoin;
-use tokio::sync::mpsc;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
 pub const PAYMENT_TYPE_RECEIVED: &str = "received";
@@ -128,10 +128,10 @@ pub fn parse_short_channel_id(id_str: &str) -> i64 {
 }
 #[cfg(test)]
 mod tests {
-    use crate::grpc::PaymentInformation;
     use prost::Message;
     use rand::random;
 
+    use crate::grpc::PaymentInformation;
     use crate::test_utils::rand_vec_u8;
 
     #[test]

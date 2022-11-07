@@ -61,8 +61,8 @@ fn main() -> Result<()> {
                         let amount_sats = 2001;
                         let description = "Test requested payment";
 
-                        let r = binding::request_payment(amount_sats, description.to_string());
-                        info!("Requested payment: {:#?}", r);
+                        binding::request_payment(amount_sats, description.to_string());
+                        info!("Payment successfully requested");
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());

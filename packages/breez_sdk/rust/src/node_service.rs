@@ -1,9 +1,13 @@
 use std::cmp::max;
 use std::str::FromStr;
+use std::time::UNIX_EPOCH;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
-use lightning_invoice::RawInvoice;
+use bitcoin::secp256k1::{Secp256k1, SecretKey};
+use lightning::util::ser::Writeable;
+use lightning_invoice::{Invoice, RawInvoice, SignedRawInvoice};
+use rand::Rng;
 use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
 
@@ -12,7 +16,7 @@ use crate::fiat::FiatCurrency;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
-use crate::invoice::{add_routing_hints, parse_invoice, RouteHint, RouteHintHop};
+use crate::invoice::{add_routing_hints, LNInvoice, parse_invoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, parse_short_channel_id, PaymentTypeFilter};
 use crate::persist;
@@ -120,7 +124,7 @@ impl NodeService {
             .cloned()
     }
 
-    pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<RawInvoice> {
+    pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<LNInvoice> {
         let lsp_info = &self.get_lsp().await?;
         let node_state = self.get_node_state()?
             .ok_or("Failed to retrieve node state")
@@ -183,6 +187,15 @@ impl NodeService {
         )?;
         info!("Routing hint added");
 
+        // TODO Replace with actual signing
+        let secp = Secp256k1::new();
+        let seed = rand::thread_rng().gen::<[u8; 32]>();
+        let secret_key = SecretKey::from_slice(&seed).expect("32 bytes, within curve order");
+
+        let signed_invoice_with_hint = raw_invoice_with_hint.sign(|&x|
+            Ok::<bitcoin::secp256k1::ecdsa::RecoverableSignature, anyhow::Error>(secp.sign_ecdsa_recoverable(&x, &secret_key)))?;
+        let invoice_with_hint: Invoice = Invoice::from_signed(signed_invoice_with_hint)?;
+
         // TODO Sign raw_invoice_with_hint
 
         // register the payment at the lsp if needed
@@ -203,8 +216,28 @@ impl NodeService {
             info!("Payment registered");
         }
 
-        // return the converted invoice
-        Ok(raw_invoice_with_hint)
+        // return the signed, converted invoice with hints
+        Ok(LNInvoice {
+            amount_sats: Some(
+                invoice_with_hint.amount_milli_satoshis()
+                    .ok_or("Signed invoice has no amount set")
+                    .map_err(|err| anyhow!(err))?
+                    / 1000
+            ),
+            description: invoice.description.clone(),
+            payment_hash: invoice_with_hint.payment_hash().to_string(),
+            payment_secret: invoice_with_hint.payment_secret().encode(),
+            payee_pubkey: invoice_with_hint.payee_pub_key()
+                .ok_or("Signed invoice has no payee pubkey set")
+                .map_err(|err| anyhow!(err))?
+                .to_string(),
+            timestamp: invoice_with_hint.timestamp().duration_since(UNIX_EPOCH)?.as_secs(),
+            expiry: invoice.expiry_time as u64,
+            routing_hints: invoice_with_hint.route_hints()
+                .iter()
+                .map(RouteHint::from_ldk_hint)
+                .collect()
+        })
     }
 }
 

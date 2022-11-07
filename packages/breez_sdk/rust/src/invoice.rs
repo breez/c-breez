@@ -11,7 +11,7 @@ pub struct LNInvoice {
     pub payee_pubkey: String,
     pub payment_hash: String,
     pub description: String,
-    pub amount: Option<u64>,
+    pub amount_sats: Option<u64>,
     pub timestamp: u64,
     pub expiry: u64,
     pub routing_hints: Vec<RouteHint>,
@@ -146,9 +146,9 @@ pub fn parse_invoice(invoice: &String) -> Result<LNInvoice> {
         .collect();
     // return the parsed invoice
     let ln_invoice = LNInvoice {
-        payee_pubkey: payee_pubkey,
+        payee_pubkey,
         expiry: invoice.expiry_time().as_secs(),
-        amount: invoice.amount_milli_satoshis(),
+        amount_sats: invoice.amount_milli_satoshis(),
         timestamp: since_the_epoch.as_secs(),
         routing_hints: converted_hints,
         payment_hash: invoice.payment_hash().encode_hex::<String>(),

@@ -13,6 +13,7 @@ use crate::models::{
 };
 use crate::node_service::NodeServiceBuilder;
 use crate::{greenlight::Greenlight, node_service::NodeService};
+use crate::invoice::LNInvoice;
 
 lazy_static! {
     static ref STATE: Mutex<Option<Greenlight>> = Mutex::new(None);
@@ -111,7 +112,7 @@ pub fn list_transactions(
 pub fn request_payment(
     amount_sats: u64,
     description: String
-) -> Result<RawInvoice> {
+) -> Result<LNInvoice> {
     block_on(async {
         build_services()
             .await?

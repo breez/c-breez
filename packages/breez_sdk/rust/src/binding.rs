@@ -111,7 +111,7 @@ pub fn list_transactions(
 
 pub fn pay(
     bolt11: String,
-) -> Result<Payment> {
+) -> Result<()> {
     block_on(async {
         build_services()
             .await?

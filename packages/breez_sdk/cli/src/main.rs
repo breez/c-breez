@@ -69,8 +69,7 @@ fn main() -> Result<()> {
                             .ok_or("Expected bolt11 arg")
                             .map_err(|err| anyhow!(err))?;
 
-                        binding::pay(bolt11.into())?;
-                        info!("Payment successfully sent");
+                        show_results(binding::pay(bolt11.into()))
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());

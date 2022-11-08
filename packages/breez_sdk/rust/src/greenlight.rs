@@ -1,6 +1,12 @@
 use crate::invoice::parse_invoice;
-use crate::models::{Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse};
-use anyhow::Result;
+use crate::models::{
+    Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeAPI,
+    NodeState, SyncResponse,
+};
+
+use anyhow::{anyhow, Result};
+use bitcoin::bech32::{u5, ToBase32};
+use bitcoin::secp256k1::ecdsa::{RecoverableSignature, RecoveryId};
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{Amount, Invoice, InvoiceRequest, Payment, WithdrawResponse};
 use gl_client::scheduler::Scheduler;
@@ -8,8 +14,9 @@ use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
 use gl_client::{node, pb};
 
-use std::cmp::max;
 use gl_client::pb::Peer;
+use lightning_invoice::{RawInvoice, SignedRawInvoice};
+use std::cmp::max;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::sync::mpsc;
 
@@ -82,6 +89,46 @@ impl NodeAPI for Greenlight {
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
         self.signer.run_forever(shutdown).await?;
         Ok(())
+    }
+
+    fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
+        let hrp_bytes = invoice.hrp.to_string().as_bytes().to_vec();
+        let data_bytes = invoice.data.to_base32();
+
+        // create the message for the signer
+        let msg_type: u16 = 8;
+        let data_len: u16 = data_bytes.len().try_into()?;
+        let mut data_len_bytes = data_len.to_be_bytes().to_vec();
+        let mut data_buf = data_bytes
+            .to_vec()
+            .into_iter()
+            .map(|b| u5::to_u8(b))
+            .collect();
+
+        let hrp_len: u16 = hrp_bytes.len().try_into()?;
+        let mut hrp_len_bytes = hrp_len.to_be_bytes().to_vec();
+        let mut hrp_buf = hrp_bytes.to_vec();
+
+        let mut buf = msg_type.to_be_bytes().to_vec();
+        buf.append(&mut data_len_bytes);
+        buf.append(&mut data_buf);
+        buf.append(&mut hrp_len_bytes);
+        buf.append(&mut hrp_buf);
+        // Sign the invoice using the signer
+        let raw_result = self.signer.sign_invoice(buf)?;
+        println!(
+            "recover id: {:?} raw = {:?}",
+            raw_result, raw_result[64] as i32
+        );
+        // contruct the RecoveryId
+        let rid = RecoveryId::from_i32(raw_result[64] as i32).expect("recovery ID");
+        let sig = &raw_result[0..64];
+        let recoverable_sig = RecoverableSignature::from_compact(sig, rid)
+            .map_err(|e| anyhow!(e))?
+            .clone();
+
+        let signed_invoice: Result<SignedRawInvoice> = invoice.sign(|_| Ok(recoverable_sig));
+        Ok(signed_invoice?.to_string())
     }
 
     // implemenet pull changes from greenlight
@@ -204,9 +251,7 @@ impl NodeAPI for Greenlight {
             }),
             label: format!(
                 "breez-{}",
-                SystemTime::now()
-                    .duration_since(UNIX_EPOCH)?
-                    .as_millis()
+                SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis()
             ),
             description,
             preimage: vec![],
@@ -218,13 +263,13 @@ impl NodeAPI for Greenlight {
     async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment> {
         let mut client = self.get_client().await?;
 
-        let request = pb::PayRequest{
+        let request = pb::PayRequest {
             amount: amount_sats
                 .map(Unit::Satoshi)
                 .map(Some)
                 .map(|amt| Amount { unit: amt }),
             bolt11,
-            timeout: self.breez_config.payment_timeout_sec
+            timeout: self.breez_config.payment_timeout_sec,
         };
         Ok(client.pay(request).await?.into_inner())
     }
@@ -235,38 +280,41 @@ impl NodeAPI for Greenlight {
         let request = pb::KeysendRequest {
             node_id: node_id.into(),
             amount: Some(Amount {
-                unit: Some( Unit::Satoshi(amount_sats))
+                unit: Some(Unit::Satoshi(amount_sats)),
             }),
             label: format!(
                 "breez-{}",
-                SystemTime::now()
-                    .duration_since(UNIX_EPOCH)?
-                    .as_millis()),
+                SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis()
+            ),
             extratlvs: vec![],
-            routehints: vec![]
+            routehints: vec![],
         };
         Ok(client.keysend(request).await?.into_inner())
     }
 
-    async fn sweep(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<WithdrawResponse> {
+    async fn sweep(
+        &self,
+        to_address: String,
+        feerate_preset: FeeratePreset,
+    ) -> Result<WithdrawResponse> {
         let mut client = self.get_client().await?;
 
         let fee_rate = pb::Feerate {
-            value: Some(pb::feerate::Value::Preset(
-                match feerate_preset {
-                    FeeratePreset::Regular => pb::FeeratePreset::Normal,
-                    FeeratePreset::Economy => pb::FeeratePreset::Slow,
-                    FeeratePreset::Priority => pb::FeeratePreset::Urgent
-                } as i32
-            ))
+            value: Some(pb::feerate::Value::Preset(match feerate_preset {
+                FeeratePreset::Regular => pb::FeeratePreset::Normal,
+                FeeratePreset::Economy => pb::FeeratePreset::Slow,
+                FeeratePreset::Priority => pb::FeeratePreset::Urgent,
+            } as i32)),
         };
 
         let request = pb::WithdrawRequest {
             feerate: Some(fee_rate),
-            amount: Some(Amount {unit: Some(Unit::All(true))}),
+            amount: Some(Amount {
+                unit: Some(Unit::All(true)),
+            }),
             destination: to_address,
             minconf: None,
-            utxos: vec![]
+            utxos: vec![],
         };
 
         Ok(client.withdraw(request).await?.into_inner())

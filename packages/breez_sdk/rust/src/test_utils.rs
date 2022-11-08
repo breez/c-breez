@@ -1,6 +1,7 @@
 use anyhow::Result;
-use gl_client::pb::{Amount, Invoice, Payment, Peer, WithdrawResponse};
 use gl_client::pb::amount::Unit;
+use gl_client::pb::{Amount, Invoice, Payment, Peer, WithdrawResponse};
+use lightning_invoice::RawInvoice;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::{random, Rng};
 
@@ -8,7 +9,9 @@ use crate::fiat::{FiatCurrency, Rate};
 
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
-use crate::models::{FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
+use crate::models::{
+    FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse,
+};
 use tokio::sync::mpsc;
 
 pub struct MockNodeAPI {
@@ -37,6 +40,10 @@ impl NodeAPI for MockNodeAPI {
         Ok(vec![])
     }
 
+    fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
+        Ok("".to_string())
+    }
+
     async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
         Ok(Invoice {
             label: "".to_string(),
@@ -58,14 +65,22 @@ impl NodeAPI for MockNodeAPI {
         Ok(MockNodeAPI::get_dummy_payment())
     }
 
-    async fn send_spontaneous_payment(&self, _node_id: String, _amount_sats: u64) -> Result<Payment> {
+    async fn send_spontaneous_payment(
+        &self,
+        _node_id: String,
+        _amount_sats: u64,
+    ) -> Result<Payment> {
         Ok(MockNodeAPI::get_dummy_payment())
     }
 
-    async fn sweep(&self, _to_address: String, _feerate_preset: FeeratePreset) -> Result<WithdrawResponse> {
+    async fn sweep(
+        &self,
+        _to_address: String,
+        _feerate_preset: FeeratePreset,
+    ) -> Result<WithdrawResponse> {
         Ok(WithdrawResponse {
             tx: rand_vec_u8(32),
-            txid: rand_vec_u8(32)
+            txid: rand_vec_u8(32),
         })
     }
 }

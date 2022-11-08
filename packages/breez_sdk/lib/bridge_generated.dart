@@ -22,7 +22,7 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kRecoverNodeConstMeta;
 
   Future<void> createNodeServices(
-      {required Network network,
+      {required Config breezConfig,
       required Uint8List seed,
       required GreenlightCredentials creds,
       dynamic hint});
@@ -73,10 +73,30 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kListTransactionsConstMeta;
 
+  Future<void> pay({required String bolt11, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kPayConstMeta;
+
   Future<LNInvoice> requestPayment(
       {required int amountSats, required String description, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRequestPaymentConstMeta;
+}
+
+class Config {
+  final String breezserver;
+  final String mempoolspaceUrl;
+  final String workingDir;
+  final Network network;
+  final int paymentTimeoutSec;
+
+  Config({
+    required this.breezserver,
+    required this.mempoolspaceUrl,
+    required this.workingDir,
+    required this.network,
+    required this.paymentTimeoutSec,
+  });
 }
 
 class CurrencyInfo {
@@ -378,26 +398,26 @@ class LightningToolkitImpl implements LightningToolkit {
       );
 
   Future<void> createNodeServices(
-          {required Network network,
+          {required Config breezConfig,
           required Uint8List seed,
           required GreenlightCredentials creds,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_create_node_services(
             port_,
-            api2wire_network(network),
+            _platform.api2wire_box_autoadd_config(breezConfig),
             _platform.api2wire_uint_8_list(seed),
             _platform.api2wire_box_autoadd_greenlight_credentials(creds)),
         parseSuccessData: _wire2api_unit,
         constMeta: kCreateNodeServicesConstMeta,
-        argValues: [network, seed, creds],
+        argValues: [breezConfig, seed, creds],
         hint: hint,
       ));
 
   FlutterRustBridgeTaskConstMeta get kCreateNodeServicesConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "create_node_services",
-        argNames: ["network", "seed", "creds"],
+        argNames: ["breezConfig", "seed", "creds"],
       );
 
   Future<void> startNode({dynamic hint}) =>
@@ -557,6 +577,22 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "list_transactions",
         argNames: ["filter", "fromTimestamp", "toTimestamp"],
+      );
+
+  Future<void> pay({required String bolt11, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            _platform.inner.wire_pay(port_, _platform.api2wire_String(bolt11)),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kPayConstMeta,
+        argValues: [bolt11],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kPayConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "pay",
+        argNames: ["bolt11"],
       );
 
   Future<LNInvoice> requestPayment(
@@ -909,6 +945,11 @@ int api2wire_payment_type_filter(PaymentTypeFilter raw) {
 }
 
 @protected
+int api2wire_u32(int raw) {
+  return raw;
+}
+
+@protected
 int api2wire_u8(int raw) {
   return raw;
 }
@@ -922,6 +963,13 @@ class LightningToolkitPlatform
   @protected
   ffi.Pointer<wire_uint_8_list> api2wire_String(String raw) {
     return api2wire_uint_8_list(utf8.encoder.convert(raw));
+  }
+
+  @protected
+  ffi.Pointer<wire_Config> api2wire_box_autoadd_config(Config raw) {
+    final ptr = inner.new_box_autoadd_config_0();
+    _api_fill_to_wire_config(raw, ptr.ref);
+    return ptr;
   }
 
   @protected
@@ -960,10 +1008,23 @@ class LightningToolkitPlatform
   }
 // Section: api_fill_to_wire
 
+  void _api_fill_to_wire_box_autoadd_config(
+      Config apiObj, ffi.Pointer<wire_Config> wireObj) {
+    _api_fill_to_wire_config(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_greenlight_credentials(
       GreenlightCredentials apiObj,
       ffi.Pointer<wire_GreenlightCredentials> wireObj) {
     _api_fill_to_wire_greenlight_credentials(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_config(Config apiObj, wire_Config wireObj) {
+    wireObj.breezserver = api2wire_String(apiObj.breezserver);
+    wireObj.mempoolspace_url = api2wire_String(apiObj.mempoolspaceUrl);
+    wireObj.working_dir = api2wire_String(apiObj.workingDir);
+    wireObj.network = api2wire_network(apiObj.network);
+    wireObj.payment_timeout_sec = api2wire_u32(apiObj.paymentTimeoutSec);
   }
 
   void _api_fill_to_wire_greenlight_credentials(
@@ -996,7 +1057,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       : _lookup = lookup;
 
   void store_dart_post_cobject(
-    DartPostCObjectFnType ptr,
+    int ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -1004,10 +1065,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
-      .asFunction<void Function(DartPostCObjectFnType)>();
+  late final _store_dart_post_cobject =
+      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
 
   void wire_register_node(
     int port_,
@@ -1049,13 +1110,13 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
 
   void wire_create_node_services(
     int port_,
-    int network,
+    ffi.Pointer<wire_Config> breez_config,
     ffi.Pointer<wire_uint_8_list> seed,
     ffi.Pointer<wire_GreenlightCredentials> creds,
   ) {
     return _wire_create_node_services(
       port_,
-      network,
+      breez_config,
       seed,
       creds,
     );
@@ -1065,13 +1126,16 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.NativeFunction<
               ffi.Void Function(
                   ffi.Int64,
-                  ffi.Int32,
+                  ffi.Pointer<wire_Config>,
                   ffi.Pointer<wire_uint_8_list>,
                   ffi.Pointer<wire_GreenlightCredentials>)>>(
       'wire_create_node_services');
   late final _wire_create_node_services =
       _wire_create_node_servicesPtr.asFunction<
-          void Function(int, int, ffi.Pointer<wire_uint_8_list>,
+          void Function(
+              int,
+              ffi.Pointer<wire_Config>,
+              ffi.Pointer<wire_uint_8_list>,
               ffi.Pointer<wire_GreenlightCredentials>)>();
 
   void wire_start_node(
@@ -1223,6 +1287,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       void Function(
           int, int, ffi.Pointer<ffi.Int64>, ffi.Pointer<ffi.Int64>)>();
 
+  void wire_pay(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> bolt11,
+  ) {
+    return _wire_pay(
+      port_,
+      bolt11,
+    );
+  }
+
+  late final _wire_payPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_pay');
+  late final _wire_pay = _wire_payPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_request_payment(
     int port_,
     int amount_sats,
@@ -1241,6 +1322,16 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_uint_8_list>)>>('wire_request_payment');
   late final _wire_request_payment = _wire_request_paymentPtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
+
+  ffi.Pointer<wire_Config> new_box_autoadd_config_0() {
+    return _new_box_autoadd_config_0();
+  }
+
+  late final _new_box_autoadd_config_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Config> Function()>>(
+          'new_box_autoadd_config_0');
+  late final _new_box_autoadd_config_0 = _new_box_autoadd_config_0Ptr
+      .asFunction<ffi.Pointer<wire_Config> Function()>();
 
   ffi.Pointer<wire_GreenlightCredentials>
       new_box_autoadd_greenlight_credentials_0() {
@@ -1306,12 +1397,24 @@ class wire_uint_8_list extends ffi.Struct {
   external int len;
 }
 
+class wire_Config extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> breezserver;
+
+  external ffi.Pointer<wire_uint_8_list> mempoolspace_url;
+
+  external ffi.Pointer<wire_uint_8_list> working_dir;
+
+  @ffi.Int32()
+  external int network;
+
+  @ffi.Uint32()
+  external int payment_timeout_sec;
+}
+
 class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_key;
 
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-typedef DartPostCObjectFnType = ffi.Pointer<
-    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
-typedef DartPort = ffi.Int64;
+typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;

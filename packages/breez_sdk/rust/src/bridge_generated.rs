@@ -27,6 +27,7 @@ use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
 use crate::lsp::LspInformation;
+use crate::models::Config;
 use crate::models::GreenlightCredentials;
 use crate::models::LightningTransaction;
 use crate::models::Network;
@@ -73,7 +74,7 @@ fn wire_recover_node_impl(
 }
 fn wire_create_node_services_impl(
     port_: MessagePort,
-    network: impl Wire2Api<Network> + UnwindSafe,
+    breez_config: impl Wire2Api<Config> + UnwindSafe,
     seed: impl Wire2Api<Vec<u8>> + UnwindSafe,
     creds: impl Wire2Api<GreenlightCredentials> + UnwindSafe,
 ) {
@@ -84,10 +85,10 @@ fn wire_create_node_services_impl(
             mode: FfiCallMode::Normal,
         },
         move || {
-            let api_network = network.wire2api();
+            let api_breez_config = breez_config.wire2api();
             let api_seed = seed.wire2api();
             let api_creds = creds.wire2api();
-            move |task_callback| create_node_services(api_network, api_seed, api_creds)
+            move |task_callback| create_node_services(api_breez_config, api_seed, api_creds)
         },
     )
 }
@@ -204,6 +205,19 @@ fn wire_list_transactions_impl(
         },
     )
 }
+fn wire_pay_impl(port_: MessagePort, bolt11: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "pay",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_bolt11 = bolt11.wire2api();
+            move |task_callback| pay(api_bolt11)
+        },
+    )
+}
 fn wire_request_payment_impl(
     port_: MessagePort,
     amount_sats: impl Wire2Api<u64> + UnwindSafe,
@@ -279,6 +293,11 @@ impl Wire2Api<PaymentTypeFilter> for i32 {
             2 => PaymentTypeFilter::All,
             _ => unreachable!("Invalid variant for PaymentTypeFilter: {}", self),
         }
+    }
+}
+impl Wire2Api<u32> for u32 {
+    fn wire2api(self) -> u32 {
+        self
     }
 }
 impl Wire2Api<u64> for u64 {

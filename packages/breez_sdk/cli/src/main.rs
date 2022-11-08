@@ -73,6 +73,16 @@ fn main() -> Result<()> {
 
                         show_results(binding::pay(bolt11.into()))
                     }
+                    Some("keysend") => {
+                        let node_id = command.next()
+                            .ok_or("Expected node_id arg")
+                            .map_err(|err| anyhow!(err))?;
+                        let amount_sats = command.next()
+                            .ok_or("Expected amount_sats arg")
+                            .map_err(|err| anyhow!(err))?;
+
+                        show_results(binding::keysend(node_id.into(), amount_sats.parse()?))
+                    }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
                         greenlight_credentials = Some(r.unwrap());

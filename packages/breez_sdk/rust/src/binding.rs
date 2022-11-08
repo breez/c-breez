@@ -120,6 +120,18 @@ pub fn pay(
     })
 }
 
+pub fn keysend(
+    node_id: String,
+    amount_sats: u64
+) -> Result<()> {
+    block_on(async {
+        build_services()
+            .await?
+            .keysend(node_id, amount_sats)
+            .await
+    })
+}
+
 pub fn request_payment(
     amount_sats: u64,
     description: String

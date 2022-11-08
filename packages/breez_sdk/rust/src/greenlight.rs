@@ -228,6 +228,25 @@ impl NodeAPI for Greenlight {
         };
         Ok(client.pay(request).await?.into_inner())
     }
+
+    async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<Payment> {
+        let mut client = self.get_client().await?;
+
+        let request = pb::KeysendRequest {
+            node_id: node_id.into(),
+            amount: Some(Amount {
+                unit: Some( Unit::Satoshi(amount_sats))
+            }),
+            label: format!(
+                "breez-{}",
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)?
+                    .as_millis()),
+            extratlvs: vec![],
+            routehints: vec![]
+        };
+        Ok(client.keysend(request).await?.into_inner())
+    }
 }
 
 // pulls transactions from greenlight based on last sync timestamp.

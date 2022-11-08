@@ -54,15 +54,25 @@ impl NodeAPI for MockNodeAPI {
         })
     }
 
-    async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment> {
-        Ok(Payment {
+    async fn send_payment(&self, _bolt11: String, _amount_sats: Option<u64>) -> Result<Payment> {
+        Ok(MockNodeAPI::get_dummy_payment())
+    }
+
+    async fn send_spontaneous_payment(&self, _node_id: String, _amount_sats: u64) -> Result<Payment> {
+        Ok(MockNodeAPI::get_dummy_payment())
+    }
+}
+
+impl MockNodeAPI {
+    fn get_dummy_payment() -> Payment {
+        Payment {
             payment_hash: rand_vec_u8(32),
-            bolt11,
-            amount: amount_sats
+            bolt11: rand_string(32),
+            amount: Some(random())
                 .map(Unit::Satoshi)
                 .map(Some)
                 .map(|amt| Amount { unit: amt }),
-            amount_sent: amount_sats
+            amount_sent: Some(random())
                 .map(Unit::Satoshi)
                 .map(Some)
                 .map(|amt| Amount { unit: amt }),
@@ -70,7 +80,7 @@ impl NodeAPI for MockNodeAPI {
             status: 1,
             created_at: random(),
             destination: rand_vec_u8(32),
-        })
+        }
     }
 }
 

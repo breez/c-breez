@@ -77,6 +77,11 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kPayConstMeta;
 
+  Future<void> keysend(
+      {required String nodeId, required int amountSats, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kKeysendConstMeta;
+
   Future<LNInvoice> requestPayment(
       {required int amountSats, required String description, dynamic hint});
 
@@ -593,6 +598,25 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "pay",
         argNames: ["bolt11"],
+      );
+
+  Future<void> keysend(
+          {required String nodeId, required int amountSats, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_keysend(
+            port_,
+            _platform.api2wire_String(nodeId),
+            _platform.api2wire_u64(amountSats)),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kKeysendConstMeta,
+        argValues: [nodeId, amountSats],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kKeysendConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "keysend",
+        argNames: ["nodeId", "amountSats"],
       );
 
   Future<LNInvoice> requestPayment(
@@ -1303,6 +1327,25 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_pay');
   late final _wire_pay = _wire_payPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_keysend(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> node_id,
+    int amount_sats,
+  ) {
+    return _wire_keysend(
+      port_,
+      node_id,
+      amount_sats,
+    );
+  }
+
+  late final _wire_keysendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Uint64)>>('wire_keysend');
+  late final _wire_keysend = _wire_keysendPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
   void wire_request_payment(
     int port_,

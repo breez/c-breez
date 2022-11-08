@@ -218,6 +218,24 @@ fn wire_pay_impl(port_: MessagePort, bolt11: impl Wire2Api<String> + UnwindSafe)
         },
     )
 }
+fn wire_keysend_impl(
+    port_: MessagePort,
+    node_id: impl Wire2Api<String> + UnwindSafe,
+    amount_sats: impl Wire2Api<u64> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "keysend",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_node_id = node_id.wire2api();
+            let api_amount_sats = amount_sats.wire2api();
+            move |task_callback| keysend(api_node_id, api_amount_sats)
+        },
+    )
+}
 fn wire_request_payment_impl(
     port_: MessagePort,
     amount_sats: impl Wire2Api<u64> + UnwindSafe,

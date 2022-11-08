@@ -64,6 +64,14 @@ fn main() -> Result<()> {
                         binding::request_payment(amount_sats, description.to_string())?;
                         info!("Payment successfully requested");
                     }
+                    Some("pay") => {
+                        let bolt11 = command.next()
+                            .ok_or("Expected bolt11 arg")
+                            .map_err(|err| anyhow!(err))?;
+
+                        binding::pay(bolt11.into())?;
+                        info!("Payment successfully sent");
+                    }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
                         greenlight_credentials = Some(r.unwrap());

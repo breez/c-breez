@@ -16,7 +16,8 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 pub trait NodeAPI {
     async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
-    async fn send_payment(&self, amount_sats: u64, bolt11: String) -> Result<Payment>;
+    /// As per the `pb::PayRequest` docs, `amount_sats` is only needed when the invoice doesn't specify an amount
+    async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment>;
     async fn start(&self) -> Result<()>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;

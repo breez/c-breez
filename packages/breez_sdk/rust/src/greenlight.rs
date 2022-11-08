@@ -215,13 +215,14 @@ impl NodeAPI for Greenlight {
         Ok(client.create_invoice(request).await?.into_inner())
     }
 
-    async fn send_payment(&self, amount_sats: u64, bolt11: String) -> Result<Payment> {
+    async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment> {
         let mut client = self.get_client().await?;
 
         let request = pb::PayRequest{
-            amount: Some(Amount {
-                unit: Some(Unit::Satoshi(amount_sats)),
-            }),
+            amount: amount_sats
+                .map(Unit::Satoshi)
+                .map(Some)
+                .map(|amt| Amount { unit: amt }),
             bolt11,
             timeout: self.breez_config.payment_timeout_sec
         };

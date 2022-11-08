@@ -6,7 +6,7 @@ use std::sync::Mutex;
 use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
-use lightning_invoice::RawInvoice;
+use gl_client::pb::Payment;
 
 use crate::models::{
     Config, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter,
@@ -105,6 +105,17 @@ pub fn list_transactions(
         build_services()
             .await?
             .list_transactions(filter, from_timestamp, to_timestamp)
+            .await
+    })
+}
+
+pub fn pay(
+    bolt11: String,
+) -> Result<Payment> {
+    block_on(async {
+        build_services()
+            .await?
+            .pay(bolt11)
             .await
     })
 }

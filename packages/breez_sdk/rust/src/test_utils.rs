@@ -54,16 +54,18 @@ impl NodeAPI for MockNodeAPI {
         })
     }
 
-    async fn send_payment(&self, amount_sats: u64, bolt11: String) -> Result<Payment> {
+    async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment> {
         Ok(Payment {
             payment_hash: rand_vec_u8(32),
             bolt11,
-            amount: Some(Amount {
-                unit: Some(Unit::Satoshi(amount_sats)),
-            }),
-            amount_sent: Some(Amount {
-                unit: Some(Unit::Satoshi(amount_sats)),
-            }),
+            amount: amount_sats
+                .map(Unit::Satoshi)
+                .map(Some)
+                .map(|amt| Amount { unit: amt }),
+            amount_sent: amount_sats
+                .map(Unit::Satoshi)
+                .map(Some)
+                .map(|amt| Amount { unit: amt }),
             payment_preimage: rand_vec_u8(32),
             status: 1,
             created_at: random(),

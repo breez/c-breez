@@ -5,7 +5,7 @@ use std::time::UNIX_EPOCH;
 use anyhow::{anyhow, Result};
 use bip39::*;
 use bitcoin::secp256k1::{Secp256k1, SecretKey};
-use lightning::util::ser::Writeable;
+use gl_client::pb::Payment;
 use lightning_invoice::{Invoice, RawInvoice, SignedRawInvoice};
 use rand::Rng;
 use tokio::sync::mpsc;
@@ -122,6 +122,12 @@ impl NodeService {
             .ok_or("No LSO found for given LSP ID")
             .map_err(|err| anyhow!(err))
             .cloned()
+    }
+
+    pub async fn pay(&mut self, bolt11: String) -> Result<Payment> {
+        let payment = self.client.send_payment(bolt11, None).await?;
+
+        Ok(payment)
     }
 
     pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<LNInvoice> {

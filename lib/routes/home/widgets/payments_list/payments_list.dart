@@ -58,30 +58,34 @@ void main() async {
   );
   final firstPaymentItemKey = GlobalKey();
   final injector = ServiceInjector();
-  HydratedBlocOverrides.runZoned(
-    () => runApp(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider<CurrencyBloc>(
-            create: (BuildContext context) =>
-                CurrencyBloc(injector.fiatService),
-          ),
-          BlocProvider<UserProfileBloc>(
-            create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
-          ),
-        ],
-        child: MaterialApp(
-          theme: breezLightTheme,
-          home: Scaffold(
-            body: SafeArea(
-              child: CustomScrollView(
-                controller: ScrollController(),
-                slivers: [
-                  PaymentsList(
-                    [
-                      PaymentInfo(
-                        type: PaymentType.received,
-                        amountMsat: Int64(4321000),
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: Directory(
+      join((await getApplicationDocumentsDirectory()).path, "preview_storage"),
+    ),
+  );
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<CurrencyBloc>(
+          create: (BuildContext context) => CurrencyBloc(injector.fiatService),
+        ),
+        BlocProvider<UserProfileBloc>(
+          create: (BuildContext context) =>
+              UserProfileBloc(injector.breezServer, injector.notifications),
+        ),
+      ],
+      child: MaterialApp(
+        theme: breezLightTheme,
+        home: Scaffold(
+          body: SafeArea(
+            child: CustomScrollView(
+              controller: ScrollController(),
+              slivers: [
+                PaymentsList(
+                  [
+                    PaymentInfo(
+                      type: PaymentType.received,
+                      amountMsat: Int64(4321000),
                         feeMsat: Int64(0),
                         creationTimestamp: Int64(1661791810),
                         pending: false,
@@ -137,9 +141,5 @@ void main() async {
           ),
         ),
       ),
-    ),
-    storage: await HydratedStorage.build(
-      storageDirectory: Directory(join((await getApplicationDocumentsDirectory()).path, "preview_storage")),
-    ),
   );
 }

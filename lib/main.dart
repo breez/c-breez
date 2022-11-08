@@ -31,7 +31,8 @@ void main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
     BreezLogger();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     //initializeDateFormatting(Platform.localeName, null);
     BreezDateUtils.setupLocales();
     await Firebase.initializeApp(
@@ -41,45 +42,48 @@ void main() async {
     final lightningServices = injector.lightningServices;
     var appDir = await getApplicationDocumentsDirectory();
 
-    final storage = await HydratedStorage.build(storageDirectory: Directory(p.join(appDir.path, "bloc_storage")));
-    HydratedBlocOverrides.runZoned(
-        () => runApp(MultiBlocProvider(
-              providers: [
-                BlocProvider<LSPBloc>(
-                  create: (BuildContext context) =>
-                      LSPBloc(lightningServices, injector.lspService),
-                ),
-                BlocProvider<AccountBloc>(
-                  create: (BuildContext context) => AccountBloc(
-                    lightningServices,
-                    injector.lnurlService,
-                    injector.keychain,
-                  ),
-                ),
-                BlocProvider<InputBloc>(
-                  create: (BuildContext context) =>
-                      InputBloc(injector.lightningLinks, injector.device, lightningServices),
-                ),
-                BlocProvider<UserProfileBloc>(
-                  create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
-                ),
-                BlocProvider<CurrencyBloc>(
-                  create: (BuildContext context) =>
-                      CurrencyBloc(injector.fiatService),
-                ),
-                BlocProvider<SecurityBloc>(
-                  create: (BuildContext context) => SecurityBloc(),
-                ),
-                BlocProvider<WithdrawFundsBloc>(
-                  create: (BuildContext context) => WithdrawFundsBloc(lightningServices),
-                ),
-                BlocProvider<ConnectivityBloc>(
-                  create: (BuildContext context) => ConnectivityBloc(),
-                ),
-              ],
-              child: UserApp(),
-            )),
-        storage: storage);
+    HydratedBloc.storage = await HydratedStorage.build(
+        storageDirectory: Directory(p.join(appDir.path, "bloc_storage")));
+    runApp(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<LSPBloc>(
+            create: (BuildContext context) =>
+                LSPBloc(lightningServices, injector.lspService),
+          ),
+          BlocProvider<AccountBloc>(
+            create: (BuildContext context) => AccountBloc(
+              lightningServices,
+              injector.lnurlService,
+              injector.keychain,
+            ),
+          ),
+          BlocProvider<InputBloc>(
+            create: (BuildContext context) => InputBloc(
+                injector.lightningLinks, injector.device, lightningServices),
+          ),
+          BlocProvider<UserProfileBloc>(
+            create: (BuildContext context) =>
+                UserProfileBloc(injector.breezServer, injector.notifications),
+          ),
+          BlocProvider<CurrencyBloc>(
+            create: (BuildContext context) =>
+                CurrencyBloc(injector.fiatService),
+          ),
+          BlocProvider<SecurityBloc>(
+            create: (BuildContext context) => SecurityBloc(),
+          ),
+          BlocProvider<WithdrawFundsBloc>(
+            create: (BuildContext context) =>
+                WithdrawFundsBloc(lightningServices),
+          ),
+          BlocProvider<ConnectivityBloc>(
+            create: (BuildContext context) => ConnectivityBloc(),
+          ),
+        ],
+        child: UserApp(),
+      ),
+    );
   }, (error, stackTrace) async {
     if (error is! FlutterErrorDetails) {
       _log.e("FlutterError: $error", ex: error, stacktrace: stackTrace);

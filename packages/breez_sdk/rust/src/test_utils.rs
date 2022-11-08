@@ -8,7 +8,7 @@ use crate::fiat::{FiatCurrency, Rate};
 
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
-use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
+use crate::models::{FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 use tokio::sync::mpsc;
 
 pub struct MockNodeAPI {
@@ -62,7 +62,7 @@ impl NodeAPI for MockNodeAPI {
         Ok(MockNodeAPI::get_dummy_payment())
     }
 
-    async fn sweep(&self, _to_address: String, _feerate_preset: i32) -> Result<WithdrawResponse> {
+    async fn sweep(&self, _to_address: String, _feerate_preset: FeeratePreset) -> Result<WithdrawResponse> {
         Ok(WithdrawResponse {
             tx: rand_vec_u8(32),
             txid: rand_vec_u8(32)

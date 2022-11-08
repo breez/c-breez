@@ -11,8 +11,10 @@ use env_logger::Env;
 use lightning_toolkit::binding;
 use lightning_toolkit::lsp::LspInformation;
 use lightning_toolkit::models::{self, GreenlightCredentials};
-use rustyline::error::ReadlineError;
 use rustyline::Editor;
+use rustyline::error::ReadlineError;
+
+use crate::models::FeeratePreset;
 
 fn get_seed() -> Vec<u8> {
     let filename = "phrase";
@@ -87,11 +89,12 @@ fn main() -> Result<()> {
                         let to_address = command.next()
                             .ok_or("Expected to_address arg")
                             .map_err(|err| anyhow!(err))?;
-                        let feerate_preset = command.next()
+                        let feerate_preset : i32 = command.next()
                             .ok_or("Expected feerate_preset arg")
-                            .map_err(|err| anyhow!(err))?;
+                            .map_err(|err| anyhow!(err))?
+                            .parse()?;
 
-                        show_results(binding::sweep(to_address.into(), feerate_preset.parse()?))
+                        show_results(binding::sweep(to_address.into(), FeeratePreset::try_from(feerate_preset)?) )
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());

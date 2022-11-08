@@ -158,6 +158,7 @@ impl Wire2Api<Config> for wire_Config {
         }
     }
 }
+
 impl Wire2Api<GreenlightCredentials> for wire_GreenlightCredentials {
     fn wire2api(self) -> GreenlightCredentials {
         GreenlightCredentials {

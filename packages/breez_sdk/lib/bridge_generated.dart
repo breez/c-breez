@@ -88,7 +88,9 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kRequestPaymentConstMeta;
 
   Future<void> sweep(
-      {required String toAddress, required int feeratePreset, dynamic hint});
+      {required String toAddress,
+      required FeeratePreset feeratePreset,
+      dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSweepConstMeta;
 }
@@ -127,6 +129,12 @@ class CurrencyInfo {
     this.localizedName,
     this.localeOverrides,
   });
+}
+
+enum FeeratePreset {
+  Regular,
+  Economy,
+  Priority,
 }
 
 class FiatCurrency {
@@ -647,11 +655,13 @@ class LightningToolkitImpl implements LightningToolkit {
 
   Future<void> sweep(
           {required String toAddress,
-          required int feeratePreset,
+          required FeeratePreset feeratePreset,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_sweep(port_,
-            _platform.api2wire_String(toAddress), api2wire_i32(feeratePreset)),
+        callFfi: (port_) => _platform.inner.wire_sweep(
+            port_,
+            _platform.api2wire_String(toAddress),
+            api2wire_feerate_preset(feeratePreset)),
         parseSuccessData: _wire2api_unit,
         constMeta: kSweepConstMeta,
         argValues: [toAddress, feeratePreset],
@@ -976,6 +986,11 @@ class LightningToolkitImpl implements LightningToolkit {
 }
 
 // Section: api2wire
+
+@protected
+int api2wire_feerate_preset(FeeratePreset raw) {
+  return api2wire_i32(raw.index);
+}
 
 @protected
 int api2wire_i32(int raw) {

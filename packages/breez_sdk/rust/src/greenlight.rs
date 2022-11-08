@@ -1,5 +1,5 @@
 use crate::invoice::parse_invoice;
-use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse};
+use crate::models::{Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse};
 use anyhow::Result;
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{Amount, Invoice, InvoiceRequest, Payment, WithdrawResponse};
@@ -248,11 +248,17 @@ impl NodeAPI for Greenlight {
         Ok(client.keysend(request).await?.into_inner())
     }
 
-    async fn sweep(&self, to_address: String, feerate_preset: i32) -> Result<WithdrawResponse> {
+    async fn sweep(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<WithdrawResponse> {
         let mut client = self.get_client().await?;
 
         let fee_rate = pb::Feerate {
-            value: Some(pb::feerate::Value::Preset(feerate_preset))
+            value: Some(pb::feerate::Value::Preset(
+                match feerate_preset {
+                    FeeratePreset::Regular => pb::FeeratePreset::Normal,
+                    FeeratePreset::Economy => pb::FeeratePreset::Slow,
+                    FeeratePreset::Priority => pb::FeeratePreset::Urgent
+                } as i32
+            ))
         };
 
         let request = pb::WithdrawRequest {

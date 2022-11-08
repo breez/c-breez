@@ -15,7 +15,7 @@ use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, LNInvoice, parse_invoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
-use crate::models::{Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, parse_short_channel_id, PaymentTypeFilter};
+use crate::models::{Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, parse_short_channel_id, PaymentTypeFilter};
 use crate::persist;
 
 pub struct NodeService {
@@ -225,7 +225,7 @@ impl NodeService {
         Ok(parsed_invoice)
     }
 
-    pub async fn sweep(&mut self, to_address: String, feerate_preset: i32) -> Result<()> {
+    pub async fn sweep(&mut self, to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
         self.client.sweep(to_address, feerate_preset).await?;
         self.sync().await?;
         Ok(())

@@ -7,7 +7,6 @@ import 'package:breez_sdk/src/breez_server/server.dart';
 import 'package:breez_sdk/src/btc_swapper/swap_address.dart';
 import 'package:breez_sdk/native_toolkit.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart' as db;
-import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
 import 'package:fixnum/fixnum.dart';
 
@@ -25,6 +24,8 @@ class BTCSwapper {
 
   // Creating a new swap address
   Future<String> createSwap() async {
+    throw Exception("Under revision.");
+    /*
     if (_node.currentLSP == null) {
       throw Exception("lsp is not set");
     }
@@ -65,6 +66,7 @@ class BTCSwapper {
     await _storage.addSwap(swap);
 
     return swap.bitcoinAddress;
+     */
   }
 
   // Fetch all swaps
@@ -86,7 +88,7 @@ class BTCSwapper {
         _log.i("found payment request for address: ${s.bitcoinAddress}");
       }
       final invoice = await _lnToolkit.parseInvoice(invoice: s.paymentRequest!);
-      if (invoice.amount != null && invoice.amount! ~/ 1000 != liveSwap.confirmedAmount) {
+      if (invoice.amountMsat != null && invoice.amountMsat! != liveSwap.confirmedAmount) {
         _log.e("Funds were added after invoice was created for address: ${s.bitcoinAddress}");
         throw Exception("Funds were added after invoice was created");
       }

@@ -15,6 +15,9 @@ use crate::node_service::NodeServiceBuilder;
 use crate::{greenlight::Greenlight, node_service::NodeService};
 use crate::invoice::LNInvoice;
 
+use bip39::{Mnemonic, Language, Seed};
+use crate::invoice::{self};
+
 lazy_static! {
     static ref STATE: Mutex<Option<Greenlight>> = Mutex::new(None);
     static ref SIGNER_SHUTDOWN: Mutex<Option<mpsc::Sender::<()>>> = Mutex::new(None);
@@ -165,4 +168,19 @@ fn block_on<F: Future>(future: F) -> F::Output {
         .build()
         .unwrap()
         .block_on(future)
+}
+
+// These functions are exposed temporarily for integration purposes
+
+pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
+ return invoice::parse_invoice(&invoice);
+}
+
+/// Attempts to convert the phrase to a mnemonic, then to a seed.
+///
+/// If the phrase is not a valid mnemonic, an error is returned.
+pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
+ let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
+ let seed = Seed::new(&mnemonic, "");
+ Ok(seed.as_bytes().to_vec())
 }

@@ -237,7 +237,11 @@ impl NodeAPI for Greenlight {
             amount: Some(Amount {
                 unit: Some( Unit::Satoshi(amount_sats))
             }),
-            label: "".into(),
+            label: format!(
+                "breez-{}",
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)?
+                    .as_millis()),
             extratlvs: vec![],
             routehints: vec![]
         };

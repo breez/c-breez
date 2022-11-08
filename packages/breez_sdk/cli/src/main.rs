@@ -11,8 +11,8 @@ use env_logger::Env;
 use lightning_toolkit::binding;
 use lightning_toolkit::lsp::LspInformation;
 use lightning_toolkit::models::{self, GreenlightCredentials};
-use rustyline::Editor;
 use rustyline::error::ReadlineError;
+use rustyline::Editor;
 
 fn get_seed() -> Vec<u8> {
     let filename = "phrase";
@@ -61,8 +61,10 @@ fn main() -> Result<()> {
                         let amount_sats = 2001;
                         let description = "Test requested payment";
 
-                        binding::request_payment(amount_sats, description.to_string())?;
-                        info!("Payment successfully requested");
+                        show_results(binding::request_payment(
+                            amount_sats,
+                            description.to_string(),
+                        ));
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
@@ -90,25 +92,30 @@ fn main() -> Result<()> {
                     Some("start_node") => show_results(binding::start_node()),
                     Some("sync") => show_results(binding::sync()),
                     Some("list_lsps") => {
-                        let lsps : Vec<LspInformation> = binding::list_lsps()?;
+                        let lsps: Vec<LspInformation> = binding::list_lsps()?;
                         info!("The available LSPs are:");
                         for lsp in lsps {
                             info!("[{}] {}", lsp.id, lsp.name);
                         }
                         info!("Please choose an LSP with `set_lsp id`");
-                    },
+                    }
                     Some("set_lsp") => {
-                        let lsps : Vec<LspInformation> = binding::list_lsps()?;
-                        let chosen_lsp_id = command.next()
+                        let lsps: Vec<LspInformation> = binding::list_lsps()?;
+                        let chosen_lsp_id = command
+                            .next()
                             .ok_or("Expected LSP ID arg")
                             .map_err(|err| anyhow!(err))?;
-                        let chosen_lsp: &LspInformation = lsps.iter()
+                        let chosen_lsp: &LspInformation = lsps
+                            .iter()
                             .find(|lsp| lsp.id == chosen_lsp_id)
                             .ok_or("No LSO found for given LSP ID")
                             .map_err(|err| anyhow!(err))?;
                         binding::set_lsp_id(chosen_lsp_id.to_string())?;
 
-                        info!("Set LSP ID: {} / LSP Name: {}", chosen_lsp_id, chosen_lsp.name);
+                        info!(
+                            "Set LSP ID: {} / LSP Name: {}",
+                            chosen_lsp_id, chosen_lsp.name
+                        );
                     }
                     Some("get_node_state") => show_results(binding::get_node_state()),
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),

@@ -7,6 +7,7 @@ use lightning_invoice::*;
 use std::str::FromStr;
 use std::time::UNIX_EPOCH;
 
+#[derive(Debug)]
 pub struct LNInvoice {
     pub bolt11: String,
     pub payee_pubkey: String,

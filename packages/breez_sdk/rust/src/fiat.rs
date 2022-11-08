@@ -23,6 +23,12 @@ pub struct LocaleOverrides {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct LocalizedName {
+    pub locale: String,
+    pub name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CurrencyInfo {
     pub name: String,
@@ -30,7 +36,7 @@ pub struct CurrencyInfo {
     pub spacing: Option<u32>,
     pub symbol: Option<Symbol>,
     pub uniq_symbol: Option<Symbol>,
-    pub localized_name: Option<Vec<(String, String)>>,
+    pub localized_name: Option<Vec<LocalizedName>>,
     pub locale_overrides: Option<Vec<LocaleOverrides>>,
 }
 

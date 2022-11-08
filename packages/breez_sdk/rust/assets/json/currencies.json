@@ -67,20 +67,28 @@
   },
   "AOA": {
     "name": "Kwanza",
-    "localized_name": {
-      "en": "Angolan Kwanza",
-      "es": "Kwanza Angoleño"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Angolan Kwanza"
+      },
+      {
+        "locale": "es",
+        "name": "Kwanza Angoleño"
+      }
+    ],
     "fractionSize": 2,
     "symbol": null,
     "uniqSymbol": null
   },
   "ARS": {
     "name": "Peso Argentino",
-    "localized_name": {
-      "en": "Argentine Peso",
-      "pt": "Peso Argentino"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Argentine Peso"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "$",
@@ -91,10 +99,16 @@
   },
   "AUD": {
     "name": "Australian Dollar",
-    "localized_name": {
-      "es": "Dólar Australiano",
-      "pt": "Dólar Australiano"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Dólar Australiano"
+      },
+      {
+        "locale": "pt",
+        "name": "Dólar Australiano"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "$",
@@ -225,10 +239,6 @@
   },
   "BOB": {
     "name": "Boliviano",
-    "localized_name": {
-      "en": "Boliviano",
-      "pt": "Boliviano"
-    },
     "fractionSize": 2,
     "symbol": {
       "grapheme": "Bs.",
@@ -249,10 +259,16 @@
   },
   "BRL": {
     "name": "Real",
-    "localized_name": {
-      "en": "Brazilian Real",
-      "es": "Real Brasileño"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Brazilian Real"
+      },
+      {
+        "locale": "es",
+        "name": "Real Brasileño"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "R$",
@@ -339,10 +355,16 @@
   },
   "CAD": {
     "name": "Canadian Dollar",
-    "localized_name": {
-      "es": "Dólar Canadiense",
-      "pt": "Dólar Canadense"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Dólar Canadiense"
+      },
+      {
+        "locale": "pt",
+        "name": "Dólar Canadense"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "$",
@@ -387,10 +409,16 @@
   },
   "CLP": {
     "name": "Peso Chileno",
-    "localized_name": {
-      "en": "Chilean Peso",
-      "pt": "Peso Chileno"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Chilean Peso"
+      },
+      {
+        "locale": "pt",
+        "name": "Peso Chileno"
+      }
+    ],
     "fractionSize": 0,
     "symbol": {
       "grapheme": "$",
@@ -414,11 +442,17 @@
     }
   },
   "COP": {
-    "name": "Colombian Peso",
-    "localized_name": {
-      "en": "Peso Colombiano",
-      "pt": "Peso Colombiano"
-    },
+    "name": "Peso Colombiano",
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Colombian Peso"
+      },
+      {
+        "locale": "pt",
+        "name": "Peso Colombiano"
+      }
+    ],
     "fractionSize": 0,
     "symbol": {
       "grapheme": "$",
@@ -455,10 +489,16 @@
   },
   "CUP": {
     "name": "Peso Cubano",
-    "localized_name": {
-      "en": "Cuban Peso",
-      "pt": "Peso Cubano"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Cuban Peso"
+      },
+      {
+        "locale": "pt",
+        "name": "Peso Cubano"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "$MN",
@@ -510,10 +550,16 @@
   },
   "DOP": {
     "name": "Peso Dominicano",
-    "localized_name": {
-      "en": "Dominican Peso",
-      "pt": "Peso Dominicano"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Dominican Peso"
+      },
+      {
+        "locale": "pt",
+        "name": "Peso Dominicano"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "RD$",
@@ -578,7 +624,6 @@
   },
   "EUR": {
     "name": "Euro",
-    "localized_name": {},
     "fractionSize": 2,
     "spacing": 1,
     "symbol": {
@@ -591,40 +636,40 @@
       "rtl": false
     },
     "localeOverrides": [
-			{
-				"locale":"de-AT",
-				"symbol":{
-					"position":0
-				}
-			},
-			{
-				"locale":"el-CY",
-				"spacing":0,
-				"symbol":{
-					"position":0
-				}
-			},
-			{
-				"locale":"en",
-				"spacing":0,
-				"symbol":{
-					"position":0
-				}
-			},
-			{
-				"locale":"nl",
-				"symbol":{
-					"position":0
-				}
-			},
-			{
-			  "locale":"tr",
-				"spacing":0,
-				"symbol":{
-					"position":0
-				}
-			}
-		]
+      {
+        "locale": "de-AT",
+        "symbol": {
+          "position": 0
+        }
+      },
+      {
+        "locale": "el-CY",
+        "spacing": 0,
+        "symbol": {
+          "position": 0
+        }
+      },
+      {
+        "locale": "en",
+        "spacing": 0,
+        "symbol": {
+          "position": 0
+        }
+      },
+      {
+        "locale": "nl",
+        "symbol": {
+          "position": 0
+        }
+      },
+      {
+        "locale": "tr",
+        "spacing": 0,
+        "symbol": {
+          "position": 0
+        }
+      }
+    ]
   },
   "FJD": {
     "name": "Fiji Dollar",
@@ -652,10 +697,16 @@
   },
   "GBP": {
     "name": "Pound Sterling",
-    "localized_name": {
-      "es": "Libra Esterlina",
-      "pt": "Libra Esterlina"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Libra Esterlina"
+      },
+      {
+        "locale": "pt",
+        "name": "Libra Esterlina"
+      }
+    ],
     "fractionSize": 2,
     "spacing": 0,
     "symbol": {
@@ -743,10 +794,16 @@
   },
   "GYD": {
     "name": "Guyana Dollar",
-    "localized_name": {
-      "es": "Dólar Guyanés",
-      "pt": "Dólar Guianês"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Dólar Guyanés"
+      },
+      {
+        "locale": "pt",
+        "name": "Dólar Guianês"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "$",
@@ -761,10 +818,16 @@
   },
   "HKD": {
     "name": "Hong Kong Dollar",
-    "localized_name": {
-      "es": "Dólar de Hong Kong",
-      "pt": "Dólar de Hong Kong"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Dólar de Hong Kong"
+      },
+      {
+        "locale": "pt",
+        "name": "Dólar de Hong Kong"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "HK$",
@@ -927,10 +990,16 @@
   },
   "JMD": {
     "name": "Jamaican Dollar",
-    "localized_name": {
-      "es": "Dólar Jamaiquino",
-      "pt": "Dólar Jamaicano"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Dólar Jamaiquino"
+      },
+      {
+        "locale": "pt",
+        "name": "Dólar Jamaicano"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "J$",
@@ -955,11 +1024,20 @@
   },
   "JPY": {
     "name": "円",
-    "localized_name": {
-      "en": "Yen",
-      "es": "Yen",
-      "pt": "Iene"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Yen"
+      },
+      {
+        "locale": "es",
+        "name": "Yen"
+      },
+      {
+        "locale": "pt",
+        "name": "Iene"
+      }
+    ],
     "fractionSize": 0,
     "symbol": {
       "grapheme": "¥",
@@ -1032,11 +1110,20 @@
   },
   "KRW": {
     "name": "원",
-    "localized_name": {
-      "en": "Won",
-      "es": "Won",
-      "pt": "Won"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Won"
+      },
+      {
+        "locale": "es",
+        "name": "Won"
+      },
+      {
+        "locale": "pt",
+        "name": "Won"
+      }
+    ],
     "fractionSize": 0,
     "symbol": {
       "grapheme": "₩",
@@ -1287,10 +1374,16 @@
   },
   "MXN": {
     "name": "Peso Mexicano",
-    "localized_name": {
-      "en": "Mexican Peso",
-      "pt": "Peso Mexicano"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Mexican Peso"
+      },
+      {
+        "locale": "pt",
+        "name": "Peso Mexicano"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "$",
@@ -1321,10 +1414,16 @@
   },
   "MZN": {
     "name": "Metical",
-    "localized_name": {
-      "en": "Mozambique Metical",
-      "es": "Metical Mozambiqueño"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Mozambique Metical"
+      },
+      {
+        "locale": "es",
+        "name": "Metical Mozambiqueño"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "MT",
@@ -1401,10 +1500,16 @@
   },
   "NZD": {
     "name": "New Zealand Dollar",
-    "localized_name": {
-      "es": "Dólar Neozelandés",
-      "pt": "Dólar Neozelandês"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Dólar Neozelandés"
+      },
+      {
+        "locale": "pt",
+        "name": "Dólar Neozelandês"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "$",
@@ -1467,11 +1572,20 @@
   },
   "PHP": {
     "name": "Piso",
-    "localized_name": {
-      "en": "Philippine Peso",
-      "es": "Peso Filipino",
-      "pt": "Peso Filipino"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Philippine Peso"
+      },
+      {
+        "locale": "es",
+        "name": "Peso Filipino"
+      },
+      {
+        "locale": "pt",
+        "name": "Peso Filipino"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "₱",
@@ -1509,10 +1623,16 @@
   },
   "PYG": {
     "name": "Guaraní",
-    "localized_name": {
-      "en": "Guarani",
-      "pt": "Guarani"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Guarani"
+      },
+      {
+        "locale": "pt",
+        "name": "Guarani"
+      }
+    ],
     "fractionSize": 0,
     "symbol": {
       "grapheme": "Gs",
@@ -1900,10 +2020,16 @@
   },
   "USD": {
     "name": "US Dollar",
-    "localized_name": {
-      "es": "Dólar Americano",
-      "pt": "Dólar Americano"
-    },
+    "localized_name": [
+      {
+        "locale": "es",
+        "name": "Dólar Americano"
+      },
+      {
+        "locale": "pt",
+        "name": "Dólar Americano"
+      }
+    ],
     "fractionSize": 2,
     "spacing": 0,
     "symbol": {
@@ -1931,10 +2057,16 @@
   },
   "UYU": {
     "name": "Peso Uruguayo",
-    "localized_name": {
-      "en": "Uruguayan Peso",
-      "pt": "Peso Uruguaio"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Uruguayan Peso"
+      },
+      {
+        "locale": "pt",
+        "name": "Peso Uruguaio"
+      }
+    ],
     "fractionSize": 0,
     "symbol": {
       "grapheme": "$U",
@@ -1963,10 +2095,16 @@
   },
   "VEF": {
     "name": "Bolívar",
-    "localized_name": {
-      "en": "Venezuelan Bolivar",
-      "pt": "Bolívar Venezuelano"
-    },
+    "localized_name": [
+      {
+        "locale": "en",
+        "name": "Venezuelan Bolivar"
+      },
+      {
+        "locale": "pt",
+        "name": "Bolívar Venezuelano"
+      }
+    ],
     "fractionSize": 2,
     "symbol": {
       "grapheme": "Bs",

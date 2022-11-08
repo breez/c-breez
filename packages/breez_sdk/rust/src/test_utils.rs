@@ -1,5 +1,5 @@
 use anyhow::Result;
-use gl_client::pb::{Amount, Invoice, Payment, Peer};
+use gl_client::pb::{Amount, Invoice, Payment, Peer, WithdrawResponse};
 use gl_client::pb::amount::Unit;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::{random, Rng};
@@ -8,7 +8,7 @@ use crate::fiat::{FiatCurrency, Rate};
 
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
-use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
+use crate::models::{FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 use tokio::sync::mpsc;
 
 pub struct MockNodeAPI {
@@ -22,11 +22,11 @@ impl NodeAPI for MockNodeAPI {
         Ok(())
     }
 
-    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+    async fn run_signer(&self, _shutdown: mpsc::Receiver<()>) -> Result<()> {
         Ok(())
     }
 
-    async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse> {
+    async fn pull_changed(&self, _since_timestamp: i64) -> Result<SyncResponse> {
         Ok(SyncResponse {
             node_state: self.node_state.clone(),
             transactions: self.transactions.clone(),
@@ -60,6 +60,13 @@ impl NodeAPI for MockNodeAPI {
 
     async fn send_spontaneous_payment(&self, _node_id: String, _amount_sats: u64) -> Result<Payment> {
         Ok(MockNodeAPI::get_dummy_payment())
+    }
+
+    async fn sweep(&self, _to_address: String, _feerate_preset: FeeratePreset) -> Result<WithdrawResponse> {
+        Ok(WithdrawResponse {
+            tx: rand_vec_u8(32),
+            txid: rand_vec_u8(32)
+        })
     }
 }
 

@@ -1,5 +1,5 @@
-use anyhow::Result;
-use gl_client::pb::{Invoice, Payment};
+use anyhow::{anyhow, Result};
+use gl_client::pb::{Invoice, Payment, WithdrawResponse};
 use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -20,6 +20,7 @@ pub trait NodeAPI {
     async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment>;
     async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<Payment>;
     async fn start(&self) -> Result<()>;
+    async fn sweep(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<WithdrawResponse>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;
 }
@@ -81,6 +82,25 @@ pub enum PaymentTypeFilter {
     Sent,
     Received,
     All,
+}
+
+pub enum FeeratePreset {
+    Regular,
+    Economy,
+    Priority
+}
+
+impl TryFrom<i32> for FeeratePreset {
+    type Error = anyhow::Error;
+
+    fn try_from(value: i32) -> std::result::Result<Self, Self::Error> {
+        match value {
+            0 => Ok(FeeratePreset::Regular),
+            1 => Ok(FeeratePreset::Economy),
+            2 => Ok(FeeratePreset::Priority),
+            _ => Err(anyhow!("Unexpected feerate enum value"))
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Eq, Debug)]

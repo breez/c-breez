@@ -28,6 +28,7 @@ use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
 use crate::lsp::LspInformation;
 use crate::models::Config;
+use crate::models::FeeratePreset;
 use crate::models::GreenlightCredentials;
 use crate::models::LightningTransaction;
 use crate::models::Network;
@@ -254,6 +255,24 @@ fn wire_request_payment_impl(
         },
     )
 }
+fn wire_sweep_impl(
+    port_: MessagePort,
+    to_address: impl Wire2Api<String> + UnwindSafe,
+    feerate_preset: impl Wire2Api<FeeratePreset> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "sweep",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_to_address = to_address.wire2api();
+            let api_feerate_preset = feerate_preset.wire2api();
+            move |task_callback| sweep(api_to_address, api_feerate_preset)
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks
@@ -278,6 +297,17 @@ where
 impl Wire2Api<i64> for *mut i64 {
     fn wire2api(self) -> i64 {
         unsafe { *support::box_from_leak_ptr(self) }
+    }
+}
+
+impl Wire2Api<FeeratePreset> for i32 {
+    fn wire2api(self) -> FeeratePreset {
+        match self {
+            0 => FeeratePreset::Regular,
+            1 => FeeratePreset::Economy,
+            2 => FeeratePreset::Priority,
+            _ => unreachable!("Invalid variant for FeeratePreset: {}", self),
+        }
     }
 }
 

@@ -6,11 +6,8 @@ use std::sync::Mutex;
 use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
-use gl_client::pb::Payment;
 
-use crate::models::{
-    Config, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter,
-};
+use crate::models::{Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter};
 use crate::node_service::NodeServiceBuilder;
 use crate::{greenlight::Greenlight, node_service::NodeService};
 use crate::invoice::LNInvoice;
@@ -140,6 +137,18 @@ pub fn request_payment(
         build_services()
             .await?
             .request_payment(amount_sats, description.to_string())
+            .await
+    })
+}
+
+pub fn sweep(
+    to_address: String,
+    feerate_preset: FeeratePreset
+) -> Result<()> {
+    block_on(async {
+        build_services()
+            .await?
+            .sweep(to_address, feerate_preset)
             .await
     })
 }

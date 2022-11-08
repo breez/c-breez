@@ -1,5 +1,5 @@
 use anyhow::Result;
-use gl_client::pb::{Invoice, Payment};
+use gl_client::pb::{Invoice, Payment, WithdrawResponse};
 use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -20,6 +20,10 @@ pub trait NodeAPI {
     async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment>;
     async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<Payment>;
     async fn start(&self) -> Result<()>;
+    /// `feerate_preset` is the int value of `gl_client::greenlight::FeeratePreset`:
+    ///
+    /// 0 = normal, 1 = slow, 2 = urgent
+    async fn sweep(&self, to_address: String, feerate_preset: i32) -> Result<WithdrawResponse>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;
 }

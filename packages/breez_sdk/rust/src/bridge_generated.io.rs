@@ -95,6 +95,11 @@ pub extern "C" fn wire_request_payment(
     wire_request_payment_impl(port_, amount_sats, description)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_sweep(port_: i64, to_address: *mut wire_uint_8_list, feerate_preset: i32) {
+    wire_sweep_impl(port_, to_address, feerate_preset)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

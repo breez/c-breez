@@ -144,6 +144,18 @@ pub fn request_payment(
     })
 }
 
+pub fn sweep(
+    to_address: String,
+    feerate_preset: i32
+) -> Result<()> {
+    block_on(async {
+        build_services()
+            .await?
+            .sweep(to_address, feerate_preset)
+            .await
+    })
+}
+
 async fn build_services() -> Result<NodeService> {
     let g = STATE.lock().unwrap().clone();
     let greenlight = g

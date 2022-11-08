@@ -83,6 +83,16 @@ fn main() -> Result<()> {
 
                         show_results(binding::keysend(node_id.into(), amount_sats.parse()?))
                     }
+                    Some("sweep") => {
+                        let to_address = command.next()
+                            .ok_or("Expected to_address arg")
+                            .map_err(|err| anyhow!(err))?;
+                        let feerate_preset = command.next()
+                            .ok_or("Expected feerate_preset arg")
+                            .map_err(|err| anyhow!(err))?;
+
+                        show_results(binding::sweep(to_address.into(), feerate_preset.parse()?))
+                    }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
                         greenlight_credentials = Some(r.unwrap());

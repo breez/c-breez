@@ -86,6 +86,11 @@ abstract class LightningToolkit {
       {required int amountSats, required String description, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRequestPaymentConstMeta;
+
+  Future<void> sweep(
+      {required String toAddress, required int feeratePreset, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kSweepConstMeta;
 }
 
 class Config {
@@ -638,6 +643,25 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "request_payment",
         argNames: ["amountSats", "description"],
+      );
+
+  Future<void> sweep(
+          {required String toAddress,
+          required int feeratePreset,
+          dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_sweep(port_,
+            _platform.api2wire_String(toAddress), api2wire_i32(feeratePreset)),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kSweepConstMeta,
+        argValues: [toAddress, feeratePreset],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kSweepConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "sweep",
+        argNames: ["toAddress", "feeratePreset"],
       );
 
 // Section: wire2api
@@ -1365,6 +1389,25 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_uint_8_list>)>>('wire_request_payment');
   late final _wire_request_payment = _wire_request_paymentPtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_sweep(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> to_address,
+    int feerate_preset,
+  ) {
+    return _wire_sweep(
+      port_,
+      to_address,
+      feerate_preset,
+    );
+  }
+
+  late final _wire_sweepPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Int32)>>('wire_sweep');
+  late final _wire_sweep = _wire_sweepPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
   ffi.Pointer<wire_Config> new_box_autoadd_config_0() {
     return _new_box_autoadd_config_0();

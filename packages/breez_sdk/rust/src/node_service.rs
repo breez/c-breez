@@ -224,6 +224,12 @@ impl NodeService {
         // return the signed, converted invoice with hints
         Ok(parsed_invoice)
     }
+
+    pub async fn sweep(&mut self, to_address: String, feerate_preset: i32) -> Result<()> {
+        self.client.sweep(to_address, feerate_preset).await?;
+        self.sync().await?;
+        Ok(())
+    }
 }
 
 #[derive(Default)]

@@ -34,3 +34,4 @@ analyzer:
   exclude:
     - lib/services/breez_server/generated/**
     - lib/services/lightning/greenlight/cmd.dart
+    - lib/generated_plugin_registrant.dart

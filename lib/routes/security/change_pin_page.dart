@@ -69,8 +69,13 @@ enum _Moment {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HydratedBlocOverrides.runZoned(
-    () => runApp(MultiBlocProvider(
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: Directory(
+      join((await getApplicationDocumentsDirectory()).path, "preview_storage"),
+    ),
+  );
+  runApp(
+    MultiBlocProvider(
       providers: [
         BlocProvider<SecurityBloc>(
           create: (BuildContext context) => SecurityBloc(),
@@ -80,9 +85,6 @@ void main() async {
         theme: breezLightTheme,
         home: const ChangePinPage(),
       ),
-    )),
-    storage: await HydratedStorage.build(
-      storageDirectory: Directory(join((await getApplicationDocumentsDirectory()).path, "preview_storage")),
     ),
   );
 }

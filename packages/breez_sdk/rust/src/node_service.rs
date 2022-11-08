@@ -123,6 +123,7 @@ impl NodeService {
 
     pub async fn pay(&mut self, bolt11: String) -> Result<()> {
         self.client.send_payment(bolt11, None).await?;
+        self.sync().await?;
         Ok(())
     }
 

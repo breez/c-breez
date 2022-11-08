@@ -1,12 +1,9 @@
 use std::cmp::max;
 use std::str::FromStr;
-use std::time::UNIX_EPOCH;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
 use bitcoin::secp256k1::{Secp256k1, SecretKey};
-use lightning::util::ser::Writeable;
-use lightning_invoice::{Invoice, RawInvoice, SignedRawInvoice};
 use rand::Rng;
 use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
@@ -122,6 +119,12 @@ impl NodeService {
             .ok_or("No LSO found for given LSP ID")
             .map_err(|err| anyhow!(err))
             .cloned()
+    }
+
+    pub async fn pay(&mut self, bolt11: String) -> Result<()> {
+        self.client.send_payment(bolt11, None).await?;
+        self.sync().await?;
+        Ok(())
     }
 
     pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<LNInvoice> {

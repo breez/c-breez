@@ -66,6 +66,13 @@ fn main() -> Result<()> {
                             description.to_string(),
                         ));
                     }
+                    Some("pay") => {
+                        let bolt11 = command.next()
+                            .ok_or("Expected bolt11 arg")
+                            .map_err(|err| anyhow!(err))?;
+
+                        show_results(binding::pay(bolt11.into()))
+                    }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
                         greenlight_credentials = Some(r.unwrap());
@@ -81,7 +88,7 @@ fn main() -> Result<()> {
                             continue;
                         }
                         match binding::create_node_services(
-                            models::Network::Bitcoin,
+                            crate::models::Config::default(),
                             seed.to_vec(),
                             greenlight_credentials.clone().unwrap(),
                         ) {

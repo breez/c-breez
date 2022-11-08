@@ -6,7 +6,7 @@ use std::sync::Mutex;
 use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
-use lightning_invoice::RawInvoice;
+use gl_client::pb::Payment;
 
 use crate::models::{
     Config, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter,
@@ -29,12 +29,12 @@ pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredent
 }
 
 pub fn create_node_services(
-    network: Network,
+    breez_config: Config,
     seed: Vec<u8>,
     creds: GreenlightCredentials,
 ) -> Result<()> {
-    let greenlight = block_on(Greenlight::new(network, seed, creds))?;
-    *STATE.lock().unwrap() = Some(greenlight.clone());
+    let greenlight = block_on(Greenlight::new(breez_config, seed, creds))?;
+    *STATE.lock().unwrap() = Some(greenlight);
     block_on(build_services())
         .map(|_| ())
         .map_err(|e| anyhow!(e))
@@ -105,6 +105,17 @@ pub fn list_transactions(
         build_services()
             .await?
             .list_transactions(filter, from_timestamp, to_timestamp)
+            .await
+    })
+}
+
+pub fn pay(
+    bolt11: String,
+) -> Result<()> {
+    block_on(async {
+        build_services()
+            .await?
+            .pay(bolt11)
             .await
     })
 }

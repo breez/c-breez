@@ -5,7 +5,7 @@ use bip39::*;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
-use crate::fiat::FiatCurrency;
+use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::lsp::LspInformation;
@@ -49,7 +49,7 @@ impl NodeService {
         Ok(())
     }
 
-    pub async fn fetch_rates(&self) -> Result<Vec<(String, f64)>> {
+    pub async fn fetch_rates(&self) -> Result<Vec<Rate>> {
         self.fiat.fetch_rates().await
     }
 
@@ -196,6 +196,7 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
+    use crate::fiat::Rate;
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
     use crate::test_utils::{MockBreezServer, MockNodeAPI};
@@ -296,7 +297,13 @@ mod test {
         node_service.sync().await?;
         let rates = node_service.fiat.fetch_rates().await?;
         assert_eq!(rates.len(), 1);
-        assert_eq!(rates, vec![("USD".to_string(), 20_000.00)]);
+        assert_eq!(
+            rates[0],
+            Rate {
+                coin: "USD".to_string(),
+                value: 20_000.00
+            }
+        );
 
         Ok(())
     }

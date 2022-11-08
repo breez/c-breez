@@ -127,6 +127,12 @@ impl NodeService {
         Ok(())
     }
 
+    pub async fn keysend(&mut self, node_id: String, amount_sats: u64) -> Result<()> {
+        self.client.send_spontaneous_payment(node_id, amount_sats).await?;
+        self.sync().await?;
+        Ok(())
+    }
+
     pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<LNInvoice> {
         let lsp_info = &self.get_lsp().await?;
         let node_state = self.get_node_state()?

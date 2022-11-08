@@ -18,6 +18,7 @@ pub trait NodeAPI {
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     /// As per the `pb::PayRequest` docs, `amount_sats` is only needed when the invoice doesn't specify an amount
     async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment>;
+    async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<Payment>;
     async fn start(&self) -> Result<()>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;

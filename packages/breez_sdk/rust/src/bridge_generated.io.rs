@@ -82,6 +82,11 @@ pub extern "C" fn wire_pay(port_: i64, bolt11: *mut wire_uint_8_list) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_keysend(port_: i64, node_id: *mut wire_uint_8_list, amount_sats: u64) {
+    wire_keysend_impl(port_, node_id, amount_sats)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_request_payment(
     port_: i64,
     amount_sats: u64,

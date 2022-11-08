@@ -66,6 +66,8 @@ void wire_list_transactions(int64_t port_,
 
 void wire_pay(int64_t port_, struct wire_uint_8_list *bolt11);
 
+void wire_keysend(int64_t port_, struct wire_uint_8_list *node_id, uint64_t amount_sats);
+
 void wire_request_payment(int64_t port_,
                           uint64_t amount_sats,
                           struct wire_uint_8_list *description);
@@ -96,6 +98,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_list_fiat_currencies);
     dummy_var ^= ((int64_t) (void*) wire_list_transactions);
     dummy_var ^= ((int64_t) (void*) wire_pay);
+    dummy_var ^= ((int64_t) (void*) wire_keysend);
     dummy_var ^= ((int64_t) (void*) wire_request_payment);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_greenlight_credentials_0);

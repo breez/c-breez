@@ -61,7 +61,7 @@ fn main() -> Result<()> {
                         let amount_sats = 2001;
                         let description = "Test requested payment";
 
-                        binding::request_payment(amount_sats, description.to_string());
+                        binding::request_payment(amount_sats, description.to_string())?;
                         info!("Payment successfully requested");
                     }
                     Some("recover_node") => {

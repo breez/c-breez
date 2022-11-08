@@ -187,29 +187,25 @@ impl NodeService {
         )?;
         info!("Routing hint added");
 
-        // TODO Replace with actual signing
+        // TODO Mock signing. Replace with actual signing of raw_invoice_with_hint
         let secp = Secp256k1::new();
         let seed = rand::thread_rng().gen::<[u8; 32]>();
         let secret_key = SecretKey::from_slice(&seed).expect("32 bytes, within curve order");
-
         let signed_invoice_with_hint = raw_invoice_with_hint.sign(|&x|
             Ok::<bitcoin::secp256k1::ecdsa::RecoverableSignature, anyhow::Error>(secp.sign_ecdsa_recoverable(&x, &secret_key)))?;
-        let invoice_with_hint: Invoice = Invoice::from_signed(signed_invoice_with_hint)?;
 
-        // TODO Sign raw_invoice_with_hint
+        let parsed_invoice = parse_invoice(&signed_invoice_with_hint.to_string())?;
 
         // register the payment at the lsp if needed
         if destination_invoice_amount_sats < amount_sats {
-            let parsed_invoice = parse_invoice(&invoice.bolt11)?; // TODO use bolt11WithHints
-
             info!("Registering payment with LSP");
             self.lsp.register_payment(
                 lsp_info.id.clone(),
                 lsp_info.lsp_pubkey.clone(),
                 PaymentInformation {
-                    payment_hash: Vec::from(parsed_invoice.payment_hash),
-                    payment_secret: parsed_invoice.payment_secret,
-                    destination: Vec::from(parsed_invoice.payee_pubkey),
+                    payment_hash: Vec::from(parsed_invoice.payment_hash.clone()),
+                    payment_secret: parsed_invoice.payment_secret.clone(),
+                    destination: Vec::from(parsed_invoice.payee_pubkey.clone()),
                     incoming_amount_msat: amount_msats as i64,
                     outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64
                 }).await?;
@@ -217,27 +213,7 @@ impl NodeService {
         }
 
         // return the signed, converted invoice with hints
-        Ok(LNInvoice {
-            amount_sats: Some(
-                invoice_with_hint.amount_milli_satoshis()
-                    .ok_or("Signed invoice has no amount set")
-                    .map_err(|err| anyhow!(err))?
-                    / 1000
-            ),
-            description: invoice.description.clone(),
-            payment_hash: invoice_with_hint.payment_hash().to_string(),
-            payment_secret: invoice_with_hint.payment_secret().encode(),
-            payee_pubkey: invoice_with_hint.payee_pub_key()
-                .ok_or("Signed invoice has no payee pubkey set")
-                .map_err(|err| anyhow!(err))?
-                .to_string(),
-            timestamp: invoice_with_hint.timestamp().duration_since(UNIX_EPOCH)?.as_secs(),
-            expiry: invoice.expiry_time as u64,
-            routing_hints: invoice_with_hint.route_hints()
-                .iter()
-                .map(RouteHint::from_ldk_hint)
-                .collect()
-        })
+        Ok(parsed_invoice)
     }
 }
 

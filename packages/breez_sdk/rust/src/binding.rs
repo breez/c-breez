@@ -1,4 +1,4 @@
-use crate::fiat::FiatCurrency;
+use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
 use lazy_static::lazy_static;
 use std::future::Future;
@@ -88,7 +88,7 @@ pub fn get_node_state() -> Result<Option<NodeState>> {
     block_on(async { build_services().await?.get_node_state() })
 }
 
-pub fn fetch_rates() -> Result<Vec<(String, f64)>> {
+pub fn fetch_rates() -> Result<Vec<Rate>> {
     block_on(async { build_services().await?.fetch_rates().await })
 }
 

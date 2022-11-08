@@ -4,7 +4,7 @@ use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 
-use crate::fiat::FiatCurrency;
+use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::Network::Bitcoin;
@@ -35,7 +35,7 @@ pub trait LspAPI {
 #[tonic::async_trait]
 pub trait FiatAPI {
     fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>>;
-    async fn fetch_rates(&self) -> Result<Vec<(String, f64)>>;
+    async fn fetch_rates(&self) -> Result<Vec<Rate>>;
 }
 
 #[derive(Clone)]

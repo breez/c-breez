@@ -40,6 +40,12 @@ pub struct FiatCurrency {
     pub info: CurrencyInfo,
 }
 
+#[derive(Debug, PartialEq)]
+pub struct Rate {
+    pub coin: String,
+    pub value: f64,
+}
+
 fn convert_to_fiat_currency_with_id(id: String, info: CurrencyInfo) -> FiatCurrency {
     FiatCurrency { id, info }
 }
@@ -58,7 +64,7 @@ impl FiatAPI for BreezServer {
     }
 
     // get the live rates from the server
-    async fn fetch_rates(&self) -> Result<Vec<(String, f64)>> {
+    async fn fetch_rates(&self) -> Result<Vec<Rate>> {
         let mut client = self.get_information_client().await?;
 
         let request = Request::new(RatesRequest {});
@@ -67,7 +73,10 @@ impl FiatAPI for BreezServer {
             .into_inner()
             .rates
             .into_iter()
-            .map(|r| (r.coin, r.value))
+            .map(|r| Rate {
+                coin: r.coin,
+                value: r.value,
+            })
             .collect())
     }
 }

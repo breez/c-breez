@@ -79,7 +79,7 @@ class InputBloc extends Cubit<InputState> {
         bolt11: raw,
         paymentHash: lnInvoice.paymentHash,
         description: lnInvoice.description,
-        amountMsat: lnInvoice.amount ?? 0,
+        amountMsat: lnInvoice.amountMsat ?? 0,
         expiry: lnInvoice.expiry);
 
     return InputState(protocol: command.protocol, inputData: invoice);

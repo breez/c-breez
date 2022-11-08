@@ -19,6 +19,7 @@ import 'package:sqflite_common_ffi/src/mixin/handler_mixin.dart';
 
 class KeychainMoc extends Mock implements KeyChain {
   final _storage = <String, String>{};
+
   @override
   Future<String> read(String key) {
     return Future.value(_storage[key]);
@@ -130,10 +131,12 @@ void sqfliteFfiInitAsMockMethodCallHandler() {
     const MethodChannel('com.tekartik.sqflite'),
     (methodCall) async {
       try {
-        return await FfiMethodCall(
-          methodCall.method,
-          methodCall.arguments,
-        ).handleInIsolate();
+        return await ffiMethodCallhandleInIsolate(
+          FfiMethodCall(
+            methodCall.method,
+            methodCall.arguments,
+          ),
+        );
       } on SqfliteFfiException catch (e) {
         throw PlatformException(
           code: e.code,

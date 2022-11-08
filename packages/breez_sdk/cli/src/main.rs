@@ -79,7 +79,7 @@ fn main() -> Result<()> {
                             continue;
                         }
                         match binding::create_node_services(
-                            models::Network::Bitcoin,
+                            crate::models::Config::default(),
                             seed.to_vec(),
                             greenlight_credentials.clone().unwrap(),
                         ) {

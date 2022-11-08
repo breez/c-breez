@@ -29,12 +29,12 @@ pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredent
 }
 
 pub fn create_node_services(
-    network: Network,
+    breez_config: Config,
     seed: Vec<u8>,
     creds: GreenlightCredentials,
 ) -> Result<()> {
-    let greenlight = block_on(Greenlight::new(network, seed, creds))?;
-    *STATE.lock().unwrap() = Some(greenlight.clone());
+    let greenlight = block_on(Greenlight::new(breez_config, seed, creds))?;
+    *STATE.lock().unwrap() = Some(greenlight);
     block_on(build_services())
         .map(|_| ())
         .map_err(|e| anyhow!(e))

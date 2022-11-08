@@ -1,5 +1,5 @@
 use anyhow::Result;
-use gl_client::pb::Invoice;
+use gl_client::pb::{Invoice, Payment};
 use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -16,6 +16,7 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 pub trait NodeAPI {
     async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
+    async fn send_payment(&self, amount_sats: u64, bolt11: String) -> Result<Payment>;
     async fn start(&self) -> Result<()>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;
@@ -44,6 +45,7 @@ pub struct Config {
     pub mempoolspace_url: String,
     pub working_dir: String,
     pub network: Network,
+    pub payment_timeout_sec: u32
 }
 
 impl Default for Config {
@@ -53,6 +55,7 @@ impl Default for Config {
             mempoolspace_url: "https://mempool.space".to_string(),
             working_dir: ".".to_string(),
             network: Bitcoin,
+            payment_timeout_sec: 30
         }
     }
 }

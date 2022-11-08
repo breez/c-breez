@@ -1,8 +1,8 @@
 use anyhow::Result;
-use gl_client::pb::{Amount, Invoice, Peer};
+use gl_client::pb::{Amount, Invoice, Payment, Peer};
 use gl_client::pb::amount::Unit;
 use rand::distributions::{Alphanumeric, DistString, Standard};
-use rand::Rng;
+use rand::{random, Rng};
 
 use crate::fiat::{FiatCurrency, Rate};
 
@@ -51,6 +51,23 @@ impl NodeAPI for MockNodeAPI {
             bolt11: "".to_string(),
             payment_hash: vec![],
             payment_preimage: vec![],
+        })
+    }
+
+    async fn send_payment(&self, amount_sats: u64, bolt11: String) -> Result<Payment> {
+        Ok(Payment {
+            payment_hash: rand_vec_u8(32),
+            bolt11,
+            amount: Some(Amount {
+                unit: Some(Unit::Satoshi(amount_sats)),
+            }),
+            amount_sent: Some(Amount {
+                unit: Some(Unit::Satoshi(amount_sats)),
+            }),
+            payment_preimage: rand_vec_u8(32),
+            status: 1,
+            created_at: random(),
+            destination: rand_vec_u8(32),
         })
     }
 }

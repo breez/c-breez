@@ -1,10 +1,8 @@
 use crate::invoice::parse_invoice;
-use crate::models::{
-    GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse,
-};
+use crate::models::{Config, GreenlightCredentials, LightningTransaction, Network, NodeAPI, NodeState, SyncResponse};
 use anyhow::Result;
 use gl_client::pb::amount::Unit;
-use gl_client::pb::{Amount, Invoice, InvoiceRequest};
+use gl_client::pb::{Amount, Invoice, InvoiceRequest, Payment};
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
@@ -20,20 +18,22 @@ const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
 
 #[derive(Clone)]
 pub(crate) struct Greenlight {
+    breez_config: Config,
     tls_config: TlsConfig,
     signer: Signer,
 }
 
 impl Greenlight {
     pub(crate) async fn new(
-        network: Network,
+        breez_config: Config,
         seed: Vec<u8>,
         creds: GreenlightCredentials,
     ) -> Result<Greenlight> {
-        let greenlight_network = parse_network(&network);
+        let greenlight_network = parse_network(&breez_config.network);
         let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
         let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
         Ok(Greenlight {
+            breez_config,
             tls_config: tls_config.clone(),
             signer: signer.clone(),
         })
@@ -213,6 +213,19 @@ impl NodeAPI for Greenlight {
         };
 
         Ok(client.create_invoice(request).await?.into_inner())
+    }
+
+    async fn send_payment(&self, amount_sats: u64, bolt11: String) -> Result<Payment> {
+        let mut client = self.get_client().await?;
+
+        let request = pb::PayRequest{
+            amount: Some(Amount {
+                unit: Some(Unit::Satoshi(amount_sats)),
+            }),
+            bolt11,
+            timeout: self.breez_config.payment_timeout_sec
+        };
+        Ok(client.pay(request).await?.into_inner())
     }
 }
 

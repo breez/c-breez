@@ -1,40 +1,39 @@
-import 'dart:typed_data';
-
+import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/native_toolkit.dart';
 import 'package:breez_sdk/src/breez_server/generated/breez.pbgrpc.dart';
 import 'package:breez_sdk/src/breez_server/server.dart';
 import 'package:breez_sdk/src/lsp/models.dart';
-import 'package:breez_sdk/native_toolkit.dart';
-import 'package:grpc/grpc.dart';
 import 'package:fixnum/fixnum.dart';
+import 'package:grpc/grpc.dart';
 
 class LSPService {
   final _lnToolkit = getNativeToolkit();
 
   Future<Map<String, LSPInfo>> getLSPList(String nodePubkey) async {
-    final server = await BreezServer.createWithDefaultConfig();
-    var channel = await server.createServerChannel();
-    var channelClient = ChannelOpenerClient(channel, options: server.defaultCallOptions);
-    var response = await channelClient.lSPList(LSPListRequest()..pubkey = nodePubkey);
-
-    return response.lsps.map((key, value) => MapEntry(
-        key,
+    List<LspInformation> lspList = await _lnToolkit.listLsps();
+    // Ideally we'll use the generated data from rust bridge as is but trying to do so
+    // the scope gets very large, very quick and it affects parts of the app that are not yet implemented.
+    // That's why we chose to map the generated data to the models we're already using for now.
+    return lspList.map(
+      (lsp) => MapEntry(
+        lsp.id,
         LSPInfo(
-          lspID: key,
-          name: value.name,
-          widgetURL: value.widgetUrl,
-          pubKey: value.pubkey,
-          lspPubkey: value.lspPubkey,
-          host: value.host,
-          frozen: value.isFrozen,
-          minHtlcMsat: value.minHtlcMsat.toInt(),
-          targetConf: value.targetConf,
-          timeLockDelta: value.timeLockDelta,
-          baseFeeMsat: value.baseFeeMsat.toInt(),
-          channelCapacity: value.channelCapacity.toInt(),
-          channelMinimumFeeMsat: value.channelMinimumFeeMsat.toInt(),
-          maxInactiveDuration: value.maxInactiveDuration.toInt(),
-          channelFeePermyriad: value.channelFeePermyriad.toInt(),
-        )));
+          lspID: lsp.id,
+          name: lsp.name,
+          pubKey: lsp.pubkey,
+          lspPubkey: lsp.lspPubkey,
+          host: lsp.host,
+          minHtlcMsat: lsp.minHtlcMsat,
+          targetConf: lsp.targetConf,
+          timeLockDelta: lsp.timeLockDelta,
+          baseFeeMsat: lsp.baseFeeMsat,
+          channelCapacity: lsp.channelCapacity,
+          channelFeePermyriad: lsp.channelFeePermyriad,
+          maxInactiveDuration: lsp.maxInactiveDuration,
+          channelMinimumFeeMsat: lsp.channelMinimumFeeMsat,
+        ),
+      ),
+    ) as Map<String, LSPInfo>;
   }
 
   Future registerPayment(
@@ -58,8 +57,8 @@ class LSPService {
       outgoingAmountMsat: outgoingAmountMsat,
     );
     final buffer = paymentInfo.writeToBuffer();
-    final key = Uint8List.fromList(lspPubKey);    
-    final encryptedMessage = await _lnToolkit.encrypt(key: key, msg: buffer);    
+    final key = Uint8List.fromList(lspPubKey);
+    final encryptedMessage = await _lnToolkit.encrypt(key: key, msg: buffer);
 
     return channelClient.registerPayment(RegisterPaymentRequest(lspId: lspID, blob: encryptedMessage));
      */
@@ -69,8 +68,11 @@ class LSPService {
     final server = await BreezServer.createWithDefaultConfig();
     var channel = await server.createServerChannel();
     var callOptions = server.defaultCallOptions;
-    callOptions = callOptions.mergedWith(CallOptions(metadata: {"authorization": "Bearer ${server.openChannelToken}"}));
-    var channelClient = PublicChannelOpenerClient(channel, options: callOptions);
-    await channelClient.openPublicChannel(OpenPublicChannelRequest(pubkey: pubkey));
+    callOptions = callOptions.mergedWith(CallOptions(
+        metadata: {"authorization": "Bearer ${server.openChannelToken}"}));
+    var channelClient =
+        PublicChannelOpenerClient(channel, options: callOptions);
+    await channelClient
+        .openPublicChannel(OpenPublicChannelRequest(pubkey: pubkey));
   }
 }

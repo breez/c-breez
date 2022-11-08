@@ -9,8 +9,9 @@ use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
 use gl_client::{node, pb};
-use hex;
+
 use std::cmp::max;
+use gl_client::pb::Peer;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::sync::mpsc;
 
@@ -185,6 +186,15 @@ impl NodeAPI for Greenlight {
         })
     }
 
+    async fn list_peers(&self) -> Result<Vec<Peer>> {
+        let mut client = self.get_client().await?;
+        Ok(client
+            .list_peers(pb::ListPeersRequest::default())
+            .await?
+            .into_inner()
+            .peers)
+    }
+
     async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
         let mut client = self.get_client().await?;
 
@@ -195,8 +205,7 @@ impl NodeAPI for Greenlight {
             label: format!(
                 "breez-{}",
                 SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
+                    .duration_since(UNIX_EPOCH)?
                     .as_millis()
             ),
             description,

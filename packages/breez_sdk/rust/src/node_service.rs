@@ -1,19 +1,25 @@
+use std::cmp::max;
 use std::str::FromStr;
+use std::time::UNIX_EPOCH;
 
 use anyhow::{anyhow, Result};
 use bip39::*;
+use bitcoin::secp256k1::{Secp256k1, SecretKey};
+use lightning::util::ser::Writeable;
+use lightning_invoice::{Invoice, RawInvoice, SignedRawInvoice};
+use rand::Rng;
+use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
 
 use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
+use crate::grpc::PaymentInformation;
+use crate::invoice::{add_routing_hints, LNInvoice, parse_invoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
-use crate::models::{
-    Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, PaymentTypeFilter,
-};
+use crate::models::{Config, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, parse_short_channel_id, PaymentTypeFilter};
 use crate::persist;
-use tokio::sync::mpsc;
 
 pub struct NodeService {
     config: Config,
@@ -95,9 +101,119 @@ impl NodeService {
             .map_err(|err| anyhow!(err))
     }
 
-    fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
+    pub fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
         self.persister.update_setting("lsp".to_string(), lsp_id)?;
         Ok(())
+    }
+
+    /// Convenience method to look up LSP info based on current LSP ID
+    async fn get_lsp(&mut self) -> Result<LspInformation> {
+        let lsp_id = self.get_lsp_id()?
+            .ok_or("No LSP ID found")
+            .map_err(|err| anyhow!(err))?;
+
+        let node_pubkey = self.get_node_state()?
+            .ok_or("No NodeState found")
+            .map_err(|err| anyhow!(err))?
+            .id;
+        self.lsp.list_lsps(node_pubkey).await?
+            .iter()
+            .find(|&lsp| lsp.id == lsp_id)
+            .ok_or("No LSO found for given LSP ID")
+            .map_err(|err| anyhow!(err))
+            .cloned()
+    }
+
+    pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<LNInvoice> {
+        let lsp_info = &self.get_lsp().await?;
+        let node_state = self.get_node_state()?
+            .ok_or("Failed to retrieve node state")
+            .map_err(|err| anyhow!(err))?;
+
+        let amount_msats = amount_sats * 1000;
+
+        let mut short_channel_id = parse_short_channel_id("1x0x0")?;
+        let mut destination_invoice_amount_sats = amount_msats;
+
+        // check if we need to open channel
+        if node_state.inbound_liquidity_msats < amount_msats {
+            info!("We need to open a channel");
+
+            // we need to open channel so we are calculating the fees for the LSP
+            let channel_fees_msat_calculated = amount_msats * lsp_info.channel_fee_permyriad as u64 / 10_000 / 1_000_000;
+            let channel_fees_msat = max(channel_fees_msat_calculated, lsp_info.channel_minimum_fee_msat as u64);
+
+            if amount_msats < channel_fees_msat + 1000 {
+                return Err(anyhow!("requestPayment: Amount should be more than the minimum fees {} sats", lsp_info.channel_minimum_fee_msat / 1000));
+            }
+
+            // remove the fees from the amount to get the small amount on the current node invoice.
+            destination_invoice_amount_sats = amount_sats - channel_fees_msat / 1000;
+        }
+        else {
+            // not opening a channel so we need to get the real channel id into the routing hints
+            info!("Finding channel ID for routing hint");
+            for peer in self.client.list_peers().await? {
+                if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
+                    let active_channel = peer.channels.iter()
+                        .find(|&c| c.state == "OPEN")
+                        .ok_or("No open channel found")
+                        .map_err(|err| anyhow!(err))?;
+                    short_channel_id = parse_short_channel_id(&active_channel.short_channel_id)?;
+                    info!("Found channel ID: {}", short_channel_id);
+                    break;
+                }
+            }
+        }
+
+        info!("Creating invoice on NodeAPI");
+        let invoice = &self.client.create_invoice(amount_sats, description).await?;
+        info!("Invoice created");
+
+        info!("Adding routing hint");
+        let lsp_hop = RouteHintHop {
+            src_node_id: lsp_info.pubkey.clone(), // TODO correct?
+            short_channel_id: short_channel_id as u64,
+            fees_base_msat: lsp_info.base_fee_msat as u32,
+            fees_proportional_millionths: 100, // TODO
+            cltv_expiry_delta: lsp_info.time_lock_delta as u64,
+            htlc_minimum_msat: Some(lsp_info.min_htlc_msat as u64), // TODO correct?
+            htlc_maximum_msat: Some(4000), // TODO ?
+        };
+        let raw_invoice_with_hint = add_routing_hints(
+            &invoice.bolt11,
+            vec![ RouteHint(vec![lsp_hop]) ],
+            amount_sats
+        )?;
+        info!("Routing hint added");
+
+        // TODO Mock signing. Replace with actual signing of raw_invoice_with_hint
+        let secp = Secp256k1::new();
+        let seed = rand::thread_rng().gen::<[u8; 32]>();
+        let secret_key = SecretKey::from_slice(&seed).expect("32 bytes, within curve order");
+        let signed_invoice_with_hint = raw_invoice_with_hint.sign(|&x|
+            Ok::<bitcoin::secp256k1::ecdsa::RecoverableSignature, anyhow::Error>(secp.sign_ecdsa_recoverable(&x, &secret_key)))?;
+
+        let parsed_invoice = parse_invoice(&signed_invoice_with_hint.to_string())?;
+
+        // register the payment at the lsp if needed
+        if destination_invoice_amount_sats < amount_sats {
+            info!("Registering payment with LSP");
+            self.lsp.register_payment(
+                lsp_info.id.clone(),
+                lsp_info.lsp_pubkey.clone(),
+                PaymentInformation {
+                    payment_hash: Vec::from(parsed_invoice.payment_hash.clone()),
+                    payment_secret: parsed_invoice.payment_secret.clone(),
+                    destination: Vec::from(parsed_invoice.payee_pubkey.clone()),
+                    incoming_amount_msat: amount_msats as i64,
+                    outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64
+                }).await?;
+            info!("Payment registered");
+        }
+
+        // return the signed, converted invoice with hints
+        Ok(parsed_invoice)
     }
 }
 
@@ -174,13 +290,13 @@ impl BreezServer {
     }
 
     pub(crate) async fn get_channel_opener_client(&self) -> Result<ChannelOpenerClient<Channel>> {
-        ChannelOpenerClient::connect(Uri::from_str(&self.server_url).unwrap())
+        ChannelOpenerClient::connect(Uri::from_str(&self.server_url)?)
             .await
             .map_err(|e| anyhow!(e))
     }
 
     pub(crate) async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
-        InformationClient::connect(Uri::from_str(&self.server_url).unwrap())
+        InformationClient::connect(Uri::from_str(&self.server_url)?)
             .await
             .map_err(|e| anyhow!(e))
     }
@@ -196,6 +312,8 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
+    use anyhow::anyhow;
+
     use crate::fiat::Rate;
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
     use crate::node_service::{Config, NodeService, NodeServiceBuilder};
@@ -210,7 +328,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_node_state() {
+    async fn test_node_state() -> Result<(), Box<dyn std::error::Error>> {
         std::fs::remove_file("./storage.sql").expect("Failed to delete file");
         let dummy_node_state = get_dummy_node_state();
 
@@ -255,35 +373,40 @@ mod test {
             .build()
             .await;
 
-        node_service.sync().await.unwrap();
-        let fetched_state = node_service.get_node_state().unwrap().unwrap();
+        node_service.sync().await?;
+        let fetched_state = node_service.get_node_state()?
+            .ok_or("No NodeState found")
+            .map_err(|err| anyhow!(err))?;
         assert_eq!(fetched_state, dummy_node_state);
 
         let all = node_service
             .list_transactions(PaymentTypeFilter::All, None, None)
-            .await
-            .unwrap();
+            .await?;
         assert_eq!(dummy_transactions, all);
 
         let received = node_service
             .list_transactions(PaymentTypeFilter::Received, None, None)
-            .await
-            .unwrap();
+            .await?;
         assert_eq!(received, vec![all[0].clone()]);
 
         let sent = node_service
             .list_transactions(PaymentTypeFilter::Sent, None, None)
-            .await
-            .unwrap();
+            .await?;
         assert_eq!(sent, vec![all[1].clone()]);
+
+        Ok(())
     }
 
     #[tokio::test]
     async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>> {
-        let node_service = node_service().await;
-
+        let node_service = build_mock_node_service().await;
         node_service.sync().await?;
-        let node_pubkey = node_service.get_node_state()?.unwrap().id;
+
+        let node_pubkey = node_service
+            .get_node_state()?
+            .ok_or("No NodeState found")
+            .map_err(|err| anyhow!(err))?
+            .id;
         let lsps = node_service.lsp.list_lsps(node_pubkey).await?;
         assert!(lsps.is_empty()); // The mock returns an empty list
 
@@ -293,8 +416,8 @@ mod test {
     #[tokio::test]
     async fn test_fetch_rates() -> Result<(), Box<dyn std::error::Error>> {
         let node_service = node_service().await;
-
         node_service.sync().await?;
+
         let rates = node_service.fiat.fetch_rates().await?;
         assert_eq!(rates.len(), 1);
         assert_eq!(
@@ -335,5 +458,17 @@ mod test {
             connected_peers: vec!["1111".to_string()],
             inbound_liquidity_msats: 2000,
         }
+    }
+
+    async fn build_mock_node_service() -> NodeService {
+        NodeServiceBuilder::default()
+            .config(Config::default())
+            .client(Box::new(MockNodeAPI {
+                node_state: get_dummy_node_state(),
+                transactions: vec![],
+            }))
+            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
+            .build()
+            .await
     }
 }

@@ -1,14 +1,13 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
 use gl_client::pb::Invoice;
+use gl_client::pb::Peer;
 use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc;
 
 use crate::fiat::{FiatCurrency, Rate};
-use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
+use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::Network::Bitcoin;
-use tokio::sync::mpsc;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
 pub const PAYMENT_TYPE_RECEIVED: &str = "received";
@@ -19,6 +18,7 @@ pub trait NodeAPI {
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     async fn start(&self) -> Result<()>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
+    async fn list_peers(&self) -> Result<Vec<Peer>>;
 }
 
 #[tonic::async_trait]
@@ -26,7 +26,8 @@ pub trait LspAPI {
     async fn list_lsps(&self, node_pubkey: String) -> Result<Vec<LspInformation>>;
     async fn register_payment(
         &mut self,
-        lsp: &grpc::LspInformation,
+        lsp_id: String,
+        lsp_pubkey: Vec<u8>,
         payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply>;
 }
@@ -112,12 +113,23 @@ pub struct LightningTransaction {
     pub description: Option<String>,
 }
 
+pub fn parse_short_channel_id(id_str: &str) -> Result<i64> {
+    let parts : Vec<&str> = id_str.split('x').collect();
+    if parts.len() != 3 {
+        return Ok(0);
+    }
+    let block_num = parts[0].parse::<i64>()?;
+    let tx_num = parts[1].parse::<i64>()?;
+    let tx_out = parts[2].parse::<i64>()?;
+
+    Ok((block_num & 0xFFFFFF) << 40 | (tx_num & 0xFFFFFF) << 16 | (tx_out & 0xFFFF))
+}
 #[cfg(test)]
 mod tests {
-    use crate::grpc::PaymentInformation;
     use prost::Message;
     use rand::random;
 
+    use crate::grpc::PaymentInformation;
     use crate::test_utils::rand_vec_u8;
 
     #[test]

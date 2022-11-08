@@ -108,6 +108,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4c527152e37cf757a3f78aae5a06fbeefdb07ccc535c980a3208ee3060dd544"
 
 [[package]]
+name = "as-any"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c3419eecc9f5967e6f0f29a0c3fefe22bda6ea34b15798f3c452cb81f2c3fa7"
+
+[[package]]
 name = "asn1-rs"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -336,7 +342,7 @@ dependencies = [
 [[package]]
 name = "bolt-derive"
 version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#3b04e55113256dbca03ef610a96fbdb97aae50f1"
+source = "git+https://github.com/Blockstream/greenlight?branch=main#99ffdfdac82c77ac852da53a94fcef581f242641"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -351,6 +357,7 @@ dependencies = [
  "env_logger",
  "hex",
  "lightning_toolkit",
+ "log",
  "rustyline",
  "serde_json",
  "tiny-bip39",
@@ -929,7 +936,7 @@ checksum = "22030e2c5a68ec659fde1e949a745124b48e6fa8b045b7ed5bd1fe4ccc5c4e5d"
 [[package]]
 name = "gl-client"
 version = "0.1.4"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#3b04e55113256dbca03ef610a96fbdb97aae50f1"
+source = "git+https://github.com/Blockstream/greenlight?branch=main#99ffdfdac82c77ac852da53a94fcef581f242641"
 dependencies = [
  "anyhow",
  "base64",
@@ -1388,7 +1395,7 @@ dependencies = [
 [[package]]
 name = "lightning-signer-core"
 version = "0.1.0-5"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#3b04e55113256dbca03ef610a96fbdb97aae50f1"
+source = "git+https://github.com/Blockstream/greenlight?branch=main#99ffdfdac82c77ac852da53a94fcef581f242641"
 dependencies = [
  "anyhow",
  "bitcoin",
@@ -1404,7 +1411,7 @@ dependencies = [
 [[package]]
 name = "lightning-signer-server"
 version = "0.1.0-5"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#3b04e55113256dbca03ef610a96fbdb97aae50f1"
+source = "git+https://github.com/Blockstream/greenlight?branch=main#99ffdfdac82c77ac852da53a94fcef581f242641"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1431,6 +1438,7 @@ dependencies = [
  "lazy_static",
  "lightning 0.0.112",
  "lightning-invoice 0.20.0",
+ "log",
  "prost 0.11.0",
  "rand",
  "reqwest",
@@ -3105,7 +3113,7 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 [[package]]
 name = "vls-persist"
 version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#3b04e55113256dbca03ef610a96fbdb97aae50f1"
+source = "git+https://github.com/Blockstream/greenlight?branch=main#99ffdfdac82c77ac852da53a94fcef581f242641"
 dependencies = [
  "hex",
  "lightning-signer-core",
@@ -3118,8 +3126,9 @@ dependencies = [
 [[package]]
 name = "vls-protocol"
 version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#3b04e55113256dbca03ef610a96fbdb97aae50f1"
+source = "git+https://github.com/Blockstream/greenlight?branch=main#99ffdfdac82c77ac852da53a94fcef581f242641"
 dependencies = [
+ "as-any",
  "bolt-derive",
  "log",
  "serde",
@@ -3130,7 +3139,7 @@ dependencies = [
 [[package]]
 name = "vls-protocol-signer"
 version = "0.1.0"
-source = "git+https://github.com/Blockstream/greenlight?branch=vls-v0.11.0.1#3b04e55113256dbca03ef610a96fbdb97aae50f1"
+source = "git+https://github.com/Blockstream/greenlight?branch=main#99ffdfdac82c77ac852da53a94fcef581f242641"
 dependencies = [
  "bit-vec",
  "lightning-signer-core",

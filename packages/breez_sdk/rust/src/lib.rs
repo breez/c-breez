@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate log;
+
 pub mod binding;
 mod chain;
 mod crypto;
@@ -5,7 +8,7 @@ mod fiat;
 mod greenlight;
 pub mod grpc;
 mod invoice;
-mod lsp;
+pub mod lsp;
 pub mod models;
 pub mod node_service;
 mod persist;

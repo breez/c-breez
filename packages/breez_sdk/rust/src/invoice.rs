@@ -8,10 +8,11 @@ use std::str::FromStr;
 use std::time::UNIX_EPOCH;
 
 pub struct LNInvoice {
+    pub bolt11: String,
     pub payee_pubkey: String,
     pub payment_hash: String,
     pub description: String,
-    pub amount: Option<u64>,
+    pub amount_msat: Option<u64>,
     pub timestamp: u64,
     pub expiry: u64,
     pub routing_hints: Vec<RouteHint>,
@@ -118,8 +119,8 @@ pub fn add_routing_hints(
 }
 
 // parse_invoice parse a bolt11 payment request and returns a structure contains the parsed fields.
-pub fn parse_invoice(invoice: &String) -> Result<LNInvoice> {
-    let signed = invoice.parse::<SignedRawInvoice>()?;
+pub fn parse_invoice(bolt11: &String) -> Result<LNInvoice> {
+    let signed = bolt11.parse::<SignedRawInvoice>()?;
     let invoice = Invoice::from_signed(signed)?;
 
     let since_the_epoch = invoice.timestamp().duration_since(UNIX_EPOCH)?;
@@ -146,9 +147,10 @@ pub fn parse_invoice(invoice: &String) -> Result<LNInvoice> {
         .collect();
     // return the parsed invoice
     let ln_invoice = LNInvoice {
-        payee_pubkey: payee_pubkey,
+        bolt11: bolt11.to_string(),
+        payee_pubkey,
         expiry: invoice.expiry_time().as_secs(),
-        amount: invoice.amount_milli_satoshis(),
+        amount_msat: invoice.amount_milli_satoshis(),
         timestamp: since_the_epoch.as_secs(),
         routing_hints: converted_hints,
         payment_hash: invoice.payment_hash().encode_hex::<String>(),

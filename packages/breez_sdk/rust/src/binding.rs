@@ -6,12 +6,14 @@ use std::sync::Mutex;
 use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
+use lightning_invoice::RawInvoice;
 
 use crate::models::{
     Config, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter,
 };
 use crate::node_service::NodeServiceBuilder;
 use crate::{greenlight::Greenlight, node_service::NodeService};
+use crate::invoice::LNInvoice;
 
 lazy_static! {
     static ref STATE: Mutex<Option<Greenlight>> = Mutex::new(None);
@@ -78,6 +80,10 @@ pub fn list_lsps() -> Result<Vec<LspInformation>> {
     block_on(async { build_services().await?.list_lsps().await })
 }
 
+pub fn set_lsp_id(lsp_id: String) -> Result<()> {
+    block_on(async { build_services().await?.set_lsp_id(lsp_id) })
+}
+
 pub fn get_node_state() -> Result<Option<NodeState>> {
     block_on(async { build_services().await?.get_node_state() })
 }
@@ -99,6 +105,18 @@ pub fn list_transactions(
         build_services()
             .await?
             .list_transactions(filter, from_timestamp, to_timestamp)
+            .await
+    })
+}
+
+pub fn request_payment(
+    amount_sats: u64,
+    description: String
+) -> Result<LNInvoice> {
+    block_on(async {
+        build_services()
+            .await?
+            .request_payment(amount_sats, description.to_string())
             .await
     })
 }

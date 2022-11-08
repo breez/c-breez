@@ -15,8 +15,7 @@ bitcoin_hashes = "*"
 bitcoin = "^0"
 # Note: private repo, might need git credentials helper to be setup
 # If so, see https://techexpertise.medium.com/storing-git-credentials-with-git-credential-helper-33d22a6b5ce7
-# Using vls-v0.11.0.1 branch for VLS integration
-gl-client = { git = "https://github.com/Blockstream/greenlight", branch="vls-v0.11.0.1" }
+gl-client = { git = "https://github.com/Blockstream/greenlight", branch="main" }
 base64 = "0.13.0"
 ecies = {version = "0.2", default-features = false, features = ["pure"]}
 ripemd = "*"
@@ -33,6 +32,7 @@ tonic = { version = "^0.8", features = ["default", "tls", "tls-roots", "transpor
 lazy_static = "^1.4.0"
 lightning = "*"
 lightning-invoice = "*"
+log = "*"
 
 [build-dependencies]
 tonic-build = "^0.8"

@@ -8,7 +8,7 @@ use anyhow::Result;
 use prost::Message;
 use tonic::Request;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct LspInformation {
     pub id: String,
     pub name: String,
@@ -63,7 +63,8 @@ impl LspAPI for BreezServer {
 
     async fn register_payment(
         &mut self,
-        lsp: &grpc::LspInformation,
+        lsp_id: String,
+        lsp_pubkey: Vec<u8>,
         payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply> {
         let mut client = self.get_channel_opener_client().await?;
@@ -73,8 +74,8 @@ impl LspAPI for BreezServer {
         payment_info.encode(&mut buf)?;
 
         let request = Request::new(RegisterPaymentRequest {
-            lsp_id: lsp.name.clone(),
-            blob: encrypt(lsp.lsp_pubkey.clone(), buf)?,
+            lsp_id,
+            blob: encrypt(lsp_pubkey, buf)?,
         });
         let response = client.register_payment(request).await?;
 

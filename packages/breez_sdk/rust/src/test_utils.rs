@@ -1,12 +1,12 @@
 use anyhow::Result;
+use gl_client::pb::{Amount, Invoice, Peer};
 use gl_client::pb::amount::Unit;
-use gl_client::pb::{Amount, Invoice};
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::Rng;
 
 use crate::fiat::{FiatCurrency, Rate};
 
-use crate::grpc::{self, PaymentInformation, RegisterPaymentReply};
+use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::{FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse};
 use tokio::sync::mpsc;
@@ -31,6 +31,10 @@ impl NodeAPI for MockNodeAPI {
             node_state: self.node_state.clone(),
             transactions: self.transactions.clone(),
         })
+    }
+
+    async fn list_peers(&self) -> Result<Vec<Peer>> {
+        Ok(vec![])
     }
 
     async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
@@ -61,7 +65,8 @@ impl LspAPI for MockBreezServer {
 
     async fn register_payment(
         &mut self,
-        _lsp: &grpc::LspInformation,
+        _lsp_id: String,
+        _lsp_pubkey: Vec<u8>,
         _payment_info: PaymentInformation,
     ) -> Result<RegisterPaymentReply> {
         Ok(RegisterPaymentReply {})

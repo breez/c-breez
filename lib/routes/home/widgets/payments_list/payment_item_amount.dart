@@ -85,7 +85,7 @@ void main() async {
       providers: [
         BlocProvider<CurrencyBloc>(
           create: (BuildContext context) =>
-              CurrencyBloc(ServiceInjector().fiatService),
+              CurrencyBloc(ServiceInjector().breezLib),
         ),
       ],
       child: MaterialApp(

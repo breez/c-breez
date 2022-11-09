@@ -6,8 +6,6 @@ export 'src/node/node_api/node_api.dart';
 export 'bridge_generated.dart' show RouteHintHop, RouteHint, LNInvoice;
 export 'src/input_parser.dart';
 export 'src/node/node_service.dart';
-export 'src/fiat/fiat_service.dart';
-export 'src/node/node_service.dart';
 export 'src/storage/storage.dart';
 export 'src/node/models.dart';
 export 'src/lnurl/lnurl_service.dart';

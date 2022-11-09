@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/src/btc_swapper/btc_swapper.dart';
 import 'package:breez_sdk/src/chain_service/chain_service_mempool_space_settings.dart';
 import 'package:breez_sdk/src/chain_service/mempool_space.dart';
@@ -28,7 +29,6 @@ class LightningNode {
   final NodeAPI _nodeAPI = Greenlight();
   final LSPService _lspService = LSPService();
   final LNURLService _lnurlService = LNURLService();
-  final FiatService _fiatService = FiatService();
   final _lnToolkit = getNativeToolkit();
 
   final _storage = Storage.createDefault();
@@ -59,8 +59,6 @@ class LightningNode {
   LSPService get lspService => _lspService;
 
   LNURLService get lnurlService => _lnurlService;
-
-  FiatService get fiatService => _fiatService;
 
   BTCSwapper get subwapService => _subswapService;
 

@@ -67,7 +67,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) => CurrencyBloc(injector.fiatService),
+          create: (BuildContext context) => CurrencyBloc(injector.breezLib),
         ),
         BlocProvider<UserProfileBloc>(
           create: (BuildContext context) =>

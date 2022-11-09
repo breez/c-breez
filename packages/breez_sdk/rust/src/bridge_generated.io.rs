@@ -100,6 +100,16 @@ pub extern "C" fn wire_sweep(port_: i64, to_address: *mut wire_uint_8_list, feer
     wire_sweep_impl(port_, to_address, feerate_preset)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list) {
+    wire_parse_invoice_impl(port_, invoice)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_mnemonic_to_seed(port_: i64, phrase: *mut wire_uint_8_list) {
+    wire_mnemonic_to_seed_impl(port_, phrase)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

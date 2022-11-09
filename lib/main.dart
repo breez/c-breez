@@ -51,7 +51,7 @@ void main() async {
         providers: [
           BlocProvider<LSPBloc>(
             create: (BuildContext context) =>
-                LSPBloc(lightningServices, injector.lspService),
+                LSPBloc(injector.breezLib),
           ),
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(

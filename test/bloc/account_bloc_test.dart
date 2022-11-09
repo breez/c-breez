@@ -19,7 +19,7 @@ void main() {
       var injector = InjectorMock();
       var lightningServices = injector.lightningServices;
       var lspBloc =
-          LSPBloc(lightningServices, injector.lightningServices.lspService);
+          LSPBloc(lightningServices, injector.breezLib);
       AccountBloc accBloc = AccountBloc(
           lightningServices, injector.lightningServices.lnurlService, injector.keychain);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());

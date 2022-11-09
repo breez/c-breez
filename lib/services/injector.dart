@@ -25,7 +25,6 @@ class ServiceInjector {
   // breez sdk
   BreezBridge? _breezBridge;
   LightningLinksService? _lightningLinksService;
-  breez_sdk.LSPService? _lspService;
   breez_sdk.LNURLService? _lnurlService;
 
   Device? _device;
@@ -72,9 +71,6 @@ class ServiceInjector {
 
   LightningLinksService get lightningLinks =>
       _lightningLinksService ??= LightningLinksService();
-
-  breez_sdk.LSPService get lspService =>
-      _lspService ??= lightningServices.lspService;
 
   breez_sdk.LNURLService get lnurlService =>
       _lnurlService ??= lightningServices.lnurlService;

@@ -1,6 +1,6 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class SelectLSPPage extends StatefulWidget {
 }
 
 class SelectLSPPageState extends State<SelectLSPPage> {
-  breez_sdk.LSPInfo? _selectedLSP;
+  LspInformation? _selectedLSP;
   dynamic _error;
 
   @override
@@ -90,8 +90,8 @@ class SelectLSPPageState extends State<SelectLSPPage> {
                       return ListTile(
                         contentPadding:
                             const EdgeInsets.symmetric(horizontal: 0.0),
-                        selected: _selectedLSP?.lspID == lsps[index].lspID,
-                        trailing: _selectedLSP?.lspID == lsps[index].lspID
+                        selected: _selectedLSP?.id == lsps[index].id,
+                        trailing: _selectedLSP?.id == lsps[index].id
                             ? const Icon(Icons.check)
                             : null,
                         title: Text(
@@ -131,7 +131,7 @@ class SelectLSPPageState extends State<SelectLSPPage> {
       return SingleButtonBottomBar(
           text: "SELECT",
           onPressed: () async {
-            widget.lstBloc.connectLSP(_selectedLSP!.lspID);
+            widget.lstBloc.connectLSP(_selectedLSP!.id);
             Navigator.pop(context);
           });
     }

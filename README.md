@@ -28,16 +28,18 @@ flutter build ios
 ```
 flutter run
 ```
+## Tests
+A testing framework for this project is being developed [here](https://github.com/breez/lntest).
 
 # Breez SDK
 
 The goal of  the Breez SDK is to enable mobile developers to add Lightning and bitcoin payments to their apps. Applications vary from social apps wanting to add tipping between their users to content creation apps interested in adding bitcoin monetization. The use cases are endless. The advantage of this SDK is that it provides an end-to-end, non-custodial, drop-in solution.
    
 The Breez SDK provides the following services:
-** Sending payments (via various protocols such as: bolt11, keysend, lnurl-pay, lightning address, etc.)
-** Receiving payments (via various protocols such as: bolt11, lnurl-withdraw, etc.)
-** Fetching node status (e.g. balance, max allow to pay, max allow to receive, on-chain balance, etc.)
-** Connecting to a new or existing node.
+* Sending payments (via various protocols such as: bolt11, keysend, lnurl-pay, lightning address, etc.)
+* Receiving payments (via various protocols such as: bolt11, lnurl-withdraw, etc.)
+* Fetching node status (e.g. balance, max allow to pay, max allow to receive, on-chain balance, etc.)
+* Connecting to a new or existing node.
 
 The first implementation of the Breez SDK is in dart and some of the logic under the hood is implemented in rust. Ideally all logic would be implemented in rust and have specific binding for each programming language. However, it’s too early to pursue this path, and for now we are interested in the SDK interface. This diagram is a high-level description of the Breez SDK:
 ![sdk](https://user-images.githubusercontent.com/5394889/174237369-05aad114-4af8-448e-9fbb-ad6adff835a5.png)

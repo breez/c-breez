@@ -51,26 +51,35 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
             leading: const back_button.BackButton(),
             title: Text(texts.fiat_currencies_title),
           ),
-          body: DragAndDropLists(
-            listPadding: EdgeInsets.zero,
-            children: [
-              _buildList(context, currencyState),
-            ],
-            lastListTargetSize: 0,
-            lastItemTargetHeight: 8,
-            scrollController: _scrollController,
-            onListReorder: (oldListIndex, newListIndex) => {},
-            onItemReorder: (from, oldListIndex, to, newListIndex) =>
-                _onReorder(context, currencyState, from, to),
-            itemDragHandle: DragHandle(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Icon(
-                  Icons.drag_handle,
-                  color: theme.BreezColors.white[200],
+          body: FutureBuilder(
+            future: artificalWait(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(child: Loader());
+              }
+
+              return DragAndDropLists(
+                listPadding: EdgeInsets.zero,
+                children: [
+                  _buildList(context, currencyState),
+                ],
+                lastListTargetSize: 0,
+                lastItemTargetHeight: 8,
+                scrollController: _scrollController,
+                onListReorder: (oldListIndex, newListIndex) => {},
+                onItemReorder: (from, oldListIndex, to, newListIndex) =>
+                    _onReorder(context, currencyState, from, to),
+                itemDragHandle: DragHandle(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Icon(
+                      Icons.drag_handle,
+                      color: theme.BreezColors.white[200],
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         );
       },
@@ -189,5 +198,15 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     List<String> preferredFiatCurrencies,
   ) {
     context.read<CurrencyBloc>().setPreferredCurrencies(preferredFiatCurrencies);
+  }
+
+  /// DragAndDropLists has a performance issue with displaying a big list
+  /// and blocks the UI thread. Since data retrieval is not the bottleneck, it
+  /// blocks the UI thread almost immediately on the screen navigating to this page.
+  /// Before the underlying performance issues are fixed on the library.
+  /// We've added an artificial wait to display the page route animation and spinnig
+  /// loader before UI thread is blocked to convey a better UX as a workaround.
+  Future artificalWait() async {
+    return await Future.delayed(const Duration(milliseconds: 800));
   }
 }

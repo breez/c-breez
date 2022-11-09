@@ -2098,6 +2098,10 @@
   "podcast_history_sort_dropdown_sats":"Pagado",
   "podcast_history_sort_dropdown_boosts":"Boosted",
   "podcast_history_empty_text":"No hay datos disponibles para mostrar.",
+  "mempool_settings_custom_url": "URL de la API Mempool",
+  "mempool_settings_custom_url_error": "URL de la API Mempool inválida",
+  "mempool_settings_action_reset": "Restablecer",
+  "mempool_settings_action_save": "Guardar",
   "locale": "es",
   "app_name": "Breez"
 }

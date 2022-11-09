@@ -1,23 +1,34 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/src/chain_service/chain_service.dart';
+import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/src/chain_service/chain_service_mempool_space_settings.dart';
 import 'package:breez_sdk/src/chain_service/payload/recommended_fee_payload.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:http/http.dart' as http;
 part 'mempool_space.g.dart';
 
 class MempoolSpace extends ChainService {
-  final String domain;
+  final Storage _storage;
 
-  MempoolSpace(this.domain);
+  MempoolSpace(this._storage);
 
-  Uri _getUrl(String relative) {
-    return Uri.parse('https://$domain/api/$relative');
-  } 
+  Future<ChainServiceMempoolSpaceSettings> getMempoolSpaceSettings() =>
+      _storage.getMempoolSpaceSettings();
+
+  Future<int> setMempoolSpaceSettings(String scheme, String host, String? port) =>
+      _storage.setMempoolSpaceSettings(scheme, host, port);
+
+  Future<void> resetMempoolSpaceSettings() =>
+      _storage.resetMempoolSpaceSettings();
+
+  Future<Uri> _getUrl(String relative) async {
+    final settings = await getMempoolSpaceSettings();
+    return Uri.parse('${settings.mempoolUrl()}/api/$relative');
+  }
 
   @override
   Future<List<OnchainTransaction>> fetchTransactionsForAddress(String address) async {
-    var url = _getUrl('address/$address/txs');
+    var url = await _getUrl('address/$address/txs');
     final response = await http.read(url);
     final List txs = json.decode(response);
     final transactions = txs.map<OnchainTransaction>((e) {      
@@ -28,7 +39,7 @@ class MempoolSpace extends ChainService {
 
   @override
   Future<UTXOStatus> fetchUtxoStatus(String txid) async {
-    var url = _getUrl('tx/$txid/outspend/0');
+    var url = await _getUrl('tx/$txid/outspend/0');
     final response = await http.read(url);
     final Map<String, dynamic> firstOutput = json.decode(response);
     return MSpaceUTXOStatus.fromJson(firstOutput);
@@ -36,7 +47,7 @@ class MempoolSpace extends ChainService {
 
   @override
   Future<RecommendedFeePayload> fetchRecommendedFees() async {
-    final response = await http.read(_getUrl('v1/fees/recommended'));
+    final response = await http.read(await _getUrl('v1/fees/recommended'));
     return RecommendedFeePayload.fromJson(json.decode(response));
   }
 }
@@ -133,7 +144,7 @@ class MSpaceVOut implements VOut {
 class MSpaceVIn implements VIn {
   @JsonKey(name: "txid")
   final String txID;
-  
+
   final int vout;
 
   @JsonKey(name: "prevout")

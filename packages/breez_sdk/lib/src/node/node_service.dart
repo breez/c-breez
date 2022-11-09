@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:breez_sdk/src/btc_swapper/btc_swapper.dart';
+import 'package:breez_sdk/src/chain_service/chain_service_mempool_space_settings.dart';
+import 'package:breez_sdk/src/chain_service/mempool_space.dart';
 import 'package:breez_sdk/src/chain_service/payload/recommended_fee_payload.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:breez_sdk/sdk.dart';
@@ -38,7 +40,7 @@ class LightningNode {
 
   LightningNode() {
     _syncer = NodeStateSyncer(_nodeAPI, _storage);
-    _chainService = ChainService.createChainService();
+    _chainService = MempoolSpace(_storage);
     _subswapService = BTCSwapper(this, _storage, _chainService);
     FGBGEvents.stream.where((event) => event == FGBGType.foreground).throttleTime(const Duration(minutes: 1)).listen((event) async {
       if (_signer != null) {
@@ -298,4 +300,16 @@ class LightningNode {
   }
 
   Future<RecommendedFeePayload> fetchRecommendedFees() => _chainService.fetchRecommendedFees();
+
+  MempoolSpace _mempoolSpace() =>
+      _chainService is MempoolSpace ? (_chainService as MempoolSpace) : MempoolSpace(_storage);
+
+  Future<ChainServiceMempoolSpaceSettings> getMempoolSpaceSettings() =>
+      _mempoolSpace().getMempoolSpaceSettings();
+
+  Future<void> setMempoolSpaceSettings(String scheme, String host, String? port) =>
+      _mempoolSpace().setMempoolSpaceSettings(scheme, host, port);
+
+  Future<void> resetMempoolSpaceSettings() =>
+      _mempoolSpace().resetMempoolSpaceSettings();
 }

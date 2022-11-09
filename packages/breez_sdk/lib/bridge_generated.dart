@@ -93,6 +93,17 @@ abstract class LightningToolkit {
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSweepConstMeta;
+
+  Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kParseInvoiceConstMeta;
+
+  /// Attempts to convert the phrase to a mnemonic, then to a seed.
+  ///
+  /// If the phrase is not a valid mnemonic, an error is returned.
+  Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta;
 }
 
 class Config {
@@ -672,6 +683,38 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "sweep",
         argNames: ["toAddress", "feeratePreset"],
+      );
+
+  Future<LNInvoice> parseInvoice({required String invoice, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner
+            .wire_parse_invoice(port_, _platform.api2wire_String(invoice)),
+        parseSuccessData: _wire2api_ln_invoice,
+        constMeta: kParseInvoiceConstMeta,
+        argValues: [invoice],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kParseInvoiceConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "parse_invoice",
+        argNames: ["invoice"],
+      );
+
+  Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner
+            .wire_mnemonic_to_seed(port_, _platform.api2wire_String(phrase)),
+        parseSuccessData: _wire2api_uint_8_list,
+        constMeta: kMnemonicToSeedConstMeta,
+        argValues: [phrase],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "mnemonic_to_seed",
+        argNames: ["phrase"],
       );
 
 // Section: wire2api
@@ -1423,6 +1466,40 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Int32)>>('wire_sweep');
   late final _wire_sweep = _wire_sweepPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
+
+  void wire_parse_invoice(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> invoice,
+  ) {
+    return _wire_parse_invoice(
+      port_,
+      invoice,
+    );
+  }
+
+  late final _wire_parse_invoicePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_parse_invoice');
+  late final _wire_parse_invoice = _wire_parse_invoicePtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_mnemonic_to_seed(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> phrase,
+  ) {
+    return _wire_mnemonic_to_seed(
+      port_,
+      phrase,
+    );
+  }
+
+  late final _wire_mnemonic_to_seedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_mnemonic_to_seed');
+  late final _wire_mnemonic_to_seed = _wire_mnemonic_to_seedPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   ffi.Pointer<wire_Config> new_box_autoadd_config_0() {
     return _new_box_autoadd_config_0();

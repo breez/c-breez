@@ -74,6 +74,10 @@ void wire_request_payment(int64_t port_,
 
 void wire_sweep(int64_t port_, struct wire_uint_8_list *to_address, int32_t feerate_preset);
 
+void wire_parse_invoice(int64_t port_, struct wire_uint_8_list *invoice);
+
+void wire_mnemonic_to_seed(int64_t port_, struct wire_uint_8_list *phrase);
+
 struct wire_Config *new_box_autoadd_config_0(void);
 
 struct wire_GreenlightCredentials *new_box_autoadd_greenlight_credentials_0(void);
@@ -103,6 +107,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_keysend);
     dummy_var ^= ((int64_t) (void*) wire_request_payment);
     dummy_var ^= ((int64_t) (void*) wire_sweep);
+    dummy_var ^= ((int64_t) (void*) wire_parse_invoice);
+    dummy_var ^= ((int64_t) (void*) wire_mnemonic_to_seed);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_greenlight_credentials_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_i64_0);

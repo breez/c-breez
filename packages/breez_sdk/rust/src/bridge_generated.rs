@@ -273,6 +273,32 @@ fn wire_sweep_impl(
         },
     )
 }
+fn wire_parse_invoice_impl(port_: MessagePort, invoice: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "parse_invoice",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_invoice = invoice.wire2api();
+            move |task_callback| parse_invoice(api_invoice)
+        },
+    )
+}
+fn wire_mnemonic_to_seed_impl(port_: MessagePort, phrase: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "mnemonic_to_seed",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_phrase = phrase.wire2api();
+            move |task_callback| mnemonic_to_seed(api_phrase)
+        },
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

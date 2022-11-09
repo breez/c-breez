@@ -25,7 +25,6 @@ class UserProfileSettings {
     String? name,
     String? color,
     String? animal,
-    String? fiatCurrency,
     String? image,
     String? token,
     String? userID,

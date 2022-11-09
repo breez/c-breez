@@ -45,6 +45,8 @@ class LSPService {
       required List<int> destination,
       required Int64 incomingAmountMsat,
       required Int64 outgoingAmountMsat}) async {
+    throw Exception("Ready for Integration");
+    /*
     final server = await BreezServer.createWithDefaultConfig();
     var channel = await server.createServerChannel();
     var channelClient = ChannelOpenerClient(channel, options: server.defaultCallOptions);
@@ -60,6 +62,7 @@ class LSPService {
     final encryptedMessage = await _lnToolkit.encrypt(key: key, msg: buffer);    
 
     return channelClient.registerPayment(RegisterPaymentRequest(lspId: lspID, blob: encryptedMessage));
+     */
   }
 
   Future openLSPChannel(String lspID, String pubkey) async {

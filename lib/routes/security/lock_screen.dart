@@ -94,8 +94,13 @@ enum AuthorizedAction {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  HydratedBlocOverrides.runZoned(
-    () => runApp(MultiBlocProvider(
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: Directory(
+      join((await getApplicationDocumentsDirectory()).path, "preview_storage"),
+    ),
+  );
+  runApp(
+    MultiBlocProvider(
       providers: [
         BlocProvider<SecurityBloc>(
           create: (BuildContext context) => SecurityBloc(),
@@ -118,9 +123,6 @@ void main() async {
           ),
         ),
       ),
-    )),
-    storage: await HydratedStorage.build(
-      storageDirectory: Directory(join((await getApplicationDocumentsDirectory()).path, "preview_storage")),
     ),
   );
 }

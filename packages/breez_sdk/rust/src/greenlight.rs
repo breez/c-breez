@@ -131,6 +131,13 @@ impl NodeAPI for Greenlight {
         Ok(signed_invoice?.to_string())
     }
 
+    async fn connect_peer(&self, node_id: String, addr: String) -> Result<()> {
+        let mut client = self.get_client().await?;
+        let connect_req = pb::ConnectRequest { node_id, addr };
+        client.connect_peer(connect_req).await?;
+        Ok(())
+    }
+
     // implemenet pull changes from greenlight
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse> {
         let mut client = self.get_client().await?;
@@ -340,7 +347,7 @@ async fn pull_transactions(
     let received_transations: Result<Vec<LightningTransaction>> = invoices
         .invoices
         .into_iter()
-        .filter(|i| i.payment_time as i64 >= since_timestamp)
+        .filter(|i| i.payment_time as i64 > since_timestamp)
         .map(|i| invoice_to_transaction(node_pubkey.clone(), i))
         .collect();
 
@@ -354,7 +361,7 @@ async fn pull_transactions(
     let sent_transactions: Result<Vec<LightningTransaction>> = payments
         .payments
         .into_iter()
-        .filter(|p| p.created_at as i64 >= since_timestamp)
+        .filter(|p| p.created_at as i64 > since_timestamp)
         .map(|p| payment_to_transaction(p))
         .collect();
 

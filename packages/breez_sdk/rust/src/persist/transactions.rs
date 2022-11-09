@@ -44,6 +44,13 @@ impl SqliteStorage {
         Ok(())
     }
 
+    pub fn last_tx_timestamp(&self) -> Result<i64> {
+        self.conn
+            .query_row("SELECT max(payment_time) FROM ln_transactions", [], |row| {
+                row.get(0)
+            })
+    }
+
     pub fn list_ln_transactions(
         &self,
         type_filter: PaymentTypeFilter,
@@ -129,7 +136,7 @@ fn test_ln_transactions() {
         LightningTransaction {
             payment_type: "sent".to_string(),
             payment_hash: "123".to_string(),
-            payment_time: 1000,
+            payment_time: 1001,
             label: "label".to_string(),
             destination_pubkey: "pubey".to_string(),
             amount_msat: 100,
@@ -180,4 +187,7 @@ fn test_ln_transactions() {
         .unwrap();
     assert_eq!(retrieve_txs.len(), 1);
     assert_eq!(retrieve_txs[0], txs[1]);
+
+    let max_ts = storage.last_tx_timestamp().unwrap();
+    assert_eq!(max_ts, 1001);
 }

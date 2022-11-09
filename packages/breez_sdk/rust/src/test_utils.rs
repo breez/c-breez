@@ -40,6 +40,10 @@ impl NodeAPI for MockNodeAPI {
         Ok(vec![])
     }
 
+    async fn connect_peer(&self, node_id: String, addr: String) -> Result<()> {
+        Ok(())
+    }
+
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
         Ok("".to_string())
     }

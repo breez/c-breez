@@ -7,10 +7,13 @@ use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
 
-use crate::models::{Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeState, PaymentTypeFilter};
+use crate::invoice::LNInvoice;
+use crate::models::{
+    Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeState,
+    PaymentTypeFilter,
+};
 use crate::node_service::NodeServiceBuilder;
 use crate::{greenlight::Greenlight, node_service::NodeService};
-use crate::invoice::LNInvoice;
 
 lazy_static! {
     static ref STATE: Mutex<Option<Greenlight>> = Mutex::new(None);
@@ -78,7 +81,7 @@ pub fn list_lsps() -> Result<Vec<LspInformation>> {
 }
 
 pub fn set_lsp_id(lsp_id: String) -> Result<()> {
-    block_on(async { build_services().await?.set_lsp_id(lsp_id) })
+    block_on(async { build_services().await?.set_lsp_id(lsp_id).await })
 }
 
 pub fn get_node_state() -> Result<Option<NodeState>> {
@@ -106,33 +109,15 @@ pub fn list_transactions(
     })
 }
 
-pub fn pay(
-    bolt11: String,
-) -> Result<()> {
-    block_on(async {
-        build_services()
-            .await?
-            .pay(bolt11)
-            .await
-    })
+pub fn pay(bolt11: String) -> Result<()> {
+    block_on(async { build_services().await?.pay(bolt11).await })
 }
 
-pub fn keysend(
-    node_id: String,
-    amount_sats: u64
-) -> Result<()> {
-    block_on(async {
-        build_services()
-            .await?
-            .keysend(node_id, amount_sats)
-            .await
-    })
+pub fn keysend(node_id: String, amount_sats: u64) -> Result<()> {
+    block_on(async { build_services().await?.keysend(node_id, amount_sats).await })
 }
 
-pub fn request_payment(
-    amount_sats: u64,
-    description: String
-) -> Result<LNInvoice> {
+pub fn request_payment(amount_sats: u64, description: String) -> Result<LNInvoice> {
     block_on(async {
         build_services()
             .await?
@@ -141,10 +126,7 @@ pub fn request_payment(
     })
 }
 
-pub fn sweep(
-    to_address: String,
-    feerate_preset: FeeratePreset
-) -> Result<()> {
+pub fn sweep(to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
     block_on(async {
         build_services()
             .await?

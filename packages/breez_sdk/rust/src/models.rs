@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Result};
-use gl_client::pb::{Invoice, Payment, WithdrawResponse};
 use gl_client::pb::Peer;
+use gl_client::pb::WithdrawResponse;
+use gl_client::pb::{Invoice, Payment};
 use lightning_invoice::RawInvoice;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -21,9 +22,14 @@ pub trait NodeAPI {
     async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment>;
     async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<Payment>;
     async fn start(&self) -> Result<()>;
-    async fn sweep(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<WithdrawResponse>;
+    async fn sweep(
+        &self,
+        to_address: String,
+        feerate_preset: FeeratePreset,
+    ) -> Result<WithdrawResponse>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;
+    async fn connect_peer(&self, node_id: String, addr: String) -> Result<()>;
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String>;
 }
 
@@ -50,7 +56,7 @@ pub struct Config {
     pub mempoolspace_url: String,
     pub working_dir: String,
     pub network: Network,
-    pub payment_timeout_sec: u32
+    pub payment_timeout_sec: u32,
 }
 
 impl Default for Config {
@@ -60,7 +66,7 @@ impl Default for Config {
             mempoolspace_url: "https://mempool.space".to_string(),
             working_dir: ".".to_string(),
             network: Bitcoin,
-            payment_timeout_sec: 30
+            payment_timeout_sec: 30,
         }
     }
 }
@@ -89,7 +95,7 @@ pub enum PaymentTypeFilter {
 pub enum FeeratePreset {
     Regular,
     Economy,
-    Priority
+    Priority,
 }
 
 impl TryFrom<i32> for FeeratePreset {
@@ -100,7 +106,7 @@ impl TryFrom<i32> for FeeratePreset {
             0 => Ok(FeeratePreset::Regular),
             1 => Ok(FeeratePreset::Economy),
             2 => Ok(FeeratePreset::Priority),
-            _ => Err(anyhow!("Unexpected feerate enum value"))
+            _ => Err(anyhow!("Unexpected feerate enum value")),
         }
     }
 }

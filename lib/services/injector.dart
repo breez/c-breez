@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/deep_links.dart';
@@ -22,6 +23,7 @@ class ServiceInjector {
   DeepLinksService? _deepLinksService;
 
   // breez sdk
+  BreezBridge? _breezBridge;
   LightningLinksService? _lightningLinksService;
   breez_sdk.LSPService? _lspService;
   breez_sdk.LNURLService? _lnurlService;
@@ -52,6 +54,8 @@ class ServiceInjector {
   BreezServer get breezServer {
     return _breezServer ??= BreezServer();
   }
+
+  BreezBridge get breezLib => _breezBridge ??= BreezBridge();
 
   breez_sdk.LightningNode get lightningServices {
     if (_lightningService != null) {

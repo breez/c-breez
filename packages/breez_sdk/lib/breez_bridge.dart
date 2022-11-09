@@ -2,7 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/native_toolkit.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
-class LightningToolkit {
+class BreezBridge {
   final _lnToolkit = getNativeToolkit();
 
   Future<GreenlightCredentials> registerNode(

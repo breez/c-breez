@@ -13,9 +13,12 @@ use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
-use crate::invoice::{add_routing_hints, LNInvoice, parse_invoice, RouteHint, RouteHintHop};
+use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
-use crate::models::{Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, parse_short_channel_id, PaymentTypeFilter};
+use crate::models::{
+    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI,
+    NodeState, PaymentTypeFilter,
+};
 use crate::persist;
 
 pub struct NodeService {
@@ -105,15 +108,19 @@ impl NodeService {
 
     /// Convenience method to look up LSP info based on current LSP ID
     async fn get_lsp(&mut self) -> Result<LspInformation> {
-        let lsp_id = self.get_lsp_id()?
+        let lsp_id = self
+            .get_lsp_id()?
             .ok_or("No LSP ID found")
             .map_err(|err| anyhow!(err))?;
 
-        let node_pubkey = self.get_node_state()?
+        let node_pubkey = self
+            .get_node_state()?
             .ok_or("No NodeState found")
             .map_err(|err| anyhow!(err))?
             .id;
-        self.lsp.list_lsps(node_pubkey).await?
+        self.lsp
+            .list_lsps(node_pubkey)
+            .await?
             .iter()
             .find(|&lsp| lsp.id == lsp_id)
             .ok_or("No LSO found for given LSP ID")
@@ -128,14 +135,21 @@ impl NodeService {
     }
 
     pub async fn keysend(&mut self, node_id: String, amount_sats: u64) -> Result<()> {
-        self.client.send_spontaneous_payment(node_id, amount_sats).await?;
+        self.client
+            .send_spontaneous_payment(node_id, amount_sats)
+            .await?;
         self.sync().await?;
         Ok(())
     }
 
-    pub async fn request_payment(&mut self, amount_sats: u64, description: String) -> Result<LNInvoice> {
+    pub async fn request_payment(
+        &mut self,
+        amount_sats: u64,
+        description: String,
+    ) -> Result<LNInvoice> {
         let lsp_info = &self.get_lsp().await?;
-        let node_state = self.get_node_state()?
+        let node_state = self
+            .get_node_state()?
             .ok_or("Failed to retrieve node state")
             .map_err(|err| anyhow!(err))?;
 
@@ -149,22 +163,30 @@ impl NodeService {
             info!("We need to open a channel");
 
             // we need to open channel so we are calculating the fees for the LSP
-            let channel_fees_msat_calculated = amount_msats * lsp_info.channel_fee_permyriad as u64 / 10_000 / 1_000_000;
-            let channel_fees_msat = max(channel_fees_msat_calculated, lsp_info.channel_minimum_fee_msat as u64);
+            let channel_fees_msat_calculated =
+                amount_msats * lsp_info.channel_fee_permyriad as u64 / 10_000 / 1_000_000;
+            let channel_fees_msat = max(
+                channel_fees_msat_calculated,
+                lsp_info.channel_minimum_fee_msat as u64,
+            );
 
             if amount_msats < channel_fees_msat + 1000 {
-                return Err(anyhow!("requestPayment: Amount should be more than the minimum fees {} sats", lsp_info.channel_minimum_fee_msat / 1000));
+                return Err(anyhow!(
+                    "requestPayment: Amount should be more than the minimum fees {} sats",
+                    lsp_info.channel_minimum_fee_msat / 1000
+                ));
             }
 
             // remove the fees from the amount to get the small amount on the current node invoice.
             destination_invoice_amount_sats = amount_sats - channel_fees_msat / 1000;
-        }
-        else {
+        } else {
             // not opening a channel so we need to get the real channel id into the routing hints
             info!("Finding channel ID for routing hint");
             for peer in self.client.list_peers().await? {
                 if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
-                    let active_channel = peer.channels.iter()
+                    let active_channel = peer
+                        .channels
+                        .iter()
                         .find(|&c| c.state == "OPEN")
                         .ok_or("No open channel found")
                         .map_err(|err| anyhow!(err))?;
@@ -177,47 +199,47 @@ impl NodeService {
 
         info!("Creating invoice on NodeAPI");
         let invoice = &self.client.create_invoice(amount_sats, description).await?;
-        info!("Invoice created");
+        info!("Invoice created {}", invoice.bolt11);
 
         info!("Adding routing hint");
         let lsp_hop = RouteHintHop {
             src_node_id: lsp_info.pubkey.clone(), // TODO correct?
             short_channel_id: short_channel_id as u64,
             fees_base_msat: lsp_info.base_fee_msat as u32,
-            fees_proportional_millionths: 100, // TODO
+            fees_proportional_millionths: 10, // TODO
             cltv_expiry_delta: lsp_info.time_lock_delta as u64,
             htlc_minimum_msat: Some(lsp_info.min_htlc_msat as u64), // TODO correct?
-            htlc_maximum_msat: Some(4000), // TODO ?
+            htlc_maximum_msat: Some(1000000000),                    // TODO ?
         };
+
+        println!("lsp hop = {:?}", lsp_hop);
+
         let raw_invoice_with_hint = add_routing_hints(
             &invoice.bolt11,
-            vec![ RouteHint(vec![lsp_hop]) ],
-            amount_sats
+            vec![RouteHint(vec![lsp_hop])],
+            amount_sats * 1000,
         )?;
         info!("Routing hint added");
-
-        // TODO Mock signing. Replace with actual signing of raw_invoice_with_hint
-        let secp = Secp256k1::new();
-        let seed = rand::thread_rng().gen::<[u8; 32]>();
-        let secret_key = SecretKey::from_slice(&seed).expect("32 bytes, within curve order");
-        let signed_invoice_with_hint = raw_invoice_with_hint.sign(|&x|
-            Ok::<bitcoin::secp256k1::ecdsa::RecoverableSignature, anyhow::Error>(secp.sign_ecdsa_recoverable(&x, &secret_key)))?;
-
+        //println!("parsed = {}", parsedd.bolt11);
+        let signed_invoice_with_hint = self.client.sign_invoice(raw_invoice_with_hint)?;
         let parsed_invoice = parse_invoice(&signed_invoice_with_hint.to_string())?;
 
         // register the payment at the lsp if needed
         if destination_invoice_amount_sats < amount_sats {
             info!("Registering payment with LSP");
-            self.lsp.register_payment(
-                lsp_info.id.clone(),
-                lsp_info.lsp_pubkey.clone(),
-                PaymentInformation {
-                    payment_hash: Vec::from(parsed_invoice.payment_hash.clone()),
-                    payment_secret: parsed_invoice.payment_secret.clone(),
-                    destination: Vec::from(parsed_invoice.payee_pubkey.clone()),
-                    incoming_amount_msat: amount_msats as i64,
-                    outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64
-                }).await?;
+            self.lsp
+                .register_payment(
+                    lsp_info.id.clone(),
+                    lsp_info.lsp_pubkey.clone(),
+                    PaymentInformation {
+                        payment_hash: Vec::from(parsed_invoice.payment_hash.clone()),
+                        payment_secret: parsed_invoice.payment_secret.clone(),
+                        destination: Vec::from(parsed_invoice.payee_pubkey.clone()),
+                        incoming_amount_msat: amount_msats as i64,
+                        outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64,
+                    },
+                )
+                .await?;
             info!("Payment registered");
         }
 
@@ -389,7 +411,8 @@ mod test {
             .await;
 
         node_service.sync().await?;
-        let fetched_state = node_service.get_node_state()?
+        let fetched_state = node_service
+            .get_node_state()?
             .ok_or("No NodeState found")
             .map_err(|err| anyhow!(err))?;
         assert_eq!(fetched_state, dummy_node_state);

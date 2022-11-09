@@ -1,6 +1,7 @@
 use anyhow::{anyhow, Result};
 use gl_client::pb::{Invoice, Payment, WithdrawResponse};
 use gl_client::pb::Peer;
+use lightning_invoice::RawInvoice;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 
@@ -23,6 +24,7 @@ pub trait NodeAPI {
     async fn sweep(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<WithdrawResponse>;
     async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
     async fn list_peers(&self) -> Result<Vec<Peer>>;
+    fn sign_invoice(&self, invoice: RawInvoice) -> Result<String>;
 }
 
 #[tonic::async_trait]
@@ -139,7 +141,7 @@ pub struct LightningTransaction {
 }
 
 pub fn parse_short_channel_id(id_str: &str) -> Result<i64> {
-    let parts : Vec<&str> = id_str.split('x').collect();
+    let parts: Vec<&str> = id_str.split('x').collect();
     if parts.len() != 3 {
         return Ok(0);
     }

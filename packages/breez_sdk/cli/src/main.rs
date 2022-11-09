@@ -60,8 +60,8 @@ fn main() -> Result<()> {
                         );
                     }
                     Some("request_payment") => {
-                        let amount_sats = 2001;
-                        let description = "Test requested payment";
+                        let amount_sats: u64 = command.next().unwrap().parse()?;
+                        let description = command.next().unwrap();
 
                         show_results(binding::request_payment(
                             amount_sats,
@@ -69,17 +69,20 @@ fn main() -> Result<()> {
                         ));
                     }
                     Some("pay") => {
-                        let bolt11 = command.next()
+                        let bolt11 = command
+                            .next()
                             .ok_or("Expected bolt11 arg")
                             .map_err(|err| anyhow!(err))?;
 
                         show_results(binding::pay(bolt11.into()))
                     }
                     Some("keysend") => {
-                        let node_id = command.next()
+                        let node_id = command
+                            .next()
                             .ok_or("Expected node_id arg")
                             .map_err(|err| anyhow!(err))?;
-                        let amount_sats = command.next()
+                        let amount_sats = command
+                            .next()
                             .ok_or("Expected amount_sats arg")
                             .map_err(|err| anyhow!(err))?;
 

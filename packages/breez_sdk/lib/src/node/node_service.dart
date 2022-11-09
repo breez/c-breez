@@ -11,8 +11,6 @@ import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/node/sync_state.dart';
 import 'package:breez_sdk/src/utils/retry.dart';
 import 'package:fimber/fimber.dart';
-import 'package:fixnum/fixnum.dart';
-import 'package:hex/hex.dart';
 import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
 import 'package:rxdart/rxdart.dart';
 

@@ -8,6 +8,7 @@ use rand::Rng;
 use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
 
+use crate::binding::get_node_state;
 use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
@@ -40,19 +41,14 @@ impl NodeService {
     }
 
     pub async fn sync(&self) -> Result<()> {
-        let since_timestamp = self
-            .persister
-            .get_cached_item("last_sync_timestamp".to_string())?
-            .unwrap_or("0".to_string())
-            .parse::<i64>()?;
+        let since_timestamp = self.persister.last_tx_timestamp().unwrap_or(0);
 
         let new_data = &self.client.pull_changed(since_timestamp).await?;
 
         self.set_node_state(&new_data.node_state)?;
         self.persister
             .insert_ln_transactions(&new_data.transactions)?;
-
-        Ok(())
+        self.connect_lsp_peer().await
     }
 
     pub async fn fetch_rates(&self) -> Result<Vec<Rate>> {
@@ -101,13 +97,38 @@ impl NodeService {
             .map_err(|err| anyhow!(err))
     }
 
-    pub fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
+    pub async fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
         self.persister.update_setting("lsp".to_string(), lsp_id)?;
+        self.connect_lsp_peer().await?;
+        Ok(())
+    }
+
+    async fn connect_lsp_peer(&self) -> Result<()> {
+        let lsp = self.get_lsp().await.ok();
+        if !lsp.is_none() {
+            let lsp_info = lsp.unwrap().clone();
+            let node_id = lsp_info.pubkey;
+            let address = lsp_info.host;
+            match self.get_node_state() {
+                Ok(Some(state)) => {
+                    if !state.connected_peers.contains(&node_id) {
+                        self.client
+                            .connect_peer(node_id, address)
+                            .await
+                            .map_err(anyhow::Error::msg)
+                    } else {
+                        Ok(())
+                    }
+                }
+                Ok(None) => Ok(()),
+                Err(e) => Err(anyhow!(e)),
+            }?
+        }
         Ok(())
     }
 
     /// Convenience method to look up LSP info based on current LSP ID
-    async fn get_lsp(&mut self) -> Result<LspInformation> {
+    async fn get_lsp(&self) -> Result<LspInformation> {
         let lsp_id = self
             .get_lsp_id()?
             .ok_or("No LSP ID found")

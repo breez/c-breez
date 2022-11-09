@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -87,7 +88,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
         return DragAndDropItem(
           child: _buildFiatCurrencyTile(context, currencyState, index),
           canDrag: currencyState.preferredCurrencies.contains(
-            currencyState.fiatCurrenciesData[index].shortName,
+            currencyState.fiatCurrenciesData[index].id,
           ),
         );
       }),
@@ -110,11 +111,11 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
       controlAffinity: ListTileControlAffinity.leading,
       activeColor: Colors.white,
       checkColor: themeData.canvasColor,
-      value: prefCurrencies.contains(currencyData.shortName),
+      value: prefCurrencies.contains(currencyData.id),
       onChanged: (bool? checked) {
         setState(() {
           if (checked == true) {
-            prefCurrencies.add(currencyData.shortName);
+            prefCurrencies.add(currencyData.id);
             // center item in viewport
             if (_scrollController.offset >=
                 (ITEM_HEIGHT * (prefCurrencies.length - 1))) {
@@ -128,7 +129,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
             }
           } else if (currencyState.preferredCurrencies.length != 1) {
             prefCurrencies.remove(
-              currencyData.shortName,
+              currencyData.id,
             );
           }
           _updatePreferredCurrencies(context, currencyState, prefCurrencies);
@@ -140,11 +141,11 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
       ),
       title: RichText(
         text: TextSpan(
-          text: currencyData.shortName,
+          text: currencyData.id,
           style: theme.fiatConversionTitleStyle,
           children: [
             TextSpan(
-              text: " (${currencyData.symbol})",
+              text: " (${currencyData.info.symbol})",
               style: theme.fiatConversionDescriptionStyle,
             ),
           ],
@@ -154,8 +155,15 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   }
 
   String _subtitle(AppLocalizations texts, FiatCurrency currencyData) {
-    final localizedName = currencyData.localizedName[texts.locale];
-    return localizedName ?? currencyData.name;
+    final localizedName = currencyData.info.localizedName;
+    if (localizedName != null) {
+      for (var localizedName in localizedName) {
+        if (localizedName.locale == texts.locale) {
+          return localizedName.name;
+        }
+      }
+    }
+    return currencyData.info.name;
   }
 
   void _onReorder(

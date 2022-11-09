@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -15,8 +16,8 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
     fetchExchangeRates();
   }
 
-  void setFiatShortName(String fiaShortName) {
-    emit(state.copyWith(fiatShortName: fiaShortName));
+  void setFiatId(String fiatId) {
+    emit(state.copyWith(fiatId: fiatId));
   }
 
   void setPreferredCurrencies(List<String> preferredCurrencies) {
@@ -24,14 +25,14 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
         fiatCurrenciesData: _sortFiatConversionList(
             state.fiatCurrenciesData, preferredCurrencies),
         preferredCurrencies: preferredCurrencies,
-        fiatShortName: preferredCurrencies[0]));
+        fiatId: preferredCurrencies[0]));
   }
 
   void setBitcoinTicker(String bitcoinTicker) {
     emit(state.copyWith(bitcoinTicker: bitcoinTicker));
   }
 
-  Future<Map<String, double>> fetchExchangeRates() async {
+  Future<Map<String, Rate>> fetchExchangeRates() async {
     var ratesMap = await _fiatService.fetchRates();   
     emit(state.copyWith(exchangeRates: ratesMap));
     return ratesMap;
@@ -51,12 +52,12 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
       List<FiatCurrency> fiatCurrencies, List<String> preferredCurrencies) {
     var sorted = fiatCurrencies.toList();
     sorted.sort((f1, f2) {
-      return f1.shortName.compareTo(f2.shortName);
+      return f1.id.compareTo(f2.id);
     });
 
     // Then give precedence to the preferred items.
     for (var p in preferredCurrencies.reversed) {
-      var preferredIndex = sorted.indexWhere((e) => e.shortName == p);
+      var preferredIndex = sorted.indexWhere((e) => e.id == p);
       if (preferredIndex >= 0) {
         var preferred = sorted[preferredIndex];
         sorted.removeAt(preferredIndex);

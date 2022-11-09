@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/utils/currency_formatter.dart';
 import 'package:c_breez/utils/locale.dart';
 import 'package:fixnum/fixnum.dart';
@@ -11,7 +11,7 @@ class FiatConversion {
   FiatConversion(this.currencyData, this.exchangeRate);
 
   String get logoPath {
-    switch (currencyData.symbol) {
+    switch (currencyData.info.symbol ?? "") {
       case "€":
         return "src/icon/btc_eur.png";
       case "£":
@@ -43,31 +43,30 @@ class FiatConversion {
     bool removeTrailingZeros = false,
   }) {
     final locale = getSystemLocale();
-    final currencyData = this
-        .currencyData
-        .localeAware(locale.toLanguageTag(), locale.languageCode);
-    int fractionSize = currencyData.fractionSize;
+    final localeOverride = _localeOverride(locale.toLanguageTag(), locale.languageCode);
+
+    int fractionSize = currencyData.info.fractionSize;
     double minimumAmount = 1 / (pow(10, fractionSize));
 
     String formattedAmount = "";
-    String spacing = " " * currencyData.spacing;
-    String symbol = (currencyData.position == 1)
-        ? spacing + currencyData.symbol
-        : currencyData.symbol + spacing;
-    // if conversion result is less than the minimum it doesn't make sense to display
-    // it.
+    String spacing = " " * (localeOverride?.spacing ?? currencyData.info.spacing ?? 0);
+    final symbol = localeOverride?.symbol ?? currencyData.info.symbol;
+    String symbolText = (symbol?.position == 1)
+        ? spacing + (symbol?.grapheme ?? "")
+        : (symbol?.grapheme ?? "") + spacing;
+    // if conversion result is less than the minimum it doesn't make sense to display it
     if (fiatAmount < minimumAmount) {
       formattedAmount = minimumAmount.toStringAsFixed(fractionSize);
-      symbol = '< $symbol';
+      symbolText = '< $symbolText';
     } else {
       final formatter = CurrencyFormatter().formatter;
       formatter.minimumFractionDigits = fractionSize;
       formatter.maximumFractionDigits = fractionSize;
       formattedAmount = formatter.format(fiatAmount);
     }
-    formattedAmount = (currencyData.position == 1)
-        ? formattedAmount + symbol
-        : symbol + formattedAmount;
+    formattedAmount = (symbol?.position == 1)
+        ? formattedAmount + symbolText
+        : symbolText + formattedAmount;
     if (removeTrailingZeros) {
       RegExp removeTrailingZeros = RegExp(r"([.]0*)(?!.*\d)");
       formattedAmount = formattedAmount.replaceAll(removeTrailingZeros, "");
@@ -76,4 +75,16 @@ class FiatConversion {
   }
 
   double get satConversionRate => 1 / exchangeRate * 100000000;
+
+  LocaleOverrides? _localeOverride(String languageTag, String languageCode) {
+    final localeOverrides = currencyData.info.localeOverrides;
+    if (localeOverrides == null || localeOverrides.isEmpty) return null;
+    if (localeOverrides.any((e) => e.locale == languageTag)) {
+      return localeOverrides.firstWhere((e) => e.locale == languageTag);
+    }
+    if (localeOverrides.any((e) => e.locale == languageCode)) {
+      return localeOverrides.firstWhere((e) => e.locale == languageCode);
+    }
+    return null;
+  }
 }

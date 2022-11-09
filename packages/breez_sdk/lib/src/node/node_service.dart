@@ -26,7 +26,7 @@ class LightningNode {
   final NodeAPI _nodeAPI = Greenlight();
   final LSPService _lspService = LSPService();
   final LNURLService _lnurlService = LNURLService();
-  final FiatService _fiatService = FiatService();    
+  final FiatService _fiatService = FiatService();
   final _lnToolkit = getNativeToolkit();
 
   final _storage = Storage.createDefault();

@@ -110,14 +110,14 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
     final items = currencyState.preferredCurrencies.map((value) {
       var fiatCurrencyData = currencyState.fiatCurrenciesData
-          .firstWhere((c) => c.shortName == value);
+          .firstWhere((c) => c.id == value);
       return DropdownMenuItem<String>(
-        value: fiatCurrencyData.shortName,
+        value: fiatCurrencyData.id,
         child: Material(
           child: SizedBox(
             width: 36,
             child: AutoSizeText(
-              fiatCurrencyData.shortName,
+              fiatCurrencyData.id,
               textAlign: TextAlign.left,
               style: themeData.dialogTheme.titleTextStyle,
               maxLines: 1,
@@ -157,7 +157,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
                 alignedDropdown: true,
                 child: BreezDropdownButton(
                   onChanged: (value) => _selectFiatCurrency(value.toString()),
-                  value: currencyState.fiatShortName,
+                  value: currencyState.fiatId,
                   iconEnabledColor:
                       themeData.dialogTheme.titleTextStyle!.color!,
                   style: themeData.dialogTheme.titleTextStyle!,
@@ -173,12 +173,15 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   Widget _dialogContent(BuildContext context, CurrencyState currencyState) {
     final themeData = Theme.of(context);
-    var fiatConversion = FiatConversion(
-        currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+    final fiatCurrency = currencyState.fiatCurrency;
+    final fiatExchangeRate = currencyState.fiatExchangeRate;
+    if (fiatCurrency == null || fiatExchangeRate == null) {
+      return const Loader();
+    }
 
-    final int fractionSize = currencyState.fiatCurrency!.fractionSize;
-    final borderColor =
-        themeData.isLightTheme ? Colors.red : themeData.errorColor;
+    final fiatConversion = FiatConversion(fiatCurrency, fiatExchangeRate);
+    final int fractionSize = fiatCurrency.info.fractionSize;
+    final borderColor = themeData.isLightTheme ? Colors.red : themeData.errorColor;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -208,7 +211,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
                 color: borderColor,
               ),
               prefix: Text(
-                currencyState.fiatCurrency!.symbol,
+                fiatCurrency.info.symbol?.grapheme ?? "",
                 style: themeData.dialogTheme.contentTextStyle,
               ),
             ),
@@ -341,13 +344,13 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
                 _exchangeRate!,
                 removeTrailingZeros: true,
               ),
-              fiatConversion.currencyData.shortName,
+              fiatConversion.currencyData.id,
             ),
             style: themeData.primaryTextTheme.subtitle2!,
           );
   }
 
-  void _selectFiatCurrency(String shortName) {
-    widget._currencyBloc.setFiatShortName(shortName);
+  void _selectFiatCurrency(String fiatId) {
+    widget._currencyBloc.setFiatId(fiatId);
   }
 }

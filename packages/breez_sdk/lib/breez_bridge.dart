@@ -60,7 +60,8 @@ class BreezBridge {
   Future keysend(String nodeId, int amountSats) async =>
       await _lnToolkit.keysend(nodeId: nodeId, amountSats: amountSats);
 
-  Future<LNInvoice> requestPayment(int amountSats, String description) async =>
+  Future<LNInvoice> requestPayment(
+          {required int amountSats, required String description}) async =>
       await _lnToolkit.requestPayment(
           amountSats: amountSats, description: description);
 

@@ -1,4 +1,3 @@
-import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 
 enum NodeNotificationType { PAYMENT_SUCCEED, PAYMENT_FAILED }
@@ -103,7 +102,7 @@ class Outpoint {
 
 class ListFundsOutput {
   final Outpoint outpoint;
-  final Int64 amountMsats;
+  final int amountMsats;
   final String address;
   final OutputStatus status;
 
@@ -125,9 +124,9 @@ class ListFundsOutput {
 class ListFundsChannel {
   final String peerId;
   final bool connected;
-  final Int64 shortChannelId;
-  final Int64 ourAmountMsat;
-  final Int64 amountMsat;
+  final int shortChannelId;
+  final int ourAmountMsat;
+  final int amountMsat;
   final String fundingTxid;
   final int fundingOutput;
 
@@ -166,8 +165,8 @@ class ListFunds {
 
 class Htlc {
   final String direction;
-  final Int64 id;
-  final Int64 amountMsat;
+  final int id;
+  final int amountMsat;
   final int expiry;
   final String paymentHash;
   final String state;
@@ -290,8 +289,8 @@ class Withdrawal {
 
 class Invoice {
   final String label;
-  final Int64 amountMsats;
-  final Int64 receivedMsats;
+  final int amountMsats;
+  final int receivedMsats;
   final String description;
   final InvoiceStatus status;
   final int paymentTime;
@@ -314,7 +313,7 @@ class Invoice {
   });
 
   Invoice copyWithNewAmount(
-      {required Int64 amountMsats, required String bolt11}) {
+      {required int amountMsats, required String bolt11}) {
     return Invoice(
       amountMsats: amountMsats,
       label: label,
@@ -333,7 +332,7 @@ class Invoice {
 
   String get payeeName => "";
 
-  Int64 get lspFee => Int64(0);
+  int get lspFee => 0;
 
   Map<String, dynamic> toJson() => {
         'amountMsats': amountMsats.toInt(),
@@ -353,9 +352,9 @@ class OutgoingLightningPayment {
   final int creationTimestamp;
   final String paymentHash;
   final String destination;
-  final Int64 feeMsats;
-  final Int64 amountMsats;
-  final Int64 amountSentMsats;
+  final int feeMsats;
+  final int amountMsats;
+  final int amountSentMsats;
   final String preimage;
   final bool isKeySend;
   final bool pending;
@@ -398,7 +397,7 @@ class TlvField {
 class IncomingLightningPayment {
   final String label;
   final String preimage;
-  final Int64 amountMsats;
+  final int amountMsats;
   final List<TlvField> extratlvs;
   final String paymentHash;
   final String bolt11;

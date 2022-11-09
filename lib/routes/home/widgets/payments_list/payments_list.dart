@@ -9,7 +9,6 @@ import 'package:c_breez/routes/home/widgets/payments_list/payment_item.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -83,11 +82,27 @@ void main() async {
               slivers: [
                 PaymentsList(
                   [
-                    PaymentInfo(
+                    const PaymentInfo(
                       type: PaymentType.received,
-                      amountMsat: Int64(4321000),
-                        feeMsat: Int64(0),
-                        creationTimestamp: Int64(1661791810),
+                      amountMsat: 4321000,
+                        feeMsat: 0,
+                        creationTimestamp: 1661791810,
+                        pending: false,
+                        keySend: false,
+                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        preimage: null,
+                        destination: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                        pendingExpirationTimestamp: null,
+                        description: "A title",
+                        longTitle: "A long title",
+                        shortTitle: "",
+                        imageURL: null,
+                      ),
+                      const PaymentInfo(
+                        type: PaymentType.received,
+                        amountMsat: 4321000,
+                        feeMsat: 12,
+                        creationTimestamp: 1661791810,
                         pending: false,
                         keySend: false,
                         paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
@@ -101,25 +116,9 @@ void main() async {
                       ),
                       PaymentInfo(
                         type: PaymentType.received,
-                        amountMsat: Int64(4321000),
-                        feeMsat: Int64(12),
-                        creationTimestamp: Int64(1661791810),
-                        pending: false,
-                        keySend: false,
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        preimage: null,
-                        destination: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        pendingExpirationTimestamp: null,
-                        description: "A title",
-                        longTitle: "A long title",
-                        shortTitle: "",
-                        imageURL: null,
-                      ),
-                      PaymentInfo(
-                        type: PaymentType.received,
-                        amountMsat: Int64(4321000),
-                        feeMsat: Int64(3456),
-                        creationTimestamp: Int64(DateTime.now().millisecondsSinceEpoch ~/ 1000),
+                        amountMsat: 4321000,
+                        feeMsat: 3456,
+                        creationTimestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
                         pending: false,
                         keySend: false,
                         paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",

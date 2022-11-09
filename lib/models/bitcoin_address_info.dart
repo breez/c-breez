@@ -1,9 +1,8 @@
 import 'package:c_breez/models/currency.dart';
-import 'package:fixnum/fixnum.dart';
 
 class BitcoinAddressInfo {
   final String? address;
-  final Int64? satAmount;
+  final int? satAmount;
 
   const BitcoinAddressInfo(
     this.address,
@@ -12,7 +11,7 @@ class BitcoinAddressInfo {
 
   factory BitcoinAddressInfo.fromScannedString(String? scannedString) {
     String? address;
-    Int64? satAmount;
+    int? satAmount;
     if (scannedString != null) {
       final uri = Uri.tryParse(scannedString);
       if (uri != null) {

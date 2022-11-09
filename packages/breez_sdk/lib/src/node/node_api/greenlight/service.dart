@@ -18,7 +18,7 @@ import 'package:hex/hex.dart';
 import 'incoming.dart';
 import 'scheduler_credentials.dart';
 
-class Greenlight implements NodeAPI {  
+class Greenlight implements NodeAPI {
   NodeCredentials? _nodeCredentials;
   greenlight.NodeClient? _nodeClient;
   //scheduler.SchedulerClient? _schedulerClient;
@@ -160,18 +160,18 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<Invoice> addInvoice(Int64 amount,
+  Future<Invoice> addInvoice(int amount,
       {String? payeeName,
       String? payeeImageURL,
       String? payerName,
       String? payerImageURL,
       String? description,
-      Int64? expiry}) async {
+      int? expiry}) async {
     await ensureScheduled();
     var invoice = await _nodeClient!.createInvoice(greenlight.InvoiceRequest(
         label: "breez-${DateTime.now().millisecondsSinceEpoch}",
-        amount: greenlight.Amount(satoshi: amount),
-        description: description));        
+        amount: greenlight.Amount(satoshi: Int64(amount)),
+        description: description));
     return Invoice(
         label: invoice.label,
         amountMsats: amountToMSats(invoice.amount),
@@ -208,9 +208,9 @@ class Greenlight implements NodeAPI {
       return ListFundsChannel(
           peerId: HEX.encode(e.peerId),
           connected: e.connected,
-          shortChannelId: e.shortChannelId,
-          ourAmountMsat: e.ourAmountMsat,
-          amountMsat: e.amountMsat,
+          shortChannelId: e.shortChannelId.toInt(),
+          ourAmountMsat: e.ourAmountMsat.toInt(),
+          amountMsat: e.amountMsat.toInt(),
           fundingTxid: HEX.encode(e.fundingTxid),
           fundingOutput: e.fundingOutput);
     }).toList();
@@ -255,8 +255,8 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<Int64> getDefaultOnChainFeeRate() {
-    return Future.value(Int64.ZERO);
+  Future<int> getDefaultOnChainFeeRate() {
+    return Future.value(0);
   }
 
   @override
@@ -308,23 +308,23 @@ class Greenlight implements NodeAPI {
   }
 
   @override
-  Future<OutgoingLightningPayment> sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
+  Future<OutgoingLightningPayment> sendPaymentForRequest(String blankInvoicePaymentRequest, {int? amount}) async {
     await ensureScheduled();    
     final p = await _nodeClient!
-        .pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: amount), timeout: 60));
+        .pay(greenlight.PayRequest(bolt11: blankInvoicePaymentRequest, amount: greenlight.Amount(satoshi: Int64(amount!)), timeout: 60));
     return fromGreenlightPayment(p);
   }
 
   @override
-  Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, Int64 amount, String description,
-      {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) async {
-    await ensureScheduled();  
+  Future<OutgoingLightningPayment> sendSpontaneousPayment(String destNode, int amount, String description,
+      {int feeLimitMsat = 0, Map<int, String> tlv = const {}}) async {
+    await ensureScheduled();
     final response = await _nodeClient!.keysend(greenlight.KeysendRequest(
       nodeId: HEX.decode(destNode),
-      amount: greenlight.Amount(satoshi: amount),
+      amount: greenlight.Amount(satoshi: Int64(amount)),
       label: "breez-${DateTime.now().millisecondsSinceEpoch}",
-      extratlvs: tlv.keys.map((key) => greenlight.TlvField(type: key, value: tlv[key]!.codeUnits))
-    ));  
+      extratlvs: tlv.keys.map((key) => greenlight.TlvField(type: Int64(key), value: tlv[key]!.codeUnits))
+    ));
     return fromGreenlightPayment(response);
   }
 
@@ -360,7 +360,7 @@ class Greenlight implements NodeAPI {
   }
 }
 
-Int64 amountToMSats(greenlight.Amount amount) {
+int amountToMSats(greenlight.Amount amount) {
   var sats = Int64(0);
   if (amount.hasSatoshi()) {
     sats = amount.satoshi * 1000;
@@ -369,18 +369,18 @@ Int64 amountToMSats(greenlight.Amount amount) {
   } else {
     sats = amount.millisatoshi;
   }
-  return sats;
+  return sats.toInt();
 }
 
-Int64 _amountStringToMsat(String amount) {
+int _amountStringToMsat(String amount) {
   if (amount.endsWith("msat")) {
-    return Int64.parseInt(amount.replaceAll("msat", ""));
+    return int.parse(amount.replaceAll("msat", ""));
   }
   if (amount.endsWith("sat")) {
-    return Int64.parseInt(amount.replaceAll("sat", "")) * 1000;
+    return int.parse(amount.replaceAll("sat", "")) * 1000;
   }
   if (amount.isEmpty) {
-    return Int64.ZERO;
+    return 0;
   }
 
   throw Exception("unknown amount $amount");
@@ -445,7 +445,7 @@ Channel _convertChannel(greenlight.Channel c) {
       htlcs: c.htlcs
           .map((h) => Htlc(
               direction: h.direction,
-              id: h.id,
+              id: h.id.toInt(),
               amountMsat: _amountStringToMsat(h.amount),
               expiry: h.expiry.toInt(),
               paymentHash: h.paymentHash,

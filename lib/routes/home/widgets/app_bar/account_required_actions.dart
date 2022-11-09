@@ -7,7 +7,6 @@ import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -41,7 +40,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
     final navigatorState = Navigator.of(context);
 
     List<Widget> warnings = [];
-    Int64 walletBalance = accountModel.walletBalance;
+    int walletBalance = accountModel.walletBalance;
 
     if (walletBalance > 0) {
       warnings.add(

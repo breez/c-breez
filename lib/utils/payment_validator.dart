@@ -1,15 +1,14 @@
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:fixnum/fixnum.dart';
 
 class PaymentValidator {
   final BitcoinCurrency _currency;
   final void Function(
-    Int64 amount,
+    int amount,
     bool outgoing, {
-    Int64? channelMinimumFee,
+    int? channelMinimumFee,
   }) _validatePayment;
-  final Int64? channelMinimumFee;
+  final int? channelMinimumFee;
 
   PaymentValidator(
     this._validatePayment,
@@ -17,15 +16,15 @@ class PaymentValidator {
     this.channelMinimumFee,
   });
 
-  String? validateIncoming(Int64 amount) {
+  String? validateIncoming(int amount) {
     return _validate(amount, false);
   }
 
-  String? validateOutgoing(Int64 amount) {
+  String? validateOutgoing(int amount) {
     return _validate(amount, true);
   }
 
-  String? _validate(Int64 amount, bool outgoing) {
+  String? _validate(int amount, bool outgoing) {
     try {
       _validatePayment(amount, outgoing, channelMinimumFee: channelMinimumFee);
     } on PaymentExceededLimitError catch (e) {

@@ -51,12 +51,13 @@ void main() async {
         providers: [
           BlocProvider<LSPBloc>(
             create: (BuildContext context) =>
-                LSPBloc(injector.breezLib),
+                LSPBloc(lightningServices, injector.breezLib),
           ),
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(
               lightningServices,
               injector.lnurlService,
+              injector.breezLib,
               injector.keychain,
             ),
           ),
@@ -82,7 +83,8 @@ void main() async {
             create: (BuildContext context) => ConnectivityBloc(),
           ),
           BlocProvider<NetworkSettingsBloc>(
-            create: (BuildContext context) => NetworkSettingsBloc(lightningServices),
+            create: (BuildContext context) =>
+                NetworkSettingsBloc(lightningServices),
           ),
         ],
         child: UserApp(),

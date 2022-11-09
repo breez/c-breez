@@ -1,7 +1,5 @@
-import 'package:fixnum/fixnum.dart';
-
 class PaymentExceededLimitError implements Exception {
-  final Int64 limitSat;
+  final int limitSat;
 
   const PaymentExceededLimitError(
     this.limitSat,
@@ -9,7 +7,7 @@ class PaymentExceededLimitError implements Exception {
 }
 
 class PaymentBelowReserveError implements Exception {
-  final Int64 reserveAmount;
+  final int reserveAmount;
 
   const PaymentBelowReserveError(
     this.reserveAmount,
@@ -21,7 +19,7 @@ class InsufficientLocalBalanceError implements Exception {
 }
 
 class PaymentBelowSetupFeesError implements Exception {
-  final Int64 setupFees;
+  final int setupFees;
 
   const PaymentBelowSetupFeesError(
     this.setupFees,

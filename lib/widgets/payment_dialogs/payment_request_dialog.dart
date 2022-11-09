@@ -5,7 +5,6 @@ import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_confirmation_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_info_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,7 +37,7 @@ class PaymentRequestDialog extends StatefulWidget {
 class PaymentRequestDialogState extends State<PaymentRequestDialog> {
   PaymentRequestState? _state;
   String? _amountToPayStr;
-  Int64? _amountToPay;
+  int? _amountToPay;
   ModalRoute? _currentRoute;
 
   @override

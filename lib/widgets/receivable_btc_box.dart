@@ -7,7 +7,6 @@ import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/warning_box.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -93,12 +92,12 @@ class FeeMessage extends StatelessWidget {
     final lspInfo = context.read<LSPBloc>().state.currentLSP!;
 
     final connected = accountState.status == AccountStatus.CONNECTED;
-    final minFee = Int64(lspInfo.channelMinimumFeeMsat ~/ 1000);
+    final minFee = lspInfo.channelMinimumFeeMsat ~/ 1000;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFee);
     final showMinFeeMessage = minFee > 0;
     final setUpFee = (lspInfo.channelFeePermyriad / 100).toString();
     final liquidity = currencyState.bitcoinCurrency.format(
-      connected ? accountState.maxInboundLiquidity : Int64(0),
+      connected ? accountState.maxInboundLiquidity : 0,
     );
 
     if (connected && showMinFeeMessage) {

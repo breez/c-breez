@@ -1,18 +1,15 @@
 import 'dart:async';
 
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/warning_box.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_extend/share_extend.dart';
@@ -20,7 +17,7 @@ import 'package:share_extend/share_extend.dart';
 import 'widgets/compact_qr_image.dart';
 
 class QrCodeDialog extends StatefulWidget {
-  final Invoice? _invoice;
+  final LNInvoice? _invoice;
   final Object? error;
   final Function(dynamic result) _onFinish;
 
@@ -200,6 +197,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     String message = "";
 
     message = "";
+    /*
     var lspFee = widget._invoice!.lspFee;
     if (lspFee != 0) {
       String conversionText = "";
@@ -209,6 +207,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       }
       message = "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
     }
+     */
     message += "Keep Breez open until the payment is completed.";
 
     return WarningBox(

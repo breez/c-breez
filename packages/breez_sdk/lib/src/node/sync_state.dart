@@ -1,13 +1,12 @@
 // _paymentsStream subscribes to local storage changes and exposes a stream of both incoming and outgoing payments.
 import 'dart:math';
 
-import 'package:breez_sdk/src/node/models.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/src/node/models_extensions.dart';
 import 'package:breez_sdk/src/node/node_api/node_api.dart';
 import 'package:breez_sdk/src/node/node_service.dart';
 import 'package:breez_sdk/src/storage/storage.dart';
 import 'package:fimber/fimber.dart';
-import 'package:fixnum/fixnum.dart';
 
 import 'node_api/models.dart';
 
@@ -57,21 +56,21 @@ class NodeStateSyncer {
 
   NodeState _assembleAccountState(
       NodeInfo nodeInfo, List<ListFundsChannel> offChainFunds, List<ListFundsOutput> onChainFunds, List<Peer> peers) {
-    var channelsBalance = offChainFunds.fold<Int64>(Int64(0), (balance, lChannel) {
+    var channelsBalance = offChainFunds.fold<int>(0, (balance, lChannel) {
       for (var p in peers) {
         final foundIndex = p.channels
             .where((c) => c.state == ChannelState.OPEN)
             .toList()
             .indexWhere((c) => c.fundingTxid == lChannel.fundingTxid);
         if (foundIndex >= 0) {
-          return balance + lChannel.ourAmountMsat;
+          return balance + lChannel.ourAmountMsat.toInt();
         }
       }
       return balance;
     });
 
     // calculate the on-chain balance
-    var walletBalance = onChainFunds.fold<Int64>(Int64(0), (balance, element) => balance + element.amountMsats);
+    var walletBalance = onChainFunds.fold<int>(0, (balance, element) => balance + element.amountMsats.toInt());
 
     // assemble the peers list and channels list.
     var channels = List<Channel>.empty(growable: true);
@@ -87,7 +86,7 @@ class NodeStateSyncer {
     bool hasActive = channels.any((c) => c.state == ChannelState.OPEN);
     bool hasPendingOpen = channels.any((c) => c.state == ChannelState.PENDING_OPEN);
     bool hasPendingClose = channels.any((c) => c.state == ChannelState.PENDING_CLOSED);
-
+    /*
     NodeStatus accStatus = NodeStatus.disconnected;
     if (hasActive) {
       accStatus = NodeStatus.connected;
@@ -96,14 +95,15 @@ class NodeStateSyncer {
     } else if (hasPendingClose) {
       accStatus = NodeStatus.disconnecting;
     }
+     */
 
     // calculate incoming and outgoing liquidity
-    Int64 maxPayable = Int64(0);
-    Int64 maxReceivableSingleChannel = Int64(0);
+    int maxPayable = 0;
+    int maxReceivableSingleChannel = 0;
     var openChannels = channels.where((c) => c.state == ChannelState.OPEN);
     for (var c in openChannels) {
       maxPayable += c.spendable;
-      Int64 channelReceivable = Int64(c.receivable);
+      int channelReceivable = c.receivable;
       if (channelReceivable > maxReceivableSingleChannel) {
         maxReceivableSingleChannel = channelReceivable;
       }
@@ -113,18 +113,18 @@ class NodeStateSyncer {
 
     // return the new account state
     return NodeState(
-      blockheight: Int64(nodeInfo.blockheight),
+      blockHeight: nodeInfo.blockheight,
       id: nodeInfo.nodeID,
-      channelsBalanceMsats: channelsBalance,
-      onchainBalanceMsats: walletBalance,
-      status: accStatus,
-      maxAllowedToPayMsats: maxPayable,
-      maxAllowedToReceiveMsats: Int64(maxAllowedToReceiveMsats),
-      maxPaymentAmountMsats: Int64(maxPaymentAmountMsats),
+      channelsBalanceMsat: channelsBalance,
+      onchainBalanceMsat: walletBalance,
+      //status: NodeStatus.values[dbState.connectionStatus],
+      maxPayableMsat: maxPayable,
+      maxReceivableMsat: maxAllowedToReceiveMsats,
+      maxSinglePaymentAmountMsat: maxPaymentAmountMsats,
       maxChanReserveMsats: channelsBalance - maxPayable,
       connectedPeers: peersList,
-      onChainFeeRate: Int64(0),
-      maxInboundLiquidityMsats: maxReceivableSingleChannel,
+      //onChainFeeRate: Int64(0),
+      inboundLiquidityMsats: maxReceivableSingleChannel,
     );
   }
 }

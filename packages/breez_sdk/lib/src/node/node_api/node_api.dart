@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:breez_sdk/src/signer.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:breez_sdk/src/node/node_api/greenlight/generated/greenlight.pbgrpc.dart' as greenlight;
+import 'package:breez_sdk/src/signer.dart';
 
 import 'models.dart';
 
@@ -33,20 +32,20 @@ abstract class NodeAPI {
   Future connectPeer(String nodeID, String address);
 
   Future<OutgoingLightningPayment> sendSpontaneousPayment(
-      String destNode, Int64 amount, String description,
-      {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv});
+      String destNode, int amount, String description,
+      {int feeLimitMsat = 0, Map<int, String> tlv});
 
   Future<OutgoingLightningPayment> sendPaymentForRequest(
       String blankInvoicePaymentRequest,
-      {Int64? amount});
+      {int? amount});
 
   Future<List<OutgoingLightningPayment>> getPayments();
 
   Future<List<Invoice>> getInvoices();
 
-  Future<Invoice> addInvoice(Int64 amount, {String? description, Int64? expiry});
+  Future<Invoice> addInvoice(int amount, {String? description, int? expiry});
 
-  Future<Int64> getDefaultOnChainFeeRate();
+  Future<int> getDefaultOnChainFeeRate();
 
   Future publishTransaction(List<int> tx);
 }

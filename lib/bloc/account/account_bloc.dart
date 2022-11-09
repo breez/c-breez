@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/services/keychain.dart';
@@ -14,7 +15,6 @@ import 'package:c_breez/utils/lnurl.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
@@ -37,11 +37,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   final _log = FimberLog("AccountBloc");
   final breez_sdk.LightningNode _lightningNode;
   final breez_sdk.LNURLService _lnurlService;
+  final BreezBridge breezLib;
   final KeyChain _keyChain;
   bool started = false;
   breez_sdk.Signer? _signer;
 
-  AccountBloc(this._lightningNode, this._lnurlService, this._keyChain) : super(AccountState.initial()) {
+  AccountBloc(this._lightningNode, this._lnurlService, this.breezLib, this._keyChain) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
@@ -161,7 +162,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       final paymentInfo = await _lightningNode
           .sendPaymentForRequest(
             lnurlPayResult.pr,
-            amount: Int64.parseInt(qParams['amount']!),
+            amount: int.parse(qParams['amount']!),
           )
           .timeout(
             const Duration(minutes: 3),
@@ -193,7 +194,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<breez_sdk.PaymentInfo> sendPayment(
-      String bolt11, Int64 amountSat) async {
+      String bolt11, int amountSat) async {
     try {
       final paymentInfo =
           await _lightningNode.sendPaymentForRequest(bolt11, amount: amountSat);
@@ -213,7 +214,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<breez_sdk.PaymentInfo> sendSpontaneousPayment(
-      String nodeID, String description, Int64 amountSat) async {
+      String nodeID, String description, int amountSat) async {
     try {
       final paymentInfo = await _lightningNode.sendSpontaneousPayment(
           nodeID, amountSat, description);
@@ -241,9 +242,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity
   // constraints.
   void validatePayment(
-    Int64 amount,
+    int amount,
     bool outgoing, {
-    Int64? channelMinimumFee,
+    int? channelMinimumFee,
   }) {
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
@@ -271,23 +272,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _lightningNode.setPaymentFilter(filter);
   }
 
-  Future<Invoice> addInvoice(
-      {String payeeName = "", String description = "", String logo = "", required Int64 amount, Int64? expiry}) async {
-    var invoice =
-        await _lightningNode.requestPayment(amount, description: description, expiry: expiry ?? Int64(defaultInvoiceExpiry));
-    syncStateWithNode();
-
-    return Invoice(
-        paymentHash: invoice.paymentHash,
-        amountMsat: invoice.amountMsats.toInt(),
-        bolt11: invoice.bolt11,
-        description: invoice.description,
-        expiry: expiry?.toInt() ?? defaultInvoiceExpiry);
+  Future<LNInvoice> addInvoice({String description = "", required int amountSats}) async {
+    return await breezLib.requestPayment(amountSats: amountSats, description: description);
   }
 
   // _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   Stream<AccountState> _watchAccountChanges() {
-    return Rx.combineLatest3<breez_sdk.PaymentsState, breez_sdk.PaymentFilter, breez_sdk.NodeState?, AccountState>(
+    return Rx.combineLatest3<breez_sdk.PaymentsState, breez_sdk.PaymentFilter, NodeState?, AccountState>(
         _lightningNode.paymentsStream(), _lightningNode.paymentFilterStream(), _lightningNode.nodeStateStream(),
         (payments, paymentsFilter, nodeInfo) {
       return assembleAccountState(payments, paymentsFilter, nodeInfo) ?? state;

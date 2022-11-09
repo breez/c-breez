@@ -9,11 +9,10 @@ import 'package:c_breez/routes/withdraw_funds/withdraw_funds_summary.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fixnum/fixnum.dart';
 
 class WithdrawFundsConfirmationPage extends StatefulWidget {
   final String address;
-  final Int64 amount;
+  final int amount;
 
   const WithdrawFundsConfirmationPage(
     this.address,

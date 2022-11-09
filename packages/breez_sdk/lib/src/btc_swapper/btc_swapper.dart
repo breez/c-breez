@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:math';
 
+import 'package:breez_sdk/native_toolkit.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:breez_sdk/src/breez_server/generated/breez.pbgrpc.dart';
 import 'package:breez_sdk/src/breez_server/server.dart';
 import 'package:breez_sdk/src/btc_swapper/swap_address.dart';
-import 'package:breez_sdk/native_toolkit.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart' as db;
 import 'package:fimber/fimber.dart';
-import 'package:fixnum/fixnum.dart';
-
 
 class BTCSwapper {
   static const maxDepositAmount = 4000000;
@@ -114,18 +111,8 @@ class BTCSwapper {
     return Future.wait(liveSwaps.map(redeem));
   }
 
-  Future<Invoice> _createSwapInvoice(int confirmedSats) async {
-    final nodeState = await _node.getNodeState();
-    if (nodeState == null) {
-      throw Exception("node is not ready");
-    }
-    final int maxReceive = max(nodeState.maxAllowedToReceiveMsats.toInt() ~/ 1000, maxDepositAmount);
-
-    if (confirmedSats > maxReceive || confirmedSats > maxReceive) {
-      throw Exception("invoice limit exceeded");
-    }
-
-    return _node.requestPayment(Int64(confirmedSats), description: "", expiry: Int64(60 * 60 * 24 * 30));
+  Future<LNInvoice> _createSwapInvoice(int confirmedSats) async {
+    return _lnToolkit.requestPayment(amountSats: confirmedSats, description: "");
   }
 
   Future<List<SwapLiveData>> _refreshSwapsStatuses() async {

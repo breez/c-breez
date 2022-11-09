@@ -53,8 +53,6 @@ class LightningNode {
     });    
   }
 
-  LSPService get lspService => _lspService;
-
   LNURLService get lnurlService => _lnurlService;
 
   BTCSwapper get subwapService => _subswapService;
@@ -100,15 +98,15 @@ class LightningNode {
           : PaymentFilter.fromJson(json.decode(rawFilter.value));
 
       var outgoing = await _storage.listOutgoingPayments();
-      var outgoingList = outgoing.map((p) {        
+      var outgoingList = outgoing.map((p) {
         return PaymentInfo(
             type: PaymentType.sent,
-            amountMsat: Int64(p.amountMsats),
+            amountMsat: p.amountMsats,
             destination: p.destination,
             shortTitle: p.description,
             description: p.description,
-            feeMsat: Int64(p.feeMsat),
-            creationTimestamp: Int64(p.createdAt),
+            feeMsat: p.feeMsat,
+            creationTimestamp: p.createdAt,
             pending: p.pending,
             keySend: p.isKeySend,
             paymentHash: p.paymentHash);
@@ -118,11 +116,11 @@ class LightningNode {
       var incomingList = incoming.map((invoice) {
         return PaymentInfo(
             type: PaymentType.received,
-            amountMsat: Int64(invoice.receivedMsat),
-            feeMsat: Int64.ZERO,
+            amountMsat: invoice.receivedMsat,
+            feeMsat: 0,
             destination: nodeState!.nodeID,
-            shortTitle:  invoice.description,
-            creationTimestamp: Int64(invoice.paymentTime),
+            shortTitle: invoice.description,
+            creationTimestamp: invoice.paymentTime,
             pending: false,
             keySend: false,
             paymentHash: invoice.paymentHash);
@@ -174,13 +172,13 @@ class LightningNode {
     }    
   }
 
-  Future<PaymentInfo> sendPaymentForRequest(String blankInvoicePaymentRequest, {Int64? amount}) async {
+  Future<PaymentInfo> sendPaymentForRequest(String blankInvoicePaymentRequest, {int? amount}) async {
     final outgoingPayment = await _nodeAPI.sendPaymentForRequest(blankInvoicePaymentRequest, amount: amount);
     return outgoingPayment.toPaymentInfo();
   }
 
-  Future<PaymentInfo> sendSpontaneousPayment(String destNode, Int64 amount, String description,
-  {Int64 feeLimitMsat = Int64.ZERO, Map<Int64, String> tlv = const {}}) async {
+  Future<PaymentInfo> sendSpontaneousPayment(String destNode, int amount, String description,
+  {int feeLimitMsat = 0, Map<int, String> tlv = const {}}) async {
     final outgoingPayment = await _nodeAPI.sendSpontaneousPayment(destNode, amount, description, feeLimitMsat: feeLimitMsat, tlv: tlv);
     return outgoingPayment.toPaymentInfo();
   }

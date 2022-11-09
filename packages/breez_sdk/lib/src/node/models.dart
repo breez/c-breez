@@ -1,35 +1,4 @@
-import 'package:fixnum/fixnum.dart';
 
-enum NodeStatus { connecting, connected, disconnecting, disconnected }
-
-class NodeState {
-  final String id;
-  final Int64 blockheight;
-  final Int64 channelsBalanceMsats;
-  final Int64 onchainBalanceMsats;
-  final NodeStatus status;
-  final Int64 maxAllowedToPayMsats;
-  final Int64 maxAllowedToReceiveMsats;
-  final Int64 maxPaymentAmountMsats;
-  final Int64 maxChanReserveMsats;
-  final List<String> connectedPeers;
-  final Int64 maxInboundLiquidityMsats;
-  final Int64 onChainFeeRate;
-
-  NodeState(
-      {required this.id,
-      required this.blockheight,
-      required this.channelsBalanceMsats,
-      required this.onchainBalanceMsats,
-      required this.status,
-      required this.maxAllowedToPayMsats,
-      required this.maxAllowedToReceiveMsats,
-      required this.maxPaymentAmountMsats,
-      required this.maxChanReserveMsats,
-      required this.connectedPeers,
-      required this.maxInboundLiquidityMsats,
-      required this.onChainFeeRate});
-}
 
 enum PaymentType {
   sent,
@@ -42,15 +11,15 @@ extension IncomePaymentType on PaymentType {
 
 class PaymentInfo {
   final PaymentType type;
-  final Int64 amountMsat;
-  final Int64 feeMsat;
-  final Int64 creationTimestamp;
+  final int amountMsat;
+  final int feeMsat;
+  final int creationTimestamp;
   final bool keySend;
   final String paymentHash;
   final String? preimage;
   final String destination;
   final bool pending;
-  final Int64? pendingExpirationTimestamp;
+  final int? pendingExpirationTimestamp;
   final String description;
   final String longTitle;
   final String shortTitle;
@@ -73,8 +42,8 @@ class PaymentInfo {
     this.imageURL,
   });
 
-  Int64 get amountSat => amountMsat ~/ 1000;
-  Int64 get feeSat => feeMsat ~/ 1000;
+  int get amountSat => amountMsat ~/ 1000;
+  int get feeSat => feeMsat ~/ 1000;
 }
 
 class PaymentFilter {

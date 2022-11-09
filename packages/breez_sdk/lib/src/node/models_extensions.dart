@@ -1,7 +1,7 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/src/node/models.dart';
 import 'package:breez_sdk/src/node/node_api/models.dart';
 import 'package:breez_sdk/src/storage/dao/db.dart' as db;
-import 'package:fixnum/fixnum.dart';
 
 import '../../native_toolkit.dart';
 
@@ -9,33 +9,32 @@ extension NodeStateAdapter on NodeState {
   db.NodeState toDbNodeState() {
     return db.NodeState(
         nodeID: id,
-        channelsBalanceMsats: channelsBalanceMsats.toInt(),
-        onchainBalanceMsats: onchainBalanceMsats.toInt(),
-        blockHeight: blockheight.toInt(),
-        connectionStatus: status.index,
-        maxAllowedToPayMsats: maxAllowedToPayMsats.toInt(),
-        maxAllowedToReceiveMsats: maxAllowedToReceiveMsats.toInt(),
-        maxPaymentAmountMsats: maxPaymentAmountMsats.toInt(),
-        maxChanReserveMsats: maxChanReserveMsats.toInt(),
+        channelsBalanceMsats: channelsBalanceMsat,
+        onchainBalanceMsats: onchainBalanceMsat,
+        blockHeight: blockHeight,
+        connectionStatus: 0, // ?
+        maxAllowedToPayMsats: maxPayableMsat,
+        maxAllowedToReceiveMsats: maxReceivableMsat,
+        maxPaymentAmountMsats: maxSinglePaymentAmountMsat,
+        maxChanReserveMsats: maxChanReserveMsats,
         connectedPeers: connectedPeers.join(","),
-        maxInboundLiquidityMsats: maxInboundLiquidityMsats.toInt(),
-        onChainFeeRate: onChainFeeRate.toInt());
+        maxInboundLiquidityMsats: inboundLiquidityMsats,
+        onChainFeeRate: 0); // ?
   }
 
   static NodeState fromDbNodeState(db.NodeState dbState) {
     return NodeState(
       id: dbState.nodeID,
-      channelsBalanceMsats: Int64(dbState.channelsBalanceMsats),
-      onchainBalanceMsats: Int64(dbState.onchainBalanceMsats),
-      blockheight: Int64(dbState.blockHeight),
-      status: NodeStatus.values[dbState.connectionStatus],
-      maxAllowedToPayMsats: Int64(dbState.maxAllowedToPayMsats),
-      maxAllowedToReceiveMsats: Int64(dbState.maxAllowedToReceiveMsats),
-      maxPaymentAmountMsats: Int64(dbState.maxPaymentAmountMsats),
-      maxChanReserveMsats: Int64(dbState.maxChanReserveMsats),
+      channelsBalanceMsat: dbState.channelsBalanceMsats,
+      onchainBalanceMsat: dbState.onchainBalanceMsats,
+      blockHeight: dbState.blockHeight,
+      //status: NodeStatus.values[dbState.connectionStatus],
+      maxPayableMsat: dbState.maxAllowedToPayMsats,
+      maxReceivableMsat: dbState.maxAllowedToReceiveMsats,
+      maxSinglePaymentAmountMsat: dbState.maxPaymentAmountMsats,
+      maxChanReserveMsats: dbState.maxChanReserveMsats,
       connectedPeers: dbState.connectedPeers.split(","),
-      maxInboundLiquidityMsats: Int64(dbState.maxInboundLiquidityMsats),
-      onChainFeeRate: Int64(dbState.onChainFeeRate),
+      inboundLiquidityMsats: dbState.maxInboundLiquidityMsats,
     );
   }
 }
@@ -75,7 +74,7 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
             shortTitle: description,
             description: description,
             feeMsat: feeMsats,
-            creationTimestamp: Int64(creationTimestamp),
+            creationTimestamp: creationTimestamp,
             pending: pending,
             keySend: isKeySend,
             paymentHash: paymentHash);
@@ -86,9 +85,9 @@ extension OutgoingLightningPaymentAdapter on OutgoingLightningPayment {
       creationTimestamp: dbPayment.createdAt,
       paymentHash: dbPayment.paymentHash,
       destination: dbPayment.destination,
-      feeMsats: Int64(dbPayment.feeMsat),
-      amountMsats: Int64(dbPayment.amountMsats),
-      amountSentMsats: Int64(dbPayment.amountSentMsats),
+      feeMsats: dbPayment.feeMsat,
+      amountMsats: dbPayment.amountMsats,
+      amountSentMsats: dbPayment.amountSentMsats,
       preimage: dbPayment.preimage,
       isKeySend: dbPayment.isKeySend,
       pending: dbPayment.pending,
@@ -117,10 +116,10 @@ extension InvoiceAdapter on Invoice {
     return PaymentInfo(
             type: PaymentType.received,
             amountMsat: receivedMsats,
-            feeMsat: Int64.ZERO,
+            feeMsat: 0,
             destination: thisNodeID,
             shortTitle:  description,
-            creationTimestamp: Int64(paymentTime),
+            creationTimestamp: paymentTime,
             pending: false,
             keySend: false,
             paymentHash: paymentHash);
@@ -130,8 +129,8 @@ extension InvoiceAdapter on Invoice {
     return Invoice(
       label: dbInvoice.label,
       description: "",
-      amountMsats: Int64(dbInvoice.amountMsat),
-      receivedMsats: Int64(dbInvoice.receivedMsat),
+      amountMsats: dbInvoice.amountMsat,
+      receivedMsats: dbInvoice.receivedMsat,
       status: InvoiceStatus.values[dbInvoice.status],
       paymentTime: dbInvoice.paymentTime,
       expiryTime: dbInvoice.expiryTime,

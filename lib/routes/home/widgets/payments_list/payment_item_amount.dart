@@ -7,7 +7,6 @@ import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -90,13 +89,13 @@ void main() async {
       ],
       child: MaterialApp(
         theme: breezLightTheme,
-        home: Column(children: [
+        home: Column(children: const [
           PaymentItemAmount(
             PaymentInfo(
               type: PaymentType.received,
-              amountMsat: Int64(4321000),
-              feeMsat: Int64(0),
-              creationTimestamp: Int64(1661791810),
+              amountMsat: 4321000,
+              feeMsat: 0,
+              creationTimestamp: 1661791810,
               pending: false,
               keySend: false,
               paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
@@ -115,9 +114,9 @@ void main() async {
           PaymentItemAmount(
             PaymentInfo(
               type: PaymentType.received,
-              amountMsat: Int64(4321000),
-              feeMsat: Int64(1234),
-              creationTimestamp: Int64(1661791810),
+              amountMsat: 4321000,
+              feeMsat: 1234,
+              creationTimestamp: 1661791810,
               pending: true,
               keySend: false,
               paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
@@ -136,9 +135,9 @@ void main() async {
           PaymentItemAmount(
             PaymentInfo(
               type: PaymentType.received,
-              amountMsat: Int64(4321000),
-              feeMsat: Int64(1234),
-              creationTimestamp: Int64(1661791810),
+              amountMsat: 4321000,
+              feeMsat: 1234,
+              creationTimestamp: 1661791810,
               pending: false,
               keySend: false,
               paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
@@ -157,9 +156,9 @@ void main() async {
           PaymentItemAmount(
             PaymentInfo(
               type: PaymentType.received,
-              amountMsat: Int64(4321000),
-              feeMsat: Int64(1234),
-              creationTimestamp: Int64(1661791810),
+              amountMsat: 4321000,
+              feeMsat: 1234,
+              creationTimestamp: 1661791810,
               pending: false,
               keySend: false,
               paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",

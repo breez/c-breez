@@ -41,6 +41,7 @@ impl NodeService {
     }
 
     pub async fn sync(&self) -> Result<()> {
+        self.connect_lsp_peer().await?;
         let since_timestamp = self.persister.last_tx_timestamp().unwrap_or(0);
 
         let new_data = &self.client.pull_changed(since_timestamp).await?;
@@ -48,7 +49,7 @@ impl NodeService {
         self.set_node_state(&new_data.node_state)?;
         self.persister
             .insert_ln_transactions(&new_data.transactions)?;
-        self.connect_lsp_peer().await
+        Ok(())
     }
 
     pub async fn fetch_rates(&self) -> Result<Vec<Rate>> {
@@ -144,9 +145,17 @@ impl NodeService {
             .await?
             .iter()
             .find(|&lsp| lsp.id == lsp_id)
-            .ok_or("No LSO found for given LSP ID")
+            .ok_or("No LSP found for given LSP ID")
             .map_err(|err| anyhow!(err))
             .cloned()
+    }
+
+    pub async fn close_lsp_channels(&self) -> Result<()> {
+        let lsp = self.get_lsp().await?;
+        self.client
+            .close_peer_channels(lsp.pubkey)
+            .await
+            .map(|r| ())
     }
 
     pub async fn pay(&mut self, bolt11: String) -> Result<()> {
@@ -204,11 +213,11 @@ impl NodeService {
             // not opening a channel so we need to get the real channel id into the routing hints
             info!("Finding channel ID for routing hint");
             for peer in self.client.list_peers().await? {
-                if peer.id == lsp_info.lsp_pubkey && !peer.channels.is_empty() {
+                if hex::encode(peer.id) == lsp_info.pubkey && !peer.channels.is_empty() {
                     let active_channel = peer
                         .channels
                         .iter()
-                        .find(|&c| c.state == "OPEN")
+                        .find(|&c| c.state == "CHANNELD_NORMAL")
                         .ok_or("No open channel found")
                         .map_err(|err| anyhow!(err))?;
                     short_channel_id = parse_short_channel_id(&active_channel.short_channel_id)?;
@@ -253,9 +262,9 @@ impl NodeService {
                     lsp_info.id.clone(),
                     lsp_info.lsp_pubkey.clone(),
                     PaymentInformation {
-                        payment_hash: Vec::from(parsed_invoice.payment_hash.clone()),
+                        payment_hash: hex::decode(parsed_invoice.payment_hash.clone())?,
                         payment_secret: parsed_invoice.payment_secret.clone(),
-                        destination: Vec::from(parsed_invoice.payee_pubkey.clone()),
+                        destination: hex::decode(parsed_invoice.payee_pubkey.clone())?,
                         incoming_amount_msat: amount_msats as i64,
                         outgoing_amount_msat: (destination_invoice_amount_sats * 1000) as i64,
                     },

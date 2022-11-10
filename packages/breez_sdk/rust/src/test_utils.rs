@@ -1,6 +1,8 @@
 use anyhow::Result;
 use gl_client::pb::amount::Unit;
-use gl_client::pb::{Amount, Invoice, Payment, Peer, WithdrawResponse};
+use gl_client::pb::{
+    Amount, CloseChannelResponse, CloseChannelType, Invoice, Payment, Peer, WithdrawResponse,
+};
 use lightning_invoice::RawInvoice;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::{random, Rng};
@@ -85,6 +87,14 @@ impl NodeAPI for MockNodeAPI {
         Ok(WithdrawResponse {
             tx: rand_vec_u8(32),
             txid: rand_vec_u8(32),
+        })
+    }
+
+    async fn close_peer_channels(&self, node_id: String) -> Result<CloseChannelResponse> {
+        Ok(CloseChannelResponse {
+            txid: Vec::new(),
+            tx: Vec::new(),
+            close_type: CloseChannelType::Mutual.into(),
         })
     }
 }

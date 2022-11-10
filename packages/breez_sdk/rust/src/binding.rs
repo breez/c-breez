@@ -126,6 +126,10 @@ pub fn request_payment(amount_sats: u64, description: String) -> Result<LNInvoic
     })
 }
 
+pub fn close_lsp_channels() -> Result<()> {
+    block_on(async { build_services().await?.close_lsp_channels().await })
+}
+
 pub fn sweep(to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
     block_on(async {
         build_services()

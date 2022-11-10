@@ -91,12 +91,12 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kCloseLspChannelsConstMeta;
 
-  Future<void> sweep(
+  Future<void> withdraw(
       {required String toAddress,
       required FeeratePreset feeratePreset,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kSweepConstMeta;
+  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta;
 
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
@@ -683,24 +683,24 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: [],
       );
 
-  Future<void> sweep(
+  Future<void> withdraw(
           {required String toAddress,
           required FeeratePreset feeratePreset,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_sweep(
+        callFfi: (port_) => _platform.inner.wire_withdraw(
             port_,
             _platform.api2wire_String(toAddress),
             api2wire_feerate_preset(feeratePreset)),
         parseSuccessData: _wire2api_unit,
-        constMeta: kSweepConstMeta,
+        constMeta: kWithdrawConstMeta,
         argValues: [toAddress, feeratePreset],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kSweepConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "sweep",
+        debugName: "withdraw",
         argNames: ["toAddress", "feeratePreset"],
       );
 
@@ -1481,23 +1481,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_close_lsp_channels =
       _wire_close_lsp_channelsPtr.asFunction<void Function(int)>();
 
-  void wire_sweep(
+  void wire_withdraw(
     int port_,
     ffi.Pointer<wire_uint_8_list> to_address,
     int feerate_preset,
   ) {
-    return _wire_sweep(
+    return _wire_withdraw(
       port_,
       to_address,
       feerate_preset,
     );
   }
 
-  late final _wire_sweepPtr = _lookup<
+  late final _wire_withdrawPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Int32)>>('wire_sweep');
-  late final _wire_sweep = _wire_sweepPtr
+              ffi.Int32)>>('wire_withdraw');
+  late final _wire_withdraw = _wire_withdrawPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
   void wire_parse_invoice(

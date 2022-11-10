@@ -24,11 +24,16 @@ lazy_static! {
 }
 
 pub fn register_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
-    block_on(Greenlight::register(network, seed))
+    let creds = block_on(Greenlight::register(network, seed.clone()))?;
+    create_node_services(crate::models::Config::default(), seed, creds.clone())?;
+    Ok(creds)
 }
 
 pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
-    block_on(Greenlight::recover(network, seed))
+    let creds = block_on(Greenlight::recover(network, seed.clone()))?;
+    create_node_services(crate::models::Config::default(), seed, creds.clone())?;
+
+    Ok(creds)
 }
 
 pub fn create_node_services(
@@ -40,7 +45,10 @@ pub fn create_node_services(
     *STATE.lock().unwrap() = Some(greenlight);
     block_on(build_services())
         .map(|_| ())
-        .map_err(|e| anyhow!(e))
+        .map_err(|e| anyhow!(e))?;
+    run_signer()?;
+    start_node()?;
+    sync()
 }
 
 pub fn start_node() -> Result<()> {
@@ -84,7 +92,8 @@ pub fn list_lsps() -> Result<Vec<LspInformation>> {
 }
 
 pub fn set_lsp_id(lsp_id: String) -> Result<()> {
-    block_on(async { build_services().await?.set_lsp_id(lsp_id).await })
+    block_on(async { build_services().await?.set_lsp_id(lsp_id).await })?;
+    sync()
 }
 
 pub fn get_node_state() -> Result<Option<NodeState>> {
@@ -133,11 +142,11 @@ pub fn close_lsp_channels() -> Result<()> {
     block_on(async { build_services().await?.close_lsp_channels().await })
 }
 
-pub fn sweep(to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
+pub fn withdraw(to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
     block_on(async {
         build_services()
             .await?
-            .sweep(to_address, feerate_preset)
+            .withdraw(to_address, feerate_preset)
             .await
     })
 }

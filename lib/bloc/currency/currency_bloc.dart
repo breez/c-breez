@@ -4,10 +4,10 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
-  final BreezBridge breezLib;
+  final BreezBridge _breezLib;
 
-  CurrencyBloc(this.breezLib) : super(CurrencyState.initial()) {
-    breezLib.listFiatCurrencies().then((fiatCurrencies) {
+  CurrencyBloc(this._breezLib) : super(CurrencyState.initial()) {
+    _breezLib.listFiatCurrencies().then((fiatCurrencies) {
       var sorted =
           _sortFiatConversionList(fiatCurrencies, state.preferredCurrencies);
       emit(state.copyWith(fiatCurrenciesData: sorted));
@@ -32,7 +32,7 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   }
 
   Future<Map<String, Rate>> fetchExchangeRates() async {
-    var ratesMap = await breezLib.fetchRates();
+    var ratesMap = await _breezLib.fetchRates();
     emit(state.copyWith(exchangeRates: ratesMap));
     return ratesMap;
   }

@@ -129,7 +129,7 @@ impl LspAPI for MockBreezServer {
     }
 
     async fn register_payment(
-        &mut self,
+        &self,
         _lsp_id: String,
         _lsp_pubkey: Vec<u8>,
         _payment_info: PaymentInformation,

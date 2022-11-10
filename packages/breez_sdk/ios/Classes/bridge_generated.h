@@ -11,19 +11,6 @@ typedef struct wire_uint_8_list {
   int32_t len;
 } wire_uint_8_list;
 
-typedef struct wire_Config {
-  struct wire_uint_8_list *breezserver;
-  struct wire_uint_8_list *mempoolspace_url;
-  struct wire_uint_8_list *working_dir;
-  int32_t network;
-  uint32_t payment_timeout_sec;
-} wire_Config;
-
-typedef struct wire_GreenlightCredentials {
-  struct wire_uint_8_list *device_key;
-  struct wire_uint_8_list *device_cert;
-} wire_GreenlightCredentials;
-
 typedef struct WireSyncReturnStruct {
   uint8_t *ptr;
   int32_t len;
@@ -35,11 +22,6 @@ void store_dart_post_cobject(DartPostCObjectFnType ptr);
 void wire_register_node(int64_t port_, int32_t network, struct wire_uint_8_list *seed);
 
 void wire_recover_node(int64_t port_, int32_t network, struct wire_uint_8_list *seed);
-
-void wire_create_node_services(int64_t port_,
-                               struct wire_Config *breez_config,
-                               struct wire_uint_8_list *seed,
-                               struct wire_GreenlightCredentials *creds);
 
 void wire_start_node(int64_t port_);
 
@@ -80,10 +62,6 @@ void wire_parse_invoice(int64_t port_, struct wire_uint_8_list *invoice);
 
 void wire_mnemonic_to_seed(int64_t port_, struct wire_uint_8_list *phrase);
 
-struct wire_Config *new_box_autoadd_config_0(void);
-
-struct wire_GreenlightCredentials *new_box_autoadd_greenlight_credentials_0(void);
-
 int64_t *new_box_autoadd_i64_0(int64_t value);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
@@ -94,7 +72,6 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_register_node);
     dummy_var ^= ((int64_t) (void*) wire_recover_node);
-    dummy_var ^= ((int64_t) (void*) wire_create_node_services);
     dummy_var ^= ((int64_t) (void*) wire_start_node);
     dummy_var ^= ((int64_t) (void*) wire_run_signer);
     dummy_var ^= ((int64_t) (void*) wire_stop_signer);
@@ -112,8 +89,6 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_withdraw);
     dummy_var ^= ((int64_t) (void*) wire_parse_invoice);
     dummy_var ^= ((int64_t) (void*) wire_mnemonic_to_seed);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_config_0);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_greenlight_credentials_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_i64_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);

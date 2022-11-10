@@ -15,7 +15,7 @@ pub const PAYMENT_TYPE_SENT: &str = "sent";
 pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 
 #[tonic::async_trait]
-pub trait NodeAPI {
+pub trait NodeAPI: Send + Sync {
     async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     /// As per the `pb::PayRequest` docs, `amount_sats` is only needed when the invoice doesn't specify an amount
@@ -35,10 +35,10 @@ pub trait NodeAPI {
 }
 
 #[tonic::async_trait]
-pub trait LspAPI {
+pub trait LspAPI: Send + Sync {
     async fn list_lsps(&self, node_pubkey: String) -> Result<Vec<LspInformation>>;
     async fn register_payment(
-        &mut self,
+        &self,
         lsp_id: String,
         lsp_pubkey: Vec<u8>,
         payment_info: PaymentInformation,
@@ -46,7 +46,7 @@ pub trait LspAPI {
 }
 
 #[tonic::async_trait]
-pub trait FiatAPI {
+pub trait FiatAPI: Send + Sync {
     fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>>;
     async fn fetch_rates(&self) -> Result<Vec<Rate>>;
 }

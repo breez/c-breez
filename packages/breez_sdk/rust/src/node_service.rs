@@ -32,7 +32,7 @@ pub struct NodeService {
 }
 
 impl NodeService {
-    pub async fn start_node(&mut self) -> Result<()> {
+    pub async fn start_node(&self) -> Result<()> {
         self.client.start().await
     }
 
@@ -158,13 +158,13 @@ impl NodeService {
             .map(|r| ())
     }
 
-    pub async fn pay(&mut self, bolt11: String) -> Result<()> {
+    pub async fn pay(&self, bolt11: String) -> Result<()> {
         self.client.send_payment(bolt11, None).await?;
         self.sync().await?;
         Ok(())
     }
 
-    pub async fn keysend(&mut self, node_id: String, amount_sats: u64) -> Result<()> {
+    pub async fn keysend(&self, node_id: String, amount_sats: u64) -> Result<()> {
         self.client
             .send_spontaneous_payment(node_id, amount_sats)
             .await?;
@@ -173,7 +173,7 @@ impl NodeService {
     }
 
     pub async fn request_payment(
-        &mut self,
+        &self,
         amount_sats: u64,
         description: String,
     ) -> Result<LNInvoice> {
@@ -277,11 +277,7 @@ impl NodeService {
         Ok(parsed_invoice)
     }
 
-    pub async fn withdraw(
-        &mut self,
-        to_address: String,
-        feerate_preset: FeeratePreset,
-    ) -> Result<()> {
+    pub async fn withdraw(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
         self.client.sweep(to_address, feerate_preset).await?;
         self.sync().await?;
         Ok(())
@@ -297,12 +293,19 @@ pub struct NodeServiceBuilder {
 }
 
 impl NodeServiceBuilder {
+    /// Initializes the config and the default services
     pub fn config(mut self, config: Config) -> Self {
         self.config = Some(config);
+        let breez_server_endpoint = BreezServer::new(config.breezserver.clone());
+        self.lsp = Some(Box::new(breez_server_endpoint.clone()));
+        self.fiat = Some(Box::new(breez_server_endpoint.clone()));
+        self.chain_service = MempoolSpace {
+            base_url: config.clone().mempoolspace_url,
+        };
         self
     }
 
-    pub fn client(mut self, client: Box<dyn NodeAPI>) -> Self {
+    pub fn node_api(mut self, client: Box<dyn NodeAPI>) -> Self {
         self.client = Some(client);
         self
     }
@@ -314,38 +317,23 @@ impl NodeServiceBuilder {
         self
     }
 
-    /// Initializes the Breez gRPC Client based on the configured Breez endpoint in the config
-    pub async fn client_grpc_init_from_config(mut self) -> Self {
-        let breez_server_endpoint = BreezServer::new(
-            self.config
-                .as_ref()
-                .expect(
-                    "Config not set. Please set config before calling this method in the builder.",
-                )
-                .breezserver
-                .clone(),
-        )
-        .await;
-        self.lsp = Some(Box::new(breez_server_endpoint.clone()));
-        self.fiat = Some(Box::new(breez_server_endpoint.clone()));
-        self
-    }
-
-    pub async fn build(self) -> NodeService {
+    pub fn build(self) -> NodeService {
         let config = self.config.as_ref().unwrap().clone();
 
         let chain_service = MempoolSpace {
             base_url: config.clone().mempoolspace_url,
         };
 
-        let persist_file = format!("{}/storage.sql", config.working_dir);
+        let persister =
+            persist::db::SqliteStorage::from_file(format!("{}/storage.sql", config.working_dir));
+        persister.init().unwrap();
         NodeService {
             config,
             client: self.client.unwrap(),
             lsp: self.lsp.unwrap(),
             fiat: self.fiat.unwrap(),
             chain_service,
-            persister: persist::db::SqliteStorage::open(persist_file).unwrap(),
+            persister: persister,
         }
     }
 }
@@ -356,7 +344,7 @@ pub struct BreezServer {
 }
 
 impl BreezServer {
-    pub async fn new(server_url: String) -> Self {
+    pub fn new(server_url: String) -> Self {
         Self { server_url }
     }
 
@@ -441,8 +429,7 @@ mod test {
                 transactions: dummy_transactions.clone(),
             }))
             .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
-            .build()
-            .await;
+            .build();
 
         node_service.sync().await?;
         let fetched_state = node_service
@@ -513,7 +500,6 @@ mod test {
             }))
             .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
             .build()
-            .await
     }
 
     /// Build dummy NodeState for tests
@@ -541,6 +527,5 @@ mod test {
             }))
             .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
             .build()
-            .await
     }
 }

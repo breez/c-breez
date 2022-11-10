@@ -27,7 +27,6 @@ use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
 use crate::lsp::LspInformation;
-use crate::models::Config;
 use crate::models::FeeratePreset;
 use crate::models::GreenlightCredentials;
 use crate::models::LightningTransaction;
@@ -70,26 +69,6 @@ fn wire_recover_node_impl(
             let api_network = network.wire2api();
             let api_seed = seed.wire2api();
             move |task_callback| recover_node(api_network, api_seed)
-        },
-    )
-}
-fn wire_create_node_services_impl(
-    port_: MessagePort,
-    breez_config: impl Wire2Api<Config> + UnwindSafe,
-    seed: impl Wire2Api<Vec<u8>> + UnwindSafe,
-    creds: impl Wire2Api<GreenlightCredentials> + UnwindSafe,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "create_node_services",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_breez_config = breez_config.wire2api();
-            let api_seed = seed.wire2api();
-            let api_creds = creds.wire2api();
-            move |task_callback| create_node_services(api_breez_config, api_seed, api_creds)
         },
     )
 }
@@ -309,7 +288,6 @@ impl Wire2Api<i64> for *mut i64 {
         unsafe { *support::box_from_leak_ptr(self) }
     }
 }
-
 impl Wire2Api<FeeratePreset> for i32 {
     fn wire2api(self) -> FeeratePreset {
         match self {
@@ -320,7 +298,6 @@ impl Wire2Api<FeeratePreset> for i32 {
         }
     }
 }
-
 impl Wire2Api<i32> for i32 {
     fn wire2api(self) -> i32 {
         self
@@ -351,11 +328,6 @@ impl Wire2Api<PaymentTypeFilter> for i32 {
             2 => PaymentTypeFilter::All,
             _ => unreachable!("Invalid variant for PaymentTypeFilter: {}", self),
         }
-    }
-}
-impl Wire2Api<u32> for u32 {
-    fn wire2api(self) -> u32 {
-        self
     }
 }
 impl Wire2Api<u64> for u64 {

@@ -1,9 +1,9 @@
 use super::db::SqliteStorage;
-use rusqlite::Result;
+use anyhow::Result;
 
 impl SqliteStorage {
     pub fn get_cached_item(&self, key: String) -> Result<Option<String>> {
-        let res = self.conn.query_row(
+        let res = self.get_connection()?.query_row(
             "SELECT value FROM cached_items WHERE key = ?1",
             [key],
             |row| row.get(0),
@@ -12,7 +12,7 @@ impl SqliteStorage {
     }
 
     pub fn update_cached_item(&self, key: String, value: String) -> Result<()> {
-        self.conn.execute(
+        self.get_connection()?.execute(
             "INSERT OR REPLACE INTO cached_items (key, value) VALUES (?1,?2)",
             (key, value),
         )?;
@@ -20,7 +20,7 @@ impl SqliteStorage {
     }
 
     pub fn delete_cached_item(&self, key: String) -> Result<()> {
-        self.conn
+        self.get_connection()?
             .execute("DELETE FROM cached_items WHERE key = ?1", [key])?;
         Ok(())
     }
@@ -30,8 +30,9 @@ impl SqliteStorage {
 fn test_cached_items() {
     use crate::persist::test_utils;
 
-    let storage =
-        &mut SqliteStorage::open(test_utils::create_test_sql_file("cache".to_string())).unwrap();
+    let storage = SqliteStorage::from_file(test_utils::create_test_sql_file("cache".to_string()));
+
+    storage.init().unwrap();
     storage
         .update_cached_item("key1".to_string(), "val1".to_string())
         .unwrap();

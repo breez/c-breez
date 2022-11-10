@@ -72,6 +72,8 @@ void wire_request_payment(int64_t port_,
                           uint64_t amount_sats,
                           struct wire_uint_8_list *description);
 
+void wire_close_lsp_channels(int64_t port_);
+
 void wire_sweep(int64_t port_, struct wire_uint_8_list *to_address, int32_t feerate_preset);
 
 struct wire_Config *new_box_autoadd_config_0(void);
@@ -102,6 +104,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_pay);
     dummy_var ^= ((int64_t) (void*) wire_keysend);
     dummy_var ^= ((int64_t) (void*) wire_request_payment);
+    dummy_var ^= ((int64_t) (void*) wire_close_lsp_channels);
     dummy_var ^= ((int64_t) (void*) wire_sweep);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_greenlight_credentials_0);

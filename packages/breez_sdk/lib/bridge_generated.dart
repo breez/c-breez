@@ -87,6 +87,10 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kRequestPaymentConstMeta;
 
+  Future<void> closeLspChannels({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCloseLspChannelsConstMeta;
+
   Future<void> sweep(
       {required String toAddress,
       required FeeratePreset feeratePreset,
@@ -651,6 +655,21 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "request_payment",
         argNames: ["amountSats", "description"],
+      );
+
+  Future<void> closeLspChannels({dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_close_lsp_channels(port_),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kCloseLspChannelsConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kCloseLspChannelsConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "close_lsp_channels",
+        argNames: [],
       );
 
   Future<void> sweep(
@@ -1404,6 +1423,20 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_uint_8_list>)>>('wire_request_payment');
   late final _wire_request_payment = _wire_request_paymentPtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_close_lsp_channels(
+    int port_,
+  ) {
+    return _wire_close_lsp_channels(
+      port_,
+    );
+  }
+
+  late final _wire_close_lsp_channelsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_close_lsp_channels');
+  late final _wire_close_lsp_channels =
+      _wire_close_lsp_channelsPtr.asFunction<void Function(int)>();
 
   void wire_sweep(
     int port_,

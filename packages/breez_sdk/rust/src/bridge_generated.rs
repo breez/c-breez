@@ -255,6 +255,16 @@ fn wire_request_payment_impl(
         },
     )
 }
+fn wire_close_lsp_channels_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "close_lsp_channels",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| close_lsp_channels(),
+    )
+}
 fn wire_sweep_impl(
     port_: MessagePort,
     to_address: impl Wire2Api<String> + UnwindSafe,

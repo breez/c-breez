@@ -508,7 +508,7 @@ packages:
     source: hosted
     version: "3.2.5"
   fixnum:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: fixnum
       url: "https://pub.dartlang.org"

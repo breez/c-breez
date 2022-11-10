@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
-import 'package:c_breez/services/breez_server/server.dart';
+import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/keychain.dart';

@@ -39,7 +39,6 @@ dependencies:
   firebase_core: ^2.1.1
   firebase_dynamic_links: ^5.0.4
   firebase_messaging: ^14.0.4
-  fixnum: ^1.0.1
   flutter_bloc: ^8.1.1
   flutter_fgbg:
     git:

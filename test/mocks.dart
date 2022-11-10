@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:c_breez/services/breez_server/server.dart';
+import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/keychain.dart';

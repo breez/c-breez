@@ -203,9 +203,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       String conversionText = "";
       if (currencyState.fiatEnabled) {
         FiatConversion conversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
-        conversionText = " (${conversion.format(Int64(lspFee))})";
+        conversionText = " (${conversion.format(lspFee)})";
       }
-      message = "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
+      message = "A setup fee of ${BitcoinCurrency.SAT.format(lspFee)}$conversionText is applied to this invoice. ";
     }
      */
     message += "Keep Breez open until the payment is completed.";

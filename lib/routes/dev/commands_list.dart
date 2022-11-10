@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:hex/hex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 
 class CommandsList extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -29,16 +28,17 @@ class _CommandsListState extends State<CommandsList> {
   bool _showDefaultCommands = true;
   bool isLoading = false;
   var _richCliText = <TextSpan>[];
-  late final breez_sdk.NodeAPI nodeAPI;
+  // ignore: prefer_typing_uninitialized_variables
+  late final breezCLILib;
 
   @override
   void initState() {
     super.initState();
-    initializeNodeAPI();
+    initializeCLIAPI();
   }
 
-  void initializeNodeAPI() {
-    nodeAPI = ServiceInjector().lightningServices.getNodeAPI();
+  void initializeCLIAPI() {
+    throw Exception("not implemented");
   }
 
   @override
@@ -192,23 +192,23 @@ class _CommandsListState extends State<CommandsList> {
         late String reply;
         switch (commandArgs[0]) {
           case 'getNodeInfo':
-            final nodeInfo = await nodeAPI.getNodeInfo();
+            final nodeInfo = await breezCLILib.getNodeInfo();
             reply = encoder.convert(nodeInfo.toJson());
             break;
           case 'listFunds':
-            final funds = await nodeAPI.listFunds();
+            final funds = await breezCLILib.listFunds();
             reply = encoder.convert(funds.toJson());
             break;
           case 'listPeers':
-            final peers = await nodeAPI.listPeers();
+            final peers = await breezCLILib.listPeers();
             reply = encoder.convert(peers);
             break;
           case 'getPayments':
-            final payments = await nodeAPI.getPayments();
+            final payments = await breezCLILib.getPayments();
             reply = encoder.convert(payments);
             break;
           case 'getInvoices':
-            final invoices = await nodeAPI.getInvoices();
+            final invoices = await breezCLILib.getInvoices();
             reply = encoder.convert(invoices);
             break;
           case 'closeChannel':
@@ -216,14 +216,14 @@ class _CommandsListState extends State<CommandsList> {
               throw "Missing node id";
             }
             var nodeID = HEX.decode(commandArgs[1]);
-            final closedResponse = await nodeAPI.closeChannel(nodeID);
+            final closedResponse = await breezCLILib.closeChannel(nodeID);
             reply = HEX.encode(closedResponse);
             break;
           case 'closeAllChannels':
-            final peers = await nodeAPI.listPeers();
+            final peers = await breezCLILib.listPeers();
             List<List<int>> closed = [];
             await Future.wait(peers.map((p) => Future.wait(p.channels.map((e) async {
-                  final tx = await nodeAPI.closeChannel(HEX.decode(e.channelId));
+                  final tx = await breezCLILib.closeChannel(HEX.decode(e.channelId));
                   closed.add(tx);
                 }))));
             reply = closed.map((e) => HEX.encode(e)).join("\n");

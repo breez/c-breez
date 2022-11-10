@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/flip_transition.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/payment_details_dialog.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/payment_item_amount.dart';
@@ -10,7 +10,7 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 
 class PaymentItem extends StatelessWidget {
-  final breez_sdk.PaymentInfo _paymentInfo;
+  final LightningTransaction _paymentInfo;
   final bool _firstItem;
   final bool _hideBalance;
   final GlobalKey firstPaymentItemKey;
@@ -82,7 +82,7 @@ class PaymentItem extends StatelessWidget {
 
   bool _createdWithin(Duration duration) {
     final diff = DateTime.fromMillisecondsSinceEpoch(
-      _paymentInfo.creationTimestamp.toInt() * 1000,
+      _paymentInfo.paymentTime * 1000,
     ).difference(
       DateTime.fromMillisecondsSinceEpoch(
         DateTime.now().millisecondsSinceEpoch,

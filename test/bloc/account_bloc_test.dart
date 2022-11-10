@@ -16,17 +16,14 @@ void main() {
   group('account', () {
     test('recover node', () async {
       var injector = InjectorMock();
-      var lightningServices = injector.lightningServices;
-      var lspBloc =
-          LSPBloc(lightningServices, injector.breezLib);
-      AccountBloc accBloc = AccountBloc(
-          lightningServices, injector.lightningServices.lnurlService, injector.breezLib, injector.keychain);
+      var breezLib = injector.breezLib;
+      var lspBloc = LSPBloc(breezLib);
+      AccountBloc accBloc = AccountBloc(breezLib, injector.keychain);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 
-      var creds =
-          await accBloc.recoverNode(Uint8List.fromList(HEX.decode(testSeed)));
-      await accBloc.syncStateWithNode();
+      var creds = await accBloc.recoverNode(
+          seed: Uint8List.fromList(HEX.decode(testSeed)));
       var accountState = accBloc.state;
       expect(accountState.blockheight, greaterThan(1));
       expect(accountState.id?.length, equals(66));
@@ -39,7 +36,7 @@ void main() {
       expect(accountState.maxChanReserve, 0);
       expect(accountState.maxInboundLiquidity, 0);
       expect(accountState.onChainFeeRate, 0);
-      expect(accountState.payments.paymentsList.length, 0);
+      expect(accountState.transactions.length, 0);
     });
   });
 }

@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
@@ -61,8 +61,7 @@ class AccountPage extends StatelessWidget {
     AccountState account,
     UserProfileState userModel,
   ) {
-    final payment = account.payments;
-    final payments = payment.paymentsList;    
+    final transactions = account.transactions;
 
     List<Widget> slivers = [];
 
@@ -74,31 +73,31 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    final bool showSliver = payments.isNotEmpty || !payment.filter.allowAll();
+    final bool showSliver =
+        transactions.isNotEmpty; // || !payment.filter.allowAll();
 
     if (showSliver) {
       slivers.add(
         PaymentsFilterSliver(
-          maxSize: _kFilterMaxSize,
-          scrollController: scrollController,
-          hasFilter: !payment.filter.allowAll(),
-        ),
+            maxSize: _kFilterMaxSize,
+            scrollController: scrollController,
+            hasFilter: false // !payment.filter.allowAll(),
+            ),
       );
     }
 
-    final paymentTypes = payment.filter.paymentType;
-    final startDate = payment.filter.startDate;
-    final endDate = payment.filter.endDate;
+    const startDate = null; //payment.filter.startDate;
+    const endDate = null; // payment.filter.endDate;
     if (startDate != null && endDate != null) {
       slivers.add(
-        HeaderFilterChip(_kFilterMaxSize, paymentTypes, startDate, endDate),
+        HeaderFilterChip(_kFilterMaxSize, startDate, endDate),
       );
     }
 
     if (showSliver) {
       slivers.add(
         PaymentsList(
-          payments,
+          transactions,
           _kPaymentListItemHeight,
           firstPaymentItemKey,
         ),
@@ -107,7 +106,7 @@ class AccountPage extends StatelessWidget {
         SliverPersistentHeader(
           pinned: true,
           delegate: FixedSliverDelegate(
-            _bottomPlaceholderSpace(context, payment, payments),
+            _bottomPlaceholderSpace(context, transactions),
             child: Container(),
           ),
         ),
@@ -151,19 +150,19 @@ class AccountPage extends StatelessWidget {
 
   double _bottomPlaceholderSpace(
     BuildContext context,
-    breez_sdk.PaymentsState payment,
-    List<breez_sdk.PaymentInfo> payments,
+    List<LightningTransaction> transactions,
   ) {
-    if (payments.isEmpty) return 0.0;
+    if (transactions.isEmpty) return 0.0;
     double listHeightSpace = MediaQuery.of(context).size.height -
         kMinExtent -
         kToolbarHeight -
         _kFilterMaxSize -
         25.0;
-    double dateFilterSpace = payment.filter.endDate != null ? 0.65 : 0.0;
+    const endDate = null;
+    double dateFilterSpace = endDate != null ? 0.65 : 0.0;
     double bottomPlaceholderSpace = (listHeightSpace -
             (_kPaymentListItemHeight + 8) *
-                (payments.length + 1 + dateFilterSpace))
+                (transactions.length + 1 + dateFilterSpace))
         .clamp(0.0, listHeightSpace);
     return bottomPlaceholderSpace;
   }

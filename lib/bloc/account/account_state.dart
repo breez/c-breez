@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
+import 'package:breez_sdk/bridge_generated.dart';
 
 const initialInboundCapacity = 4000000;
 
@@ -18,10 +18,10 @@ class AccountState {
   final List<String> connectedPeers;
   final int maxInboundLiquidity;
   final int onChainFeeRate;
-  final breez_sdk.PaymentsState payments;
+  final List<LightningTransaction> transactions;
 
   const AccountState({
-    required this.payments,
+    required this.transactions,
     required this.id,
     required this.initial,
     required this.blockheight,
@@ -51,13 +51,13 @@ class AccountState {
           onChainFeeRate: 0,
           balance: 0,
           walletBalance: 0,
-          payments: breez_sdk.PaymentsState.initial(),
+          transactions: [],
           initial: true,
         );
 
   AccountState copyWith({
     String? id,
-    breez_sdk.PaymentsState? payments,
+    List<LightningTransaction>? transactions,
     bool? initial,
     int? blockheight,
     int? balance,
@@ -72,7 +72,7 @@ class AccountState {
     int? onChainFeeRate,
   }) {
     return AccountState(
-        payments: payments ?? this.payments,
+        transactions: transactions ?? this.transactions,
         id: id ?? this.id,
         initial: initial ?? this.initial,
         balance: balance ?? this.balance,
@@ -104,13 +104,12 @@ class AccountState {
       "maxChanReserve": maxChanReserve,
       "maxInboundLiquidity": maxInboundLiquidity,
       "onChainFeeRate": onChainFeeRate,
-      "payment_filter": payments.filter.toJson()
     };
   }
 
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
-        payments: breez_sdk.PaymentsState.initial(),
+        transactions: [],
         id: json["id"],
         initial: json["initial"],
         blockheight: json["blockheight"],

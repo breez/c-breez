@@ -135,9 +135,8 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
     navigator.push(loaderRoute);
 
     await registrationBloc.registerForNotifications();
-
     await accountBloc
-        .startNewNode(bip39.mnemonicToSeed(widget._mnemonics))
+        .startNewNode(seed: bip39.mnemonicToSeed(widget._mnemonics))
         .whenComplete(() => navigator.removeRoute(loaderRoute))
         .catchError(
       (error) {

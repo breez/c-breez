@@ -5,16 +5,16 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 class BreezBridge {
   final _lnToolkit = getNativeToolkit();
 
-  Future<GreenlightCredentials> registerNode(
-    Network network,
-    Uint8List seed,
-  ) async =>
+  Future<GreenlightCredentials> registerNode({
+    required Network network,
+    required Uint8List seed,
+  }) async =>
       await _lnToolkit.registerNode(network: network, seed: seed);
 
-  Future<GreenlightCredentials> recoverNode(
-    Network network,
-    Uint8List seed,
-  ) async =>
+  Future<GreenlightCredentials> recoverNode({
+    required Network network,
+    required Uint8List seed,
+  }) async =>
       await _lnToolkit.recoverNode(network: network, seed: seed);
 
   Future createNodeServices(
@@ -40,6 +40,8 @@ class BreezBridge {
 
   Future<NodeState?> getNodeState() async => await _lnToolkit.getNodeState();
 
+  Stream<NodeState?> get nodeStateStream => getNodeState().asStream();
+
   Future<Map<String, Rate>> fetchRates() async {
     final List<Rate> rates = await _lnToolkit.fetchRates();
     return rates.fold<Map<String, Rate>>({}, (map, rate) {
@@ -51,13 +53,21 @@ class BreezBridge {
   Future<List<FiatCurrency>> listFiatCurrencies() async =>
       await _lnToolkit.listFiatCurrencies();
 
-  Future<List<LightningTransaction>> listTransactions(
-          PaymentTypeFilter filter) async =>
-      await _lnToolkit.listTransactions(filter: filter);
+  Future<List<LightningTransaction>> listTransactions({
+    PaymentTypeFilter filter = PaymentTypeFilter.All,
+    int? fromTimestamp,
+    int? toTimestamp,
+  }) async =>
+      await _lnToolkit.listTransactions(
+        filter: filter,
+        fromTimestamp: fromTimestamp,
+        toTimestamp: toTimestamp,
+      );
 
-  Future pay(String bolt11) async => await _lnToolkit.pay(bolt11: bolt11);
+  Future pay({required String bolt11}) async =>
+      await _lnToolkit.pay(bolt11: bolt11);
 
-  Future keysend(String nodeId, int amountSats) async =>
+  Future keysend({required String nodeId, required int amountSats}) async =>
       await _lnToolkit.keysend(nodeId: nodeId, amountSats: amountSats);
 
   Future<LNInvoice> requestPayment(
@@ -65,7 +75,9 @@ class BreezBridge {
       await _lnToolkit.requestPayment(
           amountSats: amountSats, description: description);
 
-  Future sweep(String toAddress, FeeratePreset feeratePreset) async =>
+  Future sweep(
+          {required String toAddress,
+          required FeeratePreset feeratePreset}) async =>
       await _lnToolkit.sweep(
           toAddress: toAddress, feeratePreset: feeratePreset);
 

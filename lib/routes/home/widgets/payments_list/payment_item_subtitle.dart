@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
@@ -6,7 +6,7 @@ import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:flutter/material.dart';
 
 class PaymentItemSubtitle extends StatelessWidget {
-  final PaymentInfo _paymentInfo;
+  final LightningTransaction _paymentInfo;
 
   const PaymentItemSubtitle(
     this._paymentInfo, {
@@ -28,7 +28,7 @@ class PaymentItemSubtitle extends StatelessWidget {
         Text(
           BreezDateUtils.formatTimelineRelative(
             DateTime.fromMillisecondsSinceEpoch(
-              _paymentInfo.creationTimestamp.toInt() * 1000,
+              _paymentInfo.paymentTime * 1000,
             ),
           ),
           style: subtitleTextStyle,
@@ -47,41 +47,45 @@ class PaymentItemSubtitle extends StatelessWidget {
 }
 
 void main() {
-  runApp(const Preview([
+  runApp(Preview([
     // Not pending
-    PaymentItemSubtitle(PaymentInfo(
-      type: PaymentType.received,
-      amountMsat: 4321000,
-      feeMsat: 0,
-      creationTimestamp: 1661791810,
-      pending: false,
-      keySend: false,
-      paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-      preimage: null,
-      destination: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-      pendingExpirationTimestamp: null,
-      description: "",
-      longTitle: "",
-      shortTitle: "",
-      imageURL: null,
-    )),
+    PaymentItemSubtitle(
+      LightningTransaction(
+        paymentType: "received",
+        label: "",
+        bolt11: "",
+        destinationPubkey:
+            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+        paymentHash:
+            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+        feesMsat: 1234,
+        keysend: false,
+        paymentPreimage: "",
+        paymentTime: 1661791810,
+        amountMsat: 4321000,
+        pending: false,
+        description: "",
+      ),
+    ),
 
     // Pending
-    PaymentItemSubtitle(PaymentInfo(
-      type: PaymentType.received,
-      amountMsat: 4321000,
-      feeMsat: 0,
-      creationTimestamp: 1661791810,
-      pending: true,
-      keySend: false,
-      paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-      preimage: null,
-      destination: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-      pendingExpirationTimestamp: null,
-      description: "",
-      longTitle: "",
-      shortTitle: "",
-      imageURL: null,
-    )),
+    PaymentItemSubtitle(
+      LightningTransaction(
+        paymentType: "received",
+        label: "",
+        bolt11: "",
+        destinationPubkey:
+            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+        paymentHash:
+            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+        feesMsat: 1234,
+        keysend: false,
+        paymentPreimage: "",
+        paymentTime: 1661791810,
+        amountMsat: 4321000,
+        pending: true,
+        description: "",
+      ),
+    ),
   ]));
 }

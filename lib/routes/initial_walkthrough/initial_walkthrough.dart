@@ -171,7 +171,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
-    await accountBloc.recoverNode(mnemonicSeed).catchError(
+    await accountBloc.recoverNode(seed: mnemonicSeed).catchError(
       (error) {
         navigator.removeRoute(loaderRoute);
         showFlushbar(context, message: error.toString());

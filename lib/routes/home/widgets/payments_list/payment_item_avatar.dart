@@ -1,9 +1,9 @@
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 
 class PaymentItemAvatar extends StatelessWidget {
-  final breez_sdk.PaymentInfo paymentItem;
+  final LightningTransaction paymentItem;
   final double radius;
 
   const PaymentItemAvatar(
@@ -19,14 +19,15 @@ class PaymentItemAvatar extends StatelessWidget {
         radius: radius,
         backgroundColor: Colors.white,
         child: Icon(
-          paymentItem.type.isIncome ? Icons.add_rounded : Icons.remove_rounded,
+          paymentItem.paymentType == "received" ? Icons.add_rounded : Icons.remove_rounded,
           color: const Color(0xb3303234),
         ),
       );
     } else {
-      return BreezAvatar(paymentItem.imageURL, radius: radius);
+      // paymentItem.imageURL is missing
+      return BreezAvatar("", radius: radius);
     }
   }
 
-  bool get _shouldShowLeadingIcon => paymentItem.keySend;
+  bool get _shouldShowLeadingIcon => paymentItem.keysend;
 }

@@ -1,4 +1,3 @@
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
@@ -10,7 +9,6 @@ import 'fixed_sliver_delegate.dart';
 class HeaderFilterChip extends SliverPadding {
   HeaderFilterChip(
     double maxHeight,
-    List<breez_sdk.PaymentType> paymentTypes,
     DateTime startDate,
     DateTime endDate, {
     Key? key,
@@ -46,9 +44,7 @@ class HeaderFilterChip extends SliverPadding {
                               ),
                               onDeleted: () => context
                                   .read<AccountBloc>()
-                                  .changePaymentFilter(
-                                    breez_sdk.PaymentFilter(paymentTypes),
-                                  ),
+                                  .changePaymentFilter(),
                             ),
                           ),
                         ],

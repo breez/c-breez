@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';
@@ -87,16 +86,6 @@ class FirebaseNotificationsMock extends Mock implements FirebaseNotifications {
 
 class InjectorMock extends Mock implements ServiceInjector {
   MockClientHandler? mockHandler;
-  LightningNode? _lightningService;
-
-  @override
-  LightningNode get lightningServices {
-    if (_lightningService != null) {
-      return _lightningService!;
-    }
-
-    return _lightningService ??= LightningNode();
-  }
 
   @override
   Future<SharedPreferences> get sharedPreferences async {
@@ -111,11 +100,6 @@ class InjectorMock extends Mock implements ServiceInjector {
 
   @override
   KeyChain get keychain => KeychainMoc();
-
-  @override
-  Storage get sdkStorage {
-    return Storage.createInMemory();
-  }
 
   @override
   Client get client {

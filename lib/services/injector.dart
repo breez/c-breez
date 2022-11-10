@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/services/breez_server/server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
@@ -19,19 +18,16 @@ class ServiceInjector {
 
   BreezServer? _breezServer;
   FirebaseNotifications? _notifications;
-  breez_sdk.LightningNode? _lightningService;
   DeepLinksService? _deepLinksService;
 
   // breez sdk
   BreezBridge? _breezBridge;
   LightningLinksService? _lightningLinksService;
-  breez_sdk.LNURLService? _lnurlService;
 
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences =
       SharedPreferences.getInstance();
   BackgroundTaskService? _backgroundTaskService;
-  breez_sdk.Storage? _appStorage;
   KeyChain? _keychain;
   Client? _client;
 
@@ -55,14 +51,6 @@ class ServiceInjector {
 
   BreezBridge get breezLib => _breezBridge ??= BreezBridge();
 
-  breez_sdk.LightningNode get lightningServices {
-    if (_lightningService != null) {
-      return _lightningService!;
-    }
-
-    return _lightningService ??= breez_sdk.LightningNode();
-  }
-
   Device get device {
     return _device ??= Device();
   }
@@ -71,9 +59,6 @@ class ServiceInjector {
 
   LightningLinksService get lightningLinks =>
       _lightningLinksService ??= LightningLinksService();
-
-  breez_sdk.LNURLService get lnurlService =>
-      _lnurlService ??= lightningServices.lnurlService;
 
   Future<SharedPreferences> get sharedPreferences =>
       _sharedPreferences ??= SharedPreferences.getInstance();
@@ -84,10 +69,6 @@ class ServiceInjector {
 
   Client get client {
     return _client ??= Client();
-  }
-
-  breez_sdk.Storage get sdkStorage {
-    return _appStorage ??= breez_sdk.Storage.createDefault();
   }
 
   KeyChain get keychain {

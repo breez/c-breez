@@ -1,10 +1,10 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_speed_chooser_item.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsConfirmationSpeedChooser extends StatefulWidget {
-  final TransactionCostSpeed currentSpeed;
-  final Function(TransactionCostSpeed) onSpeedSelected;
+  final FeeratePreset currentSpeed;
+  final Function(FeeratePreset) onSpeedSelected;
 
   const WithdrawFundsConfirmationSpeedChooser(
     this.currentSpeed,
@@ -73,17 +73,17 @@ class _WithdrawFundsConfirmationSpeedChooserState extends State<WithdrawFundsCon
             child: Row(
               children: [
                 WithdrawFundsConfirmationSpeedChooserItem(
-                  TransactionCostSpeed.economy,
+                  FeeratePreset.Economy,
                   widget.currentSpeed,
                   widget.onSpeedSelected,
                 ),
                 WithdrawFundsConfirmationSpeedChooserItem(
-                  TransactionCostSpeed.regular,
+                  FeeratePreset.Regular,
                   widget.currentSpeed,
                   widget.onSpeedSelected,
                 ),
                 WithdrawFundsConfirmationSpeedChooserItem(
-                  TransactionCostSpeed.priority,
+                  FeeratePreset.Priority,
                   widget.currentSpeed,
                   widget.onSpeedSelected,
                 ),

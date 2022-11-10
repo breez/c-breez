@@ -4,22 +4,16 @@ import 'dart:math';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
-import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/services/keychain.dart';
-import 'package:c_breez/utils/lnurl.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:rxdart/rxdart.dart';
 
 const maxPaymentAmount = 4294967;
 
@@ -35,56 +29,26 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
   final _log = FimberLog("AccountBloc");
-  final breez_sdk.LightningNode _lightningNode;
-  final breez_sdk.LNURLService _lnurlService;
-  final BreezBridge breezLib;
+  final BreezBridge _breezLib;
   final KeyChain _keyChain;
   bool started = false;
-  breez_sdk.Signer? _signer;
 
-  AccountBloc(this._lightningNode, this._lnurlService, this.breezLib, this._keyChain) : super(AccountState.initial()) {
+  AccountBloc(this._breezLib, this._keyChain) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
     });
 
-    // sync node info on incoming payments
-    final nodeAPI = _lightningNode.getNodeAPI();
-    nodeAPI.incomingPaymentsStream().listen((event) {
-      syncStateWithNode();
-    });
+    // TODO: sync node info on incoming payments
 
     if (!state.initial) {
-      _keyChain.read(accountCredsKey).then((credsHEX) async {
-        if (credsHEX != null) {
-          var creds = HEX.decode(credsHEX);
-          _log.v("found account credentials: ${String.fromCharCodes(creds)}");
-
-          // temporary fix for older versions that didn't save the seed in keychain
-          final nodeCreds = breez_sdk.NodeCredentials.fromBuffer(creds);
-          await _keyChain.write(accountSeedKey, HEX.encode(nodeCreds.secret!));
-
-          // create signer
-          final seedHex = await _keyChain.read(accountSeedKey);
-          await _createSignerFromSeed(Uint8List.fromList(HEX.decode(seedHex!)));
-
-          // init service with credentials
-          _lightningNode.connectWithCredentials(creds, _signer!);
-          _startNode();
-        }
-      });
+      throw Exception("not implemented");
     }
   }
 
-  // Export the user keys to a file
+  // TODO: Export the user keys to a file
   Future exportKeyFiles(Directory destDir) async {
-    var keys = await _lightningNode.getNodeAPI().exportKeys();
-    for (var k in keys) {
-      File(p.join(destDir.path, k.name)).writeAsBytesSync(k.content, flush: true);
-    }
-    final docDir = await getApplicationDocumentsDirectory();
-    final signerDir = Directory("${docDir.path}/signer");
-    recursiveFolderCopySync(signerDir.path, destDir.path);
+    throw Exception("not implemented");
   }
 
   void recursiveFolderCopySync(String path1, String path2) {
@@ -107,15 +71,15 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   // startNewNode register a new node and start it
-  Future<List<int>> startNewNode(Uint8List seed, {String network = "bitcoin", String email = ""}) async {
+  Future<GreenlightCredentials> startNewNode(
+      {Network network = Network.Bitcoin, required Uint8List seed}) async {
     if (started) {
       throw Exception("Node already started");
     }
-    await _createSignerFromSeed(seed);
-    var creds = await _lightningNode.newNodeFromSeed(seed, _signer!);
+    final GreenlightCredentials creds =
+        await _breezLib.registerNode(network: network, seed: seed);
     _log.i("node registered successfully");
-    await _keyChain.write(accountSeedKey, HEX.encode(seed));
-    await _keyChain.write(accountCredsKey, HEX.encode(creds));
+    await _storeCredentials(creds);
     emit(state.copyWith(initial: false));
     await _startNode();
     _log.i("new node started");
@@ -123,86 +87,55 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   // recoverNode recovers a node from seed
-  Future<List<int>> recoverNode(Uint8List seed) async {
+  Future<GreenlightCredentials> recoverNode(
+      {Network network = Network.Bitcoin, required Uint8List seed}) async {
     if (started) {
       throw Exception("Node already started");
     }
-    await _createSignerFromSeed(seed);
-    var creds = await _lightningNode.connectWithSeed(seed, _signer!);
-    await _keyChain.write(accountCredsKey, HEX.encode(creds));
+    final GreenlightCredentials creds =
+        await _breezLib.recoverNode(network: network, seed: seed);
+    _log.i("node recovered successfully");
+    await _storeCredentials(creds);
     await _startNode();
     return creds;
   }
 
+  Future<void> _storeCredentials(GreenlightCredentials creds) async {
+    await _keyChain.write(accountSeedKey, HEX.encode(creds.deviceCert));
+    await _keyChain.write(accountCredsKey, HEX.encode(creds.deviceKey));
+  }
+
   Future _startNode() async {
+    await _breezLib.runSigner();
     await syncStateWithNode();
     started = true;
   }
 
   // syncStateWithNode synchronized the node state with the local state.
   // This is required to assemble the account state (e.g liquidity, connected, etc...)
-  Future syncStateWithNode() {
-    return _lightningNode.syncState();
+  Future syncStateWithNode() async {
+    return await _breezLib.sync();
   }
 
-  Future<bool> processLNURLWithdraw(LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
-    bool isSent = await _lnurlService.processWithdrawRequest(withdrawParams, qParams).timeout(
-          const Duration(minutes: 3),
-          onTimeout: () => throw Exception('Timed out waiting 3 minutes for payment.'),
-        );
-    if (isSent) {
-      await syncStateWithNode();
-    }
-    return isSent;
+  Future<bool> processLNURLWithdraw(
+      LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
+    throw Exception("not implemented");
   }
 
-  Future<breez_sdk.PaymentInfo> sendLNURLPayment(
+  Future sendLNURLPayment(
       LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
-    try {
-      final paymentInfo = await _lightningNode
-          .sendPaymentForRequest(
-            lnurlPayResult.pr,
-            amount: int.parse(qParams['amount']!),
-          )
-          .timeout(
-            const Duration(minutes: 3),
-            onTimeout: () =>
-                throw Exception('Timed out waiting 3 minutes for payment.'),
-          );
-      await syncStateWithNode();
-      if (lnurlPayResult.successAction != null) {
-        _paymentResultStreamController.add(
-          PaymentResultData(
-            paymentInfo: paymentInfo,
-            successActionData: SuccessActionData(
-              getSuccessActionMessage(lnurlPayResult),
-              lnurlPayResult.successAction!.url,
-            ),
-          ),
-        );
-      }
-      return paymentInfo;
-    } catch (e) {
-      _paymentResultStreamController.add(PaymentResultData(error: e));
-      return Future.error(e);
-    }
+    throw Exception("not implemented");
   }
 
-  Future<LNURLPayResult> getPaymentResult(LNURLPayParams payParams, Map<String, String> qParams) async {
-    final LNURLPayResult lnurlPayResult = await _lnurlService.getPaymentResult(payParams, qParams);
-    return lnurlPayResult;
+  Future<LNURLPayResult> getPaymentResult(
+      LNURLPayParams payParams, Map<String, String> qParams) async {
+    throw Exception("not implemented");
   }
 
-  Future<breez_sdk.PaymentInfo> sendPayment(
-      String bolt11, int amountSat) async {
+  Future sendPayment(String bolt11, int amountSat) async {
     try {
-      final paymentInfo =
-          await _lightningNode.sendPaymentForRequest(bolt11, amount: amountSat);
-      await syncStateWithNode();
-      _paymentResultStreamController.add(
-        PaymentResultData(paymentInfo: paymentInfo),
-      );
-      return paymentInfo;
+      await _breezLib.pay(bolt11: bolt11);
+      syncStateWithNode();
     } catch (e) {
       _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
@@ -210,27 +143,20 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future cancelPayment(String bolt11) async {
-    //throw Exception("not implemented");
+    throw Exception("not implemented");
   }
 
-  Future<breez_sdk.PaymentInfo> sendSpontaneousPayment(
-      String nodeID, String description, int amountSat) async {
+  Future sendSpontaneousPayment(
+    String nodeId,
+    String description,
+    int amountSats,
+  ) async {
     try {
-      final paymentInfo = await _lightningNode.sendSpontaneousPayment(
-          nodeID, amountSat, description);
-      await syncStateWithNode();
-      _paymentResultStreamController.add(
-        PaymentResultData(paymentInfo: paymentInfo),
-      );
-      return paymentInfo;
+      return await _breezLib.keysend(nodeId: nodeId, amountSats: amountSats);
     } catch (e) {
       _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
     }
-  }
-
-  Future publishTransaction(List<int> tx) async {
-    await _lightningNode.getNodeAPI().publishTransaction(tx);
   }
 
   bool validateAddress(String? address) {
@@ -268,21 +194,32 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  void changePaymentFilter(breez_sdk.PaymentFilter filter) {
-    _lightningNode.setPaymentFilter(filter);
+  // TODO:
+  void changePaymentFilter({
+    PaymentTypeFilter filter = PaymentTypeFilter.All,
+    int? fromTimestamp,
+    int? toTimestamp,
+  }) {
+    _breezLib.listTransactions(
+      filter: filter,
+      fromTimestamp: fromTimestamp,
+      toTimestamp: toTimestamp,
+    );
   }
 
-  Future<LNInvoice> addInvoice({String description = "", required int amountSats}) async {
-    return await breezLib.requestPayment(amountSats: amountSats, description: description);
+  Future<LNInvoice> addInvoice({
+    String description = "",
+    required int amountSats,
+  }) async {
+    return await _breezLib.requestPayment(
+      amountSats: amountSats,
+      description: description,
+    );
   }
 
-  // _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
-  Stream<AccountState> _watchAccountChanges() {
-    return Rx.combineLatest3<breez_sdk.PaymentsState, breez_sdk.PaymentFilter, NodeState?, AccountState>(
-        _lightningNode.paymentsStream(), _lightningNode.paymentFilterStream(), _lightningNode.nodeStateStream(),
-        (payments, paymentsFilter, nodeInfo) {
-      return assembleAccountState(payments, paymentsFilter, nodeInfo) ?? state;
-    });
+  // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
+  _watchAccountChanges() {
+    throw Exception("not implemented");
   }
 
   @override
@@ -293,13 +230,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   @override
   Map<String, dynamic>? toJson(AccountState state) {
     return state.toJson();
-  }
-
-  Future _createSignerFromSeed(Uint8List seed) async {
-    final docDir = await getApplicationDocumentsDirectory();
-    final signerDir = Directory("${docDir.path}/signer");
-    await signerDir.create(recursive: true);
-    _signer = breez_sdk.Signer(seed, signerDir.path);
   }
 
   final StreamController<PaymentResultData> _paymentResultStreamController =

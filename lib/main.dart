@@ -41,7 +41,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     var injector = ServiceInjector();
-    final lightningServices = injector.lightningServices;
+    final breezLib = injector.breezLib;
     var appDir = await getApplicationDocumentsDirectory();
 
     HydratedBloc.storage = await HydratedStorage.build(
@@ -50,41 +50,39 @@ void main() async {
       MultiBlocProvider(
         providers: [
           BlocProvider<LSPBloc>(
-            create: (BuildContext context) =>
-                LSPBloc(lightningServices, injector.breezLib),
+            create: (BuildContext context) => LSPBloc(breezLib),
           ),
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(
-              lightningServices,
-              injector.lnurlService,
-              injector.breezLib,
+              breezLib,
               injector.keychain,
             ),
           ),
           BlocProvider<InputBloc>(
             create: (BuildContext context) => InputBloc(
-                injector.lightningLinks, injector.device, lightningServices),
+              breezLib,
+              injector.lightningLinks,
+              injector.device,
+            ),
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) =>
                 UserProfileBloc(injector.breezServer, injector.notifications),
           ),
           BlocProvider<CurrencyBloc>(
-            create: (BuildContext context) => CurrencyBloc(injector.breezLib),
+            create: (BuildContext context) => CurrencyBloc(breezLib),
           ),
           BlocProvider<SecurityBloc>(
             create: (BuildContext context) => SecurityBloc(),
           ),
           BlocProvider<WithdrawFundsBloc>(
-            create: (BuildContext context) =>
-                WithdrawFundsBloc(lightningServices),
+            create: (BuildContext context) => WithdrawFundsBloc(breezLib),
           ),
           BlocProvider<ConnectivityBloc>(
             create: (BuildContext context) => ConnectivityBloc(),
           ),
           BlocProvider<NetworkSettingsBloc>(
-            create: (BuildContext context) =>
-                NetworkSettingsBloc(lightningServices),
+            create: (BuildContext context) => NetworkSettingsBloc(breezLib),
           ),
         ],
         child: UserApp(),

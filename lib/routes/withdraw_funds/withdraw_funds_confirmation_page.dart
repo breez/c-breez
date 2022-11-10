@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -25,7 +25,7 @@ class WithdrawFundsConfirmationPage extends StatefulWidget {
 }
 
 class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmationPage> {
-  var _speed = TransactionCostSpeed.regular;
+  var _speed = FeeratePreset.Regular;
 
   @override
   void initState() {
@@ -45,9 +45,9 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
       body: BlocBuilder<WithdrawFundsBloc, WithdrawFudsState>(
         builder: (context, transaction) {
           if (transaction is WithdrawFudsInfoState) {
-            final selected = _speed == TransactionCostSpeed.regular
+            final selected = _speed == FeeratePreset.Regular
                 ? transaction.regular
-                : _speed == TransactionCostSpeed.priority
+                : _speed == FeeratePreset.Priority
                     ? transaction.priority
                     : transaction.economy;
 

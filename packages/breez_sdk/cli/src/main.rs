@@ -99,7 +99,7 @@ fn main() -> Result<()> {
                             .map_err(|err| anyhow!(err))?
                             .parse()?;
 
-                        show_results(binding::sweep(
+                        show_results(binding::withdraw(
                             to_address.into(),
                             FeeratePreset::try_from(feerate_preset)?,
                         ))
@@ -154,6 +154,11 @@ fn main() -> Result<()> {
                     Some("run_signer") => show_results(binding::run_signer()),
                     Some("stop_signer") => show_results(binding::stop_signer()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),
+                    Some("list_txs") => show_results(binding::list_transactions(
+                        models::PaymentTypeFilter::All,
+                        None,
+                        None,
+                    )),
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());
                     }

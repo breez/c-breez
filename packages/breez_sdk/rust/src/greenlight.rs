@@ -10,7 +10,7 @@ use bitcoin::secp256k1::ecdsa::{RecoverableSignature, RecoveryId};
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{
     Amount, BtcAddressType, CloseChannelRequest, CloseChannelResponse, Invoice, InvoiceRequest,
-    Payment, WithdrawResponse,
+    InvoiceStatus, Payment, WithdrawResponse,
 };
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
@@ -354,7 +354,11 @@ async fn pull_transactions(
     let received_transations: Result<Vec<LightningTransaction>> = invoices
         .invoices
         .into_iter()
-        .filter(|i| i.payment_time as i64 > since_timestamp)
+        .filter(|i| {
+            i.payment_time > 0
+                && i.status() == InvoiceStatus::Paid
+                && i.payment_time as i64 > since_timestamp
+        })
         .map(|i| invoice_to_transaction(node_pubkey.clone(), i))
         .collect();
 

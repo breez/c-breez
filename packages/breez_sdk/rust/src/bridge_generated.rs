@@ -265,21 +265,21 @@ fn wire_close_lsp_channels_impl(port_: MessagePort) {
         move || move |task_callback| close_lsp_channels(),
     )
 }
-fn wire_sweep_impl(
+fn wire_withdraw_impl(
     port_: MessagePort,
     to_address: impl Wire2Api<String> + UnwindSafe,
     feerate_preset: impl Wire2Api<FeeratePreset> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "sweep",
+            debug_name: "withdraw",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_to_address = to_address.wire2api();
             let api_feerate_preset = feerate_preset.wire2api();
-            move |task_callback| sweep(api_to_address, api_feerate_preset)
+            move |task_callback| withdraw(api_to_address, api_feerate_preset)
         },
     )
 }

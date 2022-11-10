@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use gl_client::pb::Peer;
 use gl_client::pb::WithdrawResponse;
-use gl_client::pb::{Invoice, Payment};
+use gl_client::pb::{CloseChannelResponse, Invoice, Payment};
 use lightning_invoice::RawInvoice;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -31,6 +31,7 @@ pub trait NodeAPI {
     async fn list_peers(&self) -> Result<Vec<Peer>>;
     async fn connect_peer(&self, node_id: String, addr: String) -> Result<()>;
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String>;
+    async fn close_peer_channels(&self, node_id: String) -> Result<CloseChannelResponse>;
 }
 
 #[tonic::async_trait]

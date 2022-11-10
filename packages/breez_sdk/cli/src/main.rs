@@ -11,8 +11,8 @@ use env_logger::Env;
 use lightning_toolkit::binding;
 use lightning_toolkit::lsp::LspInformation;
 use lightning_toolkit::models::{self, GreenlightCredentials};
-use rustyline::Editor;
 use rustyline::error::ReadlineError;
+use rustyline::Editor;
 
 use crate::models::FeeratePreset;
 
@@ -89,15 +89,20 @@ fn main() -> Result<()> {
                         show_results(binding::keysend(node_id.into(), amount_sats.parse()?))
                     }
                     Some("sweep") => {
-                        let to_address = command.next()
+                        let to_address = command
+                            .next()
                             .ok_or("Expected to_address arg")
                             .map_err(|err| anyhow!(err))?;
-                        let feerate_preset : i32 = command.next()
+                        let feerate_preset: i32 = command
+                            .next()
                             .ok_or("Expected feerate_preset arg")
                             .map_err(|err| anyhow!(err))?
                             .parse()?;
 
-                        show_results(binding::sweep(to_address.into(), FeeratePreset::try_from(feerate_preset)?) )
+                        show_results(binding::sweep(
+                            to_address.into(),
+                            FeeratePreset::try_from(feerate_preset)?,
+                        ))
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
@@ -124,14 +129,7 @@ fn main() -> Result<()> {
                     }
                     Some("start_node") => show_results(binding::start_node()),
                     Some("sync") => show_results(binding::sync()),
-                    Some("list_lsps") => {
-                        let lsps: Vec<LspInformation> = binding::list_lsps()?;
-                        info!("The available LSPs are:");
-                        for lsp in lsps {
-                            info!("[{}] {}", lsp.id, lsp.name);
-                        }
-                        info!("Please choose an LSP with `set_lsp id`");
-                    }
+                    Some("list_lsps") => show_results(binding::list_lsps()),
                     Some("set_lsp") => {
                         let lsps: Vec<LspInformation> = binding::list_lsps()?;
                         let chosen_lsp_id = command
@@ -141,7 +139,7 @@ fn main() -> Result<()> {
                         let chosen_lsp: &LspInformation = lsps
                             .iter()
                             .find(|lsp| lsp.id == chosen_lsp_id)
-                            .ok_or("No LSO found for given LSP ID")
+                            .ok_or("No LSP found for given LSP ID")
                             .map_err(|err| anyhow!(err))?;
                         binding::set_lsp_id(chosen_lsp_id.to_string())?;
 
@@ -155,6 +153,7 @@ fn main() -> Result<()> {
                     Some("fetch_rates") => show_results(binding::fetch_rates()),
                     Some("run_signer") => show_results(binding::run_signer()),
                     Some("stop_signer") => show_results(binding::stop_signer()),
+                    Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());
                     }
@@ -185,7 +184,7 @@ where
 {
     match res {
         Ok(inner) => {
-            info!("response: {:?}", inner);
+            info!("response: {:#?}", inner);
         }
         Err(err) => error!("Error: {}", err),
     }

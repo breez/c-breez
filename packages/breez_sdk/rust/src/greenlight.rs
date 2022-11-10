@@ -8,7 +8,10 @@ use anyhow::{anyhow, Result};
 use bitcoin::bech32::{u5, ToBase32};
 use bitcoin::secp256k1::ecdsa::{RecoverableSignature, RecoveryId};
 use gl_client::pb::amount::Unit;
-use gl_client::pb::{Amount, Invoice, InvoiceRequest, Payment, WithdrawResponse};
+use gl_client::pb::{
+    Amount, BtcAddressType, CloseChannelRequest, CloseChannelResponse, Invoice, InvoiceRequest,
+    Payment, WithdrawResponse,
+};
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
 use gl_client::tls::TlsConfig;
@@ -181,21 +184,14 @@ impl NodeAPI for Greenlight {
         // filter only opened channels
         let opened_channels: &mut Vec<&pb::Channel> = &mut all_channels
             .iter()
-            .filter(|c| {
-                let open_chan_statuses = vec![
-                    String::from("CHANNELD_AWAITING_LOCKIN"),
-                    String::from("DUALOPEND_OPEN_INIT"),
-                    String::from("DUALOPEND_AWAITING_LOCKIN"),
-                ];
-                return open_chan_statuses.contains(&c.state);
-            })
+            .filter(|c| return c.state == String::from("CHANNELD_NORMAL"))
             .collect();
 
         // calculate channels balance only from opened channels
         let channels_balance = offchain_funds.iter().fold(0, |a, b| {
             let hex_txid = hex::encode(b.funding_txid.clone());
             if opened_channels.iter().any(|c| c.funding_txid == hex_txid) {
-                return a + b.amount_msat;
+                return a + b.our_amount_msat;
             }
             return a;
         });
@@ -297,6 +293,17 @@ impl NodeAPI for Greenlight {
             routehints: vec![],
         };
         Ok(client.keysend(request).await?.into_inner())
+    }
+
+    async fn close_peer_channels(&self, node_id: String) -> Result<CloseChannelResponse> {
+        let mut client = self.get_client().await?;
+
+        let request = CloseChannelRequest {
+            node_id: hex::decode(node_id)?,
+            destination: None,
+            unilateraltimeout: None,
+        };
+        Ok(client.close_channel(request).await?.into_inner())
     }
 
     async fn sweep(
@@ -432,27 +439,28 @@ fn amount_to_msat(amount: pb::Amount) -> u64 {
 
 fn parse_amount(amount_str: String) -> Result<pb::Amount> {
     let mut unit = pb::amount::Unit::Millisatoshi(0);
-    if amount_str.ends_with("sat") {
-        unit = pb::amount::Unit::Satoshi(
+    if amount_str.ends_with("msat") {
+        let t = amount_str.strip_suffix("msat").unwrap().to_string();
+        unit = pb::amount::Unit::Millisatoshi(
             amount_str
-                .strip_prefix("sat")
-                .unwrap()
+                .strip_suffix("msat")
+                .ok_or(anyhow!("wrong amount format {}", amount_str))?
                 .to_string()
                 .parse::<u64>()?,
         );
-    } else if amount_str.ends_with("msat") {
-        unit = pb::amount::Unit::Millisatoshi(
+    } else if amount_str.ends_with("sat") {
+        unit = pb::amount::Unit::Satoshi(
             amount_str
-                .strip_prefix("msat")
-                .unwrap()
+                .strip_suffix("sat")
+                .ok_or(anyhow!("wrong amount format {}", amount_str))?
                 .to_string()
                 .parse::<u64>()?,
         );
     } else if amount_str.ends_with("bitcoin") {
         unit = pb::amount::Unit::Bitcoin(
             amount_str
-                .strip_prefix("bitcoin")
-                .unwrap()
+                .strip_suffix("bitcoin")
+                .ok_or(anyhow!("wrong amount format {}", amount_str))?
                 .to_string()
                 .parse::<u64>()?,
         );

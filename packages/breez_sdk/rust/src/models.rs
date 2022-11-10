@@ -51,6 +51,12 @@ pub trait FiatAPI {
     async fn fetch_rates(&self) -> Result<Vec<Rate>>;
 }
 
+#[tonic::async_trait]
+pub trait PosAPI {
+    async fn register_device(&self, device_id: String, lightning_id: String) -> Result<String>;
+    async fn upload_logo(&self, content: Vec<u8>) -> Result<String>;
+}
+
 #[derive(Clone)]
 pub struct Config {
     pub breezserver: String,

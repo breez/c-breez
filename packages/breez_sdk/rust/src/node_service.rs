@@ -13,12 +13,13 @@ use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
+use crate::grpc::pos_client::PosClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{
     parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI,
-    NodeState, PaymentTypeFilter,
+    NodeState, PaymentTypeFilter, PosAPI,
 };
 use crate::persist;
 
@@ -27,6 +28,7 @@ pub struct NodeService {
     client: Box<dyn NodeAPI>,
     lsp: Box<dyn LspAPI>,
     fiat: Box<dyn FiatAPI>,
+    pos: Box<dyn PosAPI>,
     chain_service: MempoolSpace,
     persister: persist::db::SqliteStorage,
 }
@@ -58,6 +60,14 @@ impl NodeService {
 
     pub fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>> {
         self.fiat.list_fiat_currencies()
+    }
+
+    pub async fn register_device(&self, device_id: String, lightning_id: String) -> Result<String> {
+        self.pos.register_device(device_id, lightning_id).await
+    }
+
+    pub async fn upload_logo(&self, content: Vec<u8>) -> Result<String> {
+        self.pos.upload_logo(content).await
     }
 
     pub async fn list_transactions(
@@ -290,6 +300,7 @@ pub struct NodeServiceBuilder {
     client: Option<Box<dyn NodeAPI>>,
     lsp: Option<Box<dyn LspAPI>>,
     fiat: Option<Box<dyn FiatAPI>>,
+    pos: Option<Box<dyn PosAPI>>,
 }
 
 impl NodeServiceBuilder {
@@ -304,9 +315,15 @@ impl NodeServiceBuilder {
     }
 
     /// Initialize the Breez gRPC Client to a custom implementation
-    pub fn client_grpc(mut self, lsp: Box<dyn LspAPI>, fiat: Box<dyn FiatAPI>) -> Self {
+    pub fn client_grpc(
+        mut self,
+        lsp: Box<dyn LspAPI>,
+        fiat: Box<dyn FiatAPI>,
+        pos: Box<dyn PosAPI>,
+    ) -> Self {
         self.lsp = Some(lsp);
         self.fiat = Some(fiat);
+        self.pos = Some(pos);
         self
     }
 
@@ -324,6 +341,7 @@ impl NodeServiceBuilder {
         .await;
         self.lsp = Some(Box::new(breez_server_endpoint.clone()));
         self.fiat = Some(Box::new(breez_server_endpoint.clone()));
+        self.pos = Some(Box::new(breez_server_endpoint.clone()));
         self
     }
 
@@ -340,6 +358,7 @@ impl NodeServiceBuilder {
             client: self.client.unwrap(),
             lsp: self.lsp.unwrap(),
             fiat: self.fiat.unwrap(),
+            pos: self.pos.unwrap(),
             chain_service,
             persister: persist::db::SqliteStorage::open(persist_file).unwrap(),
         }
@@ -364,6 +383,12 @@ impl BreezServer {
 
     pub(crate) async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
         InformationClient::connect(Uri::from_str(&self.server_url)?)
+            .await
+            .map_err(|e| anyhow!(e))
+    }
+
+    pub(crate) async fn get_pos_client(&self) -> Result<PosClient<Channel>> {
+        PosClient::connect(Uri::from_str(&self.server_url)?)
             .await
             .map_err(|e| anyhow!(e))
     }
@@ -436,7 +461,11 @@ mod test {
                 node_state: dummy_node_state.clone(),
                 transactions: dummy_transactions.clone(),
             }))
-            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
+            .client_grpc(
+                Box::new(MockBreezServer {}),
+                Box::new(MockBreezServer {}),
+                Box::new(MockBreezServer {}),
+            )
             .build()
             .await;
 
@@ -499,6 +528,32 @@ mod test {
         Ok(())
     }
 
+    #[tokio::test]
+    async fn test_register_device() -> Result<(), Box<dyn std::error::Error>> {
+        let node_service = node_service().await;
+        node_service.sync().await?;
+
+        let breez_id = node_service
+            .pos
+            .register_device("".to_string(), "".to_string())
+            .await?;
+        assert_eq!(breez_id, "".to_string());
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_upload_logo() -> Result<(), Box<dyn std::error::Error>> {
+        let node_service = node_service().await;
+        node_service.sync().await?;
+
+        let mut bytes: Vec<u8> = Vec::new();
+        let url = node_service.pos.upload_logo(bytes).await?;
+        assert_eq!(url, "".to_string());
+
+        Ok(())
+    }
+
     /// build node service for tests
     async fn node_service() -> NodeService {
         NodeServiceBuilder::default()
@@ -507,7 +562,11 @@ mod test {
                 node_state: get_dummy_node_state(),
                 transactions: vec![],
             }))
-            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
+            .client_grpc(
+                Box::new(MockBreezServer {}),
+                Box::new(MockBreezServer {}),
+                Box::new(MockBreezServer {}),
+            )
             .build()
             .await
     }
@@ -535,7 +594,11 @@ mod test {
                 node_state: get_dummy_node_state(),
                 transactions: vec![],
             }))
-            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
+            .client_grpc(
+                Box::new(MockBreezServer {}),
+                Box::new(MockBreezServer {}),
+                Box::new(MockBreezServer {}),
+            )
             .build()
             .await
     }

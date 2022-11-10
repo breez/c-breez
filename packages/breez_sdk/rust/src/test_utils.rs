@@ -12,7 +12,7 @@ use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::{
-    FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse,
+    FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, PosAPI, SyncResponse,
 };
 use tokio::sync::mpsc;
 
@@ -149,6 +149,17 @@ impl FiatAPI for MockBreezServer {
             coin: "USD".to_string(),
             value: 20_000.00,
         }])
+    }
+}
+
+#[tonic::async_trait]
+impl PosAPI for MockBreezServer {
+    async fn register_device(&self, _device_id: String, _lightning_id: String) -> Result<String> {
+        Ok("".to_string())
+    }
+
+    async fn upload_logo(&self, _content: Vec<u8>) -> Result<String> {
+        Ok("".to_string())
     }
 }
 

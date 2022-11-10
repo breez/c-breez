@@ -15,8 +15,8 @@ use crate::models::{
 use crate::node_service::NodeServiceBuilder;
 use crate::{greenlight::Greenlight, node_service::NodeService};
 
-use bip39::{Mnemonic, Language, Seed};
 use crate::invoice::{self};
+use bip39::{Language, Mnemonic, Seed};
 
 lazy_static! {
     static ref STATE: Mutex<Option<Greenlight>> = Mutex::new(None);
@@ -99,6 +99,19 @@ pub fn list_fiat_currencies() -> Result<Vec<FiatCurrency>> {
     block_on(async { build_services().await?.list_fiat_currencies() })
 }
 
+pub fn register_device(device_id: String, lightning_id: String) -> Result<String> {
+    block_on(async {
+        build_services()
+            .await?
+            .register_device(device_id, lightning_id)
+            .await
+    })
+}
+
+pub fn upload_logo(content: Vec<u8>) -> Result<String> {
+    block_on(async { build_services().await?.upload_logo(content).await })
+}
+
 pub fn list_transactions(
     filter: PaymentTypeFilter,
     from_timestamp: Option<i64>,
@@ -168,14 +181,14 @@ fn block_on<F: Future>(future: F) -> F::Output {
 // These functions are exposed temporarily for integration purposes
 
 pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
- return invoice::parse_invoice(&invoice);
+    return invoice::parse_invoice(&invoice);
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.
 ///
 /// If the phrase is not a valid mnemonic, an error is returned.
 pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
- let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
- let seed = Seed::new(&mnemonic, "");
- Ok(seed.as_bytes().to_vec())
+    let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
+    let seed = Seed::new(&mnemonic, "");
+    Ok(seed.as_bytes().to_vec())
 }

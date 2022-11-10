@@ -13,5 +13,6 @@ pub mod lsp;
 pub mod models;
 pub mod node_service;
 mod persist;
+mod pos;
 mod swap;
 mod test_utils;

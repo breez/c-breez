@@ -12,16 +12,6 @@ pub extern "C" fn wire_recover_node(port_: i64, network: i32, seed: *mut wire_ui
 }
 
 #[no_mangle]
-pub extern "C" fn wire_create_node_services(
-    port_: i64,
-    breez_config: *mut wire_Config,
-    seed: *mut wire_uint_8_list,
-    creds: *mut wire_GreenlightCredentials,
-) {
-    wire_create_node_services_impl(port_, breez_config, seed, creds)
-}
-
-#[no_mangle]
 pub extern "C" fn wire_start_node(port_: i64) {
     wire_start_node_impl(port_)
 }
@@ -122,16 +112,6 @@ pub extern "C" fn wire_mnemonic_to_seed(port_: i64, phrase: *mut wire_uint_8_lis
 // Section: allocate functions
 
 #[no_mangle]
-pub extern "C" fn new_box_autoadd_config_0() -> *mut wire_Config {
-    support::new_leak_box_ptr(wire_Config::new_with_null_ptr())
-}
-
-#[no_mangle]
-pub extern "C" fn new_box_autoadd_greenlight_credentials_0() -> *mut wire_GreenlightCredentials {
-    support::new_leak_box_ptr(wire_GreenlightCredentials::new_with_null_ptr())
-}
-
-#[no_mangle]
 pub extern "C" fn new_box_autoadd_i64_0(value: i64) -> *mut i64 {
     support::new_leak_box_ptr(value)
 }
@@ -153,39 +133,6 @@ impl Wire2Api<String> for *mut wire_uint_8_list {
         String::from_utf8_lossy(&vec).into_owned()
     }
 }
-impl Wire2Api<Config> for *mut wire_Config {
-    fn wire2api(self) -> Config {
-        let wrap = unsafe { support::box_from_leak_ptr(self) };
-        Wire2Api::<Config>::wire2api(*wrap).into()
-    }
-}
-impl Wire2Api<GreenlightCredentials> for *mut wire_GreenlightCredentials {
-    fn wire2api(self) -> GreenlightCredentials {
-        let wrap = unsafe { support::box_from_leak_ptr(self) };
-        Wire2Api::<GreenlightCredentials>::wire2api(*wrap).into()
-    }
-}
-
-impl Wire2Api<Config> for wire_Config {
-    fn wire2api(self) -> Config {
-        Config {
-            breezserver: self.breezserver.wire2api(),
-            mempoolspace_url: self.mempoolspace_url.wire2api(),
-            working_dir: self.working_dir.wire2api(),
-            network: self.network.wire2api(),
-            payment_timeout_sec: self.payment_timeout_sec.wire2api(),
-        }
-    }
-}
-
-impl Wire2Api<GreenlightCredentials> for wire_GreenlightCredentials {
-    fn wire2api(self) -> GreenlightCredentials {
-        GreenlightCredentials {
-            device_key: self.device_key.wire2api(),
-            device_cert: self.device_cert.wire2api(),
-        }
-    }
-}
 
 impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     fn wire2api(self) -> Vec<u8> {
@@ -196,23 +143,6 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     }
 }
 // Section: wire structs
-
-#[repr(C)]
-#[derive(Clone)]
-pub struct wire_Config {
-    breezserver: *mut wire_uint_8_list,
-    mempoolspace_url: *mut wire_uint_8_list,
-    working_dir: *mut wire_uint_8_list,
-    network: i32,
-    payment_timeout_sec: u32,
-}
-
-#[repr(C)]
-#[derive(Clone)]
-pub struct wire_GreenlightCredentials {
-    device_key: *mut wire_uint_8_list,
-    device_cert: *mut wire_uint_8_list,
-}
 
 #[repr(C)]
 #[derive(Clone)]
@@ -230,27 +160,6 @@ pub trait NewWithNullPtr {
 impl<T> NewWithNullPtr for *mut T {
     fn new_with_null_ptr() -> Self {
         std::ptr::null_mut()
-    }
-}
-
-impl NewWithNullPtr for wire_Config {
-    fn new_with_null_ptr() -> Self {
-        Self {
-            breezserver: core::ptr::null_mut(),
-            mempoolspace_url: core::ptr::null_mut(),
-            working_dir: core::ptr::null_mut(),
-            network: Default::default(),
-            payment_timeout_sec: Default::default(),
-        }
-    }
-}
-
-impl NewWithNullPtr for wire_GreenlightCredentials {
-    fn new_with_null_ptr() -> Self {
-        Self {
-            device_key: core::ptr::null_mut(),
-            device_cert: core::ptr::null_mut(),
-        }
     }
 }
 

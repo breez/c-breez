@@ -1,5 +1,5 @@
 use super::db::SqliteStorage;
-use rusqlite::Result;
+use anyhow::Result;
 
 pub struct SettingItem {
     key: String,
@@ -8,7 +8,7 @@ pub struct SettingItem {
 
 impl SqliteStorage {
     pub fn update_setting(&self, key: String, value: String) -> Result<()> {
-        self.conn.execute(
+        self.get_connection()?.execute(
             "INSERT OR REPLACE INTO settings (key, value) VALUES (?1,?2)",
             (key, value),
         )?;
@@ -16,22 +16,23 @@ impl SqliteStorage {
     }
 
     pub fn get_setting(&self, key: String) -> Result<Option<String>> {
-        let res = self
-            .conn
-            .query_row("SELECT value FROM settings WHERE key = ?1", [key], |row| {
-                row.get(0)
-            });
+        let res = self.get_connection()?.query_row(
+            "SELECT value FROM settings WHERE key = ?1",
+            [key],
+            |row| row.get(0),
+        );
         Ok(res.ok())
     }
 
     pub fn delete_setting(&self, key: String) -> Result<()> {
-        self.conn
+        self.get_connection()?
             .execute("DELETE FROM settings WHERE key = ?1", [key])?;
         Ok(())
     }
 
     pub fn list_settings(&self) -> Result<Vec<SettingItem>> {
-        let mut stmt = self.conn.prepare("SELECT * FROM settings ORDER BY key")?;
+        let con = self.get_connection()?;
+        let mut stmt = con.prepare("SELECT * FROM settings ORDER BY key")?;
         let vec = stmt
             .query_map([], |row| {
                 Ok(SettingItem {
@@ -51,7 +52,8 @@ fn test_settings() {
     use crate::persist::test_utils;
 
     let storage =
-        &SqliteStorage::open(test_utils::create_test_sql_file("settings".to_string())).unwrap();
+        SqliteStorage::from_file(test_utils::create_test_sql_file("settings".to_string()));
+    storage.init().unwrap();
     storage
         .update_setting("key1".to_string(), "val1".to_string())
         .unwrap();

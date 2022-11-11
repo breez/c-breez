@@ -1,12 +1,17 @@
-use rusqlite::{Connection, Result};
+use anyhow::{anyhow, Result};
+use rusqlite::Connection;
 use rusqlite_migration::{Migrations, M};
 
 pub struct SqliteStorage {
-    pub(crate) conn: Connection,
+    file: String,
 }
 
 impl SqliteStorage {
-    pub fn open(file: String) -> Result<SqliteStorage> {
+    pub fn from_file(file: String) -> SqliteStorage {
+        SqliteStorage { file }
+    }
+
+    pub fn init(&self) -> Result<()> {
         let migrations = Migrations::new(vec![M::up(
             "CREATE TABLE IF NOT EXISTS ln_transactions (
                payment_type TEXT NOT NULL check( payment_type in('sent', 'received')),
@@ -35,8 +40,14 @@ impl SqliteStorage {
         ",
         )]);
 
-        let mut conn = Connection::open(file)?;
-        migrations.to_latest(&mut conn).unwrap();
-        Ok(SqliteStorage { conn: conn })
+        let mut conn = self.get_connection()?;
+        migrations
+            .to_latest(&mut conn)
+            .map_err(anyhow::Error::msg)?;
+        Ok(())
+    }
+
+    pub(crate) fn get_connection(&self) -> Result<Connection> {
+        Connection::open(self.file.clone()).map_err(anyhow::Error::msg)
     }
 }

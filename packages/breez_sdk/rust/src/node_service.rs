@@ -4,6 +4,7 @@ use std::str::FromStr;
 use anyhow::{anyhow, Result};
 use bip39::*;
 use bitcoin::secp256k1::{Secp256k1, SecretKey};
+use gl_client::node::Node;
 use rand::Rng;
 use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
@@ -11,6 +12,7 @@ use tonic::transport::{Channel, Uri};
 use crate::binding::get_node_state;
 use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
+use crate::greenlight::Greenlight;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
@@ -32,7 +34,35 @@ pub struct NodeService {
 }
 
 impl NodeService {
-    pub async fn start_node(&mut self) -> Result<()> {
+    pub fn from_config(config: Config, node_api: Box<dyn NodeAPI>) -> Result<NodeService> {
+        // breez_server provides both FiatAPI & LspAPI implementations
+        let breez_server = Box::new(BreezServer::new(config.breezserver.clone()));
+
+        // mempool space is used to monitor the chain
+        let chain_service = MempoolSpace {
+            base_url: config.mempoolspace_url.clone(),
+        };
+
+        // The storage is implemented via sqlite.
+        let persister = crate::persist::db::SqliteStorage::from_file(format!(
+            "{}/storage.sql",
+            config.working_dir
+        ));
+        persister.init().unwrap();
+
+        // Create the node services and it them statically
+        let node_services = NodeService {
+            config,
+            client: node_api,
+            lsp: breez_server.clone(),
+            fiat: breez_server.clone(),
+            chain_service,
+            persister,
+        };
+        Ok(node_services)
+    }
+
+    pub async fn start_node(&self) -> Result<()> {
         self.client.start().await
     }
 
@@ -158,13 +188,13 @@ impl NodeService {
             .map(|r| ())
     }
 
-    pub async fn pay(&mut self, bolt11: String) -> Result<()> {
+    pub async fn pay(&self, bolt11: String) -> Result<()> {
         self.client.send_payment(bolt11, None).await?;
         self.sync().await?;
         Ok(())
     }
 
-    pub async fn keysend(&mut self, node_id: String, amount_sats: u64) -> Result<()> {
+    pub async fn keysend(&self, node_id: String, amount_sats: u64) -> Result<()> {
         self.client
             .send_spontaneous_payment(node_id, amount_sats)
             .await?;
@@ -173,7 +203,7 @@ impl NodeService {
     }
 
     pub async fn request_payment(
-        &mut self,
+        &self,
         amount_sats: u64,
         description: String,
     ) -> Result<LNInvoice> {
@@ -277,76 +307,10 @@ impl NodeService {
         Ok(parsed_invoice)
     }
 
-    pub async fn withdraw(
-        &mut self,
-        to_address: String,
-        feerate_preset: FeeratePreset,
-    ) -> Result<()> {
+    pub async fn withdraw(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
         self.client.sweep(to_address, feerate_preset).await?;
         self.sync().await?;
         Ok(())
-    }
-}
-
-#[derive(Default)]
-pub struct NodeServiceBuilder {
-    config: Option<Config>,
-    client: Option<Box<dyn NodeAPI>>,
-    lsp: Option<Box<dyn LspAPI>>,
-    fiat: Option<Box<dyn FiatAPI>>,
-}
-
-impl NodeServiceBuilder {
-    pub fn config(mut self, config: Config) -> Self {
-        self.config = Some(config);
-        self
-    }
-
-    pub fn client(mut self, client: Box<dyn NodeAPI>) -> Self {
-        self.client = Some(client);
-        self
-    }
-
-    /// Initialize the Breez gRPC Client to a custom implementation
-    pub fn client_grpc(mut self, lsp: Box<dyn LspAPI>, fiat: Box<dyn FiatAPI>) -> Self {
-        self.lsp = Some(lsp);
-        self.fiat = Some(fiat);
-        self
-    }
-
-    /// Initializes the Breez gRPC Client based on the configured Breez endpoint in the config
-    pub async fn client_grpc_init_from_config(mut self) -> Self {
-        let breez_server_endpoint = BreezServer::new(
-            self.config
-                .as_ref()
-                .expect(
-                    "Config not set. Please set config before calling this method in the builder.",
-                )
-                .breezserver
-                .clone(),
-        )
-        .await;
-        self.lsp = Some(Box::new(breez_server_endpoint.clone()));
-        self.fiat = Some(Box::new(breez_server_endpoint.clone()));
-        self
-    }
-
-    pub async fn build(self) -> NodeService {
-        let config = self.config.as_ref().unwrap().clone();
-
-        let chain_service = MempoolSpace {
-            base_url: config.clone().mempoolspace_url,
-        };
-
-        let persist_file = format!("{}/storage.sql", config.working_dir);
-        NodeService {
-            config,
-            client: self.client.unwrap(),
-            lsp: self.lsp.unwrap(),
-            fiat: self.fiat.unwrap(),
-            chain_service,
-            persister: persist::db::SqliteStorage::open(persist_file).unwrap(),
-        }
     }
 }
 
@@ -356,7 +320,7 @@ pub struct BreezServer {
 }
 
 impl BreezServer {
-    pub async fn new(server_url: String) -> Self {
+    pub fn new(server_url: String) -> Self {
         Self { server_url }
     }
 
@@ -385,9 +349,11 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 mod test {
     use anyhow::anyhow;
 
+    use crate::chain::MempoolSpace;
     use crate::fiat::Rate;
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
-    use crate::node_service::{Config, NodeService, NodeServiceBuilder};
+    use crate::node_service::{Config, NodeService};
+    use crate::persist;
     use crate::test_utils::{MockBreezServer, MockNodeAPI};
 
     #[test]
@@ -433,16 +399,13 @@ mod test {
                 description: Some("test payment".to_string()),
             },
         ];
-
-        let node_service = NodeServiceBuilder::default()
-            .config(Config::default())
-            .client(Box::new(MockNodeAPI {
-                node_state: dummy_node_state.clone(),
-                transactions: dummy_transactions.clone(),
-            }))
-            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
-            .build()
-            .await;
+        let node_api = Box::new(MockNodeAPI {
+            node_state: dummy_node_state.clone(),
+            transactions: dummy_transactions.clone(),
+        });
+        let mut node_service = NodeService::from_config(Config::default(), node_api)?;
+        node_service.lsp = Box::new(MockBreezServer {});
+        node_service.fiat = Box::new(MockBreezServer {});
 
         node_service.sync().await?;
         let fetched_state = node_service
@@ -505,15 +468,14 @@ mod test {
 
     /// build node service for tests
     async fn node_service() -> NodeService {
-        NodeServiceBuilder::default()
-            .config(Config::default())
-            .client(Box::new(MockNodeAPI {
-                node_state: get_dummy_node_state(),
-                transactions: vec![],
-            }))
-            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
-            .build()
-            .await
+        let node_api = Box::new(MockNodeAPI {
+            node_state: get_dummy_node_state(),
+            transactions: vec![],
+        });
+        let mut node_service = NodeService::from_config(Config::default(), node_api).unwrap();
+        node_service.lsp = Box::new(MockBreezServer {});
+        node_service.fiat = Box::new(MockBreezServer {});
+        node_service
     }
 
     /// Build dummy NodeState for tests
@@ -533,14 +495,29 @@ mod test {
     }
 
     async fn build_mock_node_service() -> NodeService {
-        NodeServiceBuilder::default()
-            .config(Config::default())
-            .client(Box::new(MockNodeAPI {
-                node_state: get_dummy_node_state(),
-                transactions: vec![],
-            }))
-            .client_grpc(Box::new(MockBreezServer {}), Box::new(MockBreezServer {}))
-            .build()
-            .await
+        let node_api = Box::new(MockNodeAPI {
+            node_state: get_dummy_node_state(),
+            transactions: vec![],
+        });
+
+        let config = Config::default();
+        let persister = persist::db::SqliteStorage::from_file(format!(
+            "{}/storage.sql",
+            config.working_dir.clone()
+        ));
+        NodeService {
+            config: Config::default(),
+            client: node_api,
+            lsp: Box::new(MockBreezServer {}),
+            fiat: Box::new(MockBreezServer {}),
+            chain_service: MempoolSpace {
+                base_url: config.mempoolspace_url.clone(),
+            },
+            persister,
+        }
+
+        // let mut node_service = NodeService::from_config(Config::default(), node_api).unwrap();
+        // node_service.lsp = Box::new(MockBreezServer {});
+        // node_service
     }
 }

@@ -36,7 +36,6 @@ fn get_seed() -> Vec<u8> {
 fn main() -> Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("debug,rustyline=warn")).init();
     let seed = get_seed();
-    let mut greenlight_credentials: Option<GreenlightCredentials> = None;
 
     let mut rl = Editor::<()>::new()?;
     if rl.load_history("history.txt").is_err() {
@@ -52,7 +51,7 @@ fn main() -> Result<()> {
                 match command.next() {
                     Some("register_node") => {
                         let r = binding::register_node(models::Network::Bitcoin, seed.to_vec());
-                        greenlight_credentials = Some(r.unwrap());
+                        let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",
                             hex::encode(greenlight_credentials.clone().unwrap().device_cert),
@@ -106,26 +105,12 @@ fn main() -> Result<()> {
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
-                        greenlight_credentials = Some(r.unwrap());
+                        let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",
                             hex::encode(greenlight_credentials.clone().unwrap().device_cert),
                             hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
                         );
-                    }
-                    Some("create_node_services") => {
-                        if greenlight_credentials.clone().is_none() {
-                            print!("Credentials are not set. Are you missing a call to recover_node or register_node?");
-                            continue;
-                        }
-                        match binding::create_node_services(
-                            crate::models::Config::default(),
-                            seed.to_vec(),
-                            greenlight_credentials.clone().unwrap(),
-                        ) {
-                            Ok(_) => info!("Node services has been created!"),
-                            Err(err) => info!("Error creating node services {}", err),
-                        }
                     }
                     Some("start_node") => show_results(binding::start_node()),
                     Some("sync") => show_results(binding::sync()),

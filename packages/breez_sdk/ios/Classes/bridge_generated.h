@@ -59,6 +59,12 @@ void wire_fetch_rates(int64_t port_);
 
 void wire_list_fiat_currencies(int64_t port_);
 
+void wire_register_device(int64_t port_,
+                          struct wire_uint_8_list *device_id,
+                          struct wire_uint_8_list *lightning_id);
+
+void wire_upload_logo(int64_t port_, struct wire_uint_8_list *content);
+
 void wire_list_transactions(int64_t port_,
                             int32_t filter,
                             int64_t *from_timestamp,
@@ -104,6 +110,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_get_node_state);
     dummy_var ^= ((int64_t) (void*) wire_fetch_rates);
     dummy_var ^= ((int64_t) (void*) wire_list_fiat_currencies);
+    dummy_var ^= ((int64_t) (void*) wire_register_device);
+    dummy_var ^= ((int64_t) (void*) wire_upload_logo);
     dummy_var ^= ((int64_t) (void*) wire_list_transactions);
     dummy_var ^= ((int64_t) (void*) wire_pay);
     dummy_var ^= ((int64_t) (void*) wire_keysend);

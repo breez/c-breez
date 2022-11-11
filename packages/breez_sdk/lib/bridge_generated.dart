@@ -65,6 +65,15 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kListFiatCurrenciesConstMeta;
 
+  Future<String> registerDevice(
+      {required String deviceId, required String lightningId, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kRegisterDeviceConstMeta;
+
+  Future<String> uploadLogo({required Uint8List content, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kUploadLogoConstMeta;
+
   Future<List<LightningTransaction>> listTransactions(
       {required PaymentTypeFilter filter,
       int? fromTimestamp,
@@ -587,6 +596,43 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "list_fiat_currencies",
         argNames: [],
+      );
+
+  Future<String> registerDevice(
+          {required String deviceId,
+          required String lightningId,
+          dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_register_device(
+            port_,
+            _platform.api2wire_String(deviceId),
+            _platform.api2wire_String(lightningId)),
+        parseSuccessData: _wire2api_String,
+        constMeta: kRegisterDeviceConstMeta,
+        argValues: [deviceId, lightningId],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kRegisterDeviceConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "register_device",
+        argNames: ["deviceId", "lightningId"],
+      );
+
+  Future<String> uploadLogo({required Uint8List content, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner
+            .wire_upload_logo(port_, _platform.api2wire_uint_8_list(content)),
+        parseSuccessData: _wire2api_String,
+        constMeta: kUploadLogoConstMeta,
+        argValues: [content],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kUploadLogoConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "upload_logo",
+        argNames: ["content"],
       );
 
   Future<List<LightningTransaction>> listTransactions(
@@ -1389,6 +1435,43 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           'wire_list_fiat_currencies');
   late final _wire_list_fiat_currencies =
       _wire_list_fiat_currenciesPtr.asFunction<void Function(int)>();
+
+  void wire_register_device(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> device_id,
+    ffi.Pointer<wire_uint_8_list> lightning_id,
+  ) {
+    return _wire_register_device(
+      port_,
+      device_id,
+      lightning_id,
+    );
+  }
+
+  late final _wire_register_devicePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_register_device');
+  late final _wire_register_device = _wire_register_devicePtr.asFunction<
+      void Function(
+          int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_upload_logo(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> content,
+  ) {
+    return _wire_upload_logo(
+      port_,
+      content,
+    );
+  }
+
+  late final _wire_upload_logoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_upload_logo');
+  late final _wire_upload_logo = _wire_upload_logoPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_list_transactions(
     int port_,

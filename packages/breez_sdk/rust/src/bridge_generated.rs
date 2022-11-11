@@ -186,6 +186,37 @@ fn wire_list_fiat_currencies_impl(port_: MessagePort) {
         move || move |task_callback| list_fiat_currencies(),
     )
 }
+fn wire_register_device_impl(
+    port_: MessagePort,
+    device_id: impl Wire2Api<String> + UnwindSafe,
+    lightning_id: impl Wire2Api<String> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "register_device",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_device_id = device_id.wire2api();
+            let api_lightning_id = lightning_id.wire2api();
+            move |task_callback| register_device(api_device_id, api_lightning_id)
+        },
+    )
+}
+fn wire_upload_logo_impl(port_: MessagePort, content: impl Wire2Api<Vec<u8>> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "upload_logo",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_content = content.wire2api();
+            move |task_callback| upload_logo(api_content)
+        },
+    )
+}
 fn wire_list_transactions_impl(
     port_: MessagePort,
     filter: impl Wire2Api<PaymentTypeFilter> + UnwindSafe,

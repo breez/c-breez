@@ -67,6 +67,20 @@ pub extern "C" fn wire_list_fiat_currencies(port_: i64) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_register_device(
+    port_: i64,
+    device_id: *mut wire_uint_8_list,
+    lightning_id: *mut wire_uint_8_list,
+) {
+    wire_register_device_impl(port_, device_id, lightning_id)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_upload_logo(port_: i64, content: *mut wire_uint_8_list) {
+    wire_upload_logo_impl(port_, content)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_list_transactions(
     port_: i64,
     filter: i32,

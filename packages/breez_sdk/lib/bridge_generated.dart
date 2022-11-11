@@ -11,60 +11,78 @@ import 'package:meta/meta.dart';
 import 'dart:ffi' as ffi;
 
 abstract class LightningToolkit {
+  /// Register a new node in the cloud and return credentials to interact with it
+  ///
+  /// # Arguments
+  ///
+  /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
   Future<GreenlightCredentials> registerNode(
       {required Network network, required Uint8List seed, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRegisterNodeConstMeta;
 
+  /// Recover an existing node from the cloud and return credentials to interact with it
+  ///
+  /// # Arguments
+  ///
+  /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
   Future<GreenlightCredentials> recoverNode(
       {required Network network, required Uint8List seed, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRecoverNodeConstMeta;
 
-  Future<void> createNodeServices(
-      {required Config breezConfig,
-      required Uint8List seed,
-      required GreenlightCredentials creds,
-      dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kCreateNodeServicesConstMeta;
-
+  /// "Wake up" a node and schedule it to run immediately in the cloud
   Future<void> startNode({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStartNodeConstMeta;
 
+  /// Run the signer in a separate thread.
+  /// This intended for internal use of the SDK and not recommended to use unless
+  /// you know what you are doing.
   Future<void> runSigner({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRunSignerConstMeta;
 
+  /// Stop the signer thread.
+  /// This intended for internal use of the SDK and not recommended to use unless
+  /// you know what you are doing.
   Future<void> stopSigner({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kStopSignerConstMeta;
 
+  /// Synchronize changes from the cloud to the persistent storage.
+  /// Changes includes the node state (inbound liquidity, max payable, max receivable, etc...)
+  /// and new transactions.
   Future<void> sync({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSyncConstMeta;
 
+  /// List available lsps that can be selected by the user
   Future<List<LspInformation>> listLsps({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kListLspsConstMeta;
 
+  /// Select the lsp to be used and provide inbound liquidity
   Future<void> setLspId({required String lspId, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kSetLspIdConstMeta;
 
+  /// get the node state from the persistent storage
   Future<NodeState?> getNodeState({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta;
 
+  /// Fetch live rates of fiat currencies
   Future<List<Rate>> fetchRates({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kFetchRatesConstMeta;
 
+  /// List all available fiat currencies
   Future<List<FiatCurrency>> listFiatCurrencies({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kListFiatCurrenciesConstMeta;
 
+  /// list transactions (incoming/outgoing payments) from the persistent storage
   Future<List<LightningTransaction>> listTransactions(
       {required PaymentTypeFilter filter,
       int? fromTimestamp,
@@ -73,30 +91,52 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kListTransactionsConstMeta;
 
+  /// pay a bolt11 invoice
+  ///
+  /// # Arguments
+  ///
+  /// * `bolt11` - The bolt11 invoice
   Future<void> pay({required String bolt11, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kPayConstMeta;
 
+  /// pay directly to a node id using keysend
+  ///
+  /// # Arguments
+  ///
+  /// * `node_id` - The destination node_id
+  /// * `amount_sats` - The amount to pay in satoshis
   Future<void> keysend(
       {required String nodeId, required int amountSats, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kKeysendConstMeta;
 
+  /// Request an bolt11 payment request
+  /// This also works when the node doesn't have any channels and need inbound liquidity.
+  /// In such case when the invoice is paid a new zero-conf channel will be open by the LSP,
+  /// providing inbound liquidity and the payment will be routed via this new channel.
+  ///
+  /// # Arguments
+  ///
+  /// * `description` - The bolt11 payment request description
+  /// * `amount_sats` - The amount to receive in satoshis
   Future<LNInvoice> requestPayment(
       {required int amountSats, required String description, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRequestPaymentConstMeta;
 
+  /// close all channels with the current lsp
   Future<void> closeLspChannels({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCloseLspChannelsConstMeta;
 
-  Future<void> sweep(
+  /// Withdraw on-chain funds in the wallet to an external btc address
+  Future<void> withdraw(
       {required String toAddress,
       required FeeratePreset feeratePreset,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kSweepConstMeta;
+  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta;
 
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
@@ -108,22 +148,6 @@ abstract class LightningToolkit {
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta;
-}
-
-class Config {
-  final String breezserver;
-  final String mempoolspaceUrl;
-  final String workingDir;
-  final Network network;
-  final int paymentTimeoutSec;
-
-  Config({
-    required this.breezserver,
-    required this.mempoolspaceUrl,
-    required this.workingDir,
-    required this.network,
-    required this.paymentTimeoutSec,
-  });
 }
 
 class CurrencyInfo {
@@ -430,29 +454,6 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["network", "seed"],
       );
 
-  Future<void> createNodeServices(
-          {required Config breezConfig,
-          required Uint8List seed,
-          required GreenlightCredentials creds,
-          dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_create_node_services(
-            port_,
-            _platform.api2wire_box_autoadd_config(breezConfig),
-            _platform.api2wire_uint_8_list(seed),
-            _platform.api2wire_box_autoadd_greenlight_credentials(creds)),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kCreateNodeServicesConstMeta,
-        argValues: [breezConfig, seed, creds],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kCreateNodeServicesConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "create_node_services",
-        argNames: ["breezConfig", "seed", "creds"],
-      );
-
   Future<void> startNode({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_start_node(port_),
@@ -683,24 +684,24 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: [],
       );
 
-  Future<void> sweep(
+  Future<void> withdraw(
           {required String toAddress,
           required FeeratePreset feeratePreset,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_sweep(
+        callFfi: (port_) => _platform.inner.wire_withdraw(
             port_,
             _platform.api2wire_String(toAddress),
             api2wire_feerate_preset(feeratePreset)),
         parseSuccessData: _wire2api_unit,
-        constMeta: kSweepConstMeta,
+        constMeta: kWithdrawConstMeta,
         argValues: [toAddress, feeratePreset],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kSweepConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "sweep",
+        debugName: "withdraw",
         argNames: ["toAddress", "feeratePreset"],
       );
 
@@ -1070,11 +1071,6 @@ int api2wire_payment_type_filter(PaymentTypeFilter raw) {
 }
 
 @protected
-int api2wire_u32(int raw) {
-  return raw;
-}
-
-@protected
 int api2wire_u8(int raw) {
   return raw;
 }
@@ -1088,21 +1084,6 @@ class LightningToolkitPlatform
   @protected
   ffi.Pointer<wire_uint_8_list> api2wire_String(String raw) {
     return api2wire_uint_8_list(utf8.encoder.convert(raw));
-  }
-
-  @protected
-  ffi.Pointer<wire_Config> api2wire_box_autoadd_config(Config raw) {
-    final ptr = inner.new_box_autoadd_config_0();
-    _api_fill_to_wire_config(raw, ptr.ref);
-    return ptr;
-  }
-
-  @protected
-  ffi.Pointer<wire_GreenlightCredentials>
-      api2wire_box_autoadd_greenlight_credentials(GreenlightCredentials raw) {
-    final ptr = inner.new_box_autoadd_greenlight_credentials_0();
-    _api_fill_to_wire_greenlight_credentials(raw, ptr.ref);
-    return ptr;
   }
 
   @protected
@@ -1133,30 +1114,6 @@ class LightningToolkitPlatform
   }
 // Section: api_fill_to_wire
 
-  void _api_fill_to_wire_box_autoadd_config(
-      Config apiObj, ffi.Pointer<wire_Config> wireObj) {
-    _api_fill_to_wire_config(apiObj, wireObj.ref);
-  }
-
-  void _api_fill_to_wire_box_autoadd_greenlight_credentials(
-      GreenlightCredentials apiObj,
-      ffi.Pointer<wire_GreenlightCredentials> wireObj) {
-    _api_fill_to_wire_greenlight_credentials(apiObj, wireObj.ref);
-  }
-
-  void _api_fill_to_wire_config(Config apiObj, wire_Config wireObj) {
-    wireObj.breezserver = api2wire_String(apiObj.breezserver);
-    wireObj.mempoolspace_url = api2wire_String(apiObj.mempoolspaceUrl);
-    wireObj.working_dir = api2wire_String(apiObj.workingDir);
-    wireObj.network = api2wire_network(apiObj.network);
-    wireObj.payment_timeout_sec = api2wire_u32(apiObj.paymentTimeoutSec);
-  }
-
-  void _api_fill_to_wire_greenlight_credentials(
-      GreenlightCredentials apiObj, wire_GreenlightCredentials wireObj) {
-    wireObj.device_key = api2wire_uint_8_list(apiObj.deviceKey);
-    wireObj.device_cert = api2wire_uint_8_list(apiObj.deviceCert);
-  }
 }
 
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names
@@ -1232,36 +1189,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_uint_8_list>)>>('wire_recover_node');
   late final _wire_recover_node = _wire_recover_nodePtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
-
-  void wire_create_node_services(
-    int port_,
-    ffi.Pointer<wire_Config> breez_config,
-    ffi.Pointer<wire_uint_8_list> seed,
-    ffi.Pointer<wire_GreenlightCredentials> creds,
-  ) {
-    return _wire_create_node_services(
-      port_,
-      breez_config,
-      seed,
-      creds,
-    );
-  }
-
-  late final _wire_create_node_servicesPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.Int64,
-                  ffi.Pointer<wire_Config>,
-                  ffi.Pointer<wire_uint_8_list>,
-                  ffi.Pointer<wire_GreenlightCredentials>)>>(
-      'wire_create_node_services');
-  late final _wire_create_node_services =
-      _wire_create_node_servicesPtr.asFunction<
-          void Function(
-              int,
-              ffi.Pointer<wire_Config>,
-              ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_GreenlightCredentials>)>();
 
   void wire_start_node(
     int port_,
@@ -1481,23 +1408,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_close_lsp_channels =
       _wire_close_lsp_channelsPtr.asFunction<void Function(int)>();
 
-  void wire_sweep(
+  void wire_withdraw(
     int port_,
     ffi.Pointer<wire_uint_8_list> to_address,
     int feerate_preset,
   ) {
-    return _wire_sweep(
+    return _wire_withdraw(
       port_,
       to_address,
       feerate_preset,
     );
   }
 
-  late final _wire_sweepPtr = _lookup<
+  late final _wire_withdrawPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Int32)>>('wire_sweep');
-  late final _wire_sweep = _wire_sweepPtr
+              ffi.Int32)>>('wire_withdraw');
+  late final _wire_withdraw = _wire_withdrawPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
   void wire_parse_invoice(
@@ -1533,29 +1460,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Pointer<wire_uint_8_list>)>>('wire_mnemonic_to_seed');
   late final _wire_mnemonic_to_seed = _wire_mnemonic_to_seedPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
-
-  ffi.Pointer<wire_Config> new_box_autoadd_config_0() {
-    return _new_box_autoadd_config_0();
-  }
-
-  late final _new_box_autoadd_config_0Ptr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<wire_Config> Function()>>(
-          'new_box_autoadd_config_0');
-  late final _new_box_autoadd_config_0 = _new_box_autoadd_config_0Ptr
-      .asFunction<ffi.Pointer<wire_Config> Function()>();
-
-  ffi.Pointer<wire_GreenlightCredentials>
-      new_box_autoadd_greenlight_credentials_0() {
-    return _new_box_autoadd_greenlight_credentials_0();
-  }
-
-  late final _new_box_autoadd_greenlight_credentials_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_GreenlightCredentials>
-              Function()>>('new_box_autoadd_greenlight_credentials_0');
-  late final _new_box_autoadd_greenlight_credentials_0 =
-      _new_box_autoadd_greenlight_credentials_0Ptr
-          .asFunction<ffi.Pointer<wire_GreenlightCredentials> Function()>();
 
   ffi.Pointer<ffi.Int64> new_box_autoadd_i64_0(
     int value,
@@ -1606,26 +1510,6 @@ class wire_uint_8_list extends ffi.Struct {
 
   @ffi.Int32()
   external int len;
-}
-
-class wire_Config extends ffi.Struct {
-  external ffi.Pointer<wire_uint_8_list> breezserver;
-
-  external ffi.Pointer<wire_uint_8_list> mempoolspace_url;
-
-  external ffi.Pointer<wire_uint_8_list> working_dir;
-
-  @ffi.Int32()
-  external int network;
-
-  @ffi.Uint32()
-  external int payment_timeout_sec;
-}
-
-class wire_GreenlightCredentials extends ffi.Struct {
-  external ffi.Pointer<wire_uint_8_list> device_key;
-
-  external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
 typedef DartPostCObjectFnType = ffi.Pointer<

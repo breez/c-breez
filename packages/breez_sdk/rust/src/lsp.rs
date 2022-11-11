@@ -62,7 +62,7 @@ impl LspAPI for BreezServer {
     }
 
     async fn register_payment(
-        &mut self,
+        &self,
         lsp_id: String,
         lsp_pubkey: Vec<u8>,
         payment_info: PaymentInformation,

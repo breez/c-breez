@@ -1,18 +1,8 @@
 use std::cmp::max;
 use std::str::FromStr;
 
-use anyhow::{anyhow, Result};
-use bip39::*;
-use bitcoin::secp256k1::{Secp256k1, SecretKey};
-use gl_client::node::Node;
-use rand::Rng;
-use tokio::sync::mpsc;
-use tonic::transport::{Channel, Uri};
-
-use crate::binding::get_node_state;
 use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
-use crate::greenlight::Greenlight;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
@@ -23,6 +13,10 @@ use crate::models::{
     NodeState, PaymentTypeFilter,
 };
 use crate::persist;
+use anyhow::{anyhow, Result};
+use bip39::*;
+use tokio::sync::mpsc;
+use tonic::transport::{Channel, Uri};
 
 pub struct NodeService {
     config: Config,
@@ -62,139 +56,21 @@ impl NodeService {
         Ok(node_services)
     }
 
-    pub async fn start_node(&self) -> Result<()> {
-        self.client.start().await
+    pub async fn scheudle_with_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+        self.start_node().await?;
+        self.client.run_signer(shutdown).await?;
+        self.sync().await
     }
 
-    pub async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
-        self.client.run_signer(shutdown).await
-    }
-
-    pub async fn sync(&self) -> Result<()> {
-        self.connect_lsp_peer().await?;
-        let since_timestamp = self.persister.last_tx_timestamp().unwrap_or(0);
-
-        let new_data = &self.client.pull_changed(since_timestamp).await?;
-
-        self.set_node_state(&new_data.node_state)?;
-        self.persister
-            .insert_ln_transactions(&new_data.transactions)?;
-        Ok(())
-    }
-
-    pub async fn fetch_rates(&self) -> Result<Vec<Rate>> {
-        self.fiat.fetch_rates().await
-    }
-
-    pub fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>> {
-        self.fiat.list_fiat_currencies()
-    }
-
-    pub async fn list_transactions(
-        &self,
-        filter: PaymentTypeFilter,
-        from_timestamp: Option<i64>,
-        to_timestamp: Option<i64>,
-    ) -> Result<Vec<LightningTransaction>> {
-        self.persister
-            .list_ln_transactions(filter, from_timestamp, to_timestamp)
-            .map_err(|err| anyhow!(err))
-    }
-
-    pub fn get_node_state(&self) -> Result<Option<NodeState>> {
-        let state_str = self.persister.get_cached_item("node_state".to_string())?;
-        Ok(match state_str {
-            Some(str) => serde_json::from_str(str.as_str())?,
-            None => None,
-        })
-    }
-
-    pub async fn list_lsps(&self) -> Result<Vec<LspInformation>> {
-        self.lsp
-            .list_lsps(self.get_node_state()?.ok_or(anyhow!("err"))?.id)
-            .await
-    }
-
-    fn set_node_state(&self, state: &NodeState) -> Result<()> {
-        let serialized_state = serde_json::to_string(state)?;
-        self.persister
-            .update_cached_item("node_state".to_string(), serialized_state.to_string())?;
-        Ok(())
-    }
-
-    fn get_lsp_id(&self) -> Result<Option<String>> {
-        self.persister
-            .get_setting("lsp".to_string())
-            .map_err(|err| anyhow!(err))
-    }
-
-    pub async fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
-        self.persister.update_setting("lsp".to_string(), lsp_id)?;
-        self.connect_lsp_peer().await?;
-        Ok(())
-    }
-
-    async fn connect_lsp_peer(&self) -> Result<()> {
-        let lsp = self.get_lsp().await.ok();
-        if !lsp.is_none() {
-            let lsp_info = lsp.unwrap().clone();
-            let node_id = lsp_info.pubkey;
-            let address = lsp_info.host;
-            match self.get_node_state() {
-                Ok(Some(state)) => {
-                    if !state.connected_peers.contains(&node_id) {
-                        self.client
-                            .connect_peer(node_id, address)
-                            .await
-                            .map_err(anyhow::Error::msg)
-                    } else {
-                        Ok(())
-                    }
-                }
-                Ok(None) => Ok(()),
-                Err(e) => Err(anyhow!(e)),
-            }?
-        }
-        Ok(())
-    }
-
-    /// Convenience method to look up LSP info based on current LSP ID
-    async fn get_lsp(&self) -> Result<LspInformation> {
-        let lsp_id = self
-            .get_lsp_id()?
-            .ok_or("No LSP ID found")
-            .map_err(|err| anyhow!(err))?;
-
-        let node_pubkey = self
-            .get_node_state()?
-            .ok_or("No NodeState found")
-            .map_err(|err| anyhow!(err))?
-            .id;
-        self.lsp
-            .list_lsps(node_pubkey)
-            .await?
-            .iter()
-            .find(|&lsp| lsp.id == lsp_id)
-            .ok_or("No LSP found for given LSP ID")
-            .map_err(|err| anyhow!(err))
-            .cloned()
-    }
-
-    pub async fn close_lsp_channels(&self) -> Result<()> {
-        let lsp = self.get_lsp().await?;
-        self.client
-            .close_peer_channels(lsp.pubkey)
-            .await
-            .map(|r| ())
-    }
-
-    pub async fn pay(&self, bolt11: String) -> Result<()> {
+    pub async fn send_payment(&self, bolt11: String) -> Result<()> {
+        self.start_node().await?;
         self.client.send_payment(bolt11, None).await?;
         self.sync().await?;
         Ok(())
     }
 
-    pub async fn keysend(&self, node_id: String, amount_sats: u64) -> Result<()> {
+    pub async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<()> {
+        self.start_node().await?;
         self.client
             .send_spontaneous_payment(node_id, amount_sats)
             .await?;
@@ -202,11 +78,12 @@ impl NodeService {
         Ok(())
     }
 
-    pub async fn request_payment(
+    pub async fn receive_payment(
         &self,
         amount_sats: u64,
         description: String,
     ) -> Result<LNInvoice> {
+        self.start_node().await?;
         let lsp_info = &self.get_lsp().await?;
         let node_state = self
             .get_node_state()?
@@ -307,10 +184,137 @@ impl NodeService {
         Ok(parsed_invoice)
     }
 
+    pub fn get_node_state(&self) -> Result<Option<NodeState>> {
+        let state_str = self.persister.get_cached_item("node_state".to_string())?;
+        Ok(match state_str {
+            Some(str) => serde_json::from_str(str.as_str())?,
+            None => None,
+        })
+    }
+
+    pub async fn list_transactions(
+        &self,
+        filter: PaymentTypeFilter,
+        from_timestamp: Option<i64>,
+        to_timestamp: Option<i64>,
+    ) -> Result<Vec<LightningTransaction>> {
+        self.persister
+            .list_ln_transactions(filter, from_timestamp, to_timestamp)
+            .map_err(|err| anyhow!(err))
+    }
+
     pub async fn withdraw(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
+        self.start_node().await?;
         self.client.sweep(to_address, feerate_preset).await?;
         self.sync().await?;
         Ok(())
+    }
+
+    pub async fn fetch_rates(&self) -> Result<Vec<Rate>> {
+        self.fiat.fetch_rates().await
+    }
+
+    pub fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>> {
+        self.fiat.list_fiat_currencies()
+    }
+
+    pub async fn list_lsps(&self) -> Result<Vec<LspInformation>> {
+        self.lsp
+            .list_lsps(self.get_node_state()?.ok_or(anyhow!("err"))?.id)
+            .await
+    }
+
+    fn set_node_state(&self, state: &NodeState) -> Result<()> {
+        let serialized_state = serde_json::to_string(state)?;
+        self.persister
+            .update_cached_item("node_state".to_string(), serialized_state.to_string())?;
+        Ok(())
+    }
+
+    fn get_lsp_id(&self) -> Result<Option<String>> {
+        self.persister
+            .get_setting("lsp".to_string())
+            .map_err(|err| anyhow!(err))
+    }
+
+    pub async fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
+        self.start_node().await?;
+        self.persister.update_setting("lsp".to_string(), lsp_id)?;
+        self.connect_lsp_peer().await?;
+        self.sync().await?;
+        Ok(())
+    }
+
+    /// Convenience method to look up LSP info based on current LSP ID
+    async fn get_lsp(&self) -> Result<LspInformation> {
+        let lsp_id = self
+            .get_lsp_id()?
+            .ok_or("No LSP ID found")
+            .map_err(|err| anyhow!(err))?;
+
+        let node_pubkey = self
+            .get_node_state()?
+            .ok_or("No NodeState found")
+            .map_err(|err| anyhow!(err))?
+            .id;
+        self.lsp
+            .list_lsps(node_pubkey)
+            .await?
+            .iter()
+            .find(|&lsp| lsp.id == lsp_id)
+            .ok_or("No LSP found for given LSP ID")
+            .map_err(|err| anyhow!(err))
+            .cloned()
+    }
+
+    pub async fn close_lsp_channels(&self) -> Result<()> {
+        self.start_node().await?;
+        let lsp = self.get_lsp().await?;
+        self.client
+            .close_peer_channels(lsp.pubkey)
+            .await
+            .map(|_| ())
+    }
+
+    async fn sync(&self) -> Result<()> {
+        self.start_node().await?;
+        self.connect_lsp_peer().await?;
+        let since_timestamp = self.persister.last_tx_timestamp().unwrap_or(0);
+
+        let new_data = &self.client.pull_changed(since_timestamp).await?;
+
+        self.set_node_state(&new_data.node_state)?;
+        self.persister
+            .insert_ln_transactions(&new_data.transactions)?;
+        Ok(())
+    }
+
+    async fn connect_lsp_peer(&self) -> Result<()> {
+        let lsp = self.get_lsp().await.ok();
+        if !lsp.is_none() {
+            let lsp_info = lsp.unwrap().clone();
+            let node_id = lsp_info.pubkey;
+            let address = lsp_info.host;
+            match self.get_node_state() {
+                Ok(Some(state)) => {
+                    if !state.connected_peers.contains(&node_id) {
+                        self.client
+                            .connect_peer(node_id, address)
+                            .await
+                            .map_err(anyhow::Error::msg)
+                    } else {
+                        Ok(())
+                    }
+                }
+                Ok(None) => Ok(()),
+                Err(e) => Err(anyhow!(e)),
+            }?
+        }
+        Ok(())
+    }
+
+    pub(crate) async fn start_node(&self) -> Result<()> {
+        self.client.start().await
     }
 }
 
@@ -366,7 +370,9 @@ mod test {
 
     #[tokio::test]
     async fn test_node_state() -> Result<(), Box<dyn std::error::Error>> {
-        std::fs::remove_file("./storage.sql").expect("Failed to delete file");
+        let storage_path = format!("{}/storage.sql", get_test_working_dir());
+        std::fs::remove_file(storage_path).ok();
+
         let dummy_node_state = get_dummy_node_state();
 
         let dummy_transactions = vec![
@@ -403,7 +409,7 @@ mod test {
             node_state: dummy_node_state.clone(),
             transactions: dummy_transactions.clone(),
         });
-        let mut node_service = NodeService::from_config(Config::default(), node_api)?;
+        let mut node_service = NodeService::from_config(create_test_config(), node_api)?;
         node_service.lsp = Box::new(MockBreezServer {});
         node_service.fiat = Box::new(MockBreezServer {});
 
@@ -434,6 +440,9 @@ mod test {
 
     #[tokio::test]
     async fn test_list_lsps() -> Result<(), Box<dyn std::error::Error>> {
+        let storage_path = format!("{}/storage.sql", get_test_working_dir());
+        std::fs::remove_file(storage_path).ok();
+
         let node_service = build_mock_node_service().await;
         node_service.sync().await?;
 
@@ -472,10 +481,20 @@ mod test {
             node_state: get_dummy_node_state(),
             transactions: vec![],
         });
-        let mut node_service = NodeService::from_config(Config::default(), node_api).unwrap();
+        let mut node_service = NodeService::from_config(create_test_config(), node_api).unwrap();
         node_service.lsp = Box::new(MockBreezServer {});
         node_service.fiat = Box::new(MockBreezServer {});
         node_service
+    }
+
+    fn create_test_config() -> Config {
+        let mut cfg = Config::default();
+        cfg.working_dir = get_test_working_dir();
+        cfg
+    }
+
+    fn get_test_working_dir() -> String {
+        std::env::temp_dir().to_str().unwrap().to_string()
     }
 
     /// Build dummy NodeState for tests
@@ -500,11 +519,10 @@ mod test {
             transactions: vec![],
         });
 
-        let config = Config::default();
-        let persister = persist::db::SqliteStorage::from_file(format!(
-            "{}/storage.sql",
-            config.working_dir.clone()
-        ));
+        let config = create_test_config();
+        let storage_path = format!("{}/storage.sql", config.working_dir);
+        let persister = persist::db::SqliteStorage::from_file(storage_path);
+        persister.init().unwrap();
         NodeService {
             config: Config::default(),
             client: node_api,

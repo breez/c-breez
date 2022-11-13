@@ -58,24 +58,33 @@ fn main() -> Result<()> {
                             hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
                         );
                     }
+                    Some("recover_node") => {
+                        let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
+                        let greenlight_credentials = Some(r.unwrap());
+                        info!(
+                            "device_cert: {}; device_key: {}",
+                            hex::encode(greenlight_credentials.clone().unwrap().device_cert),
+                            hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
+                        );
+                    }
                     Some("request_payment") => {
                         let amount_sats: u64 = command.next().unwrap().parse()?;
                         let description = command.next().unwrap();
 
-                        show_results(binding::request_payment(
+                        show_results(binding::receive_payment(
                             amount_sats,
                             description.to_string(),
                         ));
                     }
-                    Some("pay") => {
+                    Some("send_payment") => {
                         let bolt11 = command
                             .next()
                             .ok_or("Expected bolt11 arg")
                             .map_err(|err| anyhow!(err))?;
 
-                        show_results(binding::pay(bolt11.into()))
+                        show_results(binding::send_payment(bolt11.into()))
                     }
-                    Some("keysend") => {
+                    Some("send_spontaneous_payment") => {
                         let node_id = command
                             .next()
                             .ok_or("Expected node_id arg")
@@ -85,8 +94,16 @@ fn main() -> Result<()> {
                             .ok_or("Expected amount_sats arg")
                             .map_err(|err| anyhow!(err))?;
 
-                        show_results(binding::keysend(node_id.into(), amount_sats.parse()?))
+                        show_results(binding::send_spontaneous_payment(
+                            node_id.into(),
+                            amount_sats.parse()?,
+                        ))
                     }
+                    Some("list_txs") => show_results(binding::list_transactions(
+                        models::PaymentTypeFilter::All,
+                        None,
+                        None,
+                    )),
                     Some("sweep") => {
                         let to_address = command
                             .next()
@@ -103,17 +120,6 @@ fn main() -> Result<()> {
                             FeeratePreset::try_from(feerate_preset)?,
                         ))
                     }
-                    Some("recover_node") => {
-                        let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
-                        let greenlight_credentials = Some(r.unwrap());
-                        info!(
-                            "device_cert: {}; device_key: {}",
-                            hex::encode(greenlight_credentials.clone().unwrap().device_cert),
-                            hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
-                        );
-                    }
-                    Some("start_node") => show_results(binding::start_node()),
-                    Some("sync") => show_results(binding::sync()),
                     Some("list_lsps") => show_results(binding::list_lsps()),
                     Some("set_lsp") => {
                         let lsps: Vec<LspInformation> = binding::list_lsps()?;
@@ -136,14 +142,7 @@ fn main() -> Result<()> {
                     Some("get_node_state") => show_results(binding::get_node_state()),
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),
                     Some("fetch_rates") => show_results(binding::fetch_rates()),
-                    Some("run_signer") => show_results(binding::run_signer()),
-                    Some("stop_signer") => show_results(binding::stop_signer()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),
-                    Some("list_txs") => show_results(binding::list_transactions(
-                        models::PaymentTypeFilter::All,
-                        None,
-                        None,
-                    )),
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());
                     }

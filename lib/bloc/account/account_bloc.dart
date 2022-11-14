@@ -9,11 +9,13 @@ import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
-import 'package:drift/drift.dart';
 import 'package:fimber/fimber.dart';
+import 'package:flutter/services.dart';
 import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:ini/ini.dart' as ini;
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 const maxPaymentAmount = 4294967;
 
@@ -81,7 +83,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node registered successfully");
     await _storeCredentials(creds);
     emit(state.copyWith(initial: false));
-    await _startNode();
+    await _startNode(seed: seed, creds: creds);
     _log.i("new node started");
     return creds;
   }
@@ -96,7 +98,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         await _breezLib.recoverNode(network: network, seed: seed);
     _log.i("node recovered successfully");
     await _storeCredentials(creds);
-    await _startNode();
+    await _startNode(seed: seed, creds: creds);
+    _log.i("recovered node started");
     return creds;
   }
 
@@ -105,16 +108,38 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _keyChain.write(accountCredsKey, HEX.encode(creds.deviceKey));
   }
 
-  Future _startNode() async {
-    await _breezLib.runSigner();
-    await syncStateWithNode();
+  Future _startNode({
+    required Uint8List seed,
+    required GreenlightCredentials creds,
+  }) async {
+    await _breezLib.initNode(
+      breezConfig: await _getConfig(),
+      seed: seed,
+      creds: creds,
+    );
     started = true;
   }
 
-  // syncStateWithNode synchronized the node state with the local state.
-  // This is required to assemble the account state (e.g liquidity, connected, etc...)
-  Future syncStateWithNode() async {
-    return await _breezLib.sync();
+  Future<Config> _getConfig() async {
+    try {
+      // Read breez.conf ini file and organize it via ini package
+      String configString = await rootBundle.loadString('conf/breez.conf');
+      ini.Config breezConfig = ini.Config.fromString(configString);
+      // Create a Config from breez.conf
+      Config config = Config(
+        breezserver: breezConfig.get("Application Options", "breezserver")!,
+        mempoolspaceUrl:
+            breezConfig.get("Application Options", "mempoolspaceUrl")!,
+        workingDir: (await getApplicationDocumentsDirectory()).path,
+        network: Network.values.firstWhere(
+            (n) => n.name == breezConfig.get("Application Options", "network")),
+        paymentTimeoutSec: int.parse(
+            breezConfig.get("Application Options", "paymentTimeoutSec")!),
+      );
+      return config;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   Future<bool> processLNURLWithdraw(
@@ -134,8 +159,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future sendPayment(String bolt11, int amountSat) async {
     try {
-      await _breezLib.pay(bolt11: bolt11);
-      syncStateWithNode();
+      await _breezLib.sendPayment(bolt11: bolt11);
     } catch (e) {
       _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
@@ -152,7 +176,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     int amountSats,
   ) async {
     try {
-      return await _breezLib.keysend(nodeId: nodeId, amountSats: amountSats);
+      return await _breezLib.sendSpontaneousPayment(
+          nodeId: nodeId, amountSats: amountSats);
     } catch (e) {
       _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
@@ -211,7 +236,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     String description = "",
     required int amountSats,
   }) async {
-    return await _breezLib.requestPayment(
+    return await _breezLib.receivePayment(
       amountSats: amountSats,
       description: description,
     );

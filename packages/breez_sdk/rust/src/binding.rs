@@ -64,7 +64,8 @@ pub fn init_node(breez_config: Config, seed: Vec<u8>, creds: GreenlightCredentia
     *NODE_SERVICE_STATE.lock().unwrap() = Some(Arc::new(node_services));
 
     // run the signer, schedule the node in the cloud and sync state
-    run_signer()
+    run_signer_in_thread()?;
+    block_on(async { get_node_service()?.scheudle_and_sync().await })
 }
 
 /// pay a bolt11 invoice
@@ -170,7 +171,7 @@ fn get_node_service() -> Result<Arc<NodeService>> {
 /// Run the signer in a separate thread.
 /// This intended for internal use of the SDK and not recommended to use unless
 /// you know what you are doing.
-fn run_signer() -> Result<()> {
+fn run_signer_in_thread() -> Result<()> {
     let shutdown = SIGNER_SHUTDOWN.lock().unwrap().clone();
     match shutdown {
         Some(_) => Err(anyhow!("Signer is already running")),
@@ -178,7 +179,7 @@ fn run_signer() -> Result<()> {
             let (tx, rec) = mpsc::channel::<()>(1);
             *SIGNER_SHUTDOWN.lock().unwrap() = Some(tx);
             std::thread::spawn(move || {
-                block_on(async move { get_node_service()?.scheudle_with_signer(rec).await })
+                block_on(async move { get_node_service()?.run_signer(rec).await })
             });
 
             Ok(())

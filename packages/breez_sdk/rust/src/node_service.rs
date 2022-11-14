@@ -56,10 +56,13 @@ impl NodeService {
         Ok(node_services)
     }
 
-    pub async fn scheudle_with_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+    pub async fn scheudle_and_sync(&self) -> Result<()> {
         self.start_node().await?;
-        self.client.run_signer(shutdown).await?;
         self.sync().await
+    }
+
+    pub async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
+        self.client.run_signer(shutdown).await
     }
 
     pub async fn send_payment(&self, bolt11: String) -> Result<()> {

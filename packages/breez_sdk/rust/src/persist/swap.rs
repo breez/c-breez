@@ -74,12 +74,12 @@ impl SqliteStorage {
 }
 
 #[test]
-fn test_swaps() {
+fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
     use crate::persist::test_utils;
 
     let storage = SqliteStorage::from_file(test_utils::create_test_sql_file("swap".to_string()));
 
-    storage.init().unwrap();
+    storage.init()?;
     let tested_swap_info = SwapInfo {
         bitcoin_address: String::from("1"),
         created_at: 0,
@@ -93,13 +93,18 @@ fn test_swaps() {
         script: vec![5],
         status: crate::models::SwapStatus::Confirmed,
     };
-    storage.save_swap_info(tested_swap_info.clone()).unwrap();
-    let item_value = storage.get_swap_info("1".to_string()).unwrap().unwrap();
+    storage.save_swap_info(tested_swap_info.clone())?;
+    let item_value = storage.get_swap_info("1".to_string())?.unwrap();
     assert_eq!(item_value, tested_swap_info);
 
-    let swaps = storage.list_swaps().unwrap();
+    let non_existent_swap = storage.get_swap_info("non-existent".to_string())?;
+    assert!(non_existent_swap.is_none());
+
+    let swaps = storage.list_swaps()?;
     assert_eq!(swaps.len(), 1);
 
-    storage.save_swap_info(tested_swap_info.clone()).unwrap();
-    assert_eq!(swaps.len(), 1)
+    storage.save_swap_info(tested_swap_info.clone())?;
+    assert_eq!(swaps.len(), 1);
+
+    Ok(())
 }

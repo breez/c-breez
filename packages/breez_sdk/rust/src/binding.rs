@@ -65,7 +65,7 @@ pub fn init_node(breez_config: Config, seed: Vec<u8>, creds: GreenlightCredentia
 
     // run the signer, schedule the node in the cloud and sync state
     run_signer_in_thread()?;
-    block_on(async { get_node_service()?.scheudle_and_sync().await })
+    block_on(async { get_node_service()?.schedule_and_sync().await })
 }
 
 /// pay a bolt11 invoice

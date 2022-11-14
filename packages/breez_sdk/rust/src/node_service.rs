@@ -56,7 +56,7 @@ impl NodeService {
         Ok(node_services)
     }
 
-    pub async fn scheudle_and_sync(&self) -> Result<()> {
+    pub async fn schedule_and_sync(&self) -> Result<()> {
         self.start_node().await?;
         self.sync().await
     }

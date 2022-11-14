@@ -4,6 +4,7 @@ use std::str::FromStr;
 use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
+use crate::grpc::fund_manager_client::FundManagerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
@@ -339,6 +340,12 @@ impl BreezServer {
 
     pub(crate) async fn get_information_client(&self) -> Result<InformationClient<Channel>> {
         InformationClient::connect(Uri::from_str(&self.server_url)?)
+            .await
+            .map_err(|e| anyhow!(e))
+    }
+
+    pub(crate) async fn get_fund_manager_client(&self) -> Result<FundManagerClient<Channel>> {
+        FundManagerClient::connect(Uri::from_str(&self.server_url)?)
             .await
             .map_err(|e| anyhow!(e))
     }

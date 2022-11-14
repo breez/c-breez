@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{
     Amount, CloseChannelResponse, CloseChannelType, Invoice, Payment, Peer, WithdrawResponse,
@@ -12,7 +12,8 @@ use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::{
-    FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, SyncResponse,
+    FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, Swap, SwapperAPI,
+    SyncResponse,
 };
 use tokio::sync::mpsc;
 
@@ -152,10 +153,39 @@ impl FiatAPI for MockBreezServer {
     }
 }
 
+pub struct MockSwapperAPI {}
+
+#[tonic::async_trait]
+impl SwapperAPI for MockSwapperAPI {
+    async fn create_swap(
+        &self,
+        hash: Vec<u8>,
+        payer_pubkey: Vec<u8>,
+        node_pubkey: String,
+    ) -> Result<Swap> {
+        Err(anyhow!("Not implemented"))
+    }
+}
+
 pub fn rand_string(len: usize) -> String {
     Alphanumeric.sample_string(&mut rand::thread_rng(), len)
 }
 
 pub fn rand_vec_u8(len: usize) -> Vec<u8> {
     rand::thread_rng().sample_iter(Standard).take(len).collect()
+}
+
+pub fn create_test_config() -> crate::models::Config {
+    let mut cfg = crate::models::Config::default();
+    cfg.working_dir = get_test_working_dir();
+    cfg
+}
+
+pub fn create_test_persister(config: crate::models::Config) -> crate::persist::db::SqliteStorage {
+    let storage_path = format!("{}/storage.sql", config.working_dir);
+    crate::persist::db::SqliteStorage::from_file(storage_path)
+}
+
+pub fn get_test_working_dir() -> String {
+    std::env::temp_dir().to_str().unwrap().to_string()
 }

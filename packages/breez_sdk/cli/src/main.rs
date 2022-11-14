@@ -143,6 +143,7 @@ fn main() -> Result<()> {
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),
                     Some("fetch_rates") => show_results(binding::fetch_rates()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),
+                    Some("stop_node") => show_results(binding::stop_node()),
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());
                     }

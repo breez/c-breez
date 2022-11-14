@@ -68,6 +68,13 @@ pub fn init_node(breez_config: Config, seed: Vec<u8>, creds: GreenlightCredentia
     block_on(async { get_node_service()?.schedule_and_sync().await })
 }
 
+/// Cleanup node resources and stop the signer.
+pub fn stop_node() -> Result<()> {
+    stop_signer()?;
+    *NODE_SERVICE_STATE.lock().unwrap() = None;
+    Ok(())
+}
+
 /// pay a bolt11 invoice
 ///
 /// # Arguments

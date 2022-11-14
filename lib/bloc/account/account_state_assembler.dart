@@ -1,14 +1,11 @@
-import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 
 import 'account_bloc.dart';
 import 'account_state.dart';
 
 // assembleAccountState assembles the account state using the local synchronized data.
-Future<AccountState?> assembleAccountState(BreezBridge breezLib) async {
-  var nodeState = await breezLib.getNodeState();
-  List<LightningTransaction> transactions = await breezLib.listTransactions();
-
+AccountState? assembleAccountState(
+    List<LightningTransaction> transactions, NodeState? nodeState) {
   if (nodeState == null) {
     return null;
   }

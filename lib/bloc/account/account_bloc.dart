@@ -16,6 +16,9 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:ini/ini.dart' as ini;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
+
+import 'account_state_assembler.dart';
 
 const maxPaymentAmount = 4294967;
 
@@ -27,6 +30,7 @@ const maxPaymentAmount = 4294967;
 class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String paymentFilterSettingsKey = "payment_filter_settings";
   static const String accountCredsKey = "account_creds_key";
+  static const String accountCredsCert = "account_creds_cert";
   static const String accountSeedKey = "account_seed_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
@@ -41,11 +45,26 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       emit(acc);
     });
 
-    // TODO: sync node info on incoming payments
-
     if (!state.initial) {
-      throw Exception("not implemented");
+      _startRegisteredNode();
     }
+  }
+
+  Future _startRegisteredNode() async {
+    String? deviceCertStr = await _keyChain.read(accountCredsCert);
+    String? deviceKeyStr = await _keyChain.read(accountCredsKey);
+    String? seedStr = await _keyChain.read(accountSeedKey);
+
+    Uint8List deviceCert = Uint8List.fromList(HEX.decode(deviceCertStr!));
+    Uint8List deviceKey = Uint8List.fromList(HEX.decode(deviceKeyStr!));
+    Uint8List seed = Uint8List.fromList(HEX.decode(seedStr!));
+
+    final creds = GreenlightCredentials(
+      deviceKey: deviceKey,
+      deviceCert: deviceCert,
+    );
+
+    _startNode(creds: creds, seed: seed);
   }
 
   // TODO: Export the user keys to a file
@@ -81,7 +100,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     final GreenlightCredentials creds =
         await _breezLib.registerNode(network: network, seed: seed);
     _log.i("node registered successfully");
-    await _storeCredentials(creds);
+    await _storeCredentials(creds: creds, seed: seed);
     emit(state.copyWith(initial: false));
     await _startNode(seed: seed, creds: creds);
     _log.i("new node started");
@@ -97,15 +116,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     final GreenlightCredentials creds =
         await _breezLib.recoverNode(network: network, seed: seed);
     _log.i("node recovered successfully");
-    await _storeCredentials(creds);
+    await _storeCredentials(creds: creds, seed: seed);
     await _startNode(seed: seed, creds: creds);
     _log.i("recovered node started");
     return creds;
   }
 
-  Future<void> _storeCredentials(GreenlightCredentials creds) async {
-    await _keyChain.write(accountSeedKey, HEX.encode(creds.deviceCert));
+  Future<void> _storeCredentials({
+    required GreenlightCredentials creds,
+    required Uint8List seed,
+  }) async {
+    await _keyChain.write(accountCredsCert, HEX.encode(creds.deviceCert));
     await _keyChain.write(accountCredsKey, HEX.encode(creds.deviceKey));
+    await _keyChain.write(accountSeedKey, HEX.encode(seed));
   }
 
   Future _startNode({
@@ -126,15 +149,18 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       String configString = await rootBundle.loadString('conf/breez.conf');
       ini.Config breezConfig = ini.Config.fromString(configString);
       // Create a Config from breez.conf
+      // TODO: Get mempoolspaceUrl from Settings in Network tab
+      // TODO: Get paymentTimeoutSec from Settings, meanwhile set to 90 seconds as default value
       Config config = Config(
-        breezserver: breezConfig.get("Application Options", "breezserver")!,
+        breezserver:
+            breezConfig.get("Application Options", "breezserver") ?? "",
         mempoolspaceUrl:
-            breezConfig.get("Application Options", "mempoolspaceUrl")!,
+            breezConfig.get("Application Options", "breezserver") ?? "",
         workingDir: (await getApplicationDocumentsDirectory()).path,
-        network: Network.values.firstWhere(
-            (n) => n.name == breezConfig.get("Application Options", "network")),
-        paymentTimeoutSec: int.parse(
-            breezConfig.get("Application Options", "paymentTimeoutSec")!),
+        network: Network.values.firstWhere((n) =>
+            n.name.toLowerCase() ==
+            breezConfig.get("Application Options", "network")),
+        paymentTimeoutSec: 90,
       );
       return config;
     } catch (e) {
@@ -244,7 +270,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   _watchAccountChanges() {
-    throw Exception("not implemented");
+    return Rx.combineLatest2<List<LightningTransaction>, NodeState?,
+            AccountState>(
+        _breezLib.transactionsStream, _breezLib.nodeStateStream,
+        (transactions, nodeState) {
+      return assembleAccountState(transactions, nodeState) ?? state;
+    });
   }
 
   @override

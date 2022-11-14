@@ -98,6 +98,9 @@ class BreezBridge {
         toTimestamp: toTimestamp,
       );
 
+  Stream<List<LightningTransaction>> get transactionsStream =>
+      listTransactions().asStream();
+
   /// List available lsps that can be selected by the user
   Future<List<LspInformation>> listLsps() async => await _lnToolkit.listLsps();
 

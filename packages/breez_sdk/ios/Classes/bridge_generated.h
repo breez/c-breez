@@ -36,45 +36,39 @@ void wire_register_node(int64_t port_, int32_t network, struct wire_uint_8_list 
 
 void wire_recover_node(int64_t port_, int32_t network, struct wire_uint_8_list *seed);
 
-void wire_create_node_services(int64_t port_,
-                               struct wire_Config *breez_config,
-                               struct wire_uint_8_list *seed,
-                               struct wire_GreenlightCredentials *creds);
+void wire_init_node(int64_t port_,
+                    struct wire_Config *breez_config,
+                    struct wire_uint_8_list *seed,
+                    struct wire_GreenlightCredentials *creds);
 
-void wire_start_node(int64_t port_);
+void wire_send_payment(int64_t port_, struct wire_uint_8_list *bolt11);
 
-void wire_run_signer(int64_t port_);
+void wire_send_spontaneous_payment(int64_t port_,
+                                   struct wire_uint_8_list *node_id,
+                                   uint64_t amount_sats);
 
-void wire_stop_signer(int64_t port_);
-
-void wire_sync(int64_t port_);
-
-void wire_list_lsps(int64_t port_);
-
-void wire_set_lsp_id(int64_t port_, struct wire_uint_8_list *lsp_id);
+void wire_receive_payment(int64_t port_,
+                          uint64_t amount_sats,
+                          struct wire_uint_8_list *description);
 
 void wire_get_node_state(int64_t port_);
-
-void wire_fetch_rates(int64_t port_);
-
-void wire_list_fiat_currencies(int64_t port_);
 
 void wire_list_transactions(int64_t port_,
                             int32_t filter,
                             int64_t *from_timestamp,
                             int64_t *to_timestamp);
 
-void wire_pay(int64_t port_, struct wire_uint_8_list *bolt11);
+void wire_list_lsps(int64_t port_);
 
-void wire_keysend(int64_t port_, struct wire_uint_8_list *node_id, uint64_t amount_sats);
+void wire_set_lsp_id(int64_t port_, struct wire_uint_8_list *lsp_id);
 
-void wire_request_payment(int64_t port_,
-                          uint64_t amount_sats,
-                          struct wire_uint_8_list *description);
+void wire_fetch_rates(int64_t port_);
+
+void wire_list_fiat_currencies(int64_t port_);
 
 void wire_close_lsp_channels(int64_t port_);
 
-void wire_sweep(int64_t port_, struct wire_uint_8_list *to_address, int32_t feerate_preset);
+void wire_withdraw(int64_t port_, struct wire_uint_8_list *to_address, int32_t feerate_preset);
 
 void wire_parse_invoice(int64_t port_, struct wire_uint_8_list *invoice);
 
@@ -94,22 +88,18 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     int64_t dummy_var = 0;
     dummy_var ^= ((int64_t) (void*) wire_register_node);
     dummy_var ^= ((int64_t) (void*) wire_recover_node);
-    dummy_var ^= ((int64_t) (void*) wire_create_node_services);
-    dummy_var ^= ((int64_t) (void*) wire_start_node);
-    dummy_var ^= ((int64_t) (void*) wire_run_signer);
-    dummy_var ^= ((int64_t) (void*) wire_stop_signer);
-    dummy_var ^= ((int64_t) (void*) wire_sync);
+    dummy_var ^= ((int64_t) (void*) wire_init_node);
+    dummy_var ^= ((int64_t) (void*) wire_send_payment);
+    dummy_var ^= ((int64_t) (void*) wire_send_spontaneous_payment);
+    dummy_var ^= ((int64_t) (void*) wire_receive_payment);
+    dummy_var ^= ((int64_t) (void*) wire_get_node_state);
+    dummy_var ^= ((int64_t) (void*) wire_list_transactions);
     dummy_var ^= ((int64_t) (void*) wire_list_lsps);
     dummy_var ^= ((int64_t) (void*) wire_set_lsp_id);
-    dummy_var ^= ((int64_t) (void*) wire_get_node_state);
     dummy_var ^= ((int64_t) (void*) wire_fetch_rates);
     dummy_var ^= ((int64_t) (void*) wire_list_fiat_currencies);
-    dummy_var ^= ((int64_t) (void*) wire_list_transactions);
-    dummy_var ^= ((int64_t) (void*) wire_pay);
-    dummy_var ^= ((int64_t) (void*) wire_keysend);
-    dummy_var ^= ((int64_t) (void*) wire_request_payment);
     dummy_var ^= ((int64_t) (void*) wire_close_lsp_channels);
-    dummy_var ^= ((int64_t) (void*) wire_sweep);
+    dummy_var ^= ((int64_t) (void*) wire_withdraw);
     dummy_var ^= ((int64_t) (void*) wire_parse_invoice);
     dummy_var ^= ((int64_t) (void*) wire_mnemonic_to_seed);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_config_0);

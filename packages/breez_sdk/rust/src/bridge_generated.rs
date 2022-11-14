@@ -73,7 +73,7 @@ fn wire_recover_node_impl(
         },
     )
 }
-fn wire_create_node_services_impl(
+fn wire_init_node_impl(
     port_: MessagePort,
     breez_config: impl Wire2Api<Config> + UnwindSafe,
     seed: impl Wire2Api<Vec<u8>> + UnwindSafe,
@@ -81,7 +81,7 @@ fn wire_create_node_services_impl(
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "create_node_services",
+            debug_name: "init_node",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
@@ -89,48 +89,87 @@ fn wire_create_node_services_impl(
             let api_breez_config = breez_config.wire2api();
             let api_seed = seed.wire2api();
             let api_creds = creds.wire2api();
-            move |task_callback| create_node_services(api_breez_config, api_seed, api_creds)
+            move |task_callback| init_node(api_breez_config, api_seed, api_creds)
         },
     )
 }
-fn wire_start_node_impl(port_: MessagePort) {
+fn wire_send_payment_impl(port_: MessagePort, bolt11: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "start_node",
+            debug_name: "send_payment",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| start_node(),
+        move || {
+            let api_bolt11 = bolt11.wire2api();
+            move |task_callback| send_payment(api_bolt11)
+        },
     )
 }
-fn wire_run_signer_impl(port_: MessagePort) {
+fn wire_send_spontaneous_payment_impl(
+    port_: MessagePort,
+    node_id: impl Wire2Api<String> + UnwindSafe,
+    amount_sats: impl Wire2Api<u64> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "run_signer",
+            debug_name: "send_spontaneous_payment",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| run_signer(),
+        move || {
+            let api_node_id = node_id.wire2api();
+            let api_amount_sats = amount_sats.wire2api();
+            move |task_callback| send_spontaneous_payment(api_node_id, api_amount_sats)
+        },
     )
 }
-fn wire_stop_signer_impl(port_: MessagePort) {
+fn wire_receive_payment_impl(
+    port_: MessagePort,
+    amount_sats: impl Wire2Api<u64> + UnwindSafe,
+    description: impl Wire2Api<String> + UnwindSafe,
+) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "stop_signer",
+            debug_name: "receive_payment",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| stop_signer(),
+        move || {
+            let api_amount_sats = amount_sats.wire2api();
+            let api_description = description.wire2api();
+            move |task_callback| receive_payment(api_amount_sats, api_description)
+        },
     )
 }
-fn wire_sync_impl(port_: MessagePort) {
+fn wire_get_node_state_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "sync",
+            debug_name: "get_node_state",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| sync(),
+        move || move |task_callback| get_node_state(),
+    )
+}
+fn wire_list_transactions_impl(
+    port_: MessagePort,
+    filter: impl Wire2Api<PaymentTypeFilter> + UnwindSafe,
+    from_timestamp: impl Wire2Api<Option<i64>> + UnwindSafe,
+    to_timestamp: impl Wire2Api<Option<i64>> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "list_transactions",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_filter = filter.wire2api();
+            let api_from_timestamp = from_timestamp.wire2api();
+            let api_to_timestamp = to_timestamp.wire2api();
+            move |task_callback| list_transactions(api_filter, api_from_timestamp, api_to_timestamp)
+        },
     )
 }
 fn wire_list_lsps_impl(port_: MessagePort) {
@@ -156,16 +195,6 @@ fn wire_set_lsp_id_impl(port_: MessagePort, lsp_id: impl Wire2Api<String> + Unwi
         },
     )
 }
-fn wire_get_node_state_impl(port_: MessagePort) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "get_node_state",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || move |task_callback| get_node_state(),
-    )
-}
 fn wire_fetch_rates_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -186,75 +215,6 @@ fn wire_list_fiat_currencies_impl(port_: MessagePort) {
         move || move |task_callback| list_fiat_currencies(),
     )
 }
-fn wire_list_transactions_impl(
-    port_: MessagePort,
-    filter: impl Wire2Api<PaymentTypeFilter> + UnwindSafe,
-    from_timestamp: impl Wire2Api<Option<i64>> + UnwindSafe,
-    to_timestamp: impl Wire2Api<Option<i64>> + UnwindSafe,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "list_transactions",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_filter = filter.wire2api();
-            let api_from_timestamp = from_timestamp.wire2api();
-            let api_to_timestamp = to_timestamp.wire2api();
-            move |task_callback| list_transactions(api_filter, api_from_timestamp, api_to_timestamp)
-        },
-    )
-}
-fn wire_pay_impl(port_: MessagePort, bolt11: impl Wire2Api<String> + UnwindSafe) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "pay",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_bolt11 = bolt11.wire2api();
-            move |task_callback| pay(api_bolt11)
-        },
-    )
-}
-fn wire_keysend_impl(
-    port_: MessagePort,
-    node_id: impl Wire2Api<String> + UnwindSafe,
-    amount_sats: impl Wire2Api<u64> + UnwindSafe,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "keysend",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_node_id = node_id.wire2api();
-            let api_amount_sats = amount_sats.wire2api();
-            move |task_callback| keysend(api_node_id, api_amount_sats)
-        },
-    )
-}
-fn wire_request_payment_impl(
-    port_: MessagePort,
-    amount_sats: impl Wire2Api<u64> + UnwindSafe,
-    description: impl Wire2Api<String> + UnwindSafe,
-) {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
-        WrapInfo {
-            debug_name: "request_payment",
-            port: Some(port_),
-            mode: FfiCallMode::Normal,
-        },
-        move || {
-            let api_amount_sats = amount_sats.wire2api();
-            let api_description = description.wire2api();
-            move |task_callback| request_payment(api_amount_sats, api_description)
-        },
-    )
-}
 fn wire_close_lsp_channels_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -265,21 +225,21 @@ fn wire_close_lsp_channels_impl(port_: MessagePort) {
         move || move |task_callback| close_lsp_channels(),
     )
 }
-fn wire_sweep_impl(
+fn wire_withdraw_impl(
     port_: MessagePort,
     to_address: impl Wire2Api<String> + UnwindSafe,
     feerate_preset: impl Wire2Api<FeeratePreset> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "sweep",
+            debug_name: "withdraw",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
         move || {
             let api_to_address = to_address.wire2api();
             let api_feerate_preset = feerate_preset.wire2api();
-            move |task_callback| sweep(api_to_address, api_feerate_preset)
+            move |task_callback| withdraw(api_to_address, api_feerate_preset)
         },
     )
 }

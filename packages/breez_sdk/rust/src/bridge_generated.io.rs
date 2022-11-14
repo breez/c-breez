@@ -12,58 +12,41 @@ pub extern "C" fn wire_recover_node(port_: i64, network: i32, seed: *mut wire_ui
 }
 
 #[no_mangle]
-pub extern "C" fn wire_create_node_services(
+pub extern "C" fn wire_init_node(
     port_: i64,
     breez_config: *mut wire_Config,
     seed: *mut wire_uint_8_list,
     creds: *mut wire_GreenlightCredentials,
 ) {
-    wire_create_node_services_impl(port_, breez_config, seed, creds)
+    wire_init_node_impl(port_, breez_config, seed, creds)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_start_node(port_: i64) {
-    wire_start_node_impl(port_)
+pub extern "C" fn wire_send_payment(port_: i64, bolt11: *mut wire_uint_8_list) {
+    wire_send_payment_impl(port_, bolt11)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_run_signer(port_: i64) {
-    wire_run_signer_impl(port_)
+pub extern "C" fn wire_send_spontaneous_payment(
+    port_: i64,
+    node_id: *mut wire_uint_8_list,
+    amount_sats: u64,
+) {
+    wire_send_spontaneous_payment_impl(port_, node_id, amount_sats)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_stop_signer(port_: i64) {
-    wire_stop_signer_impl(port_)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_sync(port_: i64) {
-    wire_sync_impl(port_)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_list_lsps(port_: i64) {
-    wire_list_lsps_impl(port_)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_set_lsp_id(port_: i64, lsp_id: *mut wire_uint_8_list) {
-    wire_set_lsp_id_impl(port_, lsp_id)
+pub extern "C" fn wire_receive_payment(
+    port_: i64,
+    amount_sats: u64,
+    description: *mut wire_uint_8_list,
+) {
+    wire_receive_payment_impl(port_, amount_sats, description)
 }
 
 #[no_mangle]
 pub extern "C" fn wire_get_node_state(port_: i64) {
     wire_get_node_state_impl(port_)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_fetch_rates(port_: i64) {
-    wire_fetch_rates_impl(port_)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_list_fiat_currencies(port_: i64) {
-    wire_list_fiat_currencies_impl(port_)
 }
 
 #[no_mangle]
@@ -77,22 +60,23 @@ pub extern "C" fn wire_list_transactions(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_pay(port_: i64, bolt11: *mut wire_uint_8_list) {
-    wire_pay_impl(port_, bolt11)
+pub extern "C" fn wire_list_lsps(port_: i64) {
+    wire_list_lsps_impl(port_)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_keysend(port_: i64, node_id: *mut wire_uint_8_list, amount_sats: u64) {
-    wire_keysend_impl(port_, node_id, amount_sats)
+pub extern "C" fn wire_set_lsp_id(port_: i64, lsp_id: *mut wire_uint_8_list) {
+    wire_set_lsp_id_impl(port_, lsp_id)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_request_payment(
-    port_: i64,
-    amount_sats: u64,
-    description: *mut wire_uint_8_list,
-) {
-    wire_request_payment_impl(port_, amount_sats, description)
+pub extern "C" fn wire_fetch_rates(port_: i64) {
+    wire_fetch_rates_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_list_fiat_currencies(port_: i64) {
+    wire_list_fiat_currencies_impl(port_)
 }
 
 #[no_mangle]
@@ -101,8 +85,12 @@ pub extern "C" fn wire_close_lsp_channels(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_sweep(port_: i64, to_address: *mut wire_uint_8_list, feerate_preset: i32) {
-    wire_sweep_impl(port_, to_address, feerate_preset)
+pub extern "C" fn wire_withdraw(
+    port_: i64,
+    to_address: *mut wire_uint_8_list,
+    feerate_preset: i32,
+) {
+    wire_withdraw_impl(port_, to_address, feerate_preset)
 }
 
 #[no_mangle]

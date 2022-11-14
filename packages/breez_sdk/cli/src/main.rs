@@ -36,7 +36,6 @@ fn get_seed() -> Vec<u8> {
 fn main() -> Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("debug,rustyline=warn")).init();
     let seed = get_seed();
-    let mut greenlight_credentials: Option<GreenlightCredentials> = None;
 
     let mut rl = Editor::<()>::new()?;
     if rl.load_history("history.txt").is_err() {
@@ -52,7 +51,16 @@ fn main() -> Result<()> {
                 match command.next() {
                     Some("register_node") => {
                         let r = binding::register_node(models::Network::Bitcoin, seed.to_vec());
-                        greenlight_credentials = Some(r.unwrap());
+                        let greenlight_credentials = Some(r.unwrap());
+                        info!(
+                            "device_cert: {}; device_key: {}",
+                            hex::encode(greenlight_credentials.clone().unwrap().device_cert),
+                            hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
+                        );
+                    }
+                    Some("recover_node") => {
+                        let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
+                        let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",
                             hex::encode(greenlight_credentials.clone().unwrap().device_cert),
@@ -63,20 +71,20 @@ fn main() -> Result<()> {
                         let amount_sats: u64 = command.next().unwrap().parse()?;
                         let description = command.next().unwrap();
 
-                        show_results(binding::request_payment(
+                        show_results(binding::receive_payment(
                             amount_sats,
                             description.to_string(),
                         ));
                     }
-                    Some("pay") => {
+                    Some("send_payment") => {
                         let bolt11 = command
                             .next()
                             .ok_or("Expected bolt11 arg")
                             .map_err(|err| anyhow!(err))?;
 
-                        show_results(binding::pay(bolt11.into()))
+                        show_results(binding::send_payment(bolt11.into()))
                     }
-                    Some("keysend") => {
+                    Some("send_spontaneous_payment") => {
                         let node_id = command
                             .next()
                             .ok_or("Expected node_id arg")
@@ -86,8 +94,16 @@ fn main() -> Result<()> {
                             .ok_or("Expected amount_sats arg")
                             .map_err(|err| anyhow!(err))?;
 
-                        show_results(binding::keysend(node_id.into(), amount_sats.parse()?))
+                        show_results(binding::send_spontaneous_payment(
+                            node_id.into(),
+                            amount_sats.parse()?,
+                        ))
                     }
+                    Some("list_txs") => show_results(binding::list_transactions(
+                        models::PaymentTypeFilter::All,
+                        None,
+                        None,
+                    )),
                     Some("sweep") => {
                         let to_address = command
                             .next()
@@ -99,36 +115,11 @@ fn main() -> Result<()> {
                             .map_err(|err| anyhow!(err))?
                             .parse()?;
 
-                        show_results(binding::sweep(
+                        show_results(binding::withdraw(
                             to_address.into(),
                             FeeratePreset::try_from(feerate_preset)?,
                         ))
                     }
-                    Some("recover_node") => {
-                        let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
-                        greenlight_credentials = Some(r.unwrap());
-                        info!(
-                            "device_cert: {}; device_key: {}",
-                            hex::encode(greenlight_credentials.clone().unwrap().device_cert),
-                            hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
-                        );
-                    }
-                    Some("create_node_services") => {
-                        if greenlight_credentials.clone().is_none() {
-                            print!("Credentials are not set. Are you missing a call to recover_node or register_node?");
-                            continue;
-                        }
-                        match binding::create_node_services(
-                            crate::models::Config::default(),
-                            seed.to_vec(),
-                            greenlight_credentials.clone().unwrap(),
-                        ) {
-                            Ok(_) => info!("Node services has been created!"),
-                            Err(err) => info!("Error creating node services {}", err),
-                        }
-                    }
-                    Some("start_node") => show_results(binding::start_node()),
-                    Some("sync") => show_results(binding::sync()),
                     Some("list_lsps") => show_results(binding::list_lsps()),
                     Some("set_lsp") => {
                         let lsps: Vec<LspInformation> = binding::list_lsps()?;
@@ -151,9 +142,8 @@ fn main() -> Result<()> {
                     Some("get_node_state") => show_results(binding::get_node_state()),
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),
                     Some("fetch_rates") => show_results(binding::fetch_rates()),
-                    Some("run_signer") => show_results(binding::run_signer()),
-                    Some("stop_signer") => show_results(binding::stop_signer()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),
+                    Some("stop_node") => show_results(binding::stop_node()),
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());
                     }

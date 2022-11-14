@@ -1,11 +1,12 @@
 use super::db::SqliteStorage;
 use crate::models::LightningTransaction;
 use crate::models::PaymentTypeFilter;
-use rusqlite::Result;
+use anyhow::Result;
 
 impl SqliteStorage {
     pub fn insert_ln_transactions(&self, transactions: &[LightningTransaction]) -> Result<()> {
-        let mut prep_statment = self.conn.prepare(
+        let con = self.get_connection()?;
+        let mut prep_statment = con.prepare(
             "
                INSERT INTO ln_transactions (
                  payment_type,
@@ -45,10 +46,11 @@ impl SqliteStorage {
     }
 
     pub fn last_tx_timestamp(&self) -> Result<i64> {
-        self.conn
+        self.get_connection()?
             .query_row("SELECT max(payment_time) FROM ln_transactions", [], |row| {
                 row.get(0)
             })
+            .map_err(anyhow::Error::msg)
     }
 
     pub fn list_ln_transactions(
@@ -58,7 +60,8 @@ impl SqliteStorage {
         to_timestamp: Option<i64>,
     ) -> Result<Vec<LightningTransaction>> {
         let where_clause = filter_to_where_clause(type_filter, from_timestamp, to_timestamp);
-        let mut stmt = self.conn.prepare(
+        let con = self.get_connection()?;
+        let mut stmt = con.prepare(
             format!(
                 "
                SELECT * FROM ln_transactions
@@ -163,8 +166,8 @@ fn test_ln_transactions() {
         },
     ];
     let storage =
-        &mut SqliteStorage::open(test_utils::create_test_sql_file("transactions".to_string()))
-            .unwrap();
+        SqliteStorage::from_file(test_utils::create_test_sql_file("transactions".to_string()));
+    storage.init().unwrap();
     storage.insert_ln_transactions(&txs).unwrap();
 
     // retrieve all

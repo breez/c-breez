@@ -11,60 +11,84 @@ import 'package:meta/meta.dart';
 import 'dart:ffi' as ffi;
 
 abstract class LightningToolkit {
+  /// Register a new node in the cloud and return credentials to interact with it
+  ///
+  /// # Arguments
+  ///
+  /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
+  /// * `seed` - The node private key
   Future<GreenlightCredentials> registerNode(
       {required Network network, required Uint8List seed, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRegisterNodeConstMeta;
 
+  /// Recover an existing node from the cloud and return credentials to interact with it
+  ///
+  /// # Arguments
+  ///
+  /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
+  /// * `seed` - The node private key
   Future<GreenlightCredentials> recoverNode(
       {required Network network, required Uint8List seed, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRecoverNodeConstMeta;
 
-  Future<void> createNodeServices(
+  /// init_node initialized the global NodeService, schedule the node to run in the cloud and
+  /// run the signer. This must be called in order to start comunicate with the node
+  ///
+  /// # Arguments
+  ///
+  /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
+  /// * `seed` - The node private key
+  /// * `breez_config` - the sdk coniguration
+  Future<void> initNode(
       {required Config breezConfig,
       required Uint8List seed,
       required GreenlightCredentials creds,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kCreateNodeServicesConstMeta;
+  FlutterRustBridgeTaskConstMeta get kInitNodeConstMeta;
 
-  Future<void> startNode({dynamic hint});
+  /// pay a bolt11 invoice
+  ///
+  /// # Arguments
+  ///
+  /// * `bolt11` - The bolt11 invoice
+  Future<void> sendPayment({required String bolt11, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kStartNodeConstMeta;
+  FlutterRustBridgeTaskConstMeta get kSendPaymentConstMeta;
 
-  Future<void> runSigner({dynamic hint});
+  /// pay directly to a node id using keysend
+  ///
+  /// # Arguments
+  ///
+  /// * `node_id` - The destination node_id
+  /// * `amount_sats` - The amount to pay in satoshis
+  Future<void> sendSpontaneousPayment(
+      {required String nodeId, required int amountSats, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kRunSignerConstMeta;
+  FlutterRustBridgeTaskConstMeta get kSendSpontaneousPaymentConstMeta;
 
-  Future<void> stopSigner({dynamic hint});
+  /// Creates an bolt11 payment request.
+  /// This also works when the node doesn't have any channels and need inbound liquidity.
+  /// In such case when the invoice is paid a new zero-conf channel will be open by the LSP,
+  /// providing inbound liquidity and the payment will be routed via this new channel.
+  ///
+  /// # Arguments
+  ///
+  /// * `description` - The bolt11 payment request description
+  /// * `amount_sats` - The amount to receive in satoshis
+  Future<LNInvoice> receivePayment(
+      {required int amountSats, required String description, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kStopSignerConstMeta;
+  FlutterRustBridgeTaskConstMeta get kReceivePaymentConstMeta;
 
-  Future<void> sync({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kSyncConstMeta;
-
-  Future<List<LspInformation>> listLsps({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kListLspsConstMeta;
-
-  Future<void> setLspId({required String lspId, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kSetLspIdConstMeta;
-
+  /// get the node state from the persistent storage
   Future<NodeState?> getNodeState({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta;
 
-  Future<List<Rate>> fetchRates({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kFetchRatesConstMeta;
-
-  Future<List<FiatCurrency>> listFiatCurrencies({dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kListFiatCurrenciesConstMeta;
-
+  /// list transactions (incoming/outgoing payments) from the persistent storage
   Future<List<LightningTransaction>> listTransactions(
       {required PaymentTypeFilter filter,
       int? fromTimestamp,
@@ -73,30 +97,38 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kListTransactionsConstMeta;
 
-  Future<void> pay({required String bolt11, dynamic hint});
+  /// List available lsps that can be selected by the user
+  Future<List<LspInformation>> listLsps({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kPayConstMeta;
+  FlutterRustBridgeTaskConstMeta get kListLspsConstMeta;
 
-  Future<void> keysend(
-      {required String nodeId, required int amountSats, dynamic hint});
+  /// Select the lsp to be used and provide inbound liquidity
+  Future<void> setLspId({required String lspId, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kKeysendConstMeta;
+  FlutterRustBridgeTaskConstMeta get kSetLspIdConstMeta;
 
-  Future<LNInvoice> requestPayment(
-      {required int amountSats, required String description, dynamic hint});
+  /// Fetch live rates of fiat currencies
+  Future<List<Rate>> fetchRates({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kRequestPaymentConstMeta;
+  FlutterRustBridgeTaskConstMeta get kFetchRatesConstMeta;
 
+  /// List all available fiat currencies
+  Future<List<FiatCurrency>> listFiatCurrencies({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kListFiatCurrenciesConstMeta;
+
+  /// close all channels with the current lsp
   Future<void> closeLspChannels({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kCloseLspChannelsConstMeta;
 
-  Future<void> sweep(
+  /// Withdraw on-chain funds in the wallet to an external btc address
+  Future<void> withdraw(
       {required String toAddress,
       required FeeratePreset feeratePreset,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kSweepConstMeta;
+  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta;
 
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
@@ -430,87 +462,121 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["network", "seed"],
       );
 
-  Future<void> createNodeServices(
+  Future<void> initNode(
           {required Config breezConfig,
           required Uint8List seed,
           required GreenlightCredentials creds,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_create_node_services(
+        callFfi: (port_) => _platform.inner.wire_init_node(
             port_,
             _platform.api2wire_box_autoadd_config(breezConfig),
             _platform.api2wire_uint_8_list(seed),
             _platform.api2wire_box_autoadd_greenlight_credentials(creds)),
         parseSuccessData: _wire2api_unit,
-        constMeta: kCreateNodeServicesConstMeta,
+        constMeta: kInitNodeConstMeta,
         argValues: [breezConfig, seed, creds],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kCreateNodeServicesConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kInitNodeConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "create_node_services",
+        debugName: "init_node",
         argNames: ["breezConfig", "seed", "creds"],
       );
 
-  Future<void> startNode({dynamic hint}) =>
+  Future<void> sendPayment({required String bolt11, dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_start_node(port_),
+        callFfi: (port_) => _platform.inner
+            .wire_send_payment(port_, _platform.api2wire_String(bolt11)),
         parseSuccessData: _wire2api_unit,
-        constMeta: kStartNodeConstMeta,
+        constMeta: kSendPaymentConstMeta,
+        argValues: [bolt11],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kSendPaymentConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "send_payment",
+        argNames: ["bolt11"],
+      );
+
+  Future<void> sendSpontaneousPayment(
+          {required String nodeId, required int amountSats, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_send_spontaneous_payment(
+            port_,
+            _platform.api2wire_String(nodeId),
+            _platform.api2wire_u64(amountSats)),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kSendSpontaneousPaymentConstMeta,
+        argValues: [nodeId, amountSats],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kSendSpontaneousPaymentConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "send_spontaneous_payment",
+        argNames: ["nodeId", "amountSats"],
+      );
+
+  Future<LNInvoice> receivePayment(
+          {required int amountSats,
+          required String description,
+          dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_receive_payment(
+            port_,
+            _platform.api2wire_u64(amountSats),
+            _platform.api2wire_String(description)),
+        parseSuccessData: _wire2api_ln_invoice,
+        constMeta: kReceivePaymentConstMeta,
+        argValues: [amountSats, description],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kReceivePaymentConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "receive_payment",
+        argNames: ["amountSats", "description"],
+      );
+
+  Future<NodeState?> getNodeState({dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_get_node_state(port_),
+        parseSuccessData: _wire2api_opt_box_autoadd_node_state,
+        constMeta: kGetNodeStateConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kStartNodeConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "start_node",
+        debugName: "get_node_state",
         argNames: [],
       );
 
-  Future<void> runSigner({dynamic hint}) =>
+  Future<List<LightningTransaction>> listTransactions(
+          {required PaymentTypeFilter filter,
+          int? fromTimestamp,
+          int? toTimestamp,
+          dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_run_signer(port_),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kRunSignerConstMeta,
-        argValues: [],
+        callFfi: (port_) => _platform.inner.wire_list_transactions(
+            port_,
+            api2wire_payment_type_filter(filter),
+            _platform.api2wire_opt_box_autoadd_i64(fromTimestamp),
+            _platform.api2wire_opt_box_autoadd_i64(toTimestamp)),
+        parseSuccessData: _wire2api_list_lightning_transaction,
+        constMeta: kListTransactionsConstMeta,
+        argValues: [filter, fromTimestamp, toTimestamp],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kRunSignerConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kListTransactionsConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "run_signer",
-        argNames: [],
-      );
-
-  Future<void> stopSigner({dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_stop_signer(port_),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kStopSignerConstMeta,
-        argValues: [],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kStopSignerConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "stop_signer",
-        argNames: [],
-      );
-
-  Future<void> sync({dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_sync(port_),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kSyncConstMeta,
-        argValues: [],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kSyncConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "sync",
-        argNames: [],
+        debugName: "list_transactions",
+        argNames: ["filter", "fromTimestamp", "toTimestamp"],
       );
 
   Future<List<LspInformation>> listLsps({dynamic hint}) =>
@@ -544,21 +610,6 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["lspId"],
       );
 
-  Future<NodeState?> getNodeState({dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_get_node_state(port_),
-        parseSuccessData: _wire2api_opt_box_autoadd_node_state,
-        constMeta: kGetNodeStateConstMeta,
-        argValues: [],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "get_node_state",
-        argNames: [],
-      );
-
   Future<List<Rate>> fetchRates({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_fetch_rates(port_),
@@ -589,85 +640,6 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: [],
       );
 
-  Future<List<LightningTransaction>> listTransactions(
-          {required PaymentTypeFilter filter,
-          int? fromTimestamp,
-          int? toTimestamp,
-          dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_list_transactions(
-            port_,
-            api2wire_payment_type_filter(filter),
-            _platform.api2wire_opt_box_autoadd_i64(fromTimestamp),
-            _platform.api2wire_opt_box_autoadd_i64(toTimestamp)),
-        parseSuccessData: _wire2api_list_lightning_transaction,
-        constMeta: kListTransactionsConstMeta,
-        argValues: [filter, fromTimestamp, toTimestamp],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kListTransactionsConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "list_transactions",
-        argNames: ["filter", "fromTimestamp", "toTimestamp"],
-      );
-
-  Future<void> pay({required String bolt11, dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) =>
-            _platform.inner.wire_pay(port_, _platform.api2wire_String(bolt11)),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kPayConstMeta,
-        argValues: [bolt11],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kPayConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "pay",
-        argNames: ["bolt11"],
-      );
-
-  Future<void> keysend(
-          {required String nodeId, required int amountSats, dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_keysend(
-            port_,
-            _platform.api2wire_String(nodeId),
-            _platform.api2wire_u64(amountSats)),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kKeysendConstMeta,
-        argValues: [nodeId, amountSats],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kKeysendConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "keysend",
-        argNames: ["nodeId", "amountSats"],
-      );
-
-  Future<LNInvoice> requestPayment(
-          {required int amountSats,
-          required String description,
-          dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_request_payment(
-            port_,
-            _platform.api2wire_u64(amountSats),
-            _platform.api2wire_String(description)),
-        parseSuccessData: _wire2api_ln_invoice,
-        constMeta: kRequestPaymentConstMeta,
-        argValues: [amountSats, description],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kRequestPaymentConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "request_payment",
-        argNames: ["amountSats", "description"],
-      );
-
   Future<void> closeLspChannels({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_close_lsp_channels(port_),
@@ -683,24 +655,24 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: [],
       );
 
-  Future<void> sweep(
+  Future<void> withdraw(
           {required String toAddress,
           required FeeratePreset feeratePreset,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_sweep(
+        callFfi: (port_) => _platform.inner.wire_withdraw(
             port_,
             _platform.api2wire_String(toAddress),
             api2wire_feerate_preset(feeratePreset)),
         parseSuccessData: _wire2api_unit,
-        constMeta: kSweepConstMeta,
+        constMeta: kWithdrawConstMeta,
         argValues: [toAddress, feeratePreset],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kSweepConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "sweep",
+        debugName: "withdraw",
         argNames: ["toAddress", "feeratePreset"],
       );
 
@@ -1233,13 +1205,13 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_recover_node = _wire_recover_nodePtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_create_node_services(
+  void wire_init_node(
     int port_,
     ffi.Pointer<wire_Config> breez_config,
     ffi.Pointer<wire_uint_8_list> seed,
     ffi.Pointer<wire_GreenlightCredentials> creds,
   ) {
-    return _wire_create_node_services(
+    return _wire_init_node(
       port_,
       breez_config,
       seed,
@@ -1247,75 +1219,110 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
     );
   }
 
-  late final _wire_create_node_servicesPtr = _lookup<
-          ffi.NativeFunction<
-              ffi.Void Function(
-                  ffi.Int64,
-                  ffi.Pointer<wire_Config>,
-                  ffi.Pointer<wire_uint_8_list>,
-                  ffi.Pointer<wire_GreenlightCredentials>)>>(
-      'wire_create_node_services');
-  late final _wire_create_node_services =
-      _wire_create_node_servicesPtr.asFunction<
-          void Function(
-              int,
+  late final _wire_init_nodePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
               ffi.Pointer<wire_Config>,
               ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_GreenlightCredentials>)>();
+              ffi.Pointer<wire_GreenlightCredentials>)>>('wire_init_node');
+  late final _wire_init_node = _wire_init_nodePtr.asFunction<
+      void Function(
+          int,
+          ffi.Pointer<wire_Config>,
+          ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_GreenlightCredentials>)>();
 
-  void wire_start_node(
+  void wire_send_payment(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> bolt11,
+  ) {
+    return _wire_send_payment(
+      port_,
+      bolt11,
+    );
+  }
+
+  late final _wire_send_paymentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_send_payment');
+  late final _wire_send_payment = _wire_send_paymentPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_send_spontaneous_payment(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> node_id,
+    int amount_sats,
+  ) {
+    return _wire_send_spontaneous_payment(
+      port_,
+      node_id,
+      amount_sats,
+    );
+  }
+
+  late final _wire_send_spontaneous_paymentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Uint64)>>('wire_send_spontaneous_payment');
+  late final _wire_send_spontaneous_payment = _wire_send_spontaneous_paymentPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
+
+  void wire_receive_payment(
+    int port_,
+    int amount_sats,
+    ffi.Pointer<wire_uint_8_list> description,
+  ) {
+    return _wire_receive_payment(
+      port_,
+      amount_sats,
+      description,
+    );
+  }
+
+  late final _wire_receive_paymentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Uint64,
+              ffi.Pointer<wire_uint_8_list>)>>('wire_receive_payment');
+  late final _wire_receive_payment = _wire_receive_paymentPtr
+      .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_get_node_state(
     int port_,
   ) {
-    return _wire_start_node(
+    return _wire_get_node_state(
       port_,
     );
   }
 
-  late final _wire_start_nodePtr =
+  late final _wire_get_node_statePtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_start_node');
-  late final _wire_start_node =
-      _wire_start_nodePtr.asFunction<void Function(int)>();
+          'wire_get_node_state');
+  late final _wire_get_node_state =
+      _wire_get_node_statePtr.asFunction<void Function(int)>();
 
-  void wire_run_signer(
+  void wire_list_transactions(
     int port_,
+    int filter,
+    ffi.Pointer<ffi.Int64> from_timestamp,
+    ffi.Pointer<ffi.Int64> to_timestamp,
   ) {
-    return _wire_run_signer(
+    return _wire_list_transactions(
       port_,
+      filter,
+      from_timestamp,
+      to_timestamp,
     );
   }
 
-  late final _wire_run_signerPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_run_signer');
-  late final _wire_run_signer =
-      _wire_run_signerPtr.asFunction<void Function(int)>();
-
-  void wire_stop_signer(
-    int port_,
-  ) {
-    return _wire_stop_signer(
-      port_,
-    );
-  }
-
-  late final _wire_stop_signerPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_stop_signer');
-  late final _wire_stop_signer =
-      _wire_stop_signerPtr.asFunction<void Function(int)>();
-
-  void wire_sync(
-    int port_,
-  ) {
-    return _wire_sync(
-      port_,
-    );
-  }
-
-  late final _wire_syncPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_sync');
-  late final _wire_sync = _wire_syncPtr.asFunction<void Function(int)>();
+  late final _wire_list_transactionsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<ffi.Int64>,
+              ffi.Pointer<ffi.Int64>)>>('wire_list_transactions');
+  late final _wire_list_transactions = _wire_list_transactionsPtr.asFunction<
+      void Function(
+          int, int, ffi.Pointer<ffi.Int64>, ffi.Pointer<ffi.Int64>)>();
 
   void wire_list_lsps(
     int port_,
@@ -1348,20 +1355,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_set_lsp_id = _wire_set_lsp_idPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_get_node_state(
-    int port_,
-  ) {
-    return _wire_get_node_state(
-      port_,
-    );
-  }
-
-  late final _wire_get_node_statePtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_get_node_state');
-  late final _wire_get_node_state =
-      _wire_get_node_statePtr.asFunction<void Function(int)>();
-
   void wire_fetch_rates(
     int port_,
   ) {
@@ -1390,83 +1383,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_list_fiat_currencies =
       _wire_list_fiat_currenciesPtr.asFunction<void Function(int)>();
 
-  void wire_list_transactions(
-    int port_,
-    int filter,
-    ffi.Pointer<ffi.Int64> from_timestamp,
-    ffi.Pointer<ffi.Int64> to_timestamp,
-  ) {
-    return _wire_list_transactions(
-      port_,
-      filter,
-      from_timestamp,
-      to_timestamp,
-    );
-  }
-
-  late final _wire_list_transactionsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<ffi.Int64>,
-              ffi.Pointer<ffi.Int64>)>>('wire_list_transactions');
-  late final _wire_list_transactions = _wire_list_transactionsPtr.asFunction<
-      void Function(
-          int, int, ffi.Pointer<ffi.Int64>, ffi.Pointer<ffi.Int64>)>();
-
-  void wire_pay(
-    int port_,
-    ffi.Pointer<wire_uint_8_list> bolt11,
-  ) {
-    return _wire_pay(
-      port_,
-      bolt11,
-    );
-  }
-
-  late final _wire_payPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_pay');
-  late final _wire_pay = _wire_payPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
-
-  void wire_keysend(
-    int port_,
-    ffi.Pointer<wire_uint_8_list> node_id,
-    int amount_sats,
-  ) {
-    return _wire_keysend(
-      port_,
-      node_id,
-      amount_sats,
-    );
-  }
-
-  late final _wire_keysendPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Uint64)>>('wire_keysend');
-  late final _wire_keysend = _wire_keysendPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
-
-  void wire_request_payment(
-    int port_,
-    int amount_sats,
-    ffi.Pointer<wire_uint_8_list> description,
-  ) {
-    return _wire_request_payment(
-      port_,
-      amount_sats,
-      description,
-    );
-  }
-
-  late final _wire_request_paymentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Uint64,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_request_payment');
-  late final _wire_request_payment = _wire_request_paymentPtr
-      .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
-
   void wire_close_lsp_channels(
     int port_,
   ) {
@@ -1481,23 +1397,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_close_lsp_channels =
       _wire_close_lsp_channelsPtr.asFunction<void Function(int)>();
 
-  void wire_sweep(
+  void wire_withdraw(
     int port_,
     ffi.Pointer<wire_uint_8_list> to_address,
     int feerate_preset,
   ) {
-    return _wire_sweep(
+    return _wire_withdraw(
       port_,
       to_address,
       feerate_preset,
     );
   }
 
-  late final _wire_sweepPtr = _lookup<
+  late final _wire_withdrawPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Int32)>>('wire_sweep');
-  late final _wire_sweep = _wire_sweepPtr
+              ffi.Int32)>>('wire_withdraw');
+  late final _wire_withdraw = _wire_withdrawPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
   void wire_parse_invoice(

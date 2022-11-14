@@ -167,17 +167,33 @@ pub struct LightningTransaction {
     pub description: Option<String>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum SwapStatus {
-    Initial,
-    Mempool,
-    Confirmed,
-    Paid,
-    Expired,
-    Refunded,
+    Initial = 0,
+    Mempool = 1,
+    Confirmed = 2,
+    Paid = 3,
+    Expired = 4,
+    Refunded = 5,
 }
 
-#[derive(Clone)]
+impl TryFrom<i32> for SwapStatus {
+    type Error = anyhow::Error;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(SwapStatus::Initial),
+            1 => Ok(SwapStatus::Mempool),
+            2 => Ok(SwapStatus::Confirmed),
+            3 => Ok(SwapStatus::Paid),
+            4 => Ok(SwapStatus::Expired),
+            5 => Ok(SwapStatus::Refunded),
+            _ => Err(anyhow!("illegal value")),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct SwapInfo {
     pub bitcoin_address: String,
     pub created_at: i64,

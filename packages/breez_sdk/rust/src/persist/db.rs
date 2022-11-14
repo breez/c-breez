@@ -48,7 +48,8 @@ impl SqliteStorage {
                public_key BLOB NOT NULL UNIQUE,
                paid_sats INTEGER NOT NULL DEFAULT 0,
                confirmed_sats INTEGER NOT NULL DEFAULT 0,
-               script BLOB NOT NULL UNIQUE               
+               script BLOB NOT NULL UNIQUE,
+               status INTEGER NOT NULL DEFAULT 0        
              ) STRICT;
         ",
         )]);

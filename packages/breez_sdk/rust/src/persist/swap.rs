@@ -1,7 +1,8 @@
 use crate::models::{Swap, SwapInfo, SwapStatus};
 
 use super::db::SqliteStorage;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
+use rusqlite::OptionalExtension;
 
 impl SqliteStorage {
     pub fn save_swap_info(&self, swap_info: SwapInfo) -> Result<()> {
@@ -14,28 +15,30 @@ impl SqliteStorage {
     }
 
     pub fn get_swap_info(&self, address: String) -> Result<Option<SwapInfo>> {
-        let res = self.get_connection()?.query_row(
-            "SELECT * FROM swaps where bitcoin_address= ?1",
-            [address],
-            |row| {
-                let status: i32 = row.get(10)?;
-                let status: SwapStatus = status.try_into().map_or(SwapStatus::Initial, |v| v);
-                Ok(SwapInfo {
-                    bitcoin_address: row.get(0)?,
-                    created_at: row.get(1)?,
-                    lock_height: row.get(2)?,
-                    payment_hash: row.get(3)?,
-                    preimage: row.get(4)?,
-                    private_key: row.get(5)?,
-                    public_key: row.get(6)?,
-                    paid_sats: row.get(7)?,
-                    confirmed_sat: row.get(8)?,
-                    script: row.get(9)?,
-                    status: status,
-                })
-            },
-        )?;
-        Ok(Some(res))
+        self.get_connection()?
+            .query_row(
+                "SELECT * FROM swaps where bitcoin_address= ?1",
+                [address],
+                |row| {
+                    let status: i32 = row.get(10)?;
+                    let status: SwapStatus = status.try_into().map_or(SwapStatus::Initial, |v| v);
+                    Ok(SwapInfo {
+                        bitcoin_address: row.get(0)?,
+                        created_at: row.get(1)?,
+                        lock_height: row.get(2)?,
+                        payment_hash: row.get(3)?,
+                        preimage: row.get(4)?,
+                        private_key: row.get(5)?,
+                        public_key: row.get(6)?,
+                        paid_sats: row.get(7)?,
+                        confirmed_sat: row.get(8)?,
+                        script: row.get(9)?,
+                        status: status,
+                    })
+                },
+            )
+            .optional()
+            .map_err(|e| anyhow!(e))
     }
 
     pub fn list_swaps(&self) -> Result<Vec<SwapInfo>> {
@@ -74,12 +77,12 @@ impl SqliteStorage {
 }
 
 #[test]
-fn test_swaps() {
+fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
     use crate::persist::test_utils;
 
     let storage = SqliteStorage::from_file(test_utils::create_test_sql_file("swap".to_string()));
 
-    storage.init().unwrap();
+    storage.init()?;
     let tested_swap_info = SwapInfo {
         bitcoin_address: String::from("1"),
         created_at: 0,
@@ -93,13 +96,18 @@ fn test_swaps() {
         script: vec![5],
         status: crate::models::SwapStatus::Confirmed,
     };
-    storage.save_swap_info(tested_swap_info.clone()).unwrap();
-    let item_value = storage.get_swap_info("1".to_string()).unwrap().unwrap();
+    storage.save_swap_info(tested_swap_info.clone())?;
+    let item_value = storage.get_swap_info("1".to_string())?.unwrap();
     assert_eq!(item_value, tested_swap_info);
 
-    let swaps = storage.list_swaps().unwrap();
+    let non_existent_swap = storage.get_swap_info("non-existent".to_string())?;
+    assert!(non_existent_swap.is_none());
+
+    let swaps = storage.list_swaps()?;
     assert_eq!(swaps.len(), 1);
 
-    storage.save_swap_info(tested_swap_info.clone()).unwrap();
-    assert_eq!(swaps.len(), 1)
+    storage.save_swap_info(tested_swap_info.clone())?;
+    assert_eq!(swaps.len(), 1);
+
+    Ok(())
 }

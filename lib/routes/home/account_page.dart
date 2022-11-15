@@ -62,6 +62,7 @@ class AccountPage extends StatelessWidget {
     UserProfileState userModel,
   ) {
     final transactions = account.transactions;
+    final transactionFilters = account.transactionFilters;
 
     List<Widget> slivers = [];
 
@@ -73,24 +74,28 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    final bool showSliver =
-        transactions.isNotEmpty; // || !payment.filter.allowAll();
+    final bool showSliver = transactions.isNotEmpty ||
+        transactionFilters.filter != PaymentTypeFilter.All;
 
     if (showSliver) {
       slivers.add(
         PaymentsFilterSliver(
-            maxSize: _kFilterMaxSize,
-            scrollController: scrollController,
-            hasFilter: false // !payment.filter.allowAll(),
-            ),
+          maxSize: _kFilterMaxSize,
+          scrollController: scrollController,
+          hasFilter: transactionFilters.filter != PaymentTypeFilter.All,
+        ),
       );
     }
 
-    const startDate = null; //payment.filter.startDate;
-    const endDate = null; // payment.filter.endDate;
+    int? startDate = transactionFilters.fromTimestamp;
+    int? endDate = transactionFilters.toTimestamp;
     if (startDate != null && endDate != null) {
       slivers.add(
-        HeaderFilterChip(_kFilterMaxSize, startDate, endDate),
+        HeaderFilterChip(
+          _kFilterMaxSize,
+          DateTime.fromMillisecondsSinceEpoch(startDate),
+          DateTime.fromMillisecondsSinceEpoch(endDate),
+        ),
       );
     }
 

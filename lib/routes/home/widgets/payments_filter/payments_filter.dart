@@ -34,8 +34,6 @@ class PaymentsFilterState extends State<PaymentsFilter> {
 
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, account) {
-        // final payments = account.transactions;
-
         if (_filter == null) {
           _filterMap = {
             texts.payments_filter_option_all: PaymentTypeFilter.All,
@@ -43,8 +41,9 @@ class PaymentsFilterState extends State<PaymentsFilter> {
             texts.payments_filter_option_received: PaymentTypeFilter.Received,
           };
           _filter = _getFilterTypeString(
-              context, PaymentTypeFilter.All // payments.filter.paymentType,
-              );
+            context,
+            account.transactionFilters.filter!,
+          );
         }
 
         return Row(
@@ -52,7 +51,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
             PaymentsFilterCalendar(_getFilterType()),
             PaymentsFilterDropdown(
               _filter!,
-                  (value) {
+              (value) {
                 setState(() {
                   _filter = value?.toString();
                 });

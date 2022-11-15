@@ -12,6 +12,7 @@ mod invoice;
 pub mod lsp;
 pub mod models;
 pub mod node_service;
+pub mod parser;
 mod persist;
 mod swap;
 mod test_utils;

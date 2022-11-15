@@ -38,9 +38,10 @@ abstract class LightningToolkit {
   ///
   /// # Arguments
   ///
-  /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
-  /// * `seed` - The node private key
   /// * `breez_config` - the sdk coniguration
+  /// * `seed` - The node private key
+  /// * `creds` - The greenlight credentials
+  ///
   Future<void> initNode(
       {required Config breezConfig,
       required Uint8List seed,
@@ -48,6 +49,11 @@ abstract class LightningToolkit {
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kInitNodeConstMeta;
+
+  /// Cleanup node resources and stop the signer.
+  Future<void> stopNode({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kStopNodeConstMeta;
 
   /// pay a bolt11 invoice
   ///
@@ -483,6 +489,21 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "init_node",
         argNames: ["breezConfig", "seed", "creds"],
+      );
+
+  Future<void> stopNode({dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_stop_node(port_),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kStopNodeConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kStopNodeConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "stop_node",
+        argNames: [],
       );
 
   Future<void> sendPayment({required String bolt11, dynamic hint}) =>
@@ -1154,7 +1175,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       : _lookup = lookup;
 
   void store_dart_post_cobject(
-    DartPostCObjectFnType ptr,
+    int ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -1162,10 +1183,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
-      .asFunction<void Function(DartPostCObjectFnType)>();
+  late final _store_dart_post_cobject =
+      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
 
   void wire_register_node(
     int port_,
@@ -1232,6 +1253,20 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.Pointer<wire_Config>,
           ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_GreenlightCredentials>)>();
+
+  void wire_stop_node(
+    int port_,
+  ) {
+    return _wire_stop_node(
+      port_,
+    );
+  }
+
+  late final _wire_stop_nodePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_stop_node');
+  late final _wire_stop_node =
+      _wire_stop_nodePtr.asFunction<void Function(int)>();
 
   void wire_send_payment(
     int port_,
@@ -1544,6 +1579,4 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-typedef DartPostCObjectFnType = ffi.Pointer<
-    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
-typedef DartPort = ffi.Int64;
+typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;

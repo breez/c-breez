@@ -93,6 +93,16 @@ fn wire_init_node_impl(
         },
     )
 }
+fn wire_stop_node_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "stop_node",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| stop_node(),
+    )
+}
 fn wire_send_payment_impl(port_: MessagePort, bolt11: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

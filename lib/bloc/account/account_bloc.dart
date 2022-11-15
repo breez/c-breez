@@ -155,7 +155,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         breezserver:
             breezConfig.get("Application Options", "breezserver") ?? "",
         mempoolspaceUrl:
-            breezConfig.get("Application Options", "breezserver") ?? "",
+            breezConfig.get("Application Options", "mempoolspaceUrl") ?? "",
         workingDir: (await getApplicationDocumentsDirectory()).path,
         network: Network.values.firstWhere((n) =>
             n.name.toLowerCase() ==

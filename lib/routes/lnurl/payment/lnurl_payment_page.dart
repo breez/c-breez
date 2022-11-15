@@ -13,7 +13,6 @@ import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -169,7 +168,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             final AccountBloc accountBloc = context.read<AccountBloc>();
 
             // Create payerDataMap
-            final Int64 amount = Int64.parseInt(_amountController.text) * 1000;
+            final int amount = int.parse(_amountController.text) * 1000;
             final String comment = _commentController.text;
             final PayerData payerData = PayerData(
               name:
@@ -216,7 +215,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     );
   }
 
-  String? validatePayment(Int64 amount) {
+  String? validatePayment(int amount) {
     var accBloc = context.read<AccountBloc>();
     late final lspStatus = context.read<LSPBloc>().state;
     late final currencyState = context.read<CurrencyBloc>().state;
@@ -228,11 +227,9 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       return "Below minimum accepted amount: ${widget.payParams.minSendable ~/ 1000}";
     }
 
-    Int64? channelMinimumFee;
+    int? channelMinimumFee;
     if (lspStatus.currentLSP != null) {
-      channelMinimumFee = Int64(
-        lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000,
-      );
+      channelMinimumFee = lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000;
     }
 
     return PaymentValidator(

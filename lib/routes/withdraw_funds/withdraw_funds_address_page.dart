@@ -5,10 +5,9 @@ import 'package:c_breez/routes/withdraw_funds/withdraw_funds_available_btc.dart'
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
-import 'package:fixnum/fixnum.dart';
 
 class WithdrawFundsAddressPage extends StatefulWidget {
-  final Int64 availableBtc;
+  final int availableBtc;
 
   const WithdrawFundsAddressPage(
     this.availableBtc, {

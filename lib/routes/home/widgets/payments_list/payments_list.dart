@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
@@ -9,7 +9,6 @@ import 'package:c_breez/routes/home/widgets/payments_list/payment_item.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -19,7 +18,7 @@ import 'package:path_provider/path_provider.dart';
 const _kBottomPadding = 8.0;
 
 class PaymentsList extends StatelessWidget {
-  final List<PaymentInfo> _payments;
+  final List<LightningTransaction> _payments;
   final double _itemHeight;
   final GlobalKey firstPaymentItemKey;
 
@@ -67,7 +66,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) => CurrencyBloc(injector.fiatService),
+          create: (BuildContext context) => CurrencyBloc(injector.breezLib),
         ),
         BlocProvider<UserProfileBloc>(
           create: (BuildContext context) =>
@@ -83,55 +82,56 @@ void main() async {
               slivers: [
                 PaymentsList(
                   [
-                    PaymentInfo(
-                      type: PaymentType.received,
-                      amountMsat: Int64(4321000),
-                        feeMsat: Int64(0),
-                        creationTimestamp: Int64(1661791810),
-                        pending: false,
-                        keySend: false,
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        preimage: null,
-                        destination: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        pendingExpirationTimestamp: null,
-                        description: "A title",
-                        longTitle: "A long title",
-                        shortTitle: "",
-                        imageURL: null,
-                      ),
-                      PaymentInfo(
-                        type: PaymentType.received,
-                        amountMsat: Int64(4321000),
-                        feeMsat: Int64(12),
-                        creationTimestamp: Int64(1661791810),
-                        pending: false,
-                        keySend: false,
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        preimage: null,
-                        destination: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        pendingExpirationTimestamp: null,
-                        description: "A title",
-                        longTitle: "A long title",
-                        shortTitle: "",
-                        imageURL: null,
-                      ),
-                      PaymentInfo(
-                        type: PaymentType.received,
-                        amountMsat: Int64(4321000),
-                        feeMsat: Int64(3456),
-                        creationTimestamp: Int64(DateTime.now().millisecondsSinceEpoch ~/ 1000),
-                        pending: false,
-                        keySend: false,
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        preimage: null,
-                        destination: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        pendingExpirationTimestamp: null,
-                        description: "A title",
-                        longTitle: "A long title",
-                        shortTitle: "",
-                        imageURL: null,
-                      ),
-                    ],
+                    LightningTransaction(
+                      paymentType: "received",
+                      label: "A long title",
+                      bolt11: "",
+                      destinationPubkey:
+                          "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                      paymentHash:
+                          "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feesMsat: 0,
+                      keysend: false,
+                      paymentPreimage: "",
+                      paymentTime: 1661791810,
+                      amountMsat: 4321000,
+                      pending: false,
+                      description: "A title",
+                    ),
+                    LightningTransaction(
+                      paymentType: "received",
+                      label: "A long title",
+                      bolt11: "",
+                      destinationPubkey:
+                          "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                      paymentHash:
+                          "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feesMsat: 12,
+                      keysend: false,
+                      paymentPreimage: "",
+                      paymentTime: 1661791810,
+                      amountMsat: 4321000,
+                      pending: false,
+                      description: "A title",
+                    ),
+                    LightningTransaction(
+                      paymentType: "received",
+                      label: "A long title",
+                      bolt11: "",
+                      destinationPubkey:
+                          "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                      paymentHash:
+                          "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feesMsat: 3456,
+                      keysend: false,
+                      paymentPreimage: "",
+                      paymentTime:
+                          DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                      amountMsat: 4321000,
+                      pending: false,
+                      description: "A title",
+                    ),
+                  ],
                     72,
                     firstPaymentItemKey,
                   ),

@@ -1,8 +1,8 @@
 import 'dart:math';
+
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/utils/currency_formatter.dart';
 import 'package:c_breez/utils/locale.dart';
-import 'package:fixnum/fixnum.dart';
 
 class FiatConversion {
   FiatCurrency currencyData;
@@ -25,15 +25,15 @@ class FiatConversion {
     }
   }
 
-  Int64 fiatToSat(double fiatAmount) {
-    return Int64((fiatAmount / exchangeRate * 100000000).round());
+  int fiatToSat(double fiatAmount) {
+    return (fiatAmount / exchangeRate * 100000000).round();
   }
 
-  double satToFiat(Int64 satoshies) {
+  double satToFiat(int satoshies) {
     return satoshies.toDouble() / 100000000 * exchangeRate;
   }
 
-  String format(Int64 amount) {
+  String format(int amount) {
     double fiatValue = satToFiat(amount);
     return formatFiat(fiatValue);
   }

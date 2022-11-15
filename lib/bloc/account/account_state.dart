@@ -1,5 +1,4 @@
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
-import 'package:fixnum/fixnum.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 
 const initialInboundCapacity = 4000000;
 
@@ -8,21 +7,21 @@ enum AccountStatus { CONNECTING, CONNECTED, DISCONNECTION, DISCONNECTED }
 class AccountState {
   final String? id;
   final bool initial;
-  final Int64 blockheight;
-  final Int64 balance;
-  final Int64 walletBalance;
+  final int blockheight;
+  final int balance;
+  final int walletBalance;
   final AccountStatus status;
-  final Int64 maxAllowedToPay;
-  final Int64 maxAllowedToReceive;
-  final Int64 maxPaymentAmount;
-  final Int64 maxChanReserve;
+  final int maxAllowedToPay;
+  final int maxAllowedToReceive;
+  final int maxPaymentAmount;
+  final int maxChanReserve;
   final List<String> connectedPeers;
-  final Int64 maxInboundLiquidity;
-  final Int64 onChainFeeRate;
-  final breez_sdk.PaymentsState payments;
+  final int maxInboundLiquidity;
+  final int onChainFeeRate;
+  final List<LightningTransaction> transactions;
 
   const AccountState({
-    required this.payments,
+    required this.transactions,
     required this.id,
     required this.initial,
     required this.blockheight,
@@ -41,39 +40,39 @@ class AccountState {
   AccountState.initial()
       : this(
           id: null,
-          blockheight: Int64(0),
+          blockheight: 0,
           status: AccountStatus.DISCONNECTED,
-          maxAllowedToPay: Int64(0),
-          maxAllowedToReceive: Int64(0),
-          maxPaymentAmount: Int64(0),
-          maxChanReserve: Int64(0),
+          maxAllowedToPay: 0,
+          maxAllowedToReceive: 0,
+          maxPaymentAmount: 0,
+          maxChanReserve: 0,
           connectedPeers: List.empty(),
-          maxInboundLiquidity: Int64(0),
-          onChainFeeRate: Int64(0),
-          balance: Int64(0),
-          walletBalance: Int64(0),
-          payments: breez_sdk.PaymentsState.initial(),
+          maxInboundLiquidity: 0,
+          onChainFeeRate: 0,
+          balance: 0,
+          walletBalance: 0,
+          transactions: [],
           initial: true,
         );
 
   AccountState copyWith({
     String? id,
-    breez_sdk.PaymentsState? payments,
+    List<LightningTransaction>? transactions,
     bool? initial,
-    Int64? blockheight,
-    Int64? balance,
-    Int64? walletBalance,
+    int? blockheight,
+    int? balance,
+    int? walletBalance,
     AccountStatus? status,
-    Int64? maxAllowedToPay,
-    Int64? maxAllowedToReceive,
-    Int64? maxPaymentAmount,
-    Int64? maxChanReserve,
+    int? maxAllowedToPay,
+    int? maxAllowedToReceive,
+    int? maxPaymentAmount,
+    int? maxChanReserve,
     List<String>? connectedPeers,
-    Int64? maxInboundLiquidity,
-    Int64? onChainFeeRate,
+    int? maxInboundLiquidity,
+    int? onChainFeeRate,
   }) {
     return AccountState(
-        payments: payments ?? this.payments,
+        transactions: transactions ?? this.transactions,
         id: id ?? this.id,
         initial: initial ?? this.initial,
         balance: balance ?? this.balance,
@@ -89,43 +88,42 @@ class AccountState {
         onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate);
   }
 
-  Int64 get reserveAmount => balance - maxAllowedToPay;
+  int get reserveAmount => balance - maxAllowedToPay;
 
   Map<String, dynamic>? toJson() {
     return {
       "id": id,
       "initial": initial,
-      "blockheight": blockheight.toInt(),
-      "balance": balance.toInt(),
-      "walletBalance": walletBalance.toInt(),
+      "blockheight": blockheight,
+      "balance": balance,
+      "walletBalance": walletBalance,
       "status": status.index,
-      "maxAllowedToPay": maxAllowedToPay.toInt(),
-      "maxAllowedToReceive": maxAllowedToReceive.toInt(),
-      "maxPaymentAmount": maxPaymentAmount.toInt(),
-      "maxChanReserve": maxChanReserve.toInt(),
-      "maxInboundLiquidity": maxInboundLiquidity.toInt(),
-      "onChainFeeRate": onChainFeeRate.toInt(),
-      "payment_filter": payments.filter.toJson()
+      "maxAllowedToPay": maxAllowedToPay,
+      "maxAllowedToReceive": maxAllowedToReceive,
+      "maxPaymentAmount": maxPaymentAmount,
+      "maxChanReserve": maxChanReserve,
+      "maxInboundLiquidity": maxInboundLiquidity,
+      "onChainFeeRate": onChainFeeRate,
     };
   }
 
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
-        payments: breez_sdk.PaymentsState.initial(),
+        transactions: [],
         id: json["id"],
         initial: json["initial"],
-        blockheight: Int64(json["blockheight"]),
-        balance: Int64(json["balance"]),
-        walletBalance: Int64(json["walletBalance"]),
+        blockheight: json["blockheight"],
+        balance: json["balance"],
+        walletBalance: json["walletBalance"],
         status: json["status"] != null
             ? AccountStatus.values[json["status"]]
             : AccountStatus.DISCONNECTED,
-        maxAllowedToPay: Int64(json["maxAllowedToPay"]),
-        maxAllowedToReceive: Int64(json["maxAllowedToReceive"]),
-        maxPaymentAmount: Int64(json["maxPaymentAmount"]),
-        maxChanReserve: Int64(json["maxChanReserve"]),
+        maxAllowedToPay: json["maxAllowedToPay"],
+        maxAllowedToReceive: json["maxAllowedToReceive"],
+        maxPaymentAmount: json["maxPaymentAmount"],
+        maxChanReserve: json["maxChanReserve"],
         connectedPeers: <String>[],
-        maxInboundLiquidity: Int64(json["maxInboundLiquidity"] ?? 0),        
-        onChainFeeRate: Int64(json["onChainFeeRate"]));
+        maxInboundLiquidity: json["maxInboundLiquidity"] ?? 0,
+        onChainFeeRate: (json["onChainFeeRate"]));
   }
 }

@@ -1,9 +1,9 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/payment_validator.dart';
@@ -14,7 +14,6 @@ import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -136,14 +135,14 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   Future _createInvoice() async {
     final navigator = Navigator.of(context);
     var currentRoute = ModalRoute.of(navigator.context)!;
-    Future<Invoice> invoice = accountBloc.addInvoice(
+    Future<LNInvoice> invoice = accountBloc.addInvoice(
       description: _descriptionController.text,
-      amount: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
+      amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
     );
     navigator.pop();
     Widget dialog = FutureBuilder(
       future: invoice,
-      builder: (BuildContext context, AsyncSnapshot<Invoice> invoice) {        
+      builder: (BuildContext context, AsyncSnapshot<LNInvoice> invoice) {
         return QrCodeDialog(
           invoice.data,
           invoice.error,
@@ -180,12 +179,12 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     }
   }
 
-  String? validatePayment(Int64 amount) {
-    Int64? channelMinimumFee;
+  String? validatePayment(int amount) {
+    int? channelMinimumFee;
     if (lspStatus.currentLSP != null) {
-      channelMinimumFee = Int64(
-        lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000,
-      );
+      channelMinimumFee =
+        lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000
+      ;
     }
 
     return PaymentValidator(

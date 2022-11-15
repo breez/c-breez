@@ -5,7 +5,6 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +15,7 @@ import 'breez_dropdown.dart';
 
 class CurrencyConverterDialog extends StatefulWidget {
   final Function(String string) _onConvert;
-  final String? Function(Int64 amount) validatorFn;
+  final String? Function(int amount) validatorFn;
   final CurrencyBloc _currencyBloc;
 
   const CurrencyConverterDialog(
@@ -315,14 +314,14 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     }
   }
 
-  Int64 _convertedSatoshies(CurrencyState currencyState) {
+  int _convertedSatoshies(CurrencyState currencyState) {
     var fiatConversion = FiatConversion(
         currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     return _fiatAmountController.text.isNotEmpty
         ? fiatConversion.fiatToSat(
             double.parse(_fiatAmountController.text),
           )
-        : Int64(0);
+        : 0;
   }
 
   Widget _buildExchangeRateLabel(

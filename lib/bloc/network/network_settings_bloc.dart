@@ -1,20 +1,24 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/breez_bridge.dart';
 import 'package:c_breez/bloc/network/network_settings_state.dart';
 import 'package:fimber/fimber.dart';
 import 'package:http/http.dart' as http;
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin {
-  final LightningNode _lightningNode;
+class NetworkSettingsBloc extends Cubit<NetworkSettingsState>
+    with HydratedMixin {
+  // ignore: unused_field
+  final BreezBridge _breezLib;
   final _log = FimberLog("NetworkSettingsBloc");
 
   NetworkSettingsBloc(
-    this._lightningNode,
+    this._breezLib,
   ) : super(NetworkSettingsState.initial()) {
     _updateMempoolSettings().then((_) => _log.v("Inial mempool settings read"));
   }
 
   Future<bool> setMempoolUrl(String mempoolUrl) async {
+    throw Exception("not implemented");
+    /*
     _log.v("Changing mempool url to: $mempoolUrl");
     var uri = Uri.parse(mempoolUrl);
     if (!uri.hasScheme) {
@@ -33,11 +37,16 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
     await _lightningNode.setMempoolSpaceSettings(uri.scheme, uri.host, port);
     await _updateMempoolSettings();
     return true;
+     */
   }
 
   Future<void> resetMempoolSpaceSettings() async {
-    await _lightningNode.resetMempoolSpaceSettings();
+    throw Exception("not implemented");
+    /*
+     await _lightningNode.resetMempoolSpaceSettings();
     await _updateMempoolSettings();
+
+     */
   }
 
   @override
@@ -51,12 +60,16 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   }
 
   Future<void> _updateMempoolSettings() async {
+    throw Exception("not implemented");
+    /*
     final settings = await _lightningNode.getMempoolSpaceSettings();
     emit(state.copyWith(
       mempoolUrl: settings.mempoolUrl(),
     ));
+     */
   }
 
+  // ignore: unused_element
   Future<bool> _testUri(Uri uri) async {
     try {
       final response = await http.get(uri);

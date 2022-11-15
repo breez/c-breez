@@ -1,27 +1,31 @@
 import 'dart:async';
 
+import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:breez_sdk/sdk.dart';
 
 class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
-  final LightningNode _lightningNode;
+  final BreezBridge _breezLib;
 
   WithdrawFundsBloc(
-    this._lightningNode,
+    this._breezLib,
   ) : super(WithdrawFudsState.initial());
 
   Future fetchTransactionConst() async {
-    final recommendedFees = await _lightningNode.fetchRecommendedFees();
+    throw Exception("not implemented");
+    /*
+    final recommendedFees = await _breezLib.fetchRecommendedFees();
     emit(WithdrawFudsState.info(
-      TransactionCost(const Duration(minutes: 10), Int64(recommendedFees.fastestFee)),
-      TransactionCost(const Duration(minutes: 30), Int64(recommendedFees.halfHourFee)),
-      TransactionCost(const Duration(minutes: 60), Int64(recommendedFees.hourFee)),
+      TransactionCost(const Duration(minutes: 10), recommendedFees.fastestFee),
+      TransactionCost(const Duration(minutes: 30), recommendedFees.halfHourFee),
+      TransactionCost(const Duration(minutes: 60), recommendedFees.hourFee),
     ));
+     */
   }
 
-  Future<void> sweepAllCoins(String address, TransactionCostSpeed speed) async {
-    await _lightningNode.sweepAllCoinsTransactions(address, speed);
+  Future<void> sweepAllCoins(
+      String toAddress, FeeratePreset feeratePreset) async {
+    await _breezLib.withdraw(toAddress: toAddress, feeratePreset: feeratePreset);
   }
 }

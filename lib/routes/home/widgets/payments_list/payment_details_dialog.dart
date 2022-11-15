@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/date.dart';
@@ -19,7 +19,7 @@ final AutoSizeGroup _valueGroup = AutoSizeGroup();
 
 Future<void> showPaymentDetailsDialog(
   BuildContext context,
-  breez_sdk.PaymentInfo paymentInfo,
+  LightningTransaction paymentInfo,
 ) {
   final themeData = Theme.of(context);
   var mediaQuery = MediaQuery.of(context);
@@ -64,23 +64,26 @@ Future<void> showPaymentDetailsDialog(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              paymentInfo.shortTitle.isEmpty
+              paymentInfo.label.isEmpty
                   ? Container()
                   : Padding(
                       padding: EdgeInsets.only(
                         left: 16.0,
                         right: 16.0,
-                        bottom: (paymentInfo.description.isEmpty) ? 16 : 8,
+                        bottom: (paymentInfo.description == null ||
+                                paymentInfo.description == "")
+                            ? 16
+                            : 8,
                       ),
                       child: AutoSizeText(
-                        paymentInfo.shortTitle.replaceAll("\n", " "),
+                        paymentInfo.label.replaceAll("\n", " "),
                         style: themeData.primaryTextTheme.headline5,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
                     ),
-              paymentInfo.description.isEmpty
+              (paymentInfo.description == null || paymentInfo.description == "")
                   ? Container()
                   : Padding(
                       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
@@ -92,10 +95,10 @@ Future<void> showPaymentDetailsDialog(
                         child: Scrollbar(
                           child: SingleChildScrollView(
                             child: AutoSizeText(
-                              paymentInfo.description,
+                              paymentInfo.description!,
                               style: themeData.primaryTextTheme.headline4,
-                              textAlign: paymentInfo.description.length > 40 &&
-                                      !paymentInfo.description.contains("\n")
+                              textAlign: paymentInfo.description!.length > 40 &&
+                                      !paymentInfo.description!.contains("\n")
                                   ? TextAlign.start
                                   : TextAlign.center,
                             ),
@@ -160,7 +163,7 @@ Future<void> showPaymentDetailsDialog(
                         child: AutoSizeText(
                           BreezDateUtils.formatYearMonthDayHourMinute(
                             DateTime.fromMillisecondsSinceEpoch(
-                              paymentInfo.creationTimestamp.toInt() * 1000,
+                              paymentInfo.paymentTime * 1000,
                             ),
                           ),
                           style: themeData.primaryTextTheme.headline3,
@@ -192,6 +195,7 @@ Future<void> showPaymentDetailsDialog(
                               group: _labelGroup,
                             ),
                           ),
+                          /* Missing pendingExpirationTimestamp
                           Expanded(
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
@@ -212,6 +216,8 @@ Future<void> showPaymentDetailsDialog(
                               ),
                             ),
                           ),
+
+                           */
                         ],
                       ),
                     ),
@@ -240,12 +246,13 @@ Future<void> showPaymentDetailsDialog(
 
 Widget _amountText(
   BitcoinCurrency currency,
-  breez_sdk.PaymentInfo paymentInfo,
+  LightningTransaction paymentInfo,
   AppLocalizations texts,
   ThemeData themeData,
 ) {
-  final amount = currency.format(paymentInfo.amountSat);
-  final text = (paymentInfo.type.isIncome)
+  final amount = currency.format(paymentInfo.amountMsat);
+
+  final text = (paymentInfo.paymentType == "received")
       ? texts.payment_details_dialog_amount_positive(amount)
       : texts.payment_details_dialog_amount_negative(amount);
   return AutoSizeText(
@@ -258,28 +265,28 @@ Widget _amountText(
 }
 
 List<Widget> _getPaymentInfoDetails(
-  breez_sdk.PaymentInfo paymentInfo,
+  LightningTransaction paymentInfo,
   AppLocalizations texts,
 ) {
   return _getSinglePaymentInfoDetails(paymentInfo, texts);
 }
 
 List<Widget> _getSinglePaymentInfoDetails(
-  breez_sdk.PaymentInfo paymentInfo,
+  LightningTransaction paymentInfo,
   AppLocalizations texts,
 ) {
   return List<Widget>.from({
-    paymentInfo.preimage == null || paymentInfo.preimage!.isEmpty
+    paymentInfo.paymentPreimage.isEmpty
         ? Container()
         : ShareablePaymentRow(
-            title: texts.payment_details_dialog_single_info_pre_image,
-            sharedValue: paymentInfo.preimage!,
+      title: texts.payment_details_dialog_single_info_pre_image,
+            sharedValue: paymentInfo.paymentPreimage,
           ),
-    paymentInfo.destination.isEmpty
+    paymentInfo.destinationPubkey.isEmpty
         ? Container()
         : ShareablePaymentRow(
-            title: texts.payment_details_dialog_single_info_node_id,
-            sharedValue: paymentInfo.destination,
+      title: texts.payment_details_dialog_single_info_node_id,
+            sharedValue: paymentInfo.destinationPubkey,
           ),
   });
 }

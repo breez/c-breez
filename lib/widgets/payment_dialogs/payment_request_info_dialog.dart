@@ -3,15 +3,14 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,7 +19,7 @@ class PaymentRequestInfoDialog extends StatefulWidget {
   final Invoice invoice;
   final Function() _onCancel;
   final Function() _onWaitingConfirmation;
-  final Function(String bot11, Int64 amount) _onPaymentApproved;
+  final Function(String bot11, int amount) _onPaymentApproved;
   final Function(Map<String, dynamic> map) _setAmountToPay;
   final double minHeight;
 
@@ -230,9 +229,9 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         ),
         child: Text(
           _showFiatCurrency && fiatConversion != null
-              ? fiatConversion.format(Int64(widget.invoice.amountMsat ~/ 1000))
+              ? fiatConversion.format(widget.invoice.amountMsat ~/ 1000)
               : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                  .format(Int64(widget.invoice.amountMsat ~/ 1000)),
+                  .format(widget.invoice.amountMsat ~/ 1000),
           style: themeData.primaryTextTheme.headline5,
           textAlign: TextAlign.center,
         ),
@@ -313,7 +312,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       )
     ];
 
-    Int64 toPay = amountToPay(currency);
+    int toPay = amountToPay(currency);
     if (toPay > 0 && accState.maxAllowedToPay >= toPay) {
       actions.add(SimpleDialogOption(
         onPressed: (() async {
@@ -355,8 +354,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     );
   }
 
-  Int64 amountToPay(CurrencyState acc) {
-    Int64 amount = Int64(widget.invoice.amountMsat ~/ 1000);
+  int amountToPay(CurrencyState acc) {
+    int amount = widget.invoice.amountMsat ~/ 1000;
     if (amount == 0) {
       try {
         amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker)

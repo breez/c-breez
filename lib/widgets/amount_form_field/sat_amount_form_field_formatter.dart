@@ -1,5 +1,4 @@
 import 'package:c_breez/models/currency.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/services.dart';
 
 class SatAmountFormFieldFormatter extends TextInputFormatter {
@@ -18,11 +17,11 @@ class SatAmountFormFieldFormatter extends TextInputFormatter {
       );
     }
 
-    Int64 value;
+    int value;
     try {
-      value = Int64.parseInt(raw.length > 18 ? raw.substring(0, 18) : raw);
+      value = int.parse(raw.length > 18 ? raw.substring(0, 18) : raw);
     } catch (ignored) {
-      value = Int64(0);
+      value = 0;
     }
 
     final formatted = BitcoinCurrency.SAT.format(

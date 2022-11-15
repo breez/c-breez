@@ -2,7 +2,6 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +13,7 @@ import 'sat_amount_form_field_formatter.dart';
 class AmountFormField extends TextFormField {
   final FiatConversion? fiatConversion;
   final BitcoinCurrency bitcoinCurrency;
-  final String? Function(Int64 amount) validatorFn;
+  final String? Function(int amount) validatorFn;
   final AppLocalizations texts;
 
   AmountFormField({
@@ -97,7 +96,7 @@ class AmountFormField extends TextFormField {
         );
       }
       try {
-        Int64 intAmount = bitcoinCurrency.parse(value);
+        int intAmount = bitcoinCurrency.parse(value);
         if (intAmount <= 0) {
           return texts.amount_form_error_invalid_amount;
         }

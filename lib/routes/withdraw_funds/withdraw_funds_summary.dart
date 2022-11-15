@@ -5,12 +5,11 @@ import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fixnum/fixnum.dart';
 
 class WithdrawFundsSummary extends StatelessWidget {
-  final Int64 total;
-  final Int64 fee;
-  final Int64 receive;
+  final int total;
+  final int fee;
+  final int receive;
 
   const WithdrawFundsSummary(
     this.total,

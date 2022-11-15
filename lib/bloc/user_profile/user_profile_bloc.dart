@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
-import 'package:c_breez/services/breez_server/server.dart';
+import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/notifications.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';

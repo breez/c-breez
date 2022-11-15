@@ -1,12 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsConfirmationSpeedChooserItem extends StatelessWidget {
-  final TransactionCostSpeed transactionCostSpeed;
-  final TransactionCostSpeed currentSpeed;
-  final Function(TransactionCostSpeed) onSpeedSelected;
+  final FeeratePreset transactionCostSpeed;
+  final FeeratePreset currentSpeed;
+  final Function(FeeratePreset) onSpeedSelected;
 
   const WithdrawFundsConfirmationSpeedChooserItem(
     this.transactionCostSpeed,
@@ -23,9 +23,9 @@ class WithdrawFundsConfirmationSpeedChooserItem extends StatelessWidget {
       child: TextButton(
         onPressed: () => onSpeedSelected(transactionCostSpeed),
         child: AutoSizeText(
-          transactionCostSpeed == TransactionCostSpeed.economy
+          transactionCostSpeed == FeeratePreset.Economy
               ? texts.fee_chooser_option_economy
-              : transactionCostSpeed == TransactionCostSpeed.regular
+              : transactionCostSpeed == FeeratePreset.Regular
                   ? texts.fee_chooser_option_regular
                   : texts.fee_chooser_option_priority,
           maxLines: 1,

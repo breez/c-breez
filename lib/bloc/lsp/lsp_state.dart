@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'package:breez_sdk/sdk.dart';
+
+import 'package:breez_sdk/bridge_generated.dart';
 
 enum LSPConnectionStatus { notSelected, inProgress, active, notActive }
 
 class LSPState {
-  final List<LSPInfo> availableLSPs;
+  final List<LspInformation> availableLSPs;
   final String? selectedLSP;
   final LSPConnectionStatus connectionStatus;
   final String? lastConnectionError;
@@ -18,7 +19,7 @@ class LSPState {
   LSPState.initial() : this();
 
   LSPState copyWith({
-    List<LSPInfo>? availableLSPs,
+    List<LspInformation>? availableLSPs,
     LSPConnectionStatus? connectionStatus,
     String? selectedLSP,
     String? lastConnectionError,
@@ -31,8 +32,7 @@ class LSPState {
   }
 
   factory LSPState.fromJson(Map<String, dynamic> jsonMap) {
-    final List lsps = jsonDecode(jsonMap["availableLSPs"]);
-    List<LSPInfo> availableLsps = lsps.map((l) => LSPInfo.fromJson(l)).toList();
+    final List<LspInformation> availableLsps  = jsonDecode(jsonMap["availableLSPs"]);
     return LSPState(
       availableLSPs: availableLsps,
       connectionStatus: LSPConnectionStatus.values[jsonMap["connectionStatus"] as int],
@@ -52,9 +52,9 @@ class LSPState {
 
   bool get selectionRequired => selectedLSP == null && availableLSPs.isNotEmpty;
 
-  LSPInfo? get currentLSP {
+  LspInformation? get currentLSP {
     try {
-      return availableLSPs.firstWhere((element) => element.lspID == selectedLSP);
+      return availableLSPs.firstWhere((element) => element.id == selectedLSP);
     } catch(e) {
       return null;
     }

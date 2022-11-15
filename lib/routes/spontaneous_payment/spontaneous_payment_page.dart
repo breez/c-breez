@@ -199,7 +199,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
   Future _sendPayment(AccountBloc accBloc, CurrencyBloc currencyBloc) async {
     final texts = context.texts();
-    final themeData = Theme.of(context);
 
     String tipMessage = _descriptionController.text;
     var bitcoinCurrency = currencyBloc.state.bitcoinCurrency;

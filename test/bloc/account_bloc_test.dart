@@ -4,7 +4,6 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:drift/drift.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hex/hex.dart';
 
@@ -17,30 +16,27 @@ void main() {
   group('account', () {
     test('recover node', () async {
       var injector = InjectorMock();
-      var lightningServices = injector.lightningServices;
-      var lspBloc =
-          LSPBloc(lightningServices, injector.lightningServices.lspService);
-      AccountBloc accBloc = AccountBloc(
-          lightningServices, injector.lightningServices.lnurlService, injector.keychain);
+      var breezLib = injector.breezLib;
+      var lspBloc = LSPBloc(breezLib);
+      AccountBloc accBloc = AccountBloc(breezLib, injector.keychain);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 
-      var creds =
-          await accBloc.recoverNode(Uint8List.fromList(HEX.decode(testSeed)));
-      await accBloc.syncStateWithNode();
+      var creds = await accBloc.recoverNode(
+          seed: Uint8List.fromList(HEX.decode(testSeed)));
       var accountState = accBloc.state;
       expect(accountState.blockheight, greaterThan(1));
       expect(accountState.id?.length, equals(66));
-      expect(accountState.balance, Int64(0));
-      expect(accountState.walletBalance, Int64(0));
+      expect(accountState.balance, 0);
+      expect(accountState.walletBalance, 0);
       expect(accountState.status, AccountStatus.DISCONNECTED);
-      expect(accountState.maxAllowedToPay, Int64(0));
-      expect(accountState.maxAllowedToReceive, Int64(0));
-      expect(accountState.maxPaymentAmount, Int64(4294967));
-      expect(accountState.maxChanReserve, Int64(0));
-      expect(accountState.maxInboundLiquidity, Int64(0));
-      expect(accountState.onChainFeeRate, Int64(0));
-      expect(accountState.payments.paymentsList.length, 0);
+      expect(accountState.maxAllowedToPay, 0);
+      expect(accountState.maxAllowedToReceive, 0);
+      expect(accountState.maxPaymentAmount, 4294967);
+      expect(accountState.maxChanReserve, 0);
+      expect(accountState.maxInboundLiquidity, 0);
+      expect(accountState.onChainFeeRate, 0);
+      expect(accountState.transactions.length, 0);
     });
   });
 }

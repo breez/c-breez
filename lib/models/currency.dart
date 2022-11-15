@@ -1,5 +1,4 @@
 import 'package:c_breez/utils/currency_formatter.dart';
-import 'package:fixnum/fixnum.dart';
 
 enum CurrencyID { BTC, SAT }
 
@@ -17,7 +16,7 @@ class BitcoinCurrency extends Object {
   }
 
   String format(
-    Int64 sat, {
+    int sat, {
     includeCurrencySymbol = false,
     includeDisplayName = true,
     removeTrailingZeros = false,
@@ -29,7 +28,7 @@ class BitcoinCurrency extends Object {
           removeTrailingZeros: removeTrailingZeros,
           userInput: userInput);
 
-  Int64 parse(String amountStr) =>
+  int parse(String amountStr) =>
       BitcoinCurrencyFormatter().parse(amountStr, this);
 
   int parseToInt(
@@ -45,7 +44,7 @@ class BitcoinCurrency extends Object {
     return value;
   }
 
-  Int64 toSats(double amount) =>
+  int toSats(double amount) =>
       BitcoinCurrencyFormatter().toSats(amount, this);
 
   String get displayName =>

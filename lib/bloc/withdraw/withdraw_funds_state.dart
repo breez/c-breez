@@ -1,4 +1,4 @@
-import 'package:fixnum/fixnum.dart';
+
 
 abstract class WithdrawFudsState {
   const WithdrawFudsState();
@@ -35,7 +35,7 @@ class WithdrawFudsInfoState extends WithdrawFudsState {
 
 class TransactionCost {
   final Duration waitingTime;
-  final Int64 fee;
+  final int fee;
 
   const TransactionCost(
     this.waitingTime,

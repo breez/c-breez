@@ -9,7 +9,6 @@ import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -86,10 +85,10 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 child: Text(
                   _showFiatCurrency && fiatConversion != null
                       ? fiatConversion
-                          .format(Int64(widget.payParams.maxSendable ~/ 1000))
+                          .format(widget.payParams.maxSendable ~/ 1000)
                       : BitcoinCurrency.fromTickerSymbol(
                               currencyState.bitcoinTicker)
-                          .format(Int64(widget.payParams.maxSendable ~/ 1000)),
+                          .format(widget.payParams.maxSendable ~/ 1000),
                   style: themeData.primaryTextTheme.headline5,
                   textAlign: TextAlign.center,
                 ),

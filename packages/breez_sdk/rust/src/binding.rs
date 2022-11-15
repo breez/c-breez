@@ -15,7 +15,7 @@ use crate::models::{
 use crate::{greenlight::Greenlight, node_service::NodeService};
 
 use crate::invoice::{self};
-use crate::parser::InputType;
+use crate::input_parser::InputType;
 use bip39::{Language, Mnemonic, Seed};
 
 lazy_static! {
@@ -226,7 +226,7 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
 }
 
 pub fn parse(s: String) -> Result<InputType> {
-    crate::parser::parse(&s)
+    crate::input_parser::parse(&s)
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

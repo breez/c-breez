@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::parser::InputType::BitcoinAddress;
+use crate::input_parser::InputType::BitcoinAddress;
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 pub fn parse(s: &str) -> Result<InputType> {

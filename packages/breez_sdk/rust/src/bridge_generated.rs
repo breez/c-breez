@@ -23,6 +23,7 @@ use crate::fiat::LocaleOverrides;
 use crate::fiat::LocalizedName;
 use crate::fiat::Rate;
 use crate::fiat::Symbol;
+use crate::input_parser::InputType;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
@@ -34,7 +35,6 @@ use crate::models::LightningTransaction;
 use crate::models::Network;
 use crate::models::NodeState;
 use crate::models::PaymentTypeFilter;
-use crate::parser::InputType;
 
 // Section: wire functions
 

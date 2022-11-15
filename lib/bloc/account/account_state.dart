@@ -97,7 +97,7 @@ class AccountState {
 
   int get reserveAmount => balance - maxAllowedToPay;
 
-  // TODO: Add transactions & transactionFilters toJson
+  // TODO: Add transactions toJson
   Map<String, dynamic>? toJson() {
     return {
       "id": id,
@@ -112,10 +112,11 @@ class AccountState {
       "maxChanReserve": maxChanReserve,
       "maxInboundLiquidity": maxInboundLiquidity,
       "onChainFeeRate": onChainFeeRate,
+      "transactionFilters": transactionFilters.toJson(),
     };
   }
 
-// TODO: Generate transactions & transactionFilters fromJson
+// TODO: Generate transactions fromJson
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
       id: json["id"],
@@ -134,7 +135,8 @@ class AccountState {
       maxInboundLiquidity: json["maxInboundLiquidity"] ?? 0,
       onChainFeeRate: (json["onChainFeeRate"]),
       transactions: [],
-      transactionFilters: TransactionFilters.initial(),
+      transactionFilters:
+          TransactionFilters.fromJson(json["transactionFilters"]),
     );
   }
 }

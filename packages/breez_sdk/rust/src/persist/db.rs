@@ -36,7 +36,21 @@ impl SqliteStorage {
              CREATE TABLE IF NOT EXISTS cached_items (
               key TEXT NOT NULL PRIMARY KEY,
               value TEXT NOT NULL
-             ) STRICT;                
+             ) STRICT;
+             
+             CREATE TABLE IF NOT EXISTS swaps (
+               bitcoin_address TEXT PRIMARY KEY NOT NULL,
+               created_at INTEGER DEFAULT CURRENT_TIMESTAMP,
+               lock_height INTEGER NOT NULL,
+               payment_hash BLOB NOT NULL UNIQUE,
+               preimage BLOB NOT NULL UNIQUE,
+               private_key BLOB NOT NULL UNIQUE,
+               public_key BLOB NOT NULL UNIQUE,
+               paid_sats INTEGER NOT NULL DEFAULT 0,
+               confirmed_sats INTEGER NOT NULL DEFAULT 0,
+               script BLOB NOT NULL UNIQUE,
+               status INTEGER NOT NULL DEFAULT 0        
+             ) STRICT;
         ",
         )]);
 

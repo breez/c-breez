@@ -51,6 +51,26 @@ pub trait FiatAPI: Send + Sync {
     async fn fetch_rates(&self) -> Result<Vec<Rate>>;
 }
 
+pub struct Swap {
+    pub bitcoin_address: String,
+    pub swapper_pubkey: Vec<u8>,
+    pub lock_height: i64,
+    pub max_allowed_deposit: i64,
+    pub error_message: String,
+    pub required_reserve: i64,
+    pub min_allowed_deposit: i64,
+}
+
+#[tonic::async_trait]
+pub trait SwapperAPI: Send + Sync {
+    async fn create_swap(
+        &self,
+        hash: Vec<u8>,
+        payer_pubkey: Vec<u8>,
+        node_pubkey: String,
+    ) -> Result<Swap>;
+}
+
 #[derive(Clone)]
 pub struct Config {
     pub breezserver: String,
@@ -145,6 +165,47 @@ pub struct LightningTransaction {
     pub bolt11: String,
     pub pending: bool,
     pub description: Option<String>,
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum SwapStatus {
+    Initial = 0,
+    Mempool = 1,
+    Confirmed = 2,
+    Paid = 3,
+    Expired = 4,
+    Refunded = 5,
+}
+
+impl TryFrom<i32> for SwapStatus {
+    type Error = anyhow::Error;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(SwapStatus::Initial),
+            1 => Ok(SwapStatus::Mempool),
+            2 => Ok(SwapStatus::Confirmed),
+            3 => Ok(SwapStatus::Paid),
+            4 => Ok(SwapStatus::Expired),
+            5 => Ok(SwapStatus::Refunded),
+            _ => Err(anyhow!("illegal value")),
+        }
+    }
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct SwapInfo {
+    pub bitcoin_address: String,
+    pub created_at: i64,
+    pub lock_height: i64,
+    pub payment_hash: Vec<u8>,
+    pub preimage: Vec<u8>,
+    pub private_key: Vec<u8>,
+    pub public_key: Vec<u8>,
+    pub paid_sats: u32,
+    pub confirmed_sat: u32,
+    pub script: Vec<u8>,
+    pub status: SwapStatus,
 }
 
 pub fn parse_short_channel_id(id_str: &str) -> Result<i64> {

@@ -52,9 +52,10 @@ pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredent
 ///
 /// # Arguments
 ///
-/// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
-/// * `seed` - The node private key
 /// * `breez_config` - the sdk coniguration
+/// * `seed` - The node private key
+/// * `creds` - The greenlight credentials
+///
 pub fn init_node(breez_config: Config, seed: Vec<u8>, creds: GreenlightCredentials) -> Result<()> {
     let config = Config::default();
 

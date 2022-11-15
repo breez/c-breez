@@ -1,6 +1,7 @@
 pub(crate) mod cache;
 pub(crate) mod db;
 pub(crate) mod settings;
+pub(crate) mod swap;
 pub(crate) mod transactions;
 
 mod test_utils {

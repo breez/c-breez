@@ -1,4 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/account/transaction_filters.dart';
 
 const initialInboundCapacity = 4000000;
 
@@ -19,9 +20,9 @@ class AccountState {
   final int maxInboundLiquidity;
   final int onChainFeeRate;
   final List<LightningTransaction> transactions;
+  final TransactionFilters transactionFilters;
 
   const AccountState({
-    required this.transactions,
     required this.id,
     required this.initial,
     required this.blockheight,
@@ -35,11 +36,14 @@ class AccountState {
     required this.connectedPeers,
     required this.maxInboundLiquidity,
     required this.onChainFeeRate,
+    required this.transactions,
+    required this.transactionFilters,
   });
 
   AccountState.initial()
       : this(
           id: null,
+          initial: true,
           blockheight: 0,
           status: AccountStatus.DISCONNECTED,
           maxAllowedToPay: 0,
@@ -52,12 +56,11 @@ class AccountState {
           balance: 0,
           walletBalance: 0,
           transactions: [],
-          initial: true,
+          transactionFilters: TransactionFilters.initial(),
         );
 
   AccountState copyWith({
     String? id,
-    List<LightningTransaction>? transactions,
     bool? initial,
     int? blockheight,
     int? balance,
@@ -70,26 +73,31 @@ class AccountState {
     List<String>? connectedPeers,
     int? maxInboundLiquidity,
     int? onChainFeeRate,
+    List<LightningTransaction>? transactions,
+    TransactionFilters? transactionFilters,
   }) {
     return AccountState(
-        transactions: transactions ?? this.transactions,
-        id: id ?? this.id,
-        initial: initial ?? this.initial,
-        balance: balance ?? this.balance,
-        walletBalance: walletBalance ?? this.walletBalance,
-        status: status ?? this.status,
-        maxAllowedToPay: maxAllowedToPay ?? this.maxAllowedToPay,
-        maxAllowedToReceive: maxAllowedToReceive ?? this.maxAllowedToReceive,
-        maxPaymentAmount: maxPaymentAmount ?? this.maxPaymentAmount,
-        blockheight: blockheight ?? this.blockheight,
-        maxChanReserve: maxChanReserve ?? this.maxChanReserve,
-        connectedPeers: connectedPeers ?? this.connectedPeers,
-        maxInboundLiquidity: maxInboundLiquidity ?? this.maxInboundLiquidity,
-        onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate);
+      id: id ?? this.id,
+      initial: initial ?? this.initial,
+      balance: balance ?? this.balance,
+      walletBalance: walletBalance ?? this.walletBalance,
+      status: status ?? this.status,
+      maxAllowedToPay: maxAllowedToPay ?? this.maxAllowedToPay,
+      maxAllowedToReceive: maxAllowedToReceive ?? this.maxAllowedToReceive,
+      maxPaymentAmount: maxPaymentAmount ?? this.maxPaymentAmount,
+      blockheight: blockheight ?? this.blockheight,
+      maxChanReserve: maxChanReserve ?? this.maxChanReserve,
+      connectedPeers: connectedPeers ?? this.connectedPeers,
+      maxInboundLiquidity: maxInboundLiquidity ?? this.maxInboundLiquidity,
+      onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
+      transactions: transactions ?? this.transactions,
+      transactionFilters: transactionFilters ?? this.transactionFilters,
+    );
   }
 
   int get reserveAmount => balance - maxAllowedToPay;
 
+  // TODO: Add transactions & transactionFilters toJson
   Map<String, dynamic>? toJson() {
     return {
       "id": id,
@@ -107,23 +115,26 @@ class AccountState {
     };
   }
 
+// TODO: Generate transactions & transactionFilters fromJson
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
-        transactions: [],
-        id: json["id"],
-        initial: json["initial"],
-        blockheight: json["blockheight"],
-        balance: json["balance"],
-        walletBalance: json["walletBalance"],
-        status: json["status"] != null
-            ? AccountStatus.values[json["status"]]
-            : AccountStatus.DISCONNECTED,
-        maxAllowedToPay: json["maxAllowedToPay"],
-        maxAllowedToReceive: json["maxAllowedToReceive"],
-        maxPaymentAmount: json["maxPaymentAmount"],
-        maxChanReserve: json["maxChanReserve"],
-        connectedPeers: <String>[],
-        maxInboundLiquidity: json["maxInboundLiquidity"] ?? 0,
-        onChainFeeRate: (json["onChainFeeRate"]));
+      id: json["id"],
+      initial: json["initial"],
+      blockheight: json["blockheight"],
+      balance: json["balance"],
+      walletBalance: json["walletBalance"],
+      status: json["status"] != null
+          ? AccountStatus.values[json["status"]]
+          : AccountStatus.DISCONNECTED,
+      maxAllowedToPay: json["maxAllowedToPay"],
+      maxAllowedToReceive: json["maxAllowedToReceive"],
+      maxPaymentAmount: json["maxPaymentAmount"],
+      maxChanReserve: json["maxChanReserve"],
+      connectedPeers: <String>[],
+      maxInboundLiquidity: json["maxInboundLiquidity"] ?? 0,
+      onChainFeeRate: (json["onChainFeeRate"]),
+      transactions: [],
+      transactionFilters: TransactionFilters.initial(),
+    );
   }
 }

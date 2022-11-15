@@ -16,11 +16,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$InputType {
-  String get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String field0) bitcoinAddress,
-    required TResult Function(String field0) bolt11,
+    required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -30,7 +29,7 @@ mixin _$InputType {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -40,7 +39,7 @@ mixin _$InputType {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -79,17 +78,12 @@ mixin _$InputType {
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
-
-  @JsonKey(ignore: true)
-  $InputTypeCopyWith<InputType> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $InputTypeCopyWith<$Res> {
   factory $InputTypeCopyWith(InputType value, $Res Function(InputType) then) =
       _$InputTypeCopyWithImpl<$Res>;
-  $Res call({String field0});
 }
 
 /// @nodoc
@@ -99,27 +93,13 @@ class _$InputTypeCopyWithImpl<$Res> implements $InputTypeCopyWith<$Res> {
   final InputType _value;
   // ignore: unused_field
   final $Res Function(InputType) _then;
-
-  @override
-  $Res call({
-    Object? field0 = freezed,
-  }) {
-    return _then(_value.copyWith(
-      field0: field0 == freezed
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
 }
 
 /// @nodoc
-abstract class _$$InputType_BitcoinAddressCopyWith<$Res>
-    implements $InputTypeCopyWith<$Res> {
+abstract class _$$InputType_BitcoinAddressCopyWith<$Res> {
   factory _$$InputType_BitcoinAddressCopyWith(_$InputType_BitcoinAddress value,
           $Res Function(_$InputType_BitcoinAddress) then) =
       __$$InputType_BitcoinAddressCopyWithImpl<$Res>;
-  @override
   $Res call({String field0});
 }
 
@@ -184,7 +164,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String field0) bitcoinAddress,
-    required TResult Function(String field0) bolt11,
+    required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -197,7 +177,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -210,7 +190,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -271,22 +251,18 @@ abstract class InputType_BitcoinAddress implements InputType {
   const factory InputType_BitcoinAddress(final String field0) =
       _$InputType_BitcoinAddress;
 
-  @override
   String get field0;
-  @override
   @JsonKey(ignore: true)
   _$$InputType_BitcoinAddressCopyWith<_$InputType_BitcoinAddress>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InputType_Bolt11CopyWith<$Res>
-    implements $InputTypeCopyWith<$Res> {
+abstract class _$$InputType_Bolt11CopyWith<$Res> {
   factory _$$InputType_Bolt11CopyWith(
           _$InputType_Bolt11 value, $Res Function(_$InputType_Bolt11) then) =
       __$$InputType_Bolt11CopyWithImpl<$Res>;
-  @override
-  $Res call({String field0});
+  $Res call({LNInvoice field0});
 }
 
 /// @nodoc
@@ -308,7 +284,7 @@ class __$$InputType_Bolt11CopyWithImpl<$Res>
       field0 == freezed
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
-              as String,
+              as LNInvoice,
     ));
   }
 }
@@ -319,7 +295,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   const _$InputType_Bolt11(this.field0);
 
   @override
-  final String field0;
+  final LNInvoice field0;
 
   @override
   String toString() {
@@ -347,7 +323,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String field0) bitcoinAddress,
-    required TResult Function(String field0) bolt11,
+    required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -360,7 +336,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -373,7 +349,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -431,23 +407,19 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
 }
 
 abstract class InputType_Bolt11 implements InputType {
-  const factory InputType_Bolt11(final String field0) = _$InputType_Bolt11;
+  const factory InputType_Bolt11(final LNInvoice field0) = _$InputType_Bolt11;
 
-  @override
-  String get field0;
-  @override
+  LNInvoice get field0;
   @JsonKey(ignore: true)
   _$$InputType_Bolt11CopyWith<_$InputType_Bolt11> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InputType_NodeIdCopyWith<$Res>
-    implements $InputTypeCopyWith<$Res> {
+abstract class _$$InputType_NodeIdCopyWith<$Res> {
   factory _$$InputType_NodeIdCopyWith(
           _$InputType_NodeId value, $Res Function(_$InputType_NodeId) then) =
       __$$InputType_NodeIdCopyWithImpl<$Res>;
-  @override
   $Res call({String field0});
 }
 
@@ -509,7 +481,7 @@ class _$InputType_NodeId implements InputType_NodeId {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String field0) bitcoinAddress,
-    required TResult Function(String field0) bolt11,
+    required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -522,7 +494,7 @@ class _$InputType_NodeId implements InputType_NodeId {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -535,7 +507,7 @@ class _$InputType_NodeId implements InputType_NodeId {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -595,21 +567,17 @@ class _$InputType_NodeId implements InputType_NodeId {
 abstract class InputType_NodeId implements InputType {
   const factory InputType_NodeId(final String field0) = _$InputType_NodeId;
 
-  @override
   String get field0;
-  @override
   @JsonKey(ignore: true)
   _$$InputType_NodeIdCopyWith<_$InputType_NodeId> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InputType_UrlCopyWith<$Res>
-    implements $InputTypeCopyWith<$Res> {
+abstract class _$$InputType_UrlCopyWith<$Res> {
   factory _$$InputType_UrlCopyWith(
           _$InputType_Url value, $Res Function(_$InputType_Url) then) =
       __$$InputType_UrlCopyWithImpl<$Res>;
-  @override
   $Res call({String field0});
 }
 
@@ -670,7 +638,7 @@ class _$InputType_Url implements InputType_Url {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String field0) bitcoinAddress,
-    required TResult Function(String field0) bolt11,
+    required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -683,7 +651,7 @@ class _$InputType_Url implements InputType_Url {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -696,7 +664,7 @@ class _$InputType_Url implements InputType_Url {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -756,21 +724,17 @@ class _$InputType_Url implements InputType_Url {
 abstract class InputType_Url implements InputType {
   const factory InputType_Url(final String field0) = _$InputType_Url;
 
-  @override
   String get field0;
-  @override
   @JsonKey(ignore: true)
   _$$InputType_UrlCopyWith<_$InputType_Url> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InputType_LnUrlPayCopyWith<$Res>
-    implements $InputTypeCopyWith<$Res> {
+abstract class _$$InputType_LnUrlPayCopyWith<$Res> {
   factory _$$InputType_LnUrlPayCopyWith(_$InputType_LnUrlPay value,
           $Res Function(_$InputType_LnUrlPay) then) =
       __$$InputType_LnUrlPayCopyWithImpl<$Res>;
-  @override
   $Res call({String field0});
 }
 
@@ -833,7 +797,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String field0) bitcoinAddress,
-    required TResult Function(String field0) bolt11,
+    required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -846,7 +810,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -859,7 +823,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -919,21 +883,17 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
 abstract class InputType_LnUrlPay implements InputType {
   const factory InputType_LnUrlPay(final String field0) = _$InputType_LnUrlPay;
 
-  @override
   String get field0;
-  @override
   @JsonKey(ignore: true)
   _$$InputType_LnUrlPayCopyWith<_$InputType_LnUrlPay> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InputType_LnUrlWithdrawCopyWith<$Res>
-    implements $InputTypeCopyWith<$Res> {
+abstract class _$$InputType_LnUrlWithdrawCopyWith<$Res> {
   factory _$$InputType_LnUrlWithdrawCopyWith(_$InputType_LnUrlWithdraw value,
           $Res Function(_$InputType_LnUrlWithdraw) then) =
       __$$InputType_LnUrlWithdrawCopyWithImpl<$Res>;
-  @override
   $Res call({String field0});
 }
 
@@ -997,7 +957,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String field0) bitcoinAddress,
-    required TResult Function(String field0) bolt11,
+    required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -1010,7 +970,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -1023,7 +983,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String field0)? bitcoinAddress,
-    TResult Function(String field0)? bolt11,
+    TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -1084,9 +1044,7 @@ abstract class InputType_LnUrlWithdraw implements InputType {
   const factory InputType_LnUrlWithdraw(final String field0) =
       _$InputType_LnUrlWithdraw;
 
-  @override
   String get field0;
-  @override
   @JsonKey(ignore: true)
   _$$InputType_LnUrlWithdrawCopyWith<_$InputType_LnUrlWithdraw> get copyWith =>
       throw _privateConstructorUsedError;

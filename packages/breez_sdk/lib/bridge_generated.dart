@@ -223,7 +223,7 @@ class InputType with _$InputType {
     String field0,
   ) = InputType_BitcoinAddress;
   const factory InputType.bolt11(
-    String field0,
+    LNInvoice field0,
   ) = InputType_Bolt11;
   const factory InputType.nodeId(
     String field0,
@@ -792,6 +792,10 @@ class LightningToolkitImpl implements LightningToolkit {
     return raw as bool;
   }
 
+  LNInvoice _wire2api_box_autoadd_ln_invoice(dynamic raw) {
+    return _wire2api_ln_invoice(raw);
+  }
+
   NodeState _wire2api_box_autoadd_node_state(dynamic raw) {
     return _wire2api_node_state(raw);
   }
@@ -863,7 +867,7 @@ class LightningToolkitImpl implements LightningToolkit {
         );
       case 1:
         return InputType_Bolt11(
-          _wire2api_String(raw[1]),
+          _wire2api_box_autoadd_ln_invoice(raw[1]),
         );
       case 2:
         return InputType_NodeId(

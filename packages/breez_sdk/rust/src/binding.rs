@@ -14,8 +14,8 @@ use crate::models::{
 };
 use crate::{greenlight::Greenlight, node_service::NodeService};
 
-use crate::invoice::{self};
 use crate::input_parser::InputType;
+use crate::invoice::{self};
 use bip39::{Language, Mnemonic, Seed};
 
 lazy_static! {

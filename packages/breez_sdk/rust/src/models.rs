@@ -98,7 +98,7 @@ pub struct GreenlightCredentials {
     pub device_cert: Vec<u8>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Network {
     /// Mainnet
     Bitcoin,

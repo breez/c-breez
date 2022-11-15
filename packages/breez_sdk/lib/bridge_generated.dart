@@ -155,6 +155,22 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta;
 }
 
+class BitcoinAddressData {
+  final String address;
+  final Network network;
+  final int? amountSat;
+  final String? label;
+  final String? message;
+
+  BitcoinAddressData({
+    required this.address,
+    required this.network,
+    this.amountSat,
+    this.label,
+    this.message,
+  });
+}
+
 class Config {
   final String breezserver;
   final String mempoolspaceUrl;
@@ -220,7 +236,7 @@ class GreenlightCredentials {
 @freezed
 class InputType with _$InputType {
   const factory InputType.bitcoinAddress(
-    String field0,
+    BitcoinAddressData field0,
   ) = InputType_BitcoinAddress;
   const factory InputType.bolt11(
     LNInvoice field0,
@@ -784,8 +800,25 @@ class LightningToolkitImpl implements LightningToolkit {
     return (raw as List<dynamic>).cast<String>();
   }
 
+  BitcoinAddressData _wire2api_bitcoin_address_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return BitcoinAddressData(
+      address: _wire2api_String(arr[0]),
+      network: _wire2api_network(arr[1]),
+      amountSat: _wire2api_opt_box_autoadd_u64(arr[2]),
+      label: _wire2api_opt_String(arr[3]),
+      message: _wire2api_opt_String(arr[4]),
+    );
+  }
+
   bool _wire2api_bool(dynamic raw) {
     return raw as bool;
+  }
+
+  BitcoinAddressData _wire2api_box_autoadd_bitcoin_address_data(dynamic raw) {
+    return _wire2api_bitcoin_address_data(raw);
   }
 
   bool _wire2api_box_autoadd_bool(dynamic raw) {
@@ -863,7 +896,7 @@ class LightningToolkitImpl implements LightningToolkit {
     switch (raw[0]) {
       case 0:
         return InputType_BitcoinAddress(
-          _wire2api_String(raw[1]),
+          _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
         );
       case 1:
         return InputType_Bolt11(
@@ -1001,6 +1034,10 @@ class LightningToolkitImpl implements LightningToolkit {
       maxInactiveDuration: _wire2api_i64(arr[13]),
       channelMinimumFeeMsat: _wire2api_i64(arr[14]),
     );
+  }
+
+  Network _wire2api_network(dynamic raw) {
+    return Network.values[raw];
   }
 
   NodeState _wire2api_node_state(dynamic raw) {

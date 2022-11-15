@@ -23,6 +23,7 @@ use crate::fiat::LocaleOverrides;
 use crate::fiat::LocalizedName;
 use crate::fiat::Rate;
 use crate::fiat::Symbol;
+use crate::input_parser::BitcoinAddressData;
 use crate::input_parser::InputType;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
@@ -381,6 +382,20 @@ impl Wire2Api<u8> for u8 {
 
 // Section: impl IntoDart
 
+impl support::IntoDart for BitcoinAddressData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.address.into_dart(),
+            self.network.into_dart(),
+            self.amount_sat.into_dart(),
+            self.label.into_dart(),
+            self.message.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for BitcoinAddressData {}
+
 impl support::IntoDart for CurrencyInfo {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -507,6 +522,17 @@ impl support::IntoDart for LspInformation {
 }
 impl support::IntoDartExceptPrimitive for LspInformation {}
 
+impl support::IntoDart for Network {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Bitcoin => 0,
+            Self::Testnet => 1,
+            Self::Signet => 2,
+            Self::Regtest => 3,
+        }
+        .into_dart()
+    }
+}
 impl support::IntoDart for NodeState {
     fn into_dart(self) -> support::DartAbi {
         vec![

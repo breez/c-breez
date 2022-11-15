@@ -18,7 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$InputType {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String field0) bitcoinAddress,
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
@@ -28,7 +28,7 @@ mixin _$InputType {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -38,7 +38,7 @@ mixin _$InputType {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -100,7 +100,7 @@ abstract class _$$InputType_BitcoinAddressCopyWith<$Res> {
   factory _$$InputType_BitcoinAddressCopyWith(_$InputType_BitcoinAddress value,
           $Res Function(_$InputType_BitcoinAddress) then) =
       __$$InputType_BitcoinAddressCopyWithImpl<$Res>;
-  $Res call({String field0});
+  $Res call({BitcoinAddressData field0});
 }
 
 /// @nodoc
@@ -123,7 +123,7 @@ class __$$InputType_BitcoinAddressCopyWithImpl<$Res>
       field0 == freezed
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
-              as String,
+              as BitcoinAddressData,
     ));
   }
 }
@@ -134,7 +134,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   const _$InputType_BitcoinAddress(this.field0);
 
   @override
-  final String field0;
+  final BitcoinAddressData field0;
 
   @override
   String toString() {
@@ -163,7 +163,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String field0) bitcoinAddress,
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
@@ -176,7 +176,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -189,7 +189,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -248,10 +248,10 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
 }
 
 abstract class InputType_BitcoinAddress implements InputType {
-  const factory InputType_BitcoinAddress(final String field0) =
+  const factory InputType_BitcoinAddress(final BitcoinAddressData field0) =
       _$InputType_BitcoinAddress;
 
-  String get field0;
+  BitcoinAddressData get field0;
   @JsonKey(ignore: true)
   _$$InputType_BitcoinAddressCopyWith<_$InputType_BitcoinAddress>
       get copyWith => throw _privateConstructorUsedError;
@@ -322,7 +322,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String field0) bitcoinAddress,
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
@@ -335,7 +335,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -348,7 +348,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -480,7 +480,7 @@ class _$InputType_NodeId implements InputType_NodeId {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String field0) bitcoinAddress,
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
@@ -493,7 +493,7 @@ class _$InputType_NodeId implements InputType_NodeId {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -506,7 +506,7 @@ class _$InputType_NodeId implements InputType_NodeId {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -637,7 +637,7 @@ class _$InputType_Url implements InputType_Url {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String field0) bitcoinAddress,
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
@@ -650,7 +650,7 @@ class _$InputType_Url implements InputType_Url {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -663,7 +663,7 @@ class _$InputType_Url implements InputType_Url {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -796,7 +796,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String field0) bitcoinAddress,
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
@@ -809,7 +809,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -822,7 +822,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -956,7 +956,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String field0) bitcoinAddress,
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
@@ -969,7 +969,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
@@ -982,7 +982,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String field0)? bitcoinAddress,
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,

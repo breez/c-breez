@@ -32,14 +32,22 @@ typedef struct WireSyncReturnStruct {
 
 void store_dart_post_cobject(DartPostCObjectFnType ptr);
 
-void wire_register_node(int64_t port_, int32_t network, struct wire_uint_8_list *seed);
+void wire_register_node(int64_t port_,
+                        int32_t network,
+                        struct wire_uint_8_list *seed,
+                        struct wire_Config *config);
 
-void wire_recover_node(int64_t port_, int32_t network, struct wire_uint_8_list *seed);
+void wire_recover_node(int64_t port_,
+                       int32_t network,
+                       struct wire_uint_8_list *seed,
+                       struct wire_Config *config);
 
 void wire_init_node(int64_t port_,
-                    struct wire_Config *breez_config,
+                    struct wire_Config *config,
                     struct wire_uint_8_list *seed,
                     struct wire_GreenlightCredentials *creds);
+
+void wire_stop_node(int64_t port_);
 
 void wire_send_payment(int64_t port_, struct wire_uint_8_list *bolt11);
 
@@ -89,6 +97,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_register_node);
     dummy_var ^= ((int64_t) (void*) wire_recover_node);
     dummy_var ^= ((int64_t) (void*) wire_init_node);
+    dummy_var ^= ((int64_t) (void*) wire_stop_node);
     dummy_var ^= ((int64_t) (void*) wire_send_payment);
     dummy_var ^= ((int64_t) (void*) wire_send_spontaneous_payment);
     dummy_var ^= ((int64_t) (void*) wire_receive_payment);

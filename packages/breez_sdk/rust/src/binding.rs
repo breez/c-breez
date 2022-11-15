@@ -15,6 +15,7 @@ use crate::models::{
 use crate::{greenlight::Greenlight, node_service::NodeService};
 
 use crate::invoice::{self};
+use crate::parser::InputType;
 use bip39::{Language, Mnemonic, Seed};
 
 lazy_static! {
@@ -222,6 +223,10 @@ fn block_on<F: Future>(future: F) -> F::Output {
 
 pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
     return invoice::parse_invoice(&invoice);
+}
+
+pub fn parse(s: String) -> Result<InputType> {
+    crate::parser::parse(&s)
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

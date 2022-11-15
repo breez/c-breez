@@ -34,6 +34,7 @@ use crate::models::LightningTransaction;
 use crate::models::Network;
 use crate::models::NodeState;
 use crate::models::PaymentTypeFilter;
+use crate::parser::InputType;
 
 // Section: wire functions
 
@@ -266,6 +267,19 @@ fn wire_parse_invoice_impl(port_: MessagePort, invoice: impl Wire2Api<String> + 
         },
     )
 }
+fn wire_parse_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "parse",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_s = s.wire2api();
+            move |task_callback| parse(api_s)
+        },
+    )
+}
 fn wire_mnemonic_to_seed_impl(port_: MessagePort, phrase: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -397,6 +411,20 @@ impl support::IntoDart for GreenlightCredentials {
 }
 impl support::IntoDartExceptPrimitive for GreenlightCredentials {}
 
+impl support::IntoDart for InputType {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::BitcoinAddress(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::Bolt11(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::NodeId(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::Url(field0) => vec![3.into_dart(), field0.into_dart()],
+            Self::LnUrlPay(field0) => vec![4.into_dart(), field0.into_dart()],
+            Self::LnUrlWithdraw(field0) => vec![5.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for InputType {}
 impl support::IntoDart for LightningTransaction {
     fn into_dart(self) -> support::DartAbi {
         vec![

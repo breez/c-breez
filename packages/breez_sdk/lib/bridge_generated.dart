@@ -5,10 +5,13 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 
 import 'package:meta/meta.dart';
 import 'package:meta/meta.dart';
 import 'dart:ffi' as ffi;
+
+part 'bridge_generated.freezed.dart';
 
 abstract class LightningToolkit {
   /// Register a new node in the cloud and return credentials to interact with it
@@ -140,6 +143,10 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kParseInvoiceConstMeta;
 
+  Future<InputType> parse({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kParseConstMeta;
+
   /// Attempts to convert the phrase to a mnemonic, then to a seed.
   ///
   /// If the phrase is not a valid mnemonic, an error is returned.
@@ -208,6 +215,28 @@ class GreenlightCredentials {
     required this.deviceKey,
     required this.deviceCert,
   });
+}
+
+@freezed
+class InputType with _$InputType {
+  const factory InputType.bitcoinAddress(
+    String field0,
+  ) = InputType_BitcoinAddress;
+  const factory InputType.bolt11(
+    String field0,
+  ) = InputType_Bolt11;
+  const factory InputType.nodeId(
+    String field0,
+  ) = InputType_NodeId;
+  const factory InputType.url(
+    String field0,
+  ) = InputType_Url;
+  const factory InputType.lnUrlPay(
+    String field0,
+  ) = InputType_LnUrlPay;
+  const factory InputType.lnUrlWithdraw(
+    String field0,
+  ) = InputType_LnUrlWithdraw;
 }
 
 class LightningTransaction {
@@ -713,6 +742,22 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["invoice"],
       );
 
+  Future<InputType> parse({required String s, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            _platform.inner.wire_parse(port_, _platform.api2wire_String(s)),
+        parseSuccessData: _wire2api_input_type,
+        constMeta: kParseConstMeta,
+        argValues: [s],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kParseConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "parse",
+        argNames: ["s"],
+      );
+
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner
@@ -808,6 +853,37 @@ class LightningToolkitImpl implements LightningToolkit {
 
   int _wire2api_i64(dynamic raw) {
     return castInt(raw);
+  }
+
+  InputType _wire2api_input_type(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return InputType_BitcoinAddress(
+          _wire2api_String(raw[1]),
+        );
+      case 1:
+        return InputType_Bolt11(
+          _wire2api_String(raw[1]),
+        );
+      case 2:
+        return InputType_NodeId(
+          _wire2api_String(raw[1]),
+        );
+      case 3:
+        return InputType_Url(
+          _wire2api_String(raw[1]),
+        );
+      case 4:
+        return InputType_LnUrlPay(
+          _wire2api_String(raw[1]),
+        );
+      case 5:
+        return InputType_LnUrlWithdraw(
+          _wire2api_String(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   LightningTransaction _wire2api_lightning_transaction(dynamic raw) {
@@ -1466,6 +1542,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.Void Function(
               ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_parse_invoice');
   late final _wire_parse_invoice = _wire_parse_invoicePtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_parse(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_parse(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_parsePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_parse');
+  late final _wire_parse = _wire_parsePtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_mnemonic_to_seed(

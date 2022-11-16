@@ -407,7 +407,6 @@ mod tests {
         let script =
             create_submarine_swap_script(payment_hash, swapper_pub_key, payer_pub_key, lock_time)
                 .unwrap();
-        let encoded_script = hex::encode(script.as_bytes().to_vec());
 
         let refund_tx = create_refund_tx(
             utxos,

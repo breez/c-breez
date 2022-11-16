@@ -7,22 +7,24 @@ use crate::invoice::LNInvoice;
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 pub fn parse(s: &str) -> Result<InputType> {
-    match s.parse::<Uri<'_>>() {
-        Ok(uri) => Ok(BitcoinAddress(BitcoinAddressData {
-            address: uri.address.to_string(),
-            network: match uri.address.network {
-                Network::Bitcoin => crate::models::Network::Bitcoin,
-                Network::Testnet => crate::models::Network::Testnet,
-                Network::Signet => crate::models::Network::Signet,
-                Network::Regtest => crate::models::Network::Regtest,
-            },
-            amount_sat: uri.amount.map(|a| a.to_sat()),
-            label: uri.label.map(|label| label.try_into().unwrap()),
-            message: uri.message.map(|msg| msg.try_into().unwrap()),
-        })),
-        Err(e) => Err(anyhow!(e)),
+    for val in [s, &format!("bitcoin:{}", s)] {
+        if let Ok(uri) = val.parse::<Uri<'_>>() {
+            return Ok(BitcoinAddress(BitcoinAddressData {
+                address: uri.address.to_string(),
+                network: match uri.address.network {
+                    Network::Bitcoin => crate::models::Network::Bitcoin,
+                    Network::Testnet => crate::models::Network::Testnet,
+                    Network::Signet => crate::models::Network::Signet,
+                    Network::Regtest => crate::models::Network::Regtest,
+                },
+                amount_sat: uri.amount.map(|a| a.to_sat()),
+                label: uri.label.map(|label| label.try_into().unwrap()),
+                message: uri.message.map(|msg| msg.try_into().unwrap()),
+            }));
+        }
+        // TODO Parse the other InputTypes
     }
-    // TODO Parse the other InputTypes
+    Err(anyhow!("Unrecognized input type"))
 }
 
 pub enum InputType {
@@ -47,7 +49,7 @@ mod tests {
     use anyhow::anyhow;
     use anyhow::Result;
 
-    use crate::input_parser::{InputType, parse};
+    use crate::input_parser::{parse, InputType};
     use crate::models::Network;
 
     #[test]
@@ -62,7 +64,7 @@ mod tests {
         // Addresses from https://github.com/Kixunil/bip21/blob/master/src/lib.rs
 
         // Valid address but without prefix
-        assert!(parse("1andreas3batLhQa2FawWjeyjCqyBzypd").is_err());
+        assert!(parse("1andreas3batLhQa2FawWjeyjCqyBzypd").is_ok());
         assert!(parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd").is_ok());
         assert!(parse("bitcoin:testinvalidaddress").is_err());
 

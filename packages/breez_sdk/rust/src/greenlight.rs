@@ -28,22 +28,22 @@ const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
 
 #[derive(Clone)]
 pub(crate) struct Greenlight {
-    breez_config: Config,
+    sdk_config: Config,
     tls_config: TlsConfig,
     signer: Signer,
 }
 
 impl Greenlight {
     pub(crate) async fn new(
-        breez_config: Config,
+        sdk_config: Config,
         seed: Vec<u8>,
         creds: GreenlightCredentials,
     ) -> Result<Greenlight> {
-        let greenlight_network = parse_network(&breez_config.network);
+        let greenlight_network = parse_network(&sdk_config.network);
         let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
         let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
         Ok(Greenlight {
-            breez_config,
+            sdk_config,
             tls_config: tls_config.clone(),
             signer: signer.clone(),
         })
@@ -272,7 +272,7 @@ impl NodeAPI for Greenlight {
                 .map(Some)
                 .map(|amt| Amount { unit: amt }),
             bolt11,
-            timeout: self.breez_config.payment_timeout_sec,
+            timeout: self.sdk_config.payment_timeout_sec,
         };
         Ok(client.pay(request).await?.into_inner())
     }

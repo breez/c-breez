@@ -17,8 +17,12 @@ abstract class LightningToolkit {
   ///
   /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
   /// * `seed` - The node private key
+  /// * `config` - The sdk configuration
   Future<GreenlightCredentials> registerNode(
-      {required Network network, required Uint8List seed, dynamic hint});
+      {required Network network,
+      required Uint8List seed,
+      Config? config,
+      dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRegisterNodeConstMeta;
 
@@ -28,8 +32,12 @@ abstract class LightningToolkit {
   ///
   /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
   /// * `seed` - The node private key
+  /// * `config` - The sdk configuration
   Future<GreenlightCredentials> recoverNode(
-      {required Network network, required Uint8List seed, dynamic hint});
+      {required Network network,
+      required Uint8List seed,
+      Config? config,
+      dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRecoverNodeConstMeta;
 
@@ -38,16 +46,22 @@ abstract class LightningToolkit {
   ///
   /// # Arguments
   ///
-  /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
+  /// * `config` - The sdk configuration
   /// * `seed` - The node private key
-  /// * `breez_config` - the sdk coniguration
+  /// * `creds` - The greenlight credentials
+  ///
   Future<void> initNode(
-      {required Config breezConfig,
+      {Config? config,
       required Uint8List seed,
       required GreenlightCredentials creds,
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kInitNodeConstMeta;
+
+  /// Cleanup node resources and stop the signer.
+  Future<void> stopNode({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kStopNodeConstMeta;
 
   /// pay a bolt11 invoice
   ///
@@ -429,60 +443,87 @@ class LightningToolkitImpl implements LightningToolkit {
       LightningToolkitImpl(module as ExternalLibrary);
   LightningToolkitImpl.raw(this._platform);
   Future<GreenlightCredentials> registerNode(
-          {required Network network, required Uint8List seed, dynamic hint}) =>
+          {required Network network,
+          required Uint8List seed,
+          Config? config,
+          dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_register_node(port_,
-            api2wire_network(network), _platform.api2wire_uint_8_list(seed)),
+        callFfi: (port_) => _platform.inner.wire_register_node(
+            port_,
+            api2wire_network(network),
+            _platform.api2wire_uint_8_list(seed),
+            _platform.api2wire_opt_box_autoadd_config(config)),
         parseSuccessData: _wire2api_greenlight_credentials,
         constMeta: kRegisterNodeConstMeta,
-        argValues: [network, seed],
+        argValues: [network, seed, config],
         hint: hint,
       ));
 
   FlutterRustBridgeTaskConstMeta get kRegisterNodeConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "register_node",
-        argNames: ["network", "seed"],
+        argNames: ["network", "seed", "config"],
       );
 
   Future<GreenlightCredentials> recoverNode(
-          {required Network network, required Uint8List seed, dynamic hint}) =>
+          {required Network network,
+          required Uint8List seed,
+          Config? config,
+          dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_recover_node(port_,
-            api2wire_network(network), _platform.api2wire_uint_8_list(seed)),
+        callFfi: (port_) => _platform.inner.wire_recover_node(
+            port_,
+            api2wire_network(network),
+            _platform.api2wire_uint_8_list(seed),
+            _platform.api2wire_opt_box_autoadd_config(config)),
         parseSuccessData: _wire2api_greenlight_credentials,
         constMeta: kRecoverNodeConstMeta,
-        argValues: [network, seed],
+        argValues: [network, seed, config],
         hint: hint,
       ));
 
   FlutterRustBridgeTaskConstMeta get kRecoverNodeConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "recover_node",
-        argNames: ["network", "seed"],
+        argNames: ["network", "seed", "config"],
       );
 
   Future<void> initNode(
-          {required Config breezConfig,
+          {Config? config,
           required Uint8List seed,
           required GreenlightCredentials creds,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_init_node(
             port_,
-            _platform.api2wire_box_autoadd_config(breezConfig),
+            _platform.api2wire_opt_box_autoadd_config(config),
             _platform.api2wire_uint_8_list(seed),
             _platform.api2wire_box_autoadd_greenlight_credentials(creds)),
         parseSuccessData: _wire2api_unit,
         constMeta: kInitNodeConstMeta,
-        argValues: [breezConfig, seed, creds],
+        argValues: [config, seed, creds],
         hint: hint,
       ));
 
   FlutterRustBridgeTaskConstMeta get kInitNodeConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "init_node",
-        argNames: ["breezConfig", "seed", "creds"],
+        argNames: ["config", "seed", "creds"],
+      );
+
+  Future<void> stopNode({dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_stop_node(port_),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kStopNodeConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kStopNodeConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "stop_node",
+        argNames: [],
       );
 
   Future<void> sendPayment({required String bolt11, dynamic hint}) =>
@@ -1088,6 +1129,11 @@ class LightningToolkitPlatform
   }
 
   @protected
+  ffi.Pointer<wire_Config> api2wire_opt_box_autoadd_config(Config? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_config(raw);
+  }
+
+  @protected
   ffi.Pointer<ffi.Int64> api2wire_opt_box_autoadd_i64(int? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_i64(raw);
   }
@@ -1128,6 +1174,11 @@ class LightningToolkitPlatform
       GreenlightCredentials apiObj, wire_GreenlightCredentials wireObj) {
     wireObj.device_key = api2wire_uint_8_list(apiObj.deviceKey);
     wireObj.device_cert = api2wire_uint_8_list(apiObj.deviceCert);
+  }
+
+  void _api_fill_to_wire_opt_box_autoadd_config(
+      Config? apiObj, ffi.Pointer<wire_Config> wireObj) {
+    if (apiObj != null) _api_fill_to_wire_box_autoadd_config(apiObj, wireObj);
   }
 }
 
@@ -1171,49 +1222,55 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
     int port_,
     int network,
     ffi.Pointer<wire_uint_8_list> seed,
+    ffi.Pointer<wire_Config> config,
   ) {
     return _wire_register_node(
       port_,
       network,
       seed,
+      config,
     );
   }
 
   late final _wire_register_nodePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Int32,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_register_node');
-  late final _wire_register_node = _wire_register_nodePtr
-      .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
+          ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_Config>)>>('wire_register_node');
+  late final _wire_register_node = _wire_register_nodePtr.asFunction<
+      void Function(
+          int, int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_Config>)>();
 
   void wire_recover_node(
     int port_,
     int network,
     ffi.Pointer<wire_uint_8_list> seed,
+    ffi.Pointer<wire_Config> config,
   ) {
     return _wire_recover_node(
       port_,
       network,
       seed,
+      config,
     );
   }
 
   late final _wire_recover_nodePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Int32,
-              ffi.Pointer<wire_uint_8_list>)>>('wire_recover_node');
-  late final _wire_recover_node = _wire_recover_nodePtr
-      .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
+          ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_Config>)>>('wire_recover_node');
+  late final _wire_recover_node = _wire_recover_nodePtr.asFunction<
+      void Function(
+          int, int, ffi.Pointer<wire_uint_8_list>, ffi.Pointer<wire_Config>)>();
 
   void wire_init_node(
     int port_,
-    ffi.Pointer<wire_Config> breez_config,
+    ffi.Pointer<wire_Config> config,
     ffi.Pointer<wire_uint_8_list> seed,
     ffi.Pointer<wire_GreenlightCredentials> creds,
   ) {
     return _wire_init_node(
       port_,
-      breez_config,
+      config,
       seed,
       creds,
     );
@@ -1232,6 +1289,20 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.Pointer<wire_Config>,
           ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_GreenlightCredentials>)>();
+
+  void wire_stop_node(
+    int port_,
+  ) {
+    return _wire_stop_node(
+      port_,
+    );
+  }
+
+  late final _wire_stop_nodePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_stop_node');
+  late final _wire_stop_node =
+      _wire_stop_nodePtr.asFunction<void Function(int)>();
 
   void wire_send_payment(
     int port_,

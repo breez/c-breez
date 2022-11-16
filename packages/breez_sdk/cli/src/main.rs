@@ -50,7 +50,7 @@ fn main() -> Result<()> {
                 let mut command: SplitWhitespace = line.as_str().split_whitespace();
                 match command.next() {
                     Some("register_node") => {
-                        let r = binding::register_node(models::Network::Bitcoin, seed.to_vec());
+                        let r = binding::register_node(models::Network::Bitcoin, seed.to_vec(), Option::None);
                         let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",
@@ -59,7 +59,7 @@ fn main() -> Result<()> {
                         );
                     }
                     Some("recover_node") => {
-                        let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec());
+                        let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec(), Option::None);
                         let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",

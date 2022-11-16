@@ -23,6 +23,8 @@ use crate::fiat::LocaleOverrides;
 use crate::fiat::LocalizedName;
 use crate::fiat::Rate;
 use crate::fiat::Symbol;
+use crate::input_parser::BitcoinAddressData;
+use crate::input_parser::InputType;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
@@ -270,6 +272,19 @@ fn wire_parse_invoice_impl(port_: MessagePort, invoice: impl Wire2Api<String> + 
         },
     )
 }
+fn wire_parse_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "parse",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_s = s.wire2api();
+            move |task_callback| parse(api_s)
+        },
+    )
+}
 fn wire_mnemonic_to_seed_impl(port_: MessagePort, phrase: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -371,6 +386,20 @@ impl Wire2Api<u8> for u8 {
 
 // Section: impl IntoDart
 
+impl support::IntoDart for BitcoinAddressData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.address.into_dart(),
+            self.network.into_dart(),
+            self.amount_sat.into_dart(),
+            self.label.into_dart(),
+            self.message.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for BitcoinAddressData {}
+
 impl support::IntoDart for CurrencyInfo {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -401,6 +430,20 @@ impl support::IntoDart for GreenlightCredentials {
 }
 impl support::IntoDartExceptPrimitive for GreenlightCredentials {}
 
+impl support::IntoDart for InputType {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::BitcoinAddress(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::Bolt11(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::NodeId(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::Url(field0) => vec![3.into_dart(), field0.into_dart()],
+            Self::LnUrlPay(field0) => vec![4.into_dart(), field0.into_dart()],
+            Self::LnUrlWithdraw(field0) => vec![5.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for InputType {}
 impl support::IntoDart for LightningTransaction {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -483,6 +526,17 @@ impl support::IntoDart for LspInformation {
 }
 impl support::IntoDartExceptPrimitive for LspInformation {}
 
+impl support::IntoDart for Network {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Bitcoin => 0,
+            Self::Testnet => 1,
+            Self::Signet => 2,
+            Self::Regtest => 3,
+        }
+        .into_dart()
+    }
+}
 impl support::IntoDart for NodeState {
     fn into_dart(self) -> support::DartAbi {
         vec![

@@ -8,6 +8,7 @@ mod crypto;
 mod fiat;
 mod greenlight;
 pub mod grpc;
+pub mod input_parser;
 mod invoice;
 pub mod lsp;
 pub mod models;

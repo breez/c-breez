@@ -5,10 +5,13 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 
 import 'package:meta/meta.dart';
 import 'package:meta/meta.dart';
 import 'dart:ffi' as ffi;
+
+part 'bridge_generated.freezed.dart';
 
 abstract class LightningToolkit {
   /// Register a new node in the cloud and return credentials to interact with it
@@ -148,12 +151,32 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kParseInvoiceConstMeta;
 
+  Future<InputType> parse({required String s, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kParseConstMeta;
+
   /// Attempts to convert the phrase to a mnemonic, then to a seed.
   ///
   /// If the phrase is not a valid mnemonic, an error is returned.
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kMnemonicToSeedConstMeta;
+}
+
+class BitcoinAddressData {
+  final String address;
+  final Network network;
+  final int? amountSat;
+  final String? label;
+  final String? message;
+
+  BitcoinAddressData({
+    required this.address,
+    required this.network,
+    this.amountSat,
+    this.label,
+    this.message,
+  });
 }
 
 class Config {
@@ -216,6 +239,28 @@ class GreenlightCredentials {
     required this.deviceKey,
     required this.deviceCert,
   });
+}
+
+@freezed
+class InputType with _$InputType {
+  const factory InputType.bitcoinAddress(
+    BitcoinAddressData field0,
+  ) = InputType_BitcoinAddress;
+  const factory InputType.bolt11(
+    LNInvoice field0,
+  ) = InputType_Bolt11;
+  const factory InputType.nodeId(
+    String field0,
+  ) = InputType_NodeId;
+  const factory InputType.url(
+    String field0,
+  ) = InputType_Url;
+  const factory InputType.lnUrlPay(
+    String field0,
+  ) = InputType_LnUrlPay;
+  const factory InputType.lnUrlWithdraw(
+    String field0,
+  ) = InputType_LnUrlWithdraw;
 }
 
 class LightningTransaction {
@@ -733,6 +778,22 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["invoice"],
       );
 
+  Future<InputType> parse({required String s, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) =>
+            _platform.inner.wire_parse(port_, _platform.api2wire_String(s)),
+        parseSuccessData: _wire2api_input_type,
+        constMeta: kParseConstMeta,
+        argValues: [s],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kParseConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "parse",
+        argNames: ["s"],
+      );
+
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner
@@ -759,12 +820,33 @@ class LightningToolkitImpl implements LightningToolkit {
     return (raw as List<dynamic>).cast<String>();
   }
 
+  BitcoinAddressData _wire2api_bitcoin_address_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return BitcoinAddressData(
+      address: _wire2api_String(arr[0]),
+      network: _wire2api_network(arr[1]),
+      amountSat: _wire2api_opt_box_autoadd_u64(arr[2]),
+      label: _wire2api_opt_String(arr[3]),
+      message: _wire2api_opt_String(arr[4]),
+    );
+  }
+
   bool _wire2api_bool(dynamic raw) {
     return raw as bool;
   }
 
+  BitcoinAddressData _wire2api_box_autoadd_bitcoin_address_data(dynamic raw) {
+    return _wire2api_bitcoin_address_data(raw);
+  }
+
   bool _wire2api_box_autoadd_bool(dynamic raw) {
     return raw as bool;
+  }
+
+  LNInvoice _wire2api_box_autoadd_ln_invoice(dynamic raw) {
+    return _wire2api_ln_invoice(raw);
   }
 
   NodeState _wire2api_box_autoadd_node_state(dynamic raw) {
@@ -828,6 +910,37 @@ class LightningToolkitImpl implements LightningToolkit {
 
   int _wire2api_i64(dynamic raw) {
     return castInt(raw);
+  }
+
+  InputType _wire2api_input_type(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return InputType_BitcoinAddress(
+          _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
+        );
+      case 1:
+        return InputType_Bolt11(
+          _wire2api_box_autoadd_ln_invoice(raw[1]),
+        );
+      case 2:
+        return InputType_NodeId(
+          _wire2api_String(raw[1]),
+        );
+      case 3:
+        return InputType_Url(
+          _wire2api_String(raw[1]),
+        );
+      case 4:
+        return InputType_LnUrlPay(
+          _wire2api_String(raw[1]),
+        );
+      case 5:
+        return InputType_LnUrlWithdraw(
+          _wire2api_String(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   LightningTransaction _wire2api_lightning_transaction(dynamic raw) {
@@ -941,6 +1054,10 @@ class LightningToolkitImpl implements LightningToolkit {
       maxInactiveDuration: _wire2api_i64(arr[13]),
       channelMinimumFeeMsat: _wire2api_i64(arr[14]),
     );
+  }
+
+  Network _wire2api_network(dynamic raw) {
+    return Network.values[raw];
   }
 
   NodeState _wire2api_node_state(dynamic raw) {
@@ -1205,7 +1322,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       : _lookup = lookup;
 
   void store_dart_post_cobject(
-    DartPostCObjectFnType ptr,
+    int ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -1213,10 +1330,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
-      .asFunction<void Function(DartPostCObjectFnType)>();
+  late final _store_dart_post_cobject =
+      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
 
   void wire_register_node(
     int port_,
@@ -1504,6 +1621,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_parse_invoice = _wire_parse_invoicePtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
+  void wire_parse(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> s,
+  ) {
+    return _wire_parse(
+      port_,
+      s,
+    );
+  }
+
+  late final _wire_parsePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_parse');
+  late final _wire_parse = _wire_parsePtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
   void wire_mnemonic_to_seed(
     int port_,
     ffi.Pointer<wire_uint_8_list> phrase,
@@ -1615,6 +1749,4 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-typedef DartPostCObjectFnType = ffi.Pointer<
-    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
-typedef DartPort = ffi.Int64;
+typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;

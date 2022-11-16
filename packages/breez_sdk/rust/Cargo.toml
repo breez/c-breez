@@ -11,6 +11,7 @@ crate-type = ["staticlib", "cdylib", "lib"]
 flutter_rust_bridge = "1"
 anyhow = { version = "1.0.57", features = ["backtrace"] }
 hex = "*"
+bip21 = "*"
 bitcoin_hashes = "*"
 bitcoin = "^0"
 # Note: private repo, might need git credentials helper to be setup

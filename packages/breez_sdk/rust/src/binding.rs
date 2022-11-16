@@ -71,11 +71,11 @@ pub fn init_node(
     seed: Vec<u8>,
     creds: GreenlightCredentials,
 ) -> Result<()> {
-    let breez_config = config.unwrap_or(Config::default());
+    let sdk_config = config.unwrap_or(Config::default());
 
     // greenlight is the implementation of NodeAPI
-    let node_api = block_on(Greenlight::new(breez_config.clone(), seed, creds))?;
-    let node_services = NodeService::from_config(breez_config.clone(), Box::new(node_api))?;
+    let node_api = block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
+    let node_services = NodeService::from_config(sdk_config.clone(), Box::new(node_api))?;
     *NODE_SERVICE_STATE.lock().unwrap() = Some(Arc::new(node_services));
 
     // run the signer, schedule the node in the cloud and sync state

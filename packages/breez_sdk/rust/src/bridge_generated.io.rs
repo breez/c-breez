@@ -37,11 +37,6 @@ pub extern "C" fn wire_stop_node(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_stop_node(port_: i64) {
-    wire_stop_node_impl(port_)
-}
-
-#[no_mangle]
 pub extern "C" fn wire_send_payment(port_: i64, bolt11: *mut wire_uint_8_list) {
     wire_send_payment_impl(port_, bolt11)
 }

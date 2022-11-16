@@ -2,12 +2,26 @@ use anyhow::{anyhow, Result};
 use bip21::Uri;
 use bitcoin::Network;
 
-use crate::input_parser::InputType::{BitcoinAddress, Bolt11WithOnchainFallback};
-use crate::invoice::LNInvoice;
+use crate::input_parser::InputType::{BitcoinAddress, Bolt11, Bolt11WithOnchainFallback};
+use crate::invoice::{parse_invoice, LNInvoice};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 pub fn parse(s: &str) -> Result<InputType> {
-    for val in [s, &format!("bitcoin:{}", s)] {
+    // Variants of the user input, with or without certain prefixes, which we consider for parsing
+    // This lets us detect the input type even when the correct prefix is missing
+    let variants = vec![
+        // Raw user input
+        // We try to parse it directly, in case it is already formatted correctly
+        s.into(),
+        // The bip21 crate, used for parsing bitcoin addresses, expects a `bitcoin:` prefix
+        // To cover the case when the user input doesn't have it, we explicitly add it to have a valid bip21 string
+        format!("bitcoin:{}", s),
+        // The BOLT11 parsing works directly on a bolt11 string, without a prefix
+        // For the case when the user input has the `lightning:` prefix, we strip it to have the right input for the bolt11 parsing function
+        s.strip_prefix("lightning:").unwrap_or_default().into(),
+    ];
+
+    for val in variants {
         // Check if valid BTC onchain address
         if let Ok(uri) = val.parse::<Uri<'_>>() {
             let bitcoin_addr_data = BitcoinAddressData {
@@ -33,7 +47,7 @@ pub fn parse(s: &str) -> Result<InputType> {
                         if let Some(eq_pos) = ln_param.find('=') {
                             let bolt11_raw = ln_param[(eq_pos + 1)..].to_string();
 
-                            invoice_param = crate::invoice::parse_invoice(&bolt11_raw).map(Some)?;
+                            invoice_param = parse_invoice(&bolt11_raw).map(Some)?;
                         }
                     }
                 }
@@ -43,6 +57,8 @@ pub fn parse(s: &str) -> Result<InputType> {
                 None => BitcoinAddress(bitcoin_addr_data),
                 Some(invoice) => Bolt11WithOnchainFallback(invoice, bitcoin_addr_data),
             });
+        } else if let Ok(invoice) = parse_invoice(&val) {
+            return Ok(Bolt11(invoice));
         }
         // TODO Parse the other InputTypes
     }
@@ -142,6 +158,26 @@ mod tests {
                 assert_eq!(addr_with_amount_parsed.label, Some(label.into()));
                 assert_eq!(addr_with_amount_parsed.message, Some(message.into()));
             }
+            _ => return Err(anyhow!("Invalid type parsed")),
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_bolt11() -> Result<()> {
+        let bolt11 = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
+
+        // Invoice without prefix
+        match parse(bolt11)? {
+            InputType::Bolt11(_invoice) => {}
+            _ => return Err(anyhow!("Invalid type parsed")),
+        }
+
+        // Invoice with prefix
+        let invoice_with_prefix = format!("lightning:{}", bolt11);
+        match parse(&invoice_with_prefix)? {
+            InputType::Bolt11(_invoice) => {}
             _ => return Err(anyhow!("Invalid type parsed")),
         }
 

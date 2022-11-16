@@ -43,6 +43,7 @@ fn wire_register_node_impl(
     port_: MessagePort,
     network: impl Wire2Api<Network> + UnwindSafe,
     seed: impl Wire2Api<Vec<u8>> + UnwindSafe,
+    config: impl Wire2Api<Option<Config>> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -53,7 +54,8 @@ fn wire_register_node_impl(
         move || {
             let api_network = network.wire2api();
             let api_seed = seed.wire2api();
-            move |task_callback| register_node(api_network, api_seed)
+            let api_config = config.wire2api();
+            move |task_callback| register_node(api_network, api_seed, api_config)
         },
     )
 }
@@ -61,6 +63,7 @@ fn wire_recover_node_impl(
     port_: MessagePort,
     network: impl Wire2Api<Network> + UnwindSafe,
     seed: impl Wire2Api<Vec<u8>> + UnwindSafe,
+    config: impl Wire2Api<Option<Config>> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -71,13 +74,14 @@ fn wire_recover_node_impl(
         move || {
             let api_network = network.wire2api();
             let api_seed = seed.wire2api();
-            move |task_callback| recover_node(api_network, api_seed)
+            let api_config = config.wire2api();
+            move |task_callback| recover_node(api_network, api_seed, api_config)
         },
     )
 }
 fn wire_init_node_impl(
     port_: MessagePort,
-    breez_config: impl Wire2Api<Config> + UnwindSafe,
+    config: impl Wire2Api<Option<Config>> + UnwindSafe,
     seed: impl Wire2Api<Vec<u8>> + UnwindSafe,
     creds: impl Wire2Api<GreenlightCredentials> + UnwindSafe,
 ) {
@@ -88,10 +92,10 @@ fn wire_init_node_impl(
             mode: FfiCallMode::Normal,
         },
         move || {
-            let api_breez_config = breez_config.wire2api();
+            let api_config = config.wire2api();
             let api_seed = seed.wire2api();
             let api_creds = creds.wire2api();
-            move |task_callback| init_node(api_breez_config, api_seed, api_creds)
+            move |task_callback| init_node(api_config, api_seed, api_creds)
         },
     )
 }

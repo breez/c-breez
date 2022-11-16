@@ -12,10 +12,15 @@ class BreezBridge {
   /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
   /// * `seed` - The node private key
   Future<GreenlightCredentials> registerNode({
+    required Config config,
     required Network network,
     required Uint8List seed,
   }) async =>
-      await _lnToolkit.registerNode(network: network, seed: seed);
+      await _lnToolkit.registerNode(
+        config: config,
+        network: network,
+        seed: seed,
+      );
 
   /// Recover an existing node from the cloud and return credentials to interact with it
   ///
@@ -24,26 +29,31 @@ class BreezBridge {
   /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
   /// * `seed` - The node private key
   Future<GreenlightCredentials> recoverNode({
+    required Config config,
     required Network network,
     required Uint8List seed,
   }) async =>
-      await _lnToolkit.recoverNode(network: network, seed: seed);
+      await _lnToolkit.recoverNode(
+        config: config,
+        network: network,
+        seed: seed,
+      );
 
   /// init_node initialized the global NodeService, schedule the node to run in the cloud and
   /// run the signer. This must be called in order to start comunicate with the node
   ///
   /// # Arguments
   ///
-  /// * `breezConfig` - the sdk coniguration
+  /// * `config` - The sdk configuration
   /// * `seed` - The node private key
   /// * `creds` -
   Future initNode({
-    required Config breezConfig,
+    required Config config,
     required Uint8List seed,
     required GreenlightCredentials creds,
   }) async =>
       await _lnToolkit.initNode(
-        breezConfig: breezConfig,
+        config: config,
         seed: seed,
         creds: creds,
       );

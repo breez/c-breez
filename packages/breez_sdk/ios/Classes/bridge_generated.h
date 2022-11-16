@@ -32,12 +32,18 @@ typedef struct WireSyncReturnStruct {
 
 void store_dart_post_cobject(DartPostCObjectFnType ptr);
 
-void wire_register_node(int64_t port_, int32_t network, struct wire_uint_8_list *seed);
+void wire_register_node(int64_t port_,
+                        int32_t network,
+                        struct wire_uint_8_list *seed,
+                        struct wire_Config *config);
 
-void wire_recover_node(int64_t port_, int32_t network, struct wire_uint_8_list *seed);
+void wire_recover_node(int64_t port_,
+                       int32_t network,
+                       struct wire_uint_8_list *seed,
+                       struct wire_Config *config);
 
 void wire_init_node(int64_t port_,
-                    struct wire_Config *breez_config,
+                    struct wire_Config *config,
                     struct wire_uint_8_list *seed,
                     struct wire_GreenlightCredentials *creds);
 

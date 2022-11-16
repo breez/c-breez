@@ -2,23 +2,38 @@ use super::*;
 // Section: wire functions
 
 #[no_mangle]
-pub extern "C" fn wire_register_node(port_: i64, network: i32, seed: *mut wire_uint_8_list) {
-    wire_register_node_impl(port_, network, seed)
+pub extern "C" fn wire_register_node(
+    port_: i64,
+    network: i32,
+    seed: *mut wire_uint_8_list,
+    config: *mut wire_Config,
+) {
+    wire_register_node_impl(port_, network, seed, config)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_recover_node(port_: i64, network: i32, seed: *mut wire_uint_8_list) {
-    wire_recover_node_impl(port_, network, seed)
+pub extern "C" fn wire_recover_node(
+    port_: i64,
+    network: i32,
+    seed: *mut wire_uint_8_list,
+    config: *mut wire_Config,
+) {
+    wire_recover_node_impl(port_, network, seed, config)
 }
 
 #[no_mangle]
 pub extern "C" fn wire_init_node(
     port_: i64,
-    breez_config: *mut wire_Config,
+    config: *mut wire_Config,
     seed: *mut wire_uint_8_list,
     creds: *mut wire_GreenlightCredentials,
 ) {
-    wire_init_node_impl(port_, breez_config, seed, creds)
+    wire_init_node_impl(port_, config, seed, creds)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_stop_node(port_: i64) {
+    wire_stop_node_impl(port_)
 }
 
 #[no_mangle]

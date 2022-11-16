@@ -28,7 +28,7 @@ We are using [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridg
 This requires an installation of llvm then from the root folder, run the following:
 
 ```
-flutter_rust_bridge_codegen -r rust/src/api.rs -d lib/bridge_generated.dart -c ios/Classes/bridge_generated.h --llvm-path=<path to llvm>
+flutter_rust_bridge_codegen -r rust/src/binding.rs -d lib/bridge_generated.dart -c ios/Classes/bridge_generated.h --llvm-path=<path to llvm>
 ```
 
 

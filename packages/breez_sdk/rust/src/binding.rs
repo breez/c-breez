@@ -29,9 +29,14 @@ lazy_static! {
 ///
 /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
 /// * `seed` - The node private key
-pub fn register_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+/// * `config` - The sdk configuration
+pub fn register_node(
+    network: Network,
+    seed: Vec<u8>,
+    config: Option<Config>,
+) -> Result<GreenlightCredentials> {
     let creds = block_on(Greenlight::register(network, seed.clone()))?;
-    init_node(crate::models::Config::default(), seed, creds.clone())?;
+    init_node(config, seed, creds.clone())?;
     Ok(creds)
 }
 
@@ -41,9 +46,14 @@ pub fn register_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCreden
 ///
 /// * `network` - The network type which is one of (Bitcoin, Testnet, Signet, Regtest)
 /// * `seed` - The node private key
-pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+/// * `config` - The sdk configuration
+pub fn recover_node(
+    network: Network,
+    seed: Vec<u8>,
+    config: Option<Config>,
+) -> Result<GreenlightCredentials> {
     let creds = block_on(Greenlight::recover(network, seed.clone()))?;
-    init_node(crate::models::Config::default(), seed, creds.clone())?;
+    init_node(config, seed, creds.clone())?;
 
     Ok(creds)
 }
@@ -53,16 +63,20 @@ pub fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredent
 ///
 /// # Arguments
 ///
-/// * `breez_config` - the sdk coniguration
+/// * `config` - The sdk configuration
 /// * `seed` - The node private key
 /// * `creds` - The greenlight credentials
 ///
-pub fn init_node(breez_config: Config, seed: Vec<u8>, creds: GreenlightCredentials) -> Result<()> {
-    let config = Config::default();
+pub fn init_node(
+    config: Option<Config>,
+    seed: Vec<u8>,
+    creds: GreenlightCredentials,
+) -> Result<()> {
+    let sdk_config = config.unwrap_or(Config::default());
 
     // greenlight is the implementation of NodeAPI
-    let node_api = block_on(Greenlight::new(breez_config, seed, creds))?;
-    let node_services = NodeService::from_config(config, Box::new(node_api))?;
+    let node_api = block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
+    let node_services = NodeService::from_config(sdk_config.clone(), Box::new(node_api))?;
     *NODE_SERVICE_STATE.lock().unwrap() = Some(Arc::new(node_services));
 
     // run the signer, schedule the node in the cloud and sync state

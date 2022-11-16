@@ -97,8 +97,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     if (started) {
       throw Exception("Node already started");
     }
-    final GreenlightCredentials creds =
-        await _breezLib.registerNode(network: network, seed: seed);
+    final GreenlightCredentials creds = await _breezLib.registerNode(
+      config: await _getConfig(),
+      network: network,
+      seed: seed,
+    );
     _log.i("node registered successfully");
     await _storeCredentials(creds: creds, seed: seed);
     emit(state.copyWith(initial: false));
@@ -113,8 +116,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     if (started) {
       throw Exception("Node already started");
     }
-    final GreenlightCredentials creds =
-        await _breezLib.recoverNode(network: network, seed: seed);
+    final GreenlightCredentials creds = await _breezLib.recoverNode(
+      config: await _getConfig(),
+      network: network,
+      seed: seed,
+    );
     _log.i("node recovered successfully");
     await _storeCredentials(creds: creds, seed: seed);
     await _startNode(seed: seed, creds: creds);
@@ -136,7 +142,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required GreenlightCredentials creds,
   }) async {
     await _breezLib.initNode(
-      breezConfig: await _getConfig(),
+      config: await _getConfig(),
       seed: seed,
       creds: creds,
     );

@@ -7,9 +7,9 @@ use rusqlite::OptionalExtension;
 impl SqliteStorage {
     pub fn save_swap_info(&self, swap_info: SwapInfo) -> Result<()> {
         self.get_connection()?.execute(
-            "INSERT OR REPLACE INTO swaps (bitcoin_address, created_at, lock_height, payment_hash, preimage, private_key, public_key, paid_sats, confirmed_sats, script, status)
-             VALUES (?1,?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)",
-            (swap_info.bitcoin_address, swap_info.created_at, swap_info.lock_height, swap_info.payment_hash, swap_info.preimage, swap_info.private_key, swap_info.public_key, swap_info.paid_sats, swap_info.confirmed_sat, swap_info.script, swap_info.status as u32),
+            "INSERT OR REPLACE INTO swaps (bitcoin_address, created_at, lock_height, payment_hash, preimage, private_key, public_key, swapper_public_key, paid_sats, confirmed_sats, script, status)
+             VALUES (?1,?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
+            (swap_info.bitcoin_address, swap_info.created_at, swap_info.lock_height, swap_info.payment_hash, swap_info.preimage, swap_info.private_key, swap_info.public_key, swap_info.swapper_public_key, swap_info.paid_sats, swap_info.confirmed_sat, swap_info.script, swap_info.status as u32),
         )?;
         Ok(())
     }
@@ -20,7 +20,7 @@ impl SqliteStorage {
                 "SELECT * FROM swaps where bitcoin_address= ?1",
                 [address],
                 |row| {
-                    let status: i32 = row.get(10)?;
+                    let status: i32 = row.get(11)?;
                     let status: SwapStatus = status.try_into().map_or(SwapStatus::Initial, |v| v);
                     Ok(SwapInfo {
                         bitcoin_address: row.get(0)?,
@@ -30,9 +30,10 @@ impl SqliteStorage {
                         preimage: row.get(4)?,
                         private_key: row.get(5)?,
                         public_key: row.get(6)?,
-                        paid_sats: row.get(7)?,
-                        confirmed_sat: row.get(8)?,
-                        script: row.get(9)?,
+                        swapper_public_key: row.get(7)?,
+                        paid_sats: row.get(8)?,
+                        confirmed_sat: row.get(9)?,
+                        script: row.get(10)?,
                         status: status,
                     })
                 },
@@ -53,7 +54,7 @@ impl SqliteStorage {
         )?;
         let vec: Vec<SwapInfo> = stmt
             .query_map([], |row| {
-                let status: i32 = row.get(10)?;
+                let status: i32 = row.get(11)?;
                 let status: SwapStatus = status.try_into().map_or(SwapStatus::Initial, |v| v);
                 Ok(SwapInfo {
                     bitcoin_address: row.get(0)?,
@@ -63,9 +64,10 @@ impl SqliteStorage {
                     preimage: row.get(4)?,
                     private_key: row.get(5)?,
                     public_key: row.get(6)?,
-                    paid_sats: row.get(7)?,
-                    confirmed_sat: row.get(8)?,
-                    script: row.get(9)?,
+                    swapper_public_key: row.get(7)?,
+                    paid_sats: row.get(8)?,
+                    confirmed_sat: row.get(9)?,
+                    script: row.get(10)?,
                     status: status,
                 })
             })?
@@ -91,6 +93,7 @@ fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
         preimage: vec![2],
         private_key: vec![3],
         public_key: vec![4],
+        swapper_public_key: vec![5],
         paid_sats: 100,
         confirmed_sat: 100,
         script: vec![5],

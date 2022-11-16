@@ -20,6 +20,8 @@ mixin _$InputType {
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -30,6 +32,8 @@ mixin _$InputType {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -40,6 +44,8 @@ mixin _$InputType {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -51,6 +57,8 @@ mixin _$InputType {
   TResult map<TResult extends Object?>({
     required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
     required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
     required TResult Function(InputType_LnUrlPay value) lnUrlPay,
@@ -61,6 +69,8 @@ mixin _$InputType {
   TResult? mapOrNull<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -71,6 +81,8 @@ mixin _$InputType {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -165,6 +177,8 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -178,6 +192,8 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -191,6 +207,8 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -208,6 +226,8 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   TResult map<TResult extends Object?>({
     required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
     required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
     required TResult Function(InputType_LnUrlPay value) lnUrlPay,
@@ -221,6 +241,8 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   TResult? mapOrNull<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -234,6 +256,8 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -324,6 +348,8 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -337,6 +363,8 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -350,6 +378,8 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -367,6 +397,8 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   TResult map<TResult extends Object?>({
     required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
     required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
     required TResult Function(InputType_LnUrlPay value) lnUrlPay,
@@ -380,6 +412,8 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   TResult? mapOrNull<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -393,6 +427,8 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -413,6 +449,196 @@ abstract class InputType_Bolt11 implements InputType {
   @JsonKey(ignore: true)
   _$$InputType_Bolt11CopyWith<_$InputType_Bolt11> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$InputType_Bolt11WithOnchainFallbackCopyWith<$Res> {
+  factory _$$InputType_Bolt11WithOnchainFallbackCopyWith(
+          _$InputType_Bolt11WithOnchainFallback value,
+          $Res Function(_$InputType_Bolt11WithOnchainFallback) then) =
+      __$$InputType_Bolt11WithOnchainFallbackCopyWithImpl<$Res>;
+  $Res call({LNInvoice field0, BitcoinAddressData field1});
+}
+
+/// @nodoc
+class __$$InputType_Bolt11WithOnchainFallbackCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res>
+    implements _$$InputType_Bolt11WithOnchainFallbackCopyWith<$Res> {
+  __$$InputType_Bolt11WithOnchainFallbackCopyWithImpl(
+      _$InputType_Bolt11WithOnchainFallback _value,
+      $Res Function(_$InputType_Bolt11WithOnchainFallback) _then)
+      : super(_value, (v) => _then(v as _$InputType_Bolt11WithOnchainFallback));
+
+  @override
+  _$InputType_Bolt11WithOnchainFallback get _value =>
+      super._value as _$InputType_Bolt11WithOnchainFallback;
+
+  @override
+  $Res call({
+    Object? field0 = freezed,
+    Object? field1 = freezed,
+  }) {
+    return _then(_$InputType_Bolt11WithOnchainFallback(
+      field0 == freezed
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as LNInvoice,
+      field1 == freezed
+          ? _value.field1
+          : field1 // ignore: cast_nullable_to_non_nullable
+              as BitcoinAddressData,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$InputType_Bolt11WithOnchainFallback
+    implements InputType_Bolt11WithOnchainFallback {
+  const _$InputType_Bolt11WithOnchainFallback(this.field0, this.field1);
+
+  @override
+  final LNInvoice field0;
+  @override
+  final BitcoinAddressData field1;
+
+  @override
+  String toString() {
+    return 'InputType.bolt11WithOnchainFallback(field0: $field0, field1: $field1)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$InputType_Bolt11WithOnchainFallback &&
+            const DeepCollectionEquality().equals(other.field0, field0) &&
+            const DeepCollectionEquality().equals(other.field1, field1));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(field0),
+      const DeepCollectionEquality().hash(field1));
+
+  @JsonKey(ignore: true)
+  @override
+  _$$InputType_Bolt11WithOnchainFallbackCopyWith<
+          _$InputType_Bolt11WithOnchainFallback>
+      get copyWith => __$$InputType_Bolt11WithOnchainFallbackCopyWithImpl<
+          _$InputType_Bolt11WithOnchainFallback>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
+    required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
+    required TResult Function(String field0) nodeId,
+    required TResult Function(String field0) url,
+    required TResult Function(String field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlWithdraw,
+  }) {
+    return bolt11WithOnchainFallback(field0, field1);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
+    TResult Function(String field0)? nodeId,
+    TResult Function(String field0)? url,
+    TResult Function(String field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlWithdraw,
+  }) {
+    return bolt11WithOnchainFallback?.call(field0, field1);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
+    TResult Function(String field0)? nodeId,
+    TResult Function(String field0)? url,
+    TResult Function(String field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlWithdraw,
+    required TResult orElse(),
+  }) {
+    if (bolt11WithOnchainFallback != null) {
+      return bolt11WithOnchainFallback(field0, field1);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
+    required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
+    required TResult Function(InputType_NodeId value) nodeId,
+    required TResult Function(InputType_Url value) url,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+  }) {
+    return bolt11WithOnchainFallback(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
+    TResult Function(InputType_NodeId value)? nodeId,
+    TResult Function(InputType_Url value)? url,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+  }) {
+    return bolt11WithOnchainFallback?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
+    TResult Function(InputType_NodeId value)? nodeId,
+    TResult Function(InputType_Url value)? url,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    required TResult orElse(),
+  }) {
+    if (bolt11WithOnchainFallback != null) {
+      return bolt11WithOnchainFallback(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class InputType_Bolt11WithOnchainFallback implements InputType {
+  const factory InputType_Bolt11WithOnchainFallback(
+          final LNInvoice field0, final BitcoinAddressData field1) =
+      _$InputType_Bolt11WithOnchainFallback;
+
+  LNInvoice get field0;
+  BitcoinAddressData get field1;
+  @JsonKey(ignore: true)
+  _$$InputType_Bolt11WithOnchainFallbackCopyWith<
+          _$InputType_Bolt11WithOnchainFallback>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -482,6 +708,8 @@ class _$InputType_NodeId implements InputType_NodeId {
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -495,6 +723,8 @@ class _$InputType_NodeId implements InputType_NodeId {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -508,6 +738,8 @@ class _$InputType_NodeId implements InputType_NodeId {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -525,6 +757,8 @@ class _$InputType_NodeId implements InputType_NodeId {
   TResult map<TResult extends Object?>({
     required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
     required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
     required TResult Function(InputType_LnUrlPay value) lnUrlPay,
@@ -538,6 +772,8 @@ class _$InputType_NodeId implements InputType_NodeId {
   TResult? mapOrNull<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -551,6 +787,8 @@ class _$InputType_NodeId implements InputType_NodeId {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -639,6 +877,8 @@ class _$InputType_Url implements InputType_Url {
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -652,6 +892,8 @@ class _$InputType_Url implements InputType_Url {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -665,6 +907,8 @@ class _$InputType_Url implements InputType_Url {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -682,6 +926,8 @@ class _$InputType_Url implements InputType_Url {
   TResult map<TResult extends Object?>({
     required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
     required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
     required TResult Function(InputType_LnUrlPay value) lnUrlPay,
@@ -695,6 +941,8 @@ class _$InputType_Url implements InputType_Url {
   TResult? mapOrNull<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -708,6 +956,8 @@ class _$InputType_Url implements InputType_Url {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -798,6 +1048,8 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -811,6 +1063,8 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -824,6 +1078,8 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -841,6 +1097,8 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   TResult map<TResult extends Object?>({
     required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
     required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
     required TResult Function(InputType_LnUrlPay value) lnUrlPay,
@@ -854,6 +1112,8 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   TResult? mapOrNull<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -867,6 +1127,8 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -958,6 +1220,8 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
     required TResult Function(LNInvoice field0) bolt11,
+    required TResult Function(LNInvoice field0, BitcoinAddressData field1)
+        bolt11WithOnchainFallback,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
     required TResult Function(String field0) lnUrlPay,
@@ -971,6 +1235,8 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   TResult? whenOrNull<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -984,6 +1250,8 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(BitcoinAddressData field0)? bitcoinAddress,
     TResult Function(LNInvoice field0)? bolt11,
+    TResult Function(LNInvoice field0, BitcoinAddressData field1)?
+        bolt11WithOnchainFallback,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
     TResult Function(String field0)? lnUrlPay,
@@ -1001,6 +1269,8 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   TResult map<TResult extends Object?>({
     required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
     required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_Bolt11WithOnchainFallback value)
+        bolt11WithOnchainFallback,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
     required TResult Function(InputType_LnUrlPay value) lnUrlPay,
@@ -1014,6 +1284,8 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   TResult? mapOrNull<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,
@@ -1027,6 +1299,8 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
     TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_Bolt11WithOnchainFallback value)?
+        bolt11WithOnchainFallback,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
     TResult Function(InputType_LnUrlPay value)? lnUrlPay,

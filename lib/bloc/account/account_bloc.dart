@@ -8,6 +8,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/services/keychain.dart';
+import 'package:c_breez/utils/preferences.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
@@ -37,9 +38,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   final _log = FimberLog("AccountBloc");
   final BreezBridge _breezLib;
   final KeyChain _keyChain;
+  final Preferences _preferences;
   bool started = false;
 
-  AccountBloc(this._breezLib, this._keyChain) : super(AccountState.initial()) {
+  AccountBloc(
+    this._breezLib,
+    this._keyChain,
+    this._preferences,
+  ) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) {
       emit(acc);
@@ -160,8 +166,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       Config config = Config(
         breezserver:
             breezConfig.get("Application Options", "breezserver") ?? "",
-        mempoolspaceUrl:
-            breezConfig.get("Application Options", "mempoolspaceUrl") ?? "",
+        mempoolspaceUrl: await _preferences
+            .getMempoolSpaceUrl()
+            .then((url) => url ?? breezConfig.get("Application Options", "mempoolspaceurl") ?? ""),
         workingDir: (await getApplicationDocumentsDirectory()).path,
         network: Network.values.firstWhere((n) =>
             n.name.toLowerCase() ==

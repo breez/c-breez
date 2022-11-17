@@ -7,6 +7,7 @@ import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/services/notifications.dart';
+import 'package:c_breez/utils/preferences.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,6 +31,7 @@ class ServiceInjector {
   BackgroundTaskService? _backgroundTaskService;
   KeyChain? _keychain;
   Client? _client;
+  Preferences? _preferences;
 
   factory ServiceInjector() {
     return _injector ?? _singleton;
@@ -73,5 +75,9 @@ class ServiceInjector {
 
   KeyChain get keychain {
     return _keychain ??= KeyChain();
+  }
+
+  Preferences get preferences {
+    return _preferences ??= Preferences();
   }
 }

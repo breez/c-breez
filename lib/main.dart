@@ -56,6 +56,7 @@ void main() async {
             create: (BuildContext context) => AccountBloc(
               breezLib,
               injector.keychain,
+              injector.preferences,
             ),
           ),
           BlocProvider<InputBloc>(
@@ -82,7 +83,9 @@ void main() async {
             create: (BuildContext context) => ConnectivityBloc(),
           ),
           BlocProvider<NetworkSettingsBloc>(
-            create: (BuildContext context) => NetworkSettingsBloc(breezLib),
+            create: (BuildContext context) => NetworkSettingsBloc(
+              injector.preferences,
+            ),
           ),
         ],
         child: UserApp(),

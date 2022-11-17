@@ -111,7 +111,7 @@ impl BTCReceiveSwap {
         };
 
         // persist the address
-        self.persister.save_swap_info(swap_info.clone())?;
+        self.persister.insert_swap_info(swap_info.clone())?;
         Ok(swap_info)
 
         // return swap.bitcoinAddress;

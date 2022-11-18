@@ -202,6 +202,7 @@ pub struct SwapInfo {
     pub preimage: Vec<u8>,
     pub private_key: Vec<u8>,
     pub public_key: Vec<u8>,
+    pub swapper_public_key: Vec<u8>,
     pub paid_sats: u32,
     pub confirmed_sat: u32,
     pub script: Vec<u8>,

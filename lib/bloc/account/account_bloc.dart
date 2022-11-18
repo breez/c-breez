@@ -6,6 +6,7 @@ import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
+import 'package:c_breez/bloc/account/transaction_filters.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/utils/preferences.dart';
@@ -258,16 +259,22 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  // TODO:
   void changePaymentFilter({
     PaymentTypeFilter filter = PaymentTypeFilter.All,
     int? fromTimestamp,
     int? toTimestamp,
-  }) {
-    _breezLib.listTransactions(
+  }) async {
+    await _breezLib.listTransactions(
       filter: filter,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
+    );
+    _transactionsFiltersStreamController.add(
+      state.transactionFilters.copyWith(
+        filter: filter,
+        fromTimestamp: fromTimestamp,
+        toTimestamp: toTimestamp,
+      ),
     );
   }
 
@@ -283,11 +290,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   _watchAccountChanges() {
-    return Rx.combineLatest2<List<LightningTransaction>, NodeState?,
-            AccountState>(
-        _breezLib.transactionsStream, _breezLib.nodeStateStream,
-        (transactions, nodeState) {
-      return assembleAccountState(transactions, nodeState) ?? state;
+    return Rx.combineLatest3<List<LightningTransaction>, TransactionFilters,
+            NodeState?, AccountState>(
+        _breezLib.transactionsStream,
+        transactionsFiltersStream,
+        _breezLib.nodeStateStream, (transactions, filters, nodeState) {
+      return assembleAccountState(transactions, filters, nodeState) ?? state;
     });
   }
 
@@ -306,4 +314,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Stream<PaymentResultData> get paymentResultStream =>
       _paymentResultStreamController.stream;
+
+  final StreamController<TransactionFilters>
+      _transactionsFiltersStreamController =
+      StreamController<TransactionFilters>();
+
+  Stream<TransactionFilters> get transactionsFiltersStream =>
+      _transactionsFiltersStreamController.stream;
 }

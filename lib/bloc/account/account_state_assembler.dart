@@ -1,20 +1,21 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/account/transaction_filters.dart';
 
 import 'account_bloc.dart';
 import 'account_state.dart';
 
 // assembleAccountState assembles the account state using the local synchronized data.
-AccountState? assembleAccountState(
-    List<LightningTransaction> transactions, NodeState? nodeState) {
+AccountState? assembleAccountState(List<LightningTransaction> transactions,
+    TransactionFilters filters, NodeState? nodeState) {
   if (nodeState == null) {
     return null;
   }
 
   // return the new account state
   return AccountState(
+    id: nodeState.id,
     initial: false,
     blockheight: nodeState.blockHeight,
-    id: nodeState.id,
     balance: nodeState.channelsBalanceMsat.toInt() ~/ 1000,
     walletBalance: nodeState.onchainBalanceMsat ~/ 1000,
     status: AccountStatus.values[1],
@@ -29,5 +30,6 @@ AccountState? assembleAccountState(
     onChainFeeRate: 0,
     maxInboundLiquidity: nodeState.inboundLiquidityMsats ~/ 1000,
     transactions: transactions,
+    transactionFilters: filters,
   );
 }

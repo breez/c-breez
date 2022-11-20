@@ -1,7 +1,10 @@
 use std::str::FromStr;
+use std::sync::Arc;
 
-use crate::chain::MempoolSpace;
-use crate::grpc::AddFundInitRequest;
+use crate::binding::parse_invoice;
+use crate::chain::{MempoolSpace, OnchainTx};
+use crate::chain_notifier::{ChainEvent, Listener};
+use crate::grpc::{AddFundInitRequest, GetSwapPaymentRequest};
 use anyhow::{anyhow, Result};
 use bitcoin::blockdata::opcodes;
 use bitcoin::blockdata::script::Builder;
@@ -52,16 +55,48 @@ impl SwapperAPI for BreezServer {
             min_allowed_deposit: result.min_allowed_deposit,
         })
     }
+
+    async fn complete_swap(&self, bolt11: String) -> Result<()> {
+        let request = GetSwapPaymentRequest {
+            payment_request: bolt11,
+        };
+        self.get_fund_manager_client()
+            .await?
+            .get_swap_payment(request)
+            .await?
+            .into_inner();
+        Ok(())
+    }
 }
 
 pub struct BTCReceiveSwap {
-    pub(crate) swapper_api: Box<dyn SwapperAPI>,
-    pub(crate) persister: crate::persist::db::SqliteStorage,
-    pub(crate) chain_service: MempoolSpace,
+    swapper_api: Arc<dyn SwapperAPI>,
+    persister: Arc<crate::persist::db::SqliteStorage>,
+    chain_service: Arc<MempoolSpace>,
+}
+
+#[tonic::async_trait]
+impl Listener for BTCReceiveSwap {
+    fn on_event(&self, e: ChainEvent) {
+        debug!("got chain event {:?}", e)
+    }
 }
 
 impl BTCReceiveSwap {
-    async fn create_swap_address(&self, node_id: String) -> Result<SwapInfo> {
+    pub(crate) fn new(
+        swapper_api: Arc<dyn SwapperAPI>,
+        persister: Arc<crate::persist::db::SqliteStorage>,
+        chain_service: Arc<MempoolSpace>,
+    ) -> Self {
+        let swapper = Self {
+            swapper_api,
+            persister,
+            chain_service,
+        };
+        swapper
+    }
+
+    pub(crate) async fn create_swap_address(&self, node_id: String) -> Result<SwapInfo> {
         // create swap keys
         let swap_keys = create_swap_keys()?;
         let secp = Secp256k1::new();
@@ -104,28 +139,112 @@ impl BTCReceiveSwap {
             private_key: swap_keys.priv_key.to_vec(),
             public_key: pubkey.clone(),
             swapper_public_key: swap_reply.swapper_pubkey.clone(),
-            paid_sats: 0,
-            confirmed_sat: 0,
             script: our_script.as_bytes().to_vec(),
+            bolt11: None,
+            paid_sats: 0,
+            confirmed_sats: 0,
             status: SwapStatus::Initial,
         };
 
         // persist the address
-        self.persister.insert_swap_info(swap_info.clone())?;
+        self.persister.insert_swap(swap_info.clone())?;
         Ok(swap_info)
 
         // return swap.bitcoinAddress;
     }
 
-    async fn list_swaps(&self) -> Result<Vec<SwapInfo>> {
-        Err(anyhow!("Not implemented"))
+    pub(crate) async fn list_swaps(&self) -> Result<Vec<SwapInfo>> {
+        self.persister.list_swaps()
     }
 
-    async fn redeem_swap(&self, swap_address: String) -> Result<()> {
-        Err(anyhow!("Not implemented"))
+    async fn refresh_swap_on_chain_status(
+        &self,
+        bitcoin_address: String,
+        current_tip: u32,
+    ) -> Result<()> {
+        let swap_info = self
+            .persister
+            .get_swap_info(bitcoin_address.clone())?
+            .ok_or_else(|| {
+                anyhow!(format!(
+                    "swap address {} was not found",
+                    bitcoin_address.clone()
+                ))
+            })?;
+        let txs = self
+            .chain_service
+            .address_transactions(bitcoin_address.clone())
+            .await?;
+        let utxos = get_utxos(bitcoin_address.clone(), txs)?;
+        let confirmed_sats: u32 = utxos.iter().fold(0, |accum, item| accum + item.value);
+
+        let confirmed_block = utxos.iter().fold(0, |b, item| {
+            if item.block_height > b {
+                item.block_height
+            } else {
+                b
+            }
+        });
+
+        let mut swap_status = swap_info.status;
+        if swap_status != SwapStatus::Refunded
+            && current_tip - confirmed_block >= swap_info.lock_height as u32
+        {
+            swap_status = SwapStatus::Expired
+        }
+        self.persister
+            .update_swap_chain_info(bitcoin_address, confirmed_sats, swap_status)?;
+
+        Ok(())
     }
 
-    async fn refund_swap(&self, swap_address: String, to_address: String) -> Result<Vec<u8>> {
+    /// redeem_swap executes the final step of receiving lightning payment
+    /// in exchange for the on chain funds.
+    async fn redeem_swap(
+        &self,
+        bitcoin_address: String,
+        invoice_creator: fn(amount_sats: u32) -> Result<String>,
+    ) -> Result<()> {
+        let mut swap_info = self
+            .persister
+            .get_swap_info(bitcoin_address.clone())?
+            .ok_or_else(|| anyhow!(format!("swap address {} was not found", bitcoin_address)))?;
+
+        // we are creating and invoice for this swap if we didn't
+        // do it already
+        if swap_info.bolt11.is_none() {
+            let bolt11 = invoice_creator(swap_info.confirmed_sats)?;
+            self.persister
+                .update_swap_bolt11(bitcoin_address.clone(), bolt11)?;
+            swap_info = self
+                .persister
+                .get_swap_info(bitcoin_address.clone())?
+                .unwrap();
+        }
+
+        // Making sure the invoice amount matches the on-chain amount
+        let payreq = swap_info.bolt11.unwrap();
+        let ln_invoice = parse_invoice(payreq.clone())?;
+        if ln_invoice.amount_msat.unwrap() != (swap_info.confirmed_sats * 1000) as u64 {
+            return Err(anyhow!("invoice amount doesn't match confirmed sats"));
+        }
+
+        // Asking the service to initiate the lightning payment
+        let result = self.swapper_api.complete_swap(payreq.clone()).await;
+        match result {
+            Ok(r) => self
+                .persister
+                .update_swap_paid_amount(bitcoin_address, swap_info.confirmed_sats),
+            Err(e) => Err(e),
+        }
+    }
+
+    // refund_swap is the user way to receive on-chain refund for failed swaps.
+    pub(crate) async fn refund_swap(
+        &self,
+        swap_address: String,
+        to_address: String,
+    ) -> Result<Vec<u8>> {
         let swap_info = self
             .persister
             .get_swap_info(swap_address.clone())?
@@ -135,38 +254,8 @@ impl BTCReceiveSwap {
             .chain_service
             .address_transactions(swap_address.clone())
             .await?;
+        let utxos = get_utxos(swap_address, transactions)?;
 
-        // calcualte confirmed amount associated with this address
-        let mut spent_outputs: Vec<OutPoint> = Vec::new();
-        let mut utxos: Vec<Utxo> = Vec::new();
-        for (_, tx) in transactions.iter().enumerate() {
-            for (_, vin) in tx.vin.iter().enumerate() {
-                if tx.status.confirmed && vin.prevout.scriptpubkey_address == swap_address.clone() {
-                    spent_outputs.push(OutPoint {
-                        txid: Txid::from_hex(vin.txid.as_str())?,
-                        vout: vin.vout,
-                    })
-                }
-            }
-        }
-
-        for (i, tx) in transactions.iter().enumerate() {
-            for (_, vout) in tx.vout.iter().enumerate() {
-                if tx.status.confirmed && vout.scriptpubkey_address == swap_address {
-                    let outpoint = OutPoint {
-                        txid: Txid::from_hex(tx.txid.as_str())?,
-                        vout: i as u32,
-                    };
-                    if !spent_outputs.contains(&outpoint) {
-                        utxos.push(Utxo {
-                            out: outpoint,
-                            value: vout.value,
-                            block_height: tx.status.block_height,
-                        });
-                    }
-                }
-            }
-        }
         let script = create_submarine_swap_script(
             swap_info.payment_hash,
             swap_info.swapper_public_key,
@@ -218,6 +307,41 @@ fn create_submarine_swap_script(
         .push_opcode(opcodes::all::OP_ENDIF)
         .push_opcode(opcodes::all::OP_CHECKSIG)
         .into_script())
+}
+
+fn get_utxos(swap_address: String, transactions: Vec<OnchainTx>) -> Result<Vec<Utxo>> {
+    // calcualte confirmed amount associated with this address
+    let mut spent_outputs: Vec<OutPoint> = Vec::new();
+    let mut utxos: Vec<Utxo> = Vec::new();
+    for (_, tx) in transactions.iter().enumerate() {
+        for (_, vin) in tx.vin.iter().enumerate() {
+            if tx.status.confirmed && vin.prevout.scriptpubkey_address == swap_address.clone() {
+                spent_outputs.push(OutPoint {
+                    txid: Txid::from_hex(vin.txid.as_str())?,
+                    vout: vin.vout,
+                })
+            }
+        }
+    }
+
+    for (i, tx) in transactions.iter().enumerate() {
+        for (_, vout) in tx.vout.iter().enumerate() {
+            if tx.status.confirmed && vout.scriptpubkey_address == swap_address {
+                let outpoint = OutPoint {
+                    txid: Txid::from_hex(tx.txid.as_str())?,
+                    vout: i as u32,
+                };
+                if !spent_outputs.contains(&outpoint) {
+                    utxos.push(Utxo {
+                        out: outpoint,
+                        value: vout.value,
+                        block_height: tx.status.block_height,
+                    });
+                }
+            }
+        }
+    }
+    Ok(utxos)
 }
 
 fn create_refund_tx(

@@ -47,9 +47,10 @@ impl SqliteStorage {
                private_key BLOB NOT NULL UNIQUE,
                public_key BLOB NOT NULL UNIQUE,
                swapper_public_key BLOB NOT NULL UNIQUE,
-               paid_sats INTEGER NOT NULL DEFAULT 0,
-               confirmed_sats INTEGER NOT NULL DEFAULT 0,
                script BLOB NOT NULL UNIQUE,
+               bolt11 TEXT,
+               paid_sats INTEGER NOT NULL DEFAULT 0,
+               confirmed_sats INTEGER NOT NULL DEFAULT 0,               
                status INTEGER NOT NULL DEFAULT 0        
              ) STRICT;
         ",

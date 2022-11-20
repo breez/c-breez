@@ -1,7 +1,10 @@
+use core::time;
 use std::cmp::max;
 use std::str::FromStr;
+use std::sync::Arc;
 
-use crate::chain::MempoolSpace;
+use crate::chain::{self, MempoolSpace};
+use crate::chain_notifier::{self, ChainNotifier};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::fund_manager_client::FundManagerClient;
@@ -14,6 +17,7 @@ use crate::models::{
     NodeState, PaymentTypeFilter,
 };
 use crate::persist;
+use crate::swap::BTCReceiveSwap;
 use anyhow::{anyhow, Result};
 use bip39::*;
 use tokio::sync::mpsc;
@@ -21,39 +25,64 @@ use tonic::transport::{Channel, Uri};
 
 pub struct NodeService {
     config: Config,
-    client: Box<dyn NodeAPI>,
-    lsp: Box<dyn LspAPI>,
-    fiat: Box<dyn FiatAPI>,
-    chain_service: MempoolSpace,
-    persister: persist::db::SqliteStorage,
+    client: Arc<dyn NodeAPI>,
+    lsp: Arc<dyn LspAPI>,
+    fiat: Arc<dyn FiatAPI>,
+    chain_service: Arc<MempoolSpace>,
+    persister: Arc<persist::db::SqliteStorage>,
+    btc_receive_swapper: Arc<BTCReceiveSwap>,
+}
+
+pub(crate) struct ShutdownHandler {
+    shutdown_signer: mpsc::Sender<()>,
+    shutdown_chain: mpsc::Sender<()>,
+}
+
+impl ShutdownHandler {
+    pub(crate) async fn stop(&self) -> Result<()> {
+        self.shutdown_signer.send(()).await?;
+        self.shutdown_chain
+            .send(())
+            .await
+            .map_err(anyhow::Error::msg)
+    }
 }
 
 impl NodeService {
-    pub fn from_config(config: Config, node_api: Box<dyn NodeAPI>) -> Result<NodeService> {
+    pub fn from_config(config: Config, node_api: Arc<dyn NodeAPI>) -> Result<NodeService> {
         // breez_server provides both FiatAPI & LspAPI implementations
-        let breez_server = Box::new(BreezServer::new(config.breezserver.clone()));
+        let breez_server = Arc::new(BreezServer::new(config.breezserver.clone()));
 
         // mempool space is used to monitor the chain
-        let chain_service = MempoolSpace {
+        let chain_service = Arc::new(MempoolSpace {
             base_url: config.mempoolspace_url.clone(),
-        };
+        });
 
         // The storage is implemented via sqlite.
-        let persister = crate::persist::db::SqliteStorage::from_file(format!(
+        let persister = Arc::new(crate::persist::db::SqliteStorage::from_file(format!(
             "{}/storage.sql",
             config.working_dir
-        ));
+        )));
+
         persister.init().unwrap();
+
+        let btc_receive_swapper = Arc::new(BTCReceiveSwap::new(
+            breez_server.clone(),
+            persister.clone(),
+            chain_service.clone(),
+        ));
 
         // Create the node services and it them statically
         let node_services = NodeService {
             config,
-            client: node_api,
+            client: node_api.clone(),
             lsp: breez_server.clone(),
             fiat: breez_server.clone(),
-            chain_service,
-            persister,
+            chain_service: chain_service.clone(),
+            persister: persister.clone(),
+            btc_receive_swapper: btc_receive_swapper.clone(),
         };
+
         Ok(node_services)
     }
 
@@ -62,8 +91,24 @@ impl NodeService {
         self.sync().await
     }
 
-    pub async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
-        self.client.run_signer(shutdown).await
+    pub(crate) fn start_background_processing(&self) -> Result<ShutdownHandler> {
+        // create the chain notifier with listeners
+        let mut chain_notifier = ChainNotifier::new(self.chain_service.clone());
+        chain_notifier.add_listener(self.btc_receive_swapper.clone());
+
+        // start the signer thread
+        let (signer_signal, signer_receive) = mpsc::channel(1);
+        self.client.start_signer(signer_receive);
+
+        // start chain notifier thread
+        let (chain_signal, chain_receive) = mpsc::channel(1);
+        chain_notifier::start(Arc::new(chain_notifier), chain_receive);
+
+        // return the shut down handler
+        Ok(ShutdownHandler {
+            shutdown_signer: signer_signal,
+            shutdown_chain: chain_signal,
+        })
     }
 
     pub async fn send_payment(&self, bolt11: String) -> Result<()> {
@@ -153,7 +198,7 @@ impl NodeService {
             htlc_maximum_msat: Some(1000000000),                    // TODO ?
         };
 
-        println!("lsp hop = {:?}", lsp_hop);
+        info!("lsp hop = {:?}", lsp_hop);
 
         let raw_invoice_with_hint = add_routing_hints(
             &invoice.bolt11,
@@ -161,7 +206,6 @@ impl NodeService {
             amount_sats * 1000,
         )?;
         info!("Routing hint added");
-        //println!("parsed = {}", parsedd.bolt11);
         let signed_invoice_with_hint = self.client.sign_invoice(raw_invoice_with_hint)?;
         let parsed_invoice = parse_invoice(&signed_invoice_with_hint.to_string())?;
 
@@ -361,6 +405,9 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
 }
 
 mod test {
+    use std::sync::Arc;
+    use tokio::sync::mpsc;
+
     use anyhow::anyhow;
 
     use crate::chain::MempoolSpace;
@@ -415,13 +462,13 @@ mod test {
                 description: Some("test payment".to_string()),
             },
         ];
-        let node_api = Box::new(MockNodeAPI {
+        let node_api = Arc::new(MockNodeAPI {
             node_state: dummy_node_state.clone(),
             transactions: dummy_transactions.clone(),
         });
         let mut node_service = NodeService::from_config(create_test_config(), node_api)?;
-        node_service.lsp = Box::new(MockBreezServer {});
-        node_service.fiat = Box::new(MockBreezServer {});
+        node_service.lsp = Arc::new(MockBreezServer {});
+        node_service.fiat = Arc::new(MockBreezServer {});
 
         node_service.sync().await?;
         let fetched_state = node_service
@@ -453,7 +500,7 @@ mod test {
         let storage_path = format!("{}/storage.sql", get_test_working_dir());
         std::fs::remove_file(storage_path).ok();
 
-        let node_service = build_mock_node_service().await;
+        let node_service = node_service().await;
         node_service.sync().await?;
 
         let node_pubkey = node_service
@@ -487,13 +534,14 @@ mod test {
 
     /// build node service for tests
     async fn node_service() -> NodeService {
-        let node_api = Box::new(MockNodeAPI {
+        let node_api = Arc::new(MockNodeAPI {
             node_state: get_dummy_node_state(),
             transactions: vec![],
         });
+
         let mut node_service = NodeService::from_config(create_test_config(), node_api).unwrap();
-        node_service.lsp = Box::new(MockBreezServer {});
-        node_service.fiat = Box::new(MockBreezServer {});
+        node_service.lsp = Arc::new(MockBreezServer {});
+        node_service.fiat = Arc::new(MockBreezServer {});
         node_service
     }
 
@@ -521,31 +569,5 @@ mod test {
             connected_peers: vec!["1111".to_string()],
             inbound_liquidity_msats: 2000,
         }
-    }
-
-    async fn build_mock_node_service() -> NodeService {
-        let node_api = Box::new(MockNodeAPI {
-            node_state: get_dummy_node_state(),
-            transactions: vec![],
-        });
-
-        let config = create_test_config();
-        let storage_path = format!("{}/storage.sql", config.working_dir);
-        let persister = persist::db::SqliteStorage::from_file(storage_path);
-        persister.init().unwrap();
-        NodeService {
-            config: Config::default(),
-            client: node_api,
-            lsp: Box::new(MockBreezServer {}),
-            fiat: Box::new(MockBreezServer {}),
-            chain_service: MempoolSpace {
-                base_url: config.mempoolspace_url.clone(),
-            },
-            persister,
-        }
-
-        // let mut node_service = NodeService::from_config(Config::default(), node_api).unwrap();
-        // node_service.lsp = Box::new(MockBreezServer {});
-        // node_service
     }
 }

@@ -34,7 +34,11 @@ fn get_seed() -> Vec<u8> {
 }
 
 fn main() -> Result<()> {
-    env_logger::Builder::from_env(Env::default().default_filter_or("debug,rustyline=warn")).init();
+    env_logger::Builder::from_env(
+        Env::default()
+            .default_filter_or("debug,rustyline=warn,hyper=warn,reqwest=warn,rustls=warn,h2=warn"),
+    )
+    .init();
     let seed = get_seed();
 
     let mut rl = Editor::<()>::new()?;
@@ -50,7 +54,11 @@ fn main() -> Result<()> {
                 let mut command: SplitWhitespace = line.as_str().split_whitespace();
                 match command.next() {
                     Some("register_node") => {
-                        let r = binding::register_node(models::Network::Bitcoin, seed.to_vec(), Option::None);
+                        let r = binding::register_node(
+                            models::Network::Bitcoin,
+                            seed.to_vec(),
+                            Option::None,
+                        );
                         let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",
@@ -59,7 +67,11 @@ fn main() -> Result<()> {
                         );
                     }
                     Some("recover_node") => {
-                        let r = binding::recover_node(models::Network::Bitcoin, seed.to_vec(), Option::None);
+                        let r = binding::recover_node(
+                            models::Network::Bitcoin,
+                            seed.to_vec(),
+                            Option::None,
+                        );
                         let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",

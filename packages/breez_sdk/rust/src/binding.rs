@@ -1,9 +1,9 @@
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
-use lazy_static::lazy_static;
+use crate::node_service::ShutdownHandler;
+use once_cell::sync::OnceCell;
 use std::future::Future;
-use std::sync::{Arc, Mutex};
-use tokio::sync::mpsc;
+use std::sync::Arc;
 
 use anyhow::{anyhow, Result};
 
@@ -18,10 +18,8 @@ use crate::input_parser::InputType;
 use crate::invoice::{self};
 use bip39::{Language, Mnemonic, Seed};
 
-lazy_static! {
-    static ref NODE_SERVICE_STATE: Mutex<Option<Arc<NodeService>>> = Mutex::new(None);
-    static ref SIGNER_SHUTDOWN: Mutex<Option<mpsc::Sender::<()>>> = Mutex::new(None);
-}
+static NODE_SERVICE_INSTANCE: OnceCell<NodeService> = OnceCell::new();
+static STOP_NODE: OnceCell<ShutdownHandler> = OnceCell::new();
 
 /// Register a new node in the cloud and return credentials to interact with it
 ///
@@ -76,18 +74,35 @@ pub fn init_node(
 
     // greenlight is the implementation of NodeAPI
     let node_api = block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
-    let node_services = NodeService::from_config(sdk_config.clone(), Box::new(node_api))?;
-    *NODE_SERVICE_STATE.lock().unwrap() = Some(Arc::new(node_services));
 
-    // run the signer, schedule the node in the cloud and sync state
-    run_signer_in_thread()?;
-    block_on(async { get_node_service()?.schedule_and_sync().await })
+    // create the node services instance and set it globally
+    let node_services = NodeService::from_config(sdk_config.clone(), Arc::new(node_api))?;
+    NODE_SERVICE_INSTANCE
+        .set(node_services)
+        .map_err(|_| anyhow!("static node services already set"))?;
+
+    // run the background processing, schedule the node on the cloud and sync state.
+    block_on(async move {
+        let node_service = get_node_service()?;
+
+        // start background processing and save shut down handler globally
+        let shutdown_handle = node_service.start_background_processing()?;
+        STOP_NODE
+            .set(shutdown_handle)
+            .map_err(|_| anyhow!("static node services already set"))?;
+
+        // schedule node on the cloud and sync state
+        node_service.schedule_and_sync().await
+    })
 }
 
 /// Cleanup node resources and stop the signer.
 pub fn stop_node() -> Result<()> {
-    stop_signer()?;
-    *NODE_SERVICE_STATE.lock().unwrap() = None;
+    let shutdown = STOP_NODE.get();
+    match shutdown {
+        None => Err(anyhow!("Background processing is not running")),
+        Some(s) => block_on(async move { s.stop().await }),
+    }?;
     Ok(())
 }
 
@@ -183,45 +198,11 @@ pub fn withdraw(to_address: String, feerate_preset: FeeratePreset) -> Result<()>
     })
 }
 
-fn get_node_service() -> Result<Arc<NodeService>> {
-    let n = (*NODE_SERVICE_STATE.lock().unwrap()).clone();
+fn get_node_service() -> Result<&'static NodeService> {
+    let n = NODE_SERVICE_INSTANCE.get();
     match n {
         Some(a) => Ok(a),
         None => Err(anyhow!("Node service was not initialized")),
-    }
-}
-
-/// Run the signer in a separate thread.
-/// This intended for internal use of the SDK and not recommended to use unless
-/// you know what you are doing.
-fn run_signer_in_thread() -> Result<()> {
-    let shutdown = SIGNER_SHUTDOWN.lock().unwrap().clone();
-    match shutdown {
-        Some(_) => Err(anyhow!("Signer is already running")),
-        None => {
-            let (tx, rec) = mpsc::channel::<()>(1);
-            *SIGNER_SHUTDOWN.lock().unwrap() = Some(tx);
-            std::thread::spawn(move || {
-                block_on(async move { get_node_service()?.run_signer(rec).await })
-            });
-
-            Ok(())
-        }
-    }
-}
-
-/// Stop the signer thread.
-/// This intended for internal use of the SDK and not recommended to use unless
-/// you know what you are doing.
-fn stop_signer() -> Result<()> {
-    let shutdown = SIGNER_SHUTDOWN.lock().unwrap().clone();
-    match shutdown {
-        None => Err(anyhow!("Signer is not running")),
-        Some(s) => {
-            block_on(async move { s.send(()).await })?;
-            *SIGNER_SHUTDOWN.lock().unwrap() = None;
-            Ok(())
-        }
     }
 }
 

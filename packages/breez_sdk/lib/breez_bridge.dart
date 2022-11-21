@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/native_toolkit.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
+import 'package:rxdart/rxdart.dart';
 
 class BreezBridge {
   final _lnToolkit = getNativeToolkit();
@@ -51,20 +54,25 @@ class BreezBridge {
     required Config config,
     required Uint8List seed,
     required GreenlightCredentials creds,
-  }) async =>
-      await _lnToolkit.initNode(
-        config: config,
-        seed: seed,
-        creds: creds,
-      );
+  }) async {
+    await _lnToolkit.initNode(
+      config: config,
+      seed: seed,
+      creds: creds,
+    );
+    _nodeStateController.add(await getNodeState());
+  }
+
 
   /// pay a bolt11 invoice
   ///
   /// # Arguments
   ///
   /// * `bolt11` - The bolt11 invoice
-  Future sendPayment({required String bolt11}) async =>
-      await _lnToolkit.sendPayment(bolt11: bolt11);
+  Future sendPayment({required String bolt11}) async {
+    await _lnToolkit.sendPayment(bolt11: bolt11);
+    _nodeStateController.add(await getNodeState());
+  }
 
   /// pay directly to a node id using keysend
   ///
@@ -73,9 +81,11 @@ class BreezBridge {
   /// * `nodeId` - The destination nodeId
   /// * `amountSats` - The amount to pay in satoshis
   Future sendSpontaneousPayment(
-          {required String nodeId, required int amountSats}) async =>
-      await _lnToolkit.sendSpontaneousPayment(
-          nodeId: nodeId, amountSats: amountSats);
+      {required String nodeId, required int amountSats}) async {
+    await _lnToolkit.sendSpontaneousPayment(
+        nodeId: nodeId, amountSats: amountSats);
+    _nodeStateController.add(await getNodeState());
+  }
 
   /// Creates an bolt11 payment request.
   /// This also works when the node doesn't have any channels and need inbound liquidity.
@@ -94,7 +104,10 @@ class BreezBridge {
   /// get the node state from the persistent storage
   Future<NodeState?> getNodeState() async => await _lnToolkit.getNodeState();
 
-  Stream<NodeState?> get nodeStateStream => getNodeState().asStream();
+  final StreamController<NodeState?> _nodeStateController =
+      BehaviorSubject<NodeState?>();
+
+  Stream<NodeState?> get nodeStateStream => _nodeStateController.stream;
 
   /// list transactions (incoming/outgoing payments) from the persistent storage
   Future<List<LightningTransaction>> listTransactions({
@@ -115,8 +128,10 @@ class BreezBridge {
   Future<List<LspInformation>> listLsps() async => await _lnToolkit.listLsps();
 
   /// Select the lsp to be used and provide inbound liquidity
-  Future setLspId(String lspId) async =>
-      await _lnToolkit.setLspId(lspId: lspId);
+  Future setLspId(String lspId) async {
+    await _lnToolkit.setLspId(lspId: lspId);
+    _nodeStateController.add(await getNodeState());
+  }
 
   /// Fetch live rates of fiat currencies
   Future<Map<String, Rate>> fetchRates() async {
@@ -136,10 +151,11 @@ class BreezBridge {
 
   /// Withdraw on-chain funds in the wallet to an external btc address
   Future withdraw(
-          {required String toAddress,
-          required FeeratePreset feeratePreset}) async =>
-      await _lnToolkit.withdraw(
-          toAddress: toAddress, feeratePreset: feeratePreset);
+      {required String toAddress, required FeeratePreset feeratePreset}) async {
+    await _lnToolkit.withdraw(
+        toAddress: toAddress, feeratePreset: feeratePreset);
+    _nodeStateController.add(await getNodeState());
+  }
 
   Future<LNInvoice> parseInvoice(String invoice) async =>
       await _lnToolkit.parseInvoice(invoice: invoice);

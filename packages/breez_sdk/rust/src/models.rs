@@ -9,7 +9,7 @@ use tokio::sync::mpsc;
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
-use crate::models::Network::Bitcoin;
+use crate::models::Network::*;
 
 pub const PAYMENT_TYPE_SENT: &str = "sent";
 pub const PAYMENT_TYPE_RECEIVED: &str = "received";
@@ -105,6 +105,17 @@ pub enum Network {
     Testnet,
     Signet,
     Regtest,
+}
+
+impl From<bitcoin::network::constants::Network> for Network {
+    fn from(network: bitcoin::network::constants::Network) -> Self {
+        match network {
+            bitcoin::network::constants::Network::Bitcoin => Bitcoin,
+            bitcoin::network::constants::Network::Testnet => Testnet,
+            bitcoin::network::constants::Network::Signet => Signet,
+            bitcoin::network::constants::Network::Regtest => Regtest,
+        }
+    }
 }
 
 pub enum PaymentTypeFilter {

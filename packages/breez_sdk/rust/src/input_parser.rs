@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
 use bip21::Uri;
-use bitcoin::Network;
+use std::str::FromStr;
 
 use crate::input_parser::InputType::{BitcoinAddress, Bolt11};
 use crate::invoice::{parse_invoice, LNInvoice};
@@ -9,13 +9,10 @@ use crate::invoice::{parse_invoice, LNInvoice};
 pub fn parse(s: &str) -> Result<InputType> {
     // Variants of the user input, with or without certain prefixes, which we consider for parsing
     // This lets us detect the input type even when the correct prefix is missing
-    let variants = vec![
+    let variants: Vec<String> = vec![
         // Raw user input
         // We try to parse it directly, in case it is already formatted correctly
         s.into(),
-        // The bip21 crate, used for parsing bitcoin addresses, expects a `bitcoin:` prefix
-        // To cover the case when the user input doesn't have it, we explicitly add it to have a valid bip21 string
-        format!("bitcoin:{}", s),
         // The BOLT11 parsing works directly on a bolt11 string, without a prefix
         // For the case when the user input has the `lightning:` prefix, we strip it to have the right input for the bolt11 parsing function
         s.strip_prefix("lightning:").unwrap_or_default().into(),
@@ -23,15 +20,20 @@ pub fn parse(s: &str) -> Result<InputType> {
 
     for val in variants {
         // Check if valid BTC onchain address
-        if let Ok(uri) = val.parse::<Uri<'_>>() {
+        if let Ok(addr) = bitcoin::Address::from_str(val.as_str()) {
+            return Ok(BitcoinAddress(BitcoinAddressData {
+                address: val,
+                network: addr.network.into(),
+                amount_sat: None,
+                label: None,
+                message: None,
+            }));
+        }
+        // Check if valid BTC onchain address (BIP21)
+        else if let Ok(uri) = val.parse::<Uri<'_>>() {
             let bitcoin_addr_data = BitcoinAddressData {
                 address: uri.address.to_string(),
-                network: match uri.address.network {
-                    Network::Bitcoin => crate::models::Network::Bitcoin,
-                    Network::Testnet => crate::models::Network::Testnet,
-                    Network::Signet => crate::models::Network::Signet,
-                    Network::Regtest => crate::models::Network::Regtest,
-                },
+                network: uri.address.network.into(),
                 amount_sat: uri.amount.map(|a| a.to_sat()),
                 label: uri.label.map(|label| label.try_into().unwrap()),
                 message: uri.message.map(|msg| msg.try_into().unwrap()),
@@ -101,10 +103,19 @@ mod tests {
 
     #[test]
     fn test_bitcoin_address() -> Result<()> {
+        assert!(matches!(
+            parse("1andreas3batLhQa2FawWjeyjCqyBzypd")?,
+            InputType::BitcoinAddress(_)
+        ));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_bitcoin_address_bip21() -> Result<()> {
         // Addresses from https://github.com/Kixunil/bip21/blob/master/src/lib.rs
 
-        // Valid address but without prefix
-        assert!(parse("1andreas3batLhQa2FawWjeyjCqyBzypd").is_ok());
+        // Valid address with the `bitcoin:` prefix
         assert!(parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd").is_ok());
         assert!(parse("bitcoin:testinvalidaddress").is_err());
 

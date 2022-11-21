@@ -435,13 +435,10 @@ impl support::IntoDart for InputType {
         match self {
             Self::BitcoinAddress(field0) => vec![0.into_dart(), field0.into_dart()],
             Self::Bolt11(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::Bolt11WithOnchainFallback(field0, field1) => {
-                vec![2.into_dart(), field0.into_dart(), field1.into_dart()]
-            }
-            Self::NodeId(field0) => vec![3.into_dart(), field0.into_dart()],
-            Self::Url(field0) => vec![4.into_dart(), field0.into_dart()],
-            Self::LnUrlPay(field0) => vec![5.into_dart(), field0.into_dart()],
-            Self::LnUrlWithdraw(field0) => vec![6.into_dart(), field0.into_dart()],
+            Self::NodeId(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::Url(field0) => vec![3.into_dart(), field0.into_dart()],
+            Self::LnUrlPay(field0) => vec![4.into_dart(), field0.into_dart()],
+            Self::LnUrlWithdraw(field0) => vec![5.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }

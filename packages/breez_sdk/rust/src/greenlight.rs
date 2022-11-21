@@ -89,9 +89,18 @@ impl NodeAPI for Greenlight {
         Ok(())
     }
 
-    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()> {
-        self.signer.run_forever(shutdown).await?;
-        Ok(())
+    fn start_signer(&self, shutdown: mpsc::Receiver<()>) {
+        let signer = self.signer.clone();
+        std::thread::spawn(move || {
+            _ = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap()
+                .block_on(async move {
+                    _ = signer.run_forever(shutdown).await;
+                    error!("signer exited");
+                });
+        });
     }
 
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
@@ -119,7 +128,7 @@ impl NodeAPI for Greenlight {
         buf.append(&mut hrp_buf);
         // Sign the invoice using the signer
         let raw_result = self.signer.sign_invoice(buf)?;
-        println!(
+        info!(
             "recover id: {:?} raw = {:?}",
             raw_result, raw_result[64] as i32
         );

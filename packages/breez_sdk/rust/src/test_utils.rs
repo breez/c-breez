@@ -28,9 +28,7 @@ impl NodeAPI for MockNodeAPI {
         Ok(())
     }
 
-    async fn run_signer(&self, _shutdown: mpsc::Receiver<()>) -> Result<()> {
-        Ok(())
-    }
+    fn start_signer(&self, _shutdown: mpsc::Receiver<()>) {}
 
     async fn pull_changed(&self, _since_timestamp: i64) -> Result<SyncResponse> {
         Ok(SyncResponse {
@@ -164,6 +162,10 @@ impl SwapperAPI for MockSwapperAPI {
         node_pubkey: String,
     ) -> Result<Swap> {
         Err(anyhow!("Not implemented"))
+    }
+
+    async fn complete_swap(&self, bolt11: String) -> Result<()> {
+        Ok(())
     }
 }
 

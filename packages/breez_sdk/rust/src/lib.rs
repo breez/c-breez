@@ -4,6 +4,7 @@ extern crate log;
 
 pub mod binding;
 mod chain;
+mod chain_notifier;
 mod crypto;
 mod fiat;
 mod greenlight;

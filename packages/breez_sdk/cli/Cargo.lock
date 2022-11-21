@@ -289,6 +289,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d86b93f97252c47b41663388e6d155714a9d0c398b99f1005cbc5f978b29f445"
 
 [[package]]
+name = "bip21"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1998475af29ccfb7c761bb624a16e501fc321510366012bc9cce267bc134aedc"
+dependencies = [
+ "bitcoin",
+ "percent-encoding-rfc3986",
+]
+
+[[package]]
 name = "bit-vec"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1429,6 +1439,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "base64",
+ "bip21",
  "bitcoin",
  "bitcoin_hashes",
  "ecies",
@@ -1439,6 +1450,7 @@ dependencies = [
  "lightning 0.0.112",
  "lightning-invoice 0.20.0",
  "log",
+ "once_cell",
  "prost 0.11.0",
  "rand",
  "reqwest",
@@ -1756,6 +1768,12 @@ name = "percent-encoding"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "478c572c3d73181ff3c2539045f6eb99e5491218eae919370993b890cdbdd98e"
+
+[[package]]
+name = "percent-encoding-rfc3986"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3637c05577168127568a64e9dc5a6887da720efef07b3d9472d45f63ab191166"
 
 [[package]]
 name = "petgraph"

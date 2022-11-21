@@ -27,7 +27,7 @@ pub trait NodeAPI: Send + Sync {
         to_address: String,
         feerate_preset: FeeratePreset,
     ) -> Result<WithdrawResponse>;
-    async fn run_signer(&self, shutdown: mpsc::Receiver<()>) -> Result<()>;
+    fn start_signer(&self, shutdown: mpsc::Receiver<()>);
     async fn list_peers(&self) -> Result<Vec<Peer>>;
     async fn connect_peer(&self, node_id: String, addr: String) -> Result<()>;
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String>;
@@ -69,6 +69,8 @@ pub trait SwapperAPI: Send + Sync {
         payer_pubkey: Vec<u8>,
         node_pubkey: String,
     ) -> Result<Swap>;
+
+    async fn complete_swap(&self, bolt11: String) -> Result<()>;
 }
 
 #[derive(Clone)]
@@ -170,11 +172,8 @@ pub struct LightningTransaction {
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum SwapStatus {
     Initial = 0,
-    Mempool = 1,
-    Confirmed = 2,
-    Paid = 3,
-    Expired = 4,
-    Refunded = 5,
+    Expired = 1,
+    Refunded = 2,
 }
 
 impl TryFrom<i32> for SwapStatus {
@@ -183,11 +182,8 @@ impl TryFrom<i32> for SwapStatus {
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(SwapStatus::Initial),
-            1 => Ok(SwapStatus::Mempool),
-            2 => Ok(SwapStatus::Confirmed),
-            3 => Ok(SwapStatus::Paid),
-            4 => Ok(SwapStatus::Expired),
-            5 => Ok(SwapStatus::Refunded),
+            1 => Ok(SwapStatus::Expired),
+            2 => Ok(SwapStatus::Refunded),
             _ => Err(anyhow!("illegal value")),
         }
     }
@@ -195,6 +191,7 @@ impl TryFrom<i32> for SwapStatus {
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct SwapInfo {
+    //static immutable data
     pub bitcoin_address: String,
     pub created_at: i64,
     pub lock_height: i64,
@@ -203,9 +200,12 @@ pub struct SwapInfo {
     pub private_key: Vec<u8>,
     pub public_key: Vec<u8>,
     pub swapper_public_key: Vec<u8>,
-    pub paid_sats: u32,
-    pub confirmed_sat: u32,
     pub script: Vec<u8>,
+
+    // dynamic data
+    pub bolt11: Option<String>,
+    pub paid_sats: u32,
+    pub confirmed_sats: u32,
     pub status: SwapStatus,
 }
 

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
 pub(crate) struct MempoolSpace {
-    pub base_url: String,
+    pub(crate) base_url: String,
 }
 
 #[derive(Deserialize)]
@@ -92,6 +92,16 @@ impl MempoolSpace {
                 .await?
                 .json()
                 .await?,
+        )
+    }
+
+    pub async fn current_tip(&self) -> Result<u32> {
+        Ok(
+            reqwest::get(format!("{}/api/blocks/tip/height", self.base_url))
+                .await?
+                .text()
+                .await?
+                .parse()?,
         )
     }
 }

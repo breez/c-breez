@@ -1350,6 +1350,7 @@ dependencies = [
  "lightning 0.0.112",
  "lightning-invoice 0.20.0",
  "log",
+ "once_cell",
  "prost 0.11.2",
  "rand",
  "reqwest",

@@ -23,7 +23,7 @@ impl ChainNotifier {
     pub(crate) async fn poll_tip(&self, last_block: u32) -> Result<u32> {
         let tip = self.chain_service.current_tip().await?;
         if tip > last_block {
-            self.notify(ChainEvent::NewBlock(tip));
+            self.notify(ChainEvent::NewBlock(tip)).await;
         }
         debug!("current tip = {} last_block = {}", tip, last_block);
         Ok(tip)
@@ -34,17 +34,23 @@ impl ChainNotifier {
         listeners.push(listener);
     }
 
-    fn notify(&self, event: ChainEvent) {
+    async fn notify(&self, event: ChainEvent) {
         let listeners = self.listeners.lock().unwrap();
         for listener in listeners.iter() {
-            listener.on_event(event.clone());
+            let res = listener.on_event(event.clone()).await;
+            match res {
+                Ok(()) => {}
+                Err(e) => {
+                    error!("failed to notify chain listener {}", e);
+                }
+            };
         }
     }
 }
 
 #[tonic::async_trait]
 pub(crate) trait Listener: Send + Sync {
-    fn on_event(&self, e: ChainEvent);
+    async fn on_event(&self, e: ChainEvent) -> Result<()>;
 }
 
 #[derive(Clone, Debug)]

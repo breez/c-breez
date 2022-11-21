@@ -77,8 +77,50 @@ pub struct BTCReceiveSwap {
 
 #[tonic::async_trait]
 impl Listener for BTCReceiveSwap {
-    fn on_event(&self, e: ChainEvent) {
-        debug!("got chain event {:?}", e)
+    async fn on_event(&self, e: ChainEvent) -> Result<()> {
+        match e {
+            ChainEvent::NewBlock(tip) => {
+                debug!("got chain event {:?}", e);
+                let swaps = self.list_swaps().await?;
+                let to_check: Vec<SwapInfo> = swaps
+                    .into_iter()
+                    .filter(|s| s.status == SwapStatus::Initial)
+                    .collect();
+
+                let mut redeemable_swaps: Vec<SwapInfo> = Vec::new();
+                for s in to_check {
+                    let address = s.bitcoin_address.clone();
+                    let refresh_status = self
+                        .refresh_swap_on_chain_status(address.clone(), tip)
+                        .await;
+                    match refresh_status {
+                        Ok(updated) => {
+                            debug!("status refreshed for address: {}", address.clone());
+                            if updated.redeemable() {
+                                redeemable_swaps.push(updated);
+                            }
+                        }
+                        Err(e) => {
+                            error!(
+                                "failed to refresh status for address {}: {}",
+                                address.clone(),
+                                e
+                            );
+                        }
+                    };
+                }
+
+                // redeem swaps
+                for s in redeemable_swaps {
+                    // self.redeem_swap(s.bitcoin_address).await.map_err(|e| {
+                    //     //error!("failed to redeem swap {}: {}", s.bitcoin_address,);
+                    // });
+                }
+            }
+            _ => {} // skip events were are not interested in
+        }
+
+        Ok(())
     }
 }
 
@@ -161,7 +203,7 @@ impl BTCReceiveSwap {
         &self,
         bitcoin_address: String,
         current_tip: u32,
-    ) -> Result<()> {
+    ) -> Result<SwapInfo> {
         let swap_info = self
             .persister
             .get_swap_info(bitcoin_address.clone())?
@@ -193,9 +235,7 @@ impl BTCReceiveSwap {
             swap_status = SwapStatus::Expired
         }
         self.persister
-            .update_swap_chain_info(bitcoin_address, confirmed_sats, swap_status)?;
-
-        Ok(())
+            .update_swap_chain_info(bitcoin_address, confirmed_sats, swap_status)
     }
 
     /// redeem_swap executes the final step of receiving lightning payment

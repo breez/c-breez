@@ -246,22 +246,12 @@ class InputType with _$InputType {
   const factory InputType.bitcoinAddress(
     BitcoinAddressData field0,
   ) = InputType_BitcoinAddress;
+
+  /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
+  /// and discards all other data.
   const factory InputType.bolt11(
     LNInvoice field0,
   ) = InputType_Bolt11;
-
-  /// Covers URIs like `bitcoin:...&lightning=bolt11` described in BOLT11:
-  ///
-  /// > "If a URI scheme is desired, the current recommendation is to either use 'lightning:'
-  /// as a prefix before the BOLT-11 encoding (note: not 'lightning://'), or for fallback to
-  /// Bitcoin payments, to use 'bitcoin:', as per BIP-21, with the key 'lightning' and the value
-  /// equal to the BOLT-11 encoding."
-  ///
-  /// https://github.com/lightning/bolts/blob/master/11-payment-encoding.md#encoding-overview
-  const factory InputType.bolt11WithOnchainFallback(
-    LNInvoice field0,
-    BitcoinAddressData field1,
-  ) = InputType_Bolt11WithOnchainFallback;
   const factory InputType.nodeId(
     String field0,
   ) = InputType_NodeId;
@@ -936,23 +926,18 @@ class LightningToolkitImpl implements LightningToolkit {
           _wire2api_box_autoadd_ln_invoice(raw[1]),
         );
       case 2:
-        return InputType_Bolt11WithOnchainFallback(
-          _wire2api_box_autoadd_ln_invoice(raw[1]),
-          _wire2api_box_autoadd_bitcoin_address_data(raw[2]),
-        );
-      case 3:
         return InputType_NodeId(
           _wire2api_String(raw[1]),
         );
-      case 4:
+      case 3:
         return InputType_Url(
           _wire2api_String(raw[1]),
         );
-      case 5:
+      case 4:
         return InputType_LnUrlPay(
           _wire2api_String(raw[1]),
         );
-      case 6:
+      case 5:
         return InputType_LnUrlWithdraw(
           _wire2api_String(raw[1]),
         );

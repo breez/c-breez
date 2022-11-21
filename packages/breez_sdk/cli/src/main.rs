@@ -33,6 +33,26 @@ fn get_seed() -> Vec<u8> {
     seed.as_bytes().to_vec()
 }
 
+fn save_creds(creds: GreenlightCredentials) -> Result<()> {
+    let filename = "creds";
+    fs::write(filename, serde_json::to_vec(&creds)?)?;
+    Ok(())
+}
+
+fn get_creds() -> Option<GreenlightCredentials> {
+    let filename = "creds";
+    let creds: Option<GreenlightCredentials> = match fs::read(filename) {
+        Ok(raw) => Some(serde_json::from_slice(raw.as_slice()).unwrap()),
+        Err(e) => {
+            if e.kind() != io::ErrorKind::NotFound {
+                panic!("Can't read from file: {}, err {}", filename, e);
+            }
+            None
+        }
+    };
+    creds
+}
+
 fn main() -> Result<()> {
     env_logger::Builder::from_env(
         Env::default()
@@ -65,6 +85,7 @@ fn main() -> Result<()> {
                             hex::encode(greenlight_credentials.clone().unwrap().device_cert),
                             hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
                         );
+                        save_creds(greenlight_credentials.unwrap())?;
                     }
                     Some("recover_node") => {
                         let r = binding::recover_node(
@@ -78,6 +99,16 @@ fn main() -> Result<()> {
                             hex::encode(greenlight_credentials.clone().unwrap().device_cert),
                             hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
                         );
+                        save_creds(greenlight_credentials.unwrap())?;
+                    }
+
+                    Some("init") => {
+                        let creds = get_creds();
+                        if creds.is_none() {
+                            info!("credentials not found");
+                            continue;
+                        }
+                        show_results(binding::init_node(None, seed.to_vec(), creds.unwrap()));
                     }
                     Some("request_payment") => {
                         let amount_sats: u64 = command.next().unwrap().parse()?;

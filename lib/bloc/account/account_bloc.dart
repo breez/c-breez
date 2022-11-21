@@ -112,7 +112,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node registered successfully");
     await _storeCredentials(creds: creds, seed: seed);
     emit(state.copyWith(initial: false));
-    await _startNode(seed: seed, creds: creds);
+    started = true;
     _log.i("new node started");
     return creds;
   }
@@ -130,7 +130,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
     _log.i("node recovered successfully");
     await _storeCredentials(creds: creds, seed: seed);
-    await _startNode(seed: seed, creds: creds);
+    started = true;
     _log.i("recovered node started");
     return creds;
   }

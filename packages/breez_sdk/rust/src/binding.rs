@@ -10,7 +10,7 @@ use anyhow::{anyhow, Result};
 use crate::invoice::LNInvoice;
 use crate::models::{
     Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeState,
-    PaymentTypeFilter,
+    PaymentTypeFilter, SwapInfo,
 };
 use crate::{greenlight::Greenlight, node_service::NodeService};
 
@@ -194,6 +194,27 @@ pub fn withdraw(to_address: String, feerate_preset: FeeratePreset) -> Result<()>
     block_on(async {
         get_node_service()?
             .withdraw(to_address, feerate_preset)
+            .await
+    })
+}
+
+/// swaps
+
+/// Onchain receive swap API
+pub fn create_swap() -> Result<SwapInfo> {
+    block_on(async { get_node_service()?.create_swap().await })
+}
+
+// list swaps history (all of them: expired, refunded and active)
+pub fn list_swaps() -> Result<Vec<SwapInfo>> {
+    block_on(async { get_node_service()?.list_swaps().await })
+}
+
+// construct and broadcast a refund transaction for a faile/expired swap
+pub fn refund_swap(swap_address: String, to_address: String) -> Result<String> {
+    block_on(async {
+        get_node_service()?
+            .refund_swap(swap_address, to_address)
             .await
     })
 }

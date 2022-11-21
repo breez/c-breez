@@ -20,7 +20,7 @@ use rand::Rng;
 use ripemd::{Digest, Ripemd160};
 
 use crate::models::{Swap, SwapInfo, SwapStatus, SwapperAPI};
-use crate::node_service::BreezServer;
+use crate::node_service::{BreezServer, PaymentReceiver};
 
 struct Utxo {
     out: OutPoint,
@@ -73,6 +73,7 @@ pub struct BTCReceiveSwap {
     swapper_api: Arc<dyn SwapperAPI>,
     persister: Arc<crate::persist::db::SqliteStorage>,
     chain_service: Arc<MempoolSpace>,
+    payment_receiver: Arc<PaymentReceiver>,
 }
 
 #[tonic::async_trait]
@@ -129,16 +130,23 @@ impl BTCReceiveSwap {
         swapper_api: Arc<dyn SwapperAPI>,
         persister: Arc<crate::persist::db::SqliteStorage>,
         chain_service: Arc<MempoolSpace>,
+        payment_receiver: Arc<PaymentReceiver>,
     ) -> Self {
         let swapper = Self {
             swapper_api,
             persister,
             chain_service,
+            payment_receiver,
         };
         swapper
     }
 
-    pub(crate) async fn create_swap_address(&self, node_id: String) -> Result<SwapInfo> {
+    pub(crate) async fn create_swap_address(&self) -> Result<SwapInfo> {
+        let node_state = self.persister.get_node_state()?;
+        if node_state.is_none() {
+            return Err(anyhow!("node is not initialized"));
+        }
+        let node_id = node_state.unwrap().id;
         // create swap keys
         let swap_keys = create_swap_keys()?;
         let secp = Secp256k1::new();
@@ -240,11 +248,7 @@ impl BTCReceiveSwap {
 
     /// redeem_swap executes the final step of receiving lightning payment
     /// in exchange for the on chain funds.
-    async fn redeem_swap(
-        &self,
-        bitcoin_address: String,
-        invoice_creator: fn(amount_sats: u32) -> Result<String>,
-    ) -> Result<()> {
+    pub(crate) async fn redeem_swap(&self, bitcoin_address: String) -> Result<()> {
         let mut swap_info = self
             .persister
             .get_swap_info(bitcoin_address.clone())?
@@ -253,9 +257,15 @@ impl BTCReceiveSwap {
         // we are creating and invoice for this swap if we didn't
         // do it already
         if swap_info.bolt11.is_none() {
-            let bolt11 = invoice_creator(swap_info.confirmed_sats)?;
+            let invoice = self
+                .payment_receiver
+                .receive_payment(
+                    swap_info.confirmed_sats as u64,
+                    String::from("Bitcoin Transfer"),
+                )
+                .await?;
             self.persister
-                .update_swap_bolt11(bitcoin_address.clone(), bolt11)?;
+                .update_swap_bolt11(bitcoin_address.clone(), invoice.bolt11)?;
             swap_info = self
                 .persister
                 .get_swap_info(bitcoin_address.clone())?
@@ -284,7 +294,7 @@ impl BTCReceiveSwap {
         &self,
         swap_address: String,
         to_address: String,
-    ) -> Result<Vec<u8>> {
+    ) -> Result<String> {
         let swap_info = self
             .persister
             .get_swap_info(swap_address.clone())?
@@ -302,13 +312,14 @@ impl BTCReceiveSwap {
             swap_info.public_key,
             swap_info.lock_height,
         )?;
-        create_refund_tx(
+        let refund_tx = create_refund_tx(
             utxos,
             swap_info.private_key,
             to_address,
             swap_info.lock_height as u32,
             script,
-        )
+        )?;
+        self.chain_service.broadcast_transaction(refund_tx).await
     }
 }
 

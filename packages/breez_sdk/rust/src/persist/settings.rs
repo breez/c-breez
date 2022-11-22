@@ -1,5 +1,5 @@
 use super::db::SqliteStorage;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 pub struct SettingItem {
     key: String,
@@ -44,6 +44,16 @@ impl SqliteStorage {
             .collect();
 
         Ok(vec)
+    }
+
+    pub fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
+        self.update_setting("lsp".to_string(), lsp_id)?;
+        Ok(())
+    }
+
+    pub fn get_lsp_id(&self) -> Result<Option<String>> {
+        self.get_setting("lsp".to_string())
+            .map_err(|err| anyhow!(err))
     }
 }
 

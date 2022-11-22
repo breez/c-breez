@@ -58,7 +58,7 @@ impl SqliteStorage {
         bitcoin_address: String,
         confirmed_sats: u32,
         status: SwapStatus,
-    ) -> Result<()> {
+    ) -> Result<SwapInfo> {
         self.get_connection()?.execute(
             "UPDATE swaps SET confirmed_sats=:confirmed_sats, status=:status where bitcoin_address=:bitcoin_address",
             named_params! {
@@ -67,8 +67,7 @@ impl SqliteStorage {
              ":status": status as u32
             },
         )?;
-
-        Ok(())
+        Ok(self.get_swap_info(bitcoin_address)?.unwrap())
     }
 
     pub fn get_swap_info(&self, address: String) -> Result<Option<SwapInfo>> {

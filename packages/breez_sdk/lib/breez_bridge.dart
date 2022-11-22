@@ -18,12 +18,15 @@ class BreezBridge {
     required Config config,
     required Network network,
     required Uint8List seed,
-  }) async =>
-      await _lnToolkit.registerNode(
-        config: config,
-        network: network,
-        seed: seed,
-      );
+  }) async {
+    var creds = await _lnToolkit.registerNode(
+      config: config,
+      network: network,
+      seed: seed,
+    );
+    _nodeStateController.add(await getNodeState());
+    return creds;
+  }
 
   /// Recover an existing node from the cloud and return credentials to interact with it
   ///
@@ -35,12 +38,15 @@ class BreezBridge {
     required Config config,
     required Network network,
     required Uint8List seed,
-  }) async =>
-      await _lnToolkit.recoverNode(
-        config: config,
-        network: network,
-        seed: seed,
-      );
+  }) async {
+    var creds = await _lnToolkit.recoverNode(
+      config: config,
+      network: network,
+      seed: seed,
+    );
+    _nodeStateController.add(await getNodeState());
+    return creds;
+  }
 
   /// init_node initialized the global NodeService, schedule the node to run in the cloud and
   /// run the signer. This must be called in order to start comunicate with the node

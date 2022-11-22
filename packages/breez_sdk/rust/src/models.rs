@@ -94,7 +94,7 @@ impl Default for Config {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct GreenlightCredentials {
     pub device_key: Vec<u8>,
     pub device_cert: Vec<u8>,
@@ -207,6 +207,12 @@ pub struct SwapInfo {
     pub paid_sats: u32,
     pub confirmed_sats: u32,
     pub status: SwapStatus,
+}
+
+impl SwapInfo {
+    pub(crate) fn redeemable(&self) -> bool {
+        self.confirmed_sats > 0 && self.paid_sats == 0 && self.status == SwapStatus::Initial
+    }
 }
 
 pub fn parse_short_channel_id(id_str: &str) -> Result<i64> {

@@ -24,6 +24,7 @@ rand = "*"
 tiny-bip39 = "*"
 tokio = "*"
 prost = "^0.11"
+querystring = "*"
 rusqlite = { version = "0.28.0", features = ["serde_json", "bundled"] }
 rusqlite_migration = "*"
 reqwest = { version = "0.11", features = ["json"] }

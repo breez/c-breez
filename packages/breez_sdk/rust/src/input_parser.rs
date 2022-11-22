@@ -1,6 +1,7 @@
+use std::str::FromStr;
+
 use anyhow::{anyhow, Result};
 use bip21::Uri;
-use std::str::FromStr;
 
 use crate::input_parser::InputType::{BitcoinAddress, Bolt11};
 use crate::invoice::{parse_invoice, LNInvoice};
@@ -32,14 +33,14 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
 
         // Special case of LN BOLT11 with onchain fallback
         // Search for the `lightning=bolt11` param in the BIP21 URI and, if found, extract the bolt11
-        let invoice_param: Option<LNInvoice> = prepared_input
-            .split(|c| c == '?' || c == '&')
-            .collect::<Vec<&str>>()
-            .iter()
-            .find(|x| x.starts_with("lightning="))
-            .map(|x| x.trim_start_matches("lightning="))
-            .map(parse_invoice)
-            .transpose()?;
+        let mut invoice_param: Option<LNInvoice> = None;
+        if let Some(query) = prepared_input.split('?').collect::<Vec<_>>().get(1) {
+            invoice_param = querystring::querify(query)
+                .iter()
+                .find(|(key, _)| key == &"lightning")
+                .map(|(_, value)| parse_invoice(value))
+                .transpose()?;
+        }
 
         return match invoice_param {
             None => Ok(BitcoinAddress(bitcoin_addr_data)),

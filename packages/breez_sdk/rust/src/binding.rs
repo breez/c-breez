@@ -242,11 +242,11 @@ fn block_on<F: Future>(future: F) -> F::Output {
 // These functions are exposed temporarily for integration purposes
 
 pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
-    return invoice::parse_invoice(&invoice);
+    invoice::parse_invoice(&invoice)
 }
 
-pub async fn parse(s: String) -> Result<InputType> {
-    crate::input_parser::parse(&s).await
+pub fn parse(s: String) -> Result<InputType> {
+    crate::input_parser::parse(&s)
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

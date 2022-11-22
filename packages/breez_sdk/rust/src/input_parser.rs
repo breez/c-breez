@@ -83,9 +83,27 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
 }
 
 /// Decodes the bech32-encoded LNURL and returns the payload
+///
+/// The only allowed schemes are http (for onion domains) and https (for clearnet domains)
+///
+/// LNURLs in all uppercase or all lowercase are valid, but mixed case ones are invalid.
 fn lnurl_decode(encoded: &str) -> Result<String> {
     let (_hrp, payload, _variant) = bech32::decode(encoded)?;
-    String::from_utf8(Vec::from_base32(&payload)?).map_err(|e| anyhow!(e))
+    let decoded = String::from_utf8(Vec::from_base32(&payload)?).map_err(|e| anyhow!(e))?;
+
+    let url = reqwest::Url::parse(&decoded)?;
+    let domain = url
+        .domain()
+        .ok_or_else(|| anyhow!("Could not determine domain"))?;
+
+    if url.scheme() == "http" && !domain.ends_with(".onion") {
+        return Err(anyhow!("HTTP scheme only allowed for onion domains"));
+    }
+    if url.scheme() == "https" && domain.ends_with(".onion") {
+        return Err(anyhow!("HTTPS scheme not allowed for onion domains"));
+    }
+
+    Ok(decoded)
 }
 
 pub enum InputType {
@@ -121,6 +139,9 @@ pub struct BitcoinAddressData {
 mod tests {
     use anyhow::anyhow;
     use anyhow::Result;
+    use bitcoin::bech32;
+    use bitcoin::bech32::{ToBase32, Variant};
+    use rand::{random};
 
     use crate::input_parser::{lnurl_decode, parse, InputType};
     use crate::models::Network;
@@ -260,10 +281,61 @@ mod tests {
     fn test_lnurl_pay_lud_01() -> Result<()> {
         // https://github.com/lnurl/luds/blob/luds/01.md
 
+        // HTTPS allowed with clearnet domains
+        assert!(lnurl_decode(&bech32::encode(
+            "LNURL",
+            "https://domain.com".to_base32(),
+            Variant::Bech32
+        )?)
+        .is_ok());
+
+        // HTTP not allowed with clearnet domains
+        assert!(lnurl_decode(&bech32::encode(
+            "LNURL",
+            "http://domain.com".to_base32(),
+            Variant::Bech32
+        )?)
+        .is_err());
+
+        // HTTP allowed with onion domains
+        assert!(lnurl_decode(&bech32::encode(
+            "LNURL",
+            "http://3fdsf.onion".to_base32(),
+            Variant::Bech32
+        )?)
+        .is_ok());
+
+        // HTTPS not allowed with onion domains
+        assert!(lnurl_decode(&bech32::encode(
+            "LNURL",
+            "https://3fdsf.onion".to_base32(),
+            Variant::Bech32
+        )?)
+        .is_err());
+
         let decoded_url = "https://service.com/api?q=3fc3645b439ce8e7f2553a69e5267081d96dcd340693afabe04be7b0ccd178df";
         let lnurl_raw = "LNURL1DP68GURN8GHJ7UM9WFMXJCM99E3K7MF0V9CXJ0M385EKVCENXC6R2C35XVUKXEFCV5MKVV34X5EKZD3EV56NYD3HXQURZEPEXEJXXEPNXSCRVWFNV9NXZCN9XQ6XYEFHVGCXXCMYXYMNSERXFQ5FNS";
 
         assert_eq!(lnurl_decode(lnurl_raw)?, decoded_url);
+
+        // Uppercase and lowercase allowed, but mixed case is invalid
+        assert!(lnurl_decode(&lnurl_raw.to_uppercase()).is_ok());
+        assert!(lnurl_decode(&lnurl_raw.to_lowercase()).is_ok());
+        assert!(lnurl_decode(
+            lnurl_raw
+                .chars()
+                .into_iter()
+                .map(|x| {
+                    if random() {
+                        x.to_uppercase().to_string()
+                    } else {
+                        x.to_lowercase().to_string()
+                    }
+                })
+                .collect::<String>()
+                .as_str()
+        )
+        .is_err());
 
         // assert!(matches!(
         //     parse(lnurl_raw)?,

@@ -200,7 +200,7 @@ impl NodeService {
     }
 
     /// Convenience method to look up LSP info based on current LSP ID
-    async fn get_lsp(&self) -> Result<LspInformation> {
+    pub async fn get_lsp(&self) -> Result<LspInformation> {
         get_lsp(self.persister.clone(), self.lsp.clone()).await
     }
 

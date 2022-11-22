@@ -70,6 +70,8 @@ void wire_list_lsps(int64_t port_);
 
 void wire_set_lsp_id(int64_t port_, struct wire_uint_8_list *lsp_id);
 
+void wire_get_lsp(int64_t port_);
+
 void wire_fetch_rates(int64_t port_);
 
 void wire_list_fiat_currencies(int64_t port_);
@@ -116,6 +118,7 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_list_transactions);
     dummy_var ^= ((int64_t) (void*) wire_list_lsps);
     dummy_var ^= ((int64_t) (void*) wire_set_lsp_id);
+    dummy_var ^= ((int64_t) (void*) wire_get_lsp);
     dummy_var ^= ((int64_t) (void*) wire_fetch_rates);
     dummy_var ^= ((int64_t) (void*) wire_list_fiat_currencies);
     dummy_var ^= ((int64_t) (void*) wire_close_lsp_channels);

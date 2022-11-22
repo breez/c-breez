@@ -28,12 +28,12 @@ mixin _$InputType {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(String field0)? lnUrlPay,
-    TResult Function(String field0)? lnUrlWithdraw,
+    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult? Function(LNInvoice field0)? bolt11,
+    TResult? Function(String field0)? nodeId,
+    TResult? Function(String field0)? url,
+    TResult? Function(String field0)? lnUrlPay,
+    TResult? Function(String field0)? lnUrlWithdraw,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -59,12 +59,12 @@ mixin _$InputType {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
-    TResult Function(InputType_Bolt11 value)? bolt11,
-    TResult Function(InputType_NodeId value)? nodeId,
-    TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
-    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -83,16 +83,18 @@ mixin _$InputType {
 /// @nodoc
 abstract class $InputTypeCopyWith<$Res> {
   factory $InputTypeCopyWith(InputType value, $Res Function(InputType) then) =
-      _$InputTypeCopyWithImpl<$Res>;
+      _$InputTypeCopyWithImpl<$Res, InputType>;
 }
 
 /// @nodoc
-class _$InputTypeCopyWithImpl<$Res> implements $InputTypeCopyWith<$Res> {
+class _$InputTypeCopyWithImpl<$Res, $Val extends InputType>
+    implements $InputTypeCopyWith<$Res> {
   _$InputTypeCopyWithImpl(this._value, this._then);
 
-  final InputType _value;
   // ignore: unused_field
-  final $Res Function(InputType) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
@@ -100,27 +102,25 @@ abstract class _$$InputType_BitcoinAddressCopyWith<$Res> {
   factory _$$InputType_BitcoinAddressCopyWith(_$InputType_BitcoinAddress value,
           $Res Function(_$InputType_BitcoinAddress) then) =
       __$$InputType_BitcoinAddressCopyWithImpl<$Res>;
+  @useResult
   $Res call({BitcoinAddressData field0});
 }
 
 /// @nodoc
 class __$$InputType_BitcoinAddressCopyWithImpl<$Res>
-    extends _$InputTypeCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_BitcoinAddress>
     implements _$$InputType_BitcoinAddressCopyWith<$Res> {
   __$$InputType_BitcoinAddressCopyWithImpl(_$InputType_BitcoinAddress _value,
       $Res Function(_$InputType_BitcoinAddress) _then)
-      : super(_value, (v) => _then(v as _$InputType_BitcoinAddress));
+      : super(_value, _then);
 
-  @override
-  _$InputType_BitcoinAddress get _value =>
-      super._value as _$InputType_BitcoinAddress;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = freezed,
+    Object? field0 = null,
   }) {
     return _then(_$InputType_BitcoinAddress(
-      field0 == freezed
+      null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as BitcoinAddressData,
@@ -146,15 +146,15 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_BitcoinAddress &&
-            const DeepCollectionEquality().equals(other.field0, field0));
+            (identical(other.field0, field0) || other.field0 == field0));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(field0));
+  int get hashCode => Object.hash(runtimeType, field0);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$InputType_BitcoinAddressCopyWith<_$InputType_BitcoinAddress>
       get copyWith =>
           __$$InputType_BitcoinAddressCopyWithImpl<_$InputType_BitcoinAddress>(
@@ -176,12 +176,12 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(String field0)? lnUrlPay,
-    TResult Function(String field0)? lnUrlWithdraw,
+    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult? Function(LNInvoice field0)? bolt11,
+    TResult? Function(String field0)? nodeId,
+    TResult? Function(String field0)? url,
+    TResult? Function(String field0)? lnUrlPay,
+    TResult? Function(String field0)? lnUrlWithdraw,
   }) {
     return bitcoinAddress?.call(field0);
   }
@@ -219,12 +219,12 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
-    TResult Function(InputType_Bolt11 value)? bolt11,
-    TResult Function(InputType_NodeId value)? nodeId,
-    TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
-    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
   }) {
     return bitcoinAddress?.call(this);
   }
@@ -262,26 +262,25 @@ abstract class _$$InputType_Bolt11CopyWith<$Res> {
   factory _$$InputType_Bolt11CopyWith(
           _$InputType_Bolt11 value, $Res Function(_$InputType_Bolt11) then) =
       __$$InputType_Bolt11CopyWithImpl<$Res>;
+  @useResult
   $Res call({LNInvoice field0});
 }
 
 /// @nodoc
 class __$$InputType_Bolt11CopyWithImpl<$Res>
-    extends _$InputTypeCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_Bolt11>
     implements _$$InputType_Bolt11CopyWith<$Res> {
   __$$InputType_Bolt11CopyWithImpl(
       _$InputType_Bolt11 _value, $Res Function(_$InputType_Bolt11) _then)
-      : super(_value, (v) => _then(v as _$InputType_Bolt11));
+      : super(_value, _then);
 
-  @override
-  _$InputType_Bolt11 get _value => super._value as _$InputType_Bolt11;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = freezed,
+    Object? field0 = null,
   }) {
     return _then(_$InputType_Bolt11(
-      field0 == freezed
+      null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as LNInvoice,
@@ -307,15 +306,15 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_Bolt11 &&
-            const DeepCollectionEquality().equals(other.field0, field0));
+            (identical(other.field0, field0) || other.field0 == field0));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(field0));
+  int get hashCode => Object.hash(runtimeType, field0);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$InputType_Bolt11CopyWith<_$InputType_Bolt11> get copyWith =>
       __$$InputType_Bolt11CopyWithImpl<_$InputType_Bolt11>(this, _$identity);
 
@@ -335,12 +334,12 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(String field0)? lnUrlPay,
-    TResult Function(String field0)? lnUrlWithdraw,
+    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult? Function(LNInvoice field0)? bolt11,
+    TResult? Function(String field0)? nodeId,
+    TResult? Function(String field0)? url,
+    TResult? Function(String field0)? lnUrlPay,
+    TResult? Function(String field0)? lnUrlWithdraw,
   }) {
     return bolt11?.call(field0);
   }
@@ -378,12 +377,12 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
-    TResult Function(InputType_Bolt11 value)? bolt11,
-    TResult Function(InputType_NodeId value)? nodeId,
-    TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
-    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
   }) {
     return bolt11?.call(this);
   }
@@ -420,26 +419,25 @@ abstract class _$$InputType_NodeIdCopyWith<$Res> {
   factory _$$InputType_NodeIdCopyWith(
           _$InputType_NodeId value, $Res Function(_$InputType_NodeId) then) =
       __$$InputType_NodeIdCopyWithImpl<$Res>;
+  @useResult
   $Res call({String field0});
 }
 
 /// @nodoc
 class __$$InputType_NodeIdCopyWithImpl<$Res>
-    extends _$InputTypeCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_NodeId>
     implements _$$InputType_NodeIdCopyWith<$Res> {
   __$$InputType_NodeIdCopyWithImpl(
       _$InputType_NodeId _value, $Res Function(_$InputType_NodeId) _then)
-      : super(_value, (v) => _then(v as _$InputType_NodeId));
+      : super(_value, _then);
 
-  @override
-  _$InputType_NodeId get _value => super._value as _$InputType_NodeId;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = freezed,
+    Object? field0 = null,
   }) {
     return _then(_$InputType_NodeId(
-      field0 == freezed
+      null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as String,
@@ -465,15 +463,15 @@ class _$InputType_NodeId implements InputType_NodeId {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_NodeId &&
-            const DeepCollectionEquality().equals(other.field0, field0));
+            (identical(other.field0, field0) || other.field0 == field0));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(field0));
+  int get hashCode => Object.hash(runtimeType, field0);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$InputType_NodeIdCopyWith<_$InputType_NodeId> get copyWith =>
       __$$InputType_NodeIdCopyWithImpl<_$InputType_NodeId>(this, _$identity);
 
@@ -493,12 +491,12 @@ class _$InputType_NodeId implements InputType_NodeId {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(String field0)? lnUrlPay,
-    TResult Function(String field0)? lnUrlWithdraw,
+    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult? Function(LNInvoice field0)? bolt11,
+    TResult? Function(String field0)? nodeId,
+    TResult? Function(String field0)? url,
+    TResult? Function(String field0)? lnUrlPay,
+    TResult? Function(String field0)? lnUrlWithdraw,
   }) {
     return nodeId?.call(field0);
   }
@@ -536,12 +534,12 @@ class _$InputType_NodeId implements InputType_NodeId {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
-    TResult Function(InputType_Bolt11 value)? bolt11,
-    TResult Function(InputType_NodeId value)? nodeId,
-    TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
-    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
   }) {
     return nodeId?.call(this);
   }
@@ -578,25 +576,25 @@ abstract class _$$InputType_UrlCopyWith<$Res> {
   factory _$$InputType_UrlCopyWith(
           _$InputType_Url value, $Res Function(_$InputType_Url) then) =
       __$$InputType_UrlCopyWithImpl<$Res>;
+  @useResult
   $Res call({String field0});
 }
 
 /// @nodoc
-class __$$InputType_UrlCopyWithImpl<$Res> extends _$InputTypeCopyWithImpl<$Res>
+class __$$InputType_UrlCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_Url>
     implements _$$InputType_UrlCopyWith<$Res> {
   __$$InputType_UrlCopyWithImpl(
       _$InputType_Url _value, $Res Function(_$InputType_Url) _then)
-      : super(_value, (v) => _then(v as _$InputType_Url));
+      : super(_value, _then);
 
-  @override
-  _$InputType_Url get _value => super._value as _$InputType_Url;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = freezed,
+    Object? field0 = null,
   }) {
     return _then(_$InputType_Url(
-      field0 == freezed
+      null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as String,
@@ -622,15 +620,15 @@ class _$InputType_Url implements InputType_Url {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_Url &&
-            const DeepCollectionEquality().equals(other.field0, field0));
+            (identical(other.field0, field0) || other.field0 == field0));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(field0));
+  int get hashCode => Object.hash(runtimeType, field0);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$InputType_UrlCopyWith<_$InputType_Url> get copyWith =>
       __$$InputType_UrlCopyWithImpl<_$InputType_Url>(this, _$identity);
 
@@ -650,12 +648,12 @@ class _$InputType_Url implements InputType_Url {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(String field0)? lnUrlPay,
-    TResult Function(String field0)? lnUrlWithdraw,
+    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult? Function(LNInvoice field0)? bolt11,
+    TResult? Function(String field0)? nodeId,
+    TResult? Function(String field0)? url,
+    TResult? Function(String field0)? lnUrlPay,
+    TResult? Function(String field0)? lnUrlWithdraw,
   }) {
     return url?.call(field0);
   }
@@ -693,12 +691,12 @@ class _$InputType_Url implements InputType_Url {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
-    TResult Function(InputType_Bolt11 value)? bolt11,
-    TResult Function(InputType_NodeId value)? nodeId,
-    TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
-    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
   }) {
     return url?.call(this);
   }
@@ -735,26 +733,25 @@ abstract class _$$InputType_LnUrlPayCopyWith<$Res> {
   factory _$$InputType_LnUrlPayCopyWith(_$InputType_LnUrlPay value,
           $Res Function(_$InputType_LnUrlPay) then) =
       __$$InputType_LnUrlPayCopyWithImpl<$Res>;
+  @useResult
   $Res call({String field0});
 }
 
 /// @nodoc
 class __$$InputType_LnUrlPayCopyWithImpl<$Res>
-    extends _$InputTypeCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_LnUrlPay>
     implements _$$InputType_LnUrlPayCopyWith<$Res> {
   __$$InputType_LnUrlPayCopyWithImpl(
       _$InputType_LnUrlPay _value, $Res Function(_$InputType_LnUrlPay) _then)
-      : super(_value, (v) => _then(v as _$InputType_LnUrlPay));
+      : super(_value, _then);
 
-  @override
-  _$InputType_LnUrlPay get _value => super._value as _$InputType_LnUrlPay;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = freezed,
+    Object? field0 = null,
   }) {
     return _then(_$InputType_LnUrlPay(
-      field0 == freezed
+      null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as String,
@@ -780,15 +777,15 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_LnUrlPay &&
-            const DeepCollectionEquality().equals(other.field0, field0));
+            (identical(other.field0, field0) || other.field0 == field0));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(field0));
+  int get hashCode => Object.hash(runtimeType, field0);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$InputType_LnUrlPayCopyWith<_$InputType_LnUrlPay> get copyWith =>
       __$$InputType_LnUrlPayCopyWithImpl<_$InputType_LnUrlPay>(
           this, _$identity);
@@ -809,12 +806,12 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(String field0)? lnUrlPay,
-    TResult Function(String field0)? lnUrlWithdraw,
+    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult? Function(LNInvoice field0)? bolt11,
+    TResult? Function(String field0)? nodeId,
+    TResult? Function(String field0)? url,
+    TResult? Function(String field0)? lnUrlPay,
+    TResult? Function(String field0)? lnUrlWithdraw,
   }) {
     return lnUrlPay?.call(field0);
   }
@@ -852,12 +849,12 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
-    TResult Function(InputType_Bolt11 value)? bolt11,
-    TResult Function(InputType_NodeId value)? nodeId,
-    TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
-    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
   }) {
     return lnUrlPay?.call(this);
   }
@@ -894,27 +891,25 @@ abstract class _$$InputType_LnUrlWithdrawCopyWith<$Res> {
   factory _$$InputType_LnUrlWithdrawCopyWith(_$InputType_LnUrlWithdraw value,
           $Res Function(_$InputType_LnUrlWithdraw) then) =
       __$$InputType_LnUrlWithdrawCopyWithImpl<$Res>;
+  @useResult
   $Res call({String field0});
 }
 
 /// @nodoc
 class __$$InputType_LnUrlWithdrawCopyWithImpl<$Res>
-    extends _$InputTypeCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_LnUrlWithdraw>
     implements _$$InputType_LnUrlWithdrawCopyWith<$Res> {
   __$$InputType_LnUrlWithdrawCopyWithImpl(_$InputType_LnUrlWithdraw _value,
       $Res Function(_$InputType_LnUrlWithdraw) _then)
-      : super(_value, (v) => _then(v as _$InputType_LnUrlWithdraw));
+      : super(_value, _then);
 
-  @override
-  _$InputType_LnUrlWithdraw get _value =>
-      super._value as _$InputType_LnUrlWithdraw;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = freezed,
+    Object? field0 = null,
   }) {
     return _then(_$InputType_LnUrlWithdraw(
-      field0 == freezed
+      null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
               as String,
@@ -940,15 +935,15 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_LnUrlWithdraw &&
-            const DeepCollectionEquality().equals(other.field0, field0));
+            (identical(other.field0, field0) || other.field0 == field0));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(field0));
+  int get hashCode => Object.hash(runtimeType, field0);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$InputType_LnUrlWithdrawCopyWith<_$InputType_LnUrlWithdraw> get copyWith =>
       __$$InputType_LnUrlWithdrawCopyWithImpl<_$InputType_LnUrlWithdraw>(
           this, _$identity);
@@ -969,12 +964,12 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(String field0)? lnUrlPay,
-    TResult Function(String field0)? lnUrlWithdraw,
+    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
+    TResult? Function(LNInvoice field0)? bolt11,
+    TResult? Function(String field0)? nodeId,
+    TResult? Function(String field0)? url,
+    TResult? Function(String field0)? lnUrlPay,
+    TResult? Function(String field0)? lnUrlWithdraw,
   }) {
     return lnUrlWithdraw?.call(field0);
   }
@@ -1012,12 +1007,12 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
-    TResult Function(InputType_Bolt11 value)? bolt11,
-    TResult Function(InputType_NodeId value)? nodeId,
-    TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
-    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
   }) {
     return lnUrlWithdraw?.call(this);
   }

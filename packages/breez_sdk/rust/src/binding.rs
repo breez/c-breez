@@ -211,10 +211,14 @@ pub fn list_swaps() -> Result<Vec<SwapInfo>> {
 }
 
 // construct and broadcast a refund transaction for a faile/expired swap
-pub fn refund_swap(swap_address: String, to_address: String) -> Result<String> {
+pub fn refund_swap(
+    swap_address: String,
+    to_address: String,
+    sat_per_weight: u32,
+) -> Result<String> {
     block_on(async {
         get_node_service()?
-            .refund_swap(swap_address, to_address)
+            .refund_swap(swap_address, to_address, sat_per_weight)
             .await
     })
 }

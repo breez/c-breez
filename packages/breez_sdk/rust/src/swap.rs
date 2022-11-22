@@ -294,6 +294,7 @@ impl BTCReceiveSwap {
         &self,
         swap_address: String,
         to_address: String,
+        sat_per_weight: u32,
     ) -> Result<String> {
         let swap_info = self
             .persister
@@ -318,6 +319,7 @@ impl BTCReceiveSwap {
             to_address,
             swap_info.lock_height as u32,
             script,
+            sat_per_weight,
         )?;
         self.chain_service.broadcast_transaction(refund_tx).await
     }
@@ -401,6 +403,7 @@ fn create_refund_tx(
     to_address: String,
     lock_delay: u32,
     input_script: Script,
+    sat_per_weight: u32,
 ) -> Result<Vec<u8>> {
     if utxos.len() == 0 {
         return Err(anyhow!("must have at least one input"));
@@ -441,9 +444,15 @@ fn create_refund_tx(
     let mut tx = Transaction {
         version: 2,
         lock_time: bitcoin::PackedLockTime(lock_time),
-        input: txins,
+        input: txins.clone(),
         output: tx_out,
     };
+
+    let refund_witness_input_size: u32 = 1 + 1 + 73 + 1 + 0 + 1 + 100;
+    let tx_size = tx.strippedsize() as u32 + refund_witness_input_size * txins.len() as u32;
+    print!("tx size = {}", tx_size);
+    let fees: u64 = (tx_size * sat_per_weight) as u64;
+    tx.output[0].value = confirmed_amount - fees;
 
     let scpt = Secp256k1::signing_only();
 
@@ -475,6 +484,8 @@ fn create_refund_tx(
         signed_inputs.push(signed_input);
     }
     tx.input = signed_inputs;
+
+    //tx.output[0].value = confirmed_amount;
     Ok(tx.serialize())
 }
 
@@ -603,6 +614,7 @@ mod tests {
             to_address,
             lock_time as u32,
             script,
+            0,
         )
         .unwrap();
 

@@ -193,13 +193,22 @@ fn main() -> Result<()> {
                     Some("refund_swap") => show_results({
                         let swap_address = command
                             .next()
-                            .ok_or("Expected to_address arg")
+                            .ok_or("Expected swap_address arg")
                             .map_err(|err| anyhow!(err))?;
                         let to_address = command
                             .next()
                             .ok_or("Expected to_address arg")
                             .map_err(|err| anyhow!(err))?;
-                        binding::refund_swap(swap_address.to_string(), to_address.to_string())
+                        let sat_per_weight_fee: u32 = command
+                            .next()
+                            .ok_or("Expected to_address arg")
+                            .map_err(|err| anyhow!(err))?
+                            .parse()?;
+                        binding::refund_swap(
+                            swap_address.to_string(),
+                            to_address.to_string(),
+                            sat_per_weight_fee,
+                        )
                     }),
 
                     Some(_) => {

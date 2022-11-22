@@ -261,9 +261,14 @@ impl NodeService {
     }
 
     // construct and broadcast a refund transaction for a faile/expired swap
-    pub async fn refund_swap(&self, swap_address: String, to_address: String) -> Result<String> {
+    pub async fn refund_swap(
+        &self,
+        swap_address: String,
+        to_address: String,
+        sat_per_weight: u32,
+    ) -> Result<String> {
         self.btc_receive_swapper
-            .refund_swap(swap_address, to_address)
+            .refund_swap(swap_address, to_address, sat_per_weight)
             .await
     }
 

@@ -36,6 +36,8 @@ use crate::models::LightningTransaction;
 use crate::models::Network;
 use crate::models::NodeState;
 use crate::models::PaymentTypeFilter;
+use crate::models::SwapInfo;
+use crate::models::SwapStatus;
 
 // Section: wire functions
 
@@ -256,6 +258,46 @@ fn wire_withdraw_impl(
             let api_to_address = to_address.wire2api();
             let api_feerate_preset = feerate_preset.wire2api();
             move |task_callback| withdraw(api_to_address, api_feerate_preset)
+        },
+    )
+}
+fn wire_create_swap_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "create_swap",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| create_swap(),
+    )
+}
+fn wire_list_swaps_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "list_swaps",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| list_swaps(),
+    )
+}
+fn wire_refund_swap_impl(
+    port_: MessagePort,
+    swap_address: impl Wire2Api<String> + UnwindSafe,
+    to_address: impl Wire2Api<String> + UnwindSafe,
+    sat_per_weight: impl Wire2Api<u32> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "refund_swap",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_swap_address = swap_address.wire2api();
+            let api_to_address = to_address.wire2api();
+            let api_sat_per_weight = sat_per_weight.wire2api();
+            move |task_callback| refund_swap(api_swap_address, api_to_address, api_sat_per_weight)
         },
     )
 }
@@ -586,6 +628,38 @@ impl support::IntoDart for RouteHintHop {
 }
 impl support::IntoDartExceptPrimitive for RouteHintHop {}
 
+impl support::IntoDart for SwapInfo {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.bitcoin_address.into_dart(),
+            self.created_at.into_dart(),
+            self.lock_height.into_dart(),
+            self.payment_hash.into_dart(),
+            self.preimage.into_dart(),
+            self.private_key.into_dart(),
+            self.public_key.into_dart(),
+            self.swapper_public_key.into_dart(),
+            self.script.into_dart(),
+            self.bolt11.into_dart(),
+            self.paid_sats.into_dart(),
+            self.confirmed_sats.into_dart(),
+            self.status.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SwapInfo {}
+
+impl support::IntoDart for SwapStatus {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Initial => 0,
+            Self::Expired => 1,
+            Self::Refunded => 2,
+        }
+        .into_dart()
+    }
+}
 impl support::IntoDart for Symbol {
     fn into_dart(self) -> support::DartAbi {
         vec![

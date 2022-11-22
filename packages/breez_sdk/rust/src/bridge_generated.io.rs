@@ -109,6 +109,26 @@ pub extern "C" fn wire_withdraw(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_create_swap(port_: i64) {
+    wire_create_swap_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_list_swaps(port_: i64) {
+    wire_list_swaps_impl(port_)
+}
+
+#[no_mangle]
+pub extern "C" fn wire_refund_swap(
+    port_: i64,
+    swap_address: *mut wire_uint_8_list,
+    to_address: *mut wire_uint_8_list,
+    sat_per_weight: u32,
+) {
+    wire_refund_swap_impl(port_, swap_address, to_address, sat_per_weight)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list) {
     wire_parse_invoice_impl(port_, invoice)
 }

@@ -147,6 +147,24 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta;
 
+  /// swaps
+  /// Onchain receive swap API
+  Future<SwapInfo> createSwap({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kCreateSwapConstMeta;
+
+  Future<List<SwapInfo>> listSwaps({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kListSwapsConstMeta;
+
+  Future<String> refundSwap(
+      {required String swapAddress,
+      required String toAddress,
+      required int satPerWeight,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kRefundSwapConstMeta;
+
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kParseInvoiceConstMeta;
@@ -464,6 +482,44 @@ class RouteHintHop {
   });
 }
 
+class SwapInfo {
+  final String bitcoinAddress;
+  final int createdAt;
+  final int lockHeight;
+  final Uint8List paymentHash;
+  final Uint8List preimage;
+  final Uint8List privateKey;
+  final Uint8List publicKey;
+  final Uint8List swapperPublicKey;
+  final Uint8List script;
+  final String? bolt11;
+  final int paidSats;
+  final int confirmedSats;
+  final SwapStatus status;
+
+  SwapInfo({
+    required this.bitcoinAddress,
+    required this.createdAt,
+    required this.lockHeight,
+    required this.paymentHash,
+    required this.preimage,
+    required this.privateKey,
+    required this.publicKey,
+    required this.swapperPublicKey,
+    required this.script,
+    this.bolt11,
+    required this.paidSats,
+    required this.confirmedSats,
+    required this.status,
+  });
+}
+
+enum SwapStatus {
+  Initial,
+  Expired,
+  Refunded,
+}
+
 class Symbol {
   final String? grapheme;
   final String? template;
@@ -762,6 +818,59 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["toAddress", "feeratePreset"],
       );
 
+  Future<SwapInfo> createSwap({dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_create_swap(port_),
+        parseSuccessData: _wire2api_swap_info,
+        constMeta: kCreateSwapConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kCreateSwapConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "create_swap",
+        argNames: [],
+      );
+
+  Future<List<SwapInfo>> listSwaps({dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_list_swaps(port_),
+        parseSuccessData: _wire2api_list_swap_info,
+        constMeta: kListSwapsConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kListSwapsConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "list_swaps",
+        argNames: [],
+      );
+
+  Future<String> refundSwap(
+          {required String swapAddress,
+          required String toAddress,
+          required int satPerWeight,
+          dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_refund_swap(
+            port_,
+            _platform.api2wire_String(swapAddress),
+            _platform.api2wire_String(toAddress),
+            api2wire_u32(satPerWeight)),
+        parseSuccessData: _wire2api_String,
+        constMeta: kRefundSwapConstMeta,
+        argValues: [swapAddress, toAddress, satPerWeight],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kRefundSwapConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "refund_swap",
+        argNames: ["swapAddress", "toAddress", "satPerWeight"],
+      );
+
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner
@@ -995,6 +1104,10 @@ class LightningToolkitImpl implements LightningToolkit {
     return (raw as List<dynamic>).map(_wire2api_route_hint_hop).toList();
   }
 
+  List<SwapInfo> _wire2api_list_swap_info(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_swap_info).toList();
+  }
+
   LNInvoice _wire2api_ln_invoice(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 9)
@@ -1142,6 +1255,31 @@ class LightningToolkitImpl implements LightningToolkit {
       htlcMinimumMsat: _wire2api_opt_box_autoadd_u64(arr[5]),
       htlcMaximumMsat: _wire2api_opt_box_autoadd_u64(arr[6]),
     );
+  }
+
+  SwapInfo _wire2api_swap_info(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 13)
+      throw Exception('unexpected arr length: expect 13 but see ${arr.length}');
+    return SwapInfo(
+      bitcoinAddress: _wire2api_String(arr[0]),
+      createdAt: _wire2api_i64(arr[1]),
+      lockHeight: _wire2api_i64(arr[2]),
+      paymentHash: _wire2api_uint_8_list(arr[3]),
+      preimage: _wire2api_uint_8_list(arr[4]),
+      privateKey: _wire2api_uint_8_list(arr[5]),
+      publicKey: _wire2api_uint_8_list(arr[6]),
+      swapperPublicKey: _wire2api_uint_8_list(arr[7]),
+      script: _wire2api_uint_8_list(arr[8]),
+      bolt11: _wire2api_opt_String(arr[9]),
+      paidSats: _wire2api_u32(arr[10]),
+      confirmedSats: _wire2api_u32(arr[11]),
+      status: _wire2api_swap_status(arr[12]),
+    );
+  }
+
+  SwapStatus _wire2api_swap_status(dynamic raw) {
+    return SwapStatus.values[raw];
   }
 
   Symbol _wire2api_symbol(dynamic raw) {
@@ -1603,6 +1741,56 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Int32)>>('wire_withdraw');
   late final _wire_withdraw = _wire_withdrawPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
+
+  void wire_create_swap(
+    int port_,
+  ) {
+    return _wire_create_swap(
+      port_,
+    );
+  }
+
+  late final _wire_create_swapPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_create_swap');
+  late final _wire_create_swap =
+      _wire_create_swapPtr.asFunction<void Function(int)>();
+
+  void wire_list_swaps(
+    int port_,
+  ) {
+    return _wire_list_swaps(
+      port_,
+    );
+  }
+
+  late final _wire_list_swapsPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_list_swaps');
+  late final _wire_list_swaps =
+      _wire_list_swapsPtr.asFunction<void Function(int)>();
+
+  void wire_refund_swap(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> swap_address,
+    ffi.Pointer<wire_uint_8_list> to_address,
+    int sat_per_weight,
+  ) {
+    return _wire_refund_swap(
+      port_,
+      swap_address,
+      to_address,
+      sat_per_weight,
+    );
+  }
+
+  late final _wire_refund_swapPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
+              ffi.Pointer<wire_uint_8_list>, ffi.Uint32)>>('wire_refund_swap');
+  late final _wire_refund_swap = _wire_refund_swapPtr.asFunction<
+      void Function(int, ffi.Pointer<wire_uint_8_list>,
+          ffi.Pointer<wire_uint_8_list>, int)>();
 
   void wire_parse_invoice(
     int port_,

@@ -78,6 +78,15 @@ void wire_close_lsp_channels(int64_t port_);
 
 void wire_withdraw(int64_t port_, struct wire_uint_8_list *to_address, int32_t feerate_preset);
 
+void wire_create_swap(int64_t port_);
+
+void wire_list_swaps(int64_t port_);
+
+void wire_refund_swap(int64_t port_,
+                      struct wire_uint_8_list *swap_address,
+                      struct wire_uint_8_list *to_address,
+                      uint32_t sat_per_weight);
+
 void wire_parse_invoice(int64_t port_, struct wire_uint_8_list *invoice);
 
 void wire_parse(int64_t port_, struct wire_uint_8_list *s);
@@ -111,6 +120,9 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_list_fiat_currencies);
     dummy_var ^= ((int64_t) (void*) wire_close_lsp_channels);
     dummy_var ^= ((int64_t) (void*) wire_withdraw);
+    dummy_var ^= ((int64_t) (void*) wire_create_swap);
+    dummy_var ^= ((int64_t) (void*) wire_list_swaps);
+    dummy_var ^= ((int64_t) (void*) wire_refund_swap);
     dummy_var ^= ((int64_t) (void*) wire_parse_invoice);
     dummy_var ^= ((int64_t) (void*) wire_parse);
     dummy_var ^= ((int64_t) (void*) wire_mnemonic_to_seed);

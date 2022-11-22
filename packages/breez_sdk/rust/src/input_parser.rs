@@ -3,13 +3,13 @@ use std::str::FromStr;
 use anyhow::{anyhow, Result};
 use bip21::Uri;
 
-use crate::input_parser::InputType::{BitcoinAddress, Bolt11};
+use crate::input_parser::InputType::*;
 use crate::invoice::{parse_invoice, LNInvoice};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 pub fn parse(raw_input: &str) -> Result<InputType> {
     // If the `lightning:` prefix is there, strip it for the bolt11 parsing function
-    let prepared_input = raw_input.trim_start_matches("lightning:");
+    let mut prepared_input = raw_input.trim_start_matches("lightning:");
 
     // Check if valid BTC onchain address
     if let Ok(addr) = bitcoin::Address::from_str(prepared_input) {
@@ -21,8 +21,9 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
             message: None,
         }));
     }
+
     // Check if valid BTC onchain address (BIP21)
-    else if let Ok(uri) = prepared_input.parse::<Uri<'_>>() {
+    if let Ok(uri) = prepared_input.parse::<Uri<'_>>() {
         let bitcoin_addr_data = BitcoinAddressData {
             address: uri.address.to_string(),
             network: uri.address.network.into(),
@@ -46,8 +47,17 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
             None => Ok(BitcoinAddress(bitcoin_addr_data)),
             Some(invoice) => Ok(Bolt11(invoice)),
         };
-    } else if let Ok(invoice) = parse_invoice(prepared_input) {
+    } else {
+        // If it's not a BIP21 URI (bitcoin:..), then strip the prefix to simplify URL parsing later on
+        prepared_input = prepared_input.trim_start_matches("bitcoin:");
+    }
+
+    if let Ok(invoice) = parse_invoice(prepared_input) {
         return Ok(Bolt11(invoice));
+    }
+
+    if let Ok(_url) = reqwest::Url::parse(prepared_input) {
+        return Ok(Url(prepared_input.into()));
     }
     // TODO Parse the other InputTypes
 
@@ -186,6 +196,28 @@ mod tests {
         // BOLT11 is not the first URI arg (preceded by '&')
         let addr_2 = format!("bitcoin:{}?amount=0.00002000&lightning={}", addr, bolt11);
         assert!(matches!(parse(&addr_2)?, InputType::Bolt11(_invoice)));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_url() -> Result<()> {
+        assert!(matches!(
+            parse("https://breez.technology")?,
+            InputType::Url(_url)
+        ));
+        assert!(matches!(
+            parse("https://breez.technology/")?,
+            InputType::Url(_url)
+        ));
+        assert!(matches!(
+            parse("https://breez.technology/test-path")?,
+            InputType::Url(_url)
+        ));
+        assert!(matches!(
+            parse("https://breez.technology/test-path?arg1=val1&arg2=val2")?,
+            InputType::Url(_url)
+        ));
 
         Ok(())
     }

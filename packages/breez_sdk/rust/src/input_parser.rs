@@ -1,34 +1,63 @@
+use std::str::FromStr;
+
 use anyhow::{anyhow, Result};
 use bip21::Uri;
-use bitcoin::Network;
 
-use crate::input_parser::InputType::BitcoinAddress;
-use crate::invoice::LNInvoice;
+use crate::input_parser::InputType::{BitcoinAddress, Bolt11};
+use crate::invoice::{parse_invoice, LNInvoice};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
-pub fn parse(s: &str) -> Result<InputType> {
-    for val in [s, &format!("bitcoin:{}", s)] {
-        if let Ok(uri) = val.parse::<Uri<'_>>() {
-            return Ok(BitcoinAddress(BitcoinAddressData {
-                address: uri.address.to_string(),
-                network: match uri.address.network {
-                    Network::Bitcoin => crate::models::Network::Bitcoin,
-                    Network::Testnet => crate::models::Network::Testnet,
-                    Network::Signet => crate::models::Network::Signet,
-                    Network::Regtest => crate::models::Network::Regtest,
-                },
-                amount_sat: uri.amount.map(|a| a.to_sat()),
-                label: uri.label.map(|label| label.try_into().unwrap()),
-                message: uri.message.map(|msg| msg.try_into().unwrap()),
-            }));
-        }
-        // TODO Parse the other InputTypes
+pub fn parse(raw_input: &str) -> Result<InputType> {
+    // If the `lightning:` prefix is there, strip it for the bolt11 parsing function
+    let prepared_input = raw_input.trim_start_matches("lightning:");
+
+    // Check if valid BTC onchain address
+    if let Ok(addr) = bitcoin::Address::from_str(prepared_input) {
+        return Ok(BitcoinAddress(BitcoinAddressData {
+            address: prepared_input.into(),
+            network: addr.network.into(),
+            amount_sat: None,
+            label: None,
+            message: None,
+        }));
     }
+    // Check if valid BTC onchain address (BIP21)
+    else if let Ok(uri) = prepared_input.parse::<Uri<'_>>() {
+        let bitcoin_addr_data = BitcoinAddressData {
+            address: uri.address.to_string(),
+            network: uri.address.network.into(),
+            amount_sat: uri.amount.map(|a| a.to_sat()),
+            label: uri.label.map(|label| label.try_into().unwrap()),
+            message: uri.message.map(|msg| msg.try_into().unwrap()),
+        };
+
+        // Special case of LN BOLT11 with onchain fallback
+        // Search for the `lightning=bolt11` param in the BIP21 URI and, if found, extract the bolt11
+        let mut invoice_param: Option<LNInvoice> = None;
+        if let Some(query) = prepared_input.split('?').collect::<Vec<_>>().get(1) {
+            invoice_param = querystring::querify(query)
+                .iter()
+                .find(|(key, _)| key == &"lightning")
+                .map(|(_, value)| parse_invoice(value))
+                .transpose()?;
+        }
+
+        return match invoice_param {
+            None => Ok(BitcoinAddress(bitcoin_addr_data)),
+            Some(invoice) => Ok(Bolt11(invoice)),
+        };
+    } else if let Ok(invoice) = parse_invoice(prepared_input) {
+        return Ok(Bolt11(invoice));
+    }
+    // TODO Parse the other InputTypes
+
     Err(anyhow!("Unrecognized input type"))
 }
 
 pub enum InputType {
     BitcoinAddress(BitcoinAddressData),
+    /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
+    /// and discards all other data.
     Bolt11(LNInvoice),
     NodeId(String),
     Url(String),
@@ -61,10 +90,19 @@ mod tests {
 
     #[test]
     fn test_bitcoin_address() -> Result<()> {
+        assert!(matches!(
+            parse("1andreas3batLhQa2FawWjeyjCqyBzypd")?,
+            InputType::BitcoinAddress(_)
+        ));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_bitcoin_address_bip21() -> Result<()> {
         // Addresses from https://github.com/Kixunil/bip21/blob/master/src/lib.rs
 
-        // Valid address but without prefix
-        assert!(parse("1andreas3batLhQa2FawWjeyjCqyBzypd").is_ok());
+        // Valid address with the `bitcoin:` prefix
         assert!(parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd").is_ok());
         assert!(parse("bitcoin:testinvalidaddress").is_err());
 
@@ -113,6 +151,41 @@ mod tests {
             }
             _ => return Err(anyhow!("Invalid type parsed")),
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_bolt11() -> Result<()> {
+        let bolt11 = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
+
+        // Invoice without prefix
+        assert!(matches!(parse(bolt11)?, InputType::Bolt11(_invoice)));
+
+        // Invoice with prefix
+        let invoice_with_prefix = format!("lightning:{}", bolt11);
+        assert!(matches!(
+            parse(&invoice_with_prefix)?,
+            InputType::Bolt11(_invoice)
+        ));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_bolt11_with_fallback_bitcoin_address() -> Result<()> {
+        let addr = "1andreas3batLhQa2FawWjeyjCqyBzypd";
+        let bolt11 = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
+
+        // Address and invoice
+        // BOLT11 is the first URI arg (preceded by '?')
+        let addr_1 = format!("bitcoin:{}?lightning={}", addr, bolt11);
+        assert!(matches!(parse(&addr_1)?, InputType::Bolt11(_invoice)));
+
+        // Address, amount and invoice
+        // BOLT11 is not the first URI arg (preceded by '&')
+        let addr_2 = format!("bitcoin:{}?amount=0.00002000&lightning={}", addr, bolt11);
+        assert!(matches!(parse(&addr_2)?, InputType::Bolt11(_invoice)));
 
         Ok(())
     }

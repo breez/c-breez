@@ -264,6 +264,9 @@ class InputType with _$InputType {
   const factory InputType.bitcoinAddress(
     BitcoinAddressData field0,
   ) = InputType_BitcoinAddress;
+
+  /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
+  /// and discards all other data.
   const factory InputType.bolt11(
     LNInvoice field0,
   ) = InputType_Bolt11;

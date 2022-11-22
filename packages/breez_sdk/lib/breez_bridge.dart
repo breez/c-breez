@@ -118,15 +118,21 @@ class BreezBridge {
     PaymentTypeFilter filter = PaymentTypeFilter.All,
     int? fromTimestamp,
     int? toTimestamp,
-  }) async =>
-      await _lnToolkit.listTransactions(
-        filter: filter,
-        fromTimestamp: fromTimestamp,
-        toTimestamp: toTimestamp,
-      );
+  }) async {
+    var transactionList = await _lnToolkit.listTransactions(
+      filter: filter,
+      fromTimestamp: fromTimestamp,
+      toTimestamp: toTimestamp,
+    );
+    transactionsController.add(transactionList);
+    return transactionList;
+  }
+
+  final StreamController<List<LightningTransaction>> transactionsController =
+      BehaviorSubject<List<LightningTransaction>>();
 
   Stream<List<LightningTransaction>> get transactionsStream =>
-      listTransactions().asStream();
+      transactionsController.stream;
 
   /// List available lsps that can be selected by the user
   Future<List<LspInformation>> listLsps() async => await _lnToolkit.listLsps();

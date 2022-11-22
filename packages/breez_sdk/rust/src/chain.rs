@@ -104,6 +104,18 @@ impl MempoolSpace {
                 .parse()?,
         )
     }
+
+    pub async fn broadcast_transaction(&self, tx: Vec<u8>) -> Result<String> {
+        let client = reqwest::Client::new();
+        client
+            .post(format!("{}/api/tx", self.base_url))
+            .body(hex::encode(tx))
+            .send()
+            .await?
+            .text()
+            .await
+            .map_err(anyhow::Error::msg)
+    }
 }
 #[cfg(test)]
 mod tests {

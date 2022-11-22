@@ -94,7 +94,7 @@ impl Default for Config {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct GreenlightCredentials {
     pub device_key: Vec<u8>,
     pub device_cert: Vec<u8>,

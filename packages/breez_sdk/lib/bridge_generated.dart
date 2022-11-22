@@ -277,7 +277,7 @@ class InputType with _$InputType {
     String field0,
   ) = InputType_Url;
   const factory InputType.lnUrlPay(
-    String field0,
+    LnUrlPayData field0,
   ) = InputType_LnUrlPay;
   const factory InputType.lnUrlWithdraw(
     String field0,
@@ -335,6 +335,24 @@ class LNInvoice {
     required this.expiry,
     required this.routingHints,
     required this.paymentSecret,
+  });
+}
+
+class LnUrlPayData {
+  final String callback;
+  final int minSendable;
+  final int maxSendable;
+  final String metadata;
+  final int commentAllowed;
+  final String tag;
+
+  LnUrlPayData({
+    required this.callback,
+    required this.minSendable,
+    required this.maxSendable,
+    required this.metadata,
+    required this.commentAllowed,
+    required this.tag,
   });
 }
 
@@ -961,6 +979,10 @@ class LightningToolkitImpl implements LightningToolkit {
     return _wire2api_ln_invoice(raw);
   }
 
+  LnUrlPayData _wire2api_box_autoadd_ln_url_pay_data(dynamic raw) {
+    return _wire2api_ln_url_pay_data(raw);
+  }
+
   NodeState _wire2api_box_autoadd_node_state(dynamic raw) {
     return _wire2api_node_state(raw);
   }
@@ -1044,7 +1066,7 @@ class LightningToolkitImpl implements LightningToolkit {
         );
       case 4:
         return InputType_LnUrlPay(
-          _wire2api_String(raw[1]),
+          _wire2api_box_autoadd_ln_url_pay_data(raw[1]),
         );
       case 5:
         return InputType_LnUrlWithdraw(
@@ -1125,6 +1147,20 @@ class LightningToolkitImpl implements LightningToolkit {
       expiry: _wire2api_u64(arr[6]),
       routingHints: _wire2api_list_route_hint(arr[7]),
       paymentSecret: _wire2api_uint_8_list(arr[8]),
+    );
+  }
+
+  LnUrlPayData _wire2api_ln_url_pay_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 6)
+      throw Exception('unexpected arr length: expect 6 but see ${arr.length}');
+    return LnUrlPayData(
+      callback: _wire2api_String(arr[0]),
+      minSendable: _wire2api_u16(arr[1]),
+      maxSendable: _wire2api_u16(arr[2]),
+      metadata: _wire2api_String(arr[3]),
+      commentAllowed: _wire2api_u16(arr[4]),
+      tag: _wire2api_String(arr[5]),
     );
   }
 
@@ -1297,6 +1333,10 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
+  int _wire2api_u16(dynamic raw) {
+    return raw as int;
+  }
+
   int _wire2api_u32(dynamic raw) {
     return raw as int;
   }
@@ -1463,7 +1503,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       : _lookup = lookup;
 
   void store_dart_post_cobject(
-    DartPostCObjectFnType ptr,
+    int ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -1471,10 +1511,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
-      .asFunction<void Function(DartPostCObjectFnType)>();
+  late final _store_dart_post_cobject =
+      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
 
   void wire_register_node(
     int port_,
@@ -1940,6 +1980,4 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-typedef DartPostCObjectFnType = ffi.Pointer<
-    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
-typedef DartPort = ffi.Int64;
+typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;

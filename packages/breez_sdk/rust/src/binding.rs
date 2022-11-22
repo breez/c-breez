@@ -245,8 +245,8 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
     return invoice::parse_invoice(&invoice);
 }
 
-pub fn parse(s: String) -> Result<InputType> {
-    crate::input_parser::parse(&s)
+pub async fn parse(s: String) -> Result<InputType> {
+    crate::input_parser::parse(&s).await
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

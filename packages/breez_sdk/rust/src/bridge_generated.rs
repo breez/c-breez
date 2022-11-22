@@ -25,6 +25,7 @@ use crate::fiat::Rate;
 use crate::fiat::Symbol;
 use crate::input_parser::BitcoinAddressData;
 use crate::input_parser::InputType;
+use crate::input_parser::LnUrlPayData;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
@@ -524,6 +525,21 @@ impl support::IntoDart for LNInvoice {
     }
 }
 impl support::IntoDartExceptPrimitive for LNInvoice {}
+
+impl support::IntoDart for LnUrlPayData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.callback.into_dart(),
+            self.minSendable.into_dart(),
+            self.maxSendable.into_dart(),
+            self.metadata.into_dart(),
+            self.commentAllowed.into_dart(),
+            self.tag.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlPayData {}
 
 impl support::IntoDart for LocaleOverrides {
     fn into_dart(self) -> support::DartAbi {

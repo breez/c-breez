@@ -1,13 +1,18 @@
 use std::str::FromStr;
 
+use serde::Deserialize;
+
+use bitcoin::bech32::FromBase32;
+
 use anyhow::{anyhow, Result};
 use bip21::Uri;
+use bitcoin::bech32;
 
 use crate::input_parser::InputType::*;
 use crate::invoice::{parse_invoice, LNInvoice};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
-pub fn parse(raw_input: &str) -> Result<InputType> {
+pub async fn parse(raw_input: &str) -> Result<InputType> {
     // If the `lightning:` prefix is there, strip it for the bolt11 parsing function
     let mut prepared_input = raw_input.trim_start_matches("lightning:");
 
@@ -59,9 +64,28 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
     if let Ok(_url) = reqwest::Url::parse(prepared_input) {
         return Ok(Url(prepared_input.into()));
     }
+
+    if let Ok(lnurl_endpoint) = lnurl_decode(raw_input) {
+        // TODO Make request and parse response into LnUrlPayData
+
+        // Option 1: to have access to the raw response json, before converting to lnurl struct
+        // if let Ok(lnurl_pay_data) = serde_json::from_str::<LnUrlPayData>(resp) {
+        //     return Ok(LnUrlPay(lnurl_pay_data));
+        // }
+
+        // Option 2: to directly deserialize into the target lnurl struct
+        // let data: LnUrlPayData = reqwest::get(lnurl_endpoint).await?.json().await?;
+    }
+
     // TODO Parse the other InputTypes
 
     Err(anyhow!("Unrecognized input type"))
+}
+
+/// Decodes the bech32-encoded LNURL and returns the payload
+fn lnurl_decode(encoded: &str) -> Result<String> {
+    let (_hrp, payload, _variant) = bech32::decode(encoded)?;
+    String::from_utf8(Vec::from_base32(&payload)?).map_err(|e| anyhow!(e))
 }
 
 pub enum InputType {
@@ -71,8 +95,18 @@ pub enum InputType {
     Bolt11(LNInvoice),
     NodeId(String),
     Url(String),
-    LnUrlPay(String),
+    LnUrlPay(LnUrlPayData),
     LnUrlWithdraw(String),
+}
+
+#[derive(Deserialize, Debug)]
+pub struct LnUrlPayData {
+    pub callback: String,
+    pub minSendable: u16,
+    pub maxSendable: u16,
+    pub metadata: String,
+    pub commentAllowed: u16,
+    pub tag: String,
 }
 
 pub struct BitcoinAddressData {
@@ -88,39 +122,41 @@ mod tests {
     use anyhow::anyhow;
     use anyhow::Result;
 
-    use crate::input_parser::{parse, InputType};
+    use crate::input_parser::{lnurl_decode, parse, InputType};
     use crate::models::Network;
 
-    #[test]
-    fn test_generic_invalid_input() -> Result<(), Box<dyn std::error::Error>> {
-        assert!(parse("invalid_input").is_err());
+    #[tokio::test]
+    async fn test_generic_invalid_input() -> Result<(), Box<dyn std::error::Error>> {
+        assert!(parse("invalid_input").await.is_err());
 
         Ok(())
     }
 
-    #[test]
-    fn test_bitcoin_address() -> Result<()> {
+    #[tokio::test]
+    async fn test_bitcoin_address() -> Result<()> {
         assert!(matches!(
-            parse("1andreas3batLhQa2FawWjeyjCqyBzypd")?,
+            parse("1andreas3batLhQa2FawWjeyjCqyBzypd").await?,
             InputType::BitcoinAddress(_)
         ));
 
         Ok(())
     }
 
-    #[test]
-    fn test_bitcoin_address_bip21() -> Result<()> {
+    #[tokio::test]
+    async fn test_bitcoin_address_bip21() -> Result<()> {
         // Addresses from https://github.com/Kixunil/bip21/blob/master/src/lib.rs
 
         // Valid address with the `bitcoin:` prefix
-        assert!(parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd").is_ok());
-        assert!(parse("bitcoin:testinvalidaddress").is_err());
+        assert!(parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd")
+            .await
+            .is_ok());
+        assert!(parse("bitcoin:testinvalidaddress").await.is_err());
 
         let addr = "1andreas3batLhQa2FawWjeyjCqyBzypd";
 
         // Address with amount
         let addr_1 = format!("bitcoin:{}?amount=0.00002000", addr);
-        match parse(&addr_1)? {
+        match parse(&addr_1).await? {
             InputType::BitcoinAddress(addr_with_amount_parsed) => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
@@ -134,7 +170,7 @@ mod tests {
         // Address with amount and label
         let label = "test-label";
         let addr_2 = format!("bitcoin:{}?amount=0.00002000&label={}", addr, label);
-        match parse(&addr_2)? {
+        match parse(&addr_2).await? {
             InputType::BitcoinAddress(addr_with_amount_parsed) => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
@@ -151,7 +187,7 @@ mod tests {
             "bitcoin:{}?amount=0.00002000&label={}&message={}",
             addr, label, message
         );
-        match parse(&addr_3)? {
+        match parse(&addr_3).await? {
             InputType::BitcoinAddress(addr_with_amount_parsed) => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
@@ -165,59 +201,76 @@ mod tests {
         Ok(())
     }
 
-    #[test]
-    fn test_bolt11() -> Result<()> {
+    #[tokio::test]
+    async fn test_bolt11() -> Result<()> {
         let bolt11 = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
 
         // Invoice without prefix
-        assert!(matches!(parse(bolt11)?, InputType::Bolt11(_invoice)));
+        assert!(matches!(parse(bolt11).await?, InputType::Bolt11(_invoice)));
 
         // Invoice with prefix
         let invoice_with_prefix = format!("lightning:{}", bolt11);
         assert!(matches!(
-            parse(&invoice_with_prefix)?,
+            parse(&invoice_with_prefix).await?,
             InputType::Bolt11(_invoice)
         ));
 
         Ok(())
     }
 
-    #[test]
-    fn test_bolt11_with_fallback_bitcoin_address() -> Result<()> {
+    #[tokio::test]
+    async fn test_bolt11_with_fallback_bitcoin_address() -> Result<()> {
         let addr = "1andreas3batLhQa2FawWjeyjCqyBzypd";
         let bolt11 = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
 
         // Address and invoice
         // BOLT11 is the first URI arg (preceded by '?')
         let addr_1 = format!("bitcoin:{}?lightning={}", addr, bolt11);
-        assert!(matches!(parse(&addr_1)?, InputType::Bolt11(_invoice)));
+        assert!(matches!(parse(&addr_1).await?, InputType::Bolt11(_invoice)));
 
         // Address, amount and invoice
         // BOLT11 is not the first URI arg (preceded by '&')
         let addr_2 = format!("bitcoin:{}?amount=0.00002000&lightning={}", addr, bolt11);
-        assert!(matches!(parse(&addr_2)?, InputType::Bolt11(_invoice)));
+        assert!(matches!(parse(&addr_2).await?, InputType::Bolt11(_invoice)));
 
         Ok(())
     }
 
-    #[test]
-    fn test_url() -> Result<()> {
+    #[tokio::test]
+    async fn test_url() -> Result<()> {
         assert!(matches!(
-            parse("https://breez.technology")?,
+            parse("https://breez.technology").await?,
             InputType::Url(_url)
         ));
         assert!(matches!(
-            parse("https://breez.technology/")?,
+            parse("https://breez.technology/").await?,
             InputType::Url(_url)
         ));
         assert!(matches!(
-            parse("https://breez.technology/test-path")?,
+            parse("https://breez.technology/test-path").await?,
             InputType::Url(_url)
         ));
         assert!(matches!(
-            parse("https://breez.technology/test-path?arg1=val1&arg2=val2")?,
+            parse("https://breez.technology/test-path?arg1=val1&arg2=val2").await?,
             InputType::Url(_url)
         ));
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_lnurl_pay_lud_01() -> Result<()> {
+        // https://github.com/lnurl/luds/blob/luds/01.md
+
+        let decoded_url = "https://service.com/api?q=3fc3645b439ce8e7f2553a69e5267081d96dcd340693afabe04be7b0ccd178df";
+        let lnurl_raw = "LNURL1DP68GURN8GHJ7UM9WFMXJCM99E3K7MF0V9CXJ0M385EKVCENXC6R2C35XVUKXEFCV5MKVV34X5EKZD3EV56NYD3HXQURZEPEXEJXXEPNXSCRVWFNV9NXZCN9XQ6XYEFHVGCXXCMYXYMNSERXFQ5FNS";
+
+        assert_eq!(lnurl_decode(lnurl_raw)?, decoded_url);
+
+        // assert!(matches!(
+        //     parse(lnurl_raw)?,
+        //     InputType::LnUrlPay(_lnurl_pay_data)
+        // ));
 
         Ok(())
     }

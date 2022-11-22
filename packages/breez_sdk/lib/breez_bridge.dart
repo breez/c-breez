@@ -24,7 +24,6 @@ class BreezBridge {
       network: network,
       seed: seed,
     );
-    _nodeStateController.add(await getNodeState());
     return creds;
   }
 
@@ -44,7 +43,6 @@ class BreezBridge {
       network: network,
       seed: seed,
     );
-    _nodeStateController.add(await getNodeState());
     return creds;
   }
 
@@ -66,7 +64,7 @@ class BreezBridge {
       seed: seed,
       creds: creds,
     );
-    _nodeStateController.add(await getNodeState());
+    nodeStateController.add(await getNodeState());
   }
 
 
@@ -77,7 +75,7 @@ class BreezBridge {
   /// * `bolt11` - The bolt11 invoice
   Future sendPayment({required String bolt11}) async {
     await _lnToolkit.sendPayment(bolt11: bolt11);
-    _nodeStateController.add(await getNodeState());
+    nodeStateController.add(await getNodeState());
   }
 
   /// pay directly to a node id using keysend
@@ -90,7 +88,7 @@ class BreezBridge {
       {required String nodeId, required int amountSats}) async {
     await _lnToolkit.sendSpontaneousPayment(
         nodeId: nodeId, amountSats: amountSats);
-    _nodeStateController.add(await getNodeState());
+    nodeStateController.add(await getNodeState());
   }
 
   /// Creates an bolt11 payment request.
@@ -110,10 +108,10 @@ class BreezBridge {
   /// get the node state from the persistent storage
   Future<NodeState?> getNodeState() async => await _lnToolkit.getNodeState();
 
-  final StreamController<NodeState?> _nodeStateController =
+  final StreamController<NodeState?> nodeStateController =
       BehaviorSubject<NodeState?>();
 
-  Stream<NodeState?> get nodeStateStream => _nodeStateController.stream;
+  Stream<NodeState?> get nodeStateStream => nodeStateController.stream;
 
   /// list transactions (incoming/outgoing payments) from the persistent storage
   Future<List<LightningTransaction>> listTransactions({
@@ -136,7 +134,7 @@ class BreezBridge {
   /// Select the lsp to be used and provide inbound liquidity
   Future setLspId(String lspId) async {
     await _lnToolkit.setLspId(lspId: lspId);
-    _nodeStateController.add(await getNodeState());
+    nodeStateController.add(await getNodeState());
   }
 
   /// Fetch live rates of fiat currencies
@@ -160,7 +158,7 @@ class BreezBridge {
       {required String toAddress, required FeeratePreset feeratePreset}) async {
     await _lnToolkit.withdraw(
         toAddress: toAddress, feeratePreset: feeratePreset);
-    _nodeStateController.add(await getNodeState());
+    nodeStateController.add(await getNodeState());
   }
 
   Future<LNInvoice> parseInvoice(String invoice) async =>

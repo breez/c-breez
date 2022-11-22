@@ -1,3 +1,5 @@
+use crate::models::NodeState;
+
 use super::db::SqliteStorage;
 use anyhow::Result;
 
@@ -23,6 +25,20 @@ impl SqliteStorage {
         self.get_connection()?
             .execute("DELETE FROM cached_items WHERE key = ?1", [key])?;
         Ok(())
+    }
+
+    pub fn set_node_state(&self, state: &NodeState) -> Result<()> {
+        let serialized_state = serde_json::to_string(state)?;
+        self.update_cached_item("node_state".to_string(), serialized_state.to_string())?;
+        Ok(())
+    }
+
+    pub fn get_node_state(&self) -> Result<Option<NodeState>> {
+        let state_str = self.get_cached_item("node_state".to_string())?;
+        Ok(match state_str {
+            Some(str) => serde_json::from_str(str.as_str())?,
+            None => None,
+        })
     }
 }
 

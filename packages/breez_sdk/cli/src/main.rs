@@ -187,6 +187,30 @@ fn main() -> Result<()> {
                     Some("fetch_rates") => show_results(binding::fetch_rates()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),
                     Some("stop_node") => show_results(binding::stop_node()),
+
+                    Some("create_swap") => show_results(binding::create_swap()),
+                    Some("list_swaps") => show_results(binding::list_swaps()),
+                    Some("refund_swap") => show_results({
+                        let swap_address = command
+                            .next()
+                            .ok_or("Expected swap_address arg")
+                            .map_err(|err| anyhow!(err))?;
+                        let to_address = command
+                            .next()
+                            .ok_or("Expected to_address arg")
+                            .map_err(|err| anyhow!(err))?;
+                        let sat_per_weight_fee: u32 = command
+                            .next()
+                            .ok_or("Expected to_address arg")
+                            .map_err(|err| anyhow!(err))?
+                            .parse()?;
+                        binding::refund_swap(
+                            swap_address.to_string(),
+                            to_address.to_string(),
+                            sat_per_weight_fee,
+                        )
+                    }),
+
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());
                     }

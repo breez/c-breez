@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip21::Uri;
+use bitcoin_hashes::sha256;
 
 use crate::input_parser::InputType::*;
 use crate::invoice::{parse_invoice, LNInvoice};
@@ -51,6 +52,10 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
 
     if let Ok(invoice) = parse_invoice(prepared_input) {
         return Ok(Bolt11(invoice));
+    }
+
+    if let Ok(_node_id) = sha256::Hash::from_str(prepared_input) {
+        return Ok(NodeId(prepared_input.into()));
     }
 
     if let Ok(url) = reqwest::Url::parse(prepared_input) {
@@ -217,6 +222,32 @@ mod tests {
             parse("https://breez.technology/test-path?arg1=val1&arg2=val2")?,
             InputType::Url(_url)
         ));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_node_id() -> Result<()> {
+        // 64 char hex lowercase (32 bytes)
+        assert!(matches!(
+            parse("012345678901234567890123456789012345678901234567890123456789abcd")?,
+            InputType::NodeId(_id)
+        ));
+
+        // 64 char hex uppercase (32 bytes)
+        assert!(matches!(
+            parse("012345678901234567890123456789012345678901234567890123456789ABCD")?,
+            InputType::NodeId(_id)
+        ));
+
+        // 64 char non-hex
+        assert!(parse("012345678901234567890123456789012345678901234567890123456789mnop").is_err());
+
+        // 10 char hex
+        assert!(parse("0123456789").is_err());
+
+        // 10 char non-hex
+        assert!(parse("abcdefghij").is_err());
 
         Ok(())
     }

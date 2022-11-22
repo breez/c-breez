@@ -1,10 +1,8 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
-import 'package:c_breez/routes/home/widgets/app_bar/select_provider_error_dialog.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
-import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
@@ -17,16 +15,11 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LSPBloc, LSPState>(
-      builder: (ctx, lspState) {
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, accState) {
-            return _build(
-              context,
-              lspState,
-              accState,
-            );
-          },
+    return BlocBuilder<AccountBloc, AccountState>(
+      builder: (context, accState) {
+        return _build(
+          context,
+          accState,
         );
       },
     );
@@ -34,7 +27,6 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
 
   Widget _build(
     BuildContext context,
-    LSPState lspStatus,
     AccountState accountModel,
   ) {
     final navigatorState = Navigator.of(context);
@@ -56,18 +48,10 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
       );
     }
 
-    if (lspStatus.selectionRequired == true ||
-        lspStatus.connectionStatus == LSPConnectionStatus.notActive) {
+    LspInformation? lsp = context.read<LSPBloc>().state;
+    if (lsp == null) {
       warnings.add(WarningAction(() {
-        if (lspStatus.lastConnectionError != null) {
-          showProviderErrorDialog(context, () {
-            navigatorState.push(FadeInRoute(
-              builder: (_) => SelectLSPPage(lstBloc: context.read()),
-            ));
-          });
-        } else {
-          navigatorState.pushNamed("/select_lsp");
-        }
+        navigatorState.pushNamed("/select_lsp");
       }));
     }
 

@@ -66,9 +66,9 @@ class FeeMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final lspState = context.read<LSPBloc>().state;
+    final lspInformation = context.read<LSPBloc>().state;
 
-    return lspState.hasLSP
+    return lspInformation == null
         ? const SizedBox()
         : WarningBox(
             boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
@@ -89,7 +89,7 @@ class FeeMessage extends StatelessWidget {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final accountState = context.read<AccountBloc>().state;
-    final lspInfo = context.read<LSPBloc>().state.currentLSP!;
+    final lspInfo = context.read<LSPBloc>().state!;
 
     final connected = accountState.status == AccountStatus.CONNECTED;
     final minFee = lspInfo.channelMinimumFeeMsat ~/ 1000;

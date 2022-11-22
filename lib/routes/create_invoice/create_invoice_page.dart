@@ -137,7 +137,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     var currentRoute = ModalRoute.of(navigator.context)!;
     Future<LNInvoice> invoice = accountBloc.addInvoice(
       description: _descriptionController.text,
-      amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
+      amountSats:
+          currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
     );
     navigator.pop();
     Widget dialog = FutureBuilder(
@@ -181,10 +182,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   String? validatePayment(int amount) {
     int? channelMinimumFee;
-    if (lspStatus.currentLSP != null) {
-      channelMinimumFee =
-        lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000
-      ;
+    if (lspStatus != null) {
+      channelMinimumFee = lspStatus!.channelMinimumFeeMsat ~/ 1000;
     }
 
     return PaymentValidator(

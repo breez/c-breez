@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/receive_options_bottom_sheet.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/send_options_bottom_sheet.dart';
@@ -23,37 +23,33 @@ class BottomActionsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final actionsGroup = AutoSizeGroup();
 
-    return BlocBuilder<LSPBloc, LSPState>(
-      builder: (context, lsp) {
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, account) {
-            final connected =
-                lsp.connectionStatus == LSPConnectionStatus.active;
+    return BlocBuilder<AccountBloc, AccountState>(
+      builder: (context, account) {
+        LspInformation? lsp = context.read<LSPBloc>().state;
+        final connected = lsp == null;
 
-            return BottomAppBar(
-              child: SizedBox(
-                height: 60,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SendOptions(
-                      connected: connected,
-                      firstPaymentItemKey: firstPaymentItemKey,
-                      actionsGroup: actionsGroup,
-                    ),
-                    Container(width: 64),
-                    ReceiveOptions(
-                      account: account,
-                      connected: connected,
-                      firstPaymentItemKey: firstPaymentItemKey,
-                      actionsGroup: actionsGroup,
-                    )
-                  ],
+        return BottomAppBar(
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SendOptions(
+                  connected: connected,
+                  firstPaymentItemKey: firstPaymentItemKey,
+                  actionsGroup: actionsGroup,
                 ),
-              ),
-            );
-          },
+                Container(width: 64),
+                ReceiveOptions(
+                  account: account,
+                  connected: connected,
+                  firstPaymentItemKey: firstPaymentItemKey,
+                  actionsGroup: actionsGroup,
+                )
+              ],
+            ),
+          ),
         );
       },
     );

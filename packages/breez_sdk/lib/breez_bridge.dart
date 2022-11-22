@@ -67,7 +67,6 @@ class BreezBridge {
     nodeStateController.add(await getNodeState());
   }
 
-
   /// pay a bolt11 invoice
   ///
   /// # Arguments
@@ -142,6 +141,9 @@ class BreezBridge {
     await _lnToolkit.setLspId(lspId: lspId);
     nodeStateController.add(await getNodeState());
   }
+
+  /// Convenience method to look up LSP info
+  Future<LspInformation> getLsp() async => await _lnToolkit.getLsp();
 
   /// Fetch live rates of fiat currencies
   Future<Map<String, Rate>> fetchRates() async {

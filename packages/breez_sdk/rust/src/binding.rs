@@ -175,7 +175,7 @@ pub fn set_lsp_id(lsp_id: String) -> Result<()> {
 }
 
 /// Convenience method to look up LSP info based on current LSP ID
-pub async fn get_lsp() -> Result<LspInformation> {
+pub fn get_lsp() -> Result<LspInformation> {
     block_on(async { get_node_service()?.get_lsp().await })
 }
 

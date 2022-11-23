@@ -1,11 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/loading_animated_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StatusText extends StatelessWidget {
   final String? message;
@@ -20,48 +17,18 @@ class StatusText extends StatelessWidget {
     if (message != null) {
       return LoadingAnimatedText(message!);
     } else {
-      return BlocBuilder<LSPBloc, LspInformation?>(builder: (context, lsp) {
-        final themeData = Theme.of(context);
-        final texts = context.texts();
+      final themeData = Theme.of(context);
+      final texts = context.texts();
 
-        if (lsp != null) {
-          return AutoSizeText(
-            texts.status_text_ready,
-            style: themeData.textTheme.bodyText2?.copyWith(
-              color: themeData.colorScheme.onSecondary,
-            ),
-            textAlign: TextAlign.center,
-            minFontSize: MinFontSize(context).minFontSize,
-            stepGranularity: 0.1,
-          );
-        }
-
-        return LoadingAnimatedText(
-          "",
-          textAlign: TextAlign.center,
-          textElements: [
-            TextSpan(
-              text: texts.status_text_loading_begin,
-              style: themeData.textTheme.bodyText2?.copyWith(
-                color: themeData.colorScheme.onSecondary,
-              ),
-            ),
-            TextSpan(
-              style: themeData.textTheme.bodyText2!.copyWith(
-                color: themeData.colorScheme.onSecondary,
-                decoration: TextDecoration.underline,
-              ),
-              text: texts.status_text_loading_middle,
-            ),
-            TextSpan(
-              text: texts.status_text_loading_end,
-              style: themeData.textTheme.bodyText2?.copyWith(
-                color: themeData.colorScheme.onSecondary,
-              ),
-            ),
-          ],
-        );
-      });
+      return AutoSizeText(
+        texts.status_text_ready,
+        style: themeData.textTheme.bodyText2?.copyWith(
+          color: themeData.colorScheme.onSecondary,
+        ),
+        textAlign: TextAlign.center,
+        minFontSize: MinFontSize(context).minFontSize,
+        stepGranularity: 0.1,
+      );
     }
   }
 }

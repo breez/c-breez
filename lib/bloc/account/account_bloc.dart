@@ -52,6 +52,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       emit(acc);
     });
 
+    _transactionsFiltersStreamController.add(state.transactionFilters);
+
     if (!state.initial) {
       _startRegisteredNode();
     }

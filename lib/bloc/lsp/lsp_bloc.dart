@@ -15,7 +15,7 @@ class LSPBloc extends Cubit<LspInformation?> {
         .listen((nodeState) async {
       var activeLSP = await currentLSP;
       if (activeLSP != null) {
-        if (!nodeState!.connectedPeers.contains(activeLSP.pubkey)) {
+        if (!_isLspConnected(nodeState!.connectedPeers, activeLSP.pubkey)) {
           await connectLSP(activeLSP.id);
         }
         emit(activeLSP);
@@ -23,6 +23,9 @@ class LSPBloc extends Cubit<LspInformation?> {
       }
     });
   }
+
+  bool _isLspConnected(List<String> connectedPeers, String pubkey) =>
+      connectedPeers.contains(pubkey);
 
   // connect to a specific lsp
   Future connectLSP(String lspID) async => await _breezLib.setLspId(lspID);

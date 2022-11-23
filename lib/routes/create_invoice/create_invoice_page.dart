@@ -1,6 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -199,9 +198,11 @@ class AvailabilityMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
-    final accountState = context.read<AccountBloc>().state;
+
     String? availabilityMessage;
-    if (accountState.status == AccountStatus.CONNECTING) {
+    final connected = context.read<LSPBloc>().state;
+
+    if (connected != null) {
       availabilityMessage = texts.invoice_availability_message_opening_channel;
       if (availabilityMessage.endsWith('.')) {
         availabilityMessage += '.';

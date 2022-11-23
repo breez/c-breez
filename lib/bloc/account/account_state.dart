@@ -3,15 +3,12 @@ import 'package:c_breez/bloc/account/transaction_filters.dart';
 
 const initialInboundCapacity = 4000000;
 
-enum AccountStatus { CONNECTING, CONNECTED, DISCONNECTION, DISCONNECTED }
-
 class AccountState {
   final String? id;
   final bool initial;
   final int blockheight;
   final int balance;
   final int walletBalance;
-  final AccountStatus status;
   final int maxAllowedToPay;
   final int maxAllowedToReceive;
   final int maxPaymentAmount;
@@ -28,7 +25,6 @@ class AccountState {
     required this.blockheight,
     required this.balance,
     required this.walletBalance,
-    required this.status,
     required this.maxAllowedToPay,
     required this.maxAllowedToReceive,
     required this.maxPaymentAmount,
@@ -45,7 +41,6 @@ class AccountState {
           id: null,
           initial: true,
           blockheight: 0,
-          status: AccountStatus.DISCONNECTED,
           maxAllowedToPay: 0,
           maxAllowedToReceive: 0,
           maxPaymentAmount: 0,
@@ -65,7 +60,6 @@ class AccountState {
     int? blockheight,
     int? balance,
     int? walletBalance,
-    AccountStatus? status,
     int? maxAllowedToPay,
     int? maxAllowedToReceive,
     int? maxPaymentAmount,
@@ -81,7 +75,6 @@ class AccountState {
       initial: initial ?? this.initial,
       balance: balance ?? this.balance,
       walletBalance: walletBalance ?? this.walletBalance,
-      status: status ?? this.status,
       maxAllowedToPay: maxAllowedToPay ?? this.maxAllowedToPay,
       maxAllowedToReceive: maxAllowedToReceive ?? this.maxAllowedToReceive,
       maxPaymentAmount: maxPaymentAmount ?? this.maxPaymentAmount,
@@ -105,7 +98,6 @@ class AccountState {
       "blockheight": blockheight,
       "balance": balance,
       "walletBalance": walletBalance,
-      "status": status.index,
       "maxAllowedToPay": maxAllowedToPay,
       "maxAllowedToReceive": maxAllowedToReceive,
       "maxPaymentAmount": maxPaymentAmount,
@@ -124,9 +116,6 @@ class AccountState {
       blockheight: json["blockheight"],
       balance: json["balance"],
       walletBalance: json["walletBalance"],
-      status: json["status"] != null
-          ? AccountStatus.values[json["status"]]
-          : AccountStatus.DISCONNECTED,
       maxAllowedToPay: json["maxAllowedToPay"],
       maxAllowedToReceive: json["maxAllowedToReceive"],
       maxPaymentAmount: json["maxPaymentAmount"],

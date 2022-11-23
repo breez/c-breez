@@ -123,34 +123,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                       padding: const EdgeInsets.only(top: 16.0),
                       child: _buildPayableBTC(currencyState, acc),
                     ),
-                    BlocBuilder<AccountBloc, AccountState>(
-                        builder: (BuildContext context, AccountState acc) {
-                      String? message;
-                      if (acc.status == AccountStatus.CONNECTING) {
-                        message = texts.spontaneous_payment_generic_message;
-                      }
-
-                      if (message != null) {
-                        final themeData = Theme.of(context);
-                        return Container(
-                            padding: const EdgeInsets.only(
-                              top: 32.0,
-                              left: 16.0,
-                              right: 16.0,
-                            ),
-                            child: Column(children: <Widget>[
-                              Text(
-                                message,
-                                textAlign: TextAlign.center,
-                                style: themeData.textTheme.headline6!.copyWith(
-                                  color: themeData.colorScheme.error,
-                                ),
-                              ),
-                            ]));
-                      } else {
-                        return const SizedBox();
-                      }
-                    })
                   ],
                 ),
               ),

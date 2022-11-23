@@ -15,6 +15,7 @@ class LSPBloc extends Cubit<LspInformation?> {
         .listen((nodeState) async {
       var activeLSP = await currentLSP;
       if (activeLSP != null) {
+        emit(activeLSP);
         if (!nodeState!.connectedPeers.contains(activeLSP.pubkey)) {
           await connectLSP(activeLSP.id);
         }

@@ -41,7 +41,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   late final AccountBloc accountBloc = context.read<AccountBloc>();
   late final accountState = accountBloc.state;
-  late final lspStatus = context.read<LSPBloc>().state;
   late final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
   late final currencyState = currencyBloc.state;
 
@@ -107,7 +106,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                       );
                     },
                   ),
-                  AvailabilityMessage(),
                 ],
               ),
             ),
@@ -175,10 +173,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   }
 
   String? validatePayment(int amount) {
-    int? channelMinimumFee;
-    if (lspStatus != null) {
-      channelMinimumFee = lspStatus!.channelMinimumFeeMsat ~/ 1000;
-    }
+    final lsp = context.read<LSPBloc>().state;
+    int? channelMinimumFee = lsp!.channelMinimumFeeMsat ~/ 1000;
 
     return PaymentValidator(
       accountBloc.validatePayment,
@@ -186,44 +182,5 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);
-  }
-}
-
-class AvailabilityMessage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final texts = context.texts();
-    final themeData = Theme.of(context);
-
-    String? availabilityMessage;
-    final connected = context.read<LSPBloc>().state;
-
-    if (connected != null) {
-      availabilityMessage = texts.invoice_availability_message_opening_channel;
-      if (availabilityMessage.endsWith('.')) {
-        availabilityMessage += '.';
-      }
-    }
-
-    return availabilityMessage != null
-        ? Container(
-            padding: const EdgeInsets.only(
-              top: 32.0,
-              left: 16.0,
-              right: 16.0,
-            ),
-            child: Column(
-              children: [
-                Text(
-                  availabilityMessage,
-                  textAlign: TextAlign.center,
-                  style: themeData.textTheme.headline6!.copyWith(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                ),
-              ],
-            ),
-          )
-        : const SizedBox();
   }
 }

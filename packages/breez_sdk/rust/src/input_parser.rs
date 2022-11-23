@@ -9,7 +9,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 pub fn parse(raw_input: &str) -> Result<InputType> {
     // If the `lightning:` prefix is there, strip it for the bolt11 parsing function
-    let mut prepared_input = raw_input.trim_start_matches("lightning:");
+    let prepared_input = raw_input.trim_start_matches("lightning:");
 
     // Check if valid BTC onchain address
     if let Ok(addr) = bitcoin::Address::from_str(prepared_input) {
@@ -47,17 +47,16 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
             None => Ok(BitcoinAddress(bitcoin_addr_data)),
             Some(invoice) => Ok(Bolt11(invoice)),
         };
-    } else {
-        // If it's not a BIP21 URI (bitcoin:..), then strip the prefix to simplify URL parsing later on
-        prepared_input = prepared_input.trim_start_matches("bitcoin:");
     }
 
     if let Ok(invoice) = parse_invoice(prepared_input) {
         return Ok(Bolt11(invoice));
     }
 
-    if let Ok(_url) = reqwest::Url::parse(prepared_input) {
-        return Ok(Url(prepared_input.into()));
+    if let Ok(url) = reqwest::Url::parse(prepared_input) {
+        if ["http", "https"].contains(&url.scheme()) {
+            return Ok(Url(prepared_input.into()));
+        }
     }
     // TODO Parse the other InputTypes
 

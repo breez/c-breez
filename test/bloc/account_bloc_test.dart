@@ -18,7 +18,7 @@ void main() {
       var injector = InjectorMock();
       var breezLib = injector.breezLib;
       var lspBloc = LSPBloc(breezLib);
-      AccountBloc accBloc = AccountBloc(breezLib, injector.keychain);
+      AccountBloc accBloc = AccountBloc(breezLib, injector.keychain, injector.preferences);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 

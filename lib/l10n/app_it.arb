@@ -214,6 +214,43 @@
     "invoice_bottom_sheet_action_pay": "PAGA",
     "invoice_bottom_sheet_action_receive": "RICEVI",
     "invoice_bottom_sheet_error_qrcode": "Nessun QR code rilevato.",
+    "invoice_payment_validator_error_payment_exceeded_limit": "Payment exceeds the limit ({maxSats})",
+    "@invoice_payment_validator_error_payment_exceeded_limit": {
+        "placeholders": {
+            "maxSats": {
+                "type": "String",
+                "example": "2 000 sats"
+            }
+        }
+    },
+    "invoice_payment_validator_error_payment_below_limit": "Breez requires you to keep {minSats} in your balance.",
+    "@invoice_payment_validator_error_payment_below_limit": {
+        "placeholders": {
+            "minSats": {
+                "type": "String",
+                "example": "2 000 sats"
+            }
+        }
+    },
+    "invoice_payment_validator_error_insufficient_local_balance": "Insufficient local balance",
+    "invoice_payment_validator_error_payment_below_setup_fees_error": "Insufficient amount to cover the setup fees of {setUpSats}",
+    "@invoice_payment_validator_error_payment_below_setup_fees_error": {
+        "placeholders": {
+            "setUpSats": {
+                "type": "String",
+                "example": "20 sats"
+            }
+        }
+    },
+    "invoice_payment_validator_error_unknown": "Validation error {error}",
+    "@invoice_payment_validator_error_unknown": {
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "An error message"
+            }
+        }
+    },
     "backup_dialog_title": "Backup",
     "backup_dialog_message_remote_server": "Impossibile salvare i file di backup sul server remoto. Rivedi le tue impostazioni e riprova.",
     "backup_dialog_message_default": "Se vuoi poter ripristinare i tuoi fondi nel caso in cui questo dispositivo o questa app non siano più disponibili (ad es. dispositivo smarrito o rubato o disinstallazione dell'app), devi eseguire il backup delle tue informazioni.",

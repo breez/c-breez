@@ -189,6 +189,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       accountBloc.validatePayment,
       currencyState.bitcoinCurrency,
       channelMinimumFee: channelMinimumFee,
+      texts: context.texts(),
     ).validateIncoming(amount);
   }
 }

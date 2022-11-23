@@ -13,8 +13,8 @@ use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{
-    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI,
-    NodeState, PaymentTypeFilter, SwapInfo,
+    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, Network,
+    NodeAPI, NodeState, PaymentTypeFilter, SwapInfo,
 };
 use crate::persist;
 use crate::persist::db::SqliteStorage;
@@ -75,6 +75,7 @@ impl NodeService {
         });
 
         let btc_receive_swapper = Arc::new(BTCReceiveSwap::new(
+            parse_network(&config.clone().network),
             breez_server.clone(),
             persister.clone(),
             chain_service.clone(),
@@ -452,6 +453,15 @@ async fn get_lsp(persister: Arc<SqliteStorage>, lsp: Arc<dyn LspAPI>) -> Result<
         .ok_or("No LSP found for given LSP ID")
         .map_err(|err| anyhow!(err))
         .cloned()
+}
+
+pub fn parse_network(gn: &Network) -> bitcoin::Network {
+    match gn {
+        Network::Bitcoin => bitcoin::Network::Bitcoin,
+        Network::Testnet => bitcoin::Network::Testnet,
+        Network::Signet => bitcoin::Network::Signet,
+        Network::Regtest => bitcoin::Network::Regtest,
+    }
 }
 
 mod test {

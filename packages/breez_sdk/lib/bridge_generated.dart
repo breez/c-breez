@@ -124,6 +124,11 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kSetLspIdConstMeta;
 
+  /// Convenience method to look up LSP info based on current LSP ID
+  Future<LspInformation> getLsp({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kGetLspConstMeta;
+
   /// Fetch live rates of fiat currencies
   Future<List<Rate>> fetchRates({dynamic hint});
 
@@ -771,6 +776,21 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "set_lsp_id",
         argNames: ["lspId"],
+      );
+
+  Future<LspInformation> getLsp({dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_get_lsp(port_),
+        parseSuccessData: _wire2api_lsp_information,
+        constMeta: kGetLspConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kGetLspConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "get_lsp",
+        argNames: [],
       );
 
   Future<List<Rate>> fetchRates({dynamic hint}) =>
@@ -1723,6 +1743,18 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
               ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_set_lsp_id');
   late final _wire_set_lsp_id = _wire_set_lsp_idPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
+
+  void wire_get_lsp(
+    int port_,
+  ) {
+    return _wire_get_lsp(
+      port_,
+    );
+  }
+
+  late final _wire_get_lspPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_get_lsp');
+  late final _wire_get_lsp = _wire_get_lspPtr.asFunction<void Function(int)>();
 
   void wire_fetch_rates(
     int port_,

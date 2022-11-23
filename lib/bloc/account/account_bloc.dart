@@ -71,7 +71,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       deviceCert: deviceCert,
     );
 
-    _startNode(creds: creds, seed: seed);
+    await _breezLib.initNode(
+      config: await _getConfig(),
+      seed: seed,
+      creds: creds,
+    );
+    emit(state.copyWith(initial: false));
+    started = true;
   }
 
   // TODO: Export the user keys to a file
@@ -111,6 +117,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
     _log.i("node registered successfully");
     await _storeCredentials(creds: creds, seed: seed);
+    _breezLib.nodeStateController.add(await _breezLib.getNodeState());
     emit(state.copyWith(initial: false));
     started = true;
     _log.i("new node started");
@@ -130,6 +137,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
     _log.i("node recovered successfully");
     await _storeCredentials(creds: creds, seed: seed);
+    _breezLib.nodeStateController.add(await _breezLib.getNodeState());
+    emit(state.copyWith(initial: false));
     started = true;
     _log.i("recovered node started");
     return creds;
@@ -144,26 +153,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _keyChain.write(accountSeedKey, HEX.encode(seed));
   }
 
-  Future _startNode({
-    required Uint8List seed,
-    required GreenlightCredentials creds,
-  }) async {
-    await _breezLib.initNode(
-      config: await _getConfig(),
-      seed: seed,
-      creds: creds,
-    );
-    started = true;
-  }
-
   Future<Config> _getConfig() async {
     try {
       // Read breez.conf ini file and organize it via ini package
       String configString = await rootBundle.loadString('conf/breez.conf');
       ini.Config breezConfig = ini.Config.fromString(configString);
       // Create a Config from breez.conf
-      // TODO: Get mempoolspaceUrl from Settings in Network tab
-      // TODO: Get paymentTimeoutSec from Settings, meanwhile set to 90 seconds as default value
       Config config = Config(
         breezserver:
             breezConfig.get("Application Options", "breezserver") ?? "",
@@ -174,7 +169,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         network: Network.values.firstWhere((n) =>
             n.name.toLowerCase() ==
             breezConfig.get("Application Options", "network")),
-        paymentTimeoutSec: 90,
+        paymentTimeoutSec: int.parse(breezConfig.get("Application Options", "paymentTimeoutSec") ?? "30"),
       );
       return config;
     } catch (e) {

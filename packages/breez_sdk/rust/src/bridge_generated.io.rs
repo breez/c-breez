@@ -85,6 +85,11 @@ pub extern "C" fn wire_set_lsp_id(port_: i64, lsp_id: *mut wire_uint_8_list) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_get_lsp(port_: i64) {
+    wire_get_lsp_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_fetch_rates(port_: i64) {
     wire_fetch_rates_impl(port_)
 }

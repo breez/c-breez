@@ -2,7 +2,6 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
@@ -32,22 +31,17 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LSPBloc, LSPState>(
-      builder: (context, lspState) {
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, account) {
-            return BlocBuilder<UserProfileBloc, UserProfileState>(
-              builder: (context, userModel) {
-                return Container(
-                  color: Theme.of(context).customData.dashboardBgColor,
-                  child: _build(
-                    context,
-                    lspState,
-                    account,
-                    userModel,
-                  ),
-                );
-              },
+    return BlocBuilder<AccountBloc, AccountState>(
+      builder: (context, account) {
+        return BlocBuilder<UserProfileBloc, UserProfileState>(
+          builder: (context, userModel) {
+            return Container(
+              color: Theme.of(context).customData.dashboardBgColor,
+              child: _build(
+                context,
+                account,
+                userModel,
+              ),
             );
           },
         );
@@ -57,7 +51,6 @@ class AccountPage extends StatelessWidget {
 
   Widget _build(
     BuildContext context,
-    LSPState lspState,
     AccountState account,
     UserProfileState userModel,
   ) {
@@ -122,16 +115,19 @@ class AccountPage extends StatelessWidget {
           delegate: FixedSliverDelegate(
             250.0,
             builder: (context, shrinkedHeight, overlapContent) {
-              if (lspState.selectionRequired == true) {
+              return BlocBuilder<LSPBloc, LspInformation?>(
+                  builder: (context, lsp) {
+                if (lsp == null) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 120.0),
+                    child: NoLSPWidget(),
+                  );
+                }
                 return const Padding(
-                  padding: EdgeInsets.only(top: 120.0),
-                  child: NoLSPWidget(),
+                  padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
+                  child: StatusText(),
                 );
-              }
-              return const Padding(
-                padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                child: StatusText(),
-              );
+              });
             },
           ),
         ),

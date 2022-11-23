@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print, unused_local_variable
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +17,8 @@ void main() {
       var injector = InjectorMock();
       var breezLib = injector.breezLib;
       var lspBloc = LSPBloc(breezLib);
-      AccountBloc accBloc = AccountBloc(breezLib, injector.keychain);
+      AccountBloc accBloc =
+          AccountBloc(breezLib, injector.keychain, injector.preferences);
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 
@@ -29,7 +29,6 @@ void main() {
       expect(accountState.id?.length, equals(66));
       expect(accountState.balance, 0);
       expect(accountState.walletBalance, 0);
-      expect(accountState.status, AccountStatus.DISCONNECTED);
       expect(accountState.maxAllowedToPay, 0);
       expect(accountState.maxAllowedToReceive, 0);
       expect(accountState.maxPaymentAmount, 4294967);

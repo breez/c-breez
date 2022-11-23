@@ -1,6 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -137,7 +136,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     var currentRoute = ModalRoute.of(navigator.context)!;
     Future<LNInvoice> invoice = accountBloc.addInvoice(
       description: _descriptionController.text,
-      amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
+      amountSats:
+          currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
     );
     navigator.pop();
     Widget dialog = FutureBuilder(
@@ -181,10 +181,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   String? validatePayment(int amount) {
     int? channelMinimumFee;
-    if (lspStatus.currentLSP != null) {
-      channelMinimumFee =
-        lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000
-      ;
+    if (lspStatus != null) {
+      channelMinimumFee = lspStatus!.channelMinimumFeeMsat ~/ 1000;
     }
 
     return PaymentValidator(
@@ -200,9 +198,11 @@ class AvailabilityMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
-    final accountState = context.read<AccountBloc>().state;
+
     String? availabilityMessage;
-    if (accountState.status == AccountStatus.CONNECTING) {
+    final connected = context.read<LSPBloc>().state;
+
+    if (connected != null) {
       availabilityMessage = texts.invoice_availability_message_opening_channel;
       if (availabilityMessage.endsWith('.')) {
         availabilityMessage += '.';

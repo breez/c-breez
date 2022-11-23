@@ -1,8 +1,8 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -12,21 +12,19 @@ import 'package:flutter_svg/svg.dart';
 class QrActionButton extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
 
-  const QrActionButton(this.firstPaymentItemKey, {
+  const QrActionButton(
+    this.firstPaymentItemKey, {
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     InputBloc inputBloc = context.read<InputBloc>();
-
-    return BlocBuilder<LSPBloc, LSPState>(
+    return BlocBuilder<LSPBloc, LspInformation?>(
       builder: (context, lsp) {
+        final connected = lsp != null;
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, account) {
-            final connected =
-                lsp.connectionStatus == LSPConnectionStatus.active &&
-                    account.status == AccountStatus.CONNECTED;
             return Padding(
               padding: const EdgeInsets.only(top: 32.0),
               child: FloatingActionButton(

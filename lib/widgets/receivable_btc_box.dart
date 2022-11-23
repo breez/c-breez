@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -66,56 +66,48 @@ class FeeMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final lspState = context.read<LSPBloc>().state;
-
-    return lspState.hasLSP
-        ? const SizedBox()
-        : WarningBox(
-            boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  formatFeeMessage(context),
-                  style: themeData.textTheme.headline6,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
+    return BlocBuilder<LSPBloc, LspInformation?>(builder: (context, lsp) {
+      return lsp == null
+          ? const SizedBox()
+          : WarningBox(
+              boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    formatFeeMessage(context, lsp),
+                    style: themeData.textTheme.headline6,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+    });
   }
 
-  String formatFeeMessage(BuildContext context) {
+  String formatFeeMessage(BuildContext context, LspInformation lspInfo) {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final accountState = context.read<AccountBloc>().state;
-    final lspInfo = context.read<LSPBloc>().state.currentLSP!;
 
-    final connected = accountState.status == AccountStatus.CONNECTED;
     final minFee = lspInfo.channelMinimumFeeMsat ~/ 1000;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFee);
     final showMinFeeMessage = minFee > 0;
     final setUpFee = (lspInfo.channelFeePermyriad / 100).toString();
     final liquidity = currencyState.bitcoinCurrency.format(
-      connected ? accountState.maxInboundLiquidity : 0,
+      accountState.maxInboundLiquidity,
     );
 
-    if (connected && showMinFeeMessage) {
+    if (showMinFeeMessage) {
       return texts.invoice_ln_address_warning_with_min_fee_account_connected(
         setUpFee,
         minFeeFormatted,
         liquidity,
       );
-    } else if (connected && !showMinFeeMessage) {
+    } else if (!showMinFeeMessage) {
       return texts.invoice_ln_address_warning_without_min_fee_account_connected(
         setUpFee,
         liquidity,
-      );
-    } else if (!connected && showMinFeeMessage) {
-      return texts
-          .invoice_ln_address_warning_with_min_fee_account_not_connected(
-        setUpFee,
-        minFeeFormatted,
       );
     } else {
       return texts

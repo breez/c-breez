@@ -214,6 +214,16 @@ fn wire_set_lsp_id_impl(port_: MessagePort, lsp_id: impl Wire2Api<String> + Unwi
         },
     )
 }
+fn wire_get_lsp_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "get_lsp",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| get_lsp(),
+    )
+}
 fn wire_fetch_rates_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

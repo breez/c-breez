@@ -1,5 +1,5 @@
-import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -39,11 +39,10 @@ class HomeDrawerState extends State<HomeDrawer> {
     return BlocBuilder<UserProfileBloc, UserProfileState>(
       builder: (context, user) {
         final settings = user.profileSettings;
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, account) {
-            final addOrRemove = account.status == AccountStatus.CONNECTED
-                ? _hiddenRoutes.remove
-                : _hiddenRoutes.add;
+        return BlocBuilder<LSPBloc, LspInformation?>(
+          builder: (context, lsp) {
+            final addOrRemove =
+                (lsp != null) ? _hiddenRoutes.remove : _hiddenRoutes.add;
             for (var route in _kActiveAccountRoutes) {
               addOrRemove(route);
             }

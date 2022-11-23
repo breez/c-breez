@@ -15,54 +15,45 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, accState) {
-        return _build(
-          context,
-          accState,
-        );
-      },
-    );
-  }
+    return BlocBuilder<AccountBloc, AccountState>(builder: (context, accState) {
+      return BlocBuilder<LSPBloc, LspInformation?>(
+        builder: (context, lsp) {
+          final navigatorState = Navigator.of(context);
 
-  Widget _build(
-    BuildContext context,
-    AccountState accountModel,
-  ) {
-    final navigatorState = Navigator.of(context);
+          List<Widget> warnings = [];
+          int walletBalance = accState.walletBalance;
 
-    List<Widget> warnings = [];
-    int walletBalance = accountModel.walletBalance;
-
-    if (walletBalance > 0) {
-      warnings.add(
-        WarningAction(
-          () => navigatorState.push(
-            FadeInRoute(
-              builder: (_) => WithdrawFundsAddressPage(
-                walletBalance,
+          if (walletBalance > 0) {
+            warnings.add(
+              WarningAction(
+                () => navigatorState.push(
+                  FadeInRoute(
+                    builder: (_) => WithdrawFundsAddressPage(
+                      walletBalance,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
+            );
+          }
+
+          if (lsp == null) {
+            warnings.add(WarningAction(() {
+              navigatorState.pushNamed("/select_lsp");
+            }));
+          }
+
+          if (warnings.isEmpty) {
+            return const SizedBox();
+          }
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: warnings,
+          );
+        },
       );
-    }
-
-    LspInformation? lsp = context.read<LSPBloc>().state;
-    if (lsp == null) {
-      warnings.add(WarningAction(() {
-        navigatorState.pushNamed("/select_lsp");
-      }));
-    }
-
-    if (warnings.isEmpty) {
-      return const SizedBox();
-    }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      mainAxisSize: MainAxisSize.min,
-      children: warnings,
-    );
+    });
   }
 }

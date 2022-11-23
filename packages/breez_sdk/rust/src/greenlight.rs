@@ -3,6 +3,7 @@ use crate::models::{
     Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeAPI,
     NodeState, SyncResponse,
 };
+use crate::node_service::parse_network;
 
 use anyhow::{anyhow, Result};
 use bitcoin::bech32::{u5, ToBase32};
@@ -76,7 +77,11 @@ impl Greenlight {
     }
 
     async fn get_client(&self) -> Result<node::Client> {
-        let scheduler = Scheduler::new(self.signer.node_id(), bitcoin::Network::Bitcoin).await?;
+        let scheduler = Scheduler::new(
+            self.signer.node_id(),
+            parse_network(&self.sdk_config.network),
+        )
+        .await?;
         let client: node::Client = scheduler.schedule(self.tls_config.clone()).await?;
         Ok(client)
     }
@@ -480,13 +485,4 @@ fn parse_amount(amount_str: String) -> Result<pb::Amount> {
     };
 
     Ok(pb::Amount { unit: Some(unit) })
-}
-
-fn parse_network(gn: &Network) -> bitcoin::Network {
-    match gn {
-        Network::Bitcoin => bitcoin::Network::Bitcoin,
-        Network::Testnet => bitcoin::Network::Testnet,
-        Network::Signet => bitcoin::Network::Signet,
-        Network::Regtest => bitcoin::Network::Regtest,
-    }
 }

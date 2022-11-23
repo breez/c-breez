@@ -73,6 +73,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget _buildQrCodeDialog() {
+    final texts = context.texts();
+
     return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
       return BlocBuilder<InputBloc, InputState>(builder: (context, inputState) {
         return FadeTransition(
@@ -81,30 +83,39 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Invoice"),
+                Text(texts.qr_code_dialog_invoice),
                 Row(
                   children: <Widget>[
-                    IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
-                      icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
-                      color: Theme.of(context).primaryTextTheme.button!.color!,
-                      onPressed: () {
-                        ShareExtend.share("lightning:${widget._invoice!.bolt11}", "text");
-                      },
+                    Tooltip(
+                      message: texts.qr_code_dialog_share,
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
+                        icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
+                        color: Theme.of(context).primaryTextTheme.button!.color!,
+                        onPressed: () {
+                          ShareExtend.share("lightning:${widget._invoice!.bolt11}", "text");
+                        },
+                      ),
                     ),
-                    IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
-                      icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
-                      color: Theme.of(context).primaryTextTheme.button!.color!,
-                      onPressed: () {
-                        ServiceInjector().device.setClipboardText(widget._invoice!.bolt11);
-                        showFlushbar(context,
-                            message: "Invoice data was copied to your clipboard.", duration: const Duration(seconds: 3));
-                      },
+                    Tooltip(
+                      message: texts.qr_code_dialog_copy,
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
+                        icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
+                        color: Theme.of(context).primaryTextTheme.button!.color!,
+                        onPressed: () {
+                          ServiceInjector().device.setClipboardText(widget._invoice!.bolt11);
+                          showFlushbar(
+                            context,
+                            message: texts.qr_code_dialog_copied,
+                            duration: const Duration(seconds: 3),
+                          );
+                        },
+                      ),
                     )
                   ],
                 )
@@ -194,21 +205,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {
     final themeData = Theme.of(context);
-    String message = "";
-
-    message = "";
-    /*
-    var lspFee = widget._invoice!.lspFee;
-    if (lspFee != 0) {
-      String conversionText = "";
-      if (currencyState.fiatEnabled) {
-        FiatConversion conversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
-        conversionText = " (${conversion.format(lspFee)})";
-      }
-      message = "A setup fee of ${BitcoinCurrency.SAT.format(lspFee)}$conversionText is applied to this invoice. ";
-    }
-     */
-    message += "Keep Breez open until the payment is completed.";
+    final texts = context.texts();
 
     return WarningBox(
       boxPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -216,7 +213,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       backgroundColor: themeData.isLightTheme ? const Color(0xFFf3f8fc) : null,
       borderColor: themeData.isLightTheme ? const Color(0xFF0085fb) : null,
       child: Text(
-        message,
+        texts.qr_code_dialog_warning_message,
         textAlign: TextAlign.center,
         style: Theme.of(context).primaryTextTheme.caption,
       ),
@@ -224,11 +221,15 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget _buildCloseButton() {
+    final texts = context.texts();
     return TextButton(
       onPressed: (() {
         onFinish(false);
       }),
-      child: Text("CLOSE", style: Theme.of(context).primaryTextTheme.button),
+      child: Text(
+        texts.qr_code_dialog_action_close,
+        style: Theme.of(context).primaryTextTheme.button,
+      ),
     );
   }
 

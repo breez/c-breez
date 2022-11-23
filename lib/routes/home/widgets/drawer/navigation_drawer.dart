@@ -210,7 +210,7 @@ GestureDetector _buildThemeSwitch(
                   "src/icon/ic_lightmode.png",
                   height: 24,
                   width: 24,
-                  color: themeData.switchThemeIconColor,
+                  color: themeData.switchThemeIconColor(true),
                 ),
                 const SizedBox(
                   height: 20,
@@ -221,7 +221,7 @@ GestureDetector _buildThemeSwitch(
                 ),
                 ImageIcon(
                   const AssetImage("src/icon/ic_darkmode.png"),
-                  color: themeData.switchThemeIconColor,
+                  color: themeData.switchThemeIconColor(false),
                   size: 24.0,
                 ),
               ],

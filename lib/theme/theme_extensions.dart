@@ -153,8 +153,13 @@ extension ThemeExtensions on ThemeData {
       ? const Color(0xFF0085fb).withOpacity(0.1)
       : const Color(0xff4D88EC).withOpacity(0.1);
 
-  Color get switchThemeIconColor =>
-      isLightTheme ? Colors.white30 : Colors.white;
+  Color switchThemeIconColor(bool light) => light
+      ? isLightTheme
+          ? Colors.white
+          : Colors.white30
+      : isLightTheme
+          ? Colors.white30
+          : Colors.white;
 
   TextStyle get paymentItemTitleTextStyle => isLightTheme
       ? const TextStyle(

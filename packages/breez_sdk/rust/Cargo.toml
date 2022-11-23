@@ -37,5 +37,9 @@ lightning-invoice = "*"
 log = "*"
 once_cell = "*"
 openssl = { version = "0.10.42", features = ["vendored"] }
+
+[dev-dependencies]
+mockito = "*"
+
 [build-dependencies]
 tonic-build = "^0.8"

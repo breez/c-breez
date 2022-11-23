@@ -214,6 +214,43 @@
   "invoice_bottom_sheet_action_pay": "PAGAR",
   "invoice_bottom_sheet_action_receive": "RECIBIR",
   "invoice_bottom_sheet_error_qrcode": "No se detectó el código QR.",
+  "invoice_payment_validator_error_payment_exceeded_limit": "Payment exceeds the limit ({maxSats})",
+  "@invoice_payment_validator_error_payment_exceeded_limit": {
+    "placeholders": {
+      "maxSats": {
+        "type": "String",
+        "example": "2 000 sats"
+      }
+    }
+  },
+  "invoice_payment_validator_error_payment_below_limit": "Breez requires you to keep {minSats} in your balance.",
+  "@invoice_payment_validator_error_payment_below_limit": {
+    "placeholders": {
+      "minSats": {
+        "type": "String",
+        "example": "2 000 sats"
+      }
+    }
+  },
+  "invoice_payment_validator_error_insufficient_local_balance": "Insufficient local balance",
+  "invoice_payment_validator_error_payment_below_setup_fees_error": "Insufficient amount to cover the setup fees of {setUpSats}",
+  "@invoice_payment_validator_error_payment_below_setup_fees_error": {
+    "placeholders": {
+      "setUpSats": {
+        "type": "String",
+        "example": "20 sats"
+      }
+    }
+  },
+  "invoice_payment_validator_error_unknown": "Validation error {error}",
+  "@invoice_payment_validator_error_unknown": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "An error message"
+      }
+    }
+  },
   "backup_dialog_title": "Respaldar",
   "backup_dialog_message_remote_server": "No se pudieron guardar los archivos de respaldo en el servidor remoto. Por favor, revise su configuración y vuelva a intentarlo.",
   "backup_dialog_message_default": "Si desea poder restaurar sus fondos en caso de que este dispositivo móvil o esta aplicación ya no se encuentre disponible (ej: dispositivo perdido o robado, o desinstalación de la app), requerirá haber respaldado su información.",

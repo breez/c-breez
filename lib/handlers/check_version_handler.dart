@@ -13,7 +13,7 @@ void checkVersionDialog(BuildContext context,
   final texts = AppLocalizations.of(context)!;
 
   userProfileBloc.checkVersion().catchError((err) {
-    if (err.contains('bad version')) {
+    if (err.toString().contains('bad version')) {
       showFlushbar(
         context,
         buttonText: texts.handler_check_version_action_update,

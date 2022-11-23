@@ -278,6 +278,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
       accBloc.validatePayment,
       currencyState.bitcoinCurrency,
       channelMinimumFee: channelMinimumFee,
+      texts: context.texts(),
     ).validateIncoming(amount);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -66,30 +67,29 @@ class FeeMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final lspInformation = context.read<LSPBloc>().state;
-
-    return lspInformation == null
-        ? const SizedBox()
-        : WarningBox(
-            boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  formatFeeMessage(context),
-                  style: themeData.textTheme.headline6,
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
+    return BlocBuilder<LSPBloc, LspInformation?>(builder: (context, lsp) {
+      return lsp == null
+          ? const SizedBox()
+          : WarningBox(
+              boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    formatFeeMessage(context, lsp),
+                    style: themeData.textTheme.headline6,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+    });
   }
 
-  String formatFeeMessage(BuildContext context) {
+  String formatFeeMessage(BuildContext context, LspInformation lspInfo) {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final accountState = context.read<AccountBloc>().state;
-    final lspInfo = context.read<LSPBloc>().state!;
 
     final connected = accountState.status == AccountStatus.CONNECTED;
     final minFee = lspInfo.channelMinimumFeeMsat ~/ 1000;

@@ -25,32 +25,33 @@ class BottomActionsBar extends StatelessWidget {
 
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, account) {
-        LspInformation? lsp = context.read<LSPBloc>().state;
-        final connected = lsp == null;
+        return BlocBuilder<LSPBloc, LspInformation?>(builder: (context, lsp) {
+          final connected = lsp != null;
 
-        return BottomAppBar(
-          child: SizedBox(
-            height: 60,
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SendOptions(
-                  connected: connected,
-                  firstPaymentItemKey: firstPaymentItemKey,
-                  actionsGroup: actionsGroup,
-                ),
-                Container(width: 64),
-                ReceiveOptions(
-                  account: account,
-                  connected: connected,
-                  firstPaymentItemKey: firstPaymentItemKey,
-                  actionsGroup: actionsGroup,
-                )
-              ],
+          return BottomAppBar(
+            child: SizedBox(
+              height: 60,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SendOptions(
+                    connected: connected,
+                    firstPaymentItemKey: firstPaymentItemKey,
+                    actionsGroup: actionsGroup,
+                  ),
+                  Container(width: 64),
+                  ReceiveOptions(
+                    account: account,
+                    connected: connected,
+                    firstPaymentItemKey: firstPaymentItemKey,
+                    actionsGroup: actionsGroup,
+                  )
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }

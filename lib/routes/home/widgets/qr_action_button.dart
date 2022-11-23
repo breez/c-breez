@@ -20,37 +20,39 @@ class QrActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     InputBloc inputBloc = context.read<InputBloc>();
-    LspInformation? lsp = context.read<LSPBloc>().state;
-
-    return BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, account) {
+    return BlocBuilder<LSPBloc, LspInformation?>(
+      builder: (context, lsp) {
         final connected = lsp != null;
-        return Padding(
-          padding: const EdgeInsets.only(top: 32.0),
-          child: FloatingActionButton(
-            onPressed: connected
-                ? () async {
-                    final navigator = Navigator.of(context);
-                    String? scannedString =
-                        await navigator.pushNamed("/qr_scan");
-                    if (scannedString != null && scannedString.isEmpty) {
-                      showFlushbar(context,
-                          message: "QR code wasn't detected.");
-                      return;
-                    }
-                    inputBloc.addIncomingInput(scannedString!);
-                  }
-                : null,
-            child: SvgPicture.asset(
-              "src/icon/qr_scan.svg",
-              color: connected
-                  ? theme.BreezColors.white[500]
-                  : Theme.of(context).disabledColor,
-              fit: BoxFit.contain,
-              width: 24.0,
-              height: 24.0,
-            ),
-          ),
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, account) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 32.0),
+              child: FloatingActionButton(
+                onPressed: connected
+                    ? () async {
+                        final navigator = Navigator.of(context);
+                        String? scannedString =
+                            await navigator.pushNamed("/qr_scan");
+                        if (scannedString != null && scannedString.isEmpty) {
+                          showFlushbar(context,
+                              message: "QR code wasn't detected.");
+                          return;
+                        }
+                        inputBloc.addIncomingInput(scannedString!);
+                      }
+                    : null,
+                child: SvgPicture.asset(
+                  "src/icon/qr_scan.svg",
+                  color: connected
+                      ? theme.BreezColors.white[500]
+                      : Theme.of(context).disabledColor,
+                  fit: BoxFit.contain,
+                  width: 24.0,
+                  height: 24.0,
+                ),
+              ),
+            );
+          },
         );
       },
     );

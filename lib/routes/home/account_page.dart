@@ -110,22 +110,24 @@ class AccountPage extends StatelessWidget {
         ),
       );
     } else if (!account.initial) {
-      LspInformation? lsp = context.read<LSPBloc>().state;
       slivers.add(
         SliverPersistentHeader(
           delegate: FixedSliverDelegate(
             250.0,
             builder: (context, shrinkedHeight, overlapContent) {
-              if (lsp == null) {
+              return BlocBuilder<LSPBloc, LspInformation?>(
+                  builder: (context, lsp) {
+                if (lsp == null) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 120.0),
+                    child: NoLSPWidget(),
+                  );
+                }
                 return const Padding(
-                  padding: EdgeInsets.only(top: 120.0),
-                  child: NoLSPWidget(),
+                  padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
+                  child: StatusText(),
                 );
-              }
-              return const Padding(
-                padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                child: StatusText(),
-              );
+              });
             },
           ),
         ),

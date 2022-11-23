@@ -63,6 +63,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             _controller!.reverse();
           }
         });
+      }).catchError((e) {
+        showFlushbar(context, message: e.toString());
+        onFinish(false);
       });
     }
   }

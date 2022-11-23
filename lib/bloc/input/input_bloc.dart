@@ -30,7 +30,7 @@ class InputBloc extends Cubit<InputState> {
     _decodeInvoiceController.add(bolt11);
   }
 
-  Future trackPayment(String paymentHash) {
+  Future trackPayment(String paymentHash) async {
     throw Exception("not implemented");
   }
 

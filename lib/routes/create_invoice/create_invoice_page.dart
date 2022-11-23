@@ -69,7 +69,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 40.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 40.0),
           child: Scrollbar(
             child: SingleChildScrollView(
               child: Column(
@@ -114,19 +114,14 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(
-          bottom: 40.0,
-        ),
-        child: SingleButtonBottomBar(
-          stickToBottom: true,
-          text: texts.invoice_action_create,
-          onPressed: () {
-            if (_formKey.currentState?.validate() ?? false) {
-              _createInvoice();
-            }
-          },
-        ),
+      bottomNavigationBar: SingleButtonBottomBar(
+        stickToBottom: true,
+        text: texts.invoice_action_create,
+        onPressed: () {
+          if (_formKey.currentState?.validate() ?? false) {
+            _createInvoice();
+          }
+        },
       ),
     );
   }

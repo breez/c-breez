@@ -26,6 +26,7 @@ use crate::fiat::Symbol;
 use crate::input_parser::BitcoinAddressData;
 use crate::input_parser::InputType;
 use crate::input_parser::LnUrlPayData;
+use crate::input_parser::MetadataItem;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
@@ -606,6 +607,13 @@ impl support::IntoDart for LspInformation {
     }
 }
 impl support::IntoDartExceptPrimitive for LspInformation {}
+
+impl support::IntoDart for MetadataItem {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.key.into_dart(), self.value.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for MetadataItem {}
 
 impl support::IntoDart for Network {
     fn into_dart(self) -> support::DartAbi {

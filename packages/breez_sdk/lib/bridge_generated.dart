@@ -355,7 +355,7 @@ class LnUrlPayData {
   /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
   ///
   /// See https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string
-  final List<List<String>> metadata;
+  final List<MetadataItem> metadata;
   final int commentAllowed;
   final String tag;
 
@@ -424,6 +424,16 @@ class LspInformation {
     required this.lspPubkey,
     required this.maxInactiveDuration,
     required this.channelMinimumFeeMsat,
+  });
+}
+
+class MetadataItem {
+  final String key;
+  final String value;
+
+  MetadataItem({
+    required this.key,
+    required this.value,
   });
 }
 
@@ -1141,10 +1151,6 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
-  List<List<String>> _wire2api_list_StringList(dynamic raw) {
-    return (raw as List<dynamic>).map(_wire2api_StringList).toList();
-  }
-
   List<FiatCurrency> _wire2api_list_fiat_currency(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_fiat_currency).toList();
   }
@@ -1163,6 +1169,10 @@ class LightningToolkitImpl implements LightningToolkit {
 
   List<LspInformation> _wire2api_list_lsp_information(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_lsp_information).toList();
+  }
+
+  List<MetadataItem> _wire2api_list_metadata_item(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_metadata_item).toList();
   }
 
   List<Rate> _wire2api_list_rate(dynamic raw) {
@@ -1206,7 +1216,7 @@ class LightningToolkitImpl implements LightningToolkit {
       callback: _wire2api_String(arr[0]),
       minSendable: _wire2api_u16(arr[1]),
       maxSendable: _wire2api_u16(arr[2]),
-      metadata: _wire2api_list_StringList(arr[3]),
+      metadata: _wire2api_list_metadata_item(arr[3]),
       commentAllowed: _wire2api_u16(arr[4]),
       tag: _wire2api_String(arr[5]),
     );
@@ -1253,6 +1263,16 @@ class LightningToolkitImpl implements LightningToolkit {
       lspPubkey: _wire2api_uint_8_list(arr[12]),
       maxInactiveDuration: _wire2api_i64(arr[13]),
       channelMinimumFeeMsat: _wire2api_i64(arr[14]),
+    );
+  }
+
+  MetadataItem _wire2api_metadata_item(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return MetadataItem(
+      key: _wire2api_String(arr[0]),
+      value: _wire2api_String(arr[1]),
     );
   }
 

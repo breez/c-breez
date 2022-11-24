@@ -134,9 +134,15 @@ pub struct LnUrlPayData {
     ///
     /// See https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string
     #[serde_as(as = "JsonString")]
-    pub metadata: Vec<Vec<String>>,
+    pub metadata: Vec<MetadataItem>,
     pub commentAllowed: u16,
     pub tag: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct MetadataItem {
+    pub key: String,
+    pub value: String,
 }
 
 pub struct BitcoinAddressData {
@@ -425,11 +431,11 @@ mod tests {
 
                 let meta = lnurl_pay_data.metadata;
                 assert_eq!(meta.len(), 3);
-                assert_eq!(meta.get(0).ok_or("Key not found")?[0], "text/plain");
-                assert_eq!(meta.get(0).ok_or("Key not found")?[1], "WRhtV");
-                assert_eq!(meta.get(1).ok_or("Key not found")?[0], "text/long-desc");
-                assert_eq!(meta.get(1).ok_or("Key not found")?[1], "MBTrTiLCFS");
-                assert_eq!(meta.get(2).ok_or("Key not found")?[0], "image/png;base64");
+                assert_eq!(meta.get(0).ok_or("Key not found")?.key, "text/plain");
+                assert_eq!(meta.get(0).ok_or("Key not found")?.value, "WRhtV");
+                assert_eq!(meta.get(1).ok_or("Key not found")?.key, "text/long-desc");
+                assert_eq!(meta.get(1).ok_or("Key not found")?.value, "MBTrTiLCFS");
+                assert_eq!(meta.get(2).ok_or("Key not found")?.key, "image/png;base64");
             }
             _ => return Err(anyhow!("Unexpected type"))?,
         }

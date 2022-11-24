@@ -125,6 +125,17 @@ impl From<bitcoin::network::constants::Network> for Network {
     }
 }
 
+impl From<Network> for bitcoin::network::constants::Network {
+    fn from(network: Network) -> Self {
+        match network {
+            Bitcoin => bitcoin::network::constants::Network::Bitcoin,
+            Testnet => bitcoin::network::constants::Network::Testnet,
+            Signet => bitcoin::network::constants::Network::Signet,
+            Regtest => bitcoin::network::constants::Network::Regtest
+        }
+    }
+}
+
 pub enum PaymentTypeFilter {
     Sent,
     Received,

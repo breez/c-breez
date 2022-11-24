@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
@@ -55,7 +56,7 @@ void main() async {
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(
               breezLib,
-              injector.keychain,
+              CredentialsManager(keyChain: injector.keychain),
               injector.preferences,
             ),
           ),

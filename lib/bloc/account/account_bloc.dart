@@ -5,15 +5,14 @@ import 'dart:math';
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
-import 'package:c_breez/bloc/account/transaction_filters.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
-import 'package:c_breez/services/keychain.dart';
+import 'package:c_breez/bloc/account/transaction_filters.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
-import 'package:hex/hex.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:ini/ini.dart' as ini;
 import 'package:path/path.dart' as p;
@@ -28,131 +27,97 @@ const maxPaymentAmount = 4294967;
 // and reflect the node state. It is responsible for:
 // 1. Synchronizing with the node state.
 // 2. Abstracting actions exposed by the lightning service.
-// 3. Managing user keys.
 class AccountBloc extends Cubit<AccountState> with HydratedMixin {
+  final _log = FimberLog("AccountBloc");
   static const String paymentFilterSettingsKey = "payment_filter_settings";
-  static const String accountCredsKey = "account_creds_key";
-  static const String accountCredsCert = "account_creds_cert";
-  static const String accountSeedKey = "account_seed_key";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
-  final _log = FimberLog("AccountBloc");
+  final StreamController<PaymentResultData> _paymentResultStreamController =
+      StreamController<PaymentResultData>();
+
+  Stream<PaymentResultData> get paymentResultStream =>
+      _paymentResultStreamController.stream;
+
+  final StreamController<TransactionFilters>
+      _transactionsFiltersStreamController =
+      StreamController<TransactionFilters>();
+
+  Stream<TransactionFilters> get transactionsFiltersStream =>
+      _transactionsFiltersStreamController.stream;
+
   final BreezBridge _breezLib;
-  final KeyChain _keyChain;
   final Preferences _preferences;
-  bool started = false;
+  final CredentialsManager _credentialsManager;
 
   AccountBloc(
     this._breezLib,
-    this._keyChain,
+    this._credentialsManager,
     this._preferences,
   ) : super(AccountState.initial()) {
     // emit on every change
-    _watchAccountChanges().listen((acc) {
-      emit(acc);
-    });
+    _watchAccountChanges().listen((acc) => emit(acc));
 
     _transactionsFiltersStreamController.add(state.transactionFilters);
 
-    if (!state.initial) {
-      _startRegisteredNode();
-    }
+    if (!state.initial) _startRegisteredNode();
+  }
+
+  // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
+  _watchAccountChanges() {
+    return Rx.combineLatest3<List<LightningTransaction>, TransactionFilters,
+        NodeState?, AccountState>(
+      _breezLib.transactionsStream,
+      transactionsFiltersStream,
+      _breezLib.nodeStateStream,
+      (transactions, filters, nodeState) {
+        return assembleAccountState(transactions, filters, nodeState) ?? state;
+      },
+    );
   }
 
   Future _startRegisteredNode() async {
-    String? deviceCertStr = await _keyChain.read(accountCredsCert);
-    String? deviceKeyStr = await _keyChain.read(accountCredsKey);
-    String? seedStr = await _keyChain.read(accountSeedKey);
-
-    Uint8List deviceCert = Uint8List.fromList(HEX.decode(deviceCertStr!));
-    Uint8List deviceKey = Uint8List.fromList(HEX.decode(deviceKeyStr!));
-    Uint8List seed = Uint8List.fromList(HEX.decode(seedStr!));
-
-    final creds = GreenlightCredentials(
-      deviceKey: deviceKey,
-      deviceCert: deviceCert,
-    );
-
+    final credentials = await _credentialsManager.restoreCredentials();
     await _breezLib.initNode(
       config: await _getConfig(),
-      seed: seed,
-      creds: creds,
+      seed: credentials.seed,
+      creds: credentials.glCreds,
     );
-    emit(state.copyWith(initial: false));
-    started = true;
-  }
-
-  // TODO: Export the user keys to a file
-  Future exportKeyFiles(Directory destDir) async {
-    throw Exception("not implemented");
-  }
-
-  void recursiveFolderCopySync(String path1, String path2) {
-    Directory dir1 = Directory(path1);
-    Directory dir2 = Directory(path2);
-    if (!dir2.existsSync()) {
-      dir2.createSync(recursive: true);
-    }
-
-    dir1.listSync().forEach((element) {
-      String elementName = p.basename(element.path);
-      String newPath = "${dir2.path}/$elementName";
-      if (element is File) {
-        File newFile = File(newPath);
-        newFile.writeAsBytesSync(element.readAsBytesSync());
-      } else {
-        recursiveFolderCopySync(element.path, newPath);
-      }
-    });
   }
 
   // startNewNode register a new node and start it
-  Future<GreenlightCredentials> startNewNode(
-      {Network network = Network.Bitcoin, required Uint8List seed}) async {
-    if (started) {
-      throw Exception("Node already started");
-    }
+  Future startNewNode({
+    Network network = Network.Bitcoin,
+    required Uint8List seed,
+  }) async {
     final GreenlightCredentials creds = await _breezLib.registerNode(
       config: await _getConfig(),
       network: network,
       seed: seed,
     );
     _log.i("node registered successfully");
-    await _storeCredentials(creds: creds, seed: seed);
-    _breezLib.nodeStateController.add(await _breezLib.getNodeState());
-    emit(state.copyWith(initial: false));
-    started = true;
+    await _startNode(creds, seed);
     _log.i("new node started");
-    return creds;
   }
 
   // recoverNode recovers a node from seed
-  Future<GreenlightCredentials> recoverNode(
-      {Network network = Network.Bitcoin, required Uint8List seed}) async {
-    if (started) {
-      throw Exception("Node already started");
-    }
+  Future recoverNode({
+    Network network = Network.Bitcoin,
+    required Uint8List seed,
+  }) async {
     final GreenlightCredentials creds = await _breezLib.recoverNode(
       config: await _getConfig(),
       network: network,
       seed: seed,
     );
     _log.i("node recovered successfully");
-    await _storeCredentials(creds: creds, seed: seed);
-    _breezLib.nodeStateController.add(await _breezLib.getNodeState());
-    emit(state.copyWith(initial: false));
-    started = true;
+    await _startNode(creds, seed);
     _log.i("recovered node started");
-    return creds;
   }
 
-  Future<void> _storeCredentials({
-    required GreenlightCredentials creds,
-    required Uint8List seed,
-  }) async {
-    await _keyChain.write(accountCredsCert, HEX.encode(creds.deviceCert));
-    await _keyChain.write(accountCredsKey, HEX.encode(creds.deviceKey));
-    await _keyChain.write(accountSeedKey, HEX.encode(seed));
+  Future<void> _startNode(GreenlightCredentials creds, Uint8List seed) async {
+    await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
+    _breezLib.nodeStateController.add(await _breezLib.getNodeState());
+    emit(state.copyWith(initial: false));
   }
 
   Future<Config> _getConfig() async {
@@ -164,14 +129,17 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       Config config = Config(
         breezserver:
             breezConfig.get("Application Options", "breezserver") ?? "",
-        mempoolspaceUrl: await _preferences
-            .getMempoolSpaceUrl()
-            .then((url) => url ?? breezConfig.get("Application Options", "mempoolspaceurl") ?? ""),
+        mempoolspaceUrl: await _preferences.getMempoolSpaceUrl().then((url) =>
+            url ??
+            breezConfig.get("Application Options", "mempoolspaceurl") ??
+            ""),
         workingDir: (await getApplicationDocumentsDirectory()).path,
         network: Network.values.firstWhere((n) =>
             n.name.toLowerCase() ==
             breezConfig.get("Application Options", "network")),
-        paymentTimeoutSec: int.parse(breezConfig.get("Application Options", "paymentTimeoutSec") ?? "30"),
+        paymentTimeoutSec: int.parse(
+            breezConfig.get("Application Options", "paymentTimeoutSec") ??
+                "30"),
       );
       return config;
     } catch (e) {
@@ -240,7 +208,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
 
     if (!outgoing) {
-      if (channelMinimumFee != null && (amount > accState.maxInboundLiquidity && amount <= channelMinimumFee)) {
+      if (channelMinimumFee != null &&
+          (amount > accState.maxInboundLiquidity &&
+              amount <= channelMinimumFee)) {
         throw PaymentBelowSetupFeesError(channelMinimumFee);
       }
       if (amount > accState.maxAllowedToReceive) {
@@ -285,17 +255,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
   }
 
-  // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
-  _watchAccountChanges() {
-    return Rx.combineLatest3<List<LightningTransaction>, TransactionFilters,
-            NodeState?, AccountState>(
-        _breezLib.transactionsStream,
-        transactionsFiltersStream,
-        _breezLib.nodeStateStream, (transactions, filters, nodeState) {
-      return assembleAccountState(transactions, filters, nodeState) ?? state;
-    });
-  }
-
   @override
   AccountState? fromJson(Map<String, dynamic> json) {
     return AccountState.fromJson(json);
@@ -306,16 +265,27 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return state.toJson();
   }
 
-  final StreamController<PaymentResultData> _paymentResultStreamController =
-      StreamController<PaymentResultData>();
+  // TODO: Export the user keys to a file
+  Future exportKeyFiles(Directory destDir) async {
+    throw Exception("not implemented");
+  }
 
-  Stream<PaymentResultData> get paymentResultStream =>
-      _paymentResultStreamController.stream;
+  void recursiveFolderCopySync(String path1, String path2) {
+    Directory dir1 = Directory(path1);
+    Directory dir2 = Directory(path2);
+    if (!dir2.existsSync()) {
+      dir2.createSync(recursive: true);
+    }
 
-  final StreamController<TransactionFilters>
-      _transactionsFiltersStreamController =
-      StreamController<TransactionFilters>();
-
-  Stream<TransactionFilters> get transactionsFiltersStream =>
-      _transactionsFiltersStreamController.stream;
+    dir1.listSync().forEach((element) {
+      String elementName = p.basename(element.path);
+      String newPath = "${dir2.path}/$elementName";
+      if (element is File) {
+        File newFile = File(newPath);
+        newFile.writeAsBytesSync(element.readAsBytesSync());
+      } else {
+        recursiveFolderCopySync(element.path, newPath);
+      }
+    });
+  }
 }

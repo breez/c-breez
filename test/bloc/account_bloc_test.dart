@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, unused_local_variable
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,13 +18,17 @@ void main() {
       var injector = InjectorMock();
       var breezLib = injector.breezLib;
       var lspBloc = LSPBloc(breezLib);
-      AccountBloc accBloc =
-          AccountBloc(breezLib, injector.keychain, injector.preferences);
+      AccountBloc accBloc = AccountBloc(
+        breezLib,
+        CredentialsManager(keyChain: injector.keychain),
+        injector.preferences,
+      );
       var seed = bip39.mnemonicToSeed(bip39.generateMnemonic());
       print(HEX.encode(seed));
 
-      var creds = await accBloc.recoverNode(
-          seed: Uint8List.fromList(HEX.decode(testSeed)));
+      await accBloc.recoverNode(
+        seed: Uint8List.fromList(HEX.decode(testSeed)),
+      );
       var accountState = accBloc.state;
       expect(accountState.blockheight, greaterThan(1));
       expect(accountState.id?.length, equals(66));

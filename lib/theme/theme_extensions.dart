@@ -1,4 +1,3 @@
-
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +34,7 @@ final toolbarTextStyle = const TextTheme(
 ).bodyText2;
 final titleTextStyle = const TextTheme(
   headline6:
-  TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
+      TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
 ).headline6;
 const TextStyle drawerItemTextStyle =
     TextStyle(height: 1.2, letterSpacing: 0.25, fontSize: 14.3);
@@ -153,13 +152,11 @@ extension ThemeExtensions on ThemeData {
       ? const Color(0xFF0085fb).withOpacity(0.1)
       : const Color(0xff4D88EC).withOpacity(0.1);
 
-  Color switchThemeIconColor(bool light) => light
-      ? isLightTheme
-          ? Colors.white
-          : Colors.white30
-      : isLightTheme
-          ? Colors.white30
-          : Colors.white;
+  Color get lightThemeSwitchIconColor =>
+      isLightTheme ? Colors.white : Colors.white30;
+
+  Color get darkThemeSwitchIconColor =>
+      isLightTheme ? Colors.white30 : Colors.white;
 
   TextStyle get paymentItemTitleTextStyle => isLightTheme
       ? const TextStyle(

@@ -554,10 +554,10 @@ impl support::IntoDart for LnUrlPayData {
     fn into_dart(self) -> support::DartAbi {
         vec![
             self.callback.into_dart(),
-            self.minSendable.into_dart(),
-            self.maxSendable.into_dart(),
+            self.min_sendable.into_dart(),
+            self.max_sendable.into_dart(),
             self.metadata.into_dart(),
-            self.commentAllowed.into_dart(),
+            self.comment_allowed.into_dart(),
             self.tag.into_dart(),
         ]
         .into_dart()

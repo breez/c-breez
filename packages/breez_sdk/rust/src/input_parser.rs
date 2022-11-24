@@ -126,16 +126,17 @@ pub enum InputType {
 
 #[serde_as]
 #[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct LnUrlPayData {
     pub callback: String,
-    pub minSendable: u16,
-    pub maxSendable: u16,
+    pub min_sendable: u16,
+    pub max_sendable: u16,
     /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
     ///
     /// See https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string
     #[serde_as(as = "JsonString")]
     pub metadata: Vec<MetadataItem>,
-    pub commentAllowed: u16,
+    pub comment_allowed: u16,
     pub tag: String,
 }
 
@@ -424,9 +425,9 @@ mod tests {
         match parse(lnurl_pay_encoded)? {
             LnUrlPay(lnurl_pay_data) => {
                 assert_eq!(lnurl_pay_data.callback, "https://lnurl.fiatjaf.com/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
-                assert_eq!(lnurl_pay_data.maxSendable, 16000);
-                assert_eq!(lnurl_pay_data.minSendable, 4000);
-                assert_eq!(lnurl_pay_data.commentAllowed, 0);
+                assert_eq!(lnurl_pay_data.max_sendable, 16000);
+                assert_eq!(lnurl_pay_data.min_sendable, 4000);
+                assert_eq!(lnurl_pay_data.comment_allowed, 0);
                 assert_eq!(lnurl_pay_data.tag, "payRequest");
 
                 let meta = lnurl_pay_data.metadata;

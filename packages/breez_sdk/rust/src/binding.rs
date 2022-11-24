@@ -228,6 +228,10 @@ pub fn refund_swap(
     })
 }
 
+pub fn redeem_swap(swap_address: String) -> Result<()> {
+    block_on(async { get_node_service()?.redeem_swap(swap_address).await })
+}
+
 fn get_node_service() -> Result<&'static NodeService> {
     let n = NODE_SERVICE_INSTANCE.get();
     match n {

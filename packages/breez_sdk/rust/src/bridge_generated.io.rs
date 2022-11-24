@@ -134,6 +134,11 @@ pub extern "C" fn wire_refund_swap(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_redeem_swap(port_: i64, swap_address: *mut wire_uint_8_list) {
+    wire_redeem_swap_impl(port_, swap_address)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_parse_invoice(port_: i64, invoice: *mut wire_uint_8_list) {
     wire_parse_invoice_impl(port_, invoice)
 }

@@ -234,7 +234,7 @@ class UITestPage extends StatelessWidget {
                     "src/icon/ic_lightmode.png",
                     height: 24,
                     width: 24,
-                    color: themeData.switchThemeIconColor,
+                    color: themeData.lightThemeSwitchIconColor,
                   ),
                   const SizedBox(
                     height: 20,
@@ -245,7 +245,7 @@ class UITestPage extends StatelessWidget {
                   ),
                   ImageIcon(
                     const AssetImage("src/icon/ic_darkmode.png"),
-                    color: themeData.switchThemeIconColor,
+                    color: themeData.darkThemeSwitchIconColor,
                     size: 24.0,
                   ),
                 ],

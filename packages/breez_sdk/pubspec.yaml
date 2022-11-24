@@ -17,7 +17,6 @@ dependencies:
   drift_dev: ^2.2.0+1
   encrypt: ^5.0.1
   ffi: ^2.0.1
-  ffigen: ^7.2.2
   fimber: ^0.6.6
   fimber_io: ^0.6.6
   flutter_fgbg:
@@ -47,6 +46,9 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.3.2
   flutter_lints: ^2.0.1
+  # The following dependencies are required by flutter_rust_bridge_codegen to
+  # be defined under dev_dependencies to generate Dart files
+  ffigen: ^7.2.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

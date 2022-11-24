@@ -2,7 +2,6 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip21::Uri;
-use bitcoin_hashes::sha256;
 
 use crate::input_parser::InputType::*;
 use crate::invoice::{parse_invoice, LNInvoice};
@@ -54,7 +53,8 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
         return Ok(Bolt11(invoice));
     }
 
-    if let Ok(_node_id) = sha256::Hash::from_str(prepared_input) {
+    if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(prepared_input) {
+        // Public key serialized in compressed form
         return Ok(NodeId(prepared_input.into()));
     }
 
@@ -91,6 +91,7 @@ pub struct BitcoinAddressData {
 mod tests {
     use anyhow::anyhow;
     use anyhow::Result;
+    use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
 
     use crate::input_parser::{parse, InputType};
     use crate::models::Network;
@@ -228,25 +229,20 @@ mod tests {
 
     #[test]
     fn test_node_id() -> Result<()> {
-        // 64 char hex lowercase (32 bytes)
-        assert!(matches!(
-            parse("012345678901234567890123456789012345678901234567890123456789abcd")?,
-            InputType::NodeId(_id)
-        ));
+        let secp = Secp256k1::new();
+        let secret_key = SecretKey::from_slice(&[0xab; 32])?;
+        let public_key = PublicKey::from_secret_key(&secp, &secret_key);
 
-        // 64 char hex uppercase (32 bytes)
-        assert!(matches!(
-            parse("012345678901234567890123456789012345678901234567890123456789ABCD")?,
-            InputType::NodeId(_id)
-        ));
+        match parse(&public_key.to_string())? {
+            InputType::NodeId(node_id) => {
+                assert_eq!(node_id, public_key.to_string());
+            }
+            _ => return Err(anyhow!("Unexpected type")),
+        }
 
-        // 64 char non-hex
+        // Other formats and sizes
         assert!(parse("012345678901234567890123456789012345678901234567890123456789mnop").is_err());
-
-        // 10 char hex
         assert!(parse("0123456789").is_err());
-
-        // 10 char non-hex
         assert!(parse("abcdefghij").is_err());
 
         Ok(())

@@ -1169,6 +1169,7 @@ checksum = "10a35a97730320ffe8e2d410b5d3b69279b98d2c14bdb8b70ea89ecf7888d41e"
 dependencies = [
  "autocfg",
  "hashbrown 0.12.3",
+ "serde",
 ]
 
 [[package]]
@@ -1392,6 +1393,7 @@ dependencies = [
  "rusqlite_migration",
  "serde",
  "serde_json",
+ "serde_with",
  "tiny-bip39",
  "tokio",
  "tonic",
@@ -2301,6 +2303,7 @@ dependencies = [
  "base64",
  "chrono",
  "hex",
+ "indexmap",
  "serde",
  "serde_json",
  "serde_with_macros",

@@ -2,6 +2,11 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip21::Uri;
+use bitcoin::bech32;
+use bitcoin::bech32::FromBase32;
+use serde::Deserialize;
+use serde_with::json::JsonString;
+use serde_with::serde_as;
 
 use crate::input_parser::InputType::*;
 use crate::invoice::{parse_invoice, LNInvoice};
@@ -119,12 +124,17 @@ pub enum InputType {
     LnUrlWithdraw(String),
 }
 
+#[serde_as]
 #[derive(Deserialize, Debug)]
 pub struct LnUrlPayData {
     pub callback: String,
     pub minSendable: u16,
     pub maxSendable: u16,
-    pub metadata: String,
+    /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
+    ///
+    /// See https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string
+    #[serde_as(as = "JsonString")]
+    pub metadata: Vec<Vec<String>>,
     pub commentAllowed: u16,
     pub tag: String,
 }
@@ -141,9 +151,9 @@ pub struct BitcoinAddressData {
 mod tests {
     use anyhow::anyhow;
     use anyhow::Result;
-    use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
     use bitcoin::bech32;
     use bitcoin::bech32::{ToBase32, Variant};
+    use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
     use mockito;
 
     use crate::input_parser::*;
@@ -369,7 +379,7 @@ mod tests {
     }
 
     #[test]
-    fn test_lnurl_pay_lud_06() -> Result<()> {
+    fn test_lnurl_pay_lud_06() -> Result<(), Box<dyn std::error::Error>> {
         // Covers cases in LUD-06: payRequest base spec
         // https://github.com/lnurl/luds/blob/luds/06.md
 
@@ -412,9 +422,16 @@ mod tests {
                 assert_eq!(lnurl_pay_data.minSendable, 4000);
                 assert_eq!(lnurl_pay_data.commentAllowed, 0);
                 assert_eq!(lnurl_pay_data.tag, "payRequest");
-                // TODO metadata as String / Vec<String> / Vec<Vec<String>> / nested struct?
+
+                let meta = lnurl_pay_data.metadata;
+                assert_eq!(meta.len(), 3);
+                assert_eq!(meta.get(0).ok_or("Key not found")?[0], "text/plain");
+                assert_eq!(meta.get(0).ok_or("Key not found")?[1], "WRhtV");
+                assert_eq!(meta.get(1).ok_or("Key not found")?[0], "text/long-desc");
+                assert_eq!(meta.get(1).ok_or("Key not found")?[1], "MBTrTiLCFS");
+                assert_eq!(meta.get(2).ok_or("Key not found")?[0], "image/png;base64");
             }
-            _ => return Err(anyhow!("Unexpected type")),
+            _ => return Err(anyhow!("Unexpected type"))?,
         }
 
         Ok(())

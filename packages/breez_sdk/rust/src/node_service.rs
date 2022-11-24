@@ -1,10 +1,9 @@
-use core::time;
 use std::cmp::max;
 use std::str::FromStr;
 use std::sync::Arc;
 
-use crate::chain::{self, MempoolSpace};
-use crate::chain_notifier::{self, ChainNotifier};
+use crate::chain::MempoolSpace;
+use crate::chain_notifier::{self, ChainEvent, ChainNotifier, Listener};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::fund_manager_client::FundManagerClient;
@@ -14,7 +13,7 @@ use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, Rou
 use crate::lsp::LspInformation;
 use crate::models::{
     parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, Network,
-    NodeAPI, NodeState, PaymentTypeFilter, SwapInfo,
+    NodeAPI, NodeState, PaymentTypeFilter, SwapInfo, SwapperAPI,
 };
 use crate::persist;
 use crate::persist::db::SqliteStorage;
@@ -24,18 +23,102 @@ use bip39::*;
 use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
 
-pub struct NodeService {
+/// A helper struct to configure and build BreezServices
+pub struct BreezServicesBuilder {
     config: Config,
-    client: Arc<dyn NodeAPI>,
-    lsp: Arc<dyn LspAPI>,
-    fiat: Arc<dyn FiatAPI>,
+    node_api: Arc<dyn NodeAPI>,
+    lsp_api: Option<Arc<dyn LspAPI>>,
+    fiat_api: Option<Arc<dyn FiatAPI>>,
+    swapper_api: Option<Arc<dyn SwapperAPI>>,
+}
+
+impl BreezServicesBuilder {
+    pub fn new(config: Config, node_api: Arc<dyn NodeAPI>) -> BreezServicesBuilder {
+        BreezServicesBuilder {
+            config: config,
+            node_api: node_api.clone(),
+            lsp_api: None,
+            fiat_api: None,
+            swapper_api: None,
+        }
+    }
+
+    pub fn lsp_api(&mut self, lsp_api: Arc<dyn LspAPI>) -> &mut Self {
+        self.lsp_api = Some(lsp_api.clone());
+        self
+    }
+
+    pub fn fiat_api(&mut self, fiat_api: Arc<dyn FiatAPI>) -> &mut Self {
+        self.fiat_api = Some(fiat_api.clone());
+        self
+    }
+
+    pub fn swapper_api(&mut self, swapper_api: Arc<dyn SwapperAPI>) -> &mut Self {
+        self.swapper_api = Some(swapper_api.clone());
+        self
+    }
+
+    pub fn build(&self) -> Result<Arc<BreezServices>> {
+        // breez_server provides both FiatAPI & LspAPI implementations
+        let breez_server = Arc::new(BreezServer::new(self.config.breezserver.clone()));
+
+        // mempool space is used to monitor the chain
+        let chain_service = Arc::new(MempoolSpace {
+            base_url: self.config.mempoolspace_url.clone(),
+        });
+
+        // The storage is implemented via sqlite.
+        let persister = Arc::new(crate::persist::db::SqliteStorage::from_file(format!(
+            "{}/storage.sql",
+            self.config.working_dir
+        )));
+
+        persister.init().unwrap();
+
+        let payment_receiver = Arc::new(PaymentReceiver {
+            node_api: self.node_api.clone(),
+            lsp: breez_server.clone(),
+            persister: persister.clone(),
+        });
+
+        let btc_receive_swapper = Arc::new(BTCReceiveSwap::new(
+            self.config.network.clone().into(),
+            self.swapper_api.clone().unwrap_or(breez_server.clone()),
+            persister.clone(),
+            chain_service.clone(),
+            payment_receiver.clone(),
+        ));
+
+        // Create the node services and it them statically
+        let breez_services = Arc::new(BreezServices {
+            config: self.config.clone(),
+            node_api: self.node_api.clone(),
+            lsp_api: self.lsp_api.clone().unwrap_or(breez_server.clone()),
+            fiat_api: self.fiat_api.clone().unwrap_or(breez_server.clone()),
+            chain_service: chain_service.clone(),
+            persister: persister.clone(),
+            btc_receive_swapper: btc_receive_swapper.clone(),
+            payment_receiver,
+        });
+
+        Ok(breez_services)
+    }
+}
+
+/// BreezServices is a facade and the single entry point for the sdk use cases providing
+/// by exposing a simplified API
+pub struct BreezServices {
+    config: Config,
+    node_api: Arc<dyn NodeAPI>,
+    lsp_api: Arc<dyn LspAPI>,
+    fiat_api: Arc<dyn FiatAPI>,
     chain_service: Arc<MempoolSpace>,
     persister: Arc<persist::db::SqliteStorage>,
     payment_receiver: Arc<PaymentReceiver>,
     btc_receive_swapper: Arc<BTCReceiveSwap>,
 }
 
-pub(crate) struct ShutdownHandler {
+pub struct ShutdownHandler {
     shutdown_signer: mpsc::Sender<()>,
     shutdown_chain: mpsc::Sender<()>,
 }
@@ -50,88 +133,48 @@ impl ShutdownHandler {
     }
 }
 
-impl NodeService {
-    pub fn from_config(config: Config, node_api: Arc<dyn NodeAPI>) -> Result<NodeService> {
-        // breez_server provides both FiatAPI & LspAPI implementations
-        let breez_server = Arc::new(BreezServer::new(config.breezserver.clone()));
+/// starts the BreezServices background threads.
+pub async fn start(breez_services: Arc<BreezServices>) -> Result<ShutdownHandler> {
+    // start the signer
+    let (signer_signal, signer_receive) = mpsc::channel(1);
+    breez_services.node_api.start_signer(signer_receive);
 
-        // mempool space is used to monitor the chain
-        let chain_service = Arc::new(MempoolSpace {
-            base_url: config.mempoolspace_url.clone(),
-        });
+    // sync node state
+    breez_services.sync().await?;
 
-        // The storage is implemented via sqlite.
-        let persister = Arc::new(crate::persist::db::SqliteStorage::from_file(format!(
-            "{}/storage.sql",
-            config.working_dir
-        )));
-
-        persister.init().unwrap();
-
-        let payment_receiver = Arc::new(PaymentReceiver {
-            node_api: node_api.clone(),
-            lsp: breez_server.clone(),
-            persister: persister.clone(),
-        });
-
-        let btc_receive_swapper = Arc::new(BTCReceiveSwap::new(
-            config.network.clone().into(),
-            breez_server.clone(),
-            persister.clone(),
-            chain_service.clone(),
-            payment_receiver.clone(),
-        ));
-
-        // Create the node services and it them statically
-        let node_services = NodeService {
-            config,
-            client: node_api.clone(),
-            lsp: breez_server.clone(),
-            fiat: breez_server.clone(),
-            chain_service: chain_service.clone(),
-            persister: persister.clone(),
-            btc_receive_swapper: btc_receive_swapper.clone(),
-            payment_receiver,
-        };
-
-        Ok(node_services)
+    // create the chain notifier
+    let (chain_signal, chain_receive) = mpsc::channel(1);
+    let mut chain_notifier = ChainNotifier::new(breez_services.chain_service.clone());
+    let listeners: Vec<Arc<dyn Listener>> = vec![
+        breez_services.btc_receive_swapper.clone(),
+        breez_services.clone(),
+    ];
+    for l in listeners {
+        chain_notifier.add_listener(l);
     }
 
-    pub async fn schedule_and_sync(&self) -> Result<()> {
-        self.start_node().await?;
-        self.sync().await
-    }
+    // start notifying events
+    chain_notifier::start(Arc::new(chain_notifier), chain_receive);
 
-    pub(crate) fn start_background_processing(&self) -> Result<ShutdownHandler> {
-        // create the chain notifier with listeners
-        let mut chain_notifier = ChainNotifier::new(self.chain_service.clone());
-        chain_notifier.add_listener(self.btc_receive_swapper.clone());
+    let shutdown_handler = ShutdownHandler {
+        shutdown_signer: signer_signal,
+        shutdown_chain: chain_signal,
+    };
 
-        // start the signer thread
-        let (signer_signal, signer_receive) = mpsc::channel(1);
-        self.client.start_signer(signer_receive);
+    Ok(shutdown_handler)
+}
 
-        // start chain notifier thread
-        let (chain_signal, chain_receive) = mpsc::channel(1);
-        chain_notifier::start(Arc::new(chain_notifier), chain_receive);
-
-        // return the shut down handler
-        Ok(ShutdownHandler {
-            shutdown_signer: signer_signal,
-            shutdown_chain: chain_signal,
-        })
-    }
-
+impl BreezServices {
     pub async fn send_payment(&self, bolt11: String) -> Result<()> {
         self.start_node().await?;
-        self.client.send_payment(bolt11, None).await?;
+        self.node_api.send_payment(bolt11, None).await?;
         self.sync().await?;
         Ok(())
     }
 
     pub async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<()> {
         self.start_node().await?;
-        self.client
+        self.node_api
             .send_spontaneous_payment(node_id, amount_sats)
             .await?;
         self.sync().await?;
@@ -165,31 +208,27 @@ impl NodeService {
 
     pub async fn withdraw(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
         self.start_node().await?;
-        self.client.sweep(to_address, feerate_preset).await?;
+        self.node_api.sweep(to_address, feerate_preset).await?;
         self.sync().await?;
         Ok(())
     }
 
     pub async fn fetch_rates(&self) -> Result<Vec<Rate>> {
-        self.fiat.fetch_rates().await
+        self.fiat_api.fetch_rates().await
     }
 
     pub fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>> {
-        self.fiat.list_fiat_currencies()
+        self.fiat_api.list_fiat_currencies()
     }
 
     pub async fn list_lsps(&self) -> Result<Vec<LspInformation>> {
-        self.lsp
+        self.lsp_api
             .list_lsps(self.get_node_state()?.ok_or(anyhow!("err"))?.id)
             .await
     }
 
     fn set_node_state(&self, state: &NodeState) -> Result<()> {
         self.persister.set_node_state(state)
-    }
-
-    fn get_lsp_id(&self) -> Result<Option<String>> {
-        self.persister.get_lsp_id()
     }
 
     pub async fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
@@ -200,13 +239,13 @@ impl NodeService {
 
     /// Convenience method to look up LSP info based on current LSP ID
     pub async fn get_lsp(&self) -> Result<LspInformation> {
-        get_lsp(self.persister.clone(), self.lsp.clone()).await
+        get_lsp(self.persister.clone(), self.lsp_api.clone()).await
     }
 
     pub async fn close_lsp_channels(&self) -> Result<()> {
         self.start_node().await?;
         let lsp = self.get_lsp().await?;
-        self.client
+        self.node_api
             .close_peer_channels(lsp.pubkey)
             .await
             .map(|_| ())
@@ -217,7 +256,7 @@ impl NodeService {
         self.connect_lsp_peer().await?;
         let since_timestamp = self.persister.last_tx_timestamp().unwrap_or(0);
 
-        let new_data = &self.client.pull_changed(since_timestamp).await?;
+        let new_data = &self.node_api.pull_changed(since_timestamp).await?;
 
         self.set_node_state(&new_data.node_state)?;
         self.persister
@@ -234,7 +273,7 @@ impl NodeService {
             match self.get_node_state() {
                 Ok(Some(state)) => {
                     if !state.connected_peers.contains(&node_id) {
-                        self.client
+                        self.node_api
                             .connect_peer(node_id, address)
                             .await
                             .map_err(anyhow::Error::msg)
@@ -264,10 +303,10 @@ impl NodeService {
         &self,
         swap_address: String,
         to_address: String,
-        sat_per_weight: u32,
+        sat_per_vbyte: u32,
     ) -> Result<String> {
         self.btc_receive_swapper
-            .refund_swap(swap_address, to_address, sat_per_weight)
+            .refund_swap(swap_address, to_address, sat_per_vbyte)
             .await
     }
 
@@ -276,7 +315,19 @@ impl NodeService {
     }
 
     pub(crate) async fn start_node(&self) -> Result<()> {
-        self.client.start().await
+        self.node_api.start().await
+    }
+}
+
+#[tonic::async_trait]
+impl Listener for BreezServices {
+    async fn on_event(&self, e: ChainEvent) -> Result<()> {
+        match e {
+            ChainEvent::NewBlock(tip) => self.sync().await?,
+            _ => {}
+        }
+
+        Ok(())
     }
 }
 
@@ -467,7 +518,7 @@ mod test {
     use crate::chain::MempoolSpace;
     use crate::fiat::Rate;
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
-    use crate::node_service::{Config, NodeService};
+    use crate::node_service::{BreezServices, BreezServicesBuilder, Config};
     use crate::persist;
     use crate::test_utils::{MockBreezServer, MockNodeAPI};
 
@@ -520,28 +571,31 @@ mod test {
             node_state: dummy_node_state.clone(),
             transactions: dummy_transactions.clone(),
         });
-        let mut node_service = NodeService::from_config(create_test_config(), node_api)?;
-        node_service.lsp = Arc::new(MockBreezServer {});
-        node_service.fiat = Arc::new(MockBreezServer {});
 
-        node_service.sync().await?;
-        let fetched_state = node_service
+        let mut builder = BreezServicesBuilder::new(create_test_config(), node_api);
+        let breez_services = builder
+            .lsp_api(Arc::new(MockBreezServer {}))
+            .fiat_api(Arc::new(MockBreezServer {}))
+            .build()?;
+
+        breez_services.sync().await?;
+        let fetched_state = breez_services
             .get_node_state()?
             .ok_or("No NodeState found")
             .map_err(|err| anyhow!(err))?;
         assert_eq!(fetched_state, dummy_node_state);
 
-        let all = node_service
+        let all = breez_services
             .list_transactions(PaymentTypeFilter::All, None, None)
             .await?;
         assert_eq!(dummy_transactions, all);
 
-        let received = node_service
+        let received = breez_services
             .list_transactions(PaymentTypeFilter::Received, None, None)
             .await?;
         assert_eq!(received, vec![all[0].clone()]);
 
-        let sent = node_service
+        let sent = breez_services
             .list_transactions(PaymentTypeFilter::Sent, None, None)
             .await?;
         assert_eq!(sent, vec![all[1].clone()]);
@@ -554,15 +608,15 @@ mod test {
         let storage_path = format!("{}/storage.sql", get_test_working_dir());
         std::fs::remove_file(storage_path).ok();
 
-        let node_service = node_service().await;
-        node_service.sync().await?;
+        let breez_services = breez_services().await;
+        breez_services.sync().await?;
 
-        let node_pubkey = node_service
+        let node_pubkey = breez_services
             .get_node_state()?
             .ok_or("No NodeState found")
             .map_err(|err| anyhow!(err))?
             .id;
-        let lsps = node_service.lsp.list_lsps(node_pubkey).await?;
+        let lsps = breez_services.lsp_api.list_lsps(node_pubkey).await?;
         assert!(lsps.is_empty()); // The mock returns an empty list
 
         Ok(())
@@ -570,10 +624,10 @@ mod test {
 
     #[tokio::test]
     async fn test_fetch_rates() -> Result<(), Box<dyn std::error::Error>> {
-        let node_service = node_service().await;
-        node_service.sync().await?;
+        let breez_services = breez_services().await;
+        breez_services.sync().await?;
 
-        let rates = node_service.fiat.fetch_rates().await?;
+        let rates = breez_services.fiat_api.fetch_rates().await?;
         assert_eq!(rates.len(), 1);
         assert_eq!(
             rates[0],
@@ -587,16 +641,20 @@ mod test {
     }
 
     /// build node service for tests
-    async fn node_service() -> NodeService {
+    async fn breez_services() -> Arc<BreezServices> {
         let node_api = Arc::new(MockNodeAPI {
             node_state: get_dummy_node_state(),
             transactions: vec![],
         });
 
-        let mut node_service = NodeService::from_config(create_test_config(), node_api).unwrap();
-        node_service.lsp = Arc::new(MockBreezServer {});
-        node_service.fiat = Arc::new(MockBreezServer {});
-        node_service
+        let mut builder = BreezServicesBuilder::new(create_test_config(), node_api);
+        let breez_services = builder
+            .lsp_api(Arc::new(MockBreezServer {}))
+            .fiat_api(Arc::new(MockBreezServer {}))
+            .build()
+            .unwrap();
+
+        breez_services
     }
 
     fn create_test_config() -> Config {

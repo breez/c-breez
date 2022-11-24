@@ -199,7 +199,7 @@ fn main() -> Result<()> {
                             .next()
                             .ok_or("Expected to_address arg")
                             .map_err(|err| anyhow!(err))?;
-                        let sat_per_weight_fee: u32 = command
+                        let sat_per_vbyte: u32 = command
                             .next()
                             .ok_or("Expected to_address arg")
                             .map_err(|err| anyhow!(err))?
@@ -207,7 +207,7 @@ fn main() -> Result<()> {
                         binding::refund_swap(
                             swap_address.to_string(),
                             to_address.to_string(),
-                            sat_per_weight_fee,
+                            sat_per_vbyte,
                         )
                     }),
 

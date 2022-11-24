@@ -211,6 +211,14 @@ fn main() -> Result<()> {
                         )
                     }),
 
+                    Some("redeem_swap") => show_results({
+                        let swap_address = command
+                            .next()
+                            .ok_or("Expected swap_address arg")
+                            .map_err(|err| anyhow!(err))?;
+                        binding::redeem_swap(swap_address.to_string())
+                    }),
+
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());
                     }

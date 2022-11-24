@@ -1453,6 +1453,7 @@ dependencies = [
  "once_cell",
  "openssl",
  "prost 0.11.0",
+ "querystring",
  "rand",
  "reqwest",
  "ripemd",
@@ -1982,6 +1983,12 @@ dependencies = [
  "bytes",
  "prost 0.11.0",
 ]
+
+[[package]]
+name = "querystring"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9318ead08c799aad12a55a3e78b82e0b6167271ffd1f627b758891282f739187"
 
 [[package]]
 name = "quote"

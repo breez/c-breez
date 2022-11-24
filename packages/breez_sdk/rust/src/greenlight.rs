@@ -259,7 +259,12 @@ impl NodeAPI for Greenlight {
             .peers)
     }
 
-    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
+    async fn create_invoice(
+        &self,
+        amount_sats: u64,
+        description: String,
+        preimage: Option<Vec<u8>>,
+    ) -> Result<Invoice> {
         let mut client = self.get_client().await?;
 
         let request = InvoiceRequest {
@@ -271,7 +276,7 @@ impl NodeAPI for Greenlight {
                 SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis()
             ),
             description,
-            preimage: vec![],
+            preimage: preimage.unwrap_or(vec![]),
         };
 
         Ok(client.create_invoice(request).await?.into_inner())

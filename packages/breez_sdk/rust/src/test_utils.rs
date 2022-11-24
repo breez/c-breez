@@ -49,7 +49,12 @@ impl NodeAPI for MockNodeAPI {
         Ok("".to_string())
     }
 
-    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
+    async fn create_invoice(
+        &self,
+        amount_sats: u64,
+        description: String,
+        preimage: Option<Vec<u8>>,
+    ) -> Result<Invoice> {
         Ok(Invoice {
             label: "".to_string(),
             description,

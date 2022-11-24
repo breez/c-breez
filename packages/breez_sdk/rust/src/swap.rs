@@ -118,7 +118,11 @@ impl Listener for BTCReceiveSwap {
                     let redeem_res = self.redeem_swap(s.bitcoin_address.clone()).await;
 
                     if redeem_res.is_err() {
-                        error!("failed to redeem swap {:?}: {}", e, s.bitcoin_address);
+                        error!(
+                            "failed to redeem swap {:?}: {}",
+                            redeem_res.err().unwrap(),
+                            s.bitcoin_address
+                        );
                     }
                 }
             }
@@ -268,6 +272,7 @@ impl BTCReceiveSwap {
                 .receive_payment(
                     swap_info.confirmed_sats as u64,
                     String::from("Bitcoin Transfer"),
+                    Some(swap_info.preimage),
                 )
                 .await?;
             self.persister

@@ -170,6 +170,10 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kRefundSwapConstMeta;
 
+  Future<void> redeemSwap({required String swapAddress, dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kRedeemSwapConstMeta;
+
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kParseInvoiceConstMeta;
@@ -910,6 +914,22 @@ class LightningToolkitImpl implements LightningToolkit {
       const FlutterRustBridgeTaskConstMeta(
         debugName: "refund_swap",
         argNames: ["swapAddress", "toAddress", "satPerWeight"],
+      );
+
+  Future<void> redeemSwap({required String swapAddress, dynamic hint}) =>
+      _platform.executeNormal(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner
+            .wire_redeem_swap(port_, _platform.api2wire_String(swapAddress)),
+        parseSuccessData: _wire2api_unit,
+        constMeta: kRedeemSwapConstMeta,
+        argValues: [swapAddress],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kRedeemSwapConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "redeem_swap",
+        argNames: ["swapAddress"],
       );
 
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint}) =>
@@ -1866,6 +1886,23 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_refund_swap = _wire_refund_swapPtr.asFunction<
       void Function(int, ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_uint_8_list>, int)>();
+
+  void wire_redeem_swap(
+    int port_,
+    ffi.Pointer<wire_uint_8_list> swap_address,
+  ) {
+    return _wire_redeem_swap(
+      port_,
+      swap_address,
+    );
+  }
+
+  late final _wire_redeem_swapPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_redeem_swap');
+  late final _wire_redeem_swap = _wire_redeem_swapPtr
+      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_parse_invoice(
     int port_,

@@ -236,6 +236,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       accBloc.validatePayment,
       currencyState.bitcoinCurrency,
       channelMinimumFee: channelMinimumFee,
+      texts: context.texts(),
     ).validateIncoming(amount);
   }
 }

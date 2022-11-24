@@ -22,7 +22,7 @@ mixin _$InputType {
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
-    required TResult Function(LnUrlPayData field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlPay,
     required TResult Function(String field0) lnUrlWithdraw,
   }) =>
       throw _privateConstructorUsedError;
@@ -32,7 +32,7 @@ mixin _$InputType {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
   }) =>
       throw _privateConstructorUsedError;
@@ -42,7 +42,7 @@ mixin _$InputType {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
     required TResult orElse(),
   }) =>
@@ -167,7 +167,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
-    required TResult Function(LnUrlPayData field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlPay,
     required TResult Function(String field0) lnUrlWithdraw,
   }) {
     return bitcoinAddress(field0);
@@ -180,7 +180,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
   }) {
     return bitcoinAddress?.call(field0);
@@ -193,7 +193,7 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
     required TResult orElse(),
   }) {
@@ -326,7 +326,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
-    required TResult Function(LnUrlPayData field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlPay,
     required TResult Function(String field0) lnUrlWithdraw,
   }) {
     return bolt11(field0);
@@ -339,7 +339,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
   }) {
     return bolt11?.call(field0);
@@ -352,7 +352,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
     required TResult orElse(),
   }) {
@@ -484,7 +484,7 @@ class _$InputType_NodeId implements InputType_NodeId {
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
-    required TResult Function(LnUrlPayData field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlPay,
     required TResult Function(String field0) lnUrlWithdraw,
   }) {
     return nodeId(field0);
@@ -497,7 +497,7 @@ class _$InputType_NodeId implements InputType_NodeId {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
   }) {
     return nodeId?.call(field0);
@@ -510,7 +510,7 @@ class _$InputType_NodeId implements InputType_NodeId {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
     required TResult orElse(),
   }) {
@@ -641,7 +641,7 @@ class _$InputType_Url implements InputType_Url {
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
-    required TResult Function(LnUrlPayData field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlPay,
     required TResult Function(String field0) lnUrlWithdraw,
   }) {
     return url(field0);
@@ -654,7 +654,7 @@ class _$InputType_Url implements InputType_Url {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
   }) {
     return url?.call(field0);
@@ -667,7 +667,7 @@ class _$InputType_Url implements InputType_Url {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
     required TResult orElse(),
   }) {
@@ -735,7 +735,7 @@ abstract class _$$InputType_LnUrlPayCopyWith<$Res> {
   factory _$$InputType_LnUrlPayCopyWith(_$InputType_LnUrlPay value,
           $Res Function(_$InputType_LnUrlPay) then) =
       __$$InputType_LnUrlPayCopyWithImpl<$Res>;
-  $Res call({LnUrlPayData field0});
+  $Res call({String field0});
 }
 
 /// @nodoc
@@ -757,7 +757,7 @@ class __$$InputType_LnUrlPayCopyWithImpl<$Res>
       field0 == freezed
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
-              as LnUrlPayData,
+              as String,
     ));
   }
 }
@@ -768,7 +768,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
   const _$InputType_LnUrlPay(this.field0);
 
   @override
-  final LnUrlPayData field0;
+  final String field0;
 
   @override
   String toString() {
@@ -800,7 +800,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
-    required TResult Function(LnUrlPayData field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlPay,
     required TResult Function(String field0) lnUrlWithdraw,
   }) {
     return lnUrlPay(field0);
@@ -813,7 +813,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
   }) {
     return lnUrlPay?.call(field0);
@@ -826,7 +826,7 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
     required TResult orElse(),
   }) {
@@ -881,10 +881,9 @@ class _$InputType_LnUrlPay implements InputType_LnUrlPay {
 }
 
 abstract class InputType_LnUrlPay implements InputType {
-  const factory InputType_LnUrlPay(final LnUrlPayData field0) =
-      _$InputType_LnUrlPay;
+  const factory InputType_LnUrlPay(final String field0) = _$InputType_LnUrlPay;
 
-  LnUrlPayData get field0;
+  String get field0;
   @JsonKey(ignore: true)
   _$$InputType_LnUrlPayCopyWith<_$InputType_LnUrlPay> get copyWith =>
       throw _privateConstructorUsedError;
@@ -961,7 +960,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
     required TResult Function(LNInvoice field0) bolt11,
     required TResult Function(String field0) nodeId,
     required TResult Function(String field0) url,
-    required TResult Function(LnUrlPayData field0) lnUrlPay,
+    required TResult Function(String field0) lnUrlPay,
     required TResult Function(String field0) lnUrlWithdraw,
   }) {
     return lnUrlWithdraw(field0);
@@ -974,7 +973,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
   }) {
     return lnUrlWithdraw?.call(field0);
@@ -987,7 +986,7 @@ class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
     TResult Function(LNInvoice field0)? bolt11,
     TResult Function(String field0)? nodeId,
     TResult Function(String field0)? url,
-    TResult Function(LnUrlPayData field0)? lnUrlPay,
+    TResult Function(String field0)? lnUrlPay,
     TResult Function(String field0)? lnUrlWithdraw,
     required TResult orElse(),
   }) {

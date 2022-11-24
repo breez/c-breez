@@ -1,6 +1,4 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -22,37 +20,34 @@ class QrActionButton extends StatelessWidget {
     InputBloc inputBloc = context.read<InputBloc>();
     return BlocBuilder<LSPBloc, LspInformation?>(
       builder: (context, lsp) {
-        final connected = lsp != null;
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, account) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 32.0),
-              child: FloatingActionButton(
-                onPressed: connected
-                    ? () async {
-                        final navigator = Navigator.of(context);
-                        String? scannedString =
-                            await navigator.pushNamed("/qr_scan");
-                        if (scannedString != null && scannedString.isEmpty) {
-                          showFlushbar(context,
-                              message: "QR code wasn't detected.");
-                          return;
-                        }
-                        inputBloc.addIncomingInput(scannedString!);
-                      }
-                    : null,
-                child: SvgPicture.asset(
-                  "src/icon/qr_scan.svg",
-                  color: connected
-                      ? theme.BreezColors.white[500]
-                      : Theme.of(context).disabledColor,
-                  fit: BoxFit.contain,
-                  width: 24.0,
-                  height: 24.0,
-                ),
-              ),
-            );
-          },
+        final connected = (lsp != null);
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 32.0),
+          child: FloatingActionButton(
+            onPressed: connected
+                ? () async {
+                    final navigator = Navigator.of(context);
+                    String? scannedString =
+                        await navigator.pushNamed("/qr_scan");
+                    if (scannedString != null && scannedString.isEmpty) {
+                      showFlushbar(context,
+                          message: "QR code wasn't detected.");
+                      return;
+                    }
+                    inputBloc.addIncomingInput(scannedString!);
+                  }
+                : null,
+            child: SvgPicture.asset(
+              "src/icon/qr_scan.svg",
+              color: connected
+                  ? theme.BreezColors.white[500]
+                  : Theme.of(context).disabledColor,
+              fit: BoxFit.contain,
+              width: 24.0,
+              height: 24.0,
+            ),
+          ),
         );
       },
     );

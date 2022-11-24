@@ -2,9 +2,6 @@ use std::str::FromStr;
 
 use anyhow::{anyhow, Result};
 use bip21::Uri;
-use bitcoin::bech32;
-use bitcoin::bech32::FromBase32;
-use serde::Deserialize;
 
 use crate::input_parser::InputType::*;
 use crate::invoice::{parse_invoice, LNInvoice};
@@ -54,6 +51,11 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
 
     if let Ok(invoice) = parse_invoice(prepared_input) {
         return Ok(Bolt11(invoice));
+    }
+
+    if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(prepared_input) {
+        // Public key serialized in compressed form
+        return Ok(NodeId(prepared_input.into()));
     }
 
     if let Ok(url) = reqwest::Url::parse(prepared_input) {
@@ -139,6 +141,7 @@ pub struct BitcoinAddressData {
 mod tests {
     use anyhow::anyhow;
     use anyhow::Result;
+    use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
     use bitcoin::bech32;
     use bitcoin::bech32::{ToBase32, Variant};
     use mockito;
@@ -285,6 +288,27 @@ mod tests {
             parse("https://breez.technology/test-path?arg1=val1&arg2=val2")?,
             InputType::Url(_url)
         ));
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_node_id() -> Result<()> {
+        let secp = Secp256k1::new();
+        let secret_key = SecretKey::from_slice(&[0xab; 32])?;
+        let public_key = PublicKey::from_secret_key(&secp, &secret_key);
+
+        match parse(&public_key.to_string())? {
+            InputType::NodeId(node_id) => {
+                assert_eq!(node_id, public_key.to_string());
+            }
+            _ => return Err(anyhow!("Unexpected type")),
+        }
+
+        // Other formats and sizes
+        assert!(parse("012345678901234567890123456789012345678901234567890123456789mnop").is_err());
+        assert!(parse("0123456789").is_err());
+        assert!(parse("abcdefghij").is_err());
 
         Ok(())
     }

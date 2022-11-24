@@ -12,7 +12,8 @@ use bitcoin::psbt::serialize::Serialize;
 use bitcoin::secp256k1::{Message, PublicKey, Secp256k1, SecretKey};
 use bitcoin::util::sighash::SighashCache;
 use bitcoin::{
-    Address, EcdsaSighashType, OutPoint, Script, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
+    Address, EcdsaSighashType, Network, OutPoint, Script, Sequence, Transaction, TxIn, TxOut, Txid,
+    Witness,
 };
 use bitcoin_hashes::hex::FromHex;
 use bitcoin_hashes::sha256;
@@ -70,6 +71,7 @@ impl SwapperAPI for BreezServer {
 }
 
 pub struct BTCReceiveSwap {
+    network: Network,
     swapper_api: Arc<dyn SwapperAPI>,
     persister: Arc<crate::persist::db::SqliteStorage>,
     chain_service: Arc<MempoolSpace>,
@@ -113,9 +115,15 @@ impl Listener for BTCReceiveSwap {
 
                 // redeem swaps
                 for s in redeemable_swaps {
-                    // self.redeem_swap(s.bitcoin_address).await.map_err(|e| {
-                    //     //error!("failed to redeem swap {}: {}", s.bitcoin_address,);
-                    // });
+                    let redeem_res = self.redeem_swap(s.bitcoin_address.clone()).await;
+
+                    if redeem_res.is_err() {
+                        error!(
+                            "failed to redeem swap {:?}: {}",
+                            redeem_res.err().unwrap(),
+                            s.bitcoin_address
+                        );
+                    }
                 }
             }
             _ => {} // skip events were are not interested in
@@ -127,12 +135,14 @@ impl Listener for BTCReceiveSwap {
 
 impl BTCReceiveSwap {
     pub(crate) fn new(
+        network: Network,
         swapper_api: Arc<dyn SwapperAPI>,
         persister: Arc<crate::persist::db::SqliteStorage>,
         chain_service: Arc<MempoolSpace>,
         payment_receiver: Arc<PaymentReceiver>,
     ) -> Self {
         let swapper = Self {
+            network,
             swapper_api,
             persister,
             chain_service,
@@ -172,7 +182,7 @@ impl BTCReceiveSwap {
             swap_reply.lock_height,
         )?;
 
-        let address = bitcoin::Address::p2wsh(&our_script, bitcoin::Network::Bitcoin);
+        let address = bitcoin::Address::p2wsh(&our_script, self.network);
         let address_str = address.to_string();
 
         // Ensure our address generation match the service
@@ -262,6 +272,7 @@ impl BTCReceiveSwap {
                 .receive_payment(
                     swap_info.confirmed_sats as u64,
                     String::from("Bitcoin Transfer"),
+                    Some(swap_info.preimage),
                 )
                 .await?;
             self.persister
@@ -321,7 +332,14 @@ impl BTCReceiveSwap {
             script,
             sat_per_weight,
         )?;
-        self.chain_service.broadcast_transaction(refund_tx).await
+        let txid = self.chain_service.broadcast_transaction(refund_tx).await?;
+        self.persister.update_swap_chain_info(
+            swap_info.bitcoin_address,
+            swap_info.confirmed_sats,
+            SwapStatus::Refunded,
+        )?;
+
+        Ok(txid)
     }
 }
 

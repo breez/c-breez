@@ -13,8 +13,8 @@ use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{
-    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI,
-    NodeState, PaymentTypeFilter, SwapInfo,
+    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, Network,
+    NodeAPI, NodeState, PaymentTypeFilter, SwapInfo,
 };
 use crate::persist;
 use crate::persist::db::SqliteStorage;
@@ -75,6 +75,7 @@ impl NodeService {
         });
 
         let btc_receive_swapper = Arc::new(BTCReceiveSwap::new(
+            config.network.clone().into(),
             breez_server.clone(),
             persister.clone(),
             chain_service.clone(),
@@ -143,7 +144,7 @@ impl NodeService {
         description: String,
     ) -> Result<LNInvoice> {
         self.payment_receiver
-            .receive_payment(amount_sats, description)
+            .receive_payment(amount_sats, description, None)
             .await
     }
 
@@ -192,9 +193,7 @@ impl NodeService {
     }
 
     pub async fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
-        self.start_node().await?;
         self.persister.set_lsp_id(lsp_id)?;
-        self.connect_lsp_peer().await?;
         self.sync().await?;
         Ok(())
     }
@@ -272,6 +271,10 @@ impl NodeService {
             .await
     }
 
+    pub async fn redeem_swap(&self, swap_address: String) -> Result<()> {
+        self.btc_receive_swapper.redeem_swap(swap_address).await
+    }
+
     pub(crate) async fn start_node(&self) -> Result<()> {
         self.client.start().await
     }
@@ -326,6 +329,7 @@ impl PaymentReceiver {
         &self,
         amount_sats: u64,
         description: String,
+        preimage: Option<Vec<u8>>,
     ) -> Result<LNInvoice> {
         self.node_api.start().await?;
         let lsp_info = get_lsp(self.persister.clone(), self.lsp.clone()).await?;
@@ -382,7 +386,7 @@ impl PaymentReceiver {
         info!("Creating invoice on NodeAPI");
         let invoice = &self
             .node_api
-            .create_invoice(amount_sats, description)
+            .create_invoice(amount_sats, description, preimage)
             .await?;
         info!("Invoice created {}", invoice.bolt11);
 

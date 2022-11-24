@@ -16,7 +16,12 @@ pub const PAYMENT_TYPE_RECEIVED: &str = "received";
 
 #[tonic::async_trait]
 pub trait NodeAPI: Send + Sync {
-    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice>;
+    async fn create_invoice(
+        &self,
+        amount_sats: u64,
+        description: String,
+        preimage: Option<Vec<u8>>,
+    ) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     /// As per the `pb::PayRequest` docs, `amount_sats` is only needed when the invoice doesn't specify an amount
     async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment>;
@@ -116,6 +121,17 @@ impl From<bitcoin::network::constants::Network> for Network {
             bitcoin::network::constants::Network::Testnet => Testnet,
             bitcoin::network::constants::Network::Signet => Signet,
             bitcoin::network::constants::Network::Regtest => Regtest,
+        }
+    }
+}
+
+impl From<Network> for bitcoin::network::constants::Network {
+    fn from(network: Network) -> Self {
+        match network {
+            Bitcoin => bitcoin::network::constants::Network::Bitcoin,
+            Testnet => bitcoin::network::constants::Network::Testnet,
+            Signet => bitcoin::network::constants::Network::Signet,
+            Regtest => bitcoin::network::constants::Network::Regtest
         }
     }
 }

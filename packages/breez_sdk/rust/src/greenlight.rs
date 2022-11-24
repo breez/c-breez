@@ -39,7 +39,7 @@ impl Greenlight {
         seed: Vec<u8>,
         creds: GreenlightCredentials,
     ) -> Result<Greenlight> {
-        let greenlight_network = parse_network(&sdk_config.network);
+        let greenlight_network = sdk_config.network.clone().into();
         let tls_config = TlsConfig::new()?.identity(creds.device_cert, creds.device_key);
         let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
         Ok(Greenlight {
@@ -50,7 +50,7 @@ impl Greenlight {
     }
 
     pub(crate) async fn register(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
-        let greenlight_network = parse_network(&network);
+        let greenlight_network = network.into();
         let tls_config = TlsConfig::new()?;
         let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
         let scheduler = Scheduler::new(signer.node_id(), greenlight_network).await?;
@@ -63,7 +63,7 @@ impl Greenlight {
     }
 
     pub(crate) async fn recover(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
-        let greenlight_network = parse_network(&network);
+        let greenlight_network = network.into();
         let tls_config = TlsConfig::new()?;
         let signer = Signer::new(seed, greenlight_network, tls_config.clone())?;
         let scheduler = Scheduler::new(signer.node_id(), greenlight_network).await?;
@@ -76,7 +76,11 @@ impl Greenlight {
     }
 
     async fn get_client(&self) -> Result<node::Client> {
-        let scheduler = Scheduler::new(self.signer.node_id(), bitcoin::Network::Bitcoin).await?;
+        let scheduler = Scheduler::new(
+            self.signer.node_id(),
+            self.sdk_config.network.clone().into(),
+        )
+        .await?;
         let client: node::Client = scheduler.schedule(self.tls_config.clone()).await?;
         Ok(client)
     }
@@ -254,7 +258,12 @@ impl NodeAPI for Greenlight {
             .peers)
     }
 
-    async fn create_invoice(&self, amount_sats: u64, description: String) -> Result<Invoice> {
+    async fn create_invoice(
+        &self,
+        amount_sats: u64,
+        description: String,
+        preimage: Option<Vec<u8>>,
+    ) -> Result<Invoice> {
         let mut client = self.get_client().await?;
 
         let request = InvoiceRequest {
@@ -266,7 +275,7 @@ impl NodeAPI for Greenlight {
                 SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis()
             ),
             description,
-            preimage: vec![],
+            preimage: preimage.unwrap_or(vec![]),
         };
 
         Ok(client.create_invoice(request).await?.into_inner())
@@ -480,13 +489,4 @@ fn parse_amount(amount_str: String) -> Result<pb::Amount> {
     };
 
     Ok(pb::Amount { unit: Some(unit) })
-}
-
-fn parse_network(gn: &Network) -> bitcoin::Network {
-    match gn {
-        Network::Bitcoin => bitcoin::Network::Bitcoin,
-        Network::Testnet => bitcoin::Network::Testnet,
-        Network::Signet => bitcoin::Network::Signet,
-        Network::Regtest => bitcoin::Network::Regtest,
-    }
 }

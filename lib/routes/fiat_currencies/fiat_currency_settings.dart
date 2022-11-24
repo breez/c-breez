@@ -153,7 +153,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
           style: theme.fiatConversionTitleStyle,
           children: [
             TextSpan(
-              text: " (${currencyData.info.symbol})",
+              text: " (${currencyData.info.symbol?.grapheme ?? ""})",
               style: theme.fiatConversionDescriptionStyle,
             ),
           ],

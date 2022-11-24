@@ -32,9 +32,9 @@ class PaymentItemAmount extends StatelessWidget {
       height: 44,
       child: BlocBuilder<CurrencyBloc, CurrencyState>(
         builder: (context, currencyState) {
-          final fee = _paymentInfo.feesMsat * 1000;
+          final fee = _paymentInfo.feesMsat ~/ 1000;
           final amount = currencyState.bitcoinCurrency.format(
-            _paymentInfo.amountMsat * 1000,
+            _paymentInfo.amountMsat ~/ 1000,
             includeDisplayName: false,
           );
           final feeFormatted = currencyState.bitcoinCurrency.format(

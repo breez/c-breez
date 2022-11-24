@@ -2,7 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:flutter/foundation.dart';
 
 class TransactionFilters implements Exception {
-  final PaymentTypeFilter? filter;
+  final PaymentTypeFilter filter;
   final int? fromTimestamp;
   final int? toTimestamp;
 
@@ -38,7 +38,7 @@ class TransactionFilters implements Exception {
 
   Map<String, dynamic> toJson() {
     return {
-      "filter": describeEnum(filter!),
+      "filter": describeEnum(filter),
       "fromTimestamp": fromTimestamp,
       "toTimestamp": toTimestamp,
     };

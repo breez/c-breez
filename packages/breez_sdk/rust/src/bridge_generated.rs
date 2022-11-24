@@ -311,6 +311,19 @@ fn wire_refund_swap_impl(
         },
     )
 }
+fn wire_redeem_swap_impl(port_: MessagePort, swap_address: impl Wire2Api<String> + UnwindSafe) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "redeem_swap",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_swap_address = swap_address.wire2api();
+            move |task_callback| redeem_swap(api_swap_address)
+        },
+    )
+}
 fn wire_parse_invoice_impl(port_: MessagePort, invoice: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {

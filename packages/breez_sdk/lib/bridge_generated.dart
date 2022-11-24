@@ -351,7 +351,11 @@ class LnUrlPayData {
   final String callback;
   final int minSendable;
   final int maxSendable;
-  final String metadata;
+
+  /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
+  ///
+  /// See https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string
+  final List<List<String>> metadata;
   final int commentAllowed;
   final String tag;
 
@@ -1137,6 +1141,10 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
+  List<List<String>> _wire2api_list_StringList(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_StringList).toList();
+  }
+
   List<FiatCurrency> _wire2api_list_fiat_currency(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_fiat_currency).toList();
   }
@@ -1198,7 +1206,7 @@ class LightningToolkitImpl implements LightningToolkit {
       callback: _wire2api_String(arr[0]),
       minSendable: _wire2api_u16(arr[1]),
       maxSendable: _wire2api_u16(arr[2]),
-      metadata: _wire2api_String(arr[3]),
+      metadata: _wire2api_list_StringList(arr[3]),
       commentAllowed: _wire2api_u16(arr[4]),
       tag: _wire2api_String(arr[5]),
     );

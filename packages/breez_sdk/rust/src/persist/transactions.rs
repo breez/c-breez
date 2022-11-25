@@ -65,7 +65,7 @@ impl SqliteStorage {
             format!(
                 "
                SELECT * FROM ln_transactions
-               {where_clause}
+               {where_clause} ORDER BY payment_time DESC
              "
             )
             .as_str(),

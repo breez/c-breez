@@ -31,7 +31,8 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future trackPayment(String paymentHash) async {
-    throw Exception("not implemented");
+    // TODO - real implementation, waiting 1 minute to give us time to read the qrcode
+    await Future.delayed(const Duration(minutes: 1));
   }
 
   Stream<InputState?> _watchIncomingInvoices() {

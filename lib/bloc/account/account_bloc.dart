@@ -40,7 +40,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   final StreamController<TransactionFilters>
       _transactionsFiltersStreamController =
-      StreamController<TransactionFilters>();
+      BehaviorSubject<TransactionFilters>();
 
   Stream<TransactionFilters> get transactionsFiltersStream =>
       _transactionsFiltersStreamController.stream;

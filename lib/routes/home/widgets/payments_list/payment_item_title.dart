@@ -22,11 +22,11 @@ class PaymentItemTitle extends StatelessWidget {
   }
 
   String _title(BuildContext context) {
-    final shortTitle = _paymentInfo.label;
-    if (shortTitle.isNotEmpty) return shortTitle;
+    final description = _paymentInfo.description;
+    if (description != null && description.isNotEmpty) return description;
 
-    final longTitle = _paymentInfo.label;
-    if (longTitle.isNotEmpty) return longTitle;
+    final label = _paymentInfo.label;
+    if (label.isNotEmpty) return label;
 
     return context.texts().wallet_dashboard_payment_item_no_title;
   }

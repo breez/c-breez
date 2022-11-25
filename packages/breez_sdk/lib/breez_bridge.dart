@@ -64,7 +64,8 @@ class BreezBridge {
       seed: seed,
       creds: creds,
     );
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
+    await listTransactions();
   }
 
   /// pay a bolt11 invoice
@@ -74,7 +75,7 @@ class BreezBridge {
   /// * `bolt11` - The bolt11 invoice
   Future sendPayment({required String bolt11}) async {
     await _lnToolkit.sendPayment(bolt11: bolt11);
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
   }
 
   /// pay directly to a node id using keysend
@@ -87,7 +88,7 @@ class BreezBridge {
       {required String nodeId, required int amountSats}) async {
     await _lnToolkit.sendSpontaneousPayment(
         nodeId: nodeId, amountSats: amountSats);
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
   }
 
   /// Creates an bolt11 payment request.
@@ -105,7 +106,11 @@ class BreezBridge {
           amountSats: amountSats, description: description);
 
   /// get the node state from the persistent storage
-  Future<NodeState?> getNodeState() async => await _lnToolkit.getNodeState();
+  Future<NodeState?> getNodeState() async {
+    final nodeState = await _lnToolkit.getNodeState();
+    nodeStateController.add(nodeState);
+    return nodeState;
+  }
 
   final StreamController<NodeState?> nodeStateController =
       BehaviorSubject<NodeState?>();
@@ -139,7 +144,7 @@ class BreezBridge {
   /// Select the lsp to be used and provide inbound liquidity
   Future setLspId(String lspId) async {
     await _lnToolkit.setLspId(lspId: lspId);
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
   }
 
   /// Convenience method to look up LSP info
@@ -166,7 +171,7 @@ class BreezBridge {
       {required String toAddress, required FeeratePreset feeratePreset}) async {
     await _lnToolkit.withdraw(
         toAddress: toAddress, feeratePreset: feeratePreset);
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
   }
 
   Future<LNInvoice> parseInvoice(String invoice) async =>

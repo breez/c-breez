@@ -65,6 +65,7 @@ class BreezBridge {
       creds: creds,
     );
     await getNodeState();
+    await listTransactions();
   }
 
   /// pay a bolt11 invoice

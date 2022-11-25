@@ -82,11 +82,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: credentials.seed,
       creds: credentials.glCreds,
     );
-    _breezLib.listTransactions(
-      filter: state.transactionFilters.filter,
-      fromTimestamp: state.transactionFilters.fromTimestamp,
-      toTimestamp: state.transactionFilters.toTimestamp,
-    ).ignore();
   }
 
   // startNewNode register a new node and start it

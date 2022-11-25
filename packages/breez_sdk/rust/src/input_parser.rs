@@ -9,6 +9,7 @@ use serde_with::json::JsonString;
 use serde_with::serde_as;
 
 use crate::input_parser::InputType::*;
+use crate::input_parser::LnUrlRequestData::AuthRequest;
 use crate::invoice::{parse_invoice, LNInvoice};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
@@ -70,9 +71,20 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
     }
 
     if let Ok(mut lnurl_endpoint) = lnurl_decode(prepared_input) {
-        // if let Ok(lnurl_pay_data) = serde_json::from_str::<LnUrlPayData>(resp) {
-        //     return Ok(LnUrlPay(lnurl_pay_data));
-        // }
+        // For LNURL-auth links, their type is already known if the link contains the login tag
+        // No need to query the endpoint for details
+        if lnurl_endpoint.contains("tag=login") {
+            if let Some(auth_request_data) = reqwest::Url::from_str(&lnurl_endpoint)?
+                .query_pairs()
+                .into_iter()
+                .find(|(key, _)| key == "k1")
+                .map(|(_, val)| LnUrlAuthRequestData {
+                    k1: val.to_string(),
+                })
+            {
+                return Ok(LnUrlAuth(AuthRequest(auth_request_data)));
+            }
+        }
 
         #[cfg(test)]
         {
@@ -80,7 +92,7 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
             lnurl_endpoint = tests::replace_host_with_mockito_test_host(lnurl_endpoint)?;
         }
 
-        let data: LnUrlPayData = reqwest::blocking::get(lnurl_endpoint)?.json()?;
+        let data: LnUrlRequestData = reqwest::blocking::get(lnurl_endpoint)?.json()?;
         return Ok(LnUrlPay(data));
     }
 
@@ -114,30 +126,112 @@ fn lnurl_decode(encoded: &str) -> Result<String> {
 }
 
 pub enum InputType {
+    /// # Supported standards
+    ///
+    /// - plain on-chain BTC address
+    /// - BIP21
     BitcoinAddress(BitcoinAddressData),
+
     /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
     /// and discards all other data.
     Bolt11(LNInvoice),
     NodeId(String),
     Url(String),
-    LnUrlPay(LnUrlPayData),
-    LnUrlWithdraw(String),
+
+    /// # Supported standards
+    ///
+    /// - LUD-01 LNURL bech32 encoding
+    /// - LUD-06 `payRequest` spec
+    ///
+    /// # Not supported (yet)
+    ///
+    /// - LUD 17 Support for the lnurlp:// prefix and non bech32-encoded URLs
+    LnUrlPay(LnUrlRequestData),
+
+    /// # Supported standards
+    ///
+    /// - LUD-01 LNURL bech32 encoding
+    /// - LUD-03 `withdrawRequest` spec
+    ///
+    /// # Not supported (yet)
+    ///
+    /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
+    /// - LUD 17 Support for the lnurlw:// prefix and non bech32-encoded URLs
+    /// - LUD-19 Pay link discoverable from withdraw link
+    LnUrlWithdraw(LnUrlRequestData),
+
+    /// # Supported standards
+    ///
+    /// - LUD-01 LNURL bech32 encoding
+    /// - LUD-04 `auth` base spec
+    ///
+    /// # Not supported (yet)
+    ///
+    /// - LUD 17 Support for the keyauth:// prefix and non bech32-encoded URLs
+    LnUrlAuth(LnUrlRequestData),
 }
 
 #[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct LnUrlPayData {
+#[serde(tag = "tag")]
+pub enum LnUrlRequestData {
+    PayRequest(LnUrlPayRequestData),
+    WithdrawRequest(LnUrlWithdrawRequestData),
+    AuthRequest(LnUrlAuthRequestData),
+}
+
+#[serde_as]
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LnUrlPayRequestData {
     pub callback: String,
     pub min_sendable: u16,
     pub max_sendable: u16,
     /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
     ///
-    /// See https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string
+    /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
     #[serde_as(as = "JsonString")]
     pub metadata: Vec<MetadataItem>,
     pub comment_allowed: u16,
-    pub tag: String,
+}
+
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LnUrlWithdrawRequestData {
+    pub callback: String,
+    pub k1: String,
+    pub default_description: String,
+    pub min_withdrawable: u16,
+    pub max_withdrawable: u16,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct LnUrlAuthRequestData {
+    pub k1: String,
+}
+
+impl LnUrlRequestData {
+    fn pay_request_data(self) -> Result<LnUrlPayRequestData> {
+        match self {
+            LnUrlRequestData::PayRequest(pd) => Ok(pd),
+            _ => Err(anyhow!("Method can only be called on a PayRequest")),
+        }
+    }
+
+    fn withdraw_request_data(self) -> Result<LnUrlWithdrawRequestData> {
+        match self {
+            LnUrlRequestData::WithdrawRequest(wd) => Ok(wd),
+            _ => Err(anyhow!("Method can only be called on a WithdrawRequest")),
+        }
+    }
+
+    fn auth_request_data(self) -> Result<LnUrlAuthRequestData> {
+        match self {
+            LnUrlRequestData::AuthRequest(ad) => Ok(ad),
+            _ => Err(anyhow!("Method can only be called on an AuthRequest")),
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -386,6 +480,74 @@ mod tests {
     }
 
     #[test]
+    fn test_lnurl_withdraw_lud_03() -> Result<(), Box<dyn std::error::Error>> {
+        // Covers cases in LUD-03: withdrawRequest base spec
+        // https://github.com/lnurl/luds/blob/luds/03.md
+
+        let expected_lnurl_withdraw_data = r#"
+{
+    "tag":"withdrawRequest",
+    "callback":"https://lnurl.fiatjaf.com/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538",
+    "k1":"37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81",
+    "minWithdrawable":3000,
+    "maxWithdrawable":12000,
+    "defaultDescription":"sample withdraw"
+}
+        "#.replace('\n', "");
+
+        let _m = mockito::mock(
+            "GET",
+            "/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81",
+        )
+            .with_body(expected_lnurl_withdraw_data)
+            .create();
+
+        // Test URL from https://lnurl.fiatjaf.com/
+        // LNURL resolves to https://lnurl.fiatjaf.com/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81
+        let lnurl_withdraw_encoded = "lightning:LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKHW6T5DPJ8YCTH8AEK2UMND9HKU0TZVVURJVMXV9NX2C3E8QCNJVP5XCMNSVTZXSMKGD3CVEJXXE3C8PNXZVEEVYERSWPE8QMNSDRRXYURXC35XF3RWCTRXYENSV3SVSURZKAMCCN";
+        match parse(lnurl_withdraw_encoded)? {
+            LnUrlPay(data) => {
+                let wd = data.withdraw_request_data()?;
+
+                assert_eq!(wd.callback, "https://lnurl.fiatjaf.com/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
+                assert_eq!(
+                    wd.k1,
+                    "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81"
+                );
+                assert_eq!(wd.min_withdrawable, 3000);
+                assert_eq!(wd.max_withdrawable, 12000);
+                assert_eq!(wd.default_description, "sample withdraw");
+            }
+            _ => return Err(anyhow!("Unexpected type"))?,
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_auth_lud_04() -> Result<()> {
+        // Covers cases in LUD-04: `auth` base spec
+        // https://github.com/lnurl/luds/blob/luds/04.md
+
+        let decoded_url = "https://lnurl.fiatjaf.com/lnurl-login?tag=login&k1=1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822";
+        let lnurl_auth_encoded = "LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKKCMM8D9HR7ARPVU7KCMM8D9HZV6E385CKZWP4X56NQDFK8YUKXVM9XQCKYEF5X93XGERYXVERQVPHVFNXXCE4VENRJVE4XQ6KGETRXP3KYCMPXC6XYDRZ8PNXVDFEXP3RSV3JQC0MHQ";
+        assert_eq!(lnurl_decode(lnurl_auth_encoded)?, decoded_url);
+
+        match parse(lnurl_auth_encoded)? {
+            LnUrlAuth(data) => {
+                let ad = data.auth_request_data()?;
+                assert_eq!(
+                    ad.k1,
+                    "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822"
+                );
+            }
+            _ => return Err(anyhow!("Unexpected type"))?,
+        }
+
+        Ok(())
+    }
+
+    #[test]
     fn test_lnurl_pay_lud_06() -> Result<(), Box<dyn std::error::Error>> {
         // Covers cases in LUD-06: payRequest base spec
         // https://github.com/lnurl/luds/blob/luds/06.md
@@ -423,20 +585,29 @@ mod tests {
         // LNURL resolves to https://lnurl.fiatjaf.com/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7
         let lnurl_pay_encoded = "lightning:LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKHQCTE8AEK2UMND9HKU0TYVGUNGDTZXCERGV3KX4NXXDMXX4SNSEPHXANRYD3EVCMN2WPEVSMNSWTPXUMNZCNYVEJRYVR98YCKZVMRVCMXVDFSXVURYCFE8PJRW2CN9F5";
         match parse(lnurl_pay_encoded)? {
-            LnUrlPay(lnurl_pay_data) => {
-                assert_eq!(lnurl_pay_data.callback, "https://lnurl.fiatjaf.com/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
-                assert_eq!(lnurl_pay_data.max_sendable, 16000);
-                assert_eq!(lnurl_pay_data.min_sendable, 4000);
-                assert_eq!(lnurl_pay_data.comment_allowed, 0);
-                assert_eq!(lnurl_pay_data.tag, "payRequest");
+            LnUrlPay(data) => {
+                let pd = data.pay_request_data()?;
 
-                let meta = lnurl_pay_data.metadata;
-                assert_eq!(meta.len(), 3);
-                assert_eq!(meta.get(0).ok_or("Key not found")?.key, "text/plain");
-                assert_eq!(meta.get(0).ok_or("Key not found")?.value, "WRhtV");
-                assert_eq!(meta.get(1).ok_or("Key not found")?.key, "text/long-desc");
-                assert_eq!(meta.get(1).ok_or("Key not found")?.value, "MBTrTiLCFS");
-                assert_eq!(meta.get(2).ok_or("Key not found")?.key, "image/png;base64");
+                assert_eq!(pd.callback, "https://lnurl.fiatjaf.com/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
+                assert_eq!(pd.max_sendable, 16000);
+                assert_eq!(pd.min_sendable, 4000);
+                assert_eq!(pd.comment_allowed, 0);
+
+                assert_eq!(pd.metadata.len(), 3);
+                assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
+                assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+                assert_eq!(
+                    pd.metadata.get(1).ok_or("Key not found")?.key,
+                    "text/long-desc"
+                );
+                assert_eq!(
+                    pd.metadata.get(1).ok_or("Key not found")?.value,
+                    "MBTrTiLCFS"
+                );
+                assert_eq!(
+                    pd.metadata.get(2).ok_or("Key not found")?.key,
+                    "image/png;base64"
+                );
             }
             _ => return Err(anyhow!("Unexpected type"))?,
         }

@@ -295,7 +295,7 @@ fn wire_refund_swap_impl(
     port_: MessagePort,
     swap_address: impl Wire2Api<String> + UnwindSafe,
     to_address: impl Wire2Api<String> + UnwindSafe,
-    sat_per_weight: impl Wire2Api<u32> + UnwindSafe,
+    sat_per_vbyte: impl Wire2Api<u32> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -306,8 +306,8 @@ fn wire_refund_swap_impl(
         move || {
             let api_swap_address = swap_address.wire2api();
             let api_to_address = to_address.wire2api();
-            let api_sat_per_weight = sat_per_weight.wire2api();
-            move |task_callback| refund_swap(api_swap_address, api_to_address, api_sat_per_weight)
+            let api_sat_per_vbyte = sat_per_vbyte.wire2api();
+            move |task_callback| refund_swap(api_swap_address, api_to_address, api_sat_per_vbyte)
         },
     )
 }

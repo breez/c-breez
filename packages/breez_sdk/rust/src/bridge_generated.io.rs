@@ -128,9 +128,9 @@ pub extern "C" fn wire_refund_swap(
     port_: i64,
     swap_address: *mut wire_uint_8_list,
     to_address: *mut wire_uint_8_list,
-    sat_per_weight: u32,
+    sat_per_vbyte: u32,
 ) {
-    wire_refund_swap_impl(port_, swap_address, to_address, sat_per_weight)
+    wire_refund_swap_impl(port_, swap_address, to_address, sat_per_vbyte)
 }
 
 #[no_mangle]

@@ -87,7 +87,7 @@ void wire_list_swaps(int64_t port_);
 void wire_refund_swap(int64_t port_,
                       struct wire_uint_8_list *swap_address,
                       struct wire_uint_8_list *to_address,
-                      uint32_t sat_per_weight);
+                      uint32_t sat_per_vbyte);
 
 void wire_redeem_swap(int64_t port_, struct wire_uint_8_list *swap_address);
 

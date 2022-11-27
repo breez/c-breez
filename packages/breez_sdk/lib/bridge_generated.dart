@@ -165,7 +165,7 @@ abstract class LightningToolkit {
   Future<String> refundSwap(
       {required String swapAddress,
       required String toAddress,
-      required int satPerWeight,
+      required int satPerVbyte,
       dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kRefundSwapConstMeta;
@@ -878,24 +878,24 @@ class LightningToolkitImpl implements LightningToolkit {
   Future<String> refundSwap(
           {required String swapAddress,
           required String toAddress,
-          required int satPerWeight,
+          required int satPerVbyte,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_refund_swap(
             port_,
             _platform.api2wire_String(swapAddress),
             _platform.api2wire_String(toAddress),
-            api2wire_u32(satPerWeight)),
+            api2wire_u32(satPerVbyte)),
         parseSuccessData: _wire2api_String,
         constMeta: kRefundSwapConstMeta,
-        argValues: [swapAddress, toAddress, satPerWeight],
+        argValues: [swapAddress, toAddress, satPerVbyte],
         hint: hint,
       ));
 
   FlutterRustBridgeTaskConstMeta get kRefundSwapConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "refund_swap",
-        argNames: ["swapAddress", "toAddress", "satPerWeight"],
+        argNames: ["swapAddress", "toAddress", "satPerVbyte"],
       );
 
   Future<void> redeemSwap({required String swapAddress, dynamic hint}) =>
@@ -1829,13 +1829,13 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
     int port_,
     ffi.Pointer<wire_uint_8_list> swap_address,
     ffi.Pointer<wire_uint_8_list> to_address,
-    int sat_per_weight,
+    int sat_per_vbyte,
   ) {
     return _wire_refund_swap(
       port_,
       swap_address,
       to_address,
-      sat_per_weight,
+      sat_per_vbyte,
     );
   }
 

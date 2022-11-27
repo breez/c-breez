@@ -16,7 +16,7 @@ class AccountState {
   final List<String> connectedPeers;
   final int maxInboundLiquidity;
   final int onChainFeeRate;
-  final List<LightningTransaction> transactions;
+  final List<Payment> transactions;
   final TransactionFilters transactionFilters;
 
   const AccountState({
@@ -67,7 +67,7 @@ class AccountState {
     List<String>? connectedPeers,
     int? maxInboundLiquidity,
     int? onChainFeeRate,
-    List<LightningTransaction>? transactions,
+    List<Payment>? transactions,
     TransactionFilters? transactionFilters,
   }) {
     return AccountState(

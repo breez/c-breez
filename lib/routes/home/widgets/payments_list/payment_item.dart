@@ -10,7 +10,7 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 
 class PaymentItem extends StatelessWidget {
-  final LightningTransaction _paymentInfo;
+  final Payment _paymentInfo;
   final bool _firstItem;
   final bool _hideBalance;
   final GlobalKey firstPaymentItemKey;

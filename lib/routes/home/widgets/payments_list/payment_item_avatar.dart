@@ -3,7 +3,7 @@ import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 
 class PaymentItemAvatar extends StatelessWidget {
-  final LightningTransaction paymentItem;
+  final Payment paymentItem;
   final double radius;
 
   const PaymentItemAvatar(

@@ -5,7 +5,7 @@ import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:flutter/material.dart';
 
 class PaymentItemTitle extends StatelessWidget {
-  final LightningTransaction _paymentInfo;
+  final Payment _paymentInfo;
 
   const PaymentItemTitle(
     this._paymentInfo, {
@@ -36,7 +36,7 @@ void main() {
   runApp(Preview([
     // No title
     PaymentItemTitle(
-      LightningTransaction(
+      Payment(
         paymentType: "received",
         label: "",
         bolt11: "",
@@ -56,7 +56,7 @@ void main() {
 
     // Long title
     PaymentItemTitle(
-      LightningTransaction(
+      Payment(
         paymentType: "received",
         label: "A long title\nwith a new line",
         bolt11: "",
@@ -76,7 +76,7 @@ void main() {
 
     // Short title
     PaymentItemTitle(
-      LightningTransaction(
+      Payment(
         paymentType: "received",
         label: "A short title",
         bolt11: "",

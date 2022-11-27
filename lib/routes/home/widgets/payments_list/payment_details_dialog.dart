@@ -19,7 +19,7 @@ final AutoSizeGroup _valueGroup = AutoSizeGroup();
 
 Future<void> showPaymentDetailsDialog(
   BuildContext context,
-  LightningTransaction paymentInfo,
+  Payment paymentInfo,
 ) {
   final themeData = Theme.of(context);
   var mediaQuery = MediaQuery.of(context);
@@ -246,7 +246,7 @@ Future<void> showPaymentDetailsDialog(
 
 Widget _amountText(
   BitcoinCurrency currency,
-  LightningTransaction paymentInfo,
+  Payment paymentInfo,
   AppLocalizations texts,
   ThemeData themeData,
 ) {
@@ -265,14 +265,14 @@ Widget _amountText(
 }
 
 List<Widget> _getPaymentInfoDetails(
-  LightningTransaction paymentInfo,
+  Payment paymentInfo,
   AppLocalizations texts,
 ) {
   return _getSinglePaymentInfoDetails(paymentInfo, texts);
 }
 
 List<Widget> _getSinglePaymentInfoDetails(
-  LightningTransaction paymentInfo,
+  Payment paymentInfo,
   AppLocalizations texts,
 ) {
   return List<Widget>.from({

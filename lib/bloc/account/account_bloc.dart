@@ -64,7 +64,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   _watchAccountChanges() {
-    return Rx.combineLatest3<List<LightningTransaction>, TransactionFilters,
+    return Rx.combineLatest3<List<Payment>, TransactionFilters,
         NodeState?, AccountState>(
       _breezLib.transactionsStream,
       transactionsFiltersStream,

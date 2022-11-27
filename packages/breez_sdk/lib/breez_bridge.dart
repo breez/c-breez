@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/native_toolkit.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BreezBridge {
@@ -118,12 +117,12 @@ class BreezBridge {
   Stream<NodeState?> get nodeStateStream => nodeStateController.stream;
 
   /// list transactions (incoming/outgoing payments) from the persistent storage
-  Future<List<LightningTransaction>> listTransactions({
+  Future<List<Payment>> listTransactions({
     PaymentTypeFilter filter = PaymentTypeFilter.All,
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
-    var transactionList = await _lnToolkit.listTransactions(
+    var transactionList = await _lnToolkit.listPayments(
       filter: filter,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
@@ -132,10 +131,10 @@ class BreezBridge {
     return transactionList;
   }
 
-  final StreamController<List<LightningTransaction>> transactionsController =
-      BehaviorSubject<List<LightningTransaction>>();
+  final StreamController<List<Payment>> transactionsController =
+      BehaviorSubject<List<Payment>>();
 
-  Stream<List<LightningTransaction>> get transactionsStream =>
+  Stream<List<Payment>> get transactionsStream =>
       transactionsController.stream;
 
   /// List available lsps that can be selected by the user
@@ -143,16 +142,16 @@ class BreezBridge {
 
   /// Select the lsp to be used and provide inbound liquidity
   Future setLspId(String lspId) async {
-    await _lnToolkit.setLspId(lspId: lspId);
+    await _lnToolkit.connectLsp(lspId: lspId);
     await getNodeState();
   }
 
   /// Convenience method to look up LSP info
-  Future<LspInformation> getLsp() async => await _lnToolkit.getLsp();
+  Future<LspInformation> getLsp() async => await _lnToolkit.lspInfo();
 
   /// Fetch live rates of fiat currencies
   Future<Map<String, Rate>> fetchRates() async {
-    final List<Rate> rates = await _lnToolkit.fetchRates();
+    final List<Rate> rates = await _lnToolkit.fetchFiatRates();
     return rates.fold<Map<String, Rate>>({}, (map, rate) {
       map[rate.coin] = rate;
       return map;
@@ -169,7 +168,7 @@ class BreezBridge {
   /// Withdraw on-chain funds in the wallet to an external btc address
   Future withdraw(
       {required String toAddress, required FeeratePreset feeratePreset}) async {
-    await _lnToolkit.withdraw(
+    await _lnToolkit.sweep(
         toAddress: toAddress, feeratePreset: feeratePreset);
     await getNodeState();
   }

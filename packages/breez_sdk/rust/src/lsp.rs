@@ -1,9 +1,9 @@
+use crate::breez_services::BreezServer;
 use crate::crypto::encrypt;
 use crate::grpc::{
     self, LspListRequest, PaymentInformation, RegisterPaymentReply, RegisterPaymentRequest,
 };
 use crate::models::LspAPI;
-use crate::node_service::BreezServer;
 use anyhow::Result;
 use prost::Message;
 use tonic::Request;

@@ -21,8 +21,8 @@ use bitcoin_hashes::sha256;
 use rand::Rng;
 use ripemd::{Digest, Ripemd160};
 
+use crate::breez_services::{BreezServer, PaymentReceiver};
 use crate::models::{Swap, SwapInfo, SwapStatus, SwapperAPI};
-use crate::node_service::{BreezServer, PaymentReceiver};
 
 struct Utxo {
     out: OutPoint,

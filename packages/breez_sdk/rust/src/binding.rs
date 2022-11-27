@@ -1,6 +1,6 @@
+use crate::breez_services::{BreezServicesBuilder, ShutdownHandler};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
-use crate::node_service::{BreezServicesBuilder, ShutdownHandler};
 use once_cell::sync::OnceCell;
 use std::future::Future;
 use std::sync::Arc;
@@ -12,7 +12,7 @@ use crate::models::{
     Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeState,
     PaymentTypeFilter, SwapInfo,
 };
-use crate::{greenlight::Greenlight, node_service::BreezServices};
+use crate::{breez_services::BreezServices, greenlight::Greenlight};
 
 use crate::input_parser::InputType;
 use crate::invoice::{self};
@@ -79,7 +79,7 @@ pub fn init_node(
         // create the node services instance and set it globally
         let breez_services =
             BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api)).build()?;
-        let shutdown = crate::node_service::start(breez_services.clone()).await?;
+        let shutdown = crate::breez_services::start(breez_services.clone()).await?;
         BREEZ_SERVICES_SHUTDOWN
             .set(shutdown)
             .map_err(|_| anyhow!("static node services already set"))?;

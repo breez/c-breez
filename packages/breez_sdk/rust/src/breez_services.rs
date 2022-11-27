@@ -515,10 +515,10 @@ mod test {
 
     use anyhow::anyhow;
 
+    use crate::breez_services::{BreezServices, BreezServicesBuilder, Config};
     use crate::chain::MempoolSpace;
     use crate::fiat::Rate;
     use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
-    use crate::node_service::{BreezServices, BreezServicesBuilder, Config};
     use crate::persist;
     use crate::test_utils::{MockBreezServer, MockNodeAPI};
 
@@ -588,17 +588,21 @@ mod test {
         let all = breez_services
             .list_transactions(PaymentTypeFilter::All, None, None)
             .await?;
-        assert_eq!(dummy_transactions, all);
+        let mut cloned = all.clone();
+
+        // test the right order
+        cloned.reverse();
+        assert_eq!(dummy_transactions, cloned);
 
         let received = breez_services
             .list_transactions(PaymentTypeFilter::Received, None, None)
             .await?;
-        assert_eq!(received, vec![all[0].clone()]);
+        assert_eq!(received, vec![cloned[0].clone()]);
 
         let sent = breez_services
             .list_transactions(PaymentTypeFilter::Sent, None, None)
             .await?;
-        assert_eq!(sent, vec![all[1].clone()]);
+        assert_eq!(sent, vec![cloned[1].clone()]);
 
         Ok(())
     }

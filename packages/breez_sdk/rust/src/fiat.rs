@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
+use crate::breez_services::BreezServer;
 use crate::grpc::RatesRequest;
 use crate::models::FiatAPI;
-use crate::node_service::BreezServer;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use tonic::Request;

@@ -61,35 +61,33 @@ void wire_receive_payment(int64_t port_,
 
 void wire_get_node_state(int64_t port_);
 
-void wire_list_transactions(int64_t port_,
-                            int32_t filter,
-                            int64_t *from_timestamp,
-                            int64_t *to_timestamp);
+void wire_list_payments(int64_t port_,
+                        int32_t filter,
+                        int64_t *from_timestamp,
+                        int64_t *to_timestamp);
 
 void wire_list_lsps(int64_t port_);
 
-void wire_set_lsp_id(int64_t port_, struct wire_uint_8_list *lsp_id);
+void wire_connect_lsp(int64_t port_, struct wire_uint_8_list *lsp_id);
 
-void wire_get_lsp(int64_t port_);
+void wire_lsp_info(int64_t port_);
 
-void wire_fetch_rates(int64_t port_);
+void wire_fetch_fiat_rates(int64_t port_);
 
 void wire_list_fiat_currencies(int64_t port_);
 
 void wire_close_lsp_channels(int64_t port_);
 
-void wire_withdraw(int64_t port_, struct wire_uint_8_list *to_address, int32_t feerate_preset);
+void wire_sweep(int64_t port_, struct wire_uint_8_list *to_address, int32_t feerate_preset);
 
-void wire_create_swap(int64_t port_);
+void wire_receive_onchain(int64_t port_);
 
-void wire_list_swaps(int64_t port_);
+void wire_list_refundables(int64_t port_);
 
-void wire_refund_swap(int64_t port_,
-                      struct wire_uint_8_list *swap_address,
-                      struct wire_uint_8_list *to_address,
-                      uint32_t sat_per_vbyte);
-
-void wire_redeem_swap(int64_t port_, struct wire_uint_8_list *swap_address);
+void wire_refund(int64_t port_,
+                 struct wire_uint_8_list *swap_address,
+                 struct wire_uint_8_list *to_address,
+                 uint32_t sat_per_vbyte);
 
 void wire_parse_invoice(int64_t port_, struct wire_uint_8_list *invoice);
 
@@ -117,18 +115,17 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_send_spontaneous_payment);
     dummy_var ^= ((int64_t) (void*) wire_receive_payment);
     dummy_var ^= ((int64_t) (void*) wire_get_node_state);
-    dummy_var ^= ((int64_t) (void*) wire_list_transactions);
+    dummy_var ^= ((int64_t) (void*) wire_list_payments);
     dummy_var ^= ((int64_t) (void*) wire_list_lsps);
-    dummy_var ^= ((int64_t) (void*) wire_set_lsp_id);
-    dummy_var ^= ((int64_t) (void*) wire_get_lsp);
-    dummy_var ^= ((int64_t) (void*) wire_fetch_rates);
+    dummy_var ^= ((int64_t) (void*) wire_connect_lsp);
+    dummy_var ^= ((int64_t) (void*) wire_lsp_info);
+    dummy_var ^= ((int64_t) (void*) wire_fetch_fiat_rates);
     dummy_var ^= ((int64_t) (void*) wire_list_fiat_currencies);
     dummy_var ^= ((int64_t) (void*) wire_close_lsp_channels);
-    dummy_var ^= ((int64_t) (void*) wire_withdraw);
-    dummy_var ^= ((int64_t) (void*) wire_create_swap);
-    dummy_var ^= ((int64_t) (void*) wire_list_swaps);
-    dummy_var ^= ((int64_t) (void*) wire_refund_swap);
-    dummy_var ^= ((int64_t) (void*) wire_redeem_swap);
+    dummy_var ^= ((int64_t) (void*) wire_sweep);
+    dummy_var ^= ((int64_t) (void*) wire_receive_onchain);
+    dummy_var ^= ((int64_t) (void*) wire_list_refundables);
+    dummy_var ^= ((int64_t) (void*) wire_refund);
     dummy_var ^= ((int64_t) (void*) wire_parse_invoice);
     dummy_var ^= ((int64_t) (void*) wire_parse);
     dummy_var ^= ((int64_t) (void*) wire_mnemonic_to_seed);

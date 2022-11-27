@@ -85,7 +85,7 @@ impl Listener for BTCReceiveSwap {
         match e {
             ChainEvent::NewBlock(tip) => {
                 debug!("got chain event {:?}", e);
-                let swaps = self.list_swaps().await?;
+                let swaps = self.list_swaps(SwapStatus::Initial)?;
                 let to_check: Vec<SwapInfo> = swaps
                     .into_iter()
                     .filter(|s| s.status == SwapStatus::Initial)
@@ -214,8 +214,12 @@ impl BTCReceiveSwap {
         // return swap.bitcoinAddress;
     }
 
-    pub(crate) async fn list_swaps(&self) -> Result<Vec<SwapInfo>> {
-        self.persister.list_swaps()
+    pub(crate) async fn list_refundables(&self) -> Result<Vec<SwapInfo>> {
+        self.list_swaps(SwapStatus::Expired)
+    }
+
+    fn list_swaps(&self, status: SwapStatus) -> Result<Vec<SwapInfo>> {
+        self.persister.list_swaps_with_status(status)
     }
 
     async fn refresh_swap_on_chain_status(

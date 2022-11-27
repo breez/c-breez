@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use gl_client::pb::Peer;
 use gl_client::pb::WithdrawResponse;
-use gl_client::pb::{CloseChannelResponse, Invoice, Payment};
+use gl_client::pb::{CloseChannelResponse, Invoice};
 use lightning_invoice::RawInvoice;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
@@ -24,8 +24,16 @@ pub trait NodeAPI: Send + Sync {
     ) -> Result<Invoice>;
     async fn pull_changed(&self, since_timestamp: i64) -> Result<SyncResponse>;
     /// As per the `pb::PayRequest` docs, `amount_sats` is only needed when the invoice doesn't specify an amount
-    async fn send_payment(&self, bolt11: String, amount_sats: Option<u64>) -> Result<Payment>;
-    async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<Payment>;
+    async fn send_payment(
+        &self,
+        bolt11: String,
+        amount_sats: Option<u64>,
+    ) -> Result<gl_client::pb::Payment>;
+    async fn send_spontaneous_payment(
+        &self,
+        node_id: String,
+        amount_sats: u64,
+    ) -> Result<gl_client::pb::Payment>;
     async fn start(&self) -> Result<()>;
     async fn sweep(
         &self,
@@ -53,7 +61,7 @@ pub trait LspAPI: Send + Sync {
 #[tonic::async_trait]
 pub trait FiatAPI: Send + Sync {
     fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>>;
-    async fn fetch_rates(&self) -> Result<Vec<Rate>>;
+    async fn fetch_fiat_rates(&self) -> Result<Vec<Rate>>;
 }
 
 pub struct Swap {
@@ -131,7 +139,7 @@ impl From<Network> for bitcoin::network::constants::Network {
             Bitcoin => bitcoin::network::constants::Network::Bitcoin,
             Testnet => bitcoin::network::constants::Network::Testnet,
             Signet => bitcoin::network::constants::Network::Signet,
-            Regtest => bitcoin::network::constants::Network::Regtest
+            Regtest => bitcoin::network::constants::Network::Regtest,
         }
     }
 }
@@ -177,11 +185,11 @@ pub struct NodeState {
 
 pub struct SyncResponse {
     pub node_state: NodeState,
-    pub transactions: Vec<LightningTransaction>,
+    pub payments: Vec<crate::models::Payment>,
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub struct LightningTransaction {
+pub struct Payment {
     pub payment_type: String,
     pub payment_hash: String,
     pub payment_time: i64,

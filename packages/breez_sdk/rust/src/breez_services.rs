@@ -12,8 +12,8 @@ use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{
-    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LightningTransaction, LspAPI, Network,
-    NodeAPI, NodeState, PaymentTypeFilter, SwapInfo, SwapperAPI,
+    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LspAPI, Network, NodeAPI, NodeState,
+    Payment, PaymentTypeFilter, SwapInfo, SwapperAPI,
 };
 use crate::persist;
 use crate::persist::db::SqliteStorage;
@@ -22,6 +22,210 @@ use anyhow::{anyhow, Result};
 use bip39::*;
 use tokio::sync::mpsc;
 use tonic::transport::{Channel, Uri};
+
+/// starts the BreezServices background threads.
+pub async fn start(breez_services: Arc<BreezServices>) -> Result<ShutdownHandler> {
+    // start the signer
+    let (signer_signal, signer_receive) = mpsc::channel(1);
+    breez_services.node_api.start_signer(signer_receive);
+
+    // sync node state
+    breez_services.sync().await?;
+
+    // create the chain notifier
+    let (chain_signal, chain_receive) = mpsc::channel(1);
+    let mut chain_notifier = ChainNotifier::new(breez_services.chain_service.clone());
+    let listeners: Vec<Arc<dyn Listener>> = vec![
+        breez_services.btc_receive_swapper.clone(),
+        breez_services.clone(),
+    ];
+    for l in listeners {
+        chain_notifier.add_listener(l);
+    }
+
+    // start notifying events
+    chain_notifier::start(Arc::new(chain_notifier), chain_receive);
+
+    let shutdown_handler = ShutdownHandler {
+        shutdown_signer: signer_signal,
+        shutdown_chain: chain_signal,
+    };
+
+    Ok(shutdown_handler)
+}
+
+impl BreezServices {
+    pub async fn send_payment(&self, bolt11: String) -> Result<()> {
+        self.start_node().await?;
+        self.node_api.send_payment(bolt11, None).await?;
+        self.sync().await?;
+        Ok(())
+    }
+
+    pub async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<()> {
+        self.start_node().await?;
+        self.node_api
+            .send_spontaneous_payment(node_id, amount_sats)
+            .await?;
+        self.sync().await?;
+        Ok(())
+    }
+
+    pub async fn receive_payment(
+        &self,
+        amount_sats: u64,
+        description: String,
+    ) -> Result<LNInvoice> {
+        self.payment_receiver
+            .receive_payment(amount_sats, description, None)
+            .await
+    }
+
+    pub fn node_info(&self) -> Result<Option<NodeState>> {
+        self.persister.get_node_state()
+    }
+
+    pub async fn list_payments(
+        &self,
+        filter: PaymentTypeFilter,
+        from_timestamp: Option<i64>,
+        to_timestamp: Option<i64>,
+    ) -> Result<Vec<Payment>> {
+        self.persister
+            .list_payments(filter, from_timestamp, to_timestamp)
+            .map_err(|err| anyhow!(err))
+    }
+
+    pub async fn sweep(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
+        self.start_node().await?;
+        self.node_api.sweep(to_address, feerate_preset).await?;
+        self.sync().await?;
+        Ok(())
+    }
+
+    pub async fn fetch_fiat_rates(&self) -> Result<Vec<Rate>> {
+        self.fiat_api.fetch_fiat_rates().await
+    }
+
+    pub fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>> {
+        self.fiat_api.list_fiat_currencies()
+    }
+
+    pub async fn list_lsps(&self) -> Result<Vec<LspInformation>> {
+        self.lsp_api
+            .list_lsps(self.node_info()?.ok_or(anyhow!("err"))?.id)
+            .await
+    }
+
+    pub async fn connect_lsp(&self, lsp_id: String) -> Result<()> {
+        self.persister.set_lsp_id(lsp_id)?;
+        self.sync().await?;
+        Ok(())
+    }
+
+    /// Convenience method to look up LSP info based on current LSP ID
+    pub async fn lsp_info(&self) -> Result<LspInformation> {
+        get_lsp(self.persister.clone(), self.lsp_api.clone()).await
+    }
+
+    pub async fn close_lsp_channels(&self) -> Result<()> {
+        self.start_node().await?;
+        let lsp = self.lsp_info().await?;
+        self.node_api
+            .close_peer_channels(lsp.pubkey)
+            .await
+            .map(|_| ())
+    }
+
+    /// Onchain receive swap API
+    pub async fn receive_onchain(&self) -> Result<SwapInfo> {
+        self.btc_receive_swapper.create_swap_address().await
+    }
+
+    // list swaps history (all of them: expired, refunded and active)
+    pub async fn list_refundables(&self) -> Result<Vec<SwapInfo>> {
+        self.btc_receive_swapper.list_refundables().await
+    }
+
+    // construct and broadcast a refund transaction for a faile/expired swap
+    pub async fn refund(
+        &self,
+        swap_address: String,
+        to_address: String,
+        sat_per_vbyte: u32,
+    ) -> Result<String> {
+        self.btc_receive_swapper
+            .refund_swap(swap_address, to_address, sat_per_vbyte)
+            .await
+    }
+
+    async fn sync(&self) -> Result<()> {
+        self.start_node().await?;
+        self.connect_lsp_peer().await?;
+        let since_timestamp = self.persister.last_payment_timestamp().unwrap_or(0);
+
+        let new_data = &self.node_api.pull_changed(since_timestamp).await?;
+
+        self.persister.set_node_state(&new_data.node_state)?;
+        self.persister.insert_payments(&new_data.payments)?;
+        Ok(())
+    }
+
+    async fn connect_lsp_peer(&self) -> Result<()> {
+        let lsp = self.lsp_info().await.ok();
+        if !lsp.is_none() {
+            let lsp_info = lsp.unwrap().clone();
+            let node_id = lsp_info.pubkey;
+            let address = lsp_info.host;
+            match self.node_info() {
+                Ok(Some(state)) => {
+                    if !state.connected_peers.contains(&node_id) {
+                        self.node_api
+                            .connect_peer(node_id, address)
+                            .await
+                            .map_err(anyhow::Error::msg)
+                    } else {
+                        Ok(())
+                    }
+                }
+                Ok(None) => Ok(()),
+                Err(e) => Err(anyhow!(e)),
+            }?
+        }
+        Ok(())
+    }
+
+    pub(crate) async fn start_node(&self) -> Result<()> {
+        self.node_api.start().await
+    }
+}
+
+#[tonic::async_trait]
+impl Listener for BreezServices {
+    async fn on_event(&self, e: ChainEvent) -> Result<()> {
+        match e {
+            ChainEvent::NewBlock(tip) => self.sync().await?,
+            _ => {}
+        }
+
+        Ok(())
+    }
+}
+
+pub struct ShutdownHandler {
+    shutdown_signer: mpsc::Sender<()>,
+    shutdown_chain: mpsc::Sender<()>,
+}
+
+impl ShutdownHandler {
+    pub(crate) async fn stop(&self) -> Result<()> {
+        self.shutdown_signer.send(()).await?;
+        self.shutdown_chain
+            .send(())
+            .await
+            .map_err(anyhow::Error::msg)
+    }
+}
 
 /// A helper struct to configure and build BreezServices
 pub struct BreezServicesBuilder {
@@ -116,219 +320,6 @@ pub struct BreezServices {
     persister: Arc<persist::db::SqliteStorage>,
     payment_receiver: Arc<PaymentReceiver>,
     btc_receive_swapper: Arc<BTCReceiveSwap>,
-}
-
-pub struct ShutdownHandler {
-    shutdown_signer: mpsc::Sender<()>,
-    shutdown_chain: mpsc::Sender<()>,
-}
-
-impl ShutdownHandler {
-    pub(crate) async fn stop(&self) -> Result<()> {
-        self.shutdown_signer.send(()).await?;
-        self.shutdown_chain
-            .send(())
-            .await
-            .map_err(anyhow::Error::msg)
-    }
-}
-
-/// starts the BreezServices background threads.
-pub async fn start(breez_services: Arc<BreezServices>) -> Result<ShutdownHandler> {
-    // start the signer
-    let (signer_signal, signer_receive) = mpsc::channel(1);
-    breez_services.node_api.start_signer(signer_receive);
-
-    // sync node state
-    breez_services.sync().await?;
-
-    // create the chain notifier
-    let (chain_signal, chain_receive) = mpsc::channel(1);
-    let mut chain_notifier = ChainNotifier::new(breez_services.chain_service.clone());
-    let listeners: Vec<Arc<dyn Listener>> = vec![
-        breez_services.btc_receive_swapper.clone(),
-        breez_services.clone(),
-    ];
-    for l in listeners {
-        chain_notifier.add_listener(l);
-    }
-
-    // start notifying events
-    chain_notifier::start(Arc::new(chain_notifier), chain_receive);
-
-    let shutdown_handler = ShutdownHandler {
-        shutdown_signer: signer_signal,
-        shutdown_chain: chain_signal,
-    };
-
-    Ok(shutdown_handler)
-}
-
-impl BreezServices {
-    pub async fn send_payment(&self, bolt11: String) -> Result<()> {
-        self.start_node().await?;
-        self.node_api.send_payment(bolt11, None).await?;
-        self.sync().await?;
-        Ok(())
-    }
-
-    pub async fn send_spontaneous_payment(&self, node_id: String, amount_sats: u64) -> Result<()> {
-        self.start_node().await?;
-        self.node_api
-            .send_spontaneous_payment(node_id, amount_sats)
-            .await?;
-        self.sync().await?;
-        Ok(())
-    }
-
-    pub async fn receive_payment(
-        &self,
-        amount_sats: u64,
-        description: String,
-    ) -> Result<LNInvoice> {
-        self.payment_receiver
-            .receive_payment(amount_sats, description, None)
-            .await
-    }
-
-    pub fn get_node_state(&self) -> Result<Option<NodeState>> {
-        self.persister.get_node_state()
-    }
-
-    pub async fn list_transactions(
-        &self,
-        filter: PaymentTypeFilter,
-        from_timestamp: Option<i64>,
-        to_timestamp: Option<i64>,
-    ) -> Result<Vec<LightningTransaction>> {
-        self.persister
-            .list_ln_transactions(filter, from_timestamp, to_timestamp)
-            .map_err(|err| anyhow!(err))
-    }
-
-    pub async fn withdraw(&self, to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
-        self.start_node().await?;
-        self.node_api.sweep(to_address, feerate_preset).await?;
-        self.sync().await?;
-        Ok(())
-    }
-
-    pub async fn fetch_rates(&self) -> Result<Vec<Rate>> {
-        self.fiat_api.fetch_rates().await
-    }
-
-    pub fn list_fiat_currencies(&self) -> Result<Vec<FiatCurrency>> {
-        self.fiat_api.list_fiat_currencies()
-    }
-
-    pub async fn list_lsps(&self) -> Result<Vec<LspInformation>> {
-        self.lsp_api
-            .list_lsps(self.get_node_state()?.ok_or(anyhow!("err"))?.id)
-            .await
-    }
-
-    fn set_node_state(&self, state: &NodeState) -> Result<()> {
-        self.persister.set_node_state(state)
-    }
-
-    pub async fn set_lsp_id(&self, lsp_id: String) -> Result<()> {
-        self.persister.set_lsp_id(lsp_id)?;
-        self.sync().await?;
-        Ok(())
-    }
-
-    /// Convenience method to look up LSP info based on current LSP ID
-    pub async fn get_lsp(&self) -> Result<LspInformation> {
-        get_lsp(self.persister.clone(), self.lsp_api.clone()).await
-    }
-
-    pub async fn close_lsp_channels(&self) -> Result<()> {
-        self.start_node().await?;
-        let lsp = self.get_lsp().await?;
-        self.node_api
-            .close_peer_channels(lsp.pubkey)
-            .await
-            .map(|_| ())
-    }
-
-    async fn sync(&self) -> Result<()> {
-        self.start_node().await?;
-        self.connect_lsp_peer().await?;
-        let since_timestamp = self.persister.last_tx_timestamp().unwrap_or(0);
-
-        let new_data = &self.node_api.pull_changed(since_timestamp).await?;
-
-        self.set_node_state(&new_data.node_state)?;
-        self.persister
-            .insert_ln_transactions(&new_data.transactions)?;
-        Ok(())
-    }
-
-    async fn connect_lsp_peer(&self) -> Result<()> {
-        let lsp = self.get_lsp().await.ok();
-        if !lsp.is_none() {
-            let lsp_info = lsp.unwrap().clone();
-            let node_id = lsp_info.pubkey;
-            let address = lsp_info.host;
-            match self.get_node_state() {
-                Ok(Some(state)) => {
-                    if !state.connected_peers.contains(&node_id) {
-                        self.node_api
-                            .connect_peer(node_id, address)
-                            .await
-                            .map_err(anyhow::Error::msg)
-                    } else {
-                        Ok(())
-                    }
-                }
-                Ok(None) => Ok(()),
-                Err(e) => Err(anyhow!(e)),
-            }?
-        }
-        Ok(())
-    }
-
-    /// Onchain receive swap API
-    pub async fn create_swap(&self) -> Result<SwapInfo> {
-        self.btc_receive_swapper.create_swap_address().await
-    }
-
-    // list swaps history (all of them: expired, refunded and active)
-    pub async fn list_swaps(&self) -> Result<Vec<SwapInfo>> {
-        self.btc_receive_swapper.list_swaps().await
-    }
-
-    // construct and broadcast a refund transaction for a faile/expired swap
-    pub async fn refund_swap(
-        &self,
-        swap_address: String,
-        to_address: String,
-        sat_per_vbyte: u32,
-    ) -> Result<String> {
-        self.btc_receive_swapper
-            .refund_swap(swap_address, to_address, sat_per_vbyte)
-            .await
-    }
-
-    pub async fn redeem_swap(&self, swap_address: String) -> Result<()> {
-        self.btc_receive_swapper.redeem_swap(swap_address).await
-    }
-
-    pub(crate) async fn start_node(&self) -> Result<()> {
-        self.node_api.start().await
-    }
-}
-
-#[tonic::async_trait]
-impl Listener for BreezServices {
-    async fn on_event(&self, e: ChainEvent) -> Result<()> {
-        match e {
-            ChainEvent::NewBlock(tip) => self.sync().await?,
-            _ => {}
-        }
-
-        Ok(())
-    }
 }
 
 #[derive(Clone)]
@@ -518,7 +509,7 @@ mod test {
     use crate::breez_services::{BreezServices, BreezServicesBuilder, Config};
     use crate::chain::MempoolSpace;
     use crate::fiat::Rate;
-    use crate::models::{LightningTransaction, NodeState, PaymentTypeFilter};
+    use crate::models::{NodeState, Payment, PaymentTypeFilter};
     use crate::persist;
     use crate::test_utils::{MockBreezServer, MockNodeAPI};
 
@@ -538,7 +529,7 @@ mod test {
         let dummy_node_state = get_dummy_node_state();
 
         let dummy_transactions = vec![
-            LightningTransaction {
+            Payment {
                 payment_type: crate::models::PAYMENT_TYPE_RECEIVED.to_string(),
                 payment_hash: "1111".to_string(),
                 payment_time: 100000,
@@ -552,7 +543,7 @@ mod test {
                 pending: false,
                 description: Some("test receive".to_string()),
             },
-            LightningTransaction {
+            Payment {
                 payment_type: crate::models::PAYMENT_TYPE_SENT.to_string(),
                 payment_hash: "3333".to_string(),
                 payment_time: 200000,
@@ -580,13 +571,13 @@ mod test {
 
         breez_services.sync().await?;
         let fetched_state = breez_services
-            .get_node_state()?
+            .node_info()?
             .ok_or("No NodeState found")
             .map_err(|err| anyhow!(err))?;
         assert_eq!(fetched_state, dummy_node_state);
 
         let all = breez_services
-            .list_transactions(PaymentTypeFilter::All, None, None)
+            .list_payments(PaymentTypeFilter::All, None, None)
             .await?;
         let mut cloned = all.clone();
 
@@ -595,12 +586,12 @@ mod test {
         assert_eq!(dummy_transactions, cloned);
 
         let received = breez_services
-            .list_transactions(PaymentTypeFilter::Received, None, None)
+            .list_payments(PaymentTypeFilter::Received, None, None)
             .await?;
         assert_eq!(received, vec![cloned[0].clone()]);
 
         let sent = breez_services
-            .list_transactions(PaymentTypeFilter::Sent, None, None)
+            .list_payments(PaymentTypeFilter::Sent, None, None)
             .await?;
         assert_eq!(sent, vec![cloned[1].clone()]);
 
@@ -616,7 +607,7 @@ mod test {
         breez_services.sync().await?;
 
         let node_pubkey = breez_services
-            .get_node_state()?
+            .node_info()?
             .ok_or("No NodeState found")
             .map_err(|err| anyhow!(err))?
             .id;
@@ -631,7 +622,7 @@ mod test {
         let breez_services = breez_services().await;
         breez_services.sync().await?;
 
-        let rates = breez_services.fiat_api.fetch_rates().await?;
+        let rates = breez_services.fiat_api.fetch_fiat_rates().await?;
         assert_eq!(rates.len(), 1);
         assert_eq!(
             rates[0],

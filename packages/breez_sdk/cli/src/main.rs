@@ -158,7 +158,7 @@ fn main() -> Result<()> {
                             .map_err(|err| anyhow!(err))?
                             .parse()?;
 
-                        show_results(binding::withdraw(
+                        show_results(binding::sweep(
                             to_address.into(),
                             FeeratePreset::try_from(feerate_preset)?,
                         ))
@@ -189,7 +189,7 @@ fn main() -> Result<()> {
                     Some("stop_node") => show_results(binding::stop_node()),
 
                     Some("receive_onchain") => show_results(binding::receive_onchain()),
-                    Some("list_refundables") => show_results(binding::list_swaps()),
+                    Some("list_refundables") => show_results(binding::list_refundables()),
                     Some("refund") => show_results({
                         let swap_address = command
                             .next()
@@ -209,14 +209,6 @@ fn main() -> Result<()> {
                             to_address.to_string(),
                             sat_per_vbyte,
                         )
-                    }),
-
-                    Some("redeem_swap") => show_results({
-                        let swap_address = command
-                            .next()
-                            .ok_or("Expected swap_address arg")
-                            .map_err(|err| anyhow!(err))?;
-                        binding::redeem_swap(swap_address.to_string())
                     }),
 
                     Some(_) => {

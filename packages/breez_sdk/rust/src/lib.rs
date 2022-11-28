@@ -6,7 +6,7 @@ pub mod binding;
 pub mod breez_services;
 mod chain;
 mod chain_notifier;
-mod crypto;
+mod crypt;
 mod fiat;
 mod greenlight;
 pub mod grpc;

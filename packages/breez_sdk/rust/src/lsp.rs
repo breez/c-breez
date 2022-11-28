@@ -1,5 +1,5 @@
 use crate::breez_services::BreezServer;
-use crate::crypto::encrypt;
+use crate::crypt::encrypt;
 use crate::grpc::{
     self, LspListRequest, PaymentInformation, RegisterPaymentReply, RegisterPaymentRequest,
 };

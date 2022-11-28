@@ -13,7 +13,7 @@ impl SqliteStorage {
 
     pub fn init(&self) -> Result<()> {
         let migrations = Migrations::new(vec![M::up(
-            "CREATE TABLE IF NOT EXISTS ln_transactions (
+            "CREATE TABLE IF NOT EXISTS payments (
                payment_type TEXT NOT NULL check( payment_type in('sent', 'received')),
                payment_hash TEXT NOT NULL PRIMARY KEY,
                payment_time INTEGER NOT NULL,

@@ -99,18 +99,19 @@ impl SqliteStorage {
             .map_err(|e| anyhow!(e))
     }
 
-    pub fn list_swaps(&self) -> Result<Vec<SwapInfo>> {
+    pub fn list_swaps_with_status(&self, status: SwapStatus) -> Result<Vec<SwapInfo>> {
         let con = self.get_connection()?;
         let mut stmt = con.prepare(
             format!(
                 "
-              SELECT * FROM swaps            
+              SELECT * FROM swaps WHERE status=?         
              "
             )
             .as_str(),
         )?;
+
         let vec: Vec<SwapInfo> = stmt
-            .query_map([], |row| {
+            .query_map([status as u32], |row| {
                 let status: i32 = row.get(12)?;
                 let status: SwapStatus = status.try_into().map_or(SwapStatus::Initial, |v| v);
                 Ok(SwapInfo {
@@ -165,7 +166,10 @@ fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
     let non_existent_swap = storage.get_swap_info("non-existent".to_string())?;
     assert!(non_existent_swap.is_none());
 
-    let swaps = storage.list_swaps()?;
+    let empty_swaps = storage.list_swaps_with_status(SwapStatus::Expired)?;
+    assert_eq!(empty_swaps.len(), 0);
+
+    let swaps = storage.list_swaps_with_status(SwapStatus::Initial)?;
     assert_eq!(swaps.len(), 1);
 
     let err = storage.insert_swap(tested_swap_info.clone());

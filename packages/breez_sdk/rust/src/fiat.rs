@@ -70,7 +70,7 @@ impl FiatAPI for BreezServer {
     }
 
     // get the live rates from the server
-    async fn fetch_rates(&self) -> Result<Vec<Rate>> {
+    async fn fetch_fiat_rates(&self) -> Result<Vec<Rate>> {
         let mut client = self.get_information_client().await?;
 
         let request = Request::new(RatesRequest {});

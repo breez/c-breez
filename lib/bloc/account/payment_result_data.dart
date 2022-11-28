@@ -4,7 +4,7 @@ import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.
 import 'package:c_breez/utils/locale.dart';
 
 class PaymentResultData {
-  final LightningTransaction? paymentInfo;
+  final Payment? paymentInfo;
   final Object? error;
   final SuccessActionData? successActionData;
 

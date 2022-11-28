@@ -1,5 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/account/transaction_filters.dart';
+import 'package:c_breez/bloc/account/payment_filters.dart';
 
 const initialInboundCapacity = 4000000;
 
@@ -16,8 +16,8 @@ class AccountState {
   final List<String> connectedPeers;
   final int maxInboundLiquidity;
   final int onChainFeeRate;
-  final List<Payment> transactions;
-  final TransactionFilters transactionFilters;
+  final List<Payment> payments;
+  final PaymentFilters paymentFilters;
 
   const AccountState({
     required this.id,
@@ -32,8 +32,8 @@ class AccountState {
     required this.connectedPeers,
     required this.maxInboundLiquidity,
     required this.onChainFeeRate,
-    required this.transactions,
-    required this.transactionFilters,
+    required this.payments,
+    required this.paymentFilters,
   });
 
   AccountState.initial()
@@ -50,8 +50,8 @@ class AccountState {
           onChainFeeRate: 0,
           balance: 0,
           walletBalance: 0,
-          transactions: [],
-          transactionFilters: TransactionFilters.initial(),
+          payments: [],
+          paymentFilters: PaymentFilters.initial(),
         );
 
   AccountState copyWith({
@@ -67,8 +67,8 @@ class AccountState {
     List<String>? connectedPeers,
     int? maxInboundLiquidity,
     int? onChainFeeRate,
-    List<Payment>? transactions,
-    TransactionFilters? transactionFilters,
+    List<Payment>? payments,
+    PaymentFilters? paymentFilters,
   }) {
     return AccountState(
       id: id ?? this.id,
@@ -83,14 +83,14 @@ class AccountState {
       connectedPeers: connectedPeers ?? this.connectedPeers,
       maxInboundLiquidity: maxInboundLiquidity ?? this.maxInboundLiquidity,
       onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
-      transactions: transactions ?? this.transactions,
-      transactionFilters: transactionFilters ?? this.transactionFilters,
+      payments: payments ?? this.payments,
+      paymentFilters: paymentFilters ?? this.paymentFilters,
     );
   }
 
   int get reserveAmount => balance - maxAllowedToPay;
 
-  // TODO: Add transactions toJson
+  // TODO: Add payments toJson
   Map<String, dynamic>? toJson() {
     return {
       "id": id,
@@ -104,11 +104,11 @@ class AccountState {
       "maxChanReserve": maxChanReserve,
       "maxInboundLiquidity": maxInboundLiquidity,
       "onChainFeeRate": onChainFeeRate,
-      "transactionFilters": transactionFilters.toJson(),
+      "paymentFilters": paymentFilters.toJson(),
     };
   }
 
-// TODO: Generate transactions fromJson
+// TODO: Generate payments fromJson
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
       id: json["id"],
@@ -123,9 +123,8 @@ class AccountState {
       connectedPeers: <String>[],
       maxInboundLiquidity: json["maxInboundLiquidity"] ?? 0,
       onChainFeeRate: (json["onChainFeeRate"]),
-      transactions: [],
-      transactionFilters:
-          TransactionFilters.fromJson(json["transactionFilters"]),
+      payments: [],
+      paymentFilters: PaymentFilters.fromJson(json["paymentFilters"]),
     );
   }
 }

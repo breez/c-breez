@@ -32,9 +32,9 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   }
 
   Future<Map<String, Rate>> fetchExchangeRates() async {
-    var ratesMap = await _breezLib.fetchRates();
-    emit(state.copyWith(exchangeRates: ratesMap));
-    return ratesMap;
+    var exchangeRates = await _breezLib.fetchFiatRates();
+    emit(state.copyWith(exchangeRates: exchangeRates));
+    return exchangeRates;
   }
 
   @override

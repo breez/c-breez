@@ -42,7 +42,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
           };
           _filter = _getFilterTypeString(
             context,
-            account.transactionFilters.filter,
+            account.paymentFilters.filter,
           );
         }
 

@@ -1,12 +1,15 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/account/transaction_filters.dart';
+import 'package:c_breez/bloc/account/payment_filters.dart';
 
 import 'account_bloc.dart';
 import 'account_state.dart';
 
 // assembleAccountState assembles the account state using the local synchronized data.
-AccountState? assembleAccountState(List<Payment> transactions,
-    TransactionFilters filters, NodeState? nodeState) {
+AccountState? assembleAccountState(
+  List<Payment> payments,
+  PaymentFilters paymentFilters,
+  NodeState? nodeState,
+) {
   if (nodeState == null) {
     return null;
   }
@@ -27,7 +30,7 @@ AccountState? assembleAccountState(List<Payment> transactions,
     connectedPeers: nodeState.connectedPeers,
     onChainFeeRate: 0,
     maxInboundLiquidity: nodeState.inboundLiquidityMsats ~/ 1000,
-    transactions: transactions,
-    transactionFilters: filters,
+    payments: payments,
+    paymentFilters: paymentFilters,
   );
 }

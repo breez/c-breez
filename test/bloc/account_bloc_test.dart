@@ -40,7 +40,7 @@ void main() {
       expect(accountState.maxChanReserve, 0);
       expect(accountState.maxInboundLiquidity, 0);
       expect(accountState.onChainFeeRate, 0);
-      expect(accountState.transactions.length, 0);
+      expect(accountState.payments.length, 0);
     });
   });
 }

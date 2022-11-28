@@ -105,7 +105,7 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta;
 
-  /// list transactions (incoming/outgoing payments) from the persistent storage
+  /// list payments (incoming/outgoing payments) from the persistent storage
   Future<List<Payment>> listPayments(
       {required PaymentTypeFilter filter,
       int? fromTimestamp,

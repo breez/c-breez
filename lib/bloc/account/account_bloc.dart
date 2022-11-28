@@ -8,7 +8,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
-import 'package:c_breez/bloc/account/transaction_filters.dart';
+import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
@@ -38,12 +38,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Stream<PaymentResultData> get paymentResultStream =>
       _paymentResultStreamController.stream;
 
-  final StreamController<TransactionFilters>
-      _transactionsFiltersStreamController =
-      BehaviorSubject<TransactionFilters>();
+  final StreamController<PaymentFilters> _paymentFiltersStreamController =
+      BehaviorSubject<PaymentFilters>();
 
-  Stream<TransactionFilters> get transactionsFiltersStream =>
-      _transactionsFiltersStreamController.stream;
+  Stream<PaymentFilters> get paymentFiltersStream =>
+      _paymentFiltersStreamController.stream;
 
   final BreezBridge _breezLib;
   final Preferences _preferences;
@@ -57,20 +56,21 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     // emit on every change
     _watchAccountChanges().listen((acc) => emit(acc));
 
-    _transactionsFiltersStreamController.add(state.transactionFilters);
+    _paymentFiltersStreamController.add(state.paymentFilters);
 
     if (!state.initial) _startRegisteredNode();
   }
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   _watchAccountChanges() {
-    return Rx.combineLatest3<List<Payment>, TransactionFilters,
-        NodeState?, AccountState>(
-      _breezLib.transactionsStream,
-      transactionsFiltersStream,
+    return Rx.combineLatest3<List<Payment>, PaymentFilters, NodeState?,
+        AccountState>(
+      _breezLib.paymentsStream,
+      paymentFiltersStream,
       _breezLib.nodeStateStream,
-      (transactions, filters, nodeState) {
-        return assembleAccountState(transactions, filters, nodeState) ?? state;
+      (payments, paymentFilters, nodeState) {
+        return assembleAccountState(payments, paymentFilters, nodeState) ??
+            state;
       },
     );
   }
@@ -231,13 +231,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
-    await _breezLib.listTransactions(
+    await _breezLib.listPayments(
       filter: filter,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
     );
-    _transactionsFiltersStreamController.add(
-      state.transactionFilters.copyWith(
+    _paymentFiltersStreamController.add(
+      state.paymentFilters.copyWith(
         filter: filter,
         fromTimestamp: fromTimestamp,
         toTimestamp: toTimestamp,

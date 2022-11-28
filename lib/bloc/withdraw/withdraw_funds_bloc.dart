@@ -26,6 +26,6 @@ class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
 
   Future<void> sweepAllCoins(
       String toAddress, FeeratePreset feeratePreset) async {
-    await _breezLib.withdraw(toAddress: toAddress, feeratePreset: feeratePreset);
+    await _breezLib.sweep(toAddress: toAddress, feeratePreset: feeratePreset);
   }
 }

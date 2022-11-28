@@ -1,33 +1,33 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:flutter/foundation.dart';
 
-class TransactionFilters implements Exception {
+class PaymentFilters implements Exception {
   final PaymentTypeFilter filter;
   final int? fromTimestamp;
   final int? toTimestamp;
 
-  TransactionFilters({
+  PaymentFilters({
     this.filter = PaymentTypeFilter.All,
     this.fromTimestamp,
     this.toTimestamp,
   });
 
-  TransactionFilters.initial() : this();
+  PaymentFilters.initial() : this();
 
-  TransactionFilters copyWith({
+  PaymentFilters copyWith({
     PaymentTypeFilter? filter,
     int? fromTimestamp,
     int? toTimestamp,
   }) {
-    return TransactionFilters(
+    return PaymentFilters(
       filter: filter ?? this.filter,
       fromTimestamp: fromTimestamp ?? this.fromTimestamp,
       toTimestamp: toTimestamp ?? this.toTimestamp,
     );
   }
 
-  factory TransactionFilters.fromJson(Map<String, dynamic> json) {
-    return TransactionFilters(
+  factory PaymentFilters.fromJson(Map<String, dynamic> json) {
+    return PaymentFilters(
       filter: PaymentTypeFilter.values.firstWhere(
           (n) => n.name == json["filter"],
           orElse: () => PaymentTypeFilter.All),

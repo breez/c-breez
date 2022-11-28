@@ -5,6 +5,7 @@ use gl_client::pb::{CloseChannelResponse, Invoice};
 use lightning_invoice::RawInvoice;
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
+use tonic::Streaming;
 
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
@@ -45,6 +46,7 @@ pub trait NodeAPI: Send + Sync {
     async fn connect_peer(&self, node_id: String, addr: String) -> Result<()>;
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String>;
     async fn close_peer_channels(&self, node_id: String) -> Result<CloseChannelResponse>;
+    async fn stream_incoming_payments(&self) -> Result<Streaming<gl_client::pb::IncomingPayment>>;
 }
 
 #[tonic::async_trait]

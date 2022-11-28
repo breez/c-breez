@@ -1,6 +1,9 @@
-use crate::breez_services::{BreezServicesBuilder, ShutdownHandler};
+use crate::breez_services::{
+    BreezEvent, BreezEventListener, BreezServicesBuilder, ShutdownHandler,
+};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
+use flutter_rust_bridge::StreamSink;
 use once_cell::sync::OnceCell;
 use std::future::Future;
 use std::sync::Arc;
@@ -20,6 +23,20 @@ use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
 static BREEZ_SERVICES_SHUTDOWN: OnceCell<ShutdownHandler> = OnceCell::new();
+static NOTIFICATION_STREAM: OnceCell<StreamSink<BreezEvent>> = OnceCell::new();
+
+struct BindingEventListener {}
+
+#[tonic::async_trait]
+impl BreezEventListener for BindingEventListener {
+    async fn on_event(&self, e: BreezEvent) -> Result<()> {
+        let s = NOTIFICATION_STREAM.get();
+        if s.is_some() {
+            s.unwrap().add(e);
+        }
+        Ok(())
+    }
+}
 
 /// Register a new node in the cloud and return credentials to interact with it
 ///
@@ -77,8 +94,9 @@ pub fn init_node(
         let node_api = Greenlight::new(sdk_config.clone(), seed, creds).await?; //block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
 
         // create the node services instance and set it globally
-        let breez_services =
-            BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api)).build()?;
+        let breez_services = BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api))
+            .event_listener(Arc::new(BindingEventListener {}))
+            .build()?;
         let shutdown = crate::breez_services::start(breez_services.clone()).await?;
         BREEZ_SERVICES_SHUTDOWN
             .set(shutdown)
@@ -89,6 +107,13 @@ pub fn init_node(
 
         Ok(())
     })
+}
+
+pub fn breez_events_stream(s: StreamSink<BreezEvent>) -> Result<()> {
+    NOTIFICATION_STREAM
+        .set(s)
+        .map_err(|_| anyhow!("events stream already created"))?;
+    Ok(())
 }
 
 /// Cleanup node resources and stop the signer.

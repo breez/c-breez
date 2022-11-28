@@ -6,6 +6,7 @@ use gl_client::pb::{
 use lightning_invoice::RawInvoice;
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::{random, Rng};
+use tonic::Streaming;
 
 use crate::fiat::{FiatCurrency, Rate};
 
@@ -23,31 +24,6 @@ pub struct MockNodeAPI {
 
 #[tonic::async_trait]
 impl NodeAPI for MockNodeAPI {
-    async fn start(&self) -> Result<()> {
-        Ok(())
-    }
-
-    fn start_signer(&self, _shutdown: mpsc::Receiver<()>) {}
-
-    async fn pull_changed(&self, _since_timestamp: i64) -> Result<SyncResponse> {
-        Ok(SyncResponse {
-            node_state: self.node_state.clone(),
-            payments: self.transactions.clone(),
-        })
-    }
-
-    async fn list_peers(&self) -> Result<Vec<Peer>> {
-        Ok(vec![])
-    }
-
-    async fn connect_peer(&self, node_id: String, addr: String) -> Result<()> {
-        Ok(())
-    }
-
-    fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
-        Ok("".to_string())
-    }
-
     async fn create_invoice(
         &self,
         amount_sats: u64,
@@ -70,6 +46,13 @@ impl NodeAPI for MockNodeAPI {
         })
     }
 
+    async fn pull_changed(&self, _since_timestamp: i64) -> Result<SyncResponse> {
+        Ok(SyncResponse {
+            node_state: self.node_state.clone(),
+            payments: self.transactions.clone(),
+        })
+    }
+
     async fn send_payment(
         &self,
         _bolt11: String,
@@ -86,6 +69,10 @@ impl NodeAPI for MockNodeAPI {
         Ok(MockNodeAPI::get_dummy_payment())
     }
 
+    async fn start(&self) -> Result<()> {
+        Ok(())
+    }
+
     async fn sweep(
         &self,
         _to_address: String,
@@ -97,12 +84,29 @@ impl NodeAPI for MockNodeAPI {
         })
     }
 
+    fn start_signer(&self, _shutdown: mpsc::Receiver<()>) {}
+
+    async fn list_peers(&self) -> Result<Vec<Peer>> {
+        Ok(vec![])
+    }
+
+    async fn connect_peer(&self, node_id: String, addr: String) -> Result<()> {
+        Ok(())
+    }
+
+    fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
+        Ok("".to_string())
+    }
+
     async fn close_peer_channels(&self, node_id: String) -> Result<CloseChannelResponse> {
         Ok(CloseChannelResponse {
             txid: Vec::new(),
             tx: Vec::new(),
             close_type: CloseChannelType::Mutual.into(),
         })
+    }
+    async fn stream_incoming_payments(&self) -> Result<Streaming<gl_client::pb::IncomingPayment>> {
+        Err(anyhow!("Not implemented"))
     }
 }
 

@@ -17,6 +17,8 @@ use flutter_rust_bridge::*;
 
 // Section: imports
 
+use crate::breez_services::BreezEvent;
+use crate::breez_services::InvoicePaidDetails;
 use crate::fiat::CurrencyInfo;
 use crate::fiat::FiatCurrency;
 use crate::fiat::LocaleOverrides;
@@ -99,6 +101,16 @@ fn wire_init_node_impl(
             let api_creds = creds.wire2api();
             move |task_callback| init_node(api_config, api_seed, api_creds)
         },
+    )
+}
+fn wire_breez_events_stream_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "breez_events_stream",
+            port: Some(port_),
+            mode: FfiCallMode::Stream,
+        },
+        move || move |task_callback| breez_events_stream(task_callback.stream_sink()),
     )
 }
 fn wire_stop_node_impl(port_: MessagePort) {
@@ -452,6 +464,16 @@ impl support::IntoDart for BitcoinAddressData {
 }
 impl support::IntoDartExceptPrimitive for BitcoinAddressData {}
 
+impl support::IntoDart for BreezEvent {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::NewBlock(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::InvoicePaid(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for BreezEvent {}
 impl support::IntoDart for CurrencyInfo {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -496,6 +518,12 @@ impl support::IntoDart for InputType {
     }
 }
 impl support::IntoDartExceptPrimitive for InputType {}
+impl support::IntoDart for InvoicePaidDetails {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.payment_hash.into_dart(), self.bolt11.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for InvoicePaidDetails {}
 
 impl support::IntoDart for LNInvoice {
     fn into_dart(self) -> support::DartAbi {

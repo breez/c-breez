@@ -32,5 +32,6 @@ AccountState? assembleAccountState(
     maxInboundLiquidity: nodeState.inboundLiquidityMsats ~/ 1000,
     payments: payments,
     paymentFilters: paymentFilters,
+    status: ConnectionStatus.CONNECTED,
   );
 }

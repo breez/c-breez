@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
 import 'package:c_breez/routes/home/widgets/dashboard/wallet_dashboard_header_delegate.dart';
 import 'package:c_breez/routes/home/widgets/no_lsp_widget.dart';
@@ -129,15 +130,17 @@ class AccountPage extends StatelessWidget {
             builder: (context, shrinkedHeight, overlapContent) {
               return BlocBuilder<LSPBloc, LspInformation?>(
                   builder: (context, lsp) {
-                if (lsp == null) {
+                var isConnecting =
+                    account.status == ConnectionStatus.CONNECTING;
+                if (!isConnecting && lsp == null) {
                   return const Padding(
                     padding: EdgeInsets.only(top: 120.0),
                     child: NoLSPWidget(),
                   );
                 }
-                return const Padding(
-                  padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                  child: StatusText(),
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
+                  child: StatusText(isConnecting: isConnecting),
                 );
               });
             },

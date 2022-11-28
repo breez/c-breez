@@ -3,6 +3,8 @@ import 'package:c_breez/bloc/account/payment_filters.dart';
 
 const initialInboundCapacity = 4000000;
 
+enum ConnectionStatus { CONNECTING, CONNECTED }
+
 class AccountState {
   final String? id;
   final bool initial;
@@ -18,6 +20,7 @@ class AccountState {
   final int onChainFeeRate;
   final List<Payment> payments;
   final PaymentFilters paymentFilters;
+  final ConnectionStatus? status;
 
   const AccountState({
     required this.id,
@@ -34,6 +37,7 @@ class AccountState {
     required this.onChainFeeRate,
     required this.payments,
     required this.paymentFilters,
+    required this.status,
   });
 
   AccountState.initial()
@@ -52,6 +56,7 @@ class AccountState {
           walletBalance: 0,
           payments: [],
           paymentFilters: PaymentFilters.initial(),
+          status: null,
         );
 
   AccountState copyWith({
@@ -69,6 +74,7 @@ class AccountState {
     int? onChainFeeRate,
     List<Payment>? payments,
     PaymentFilters? paymentFilters,
+    ConnectionStatus? status,
   }) {
     return AccountState(
       id: id ?? this.id,
@@ -85,6 +91,7 @@ class AccountState {
       onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
       payments: payments ?? this.payments,
       paymentFilters: paymentFilters ?? this.paymentFilters,
+      status: status ?? this.status,
     );
   }
 
@@ -105,6 +112,7 @@ class AccountState {
       "maxInboundLiquidity": maxInboundLiquidity,
       "onChainFeeRate": onChainFeeRate,
       "paymentFilters": paymentFilters.toJson(),
+      "status": status?.index,
     };
   }
 
@@ -125,6 +133,9 @@ class AccountState {
       onChainFeeRate: (json["onChainFeeRate"]),
       payments: [],
       paymentFilters: PaymentFilters.fromJson(json["paymentFilters"]),
+      status: json["status"] != null
+          ? ConnectionStatus.values[json["status"]]
+          : ConnectionStatus.CONNECTING,
     );
   }
 }

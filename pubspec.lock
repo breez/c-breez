@@ -373,14 +373,14 @@ packages:
       name: drift
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.0"
   drift_dev:
     dependency: "direct main"
     description:
       name: drift_dev
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.0+1"
+    version: "2.3.0"
   duration:
     dependency: "direct main"
     description:
@@ -430,13 +430,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  ffigen:
-    dependency: transitive
-    description:
-      name: ffigen
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "7.2.2"
   file:
     dependency: transitive
     description:
@@ -1182,13 +1175,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
-  quiver:
-    dependency: transitive
-    description:
-      name: quiver
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.0"
   rational:
     dependency: transitive
     description:
@@ -1389,7 +1375,7 @@ packages:
       name: sqlparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.23.3"
+    version: "0.24.0"
   stack_trace:
     dependency: transitive
     description:
@@ -1613,7 +1599,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.1"
+    version: "3.1.2"
   xdg_directories:
     dependency: transitive
     description:
@@ -1635,13 +1621,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
-  yaml_edit:
-    dependency: transitive
-    description:
-      name: yaml_edit
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.3"
 sdks:
   dart: ">=2.18.5 <3.0.0"
   flutter: ">=3.3.0"

@@ -30,8 +30,8 @@ dependencies:
     git:
       url: https://github.com/breez/dart_lnurl
   drag_and_drop_lists: ^0.3.3
-  drift: ^2.2.0
-  drift_dev: ^2.2.0+1
+  drift: ^2.3.0
+  drift_dev: ^2.3.0
   duration: ^3.0.12
   email_validator: ^2.1.17
   extended_image: ^6.3.2
@@ -40,7 +40,7 @@ dependencies:
   fimber_io: ^0.6.6
   firebase_core: ^2.3.0
   firebase_dynamic_links: ^5.0.6
-  firebase_messaging: ^14.1.1
+  firebase_messaging: ^14.1.2
   flutter_bloc: ^8.1.1
   flutter_fgbg:
     git:

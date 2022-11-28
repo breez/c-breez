@@ -34,12 +34,11 @@ const String THEME_ID_PREFERENCE_KEY = "themeID";
 
 class UserApp extends StatelessWidget {
   final GlobalKey _appKey = GlobalKey();
-  final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _homeNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    final accountBloc = context.read<AccountBloc>();
-    final userProfileBloc = context.read<UserProfileBloc>();
     final lspBloc = context.read<LSPBloc>();
 
     return ThemeProvider(
@@ -126,7 +125,8 @@ class UserApp extends StatelessWidget {
                       return FadeInRoute(
                         builder: (_) => WillPopScope(
                           onWillPop: () async {
-                            return !await _homeNavigatorKey.currentState!.maybePop();
+                            return !await _homeNavigatorKey.currentState!
+                                .maybePop();
                           },
                           child: Navigator(
                             initialRoute: "/",
@@ -152,10 +152,8 @@ class UserApp extends StatelessWidget {
                                   );
                                 case '/fiat_currency':
                                   return FadeInRoute(
-                                    builder: (_) => FiatCurrencySettings(
-                                      accountBloc,
-                                      userProfileBloc,
-                                    ),
+                                    builder: (_) =>
+                                        const FiatCurrencySettings(),
                                     settings: settings,
                                   );
                                 case '/security':

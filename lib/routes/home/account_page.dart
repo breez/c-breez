@@ -54,8 +54,20 @@ class AccountPage extends StatelessWidget {
     AccountState account,
     UserProfileState userModel,
   ) {
-    final transactions = account.transactions;
-    final transactionFilters = account.transactionFilters;
+    final nonFilteredPayments = account.payments;
+    final paymentFilters = account.paymentFilters;
+    final filteredPayments = nonFilteredPayments.where((tx) {
+      if (paymentFilters.fromTimestamp != null &&
+          paymentFilters.toTimestamp != null) {
+        return paymentFilters.fromTimestamp! < tx.paymentTime * 1000 &&
+            tx.paymentTime * 1000 < paymentFilters.toTimestamp!;
+      }
+      if (paymentFilters.filter != PaymentTypeFilter.All) {
+        return tx.paymentType.toLowerCase() ==
+            paymentFilters.filter.name.toLowerCase();
+      }
+      return true;
+    }).toList();
 
     List<Widget> slivers = [];
 
@@ -67,21 +79,21 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    final bool showSliver = transactions.isNotEmpty ||
-        transactionFilters.filter != PaymentTypeFilter.All;
+    final bool showSliver = nonFilteredPayments.isNotEmpty ||
+        paymentFilters.filter != PaymentTypeFilter.All;
 
     if (showSliver) {
       slivers.add(
         PaymentsFilterSliver(
           maxSize: _kFilterMaxSize,
           scrollController: scrollController,
-          hasFilter: transactionFilters.filter != PaymentTypeFilter.All,
+          hasFilter: paymentFilters.filter != PaymentTypeFilter.All,
         ),
       );
     }
 
-    int? startDate = transactionFilters.fromTimestamp;
-    int? endDate = transactionFilters.toTimestamp;
+    int? startDate = paymentFilters.fromTimestamp;
+    int? endDate = paymentFilters.toTimestamp;
     if (startDate != null && endDate != null) {
       slivers.add(
         HeaderFilterChip(
@@ -95,7 +107,7 @@ class AccountPage extends StatelessWidget {
     if (showSliver) {
       slivers.add(
         PaymentsList(
-          transactions,
+          filteredPayments,
           _kPaymentListItemHeight,
           firstPaymentItemKey,
         ),
@@ -104,12 +116,12 @@ class AccountPage extends StatelessWidget {
         SliverPersistentHeader(
           pinned: true,
           delegate: FixedSliverDelegate(
-            _bottomPlaceholderSpace(context, transactions),
+            _bottomPlaceholderSpace(context, filteredPayments),
             child: Container(),
           ),
         ),
       );
-    } else if (!account.initial) {
+    } else if (!account.initial && nonFilteredPayments.isEmpty) {
       slivers.add(
         SliverPersistentHeader(
           delegate: FixedSliverDelegate(
@@ -151,9 +163,9 @@ class AccountPage extends StatelessWidget {
 
   double _bottomPlaceholderSpace(
     BuildContext context,
-    List<Payment> transactions,
+    List<Payment> payments,
   ) {
-    if (transactions.isEmpty) return 0.0;
+    if (payments.isEmpty) return 0.0;
     double listHeightSpace = MediaQuery.of(context).size.height -
         kMinExtent -
         kToolbarHeight -
@@ -163,7 +175,7 @@ class AccountPage extends StatelessWidget {
     double dateFilterSpace = endDate != null ? 0.65 : 0.0;
     double bottomPlaceholderSpace = (listHeightSpace -
             (_kPaymentListItemHeight + 8) *
-                (transactions.length + 1 + dateFilterSpace))
+                (payments.length + 1 + dateFilterSpace))
         .clamp(0.0, listHeightSpace);
     return bottomPlaceholderSpace;
   }

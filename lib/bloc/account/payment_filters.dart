@@ -21,8 +21,8 @@ class PaymentFilters implements Exception {
   }) {
     return PaymentFilters(
       filter: filter ?? this.filter,
-      fromTimestamp: fromTimestamp ?? this.fromTimestamp,
-      toTimestamp: toTimestamp ?? this.toTimestamp,
+      fromTimestamp: fromTimestamp,
+      toTimestamp: toTimestamp,
     );
   }
 

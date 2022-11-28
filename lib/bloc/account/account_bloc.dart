@@ -56,7 +56,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     // emit on every change
     _watchAccountChanges().listen((acc) => emit(acc));
 
-    _paymentFiltersStreamController.add(state.paymentFilters);
+    _paymentFiltersStreamController
+        .add(state.paymentFilters.copyWith(filter: PaymentTypeFilter.All));
 
     if (!state.initial) _startRegisteredNode();
   }
@@ -227,15 +228,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void changePaymentFilter({
-    PaymentTypeFilter filter = PaymentTypeFilter.All,
+    PaymentTypeFilter? filter,
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
-    await _breezLib.listPayments(
-      filter: filter,
-      fromTimestamp: fromTimestamp,
-      toTimestamp: toTimestamp,
-    );
     _paymentFiltersStreamController.add(
       state.paymentFilters.copyWith(
         filter: filter,

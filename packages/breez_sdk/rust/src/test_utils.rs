@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{
-    Amount, CloseChannelResponse, CloseChannelType, Invoice, Payment, Peer, WithdrawResponse,
+    Amount, CloseChannelResponse, CloseChannelType, Invoice, Peer, WithdrawResponse,
 };
 use lightning_invoice::RawInvoice;
 use rand::distributions::{Alphanumeric, DistString, Standard};
@@ -12,14 +12,13 @@ use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
 use crate::models::{
-    FeeratePreset, FiatAPI, LightningTransaction, LspAPI, NodeAPI, NodeState, Swap, SwapperAPI,
-    SyncResponse,
+    FeeratePreset, FiatAPI, LspAPI, NodeAPI, NodeState, Payment, Swap, SwapperAPI, SyncResponse,
 };
 use tokio::sync::mpsc;
 
 pub struct MockNodeAPI {
     pub node_state: NodeState,
-    pub transactions: Vec<LightningTransaction>,
+    pub transactions: Vec<Payment>,
 }
 
 #[tonic::async_trait]
@@ -33,7 +32,7 @@ impl NodeAPI for MockNodeAPI {
     async fn pull_changed(&self, _since_timestamp: i64) -> Result<SyncResponse> {
         Ok(SyncResponse {
             node_state: self.node_state.clone(),
-            transactions: self.transactions.clone(),
+            payments: self.transactions.clone(),
         })
     }
 
@@ -71,7 +70,11 @@ impl NodeAPI for MockNodeAPI {
         })
     }
 
-    async fn send_payment(&self, _bolt11: String, _amount_sats: Option<u64>) -> Result<Payment> {
+    async fn send_payment(
+        &self,
+        _bolt11: String,
+        _amount_sats: Option<u64>,
+    ) -> Result<gl_client::pb::Payment> {
         Ok(MockNodeAPI::get_dummy_payment())
     }
 
@@ -79,7 +82,7 @@ impl NodeAPI for MockNodeAPI {
         &self,
         _node_id: String,
         _amount_sats: u64,
-    ) -> Result<Payment> {
+    ) -> Result<gl_client::pb::Payment> {
         Ok(MockNodeAPI::get_dummy_payment())
     }
 
@@ -104,8 +107,8 @@ impl NodeAPI for MockNodeAPI {
 }
 
 impl MockNodeAPI {
-    fn get_dummy_payment() -> Payment {
-        Payment {
+    fn get_dummy_payment() -> gl_client::pb::Payment {
+        gl_client::pb::Payment {
             payment_hash: rand_vec_u8(32),
             bolt11: rand_string(32),
             amount: Some(random())
@@ -148,7 +151,7 @@ impl FiatAPI for MockBreezServer {
         Ok(vec![])
     }
 
-    async fn fetch_rates(&self) -> Result<Vec<Rate>> {
+    async fn fetch_fiat_rates(&self) -> Result<Vec<Rate>> {
         Ok(vec![Rate {
             coin: "USD".to_string(),
             value: 20_000.00,

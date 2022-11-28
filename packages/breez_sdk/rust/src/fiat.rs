@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
+use crate::breez_services::BreezServer;
 use crate::grpc::RatesRequest;
 use crate::models::FiatAPI;
-use crate::node_service::BreezServer;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use tonic::Request;
@@ -70,7 +70,7 @@ impl FiatAPI for BreezServer {
     }
 
     // get the live rates from the server
-    async fn fetch_rates(&self) -> Result<Vec<Rate>> {
+    async fn fetch_fiat_rates(&self) -> Result<Vec<Rate>> {
         let mut client = self.get_information_client().await?;
 
         let request = Request::new(RatesRequest {});

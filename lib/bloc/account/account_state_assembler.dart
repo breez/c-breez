@@ -5,7 +5,7 @@ import 'account_bloc.dart';
 import 'account_state.dart';
 
 // assembleAccountState assembles the account state using the local synchronized data.
-AccountState? assembleAccountState(List<LightningTransaction> transactions,
+AccountState? assembleAccountState(List<Payment> transactions,
     TransactionFilters filters, NodeState? nodeState) {
   if (nodeState == null) {
     return null;

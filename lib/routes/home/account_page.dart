@@ -151,7 +151,7 @@ class AccountPage extends StatelessWidget {
 
   double _bottomPlaceholderSpace(
     BuildContext context,
-    List<LightningTransaction> transactions,
+    List<Payment> transactions,
   ) {
     if (transactions.isEmpty) return 0.0;
     double listHeightSpace = MediaQuery.of(context).size.height -

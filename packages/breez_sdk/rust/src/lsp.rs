@@ -58,6 +58,7 @@ impl LspAPI for BreezServer {
         for (key, value) in response.into_inner().lsps.into_iter() {
             lsp_list.push(convert_to_lsp_info(key, value));
         }
+        lsp_list.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
         Ok(lsp_list)
     }
 

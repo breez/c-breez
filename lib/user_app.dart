@@ -1,7 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -39,8 +38,6 @@ class UserApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lspBloc = context.read<LSPBloc>();
-
     return ThemeProvider(
       saveThemesOnChange: true,
       onInitCallback: (controller, previouslySavedThemeFuture) async {
@@ -141,8 +138,7 @@ class UserApp extends StatelessWidget {
                                 case '/select_lsp':
                                   return MaterialPageRoute(
                                     fullscreenDialog: true,
-                                    builder: (_) =>
-                                        SelectLSPPage(lstBloc: lspBloc),
+                                    builder: (_) => const SelectLSPPage(),
                                     settings: settings,
                                   );
                                 case '/create_invoice':

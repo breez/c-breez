@@ -56,8 +56,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     // emit on every change
     _watchAccountChanges().listen((acc) => emit(acc));
 
-    _paymentFiltersStreamController
-        .add(state.paymentFilters.copyWith(filter: PaymentTypeFilter.All));
+    _paymentFiltersStreamController.add(state.paymentFilters);
 
     if (!state.initial) _startRegisteredNode();
   }

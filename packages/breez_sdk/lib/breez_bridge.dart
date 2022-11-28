@@ -76,6 +76,7 @@ class BreezBridge {
   Future sendPayment({required String bolt11}) async {
     await _lnToolkit.sendPayment(bolt11: bolt11);
     await getNodeState();
+    await listPayments();
   }
 
   /// pay directly to a node id using keysend
@@ -89,6 +90,7 @@ class BreezBridge {
     await _lnToolkit.sendSpontaneousPayment(
         nodeId: nodeId, amountSats: amountSats);
     await getNodeState();
+    await listPayments();
   }
 
   /// Creates an bolt11 payment request.
@@ -170,6 +172,7 @@ class BreezBridge {
       {required String toAddress, required FeeratePreset feeratePreset}) async {
     await _lnToolkit.sweep(toAddress: toAddress, feeratePreset: feeratePreset);
     await getNodeState();
+    await listPayments();
   }
 
   /// Onchain receive swap API

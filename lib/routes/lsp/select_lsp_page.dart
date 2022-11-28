@@ -128,13 +128,17 @@ class SelectLSPPageState extends State<SelectLSPPage> {
       );
     }
     if (_selectedLSP != null) {
-      return SingleButtonBottomBar(
-          text: "SELECT",
-          onPressed: () async {
-            widget.lstBloc.connectLSP(_selectedLSP!.id);
-            Navigator.pop(context);
-          });
+      return SingleButtonBottomBar(text: "SELECT", onPressed: _connectToLSP);
     }
     return null;
+  }
+
+  void _connectToLSP() async {
+    final navigator = Navigator.of(context);
+    var loaderRoute = createLoaderRoute(context);
+    navigator.push(loaderRoute);
+    await widget.lstBloc.connectLSP(_selectedLSP!.id);
+    navigator.removeRoute(loaderRoute);
+    navigator.pop();
   }
 }

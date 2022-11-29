@@ -282,6 +282,10 @@ class GreenlightCredentials {
 
 @freezed
 class InputType with _$InputType {
+  /// # Supported standards
+  ///
+  /// - plain on-chain BTC address
+  /// - BIP21
   const factory InputType.bitcoinAddress(
     BitcoinAddressData field0,
   ) = InputType_BitcoinAddress;
@@ -297,12 +301,44 @@ class InputType with _$InputType {
   const factory InputType.url(
     String field0,
   ) = InputType_Url;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-06 `payRequest` spec
+  ///
+  /// # Not supported (yet)
+  ///
+  /// - LUD 17 Support for the lnurlp:// prefix and non bech32-encoded URLs
   const factory InputType.lnUrlPay(
-    String field0,
+    LnUrlRequestData field0,
   ) = InputType_LnUrlPay;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-03 `withdrawRequest` spec
+  ///
+  /// # Not supported (yet)
+  ///
+  /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
+  /// - LUD 17 Support for the lnurlw:// prefix and non bech32-encoded URLs
+  /// - LUD-19 Pay link discoverable from withdraw link
   const factory InputType.lnUrlWithdraw(
-    String field0,
+    LnUrlRequestData field0,
   ) = InputType_LnUrlWithdraw;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-04 `auth` base spec
+  ///
+  /// # Not supported (yet)
+  ///
+  /// - LUD 17 Support for the keyauth:// prefix and non bech32-encoded URLs
+  const factory InputType.lnUrlAuth(
+    LnUrlRequestData field0,
+  ) = InputType_LnUrlAuth;
 }
 
 class InvoicePaidDetails {
@@ -336,6 +372,63 @@ class LNInvoice {
     required this.expiry,
     required this.routingHints,
     required this.paymentSecret,
+  });
+}
+
+class LnUrlAuthRequestData {
+  final String k1;
+
+  LnUrlAuthRequestData({
+    required this.k1,
+  });
+}
+
+class LnUrlPayRequestData {
+  final String callback;
+  final int minSendable;
+  final int maxSendable;
+
+  /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
+  ///
+  /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
+  final List<MetadataItem> metadata;
+  final int commentAllowed;
+
+  LnUrlPayRequestData({
+    required this.callback,
+    required this.minSendable,
+    required this.maxSendable,
+    required this.metadata,
+    required this.commentAllowed,
+  });
+}
+
+@freezed
+class LnUrlRequestData with _$LnUrlRequestData {
+  const factory LnUrlRequestData.payRequest(
+    LnUrlPayRequestData field0,
+  ) = LnUrlRequestData_PayRequest;
+  const factory LnUrlRequestData.withdrawRequest(
+    LnUrlWithdrawRequestData field0,
+  ) = LnUrlRequestData_WithdrawRequest;
+  const factory LnUrlRequestData.authRequest(
+    LnUrlAuthRequestData field0,
+  ) = LnUrlRequestData_AuthRequest;
+}
+
+class LnUrlWithdrawRequestData {
+  final String callback;
+  final String k1;
+  final String defaultDescription;
+  final int minWithdrawable;
+  final int maxWithdrawable;
+
+  LnUrlWithdrawRequestData({
+    required this.callback,
+    required this.k1,
+    required this.defaultDescription,
+    required this.minWithdrawable,
+    required this.maxWithdrawable,
   });
 }
 
@@ -394,6 +487,16 @@ class LspInformation {
     required this.lspPubkey,
     required this.maxInactiveDuration,
     required this.channelMinimumFeeMsat,
+  });
+}
+
+class MetadataItem {
+  final String key;
+  final String value;
+
+  MetadataItem({
+    required this.key,
+    required this.value,
   });
 }
 
@@ -1026,6 +1129,25 @@ class LightningToolkitImpl implements LightningToolkit {
     return _wire2api_ln_invoice(raw);
   }
 
+  LnUrlAuthRequestData _wire2api_box_autoadd_ln_url_auth_request_data(
+      dynamic raw) {
+    return _wire2api_ln_url_auth_request_data(raw);
+  }
+
+  LnUrlPayRequestData _wire2api_box_autoadd_ln_url_pay_request_data(
+      dynamic raw) {
+    return _wire2api_ln_url_pay_request_data(raw);
+  }
+
+  LnUrlRequestData _wire2api_box_autoadd_ln_url_request_data(dynamic raw) {
+    return _wire2api_ln_url_request_data(raw);
+  }
+
+  LnUrlWithdrawRequestData _wire2api_box_autoadd_ln_url_withdraw_request_data(
+      dynamic raw) {
+    return _wire2api_ln_url_withdraw_request_data(raw);
+  }
+
   NodeState _wire2api_box_autoadd_node_state(dynamic raw) {
     return _wire2api_node_state(raw);
   }
@@ -1124,11 +1246,15 @@ class LightningToolkitImpl implements LightningToolkit {
         );
       case 4:
         return InputType_LnUrlPay(
-          _wire2api_String(raw[1]),
+          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
         );
       case 5:
         return InputType_LnUrlWithdraw(
-          _wire2api_String(raw[1]),
+          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
+        );
+      case 6:
+        return InputType_LnUrlAuth(
+          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -1159,6 +1285,10 @@ class LightningToolkitImpl implements LightningToolkit {
 
   List<LspInformation> _wire2api_list_lsp_information(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_lsp_information).toList();
+  }
+
+  List<MetadataItem> _wire2api_list_metadata_item(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_metadata_item).toList();
   }
 
   List<Payment> _wire2api_list_payment(dynamic raw) {
@@ -1195,6 +1325,60 @@ class LightningToolkitImpl implements LightningToolkit {
       expiry: _wire2api_u64(arr[6]),
       routingHints: _wire2api_list_route_hint(arr[7]),
       paymentSecret: _wire2api_uint_8_list(arr[8]),
+    );
+  }
+
+  LnUrlAuthRequestData _wire2api_ln_url_auth_request_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return LnUrlAuthRequestData(
+      k1: _wire2api_String(arr[0]),
+    );
+  }
+
+  LnUrlPayRequestData _wire2api_ln_url_pay_request_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return LnUrlPayRequestData(
+      callback: _wire2api_String(arr[0]),
+      minSendable: _wire2api_u16(arr[1]),
+      maxSendable: _wire2api_u16(arr[2]),
+      metadata: _wire2api_list_metadata_item(arr[3]),
+      commentAllowed: _wire2api_u16(arr[4]),
+    );
+  }
+
+  LnUrlRequestData _wire2api_ln_url_request_data(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return LnUrlRequestData_PayRequest(
+          _wire2api_box_autoadd_ln_url_pay_request_data(raw[1]),
+        );
+      case 1:
+        return LnUrlRequestData_WithdrawRequest(
+          _wire2api_box_autoadd_ln_url_withdraw_request_data(raw[1]),
+        );
+      case 2:
+        return LnUrlRequestData_AuthRequest(
+          _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  LnUrlWithdrawRequestData _wire2api_ln_url_withdraw_request_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return LnUrlWithdrawRequestData(
+      callback: _wire2api_String(arr[0]),
+      k1: _wire2api_String(arr[1]),
+      defaultDescription: _wire2api_String(arr[2]),
+      minWithdrawable: _wire2api_u16(arr[3]),
+      maxWithdrawable: _wire2api_u16(arr[4]),
     );
   }
 
@@ -1239,6 +1423,16 @@ class LightningToolkitImpl implements LightningToolkit {
       lspPubkey: _wire2api_uint_8_list(arr[12]),
       maxInactiveDuration: _wire2api_i64(arr[13]),
       channelMinimumFeeMsat: _wire2api_i64(arr[14]),
+    );
+  }
+
+  MetadataItem _wire2api_metadata_item(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return MetadataItem(
+      key: _wire2api_String(arr[0]),
+      value: _wire2api_String(arr[1]),
     );
   }
 
@@ -1385,6 +1579,10 @@ class LightningToolkitImpl implements LightningToolkit {
       rtl: _wire2api_opt_box_autoadd_bool(arr[2]),
       position: _wire2api_opt_box_autoadd_u32(arr[3]),
     );
+  }
+
+  int _wire2api_u16(dynamic raw) {
+    return raw as int;
   }
 
   int _wire2api_u32(dynamic raw) {
@@ -1559,7 +1757,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       : _lookup = lookup;
 
   void store_dart_post_cobject(
-    DartPostCObjectFnType ptr,
+    int ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -1567,10 +1765,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
-      .asFunction<void Function(DartPostCObjectFnType)>();
+  late final _store_dart_post_cobject =
+      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
 
   void wire_register_node(
     int port_,
@@ -2066,6 +2264,4 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-typedef DartPostCObjectFnType = ffi.Pointer<
-    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
-typedef DartPort = ffi.Int64;
+typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;

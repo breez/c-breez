@@ -17,6 +17,7 @@ typedef struct wire_Config {
   struct wire_uint_8_list *working_dir;
   int32_t network;
   uint32_t payment_timeout_sec;
+  struct wire_uint_8_list *default_lsp_id;
 } wire_Config;
 
 typedef struct wire_GreenlightCredentials {

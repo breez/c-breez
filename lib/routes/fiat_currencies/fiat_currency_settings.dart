@@ -1,8 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
@@ -15,13 +13,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 const double ITEM_HEIGHT = 72.0;
 
 class FiatCurrencySettings extends StatefulWidget {
-  final AccountBloc accountBloc;
-  final UserProfileBloc userProfileBloc;
-
-  const FiatCurrencySettings(
-    this.accountBloc,
-    this.userProfileBloc,
-  );
+  const FiatCurrencySettings({
+    Key? key,
+  }) : super(key: key);
 
   @override
   FiatCurrencySettingsState createState() {
@@ -196,7 +190,9 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     CurrencyState currencyState,
     List<String> preferredFiatCurrencies,
   ) {
-    context.read<CurrencyBloc>().setPreferredCurrencies(preferredFiatCurrencies);
+    context
+        .read<CurrencyBloc>()
+        .setPreferredCurrencies(preferredFiatCurrencies);
   }
 
   /// DragAndDropLists has a performance issue with displaying a big list

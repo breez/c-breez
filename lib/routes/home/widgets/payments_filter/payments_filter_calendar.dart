@@ -23,8 +23,12 @@ class PaymentsFilterCalendar extends StatelessWidget {
 
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, account) {
-
-        const firstDate = null;
+        DateTime? firstDate;
+        if (account.payments.isNotEmpty) {
+          firstDate = DateTime.fromMillisecondsSinceEpoch(
+            account.payments.first.paymentTime * 1000,
+          );
+        }
 
         return Padding(
           padding: const EdgeInsets.only(left: 0.0, right: 0.0),
@@ -44,11 +48,13 @@ class PaymentsFilterCalendar extends StatelessWidget {
                     builder: (_) => CalendarDialog(firstDate!),
                   ).then((result) {
                     final accountBloc = context.read<AccountBloc>();
-                    accountBloc.changePaymentFilter(
-                      filter: filter,
-                      fromTimestamp: result![0].millisecondsSinceEpoch,
-                      toTimestamp: result[1].millisecondsSinceEpoch,
-                    );
+                    if (result != null) {
+                      accountBloc.changePaymentFilter(
+                        filter: filter,
+                        fromTimestamp: result[0].millisecondsSinceEpoch,
+                        toTimestamp: result[1].millisecondsSinceEpoch,
+                      );
+                    }
                   })
                 : ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

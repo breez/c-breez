@@ -1,14 +1,14 @@
 use super::db::SqliteStorage;
-use crate::models::LightningTransaction;
+use crate::models::Payment;
 use crate::models::PaymentTypeFilter;
 use anyhow::Result;
 
 impl SqliteStorage {
-    pub fn insert_ln_transactions(&self, transactions: &[LightningTransaction]) -> Result<()> {
+    pub fn insert_payments(&self, transactions: &[Payment]) -> Result<()> {
         let con = self.get_connection()?;
         let mut prep_statment = con.prepare(
             "
-               INSERT INTO ln_transactions (
+               INSERT INTO payments (
                  payment_type,
                  payment_hash, 
                  payment_time,
@@ -45,34 +45,34 @@ impl SqliteStorage {
         Ok(())
     }
 
-    pub fn last_tx_timestamp(&self) -> Result<i64> {
+    pub fn last_payment_timestamp(&self) -> Result<i64> {
         self.get_connection()?
-            .query_row("SELECT max(payment_time) FROM ln_transactions", [], |row| {
+            .query_row("SELECT max(payment_time) FROM payments", [], |row| {
                 row.get(0)
             })
             .map_err(anyhow::Error::msg)
     }
 
-    pub fn list_ln_transactions(
+    pub fn list_payments(
         &self,
         type_filter: PaymentTypeFilter,
         from_timestamp: Option<i64>,
         to_timestamp: Option<i64>,
-    ) -> Result<Vec<LightningTransaction>> {
+    ) -> Result<Vec<Payment>> {
         let where_clause = filter_to_where_clause(type_filter, from_timestamp, to_timestamp);
         let con = self.get_connection()?;
         let mut stmt = con.prepare(
             format!(
                 "
-               SELECT * FROM ln_transactions
-               {where_clause}
+               SELECT * FROM payments
+               {where_clause} ORDER BY payment_time DESC
              "
             )
             .as_str(),
         )?;
-        let vec: Vec<LightningTransaction> = stmt
+        let vec: Vec<Payment> = stmt
             .query_map([], |row| {
-                Ok(LightningTransaction {
+                Ok(Payment {
                     payment_type: row.get(0)?,
                     payment_hash: row.get(1)?,
                     payment_time: row.get(2)?,
@@ -136,7 +136,7 @@ fn test_ln_transactions() {
     use crate::persist::test_utils;
 
     let txs = [
-        LightningTransaction {
+        Payment {
             payment_type: "sent".to_string(),
             payment_hash: "123".to_string(),
             payment_time: 1001,
@@ -150,7 +150,7 @@ fn test_ln_transactions() {
             pending: false,
             description: None,
         },
-        LightningTransaction {
+        Payment {
             payment_type: "received".to_string(),
             payment_hash: "124".to_string(),
             payment_time: 1000,
@@ -168,29 +168,29 @@ fn test_ln_transactions() {
     let storage =
         SqliteStorage::from_file(test_utils::create_test_sql_file("transactions".to_string()));
     storage.init().unwrap();
-    storage.insert_ln_transactions(&txs).unwrap();
+    storage.insert_payments(&txs).unwrap();
 
     // retrieve all
     let retrieve_txs = storage
-        .list_ln_transactions(PaymentTypeFilter::All, None, None)
+        .list_payments(PaymentTypeFilter::All, None, None)
         .unwrap();
     assert_eq!(retrieve_txs.len(), 2);
     assert_eq!(retrieve_txs, txs);
 
     //test only sent
     let retrieve_txs = storage
-        .list_ln_transactions(PaymentTypeFilter::Sent, None, None)
+        .list_payments(PaymentTypeFilter::Sent, None, None)
         .unwrap();
     assert_eq!(retrieve_txs.len(), 1);
     assert_eq!(retrieve_txs[0], txs[0]);
 
     //test only received
     let retrieve_txs = storage
-        .list_ln_transactions(PaymentTypeFilter::Received, None, None)
+        .list_payments(PaymentTypeFilter::Received, None, None)
         .unwrap();
     assert_eq!(retrieve_txs.len(), 1);
     assert_eq!(retrieve_txs[0], txs[1]);
 
-    let max_ts = storage.last_tx_timestamp().unwrap();
+    let max_ts = storage.last_payment_timestamp().unwrap();
     assert_eq!(max_ts, 1001);
 }

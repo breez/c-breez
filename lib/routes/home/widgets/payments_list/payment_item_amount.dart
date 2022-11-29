@@ -14,7 +14,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PaymentItemAmount extends StatelessWidget {
-  final LightningTransaction _paymentInfo;
+  final Payment _paymentInfo;
   final bool _hideBalance;
 
   const PaymentItemAmount(
@@ -32,9 +32,9 @@ class PaymentItemAmount extends StatelessWidget {
       height: 44,
       child: BlocBuilder<CurrencyBloc, CurrencyState>(
         builder: (context, currencyState) {
-          final fee = _paymentInfo.feesMsat * 1000;
+          final fee = _paymentInfo.feesMsat ~/ 1000;
           final amount = currencyState.bitcoinCurrency.format(
-            _paymentInfo.amountMsat * 1000,
+            _paymentInfo.amountMsat ~/ 1000,
             includeDisplayName: false,
           );
           final feeFormatted = currencyState.bitcoinCurrency.format(
@@ -94,7 +94,7 @@ void main() async {
         theme: breezLightTheme,
         home: Column(children: [
           PaymentItemAmount(
-            LightningTransaction(
+            Payment(
               paymentType: "received",
               label: "",
               bolt11: "",
@@ -115,7 +115,7 @@ void main() async {
 
           // Pending
           PaymentItemAmount(
-            LightningTransaction(
+            Payment(
               paymentType: "received",
               label: "",
               bolt11: "",
@@ -136,7 +136,7 @@ void main() async {
 
           // Show all
           PaymentItemAmount(
-            LightningTransaction(
+            Payment(
               paymentType: "received",
               label: "",
               bolt11: "",
@@ -157,7 +157,7 @@ void main() async {
 
           // Hide all
           PaymentItemAmount(
-            LightningTransaction(
+            Payment(
               paymentType: "received",
               label: "",
               bolt11: "",

@@ -38,18 +38,11 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
   PaymentRequestState? _state;
   String? _amountToPayStr;
   int? _amountToPay;
-  ModalRoute? _currentRoute;
 
   @override
   void initState() {
     super.initState();
     _state = PaymentRequestState.PAYMENT_REQUEST;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _currentRoute ??= ModalRoute.of(context);
   }
 
   @override
@@ -105,11 +98,11 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
 
   void _onStateChange(BuildContext context, PaymentRequestState state) {
     if (state == PaymentRequestState.PAYMENT_COMPLETED) {
-      Navigator.of(context).removeRoute(_currentRoute!);
+      Navigator.of(context).pop();
       return;
     }
     if (state == PaymentRequestState.USER_CANCELLED) {
-      Navigator.of(context).removeRoute(_currentRoute!);
+      Navigator.of(context).pop();
       context.read<AccountBloc>().cancelPayment(widget.invoice.bolt11);
       return;
     }

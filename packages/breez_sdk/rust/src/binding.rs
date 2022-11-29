@@ -1,25 +1,41 @@
+use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
-use crate::node_service::ShutdownHandler;
+use flutter_rust_bridge::StreamSink;
 use once_cell::sync::OnceCell;
 use std::future::Future;
 use std::sync::Arc;
+use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
 
 use crate::invoice::LNInvoice;
 use crate::models::{
-    Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeState,
-    PaymentTypeFilter, SwapInfo,
+    Config, FeeratePreset, GreenlightCredentials, Network, NodeState, Payment, PaymentTypeFilter,
+    SwapInfo,
 };
-use crate::{greenlight::Greenlight, node_service::NodeService};
+use crate::{breez_services::BreezServices, greenlight::Greenlight};
 
 use crate::input_parser::InputType;
 use crate::invoice::{self};
 use bip39::{Language, Mnemonic, Seed};
 
-static NODE_SERVICE_INSTANCE: OnceCell<NodeService> = OnceCell::new();
-static STOP_NODE: OnceCell<ShutdownHandler> = OnceCell::new();
+static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
+static BREEZ_SERVICES_SHUTDOWN: OnceCell<mpsc::Sender<()>> = OnceCell::new();
+static NOTIFICATION_STREAM: OnceCell<StreamSink<BreezEvent>> = OnceCell::new();
+
+struct BindingEventListener {}
+
+#[tonic::async_trait]
+impl BreezEventListener for BindingEventListener {
+    async fn on_event(&self, e: BreezEvent) -> Result<()> {
+        let s = NOTIFICATION_STREAM.get();
+        if s.is_some() {
+            s.unwrap().add(e);
+        }
+        Ok(())
+    }
+}
 
 /// Register a new node in the cloud and return credentials to interact with it
 ///
@@ -70,40 +86,45 @@ pub fn init_node(
     seed: Vec<u8>,
     creds: GreenlightCredentials,
 ) -> Result<()> {
-    let sdk_config = config.unwrap_or(Config::default());
-
-    // greenlight is the implementation of NodeAPI
-    let node_api = block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
-
-    // create the node services instance and set it globally
-    let node_services = NodeService::from_config(sdk_config.clone(), Arc::new(node_api))?;
-    NODE_SERVICE_INSTANCE
-        .set(node_services)
-        .map_err(|_| anyhow!("static node services already set"))?;
-
-    // run the background processing, schedule the node on the cloud and sync state.
     block_on(async move {
-        let node_service = get_node_service()?;
+        let sdk_config = config.unwrap_or(Config::default());
 
-        // start background processing and save shut down handler globally
-        let shutdown_handle = node_service.start_background_processing()?;
-        STOP_NODE
-            .set(shutdown_handle)
+        // greenlight is the implementation of NodeAPI
+        let node_api = Greenlight::new(sdk_config.clone(), seed, creds).await?; //block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
+
+        // create the node services instance and set it globally
+        let breez_services = BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api))
+            .event_listener(Arc::new(BindingEventListener {}))
+            .build()?;
+        let (stop_sender, stop_receiver) = mpsc::channel(1);
+        _ = crate::breez_services::start(breez_services.clone(), stop_receiver).await?;
+        BREEZ_SERVICES_SHUTDOWN
+            .set(stop_sender)
+            .map_err(|_| anyhow!("static node services already set"))?;
+        BREEZ_SERVICES_INSTANCE
+            .set(breez_services.clone())
             .map_err(|_| anyhow!("static node services already set"))?;
 
-        // schedule node on the cloud and sync state
-        node_service.schedule_and_sync().await
+        Ok(())
     })
+}
+
+pub fn breez_events_stream(s: StreamSink<BreezEvent>) -> Result<()> {
+    NOTIFICATION_STREAM
+        .set(s)
+        .map_err(|_| anyhow!("events stream already created"))?;
+    Ok(())
 }
 
 /// Cleanup node resources and stop the signer.
 pub fn stop_node() -> Result<()> {
-    let shutdown = STOP_NODE.get();
-    match shutdown {
-        None => Err(anyhow!("Background processing is not running")),
-        Some(s) => block_on(async move { s.stop().await }),
-    }?;
-    Ok(())
+    block_on(async {
+        let shutdown_handler = BREEZ_SERVICES_SHUTDOWN.get();
+        match shutdown_handler {
+            None => Err(anyhow!("Background processing is not running")),
+            Some(s) => s.send(()).await.map_err(anyhow::Error::msg),
+        }
+    })
 }
 
 /// pay a bolt11 invoice
@@ -112,7 +133,7 @@ pub fn stop_node() -> Result<()> {
 ///
 /// * `bolt11` - The bolt11 invoice
 pub fn send_payment(bolt11: String) -> Result<()> {
-    block_on(async { get_node_service()?.send_payment(bolt11).await })
+    block_on(async { get_breez_services()?.send_payment(bolt11).await })
 }
 
 /// pay directly to a node id using keysend
@@ -123,7 +144,7 @@ pub fn send_payment(bolt11: String) -> Result<()> {
 /// * `amount_sats` - The amount to pay in satoshis
 pub fn send_spontaneous_payment(node_id: String, amount_sats: u64) -> Result<()> {
     block_on(async {
-        get_node_service()?
+        get_breez_services()?
             .send_spontaneous_payment(node_id, amount_sats)
             .await
     })
@@ -140,65 +161,65 @@ pub fn send_spontaneous_payment(node_id: String, amount_sats: u64) -> Result<()>
 /// * `amount_sats` - The amount to receive in satoshis
 pub fn receive_payment(amount_sats: u64, description: String) -> Result<LNInvoice> {
     block_on(async {
-        get_node_service()?
+        get_breez_services()?
             .receive_payment(amount_sats, description.to_string())
             .await
     })
 }
 
 /// get the node state from the persistent storage
-pub fn get_node_state() -> Result<Option<NodeState>> {
-    block_on(async { get_node_service()?.get_node_state() })
+pub fn node_info() -> Result<Option<NodeState>> {
+    block_on(async { get_breez_services()?.node_info() })
 }
 
 /// list transactions (incoming/outgoing payments) from the persistent storage
-pub fn list_transactions(
+pub fn list_payments(
     filter: PaymentTypeFilter,
     from_timestamp: Option<i64>,
     to_timestamp: Option<i64>,
-) -> Result<Vec<LightningTransaction>> {
+) -> Result<Vec<Payment>> {
     block_on(async {
-        get_node_service()?
-            .list_transactions(filter, from_timestamp, to_timestamp)
+        get_breez_services()?
+            .list_payments(filter, from_timestamp, to_timestamp)
             .await
     })
 }
 
 /// List available lsps that can be selected by the user
 pub fn list_lsps() -> Result<Vec<LspInformation>> {
-    block_on(async { get_node_service()?.list_lsps().await })
+    block_on(async { get_breez_services()?.list_lsps().await })
 }
 
 /// Select the lsp to be used and provide inbound liquidity
-pub fn set_lsp_id(lsp_id: String) -> Result<()> {
-    block_on(async { get_node_service()?.set_lsp_id(lsp_id).await })
+pub fn connect_lsp(lsp_id: String) -> Result<()> {
+    block_on(async { get_breez_services()?.connect_lsp(lsp_id).await })
 }
 
 /// Convenience method to look up LSP info based on current LSP ID
-pub fn get_lsp() -> Result<LspInformation> {
-    block_on(async { get_node_service()?.get_lsp().await })
+pub fn lsp_info() -> Result<LspInformation> {
+    block_on(async { get_breez_services()?.lsp_info().await })
 }
 
 /// Fetch live rates of fiat currencies
-pub fn fetch_rates() -> Result<Vec<Rate>> {
-    block_on(async { get_node_service()?.fetch_rates().await })
+pub fn fetch_fiat_rates() -> Result<Vec<Rate>> {
+    block_on(async { get_breez_services()?.fetch_fiat_rates().await })
 }
 
 /// List all available fiat currencies
 pub fn list_fiat_currencies() -> Result<Vec<FiatCurrency>> {
-    block_on(async { get_node_service()?.list_fiat_currencies() })
+    block_on(async { get_breez_services()?.list_fiat_currencies() })
 }
 
 /// close all channels with the current lsp
 pub fn close_lsp_channels() -> Result<()> {
-    block_on(async { get_node_service()?.close_lsp_channels().await })
+    block_on(async { get_breez_services()?.close_lsp_channels().await })
 }
 
 /// Withdraw on-chain funds in the wallet to an external btc address
-pub fn withdraw(to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
+pub fn sweep(to_address: String, feerate_preset: FeeratePreset) -> Result<()> {
     block_on(async {
-        get_node_service()?
-            .withdraw(to_address, feerate_preset)
+        get_breez_services()?
+            .sweep(to_address, feerate_preset)
             .await
     })
 }
@@ -206,34 +227,26 @@ pub fn withdraw(to_address: String, feerate_preset: FeeratePreset) -> Result<()>
 /// swaps
 
 /// Onchain receive swap API
-pub fn create_swap() -> Result<SwapInfo> {
-    block_on(async { get_node_service()?.create_swap().await })
+pub fn receive_onchain() -> Result<SwapInfo> {
+    block_on(async { get_breez_services()?.receive_onchain().await })
 }
 
 // list swaps history (all of them: expired, refunded and active)
-pub fn list_swaps() -> Result<Vec<SwapInfo>> {
-    block_on(async { get_node_service()?.list_swaps().await })
+pub fn list_refundables() -> Result<Vec<SwapInfo>> {
+    block_on(async { get_breez_services()?.list_refundables().await })
 }
 
 // construct and broadcast a refund transaction for a faile/expired swap
-pub fn refund_swap(
-    swap_address: String,
-    to_address: String,
-    sat_per_weight: u32,
-) -> Result<String> {
+pub fn refund(swap_address: String, to_address: String, sat_per_vbyte: u32) -> Result<String> {
     block_on(async {
-        get_node_service()?
-            .refund_swap(swap_address, to_address, sat_per_weight)
+        get_breez_services()?
+            .refund(swap_address, to_address, sat_per_vbyte)
             .await
     })
 }
 
-pub fn redeem_swap(swap_address: String) -> Result<()> {
-    block_on(async { get_node_service()?.redeem_swap(swap_address).await })
-}
-
-fn get_node_service() -> Result<&'static NodeService> {
-    let n = NODE_SERVICE_INSTANCE.get();
+fn get_breez_services() -> Result<&'static BreezServices> {
+    let n = BREEZ_SERVICES_INSTANCE.get();
     match n {
         Some(a) => Ok(a),
         None => Err(anyhow!("Node service was not initialized")),

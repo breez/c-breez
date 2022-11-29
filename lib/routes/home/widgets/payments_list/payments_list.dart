@@ -18,7 +18,7 @@ import 'package:path_provider/path_provider.dart';
 const _kBottomPadding = 8.0;
 
 class PaymentsList extends StatelessWidget {
-  final List<LightningTransaction> _payments;
+  final List<Payment> _payments;
   final double _itemHeight;
   final GlobalKey firstPaymentItemKey;
 
@@ -82,7 +82,7 @@ void main() async {
               slivers: [
                 PaymentsList(
                   [
-                    LightningTransaction(
+                    Payment(
                       paymentType: "received",
                       label: "A long title",
                       bolt11: "",
@@ -98,7 +98,7 @@ void main() async {
                       pending: false,
                       description: "A title",
                     ),
-                    LightningTransaction(
+                    Payment(
                       paymentType: "received",
                       label: "A long title",
                       bolt11: "",
@@ -114,7 +114,7 @@ void main() async {
                       pending: false,
                       description: "A title",
                     ),
-                    LightningTransaction(
+                    Payment(
                       paymentType: "received",
                       label: "A long title",
                       bolt11: "",

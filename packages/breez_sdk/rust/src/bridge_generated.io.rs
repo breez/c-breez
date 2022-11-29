@@ -32,6 +32,11 @@ pub extern "C" fn wire_init_node(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_breez_events_stream(port_: i64) {
+    wire_breez_events_stream_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_stop_node(port_: i64) {
     wire_stop_node_impl(port_)
 }
@@ -60,18 +65,18 @@ pub extern "C" fn wire_receive_payment(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_get_node_state(port_: i64) {
-    wire_get_node_state_impl(port_)
+pub extern "C" fn wire_node_info(port_: i64) {
+    wire_node_info_impl(port_)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_list_transactions(
+pub extern "C" fn wire_list_payments(
     port_: i64,
     filter: i32,
     from_timestamp: *mut i64,
     to_timestamp: *mut i64,
 ) {
-    wire_list_transactions_impl(port_, filter, from_timestamp, to_timestamp)
+    wire_list_payments_impl(port_, filter, from_timestamp, to_timestamp)
 }
 
 #[no_mangle]
@@ -80,18 +85,18 @@ pub extern "C" fn wire_list_lsps(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_set_lsp_id(port_: i64, lsp_id: *mut wire_uint_8_list) {
-    wire_set_lsp_id_impl(port_, lsp_id)
+pub extern "C" fn wire_connect_lsp(port_: i64, lsp_id: *mut wire_uint_8_list) {
+    wire_connect_lsp_impl(port_, lsp_id)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_get_lsp(port_: i64) {
-    wire_get_lsp_impl(port_)
+pub extern "C" fn wire_lsp_info(port_: i64) {
+    wire_lsp_info_impl(port_)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_fetch_rates(port_: i64) {
-    wire_fetch_rates_impl(port_)
+pub extern "C" fn wire_fetch_fiat_rates(port_: i64) {
+    wire_fetch_fiat_rates_impl(port_)
 }
 
 #[no_mangle]
@@ -105,37 +110,28 @@ pub extern "C" fn wire_close_lsp_channels(port_: i64) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_withdraw(
-    port_: i64,
-    to_address: *mut wire_uint_8_list,
-    feerate_preset: i32,
-) {
-    wire_withdraw_impl(port_, to_address, feerate_preset)
+pub extern "C" fn wire_sweep(port_: i64, to_address: *mut wire_uint_8_list, feerate_preset: i32) {
+    wire_sweep_impl(port_, to_address, feerate_preset)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_create_swap(port_: i64) {
-    wire_create_swap_impl(port_)
+pub extern "C" fn wire_receive_onchain(port_: i64) {
+    wire_receive_onchain_impl(port_)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_list_swaps(port_: i64) {
-    wire_list_swaps_impl(port_)
+pub extern "C" fn wire_list_refundables(port_: i64) {
+    wire_list_refundables_impl(port_)
 }
 
 #[no_mangle]
-pub extern "C" fn wire_refund_swap(
+pub extern "C" fn wire_refund(
     port_: i64,
     swap_address: *mut wire_uint_8_list,
     to_address: *mut wire_uint_8_list,
-    sat_per_weight: u32,
+    sat_per_vbyte: u32,
 ) {
-    wire_refund_swap_impl(port_, swap_address, to_address, sat_per_weight)
-}
-
-#[no_mangle]
-pub extern "C" fn wire_redeem_swap(port_: i64, swap_address: *mut wire_uint_8_list) {
-    wire_redeem_swap_impl(port_, swap_address)
+    wire_refund_impl(port_, swap_address, to_address, sat_per_vbyte)
 }
 
 #[no_mangle]
@@ -208,6 +204,7 @@ impl Wire2Api<Config> for wire_Config {
             working_dir: self.working_dir.wire2api(),
             network: self.network.wire2api(),
             payment_timeout_sec: self.payment_timeout_sec.wire2api(),
+            default_lsp_id: self.default_lsp_id.wire2api(),
         }
     }
 }
@@ -239,6 +236,7 @@ pub struct wire_Config {
     working_dir: *mut wire_uint_8_list,
     network: i32,
     payment_timeout_sec: u32,
+    default_lsp_id: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -275,6 +273,7 @@ impl NewWithNullPtr for wire_Config {
             working_dir: core::ptr::null_mut(),
             network: Default::default(),
             payment_timeout_sec: Default::default(),
+            default_lsp_id: core::ptr::null_mut(),
         }
     }
 }

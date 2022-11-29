@@ -1,7 +1,6 @@
 use crate::invoice::parse_invoice;
 use crate::models::{
-    Config, FeeratePreset, GreenlightCredentials, LightningTransaction, Network, NodeAPI,
-    NodeState, SyncResponse,
+    Config, FeeratePreset, GreenlightCredentials, Network, NodeAPI, NodeState, SyncResponse,
 };
 
 use anyhow::{anyhow, Result};
@@ -22,6 +21,7 @@ use lightning_invoice::{RawInvoice, SignedRawInvoice};
 use std::cmp::max;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::sync::mpsc;
+use tonic::Streaming;
 
 const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
 const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
@@ -105,6 +105,15 @@ impl NodeAPI for Greenlight {
                     error!("signer exited");
                 });
         });
+    }
+
+    async fn stream_incoming_payments(&self) -> Result<Streaming<gl_client::pb::IncomingPayment>> {
+        let mut client = self.get_client().await?;
+        let stream = client
+            .stream_incoming(gl_client::pb::StreamIncomingFilter {})
+            .await?
+            .into_inner();
+        Ok(stream)
     }
 
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
@@ -244,7 +253,7 @@ impl NodeAPI for Greenlight {
         };
         Ok(SyncResponse {
             node_state,
-            transactions: pull_transactions(node_pubkey.clone(), since_timestamp, client.clone())
+            payments: pull_transactions(node_pubkey.clone(), since_timestamp, client.clone())
                 .await?,
         })
     }
@@ -359,7 +368,7 @@ async fn pull_transactions(
     node_pubkey: String,
     since_timestamp: i64,
     client: node::Client,
-) -> Result<Vec<LightningTransaction>> {
+) -> Result<Vec<crate::models::Payment>> {
     let mut c = client.clone();
 
     // list invoices
@@ -369,7 +378,7 @@ async fn pull_transactions(
         .into_inner();
 
     // construct the received transactions by filtering the invoices to those paid and beyond the filter timestamp
-    let received_transations: Result<Vec<LightningTransaction>> = invoices
+    let received_transations: Result<Vec<crate::models::Payment>> = invoices
         .invoices
         .into_iter()
         .filter(|i| {
@@ -387,14 +396,14 @@ async fn pull_transactions(
         .into_inner();
 
     // construct the payment transactions
-    let sent_transactions: Result<Vec<LightningTransaction>> = payments
+    let sent_transactions: Result<Vec<crate::models::Payment>> = payments
         .payments
         .into_iter()
         .filter(|p| p.created_at as i64 > since_timestamp)
         .map(|p| payment_to_transaction(p))
         .collect();
 
-    let mut transactions: Vec<LightningTransaction> = Vec::new();
+    let mut transactions: Vec<crate::models::Payment> = Vec::new();
     transactions.extend(received_transations?);
     transactions.extend(sent_transactions?);
 
@@ -405,9 +414,9 @@ async fn pull_transactions(
 fn invoice_to_transaction(
     node_pubkey: String,
     invoice: pb::Invoice,
-) -> Result<LightningTransaction> {
+) -> Result<crate::models::Payment> {
     let ln_invoice = parse_invoice(&invoice.bolt11)?;
-    Ok(LightningTransaction {
+    Ok(crate::models::Payment {
         payment_type: crate::models::PAYMENT_TYPE_RECEIVED.to_string(),
         payment_hash: hex::encode(invoice.payment_hash),
         payment_time: invoice.payment_time as i64,
@@ -424,7 +433,7 @@ fn invoice_to_transaction(
 }
 
 // construct a lightning transaction from a payment
-fn payment_to_transaction(payment: pb::Payment) -> Result<LightningTransaction> {
+fn payment_to_transaction(payment: pb::Payment) -> Result<crate::models::Payment> {
     let mut description = None;
     if !payment.bolt11.is_empty() {
         description = Some(parse_invoice(&payment.bolt11)?.description);
@@ -433,7 +442,7 @@ fn payment_to_transaction(payment: pb::Payment) -> Result<LightningTransaction> 
     let payment_amount = amount_to_msat(payment.amount.unwrap_or_default()) as i32;
     let payment_amount_sent = amount_to_msat(payment.amount_sent.unwrap_or_default()) as i32;
 
-    Ok(LightningTransaction {
+    Ok(crate::models::Payment {
         payment_type: crate::models::PAYMENT_TYPE_SENT.to_string(),
         payment_hash: hex::encode(payment.payment_hash),
         payment_time: payment.created_at as i64,

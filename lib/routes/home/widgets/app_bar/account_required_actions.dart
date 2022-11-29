@@ -37,7 +37,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
             );
           }
 
-          if (lsp == null) {
+          if (accState.status != ConnectionStatus.CONNECTING && lsp == null) {
             warnings.add(WarningAction(() {
               navigatorState.pushNamed("/select_lsp");
             }));

@@ -28,10 +28,10 @@ class LSPBloc extends Cubit<LspInformation?> {
       connectedPeers.contains(pubkey);
 
   // connect to a specific lsp
-  Future connectLSP(String lspID) async => await _breezLib.setLspId(lspID);
+  Future connectLSP(String lspID) async => await _breezLib.connectLSP(lspID);
 
   // fetch the connected lsp from the sdk.
-  Future<LspInformation>? get currentLSP async => await _breezLib.getLsp();
+  Future<LspInformation>? get currentLSP async => await _breezLib.getLspInfo();
 
   // fetch the lsp list from the sdk.
   Future<List<LspInformation>> get lspList async => await _breezLib.listLsps();

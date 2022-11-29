@@ -64,7 +64,8 @@ class BreezBridge {
       seed: seed,
       creds: creds,
     );
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
+    await listPayments();
   }
 
   /// pay a bolt11 invoice
@@ -74,7 +75,8 @@ class BreezBridge {
   /// * `bolt11` - The bolt11 invoice
   Future sendPayment({required String bolt11}) async {
     await _lnToolkit.sendPayment(bolt11: bolt11);
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
+    await listPayments();
   }
 
   /// pay directly to a node id using keysend
@@ -87,7 +89,8 @@ class BreezBridge {
       {required String nodeId, required int amountSats}) async {
     await _lnToolkit.sendSpontaneousPayment(
         nodeId: nodeId, amountSats: amountSats);
-    nodeStateController.add(await getNodeState());
+    await getNodeState();
+    await listPayments();
   }
 
   /// Creates an bolt11 payment request.
@@ -105,49 +108,52 @@ class BreezBridge {
           amountSats: amountSats, description: description);
 
   /// get the node state from the persistent storage
-  Future<NodeState?> getNodeState() async => await _lnToolkit.getNodeState();
+  Future<NodeState?> getNodeState() async {
+    final nodeState = await _lnToolkit.getNodeState();
+    nodeStateController.add(nodeState);
+    return nodeState;
+  }
 
   final StreamController<NodeState?> nodeStateController =
       BehaviorSubject<NodeState?>();
 
   Stream<NodeState?> get nodeStateStream => nodeStateController.stream;
 
-  /// list transactions (incoming/outgoing payments) from the persistent storage
-  Future<List<LightningTransaction>> listTransactions({
+  /// list payments (incoming/outgoing payments) from the persistent storage
+  Future<List<Payment>> listPayments({
     PaymentTypeFilter filter = PaymentTypeFilter.All,
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
-    var transactionList = await _lnToolkit.listTransactions(
+    var paymentsList = await _lnToolkit.listPayments(
       filter: filter,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
     );
-    transactionsController.add(transactionList);
-    return transactionList;
+    paymentsController.add(paymentsList);
+    return paymentsList;
   }
 
-  final StreamController<List<LightningTransaction>> transactionsController =
-      BehaviorSubject<List<LightningTransaction>>();
+  final StreamController<List<Payment>> paymentsController =
+      BehaviorSubject<List<Payment>>();
 
-  Stream<List<LightningTransaction>> get transactionsStream =>
-      transactionsController.stream;
+  Stream<List<Payment>> get paymentsStream => paymentsController.stream;
 
   /// List available lsps that can be selected by the user
   Future<List<LspInformation>> listLsps() async => await _lnToolkit.listLsps();
 
   /// Select the lsp to be used and provide inbound liquidity
-  Future setLspId(String lspId) async {
-    await _lnToolkit.setLspId(lspId: lspId);
-    nodeStateController.add(await getNodeState());
+  Future connectLSP(String lspId) async {
+    await _lnToolkit.connectLsp(lspId: lspId);
+    await getNodeState();
   }
 
   /// Convenience method to look up LSP info
-  Future<LspInformation> getLsp() async => await _lnToolkit.getLsp();
+  Future<LspInformation> getLspInfo() async => await _lnToolkit.lspInfo();
 
   /// Fetch live rates of fiat currencies
-  Future<Map<String, Rate>> fetchRates() async {
-    final List<Rate> rates = await _lnToolkit.fetchRates();
+  Future<Map<String, Rate>> fetchFiatRates() async {
+    final List<Rate> rates = await _lnToolkit.fetchFiatRates();
     return rates.fold<Map<String, Rate>>({}, (map, rate) {
       map[rate.coin] = rate;
       return map;
@@ -162,12 +168,29 @@ class BreezBridge {
   Future closeLspChannels() async => await _lnToolkit.closeLspChannels();
 
   /// Withdraw on-chain funds in the wallet to an external btc address
-  Future withdraw(
+  Future sweep(
       {required String toAddress, required FeeratePreset feeratePreset}) async {
-    await _lnToolkit.withdraw(
-        toAddress: toAddress, feeratePreset: feeratePreset);
-    nodeStateController.add(await getNodeState());
+    await _lnToolkit.sweep(toAddress: toAddress, feeratePreset: feeratePreset);
+    await getNodeState();
+    await listPayments();
   }
+
+  /// Onchain receive swap API
+  Future<SwapInfo> receiveOnchain() async => await _lnToolkit.receiveOnchain();
+
+  Future<List<SwapInfo>> listRefundables() async =>
+      await _lnToolkit.listRefundables();
+
+  Future<String> refund({
+    required String swapAddress,
+    required String toAddress,
+    required int satPerVbyte,
+  }) async =>
+      await _lnToolkit.refund(
+        swapAddress: swapAddress,
+        toAddress: toAddress,
+        satPerVbyte: satPerVbyte,
+      );
 
   Future<LNInvoice> parseInvoice(String invoice) async =>
       await _lnToolkit.parseInvoice(invoice: invoice);

@@ -18,25 +18,12 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
     let prepared_input = raw_input.trim_start_matches("lightning:");
 
     // Check if valid BTC onchain address
-    if let Ok(addr) = bitcoin::Address::from_str(prepared_input) {
-        return Ok(BitcoinAddress(BitcoinAddressData {
-            address: prepared_input.into(),
-            network: addr.network.into(),
-            amount_sat: None,
-            label: None,
-            message: None,
-        }));
-    }
-
-    // Check if valid BTC onchain address (BIP21)
-    if let Ok(uri) = prepared_input.parse::<Uri<'_>>() {
-        let bitcoin_addr_data = BitcoinAddressData {
-            address: uri.address.to_string(),
-            network: uri.address.network.into(),
-            amount_sat: uri.amount.map(|a| a.to_sat()),
-            label: uri.label.map(|label| label.try_into().unwrap()),
-            message: uri.message.map(|msg| msg.try_into().unwrap()),
-        };
+    // For simple addresses, it prepends the "bitcoin:" prefix, thus converting it to a BIP21 URI
+    // If it already has that prefix, it keeps it. In both cases, it tries to parse it as a BIP 21 URI
+    if let Ok(uri) =
+        format!("bitcoin:{}", prepared_input.trim_start_matches("bitcoin:")).parse::<Uri<'_>>()
+    {
+        let bitcoin_addr_data = uri.into();
 
         // Special case of LN BOLT11 with onchain fallback
         // Search for the `lightning=bolt11` param in the BIP21 URI and, if found, extract the bolt11
@@ -246,6 +233,18 @@ pub struct BitcoinAddressData {
     pub amount_sat: Option<u64>,
     pub label: Option<String>,
     pub message: Option<String>,
+}
+
+impl From<Uri<'_>> for BitcoinAddressData {
+    fn from(uri: Uri) -> Self {
+        BitcoinAddressData {
+            address: uri.address.to_string(),
+            network: uri.address.network.into(),
+            amount_sat: uri.amount.map(|a| a.to_sat()),
+            label: uri.label.map(|label| label.try_into().unwrap()),
+            message: uri.message.map(|msg| msg.try_into().unwrap()),
+        }
+    }
 }
 
 #[cfg(test)]

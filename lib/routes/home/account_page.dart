@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
 import 'package:c_breez/routes/home/widgets/dashboard/wallet_dashboard_header_delegate.dart';
 import 'package:c_breez/routes/home/widgets/no_lsp_widget.dart';
@@ -54,8 +55,20 @@ class AccountPage extends StatelessWidget {
     AccountState account,
     UserProfileState userModel,
   ) {
-    final transactions = account.transactions;
-    final transactionFilters = account.transactionFilters;
+    final nonFilteredPayments = account.payments;
+    final paymentFilters = account.paymentFilters;
+    final filteredPayments = nonFilteredPayments.where((tx) {
+      if (paymentFilters.fromTimestamp != null &&
+          paymentFilters.toTimestamp != null) {
+        return paymentFilters.fromTimestamp! < tx.paymentTime * 1000 &&
+            tx.paymentTime * 1000 < paymentFilters.toTimestamp!;
+      }
+      if (paymentFilters.filter != PaymentTypeFilter.All) {
+        return tx.paymentType.toLowerCase() ==
+            paymentFilters.filter.name.toLowerCase();
+      }
+      return true;
+    }).toList();
 
     List<Widget> slivers = [];
 
@@ -67,21 +80,21 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    final bool showSliver = transactions.isNotEmpty ||
-        transactionFilters.filter != PaymentTypeFilter.All;
+    final bool showSliver = nonFilteredPayments.isNotEmpty ||
+        paymentFilters.filter != PaymentTypeFilter.All;
 
     if (showSliver) {
       slivers.add(
         PaymentsFilterSliver(
           maxSize: _kFilterMaxSize,
           scrollController: scrollController,
-          hasFilter: transactionFilters.filter != PaymentTypeFilter.All,
+          hasFilter: paymentFilters.filter != PaymentTypeFilter.All,
         ),
       );
     }
 
-    int? startDate = transactionFilters.fromTimestamp;
-    int? endDate = transactionFilters.toTimestamp;
+    int? startDate = paymentFilters.fromTimestamp;
+    int? endDate = paymentFilters.toTimestamp;
     if (startDate != null && endDate != null) {
       slivers.add(
         HeaderFilterChip(
@@ -95,7 +108,7 @@ class AccountPage extends StatelessWidget {
     if (showSliver) {
       slivers.add(
         PaymentsList(
-          transactions,
+          filteredPayments,
           _kPaymentListItemHeight,
           firstPaymentItemKey,
         ),
@@ -104,12 +117,12 @@ class AccountPage extends StatelessWidget {
         SliverPersistentHeader(
           pinned: true,
           delegate: FixedSliverDelegate(
-            _bottomPlaceholderSpace(context, transactions),
+            _bottomPlaceholderSpace(context, filteredPayments),
             child: Container(),
           ),
         ),
       );
-    } else if (!account.initial) {
+    } else if (!account.initial && nonFilteredPayments.isEmpty) {
       slivers.add(
         SliverPersistentHeader(
           delegate: FixedSliverDelegate(
@@ -117,15 +130,17 @@ class AccountPage extends StatelessWidget {
             builder: (context, shrinkedHeight, overlapContent) {
               return BlocBuilder<LSPBloc, LspInformation?>(
                   builder: (context, lsp) {
-                if (lsp == null) {
+                var isConnecting =
+                    account.status == ConnectionStatus.CONNECTING;
+                if (!isConnecting && lsp == null) {
                   return const Padding(
                     padding: EdgeInsets.only(top: 120.0),
                     child: NoLSPWidget(),
                   );
                 }
-                return const Padding(
-                  padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                  child: StatusText(),
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
+                  child: StatusText(isConnecting: isConnecting),
                 );
               });
             },
@@ -151,9 +166,9 @@ class AccountPage extends StatelessWidget {
 
   double _bottomPlaceholderSpace(
     BuildContext context,
-    List<LightningTransaction> transactions,
+    List<Payment> payments,
   ) {
-    if (transactions.isEmpty) return 0.0;
+    if (payments.isEmpty) return 0.0;
     double listHeightSpace = MediaQuery.of(context).size.height -
         kMinExtent -
         kToolbarHeight -
@@ -163,7 +178,7 @@ class AccountPage extends StatelessWidget {
     double dateFilterSpace = endDate != null ? 0.65 : 0.0;
     double bottomPlaceholderSpace = (listHeightSpace -
             (_kPaymentListItemHeight + 8) *
-                (transactions.length + 1 + dateFilterSpace))
+                (payments.length + 1 + dateFilterSpace))
         .clamp(0.0, listHeightSpace);
     return bottomPlaceholderSpace;
   }

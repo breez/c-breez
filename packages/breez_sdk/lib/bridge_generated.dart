@@ -61,6 +61,10 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kInitNodeConstMeta;
 
+  Stream<BreezEvent> breezEventsStream({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kBreezEventsStreamConstMeta;
+
   /// Cleanup node resources and stop the signer.
   Future<void> stopNode({dynamic hint});
 
@@ -101,18 +105,18 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kReceivePaymentConstMeta;
 
   /// get the node state from the persistent storage
-  Future<NodeState?> getNodeState({dynamic hint});
+  Future<NodeState?> nodeInfo({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta;
+  FlutterRustBridgeTaskConstMeta get kNodeInfoConstMeta;
 
   /// list transactions (incoming/outgoing payments) from the persistent storage
-  Future<List<LightningTransaction>> listTransactions(
+  Future<List<Payment>> listPayments(
       {required PaymentTypeFilter filter,
       int? fromTimestamp,
       int? toTimestamp,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kListTransactionsConstMeta;
+  FlutterRustBridgeTaskConstMeta get kListPaymentsConstMeta;
 
   /// List available lsps that can be selected by the user
   Future<List<LspInformation>> listLsps({dynamic hint});
@@ -120,19 +124,19 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kListLspsConstMeta;
 
   /// Select the lsp to be used and provide inbound liquidity
-  Future<void> setLspId({required String lspId, dynamic hint});
+  Future<void> connectLsp({required String lspId, dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kSetLspIdConstMeta;
+  FlutterRustBridgeTaskConstMeta get kConnectLspConstMeta;
 
   /// Convenience method to look up LSP info based on current LSP ID
-  Future<LspInformation> getLsp({dynamic hint});
+  Future<LspInformation> lspInfo({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kGetLspConstMeta;
+  FlutterRustBridgeTaskConstMeta get kLspInfoConstMeta;
 
   /// Fetch live rates of fiat currencies
-  Future<List<Rate>> fetchRates({dynamic hint});
+  Future<List<Rate>> fetchFiatRates({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kFetchRatesConstMeta;
+  FlutterRustBridgeTaskConstMeta get kFetchFiatRatesConstMeta;
 
   /// List all available fiat currencies
   Future<List<FiatCurrency>> listFiatCurrencies({dynamic hint});
@@ -145,34 +149,30 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kCloseLspChannelsConstMeta;
 
   /// Withdraw on-chain funds in the wallet to an external btc address
-  Future<void> withdraw(
+  Future<void> sweep(
       {required String toAddress,
       required FeeratePreset feeratePreset,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta;
+  FlutterRustBridgeTaskConstMeta get kSweepConstMeta;
 
   /// swaps
   /// Onchain receive swap API
-  Future<SwapInfo> createSwap({dynamic hint});
+  Future<SwapInfo> receiveOnchain({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kCreateSwapConstMeta;
+  FlutterRustBridgeTaskConstMeta get kReceiveOnchainConstMeta;
 
-  Future<List<SwapInfo>> listSwaps({dynamic hint});
+  Future<List<SwapInfo>> listRefundables({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kListSwapsConstMeta;
+  FlutterRustBridgeTaskConstMeta get kListRefundablesConstMeta;
 
-  Future<String> refundSwap(
+  Future<String> refund(
       {required String swapAddress,
       required String toAddress,
-      required int satPerWeight,
+      required int satPerVbyte,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kRefundSwapConstMeta;
-
-  Future<void> redeemSwap({required String swapAddress, dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kRedeemSwapConstMeta;
+  FlutterRustBridgeTaskConstMeta get kRefundConstMeta;
 
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint});
 
@@ -206,12 +206,23 @@ class BitcoinAddressData {
   });
 }
 
+@freezed
+class BreezEvent with _$BreezEvent {
+  const factory BreezEvent.newBlock(
+    int field0,
+  ) = BreezEvent_NewBlock;
+  const factory BreezEvent.invoicePaid(
+    InvoicePaidDetails field0,
+  ) = BreezEvent_InvoicePaid;
+}
+
 class Config {
   final String breezserver;
   final String mempoolspaceUrl;
   final String workingDir;
   final Network network;
   final int paymentTimeoutSec;
+  final String? defaultLspId;
 
   Config({
     required this.breezserver,
@@ -219,6 +230,7 @@ class Config {
     required this.workingDir,
     required this.network,
     required this.paymentTimeoutSec,
+    this.defaultLspId,
   });
 }
 
@@ -270,10 +282,6 @@ class GreenlightCredentials {
 
 @freezed
 class InputType with _$InputType {
-  /// # Supported standards
-  ///
-  /// - plain on-chain BTC address
-  /// - BIP21
   const factory InputType.bitcoinAddress(
     BitcoinAddressData field0,
   ) = InputType_BitcoinAddress;
@@ -289,73 +297,21 @@ class InputType with _$InputType {
   const factory InputType.url(
     String field0,
   ) = InputType_Url;
-
-  /// # Supported standards
-  ///
-  /// - LUD-01 LNURL bech32 encoding
-  /// - LUD-06 `payRequest` spec
-  ///
-  /// # Not supported (yet)
-  ///
-  /// - LUD 17 Support for the lnurlp:// prefix and non bech32-encoded URLs
   const factory InputType.lnUrlPay(
-    LnUrlRequestData field0,
+    String field0,
   ) = InputType_LnUrlPay;
-
-  /// # Supported standards
-  ///
-  /// - LUD-01 LNURL bech32 encoding
-  /// - LUD-03 `withdrawRequest` spec
-  ///
-  /// # Not supported (yet)
-  ///
-  /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
-  /// - LUD 17 Support for the lnurlw:// prefix and non bech32-encoded URLs
-  /// - LUD-19 Pay link discoverable from withdraw link
   const factory InputType.lnUrlWithdraw(
-    LnUrlRequestData field0,
+    String field0,
   ) = InputType_LnUrlWithdraw;
-
-  /// # Supported standards
-  ///
-  /// - LUD-01 LNURL bech32 encoding
-  /// - LUD-04 `auth` base spec
-  ///
-  /// # Not supported (yet)
-  ///
-  /// - LUD 17 Support for the keyauth:// prefix and non bech32-encoded URLs
-  const factory InputType.lnUrlAuth(
-    LnUrlRequestData field0,
-  ) = InputType_LnUrlAuth;
 }
 
-class LightningTransaction {
-  final String paymentType;
-  final String paymentHash;
-  final int paymentTime;
-  final String label;
-  final String destinationPubkey;
-  final int amountMsat;
-  final int feesMsat;
-  final String paymentPreimage;
-  final bool keysend;
+class InvoicePaidDetails {
+  final Uint8List paymentHash;
   final String bolt11;
-  final bool pending;
-  final String? description;
 
-  LightningTransaction({
-    required this.paymentType,
+  InvoicePaidDetails({
     required this.paymentHash,
-    required this.paymentTime,
-    required this.label,
-    required this.destinationPubkey,
-    required this.amountMsat,
-    required this.feesMsat,
-    required this.paymentPreimage,
-    required this.keysend,
     required this.bolt11,
-    required this.pending,
-    this.description,
   });
 }
 
@@ -380,63 +336,6 @@ class LNInvoice {
     required this.expiry,
     required this.routingHints,
     required this.paymentSecret,
-  });
-}
-
-class LnUrlAuthRequestData {
-  final String k1;
-
-  LnUrlAuthRequestData({
-    required this.k1,
-  });
-}
-
-class LnUrlPayRequestData {
-  final String callback;
-  final int minSendable;
-  final int maxSendable;
-
-  /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
-  ///
-  /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
-  final List<MetadataItem> metadata;
-  final int commentAllowed;
-
-  LnUrlPayRequestData({
-    required this.callback,
-    required this.minSendable,
-    required this.maxSendable,
-    required this.metadata,
-    required this.commentAllowed,
-  });
-}
-
-@freezed
-class LnUrlRequestData with _$LnUrlRequestData {
-  const factory LnUrlRequestData.payRequest(
-    LnUrlPayRequestData field0,
-  ) = LnUrlRequestData_PayRequest;
-  const factory LnUrlRequestData.withdrawRequest(
-    LnUrlWithdrawRequestData field0,
-  ) = LnUrlRequestData_WithdrawRequest;
-  const factory LnUrlRequestData.authRequest(
-    LnUrlAuthRequestData field0,
-  ) = LnUrlRequestData_AuthRequest;
-}
-
-class LnUrlWithdrawRequestData {
-  final String callback;
-  final String k1;
-  final String defaultDescription;
-  final int minWithdrawable;
-  final int maxWithdrawable;
-
-  LnUrlWithdrawRequestData({
-    required this.callback,
-    required this.k1,
-    required this.defaultDescription,
-    required this.minWithdrawable,
-    required this.maxWithdrawable,
   });
 }
 
@@ -498,16 +397,6 @@ class LspInformation {
   });
 }
 
-class MetadataItem {
-  final String key;
-  final String value;
-
-  MetadataItem({
-    required this.key,
-    required this.value,
-  });
-}
-
 enum Network {
   /// Mainnet
   Bitcoin,
@@ -539,6 +428,36 @@ class NodeState {
     required this.maxChanReserveMsats,
     required this.connectedPeers,
     required this.inboundLiquidityMsats,
+  });
+}
+
+class Payment {
+  final String paymentType;
+  final String paymentHash;
+  final int paymentTime;
+  final String label;
+  final String destinationPubkey;
+  final int amountMsat;
+  final int feesMsat;
+  final String paymentPreimage;
+  final bool keysend;
+  final String bolt11;
+  final bool pending;
+  final String? description;
+
+  Payment({
+    required this.paymentType,
+    required this.paymentHash,
+    required this.paymentTime,
+    required this.label,
+    required this.destinationPubkey,
+    required this.amountMsat,
+    required this.feesMsat,
+    required this.paymentPreimage,
+    required this.keysend,
+    required this.bolt11,
+    required this.pending,
+    this.description,
   });
 }
 
@@ -727,6 +646,21 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["config", "seed", "creds"],
       );
 
+  Stream<BreezEvent> breezEventsStream({dynamic hint}) =>
+      _platform.executeStream(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_breez_events_stream(port_),
+        parseSuccessData: _wire2api_breez_event,
+        constMeta: kBreezEventsStreamConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kBreezEventsStreamConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "breez_events_stream",
+        argNames: [],
+      );
+
   Future<void> stopNode({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_stop_node(port_),
@@ -798,41 +732,41 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["amountSats", "description"],
       );
 
-  Future<NodeState?> getNodeState({dynamic hint}) =>
+  Future<NodeState?> nodeInfo({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_get_node_state(port_),
+        callFfi: (port_) => _platform.inner.wire_node_info(port_),
         parseSuccessData: _wire2api_opt_box_autoadd_node_state,
-        constMeta: kGetNodeStateConstMeta,
+        constMeta: kNodeInfoConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kNodeInfoConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "get_node_state",
+        debugName: "node_info",
         argNames: [],
       );
 
-  Future<List<LightningTransaction>> listTransactions(
+  Future<List<Payment>> listPayments(
           {required PaymentTypeFilter filter,
           int? fromTimestamp,
           int? toTimestamp,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_list_transactions(
+        callFfi: (port_) => _platform.inner.wire_list_payments(
             port_,
             api2wire_payment_type_filter(filter),
             _platform.api2wire_opt_box_autoadd_i64(fromTimestamp),
             _platform.api2wire_opt_box_autoadd_i64(toTimestamp)),
-        parseSuccessData: _wire2api_list_lightning_transaction,
-        constMeta: kListTransactionsConstMeta,
+        parseSuccessData: _wire2api_list_payment,
+        constMeta: kListPaymentsConstMeta,
         argValues: [filter, fromTimestamp, toTimestamp],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kListTransactionsConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kListPaymentsConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "list_transactions",
+        debugName: "list_payments",
         argNames: ["filter", "fromTimestamp", "toTimestamp"],
       );
 
@@ -851,49 +785,49 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: [],
       );
 
-  Future<void> setLspId({required String lspId, dynamic hint}) =>
+  Future<void> connectLsp({required String lspId, dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner
-            .wire_set_lsp_id(port_, _platform.api2wire_String(lspId)),
+            .wire_connect_lsp(port_, _platform.api2wire_String(lspId)),
         parseSuccessData: _wire2api_unit,
-        constMeta: kSetLspIdConstMeta,
+        constMeta: kConnectLspConstMeta,
         argValues: [lspId],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kSetLspIdConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kConnectLspConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "set_lsp_id",
+        debugName: "connect_lsp",
         argNames: ["lspId"],
       );
 
-  Future<LspInformation> getLsp({dynamic hint}) =>
+  Future<LspInformation> lspInfo({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_get_lsp(port_),
+        callFfi: (port_) => _platform.inner.wire_lsp_info(port_),
         parseSuccessData: _wire2api_lsp_information,
-        constMeta: kGetLspConstMeta,
+        constMeta: kLspInfoConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kGetLspConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kLspInfoConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "get_lsp",
+        debugName: "lsp_info",
         argNames: [],
       );
 
-  Future<List<Rate>> fetchRates({dynamic hint}) =>
+  Future<List<Rate>> fetchFiatRates({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_fetch_rates(port_),
+        callFfi: (port_) => _platform.inner.wire_fetch_fiat_rates(port_),
         parseSuccessData: _wire2api_list_rate,
-        constMeta: kFetchRatesConstMeta,
+        constMeta: kFetchFiatRatesConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kFetchRatesConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kFetchFiatRatesConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "fetch_rates",
+        debugName: "fetch_fiat_rates",
         argNames: [],
       );
 
@@ -927,94 +861,78 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: [],
       );
 
-  Future<void> withdraw(
+  Future<void> sweep(
           {required String toAddress,
           required FeeratePreset feeratePreset,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_withdraw(
+        callFfi: (port_) => _platform.inner.wire_sweep(
             port_,
             _platform.api2wire_String(toAddress),
             api2wire_feerate_preset(feeratePreset)),
         parseSuccessData: _wire2api_unit,
-        constMeta: kWithdrawConstMeta,
+        constMeta: kSweepConstMeta,
         argValues: [toAddress, feeratePreset],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kWithdrawConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kSweepConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "withdraw",
+        debugName: "sweep",
         argNames: ["toAddress", "feeratePreset"],
       );
 
-  Future<SwapInfo> createSwap({dynamic hint}) =>
+  Future<SwapInfo> receiveOnchain({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_create_swap(port_),
+        callFfi: (port_) => _platform.inner.wire_receive_onchain(port_),
         parseSuccessData: _wire2api_swap_info,
-        constMeta: kCreateSwapConstMeta,
+        constMeta: kReceiveOnchainConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kCreateSwapConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kReceiveOnchainConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "create_swap",
+        debugName: "receive_onchain",
         argNames: [],
       );
 
-  Future<List<SwapInfo>> listSwaps({dynamic hint}) =>
+  Future<List<SwapInfo>> listRefundables({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_list_swaps(port_),
+        callFfi: (port_) => _platform.inner.wire_list_refundables(port_),
         parseSuccessData: _wire2api_list_swap_info,
-        constMeta: kListSwapsConstMeta,
+        constMeta: kListRefundablesConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kListSwapsConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kListRefundablesConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "list_swaps",
+        debugName: "list_refundables",
         argNames: [],
       );
 
-  Future<String> refundSwap(
+  Future<String> refund(
           {required String swapAddress,
           required String toAddress,
-          required int satPerWeight,
+          required int satPerVbyte,
           dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_refund_swap(
+        callFfi: (port_) => _platform.inner.wire_refund(
             port_,
             _platform.api2wire_String(swapAddress),
             _platform.api2wire_String(toAddress),
-            api2wire_u32(satPerWeight)),
+            api2wire_u32(satPerVbyte)),
         parseSuccessData: _wire2api_String,
-        constMeta: kRefundSwapConstMeta,
-        argValues: [swapAddress, toAddress, satPerWeight],
+        constMeta: kRefundConstMeta,
+        argValues: [swapAddress, toAddress, satPerVbyte],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kRefundSwapConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kRefundConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "refund_swap",
-        argNames: ["swapAddress", "toAddress", "satPerWeight"],
-      );
-
-  Future<void> redeemSwap({required String swapAddress, dynamic hint}) =>
-      _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner
-            .wire_redeem_swap(port_, _platform.api2wire_String(swapAddress)),
-        parseSuccessData: _wire2api_unit,
-        constMeta: kRedeemSwapConstMeta,
-        argValues: [swapAddress],
-        hint: hint,
-      ));
-
-  FlutterRustBridgeTaskConstMeta get kRedeemSwapConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "redeem_swap",
-        argNames: ["swapAddress"],
+        debugName: "refund",
+        argNames: ["swapAddress", "toAddress", "satPerVbyte"],
       );
 
   Future<LNInvoice> parseInvoice({required String invoice, dynamic hint}) =>
@@ -1100,27 +1018,12 @@ class LightningToolkitImpl implements LightningToolkit {
     return raw as bool;
   }
 
+  InvoicePaidDetails _wire2api_box_autoadd_invoice_paid_details(dynamic raw) {
+    return _wire2api_invoice_paid_details(raw);
+  }
+
   LNInvoice _wire2api_box_autoadd_ln_invoice(dynamic raw) {
     return _wire2api_ln_invoice(raw);
-  }
-
-  LnUrlAuthRequestData _wire2api_box_autoadd_ln_url_auth_request_data(
-      dynamic raw) {
-    return _wire2api_ln_url_auth_request_data(raw);
-  }
-
-  LnUrlPayRequestData _wire2api_box_autoadd_ln_url_pay_request_data(
-      dynamic raw) {
-    return _wire2api_ln_url_pay_request_data(raw);
-  }
-
-  LnUrlRequestData _wire2api_box_autoadd_ln_url_request_data(dynamic raw) {
-    return _wire2api_ln_url_request_data(raw);
-  }
-
-  LnUrlWithdrawRequestData _wire2api_box_autoadd_ln_url_withdraw_request_data(
-      dynamic raw) {
-    return _wire2api_ln_url_withdraw_request_data(raw);
   }
 
   NodeState _wire2api_box_autoadd_node_state(dynamic raw) {
@@ -1137,6 +1040,21 @@ class LightningToolkitImpl implements LightningToolkit {
 
   int _wire2api_box_autoadd_u64(dynamic raw) {
     return _wire2api_u64(raw);
+  }
+
+  BreezEvent _wire2api_breez_event(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return BreezEvent_NewBlock(
+          _wire2api_u32(raw[1]),
+        );
+      case 1:
+        return BreezEvent_InvoicePaid(
+          _wire2api_box_autoadd_invoice_paid_details(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   CurrencyInfo _wire2api_currency_info(dynamic raw) {
@@ -1206,47 +1124,29 @@ class LightningToolkitImpl implements LightningToolkit {
         );
       case 4:
         return InputType_LnUrlPay(
-          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
+          _wire2api_String(raw[1]),
         );
       case 5:
         return InputType_LnUrlWithdraw(
-          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
-        );
-      case 6:
-        return InputType_LnUrlAuth(
-          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
+          _wire2api_String(raw[1]),
         );
       default:
         throw Exception("unreachable");
     }
   }
 
-  LightningTransaction _wire2api_lightning_transaction(dynamic raw) {
+  InvoicePaidDetails _wire2api_invoice_paid_details(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 12)
-      throw Exception('unexpected arr length: expect 12 but see ${arr.length}');
-    return LightningTransaction(
-      paymentType: _wire2api_String(arr[0]),
-      paymentHash: _wire2api_String(arr[1]),
-      paymentTime: _wire2api_i64(arr[2]),
-      label: _wire2api_String(arr[3]),
-      destinationPubkey: _wire2api_String(arr[4]),
-      amountMsat: _wire2api_i32(arr[5]),
-      feesMsat: _wire2api_i32(arr[6]),
-      paymentPreimage: _wire2api_String(arr[7]),
-      keysend: _wire2api_bool(arr[8]),
-      bolt11: _wire2api_String(arr[9]),
-      pending: _wire2api_bool(arr[10]),
-      description: _wire2api_opt_String(arr[11]),
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return InvoicePaidDetails(
+      paymentHash: _wire2api_uint_8_list(arr[0]),
+      bolt11: _wire2api_String(arr[1]),
     );
   }
 
   List<FiatCurrency> _wire2api_list_fiat_currency(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_fiat_currency).toList();
-  }
-
-  List<LightningTransaction> _wire2api_list_lightning_transaction(dynamic raw) {
-    return (raw as List<dynamic>).map(_wire2api_lightning_transaction).toList();
   }
 
   List<LocaleOverrides> _wire2api_list_locale_overrides(dynamic raw) {
@@ -1261,8 +1161,8 @@ class LightningToolkitImpl implements LightningToolkit {
     return (raw as List<dynamic>).map(_wire2api_lsp_information).toList();
   }
 
-  List<MetadataItem> _wire2api_list_metadata_item(dynamic raw) {
-    return (raw as List<dynamic>).map(_wire2api_metadata_item).toList();
+  List<Payment> _wire2api_list_payment(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_payment).toList();
   }
 
   List<Rate> _wire2api_list_rate(dynamic raw) {
@@ -1295,60 +1195,6 @@ class LightningToolkitImpl implements LightningToolkit {
       expiry: _wire2api_u64(arr[6]),
       routingHints: _wire2api_list_route_hint(arr[7]),
       paymentSecret: _wire2api_uint_8_list(arr[8]),
-    );
-  }
-
-  LnUrlAuthRequestData _wire2api_ln_url_auth_request_data(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-    return LnUrlAuthRequestData(
-      k1: _wire2api_String(arr[0]),
-    );
-  }
-
-  LnUrlPayRequestData _wire2api_ln_url_pay_request_data(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
-    return LnUrlPayRequestData(
-      callback: _wire2api_String(arr[0]),
-      minSendable: _wire2api_u16(arr[1]),
-      maxSendable: _wire2api_u16(arr[2]),
-      metadata: _wire2api_list_metadata_item(arr[3]),
-      commentAllowed: _wire2api_u16(arr[4]),
-    );
-  }
-
-  LnUrlRequestData _wire2api_ln_url_request_data(dynamic raw) {
-    switch (raw[0]) {
-      case 0:
-        return LnUrlRequestData_PayRequest(
-          _wire2api_box_autoadd_ln_url_pay_request_data(raw[1]),
-        );
-      case 1:
-        return LnUrlRequestData_WithdrawRequest(
-          _wire2api_box_autoadd_ln_url_withdraw_request_data(raw[1]),
-        );
-      case 2:
-        return LnUrlRequestData_AuthRequest(
-          _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
-  }
-
-  LnUrlWithdrawRequestData _wire2api_ln_url_withdraw_request_data(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 5)
-      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
-    return LnUrlWithdrawRequestData(
-      callback: _wire2api_String(arr[0]),
-      k1: _wire2api_String(arr[1]),
-      defaultDescription: _wire2api_String(arr[2]),
-      minWithdrawable: _wire2api_u16(arr[3]),
-      maxWithdrawable: _wire2api_u16(arr[4]),
     );
   }
 
@@ -1393,16 +1239,6 @@ class LightningToolkitImpl implements LightningToolkit {
       lspPubkey: _wire2api_uint_8_list(arr[12]),
       maxInactiveDuration: _wire2api_i64(arr[13]),
       channelMinimumFeeMsat: _wire2api_i64(arr[14]),
-    );
-  }
-
-  MetadataItem _wire2api_metadata_item(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return MetadataItem(
-      key: _wire2api_String(arr[0]),
-      value: _wire2api_String(arr[1]),
     );
   }
 
@@ -1458,6 +1294,26 @@ class LightningToolkitImpl implements LightningToolkit {
 
   List<LocalizedName>? _wire2api_opt_list_localized_name(dynamic raw) {
     return raw == null ? null : _wire2api_list_localized_name(raw);
+  }
+
+  Payment _wire2api_payment(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 12)
+      throw Exception('unexpected arr length: expect 12 but see ${arr.length}');
+    return Payment(
+      paymentType: _wire2api_String(arr[0]),
+      paymentHash: _wire2api_String(arr[1]),
+      paymentTime: _wire2api_i64(arr[2]),
+      label: _wire2api_String(arr[3]),
+      destinationPubkey: _wire2api_String(arr[4]),
+      amountMsat: _wire2api_i32(arr[5]),
+      feesMsat: _wire2api_i32(arr[6]),
+      paymentPreimage: _wire2api_String(arr[7]),
+      keysend: _wire2api_bool(arr[8]),
+      bolt11: _wire2api_String(arr[9]),
+      pending: _wire2api_bool(arr[10]),
+      description: _wire2api_opt_String(arr[11]),
+    );
   }
 
   Rate _wire2api_rate(dynamic raw) {
@@ -1529,10 +1385,6 @@ class LightningToolkitImpl implements LightningToolkit {
       rtl: _wire2api_opt_box_autoadd_bool(arr[2]),
       position: _wire2api_opt_box_autoadd_u32(arr[3]),
     );
-  }
-
-  int _wire2api_u16(dynamic raw) {
-    return raw as int;
   }
 
   int _wire2api_u32(dynamic raw) {
@@ -1625,6 +1477,11 @@ class LightningToolkitPlatform
   }
 
   @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_opt_String(String? raw) {
+    return raw == null ? ffi.nullptr : api2wire_String(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_Config> api2wire_opt_box_autoadd_config(Config? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_config(raw);
   }
@@ -1664,6 +1521,7 @@ class LightningToolkitPlatform
     wireObj.working_dir = api2wire_String(apiObj.workingDir);
     wireObj.network = api2wire_network(apiObj.network);
     wireObj.payment_timeout_sec = api2wire_u32(apiObj.paymentTimeoutSec);
+    wireObj.default_lsp_id = api2wire_opt_String(apiObj.defaultLspId);
   }
 
   void _api_fill_to_wire_greenlight_credentials(
@@ -1701,7 +1559,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       : _lookup = lookup;
 
   void store_dart_post_cobject(
-    int ptr,
+    DartPostCObjectFnType ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -1709,10 +1567,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject =
-      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
+  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
+      .asFunction<void Function(DartPostCObjectFnType)>();
 
   void wire_register_node(
     int port_,
@@ -1786,6 +1644,20 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_GreenlightCredentials>)>();
 
+  void wire_breez_events_stream(
+    int port_,
+  ) {
+    return _wire_breez_events_stream(
+      port_,
+    );
+  }
+
+  late final _wire_breez_events_streamPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_breez_events_stream');
+  late final _wire_breez_events_stream =
+      _wire_breez_events_streamPtr.asFunction<void Function(int)>();
+
   void wire_stop_node(
     int port_,
   ) {
@@ -1855,27 +1727,27 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_receive_payment = _wire_receive_paymentPtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_get_node_state(
+  void wire_node_info(
     int port_,
   ) {
-    return _wire_get_node_state(
+    return _wire_node_info(
       port_,
     );
   }
 
-  late final _wire_get_node_statePtr =
+  late final _wire_node_infoPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_get_node_state');
-  late final _wire_get_node_state =
-      _wire_get_node_statePtr.asFunction<void Function(int)>();
+          'wire_node_info');
+  late final _wire_node_info =
+      _wire_node_infoPtr.asFunction<void Function(int)>();
 
-  void wire_list_transactions(
+  void wire_list_payments(
     int port_,
     int filter,
     ffi.Pointer<ffi.Int64> from_timestamp,
     ffi.Pointer<ffi.Int64> to_timestamp,
   ) {
-    return _wire_list_transactions(
+    return _wire_list_payments(
       port_,
       filter,
       from_timestamp,
@@ -1883,11 +1755,11 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
     );
   }
 
-  late final _wire_list_transactionsPtr = _lookup<
+  late final _wire_list_paymentsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64, ffi.Int32, ffi.Pointer<ffi.Int64>,
-              ffi.Pointer<ffi.Int64>)>>('wire_list_transactions');
-  late final _wire_list_transactions = _wire_list_transactionsPtr.asFunction<
+              ffi.Pointer<ffi.Int64>)>>('wire_list_payments');
+  late final _wire_list_payments = _wire_list_paymentsPtr.asFunction<
       void Function(
           int, int, ffi.Pointer<ffi.Int64>, ffi.Pointer<ffi.Int64>)>();
 
@@ -1905,48 +1777,50 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_list_lsps =
       _wire_list_lspsPtr.asFunction<void Function(int)>();
 
-  void wire_set_lsp_id(
+  void wire_connect_lsp(
     int port_,
     ffi.Pointer<wire_uint_8_list> lsp_id,
   ) {
-    return _wire_set_lsp_id(
+    return _wire_connect_lsp(
       port_,
       lsp_id,
     );
   }
 
-  late final _wire_set_lsp_idPtr = _lookup<
+  late final _wire_connect_lspPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_set_lsp_id');
-  late final _wire_set_lsp_id = _wire_set_lsp_idPtr
+              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_connect_lsp');
+  late final _wire_connect_lsp = _wire_connect_lspPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_get_lsp(
+  void wire_lsp_info(
     int port_,
   ) {
-    return _wire_get_lsp(
+    return _wire_lsp_info(
       port_,
     );
   }
 
-  late final _wire_get_lspPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>('wire_get_lsp');
-  late final _wire_get_lsp = _wire_get_lspPtr.asFunction<void Function(int)>();
-
-  void wire_fetch_rates(
-    int port_,
-  ) {
-    return _wire_fetch_rates(
-      port_,
-    );
-  }
-
-  late final _wire_fetch_ratesPtr =
+  late final _wire_lsp_infoPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_fetch_rates');
-  late final _wire_fetch_rates =
-      _wire_fetch_ratesPtr.asFunction<void Function(int)>();
+          'wire_lsp_info');
+  late final _wire_lsp_info =
+      _wire_lsp_infoPtr.asFunction<void Function(int)>();
+
+  void wire_fetch_fiat_rates(
+    int port_,
+  ) {
+    return _wire_fetch_fiat_rates(
+      port_,
+    );
+  }
+
+  late final _wire_fetch_fiat_ratesPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_fetch_fiat_rates');
+  late final _wire_fetch_fiat_rates =
+      _wire_fetch_fiat_ratesPtr.asFunction<void Function(int)>();
 
   void wire_list_fiat_currencies(
     int port_,
@@ -1976,91 +1850,74 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_close_lsp_channels =
       _wire_close_lsp_channelsPtr.asFunction<void Function(int)>();
 
-  void wire_withdraw(
+  void wire_sweep(
     int port_,
     ffi.Pointer<wire_uint_8_list> to_address,
     int feerate_preset,
   ) {
-    return _wire_withdraw(
+    return _wire_sweep(
       port_,
       to_address,
       feerate_preset,
     );
   }
 
-  late final _wire_withdrawPtr = _lookup<
+  late final _wire_sweepPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Int32)>>('wire_withdraw');
-  late final _wire_withdraw = _wire_withdrawPtr
+              ffi.Int32)>>('wire_sweep');
+  late final _wire_sweep = _wire_sweepPtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>, int)>();
 
-  void wire_create_swap(
+  void wire_receive_onchain(
     int port_,
   ) {
-    return _wire_create_swap(
+    return _wire_receive_onchain(
       port_,
     );
   }
 
-  late final _wire_create_swapPtr =
+  late final _wire_receive_onchainPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_create_swap');
-  late final _wire_create_swap =
-      _wire_create_swapPtr.asFunction<void Function(int)>();
+          'wire_receive_onchain');
+  late final _wire_receive_onchain =
+      _wire_receive_onchainPtr.asFunction<void Function(int)>();
 
-  void wire_list_swaps(
+  void wire_list_refundables(
     int port_,
   ) {
-    return _wire_list_swaps(
+    return _wire_list_refundables(
       port_,
     );
   }
 
-  late final _wire_list_swapsPtr =
+  late final _wire_list_refundablesPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_list_swaps');
-  late final _wire_list_swaps =
-      _wire_list_swapsPtr.asFunction<void Function(int)>();
+          'wire_list_refundables');
+  late final _wire_list_refundables =
+      _wire_list_refundablesPtr.asFunction<void Function(int)>();
 
-  void wire_refund_swap(
+  void wire_refund(
     int port_,
     ffi.Pointer<wire_uint_8_list> swap_address,
     ffi.Pointer<wire_uint_8_list> to_address,
-    int sat_per_weight,
+    int sat_per_vbyte,
   ) {
-    return _wire_refund_swap(
+    return _wire_refund(
       port_,
       swap_address,
       to_address,
-      sat_per_weight,
+      sat_per_vbyte,
     );
   }
 
-  late final _wire_refund_swapPtr = _lookup<
+  late final _wire_refundPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.Int64, ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_uint_8_list>, ffi.Uint32)>>('wire_refund_swap');
-  late final _wire_refund_swap = _wire_refund_swapPtr.asFunction<
+              ffi.Pointer<wire_uint_8_list>, ffi.Uint32)>>('wire_refund');
+  late final _wire_refund = _wire_refundPtr.asFunction<
       void Function(int, ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_uint_8_list>, int)>();
-
-  void wire_redeem_swap(
-    int port_,
-    ffi.Pointer<wire_uint_8_list> swap_address,
-  ) {
-    return _wire_redeem_swap(
-      port_,
-      swap_address,
-    );
-  }
-
-  late final _wire_redeem_swapPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int64, ffi.Pointer<wire_uint_8_list>)>>('wire_redeem_swap');
-  late final _wire_redeem_swap = _wire_redeem_swapPtr
-      .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
   void wire_parse_invoice(
     int port_,
@@ -2199,6 +2056,8 @@ class wire_Config extends ffi.Struct {
 
   @ffi.Uint32()
   external int payment_timeout_sec;
+
+  external ffi.Pointer<wire_uint_8_list> default_lsp_id;
 }
 
 class wire_GreenlightCredentials extends ffi.Struct {
@@ -2207,4 +2066,6 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;
+typedef DartPostCObjectFnType = ffi.Pointer<
+    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
+typedef DartPort = ffi.Int64;

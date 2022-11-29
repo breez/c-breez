@@ -110,7 +110,7 @@ fn main() -> Result<()> {
                         }
                         show_results(binding::init_node(None, seed.to_vec(), creds.unwrap()));
                     }
-                    Some("request_payment") => {
+                    Some("receive_payment") => {
                         let amount_sats: u64 = command.next().unwrap().parse()?;
                         let description = command.next().unwrap();
 
@@ -142,7 +142,7 @@ fn main() -> Result<()> {
                             amount_sats.parse()?,
                         ))
                     }
-                    Some("list_txs") => show_results(binding::list_transactions(
+                    Some("list_payments") => show_results(binding::list_payments(
                         models::PaymentTypeFilter::All,
                         None,
                         None,
@@ -158,13 +158,13 @@ fn main() -> Result<()> {
                             .map_err(|err| anyhow!(err))?
                             .parse()?;
 
-                        show_results(binding::withdraw(
+                        show_results(binding::sweep(
                             to_address.into(),
                             FeeratePreset::try_from(feerate_preset)?,
                         ))
                     }
                     Some("list_lsps") => show_results(binding::list_lsps()),
-                    Some("set_lsp") => {
+                    Some("connect_lsp") => {
                         let lsps: Vec<LspInformation> = binding::list_lsps()?;
                         let chosen_lsp_id = command
                             .next()
@@ -175,22 +175,22 @@ fn main() -> Result<()> {
                             .find(|lsp| lsp.id == chosen_lsp_id)
                             .ok_or("No LSP found for given LSP ID")
                             .map_err(|err| anyhow!(err))?;
-                        binding::set_lsp_id(chosen_lsp_id.to_string())?;
+                        binding::connect_lsp(chosen_lsp_id.to_string())?;
 
                         info!(
                             "Set LSP ID: {} / LSP Name: {}",
                             chosen_lsp_id, chosen_lsp.name
                         );
                     }
-                    Some("get_node_state") => show_results(binding::get_node_state()),
+                    Some("node_info") => show_results(binding::node_info()),
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),
-                    Some("fetch_rates") => show_results(binding::fetch_rates()),
+                    Some("fetch_fiat_rates") => show_results(binding::fetch_fiat_rates()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),
                     Some("stop_node") => show_results(binding::stop_node()),
 
-                    Some("create_swap") => show_results(binding::create_swap()),
-                    Some("list_swaps") => show_results(binding::list_swaps()),
-                    Some("refund_swap") => show_results({
+                    Some("receive_onchain") => show_results(binding::receive_onchain()),
+                    Some("list_refundables") => show_results(binding::list_refundables()),
+                    Some("refund") => show_results({
                         let swap_address = command
                             .next()
                             .ok_or("Expected swap_address arg")
@@ -199,24 +199,16 @@ fn main() -> Result<()> {
                             .next()
                             .ok_or("Expected to_address arg")
                             .map_err(|err| anyhow!(err))?;
-                        let sat_per_weight_fee: u32 = command
+                        let sat_per_vbyte: u32 = command
                             .next()
                             .ok_or("Expected to_address arg")
                             .map_err(|err| anyhow!(err))?
                             .parse()?;
-                        binding::refund_swap(
+                        binding::refund(
                             swap_address.to_string(),
                             to_address.to_string(),
-                            sat_per_weight_fee,
+                            sat_per_vbyte,
                         )
-                    }),
-
-                    Some("redeem_swap") => show_results({
-                        let swap_address = command
-                            .next()
-                            .ok_or("Expected swap_address arg")
-                            .map_err(|err| anyhow!(err))?;
-                        binding::redeem_swap(swap_address.to_string())
                     }),
 
                     Some(_) => {

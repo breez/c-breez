@@ -13,8 +13,8 @@ dependencies:
   dart_lnurl:
     git:
       url: https://github.com/breez/dart_lnurl
-  drift: ^2.2.0
-  drift_dev: ^2.2.0+1
+  drift: ^2.3.0
+  drift_dev: ^2.3.0
   encrypt: ^5.0.1
   ffi: ^2.0.1
   fimber: ^0.6.6

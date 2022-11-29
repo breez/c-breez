@@ -3,9 +3,9 @@ use std::sync::Arc;
 
 use crate::binding::parse_invoice;
 use crate::chain::{MempoolSpace, OnchainTx};
-use crate::chain_notifier::{ChainEvent, Listener};
 use crate::grpc::{AddFundInitRequest, GetSwapPaymentRequest};
 use anyhow::{anyhow, Result};
+use bitcoin::blockdata::constants::WITNESS_SCALE_FACTOR;
 use bitcoin::blockdata::opcodes;
 use bitcoin::blockdata::script::Builder;
 use bitcoin::psbt::serialize::Serialize;
@@ -20,8 +20,8 @@ use bitcoin_hashes::sha256;
 use rand::Rng;
 use ripemd::{Digest, Ripemd160};
 
+use crate::breez_services::{BreezEvent, BreezServer, PaymentReceiver};
 use crate::models::{Swap, SwapInfo, SwapStatus, SwapperAPI};
-use crate::node_service::{BreezServer, PaymentReceiver};
 
 struct Utxo {
     out: OutPoint,
@@ -78,13 +78,29 @@ pub struct BTCReceiveSwap {
     payment_receiver: Arc<PaymentReceiver>,
 }
 
-#[tonic::async_trait]
-impl Listener for BTCReceiveSwap {
-    async fn on_event(&self, e: ChainEvent) -> Result<()> {
+impl BTCReceiveSwap {
+    pub(crate) fn new(
+        network: Network,
+        swapper_api: Arc<dyn SwapperAPI>,
+        persister: Arc<crate::persist::db::SqliteStorage>,
+        chain_service: Arc<MempoolSpace>,
+        payment_receiver: Arc<PaymentReceiver>,
+    ) -> Self {
+        let swapper = Self {
+            network,
+            swapper_api,
+            persister,
+            chain_service,
+            payment_receiver,
+        };
+        swapper
+    }
+
+    pub(crate) async fn on_event(&self, e: BreezEvent) -> Result<()> {
         match e {
-            ChainEvent::NewBlock(tip) => {
+            BreezEvent::NewBlock(tip) => {
                 debug!("got chain event {:?}", e);
-                let swaps = self.list_swaps().await?;
+                let swaps = self.list_swaps(SwapStatus::Initial)?;
                 let to_check: Vec<SwapInfo> = swaps
                     .into_iter()
                     .filter(|s| s.status == SwapStatus::Initial)
@@ -130,25 +146,6 @@ impl Listener for BTCReceiveSwap {
         }
 
         Ok(())
-    }
-}
-
-impl BTCReceiveSwap {
-    pub(crate) fn new(
-        network: Network,
-        swapper_api: Arc<dyn SwapperAPI>,
-        persister: Arc<crate::persist::db::SqliteStorage>,
-        chain_service: Arc<MempoolSpace>,
-        payment_receiver: Arc<PaymentReceiver>,
-    ) -> Self {
-        let swapper = Self {
-            network,
-            swapper_api,
-            persister,
-            chain_service,
-            payment_receiver,
-        };
-        swapper
     }
 
     pub(crate) async fn create_swap_address(&self) -> Result<SwapInfo> {
@@ -213,8 +210,12 @@ impl BTCReceiveSwap {
         // return swap.bitcoinAddress;
     }
 
-    pub(crate) async fn list_swaps(&self) -> Result<Vec<SwapInfo>> {
-        self.persister.list_swaps()
+    pub(crate) async fn list_refundables(&self) -> Result<Vec<SwapInfo>> {
+        self.list_swaps(SwapStatus::Expired)
+    }
+
+    fn list_swaps(&self, status: SwapStatus) -> Result<Vec<SwapInfo>> {
+        self.persister.list_swaps_with_status(status)
     }
 
     async fn refresh_swap_on_chain_status(
@@ -247,8 +248,15 @@ impl BTCReceiveSwap {
         });
 
         let mut swap_status = swap_info.status;
-        if swap_status != SwapStatus::Refunded
-            && current_tip - confirmed_block >= swap_info.lock_height as u32
+        debug!(
+            "refreshing swap status current_tip: {}, lock_height={}, confirmed block: {}",
+            current_tip, swap_info.lock_height, confirmed_block
+        );
+
+        if confirmed_sats > 0
+            && (swap_status != SwapStatus::Refunded
+                && current_tip - confirmed_block >= swap_info.lock_height as u32)
+            || swap_info.paid_sats > 0
         {
             swap_status = SwapStatus::Expired
         }
@@ -305,7 +313,7 @@ impl BTCReceiveSwap {
         &self,
         swap_address: String,
         to_address: String,
-        sat_per_weight: u32,
+        sat_per_vbyte: u32,
     ) -> Result<String> {
         let swap_info = self
             .persister
@@ -330,7 +338,7 @@ impl BTCReceiveSwap {
             to_address,
             swap_info.lock_height as u32,
             script,
-            sat_per_weight,
+            sat_per_vbyte,
         )?;
         let txid = self.chain_service.broadcast_transaction(refund_tx).await?;
         self.persister.update_swap_chain_info(
@@ -421,7 +429,7 @@ fn create_refund_tx(
     to_address: String,
     lock_delay: u32,
     input_script: Script,
-    sat_per_weight: u32,
+    sat_per_vbyte: u32,
 ) -> Result<Vec<u8>> {
     if utxos.len() == 0 {
         return Err(anyhow!("must have at least one input"));
@@ -467,9 +475,10 @@ fn create_refund_tx(
     };
 
     let refund_witness_input_size: u32 = 1 + 1 + 73 + 1 + 0 + 1 + 100;
-    let tx_size = tx.strippedsize() as u32 + refund_witness_input_size * txins.len() as u32;
-    print!("tx size = {}", tx_size);
-    let fees: u64 = (tx_size * sat_per_weight) as u64;
+    let tx_weight = tx.strippedsize() as u32 * WITNESS_SCALE_FACTOR as u32
+        + refund_witness_input_size * txins.len() as u32;
+    debug!("tx weight = {}", tx_weight);
+    let fees: u64 = (tx_weight * sat_per_vbyte / WITNESS_SCALE_FACTOR as u32) as u64;
     tx.output[0].value = confirmed_amount - fees;
 
     let scpt = Secp256k1::signing_only();

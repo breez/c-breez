@@ -1,3 +1,4 @@
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/lnurl.dart';
@@ -5,6 +6,7 @@ import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EnterPaymentInfoDialog extends StatefulWidget {
@@ -152,18 +154,8 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
           onPressed: (() async {
             if (_formKey.currentState!.validate()) {
               Navigator.of(context).pop();
-              var nodeID = parseNodeId(_paymentInfoController.text);
-              Navigator.of(context).push(
-                FadeInRoute(
-                  builder: (_) => SpontaneousPaymentPage(
-                    nodeID,
-                    widget.paymentItemKey,
-                  ),
-                ),
-              );
-              return;
-              // final InputBloc inputBloc = context.read<InputBloc>();
-              // inputBloc.addIncomingInput(_paymentInfoController.text);
+              final inputBloc = context.read<InputBloc>();
+              inputBloc.addIncomingInput(_paymentInfoController.text);
             }
           }),
           child: Text(

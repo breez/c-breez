@@ -1,12 +1,11 @@
-use crate::breez_services::{
-    BreezEvent, BreezEventListener, BreezServicesBuilder, ShutdownHandler,
-};
+use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
 use flutter_rust_bridge::StreamSink;
 use once_cell::sync::OnceCell;
 use std::future::Future;
 use std::sync::Arc;
+use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
 
@@ -22,7 +21,7 @@ use crate::invoice::{self};
 use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
-static BREEZ_SERVICES_SHUTDOWN: OnceCell<ShutdownHandler> = OnceCell::new();
+static BREEZ_SERVICES_SHUTDOWN: OnceCell<mpsc::Sender<()>> = OnceCell::new();
 static NOTIFICATION_STREAM: OnceCell<StreamSink<BreezEvent>> = OnceCell::new();
 
 struct BindingEventListener {}
@@ -97,9 +96,10 @@ pub fn init_node(
         let breez_services = BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api))
             .event_listener(Arc::new(BindingEventListener {}))
             .build()?;
-        let shutdown = crate::breez_services::start(breez_services.clone()).await?;
+        let (stop_sender, stop_receiver) = mpsc::channel(1);
+        _ = crate::breez_services::start(breez_services.clone(), stop_receiver).await?;
         BREEZ_SERVICES_SHUTDOWN
-            .set(shutdown)
+            .set(stop_sender)
             .map_err(|_| anyhow!("static node services already set"))?;
         BREEZ_SERVICES_INSTANCE
             .set(breez_services.clone())
@@ -122,7 +122,7 @@ pub fn stop_node() -> Result<()> {
         let shutdown_handler = BREEZ_SERVICES_SHUTDOWN.get();
         match shutdown_handler {
             None => Err(anyhow!("Background processing is not running")),
-            Some(s) => s.stop().await,
+            Some(s) => s.send(()).await.map_err(anyhow::Error::msg),
         }
     })
 }

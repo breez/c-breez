@@ -42,14 +42,14 @@ pub struct InvoicePaidDetails {
 }
 
 /// starts the BreezServices background threads.
-pub async fn start(breez_services: Arc<BreezServices>) -> Result<ShutdownHandler> {
+pub async fn start(
+    breez_services: Arc<BreezServices>,
+    mut shutdown_receiver: mpsc::Receiver<()>,
+) -> Result<()> {
     // start the signer
-    let (signer_signal, signer_receive) = mpsc::channel(1);
-    breez_services.node_api.start_signer(signer_receive);
-    // sync node state
-    breez_services.sync().await?;
+    let (shutdown_signer_sender, signer_signer_receiver) = mpsc::channel(1);
+    breez_services.node_api.start_signer(signer_signer_receiver);
 
-    let (chain_signal, mut shutdown) = mpsc::channel(1);
     std::thread::spawn(move || {
         tokio::runtime::Builder::new_current_thread()
             .enable_all()
@@ -71,7 +71,8 @@ pub async fn start(breez_services: Arc<BreezServices>) -> Result<ShutdownHandler
                         }
                        }
                       },
-                      _ = shutdown.recv() => {
+                      _ = shutdown_receiver.recv() => {
+                       _ = shutdown_signer_sender.send(()).await;
                        debug!("Received the signal to exit the chain monitoring loop");
                        return;
                      }
@@ -80,12 +81,7 @@ pub async fn start(breez_services: Arc<BreezServices>) -> Result<ShutdownHandler
             })
     });
 
-    let shutdown_handler = ShutdownHandler {
-        shutdown_signer: signer_signal,
-        shutdown_chain: chain_signal,
-    };
-
-    Ok(shutdown_handler)
+    Ok(())
 }
 
 /// BreezServices is a facade and the single entry point for the sdk use cases providing
@@ -245,6 +241,12 @@ impl BreezServices {
 
     async fn on_event(&self, e: BreezEvent) -> Result<()> {
         debug!("breez services got event {:?}", e);
+        match e {
+            BreezEvent::InvoicePaid(_) => self.sync().await?,
+            BreezEvent::NewBlock(_) => self.sync().await?,
+            _ => {}
+        }
+
         if let Err(err) = self.btc_receive_swapper.on_event(e.clone()).await {
             debug!(
                 "btc_receive_swapper failed to processed event {:?}: {:?}",
@@ -261,18 +263,6 @@ impl BreezServices {
 
     pub(crate) async fn start_node(&self) -> Result<()> {
         self.node_api.start().await
-    }
-}
-
-#[tonic::async_trait]
-impl BreezEventListener for BreezServices {
-    async fn on_event(&self, e: BreezEvent) -> Result<()> {
-        match e {
-            BreezEvent::NewBlock(tip) => self.sync().await?,
-            _ => {}
-        }
-
-        Ok(())
     }
 }
 
@@ -320,21 +310,6 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
            };
          },
         }
-    }
-}
-
-pub struct ShutdownHandler {
-    shutdown_signer: mpsc::Sender<()>,
-    shutdown_chain: mpsc::Sender<()>,
-}
-
-impl ShutdownHandler {
-    pub(crate) async fn stop(&self) -> Result<()> {
-        self.shutdown_signer.send(()).await?;
-        self.shutdown_chain
-            .send(())
-            .await
-            .map_err(anyhow::Error::msg)
     }
 }
 

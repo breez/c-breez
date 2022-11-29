@@ -305,11 +305,15 @@ class InputType with _$InputType {
   /// # Supported standards
   ///
   /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-03 `withdrawRequest` spec
+  /// - LUD-04 `auth` base spec
   /// - LUD-06 `payRequest` spec
   ///
   /// # Not supported (yet)
   ///
-  /// - LUD 17 Support for the lnurlp:// prefix and non bech32-encoded URLs
+  /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
+  /// - LUD 17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
+  /// - LUD-19 Pay link discoverable from withdraw link
   const factory InputType.lnUrl(
     LnUrlRequestData field0,
   ) = InputType_LnUrl;

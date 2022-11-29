@@ -15,6 +15,335 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
+mixin _$BreezEvent {
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int field0) newBlock,
+    required TResult Function(InvoicePaidDetails field0) invoicePaid,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int field0)? newBlock,
+    TResult? Function(InvoicePaidDetails field0)? invoicePaid,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int field0)? newBlock,
+    TResult Function(InvoicePaidDetails field0)? invoicePaid,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(BreezEvent_NewBlock value) newBlock,
+    required TResult Function(BreezEvent_InvoicePaid value) invoicePaid,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(BreezEvent_NewBlock value)? newBlock,
+    TResult? Function(BreezEvent_InvoicePaid value)? invoicePaid,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(BreezEvent_NewBlock value)? newBlock,
+    TResult Function(BreezEvent_InvoicePaid value)? invoicePaid,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $BreezEventCopyWith<$Res> {
+  factory $BreezEventCopyWith(
+          BreezEvent value, $Res Function(BreezEvent) then) =
+      _$BreezEventCopyWithImpl<$Res, BreezEvent>;
+}
+
+/// @nodoc
+class _$BreezEventCopyWithImpl<$Res, $Val extends BreezEvent>
+    implements $BreezEventCopyWith<$Res> {
+  _$BreezEventCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$BreezEvent_NewBlockCopyWith<$Res> {
+  factory _$$BreezEvent_NewBlockCopyWith(_$BreezEvent_NewBlock value,
+          $Res Function(_$BreezEvent_NewBlock) then) =
+      __$$BreezEvent_NewBlockCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int field0});
+}
+
+/// @nodoc
+class __$$BreezEvent_NewBlockCopyWithImpl<$Res>
+    extends _$BreezEventCopyWithImpl<$Res, _$BreezEvent_NewBlock>
+    implements _$$BreezEvent_NewBlockCopyWith<$Res> {
+  __$$BreezEvent_NewBlockCopyWithImpl(
+      _$BreezEvent_NewBlock _value, $Res Function(_$BreezEvent_NewBlock) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$BreezEvent_NewBlock(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$BreezEvent_NewBlock implements BreezEvent_NewBlock {
+  const _$BreezEvent_NewBlock(this.field0);
+
+  @override
+  final int field0;
+
+  @override
+  String toString() {
+    return 'BreezEvent.newBlock(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BreezEvent_NewBlock &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BreezEvent_NewBlockCopyWith<_$BreezEvent_NewBlock> get copyWith =>
+      __$$BreezEvent_NewBlockCopyWithImpl<_$BreezEvent_NewBlock>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int field0) newBlock,
+    required TResult Function(InvoicePaidDetails field0) invoicePaid,
+  }) {
+    return newBlock(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int field0)? newBlock,
+    TResult? Function(InvoicePaidDetails field0)? invoicePaid,
+  }) {
+    return newBlock?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int field0)? newBlock,
+    TResult Function(InvoicePaidDetails field0)? invoicePaid,
+    required TResult orElse(),
+  }) {
+    if (newBlock != null) {
+      return newBlock(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(BreezEvent_NewBlock value) newBlock,
+    required TResult Function(BreezEvent_InvoicePaid value) invoicePaid,
+  }) {
+    return newBlock(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(BreezEvent_NewBlock value)? newBlock,
+    TResult? Function(BreezEvent_InvoicePaid value)? invoicePaid,
+  }) {
+    return newBlock?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(BreezEvent_NewBlock value)? newBlock,
+    TResult Function(BreezEvent_InvoicePaid value)? invoicePaid,
+    required TResult orElse(),
+  }) {
+    if (newBlock != null) {
+      return newBlock(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class BreezEvent_NewBlock implements BreezEvent {
+  const factory BreezEvent_NewBlock(final int field0) = _$BreezEvent_NewBlock;
+
+  int get field0;
+  @JsonKey(ignore: true)
+  _$$BreezEvent_NewBlockCopyWith<_$BreezEvent_NewBlock> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$BreezEvent_InvoicePaidCopyWith<$Res> {
+  factory _$$BreezEvent_InvoicePaidCopyWith(_$BreezEvent_InvoicePaid value,
+          $Res Function(_$BreezEvent_InvoicePaid) then) =
+      __$$BreezEvent_InvoicePaidCopyWithImpl<$Res>;
+  @useResult
+  $Res call({InvoicePaidDetails field0});
+}
+
+/// @nodoc
+class __$$BreezEvent_InvoicePaidCopyWithImpl<$Res>
+    extends _$BreezEventCopyWithImpl<$Res, _$BreezEvent_InvoicePaid>
+    implements _$$BreezEvent_InvoicePaidCopyWith<$Res> {
+  __$$BreezEvent_InvoicePaidCopyWithImpl(_$BreezEvent_InvoicePaid _value,
+      $Res Function(_$BreezEvent_InvoicePaid) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$BreezEvent_InvoicePaid(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as InvoicePaidDetails,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$BreezEvent_InvoicePaid implements BreezEvent_InvoicePaid {
+  const _$BreezEvent_InvoicePaid(this.field0);
+
+  @override
+  final InvoicePaidDetails field0;
+
+  @override
+  String toString() {
+    return 'BreezEvent.invoicePaid(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BreezEvent_InvoicePaid &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BreezEvent_InvoicePaidCopyWith<_$BreezEvent_InvoicePaid> get copyWith =>
+      __$$BreezEvent_InvoicePaidCopyWithImpl<_$BreezEvent_InvoicePaid>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(int field0) newBlock,
+    required TResult Function(InvoicePaidDetails field0) invoicePaid,
+  }) {
+    return invoicePaid(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(int field0)? newBlock,
+    TResult? Function(InvoicePaidDetails field0)? invoicePaid,
+  }) {
+    return invoicePaid?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(int field0)? newBlock,
+    TResult Function(InvoicePaidDetails field0)? invoicePaid,
+    required TResult orElse(),
+  }) {
+    if (invoicePaid != null) {
+      return invoicePaid(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(BreezEvent_NewBlock value) newBlock,
+    required TResult Function(BreezEvent_InvoicePaid value) invoicePaid,
+  }) {
+    return invoicePaid(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(BreezEvent_NewBlock value)? newBlock,
+    TResult? Function(BreezEvent_InvoicePaid value)? invoicePaid,
+  }) {
+    return invoicePaid?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(BreezEvent_NewBlock value)? newBlock,
+    TResult Function(BreezEvent_InvoicePaid value)? invoicePaid,
+    required TResult orElse(),
+  }) {
+    if (invoicePaid != null) {
+      return invoicePaid(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class BreezEvent_InvoicePaid implements BreezEvent {
+  const factory BreezEvent_InvoicePaid(final InvoicePaidDetails field0) =
+      _$BreezEvent_InvoicePaid;
+
+  InvoicePaidDetails get field0;
+  @JsonKey(ignore: true)
+  _$$BreezEvent_InvoicePaidCopyWith<_$BreezEvent_InvoicePaid> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
 mixin _$InputType {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({

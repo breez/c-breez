@@ -17,6 +17,7 @@ typedef struct wire_Config {
   struct wire_uint_8_list *working_dir;
   int32_t network;
   uint32_t payment_timeout_sec;
+  struct wire_uint_8_list *default_lsp_id;
 } wire_Config;
 
 typedef struct wire_GreenlightCredentials {
@@ -47,6 +48,8 @@ void wire_init_node(int64_t port_,
                     struct wire_uint_8_list *seed,
                     struct wire_GreenlightCredentials *creds);
 
+void wire_breez_events_stream(int64_t port_);
+
 void wire_stop_node(int64_t port_);
 
 void wire_send_payment(int64_t port_, struct wire_uint_8_list *bolt11);
@@ -59,7 +62,7 @@ void wire_receive_payment(int64_t port_,
                           uint64_t amount_sats,
                           struct wire_uint_8_list *description);
 
-void wire_get_node_state(int64_t port_);
+void wire_node_info(int64_t port_);
 
 void wire_list_payments(int64_t port_,
                         int32_t filter,
@@ -110,11 +113,12 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) wire_register_node);
     dummy_var ^= ((int64_t) (void*) wire_recover_node);
     dummy_var ^= ((int64_t) (void*) wire_init_node);
+    dummy_var ^= ((int64_t) (void*) wire_breez_events_stream);
     dummy_var ^= ((int64_t) (void*) wire_stop_node);
     dummy_var ^= ((int64_t) (void*) wire_send_payment);
     dummy_var ^= ((int64_t) (void*) wire_send_spontaneous_payment);
     dummy_var ^= ((int64_t) (void*) wire_receive_payment);
-    dummy_var ^= ((int64_t) (void*) wire_get_node_state);
+    dummy_var ^= ((int64_t) (void*) wire_node_info);
     dummy_var ^= ((int64_t) (void*) wire_list_payments);
     dummy_var ^= ((int64_t) (void*) wire_list_lsps);
     dummy_var ^= ((int64_t) (void*) wire_connect_lsp);

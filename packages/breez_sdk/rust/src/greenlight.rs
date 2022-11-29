@@ -21,6 +21,7 @@ use lightning_invoice::{RawInvoice, SignedRawInvoice};
 use std::cmp::max;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::sync::mpsc;
+use tonic::Streaming;
 
 const MAX_PAYMENT_AMOUNT_MSAT: u64 = 4294967000;
 const MAX_INBOUND_LIQUIDITY_MSAT: u64 = 4000000000;
@@ -104,6 +105,15 @@ impl NodeAPI for Greenlight {
                     error!("signer exited");
                 });
         });
+    }
+
+    async fn stream_incoming_payments(&self) -> Result<Streaming<gl_client::pb::IncomingPayment>> {
+        let mut client = self.get_client().await?;
+        let stream = client
+            .stream_incoming(gl_client::pb::StreamIncomingFilter {})
+            .await?
+            .into_inner();
+        Ok(stream)
     }
 
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {

@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use crate::binding::parse_invoice;
 use crate::chain::{MempoolSpace, OnchainTx};
-use crate::chain_notifier::{ChainEvent, Listener};
 use crate::grpc::{AddFundInitRequest, GetSwapPaymentRequest};
 use anyhow::{anyhow, Result};
 use bitcoin::blockdata::constants::WITNESS_SCALE_FACTOR;
@@ -21,7 +20,7 @@ use bitcoin_hashes::sha256;
 use rand::Rng;
 use ripemd::{Digest, Ripemd160};
 
-use crate::breez_services::{BreezServer, PaymentReceiver};
+use crate::breez_services::{BreezEvent, BreezServer, PaymentReceiver};
 use crate::models::{Swap, SwapInfo, SwapStatus, SwapperAPI};
 
 struct Utxo {
@@ -79,11 +78,27 @@ pub struct BTCReceiveSwap {
     payment_receiver: Arc<PaymentReceiver>,
 }
 
-#[tonic::async_trait]
-impl Listener for BTCReceiveSwap {
-    async fn on_event(&self, e: ChainEvent) -> Result<()> {
+impl BTCReceiveSwap {
+    pub(crate) fn new(
+        network: Network,
+        swapper_api: Arc<dyn SwapperAPI>,
+        persister: Arc<crate::persist::db::SqliteStorage>,
+        chain_service: Arc<MempoolSpace>,
+        payment_receiver: Arc<PaymentReceiver>,
+    ) -> Self {
+        let swapper = Self {
+            network,
+            swapper_api,
+            persister,
+            chain_service,
+            payment_receiver,
+        };
+        swapper
+    }
+
+    pub(crate) async fn on_event(&self, e: BreezEvent) -> Result<()> {
         match e {
-            ChainEvent::NewBlock(tip) => {
+            BreezEvent::NewBlock(tip) => {
                 debug!("got chain event {:?}", e);
                 let swaps = self.list_swaps(SwapStatus::Initial)?;
                 let to_check: Vec<SwapInfo> = swaps
@@ -131,25 +146,6 @@ impl Listener for BTCReceiveSwap {
         }
 
         Ok(())
-    }
-}
-
-impl BTCReceiveSwap {
-    pub(crate) fn new(
-        network: Network,
-        swapper_api: Arc<dyn SwapperAPI>,
-        persister: Arc<crate::persist::db::SqliteStorage>,
-        chain_service: Arc<MempoolSpace>,
-        payment_receiver: Arc<PaymentReceiver>,
-    ) -> Self {
-        let swapper = Self {
-            network,
-            swapper_api,
-            persister,
-            chain_service,
-            payment_receiver,
-        };
-        swapper
     }
 
     pub(crate) async fn create_swap_address(&self) -> Result<SwapInfo> {

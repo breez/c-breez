@@ -1,9 +1,9 @@
+use core::time;
 use std::cmp::max;
 use std::str::FromStr;
 use std::sync::Arc;
 
 use crate::chain::MempoolSpace;
-use crate::chain_notifier::{self, ChainEvent, ChainNotifier, Listener};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::fund_manager_client::FundManagerClient;
@@ -21,37 +21,81 @@ use crate::swap::BTCReceiveSwap;
 use anyhow::{anyhow, Result};
 use bip39::*;
 use tokio::sync::mpsc;
+use tokio::time::{sleep, Duration};
 use tonic::transport::{Channel, Uri};
 
+#[tonic::async_trait]
+pub trait BreezEventListener: Send + Sync {
+    async fn on_event(&self, e: BreezEvent) -> Result<()>;
+}
+
+#[derive(Clone, Debug)]
+pub enum BreezEvent {
+    NewBlock(u32),
+    InvoicePaid(InvoicePaidDetails),
+}
+
+#[derive(Clone, Debug)]
+pub struct InvoicePaidDetails {
+    pub payment_hash: Vec<u8>,
+    pub bolt11: String,
+}
+
 /// starts the BreezServices background threads.
-pub async fn start(breez_services: Arc<BreezServices>) -> Result<ShutdownHandler> {
+pub async fn start(
+    breez_services: Arc<BreezServices>,
+    mut shutdown_receiver: mpsc::Receiver<()>,
+) -> Result<()> {
     // start the signer
-    let (signer_signal, signer_receive) = mpsc::channel(1);
-    breez_services.node_api.start_signer(signer_receive);
+    let (shutdown_signer_sender, signer_signer_receiver) = mpsc::channel(1);
+    breez_services.node_api.start_signer(signer_signer_receiver);
 
-    // sync node state
-    breez_services.sync().await?;
+    std::thread::spawn(move || {
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(async move {
+                let current_block: u32 = 0;
+                loop {
+                    tokio::select! {
+                      poll_result = poll_events(breez_services.clone(), current_block) => {
+                       match poll_result {
+                        Ok(()) => {
+                         return;
+                        },
+                        Err(err) => {
+                         debug!("poll_events returned with error: {:?}", err);
+                         sleep(Duration::from_millis(1000)).await;
+                         continue
+                        }
+                       }
+                      },
+                      _ = shutdown_receiver.recv() => {
+                       _ = shutdown_signer_sender.send(()).await;
+                       debug!("Received the signal to exit the chain monitoring loop");
+                       return;
+                     }
+                    }
+                }
+            })
+    });
 
-    // create the chain notifier
-    let (chain_signal, chain_receive) = mpsc::channel(1);
-    let mut chain_notifier = ChainNotifier::new(breez_services.chain_service.clone());
-    let listeners: Vec<Arc<dyn Listener>> = vec![
-        breez_services.btc_receive_swapper.clone(),
-        breez_services.clone(),
-    ];
-    for l in listeners {
-        chain_notifier.add_listener(l);
-    }
+    Ok(())
+}
 
-    // start notifying events
-    chain_notifier::start(Arc::new(chain_notifier), chain_receive);
-
-    let shutdown_handler = ShutdownHandler {
-        shutdown_signer: signer_signal,
-        shutdown_chain: chain_signal,
-    };
-
-    Ok(shutdown_handler)
+/// BreezServices is a facade and the single entry point for the sdk use cases providing
+/// by exposing a simplified API
+pub struct BreezServices {
+    config: Config,
+    node_api: Arc<dyn NodeAPI>,
+    lsp_api: Arc<dyn LspAPI>,
+    fiat_api: Arc<dyn FiatAPI>,
+    chain_service: Arc<MempoolSpace>,
+    persister: Arc<persist::db::SqliteStorage>,
+    payment_receiver: Arc<PaymentReceiver>,
+    btc_receive_swapper: Arc<BTCReceiveSwap>,
+    event_listener: Option<Arc<dyn BreezEventListener>>,
 }
 
 impl BreezServices {
@@ -195,35 +239,77 @@ impl BreezServices {
         Ok(())
     }
 
+    async fn on_event(&self, e: BreezEvent) -> Result<()> {
+        debug!("breez services got event {:?}", e);
+        match e {
+            BreezEvent::InvoicePaid(_) => self.sync().await?,
+            BreezEvent::NewBlock(_) => self.sync().await?,
+            _ => {}
+        }
+
+        if let Err(err) = self.btc_receive_swapper.on_event(e.clone()).await {
+            debug!(
+                "btc_receive_swapper failed to processed event {:?}: {:?}",
+                e, err
+            )
+        };
+        if let Some(l) = self.event_listener.clone() {
+            if let Err(err) = l.on_event(e.clone()).await {
+                debug!("failed to processed event {:?}: {:?}", e, err)
+            };
+        }
+        Ok(())
+    }
+
     pub(crate) async fn start_node(&self) -> Result<()> {
         self.node_api.start().await
     }
 }
 
-#[tonic::async_trait]
-impl Listener for BreezServices {
-    async fn on_event(&self, e: ChainEvent) -> Result<()> {
-        match e {
-            ChainEvent::NewBlock(tip) => self.sync().await?,
-            _ => {}
+async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32) -> Result<()> {
+    let mut interval = tokio::time::interval(time::Duration::from_secs(30));
+    let mut invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
+
+    loop {
+        tokio::select! {
+
+         // handle chain events
+         _ = interval.tick() => {
+          let tip_res = breez_services.chain_service.current_tip().await;// monitor.poll_tip(current_block).await;
+          match tip_res {
+           Ok(next_block) => {
+            if next_block > current_block {
+             _  = breez_services.on_event(BreezEvent::NewBlock(next_block)).await;
+            }
+            current_block = next_block
+           },
+           Err(e) => {
+            error!("failed to fetch next block {}", e)
+           }
+          };
+         },
+         paid_invoice_res = invoice_stream.message() => {
+           let s = match paid_invoice_res {
+            Ok(Some(i)) => {
+             match i.details {
+              Some(gl_client::pb::incoming_payment::Details::Offchain(p)) => {
+               _  = breez_services.on_event(BreezEvent::InvoicePaid(InvoicePaidDetails { payment_hash: p.payment_hash, bolt11: p.bolt11 })).await;
+              },
+              None => {}
+             }
+            }
+            // stream is closed, renew it
+            Ok(None) => {
+             debug!("invoice stream closed, renewing");
+             invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
+            }
+            Err(err) => {
+             debug!("failed to process incoming payment {:?}", err);
+             invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
+            }
+           };
+         },
         }
-
-        Ok(())
-    }
-}
-
-pub struct ShutdownHandler {
-    shutdown_signer: mpsc::Sender<()>,
-    shutdown_chain: mpsc::Sender<()>,
-}
-
-impl ShutdownHandler {
-    pub(crate) async fn stop(&self) -> Result<()> {
-        self.shutdown_signer.send(()).await?;
-        self.shutdown_chain
-            .send(())
-            .await
-            .map_err(anyhow::Error::msg)
     }
 }
 
@@ -234,6 +320,7 @@ pub struct BreezServicesBuilder {
     lsp_api: Option<Arc<dyn LspAPI>>,
     fiat_api: Option<Arc<dyn FiatAPI>>,
     swapper_api: Option<Arc<dyn SwapperAPI>>,
+    event_listener: Option<Arc<dyn BreezEventListener>>,
 }
 
 impl BreezServicesBuilder {
@@ -244,6 +331,7 @@ impl BreezServicesBuilder {
             lsp_api: None,
             fiat_api: None,
             swapper_api: None,
+            event_listener: None,
         }
     }
 
@@ -259,6 +347,11 @@ impl BreezServicesBuilder {
 
     pub fn swapper_api(&mut self, swapper_api: Arc<dyn SwapperAPI>) -> &mut Self {
         self.swapper_api = Some(swapper_api.clone());
+        self
+    }
+
+    pub fn event_listener(&mut self, event_listener: Arc<dyn BreezEventListener>) -> &mut Self {
+        self.event_listener = Some(event_listener.clone());
         self
     }
 
@@ -278,6 +371,10 @@ impl BreezServicesBuilder {
         )));
 
         persister.init().unwrap();
+        let current_lsp_id = persister.get_lsp_id()?;
+        if let Some(default_lsp_id) = current_lsp_id {
+            persister.set_lsp_id(default_lsp_id)?;
+        }
 
         let payment_receiver = Arc::new(PaymentReceiver {
             node_api: self.node_api.clone(),
@@ -303,23 +400,11 @@ impl BreezServicesBuilder {
             persister: persister.clone(),
             btc_receive_swapper: btc_receive_swapper.clone(),
             payment_receiver,
+            event_listener: self.event_listener.clone(),
         });
 
         Ok(breez_services)
     }
-}
-
-/// BreezServices is a facade and the single entry point for the sdk use cases providing
-/// by exposing a simplified API
-pub struct BreezServices {
-    config: Config,
-    node_api: Arc<dyn NodeAPI>,
-    lsp_api: Arc<dyn LspAPI>,
-    fiat_api: Arc<dyn FiatAPI>,
-    chain_service: Arc<MempoolSpace>,
-    persister: Arc<persist::db::SqliteStorage>,
-    payment_receiver: Arc<PaymentReceiver>,
-    btc_receive_swapper: Arc<BTCReceiveSwap>,
 }
 
 #[derive(Clone)]

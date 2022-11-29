@@ -1,9 +1,11 @@
-use crate::breez_services::{BreezServicesBuilder, ShutdownHandler};
+use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
+use flutter_rust_bridge::StreamSink;
 use once_cell::sync::OnceCell;
 use std::future::Future;
 use std::sync::Arc;
+use tokio::sync::mpsc;
 
 use anyhow::{anyhow, Result};
 
@@ -19,7 +21,21 @@ use crate::invoice::{self};
 use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
-static BREEZ_SERVICES_SHUTDOWN: OnceCell<ShutdownHandler> = OnceCell::new();
+static BREEZ_SERVICES_SHUTDOWN: OnceCell<mpsc::Sender<()>> = OnceCell::new();
+static NOTIFICATION_STREAM: OnceCell<StreamSink<BreezEvent>> = OnceCell::new();
+
+struct BindingEventListener {}
+
+#[tonic::async_trait]
+impl BreezEventListener for BindingEventListener {
+    async fn on_event(&self, e: BreezEvent) -> Result<()> {
+        let s = NOTIFICATION_STREAM.get();
+        if s.is_some() {
+            s.unwrap().add(e);
+        }
+        Ok(())
+    }
+}
 
 /// Register a new node in the cloud and return credentials to interact with it
 ///
@@ -77,11 +93,13 @@ pub fn init_node(
         let node_api = Greenlight::new(sdk_config.clone(), seed, creds).await?; //block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
 
         // create the node services instance and set it globally
-        let breez_services =
-            BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api)).build()?;
-        let shutdown = crate::breez_services::start(breez_services.clone()).await?;
+        let breez_services = BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api))
+            .event_listener(Arc::new(BindingEventListener {}))
+            .build()?;
+        let (stop_sender, stop_receiver) = mpsc::channel(1);
+        _ = crate::breez_services::start(breez_services.clone(), stop_receiver).await?;
         BREEZ_SERVICES_SHUTDOWN
-            .set(shutdown)
+            .set(stop_sender)
             .map_err(|_| anyhow!("static node services already set"))?;
         BREEZ_SERVICES_INSTANCE
             .set(breez_services.clone())
@@ -91,13 +109,20 @@ pub fn init_node(
     })
 }
 
+pub fn breez_events_stream(s: StreamSink<BreezEvent>) -> Result<()> {
+    NOTIFICATION_STREAM
+        .set(s)
+        .map_err(|_| anyhow!("events stream already created"))?;
+    Ok(())
+}
+
 /// Cleanup node resources and stop the signer.
 pub fn stop_node() -> Result<()> {
     block_on(async {
         let shutdown_handler = BREEZ_SERVICES_SHUTDOWN.get();
         match shutdown_handler {
             None => Err(anyhow!("Background processing is not running")),
-            Some(s) => s.stop().await,
+            Some(s) => s.send(()).await.map_err(anyhow::Error::msg),
         }
     })
 }
@@ -143,7 +168,7 @@ pub fn receive_payment(amount_sats: u64, description: String) -> Result<LNInvoic
 }
 
 /// get the node state from the persistent storage
-pub fn get_node_state() -> Result<Option<NodeState>> {
+pub fn node_info() -> Result<Option<NodeState>> {
     block_on(async { get_breez_services()?.node_info() })
 }
 

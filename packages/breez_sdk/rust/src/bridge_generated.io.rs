@@ -32,6 +32,11 @@ pub extern "C" fn wire_init_node(
 }
 
 #[no_mangle]
+pub extern "C" fn wire_breez_events_stream(port_: i64) {
+    wire_breez_events_stream_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_stop_node(port_: i64) {
     wire_stop_node_impl(port_)
 }
@@ -60,8 +65,8 @@ pub extern "C" fn wire_receive_payment(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_get_node_state(port_: i64) {
-    wire_get_node_state_impl(port_)
+pub extern "C" fn wire_node_info(port_: i64) {
+    wire_node_info_impl(port_)
 }
 
 #[no_mangle]
@@ -199,6 +204,7 @@ impl Wire2Api<Config> for wire_Config {
             working_dir: self.working_dir.wire2api(),
             network: self.network.wire2api(),
             payment_timeout_sec: self.payment_timeout_sec.wire2api(),
+            default_lsp_id: self.default_lsp_id.wire2api(),
         }
     }
 }
@@ -230,6 +236,7 @@ pub struct wire_Config {
     working_dir: *mut wire_uint_8_list,
     network: i32,
     payment_timeout_sec: u32,
+    default_lsp_id: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -266,6 +273,7 @@ impl NewWithNullPtr for wire_Config {
             working_dir: core::ptr::null_mut(),
             network: Default::default(),
             payment_timeout_sec: Default::default(),
+            default_lsp_id: core::ptr::null_mut(),
         }
     }
 }

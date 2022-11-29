@@ -5,7 +5,6 @@ extern crate log;
 pub mod binding;
 pub mod breez_services;
 mod chain;
-mod chain_notifier;
 mod crypt;
 mod fiat;
 mod greenlight;

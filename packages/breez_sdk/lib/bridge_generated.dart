@@ -61,6 +61,10 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kInitNodeConstMeta;
 
+  Stream<BreezEvent> breezEventsStream({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kBreezEventsStreamConstMeta;
+
   /// Cleanup node resources and stop the signer.
   Future<void> stopNode({dynamic hint});
 
@@ -101,11 +105,11 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kReceivePaymentConstMeta;
 
   /// get the node state from the persistent storage
-  Future<NodeState?> getNodeState({dynamic hint});
+  Future<NodeState?> nodeInfo({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta;
+  FlutterRustBridgeTaskConstMeta get kNodeInfoConstMeta;
 
-  /// list payments (incoming/outgoing payments) from the persistent storage
+  /// list transactions (incoming/outgoing payments) from the persistent storage
   Future<List<Payment>> listPayments(
       {required PaymentTypeFilter filter,
       int? fromTimestamp,
@@ -202,12 +206,23 @@ class BitcoinAddressData {
   });
 }
 
+@freezed
+class BreezEvent with _$BreezEvent {
+  const factory BreezEvent.newBlock(
+    int field0,
+  ) = BreezEvent_NewBlock;
+  const factory BreezEvent.invoicePaid(
+    InvoicePaidDetails field0,
+  ) = BreezEvent_InvoicePaid;
+}
+
 class Config {
   final String breezserver;
   final String mempoolspaceUrl;
   final String workingDir;
   final Network network;
   final int paymentTimeoutSec;
+  final String? defaultLspId;
 
   Config({
     required this.breezserver,
@@ -215,6 +230,7 @@ class Config {
     required this.workingDir,
     required this.network,
     required this.paymentTimeoutSec,
+    this.defaultLspId,
   });
 }
 
@@ -287,6 +303,16 @@ class InputType with _$InputType {
   const factory InputType.lnUrlWithdraw(
     String field0,
   ) = InputType_LnUrlWithdraw;
+}
+
+class InvoicePaidDetails {
+  final Uint8List paymentHash;
+  final String bolt11;
+
+  InvoicePaidDetails({
+    required this.paymentHash,
+    required this.bolt11,
+  });
 }
 
 class LNInvoice {
@@ -620,6 +646,21 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["config", "seed", "creds"],
       );
 
+  Stream<BreezEvent> breezEventsStream({dynamic hint}) =>
+      _platform.executeStream(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_breez_events_stream(port_),
+        parseSuccessData: _wire2api_breez_event,
+        constMeta: kBreezEventsStreamConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kBreezEventsStreamConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "breez_events_stream",
+        argNames: [],
+      );
+
   Future<void> stopNode({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => _platform.inner.wire_stop_node(port_),
@@ -691,18 +732,18 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["amountSats", "description"],
       );
 
-  Future<NodeState?> getNodeState({dynamic hint}) =>
+  Future<NodeState?> nodeInfo({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_get_node_state(port_),
+        callFfi: (port_) => _platform.inner.wire_node_info(port_),
         parseSuccessData: _wire2api_opt_box_autoadd_node_state,
-        constMeta: kGetNodeStateConstMeta,
+        constMeta: kNodeInfoConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kNodeInfoConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "get_node_state",
+        debugName: "node_info",
         argNames: [],
       );
 
@@ -977,6 +1018,10 @@ class LightningToolkitImpl implements LightningToolkit {
     return raw as bool;
   }
 
+  InvoicePaidDetails _wire2api_box_autoadd_invoice_paid_details(dynamic raw) {
+    return _wire2api_invoice_paid_details(raw);
+  }
+
   LNInvoice _wire2api_box_autoadd_ln_invoice(dynamic raw) {
     return _wire2api_ln_invoice(raw);
   }
@@ -995,6 +1040,21 @@ class LightningToolkitImpl implements LightningToolkit {
 
   int _wire2api_box_autoadd_u64(dynamic raw) {
     return _wire2api_u64(raw);
+  }
+
+  BreezEvent _wire2api_breez_event(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return BreezEvent_NewBlock(
+          _wire2api_u32(raw[1]),
+        );
+      case 1:
+        return BreezEvent_InvoicePaid(
+          _wire2api_box_autoadd_invoice_paid_details(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   CurrencyInfo _wire2api_currency_info(dynamic raw) {
@@ -1073,6 +1133,16 @@ class LightningToolkitImpl implements LightningToolkit {
       default:
         throw Exception("unreachable");
     }
+  }
+
+  InvoicePaidDetails _wire2api_invoice_paid_details(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return InvoicePaidDetails(
+      paymentHash: _wire2api_uint_8_list(arr[0]),
+      bolt11: _wire2api_String(arr[1]),
+    );
   }
 
   List<FiatCurrency> _wire2api_list_fiat_currency(dynamic raw) {
@@ -1407,6 +1477,11 @@ class LightningToolkitPlatform
   }
 
   @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_opt_String(String? raw) {
+    return raw == null ? ffi.nullptr : api2wire_String(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_Config> api2wire_opt_box_autoadd_config(Config? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_config(raw);
   }
@@ -1446,6 +1521,7 @@ class LightningToolkitPlatform
     wireObj.working_dir = api2wire_String(apiObj.workingDir);
     wireObj.network = api2wire_network(apiObj.network);
     wireObj.payment_timeout_sec = api2wire_u32(apiObj.paymentTimeoutSec);
+    wireObj.default_lsp_id = api2wire_opt_String(apiObj.defaultLspId);
   }
 
   void _api_fill_to_wire_greenlight_credentials(
@@ -1568,6 +1644,20 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_GreenlightCredentials>)>();
 
+  void wire_breez_events_stream(
+    int port_,
+  ) {
+    return _wire_breez_events_stream(
+      port_,
+    );
+  }
+
+  late final _wire_breez_events_streamPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_breez_events_stream');
+  late final _wire_breez_events_stream =
+      _wire_breez_events_streamPtr.asFunction<void Function(int)>();
+
   void wire_stop_node(
     int port_,
   ) {
@@ -1637,19 +1727,19 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_receive_payment = _wire_receive_paymentPtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_get_node_state(
+  void wire_node_info(
     int port_,
   ) {
-    return _wire_get_node_state(
+    return _wire_node_info(
       port_,
     );
   }
 
-  late final _wire_get_node_statePtr =
+  late final _wire_node_infoPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_get_node_state');
-  late final _wire_get_node_state =
-      _wire_get_node_statePtr.asFunction<void Function(int)>();
+          'wire_node_info');
+  late final _wire_node_info =
+      _wire_node_infoPtr.asFunction<void Function(int)>();
 
   void wire_list_payments(
     int port_,
@@ -1966,6 +2056,8 @@ class wire_Config extends ffi.Struct {
 
   @ffi.Uint32()
   external int payment_timeout_sec;
+
+  external ffi.Pointer<wire_uint_8_list> default_lsp_id;
 }
 
 class wire_GreenlightCredentials extends ffi.Struct {

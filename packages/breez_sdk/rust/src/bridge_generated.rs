@@ -172,14 +172,14 @@ fn wire_receive_payment_impl(
         },
     )
 }
-fn wire_get_node_state_impl(port_: MessagePort) {
+fn wire_node_info_impl(port_: MessagePort) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "get_node_state",
+            debug_name: "node_info",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| get_node_state(),
+        move || move |task_callback| node_info(),
     )
 }
 fn wire_list_payments_impl(

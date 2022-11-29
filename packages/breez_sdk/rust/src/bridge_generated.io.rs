@@ -65,8 +65,8 @@ pub extern "C" fn wire_receive_payment(
 }
 
 #[no_mangle]
-pub extern "C" fn wire_get_node_state(port_: i64) {
-    wire_get_node_state_impl(port_)
+pub extern "C" fn wire_node_info(port_: i64) {
+    wire_node_info_impl(port_)
 }
 
 #[no_mangle]

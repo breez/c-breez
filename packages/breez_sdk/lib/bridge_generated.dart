@@ -105,9 +105,9 @@ abstract class LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kReceivePaymentConstMeta;
 
   /// get the node state from the persistent storage
-  Future<NodeState?> getNodeState({dynamic hint});
+  Future<NodeState?> nodeInfo({dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta;
+  FlutterRustBridgeTaskConstMeta get kNodeInfoConstMeta;
 
   /// list transactions (incoming/outgoing payments) from the persistent storage
   Future<List<Payment>> listPayments(
@@ -730,18 +730,18 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["amountSats", "description"],
       );
 
-  Future<NodeState?> getNodeState({dynamic hint}) =>
+  Future<NodeState?> nodeInfo({dynamic hint}) =>
       _platform.executeNormal(FlutterRustBridgeTask(
-        callFfi: (port_) => _platform.inner.wire_get_node_state(port_),
+        callFfi: (port_) => _platform.inner.wire_node_info(port_),
         parseSuccessData: _wire2api_opt_box_autoadd_node_state,
-        constMeta: kGetNodeStateConstMeta,
+        constMeta: kNodeInfoConstMeta,
         argValues: [],
         hint: hint,
       ));
 
-  FlutterRustBridgeTaskConstMeta get kGetNodeStateConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kNodeInfoConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "get_node_state",
+        debugName: "node_info",
         argNames: [],
       );
 
@@ -1719,19 +1719,19 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_receive_payment = _wire_receive_paymentPtr
       .asFunction<void Function(int, int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_get_node_state(
+  void wire_node_info(
     int port_,
   ) {
-    return _wire_get_node_state(
+    return _wire_node_info(
       port_,
     );
   }
 
-  late final _wire_get_node_statePtr =
+  late final _wire_node_infoPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'wire_get_node_state');
-  late final _wire_get_node_state =
-      _wire_get_node_statePtr.asFunction<void Function(int)>();
+          'wire_node_info');
+  late final _wire_node_info =
+      _wire_node_infoPtr.asFunction<void Function(int)>();
 
   void wire_list_payments(
     int port_,

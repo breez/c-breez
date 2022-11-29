@@ -182,7 +182,7 @@ fn main() -> Result<()> {
                             chosen_lsp_id, chosen_lsp.name
                         );
                     }
-                    Some("node_info") => show_results(binding::get_node_state()),
+                    Some("node_info") => show_results(binding::node_info()),
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),
                     Some("fetch_fiat_rates") => show_results(binding::fetch_fiat_rates()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),

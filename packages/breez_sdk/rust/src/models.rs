@@ -95,6 +95,7 @@ pub struct Config {
     pub working_dir: String,
     pub network: Network,
     pub payment_timeout_sec: u32,
+    pub default_lsp_id: Option<String>,
 }
 
 impl Default for Config {
@@ -105,6 +106,7 @@ impl Default for Config {
             working_dir: ".".to_string(),
             network: Bitcoin,
             payment_timeout_sec: 30,
+            default_lsp_id: Some(String::from("ea51d025-042d-456c-8325-63e430797481")),
         }
     }
 }

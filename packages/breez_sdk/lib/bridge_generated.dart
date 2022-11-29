@@ -222,6 +222,7 @@ class Config {
   final String workingDir;
   final Network network;
   final int paymentTimeoutSec;
+  final String? defaultLspId;
 
   Config({
     required this.breezserver,
@@ -229,6 +230,7 @@ class Config {
     required this.workingDir,
     required this.network,
     required this.paymentTimeoutSec,
+    this.defaultLspId,
   });
 }
 
@@ -1475,6 +1477,11 @@ class LightningToolkitPlatform
   }
 
   @protected
+  ffi.Pointer<wire_uint_8_list> api2wire_opt_String(String? raw) {
+    return raw == null ? ffi.nullptr : api2wire_String(raw);
+  }
+
+  @protected
   ffi.Pointer<wire_Config> api2wire_opt_box_autoadd_config(Config? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_config(raw);
   }
@@ -1514,6 +1521,7 @@ class LightningToolkitPlatform
     wireObj.working_dir = api2wire_String(apiObj.workingDir);
     wireObj.network = api2wire_network(apiObj.network);
     wireObj.payment_timeout_sec = api2wire_u32(apiObj.paymentTimeoutSec);
+    wireObj.default_lsp_id = api2wire_opt_String(apiObj.defaultLspId);
   }
 
   void _api_fill_to_wire_greenlight_credentials(
@@ -2048,6 +2056,8 @@ class wire_Config extends ffi.Struct {
 
   @ffi.Uint32()
   external int payment_timeout_sec;
+
+  external ffi.Pointer<wire_uint_8_list> default_lsp_id;
 }
 
 class wire_GreenlightCredentials extends ffi.Struct {

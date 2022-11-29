@@ -371,6 +371,10 @@ impl BreezServicesBuilder {
         )));
 
         persister.init().unwrap();
+        let current_lsp_id = persister.get_lsp_id()?;
+        if let Some(default_lsp_id) = current_lsp_id {
+            persister.set_lsp_id(default_lsp_id)?;
+        }
 
         let payment_receiver = Arc::new(PaymentReceiver {
             node_api: self.node_api.clone(),

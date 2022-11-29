@@ -73,17 +73,25 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
             }
         }
 
-        #[cfg(test)]
-        {
-            // Block executed only during tests
-            lnurl_endpoint = tests::replace_host_with_mockito_test_host(lnurl_endpoint)?;
-        }
-
+        lnurl_endpoint = maybe_replace_host_with_mockito_test_host(lnurl_endpoint)?;
         let data: LnUrlRequestData = reqwest::blocking::get(lnurl_endpoint)?.json()?;
         return Ok(LnUrl(data));
     }
 
     Err(anyhow!("Unrecognized input type"))
+}
+
+#[cfg(test)]
+fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
+    /// During tests, the mockito test URL chooses a free port. This cannot be known in advance,
+    /// so the URL has to be adjusted dynamically.
+    tests::replace_host_with_mockito_test_host(lnurl_endpoint)
+}
+
+#[cfg(not(test))]
+fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String>  {
+    /// When not called from a test, we fallback to keeping the URL intact
+    Ok(lnurl_endpoint)
 }
 
 /// Decodes the bech32-encoded LNURL and returns the payload

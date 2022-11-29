@@ -1,9 +1,12 @@
 use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
+use crate::models::LogEntry;
 use flutter_rust_bridge::StreamSink;
+use log::{Metadata, Record};
 use once_cell::sync::OnceCell;
 use std::future::Future;
+use std::io::Write;
 use std::sync::Arc;
 use tokio::sync::mpsc;
 
@@ -23,8 +26,35 @@ use bip39::{Language, Mnemonic, Seed};
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
 static BREEZ_SERVICES_SHUTDOWN: OnceCell<mpsc::Sender<()>> = OnceCell::new();
 static NOTIFICATION_STREAM: OnceCell<StreamSink<BreezEvent>> = OnceCell::new();
+static LOG_STREAM: OnceCell<StreamSink<LogEntry>> = OnceCell::new();
 
-struct BindingEventListener {}
+struct BindingLogger;
+
+impl BindingLogger {
+    fn init() {
+        log::set_logger(&BindingLogger {}).unwrap();
+    }
+}
+
+impl log::Log for BindingLogger {
+    fn enabled(&self, _: &Metadata) -> bool {
+        true
+    }
+
+    fn log(&self, record: &Record) {
+        if self.enabled(record.metadata()) {
+            if let Some(s) = LOG_STREAM.get() {
+                s.add(LogEntry {
+                    line: record.args().to_string(),
+                    level: record.level().as_str().to_string(),
+                });
+            }
+        };
+    }
+    fn flush(&self) {}
+}
+
+struct BindingEventListener;
 
 #[tonic::async_trait]
 impl BreezEventListener for BindingEventListener {
@@ -113,6 +143,14 @@ pub fn breez_events_stream(s: StreamSink<BreezEvent>) -> Result<()> {
     NOTIFICATION_STREAM
         .set(s)
         .map_err(|_| anyhow!("events stream already created"))?;
+    Ok(())
+}
+
+pub fn breez_log_stream(s: StreamSink<LogEntry>) -> Result<()> {
+    BindingLogger::init();
+    LOG_STREAM
+        .set(s)
+        .map_err(|_| anyhow!("log stream already created"))?;
     Ok(())
 }
 

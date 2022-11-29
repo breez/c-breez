@@ -34,6 +34,7 @@ use crate::lsp::LspInformation;
 use crate::models::Config;
 use crate::models::FeeratePreset;
 use crate::models::GreenlightCredentials;
+use crate::models::LogEntry;
 use crate::models::Network;
 use crate::models::NodeState;
 use crate::models::Payment;
@@ -111,6 +112,16 @@ fn wire_breez_events_stream_impl(port_: MessagePort) {
             mode: FfiCallMode::Stream,
         },
         move || move |task_callback| breez_events_stream(task_callback.stream_sink()),
+    )
+}
+fn wire_breez_log_stream_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "breez_log_stream",
+            port: Some(port_),
+            mode: FfiCallMode::Stream,
+        },
+        move || move |task_callback| breez_log_stream(task_callback.stream_sink()),
     )
 }
 fn wire_stop_node_impl(port_: MessagePort) {
@@ -561,6 +572,13 @@ impl support::IntoDart for LocalizedName {
     }
 }
 impl support::IntoDartExceptPrimitive for LocalizedName {}
+
+impl support::IntoDart for LogEntry {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.line.into_dart(), self.level.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LogEntry {}
 
 impl support::IntoDart for LspInformation {
     fn into_dart(self) -> support::DartAbi {

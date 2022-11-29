@@ -37,6 +37,11 @@ pub extern "C" fn wire_breez_events_stream(port_: i64) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_breez_log_stream(port_: i64) {
+    wire_breez_log_stream_impl(port_)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_stop_node(port_: i64) {
     wire_stop_node_impl(port_)
 }

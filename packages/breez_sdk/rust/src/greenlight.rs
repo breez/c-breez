@@ -116,6 +116,15 @@ impl NodeAPI for Greenlight {
         Ok(stream)
     }
 
+    async fn stream_log_messages(&self) -> Result<Streaming<gl_client::pb::LogEntry>> {
+        let mut client = self.get_client().await?;
+        let stream = client
+            .stream_log(gl_client::pb::StreamLogRequest {})
+            .await?
+            .into_inner();
+        Ok(stream)
+    }
+
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String> {
         let hrp_bytes = invoice.hrp.to_string().as_bytes().to_vec();
         let data_bytes = invoice.data.to_base32();

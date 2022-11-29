@@ -108,6 +108,10 @@ impl NodeAPI for MockNodeAPI {
     async fn stream_incoming_payments(&self) -> Result<Streaming<gl_client::pb::IncomingPayment>> {
         Err(anyhow!("Not implemented"))
     }
+
+    async fn stream_log_messages(&self) -> Result<Streaming<gl_client::pb::LogEntry>> {
+        Err(anyhow!("Not implemented"))
+    }
 }
 
 impl MockNodeAPI {

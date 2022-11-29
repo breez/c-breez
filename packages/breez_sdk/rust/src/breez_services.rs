@@ -269,6 +269,7 @@ impl BreezServices {
 async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32) -> Result<()> {
     let mut interval = tokio::time::interval(time::Duration::from_secs(30));
     let mut invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
+    let mut log_stream = breez_services.node_api.stream_log_messages().await?;
 
     loop {
         tokio::select! {
@@ -289,7 +290,7 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
           };
          },
          paid_invoice_res = invoice_stream.message() => {
-           let s = match paid_invoice_res {
+           match paid_invoice_res {
             Ok(Some(i)) => {
              match i.details {
               Some(gl_client::pb::incoming_payment::Details::Offchain(p)) => {
@@ -309,6 +310,22 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
             }
            };
          },
+         log_message_res = log_stream.message() => {
+          match log_message_res {
+           Ok(Some(l)) => {
+            debug!("{}", l.line);
+           },
+           // stream is closed, renew it
+           Ok(None) => {
+            debug!("log stream closed, renewing");
+            log_stream = breez_services.node_api.stream_log_messages().await?;
+           }
+           Err(err) => {
+            debug!("failed to process log entry {:?}", err);
+            log_stream = breez_services.node_api.stream_log_messages().await?;
+           }
+          };
+         }
         }
     }
 }

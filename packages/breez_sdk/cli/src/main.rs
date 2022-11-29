@@ -110,7 +110,7 @@ fn main() -> Result<()> {
                         }
                         show_results(binding::init_node(None, seed.to_vec(), creds.unwrap()));
                     }
-                    Some("request_payment") => {
+                    Some("receive_payment") => {
                         let amount_sats: u64 = command.next().unwrap().parse()?;
                         let description = command.next().unwrap();
 
@@ -182,7 +182,7 @@ fn main() -> Result<()> {
                             chosen_lsp_id, chosen_lsp.name
                         );
                     }
-                    Some("get_node_state") => show_results(binding::get_node_state()),
+                    Some("node_info") => show_results(binding::get_node_state()),
                     Some("list_fiat") => show_results(binding::list_fiat_currencies()),
                     Some("fetch_fiat_rates") => show_results(binding::fetch_fiat_rates()),
                     Some("close_lsp_channels") => show_results(binding::close_lsp_channels()),

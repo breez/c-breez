@@ -168,7 +168,7 @@ pub fn receive_payment(amount_sats: u64, description: String) -> Result<LNInvoic
 }
 
 /// get the node state from the persistent storage
-pub fn get_node_state() -> Result<Option<NodeState>> {
+pub fn node_info() -> Result<Option<NodeState>> {
     block_on(async { get_breez_services()?.node_info() })
 }
 

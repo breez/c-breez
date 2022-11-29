@@ -69,7 +69,7 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
                     k1: val.to_string(),
                 })
             {
-                return Ok(LnUrlAuth(AuthRequest(auth_request_data)));
+                return Ok(LnUrl(AuthRequest(auth_request_data)));
             }
         }
 
@@ -80,10 +80,8 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
         }
 
         let data: LnUrlRequestData = reqwest::blocking::get(lnurl_endpoint)?.json()?;
-        return Ok(LnUrlPay(data));
+        return Ok(LnUrl(data));
     }
-
-    // TODO Parse the other InputTypes
 
     Err(anyhow!("Unrecognized input type"))
 }
@@ -128,34 +126,16 @@ pub enum InputType {
     /// # Supported standards
     ///
     /// - LUD-01 LNURL bech32 encoding
+    /// - LUD-03 `withdrawRequest` spec
+    /// - LUD-04 `auth` base spec
     /// - LUD-06 `payRequest` spec
     ///
     /// # Not supported (yet)
     ///
-    /// - LUD 17 Support for the lnurlp:// prefix and non bech32-encoded URLs
-    LnUrlPay(LnUrlRequestData),
-
-    /// # Supported standards
-    ///
-    /// - LUD-01 LNURL bech32 encoding
-    /// - LUD-03 `withdrawRequest` spec
-    ///
-    /// # Not supported (yet)
-    ///
     /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
-    /// - LUD 17 Support for the lnurlw:// prefix and non bech32-encoded URLs
+    /// - LUD 17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
     /// - LUD-19 Pay link discoverable from withdraw link
-    LnUrlWithdraw(LnUrlRequestData),
-
-    /// # Supported standards
-    ///
-    /// - LUD-01 LNURL bech32 encoding
-    /// - LUD-04 `auth` base spec
-    ///
-    /// # Not supported (yet)
-    ///
-    /// - LUD 17 Support for the keyauth:// prefix and non bech32-encoded URLs
-    LnUrlAuth(LnUrlRequestData),
+    LnUrl(LnUrlRequestData),
 }
 
 #[serde_as]
@@ -198,29 +178,6 @@ pub struct LnUrlAuthRequestData {
     pub k1: String,
 }
 
-impl LnUrlRequestData {
-    fn pay_request_data(self) -> Result<LnUrlPayRequestData> {
-        match self {
-            LnUrlRequestData::PayRequest(pd) => Ok(pd),
-            _ => Err(anyhow!("Method can only be called on a PayRequest")),
-        }
-    }
-
-    fn withdraw_request_data(self) -> Result<LnUrlWithdrawRequestData> {
-        match self {
-            LnUrlRequestData::WithdrawRequest(wd) => Ok(wd),
-            _ => Err(anyhow!("Method can only be called on a WithdrawRequest")),
-        }
-    }
-
-    fn auth_request_data(self) -> Result<LnUrlAuthRequestData> {
-        match self {
-            LnUrlRequestData::AuthRequest(ad) => Ok(ad),
-            _ => Err(anyhow!("Method can only be called on an AuthRequest")),
-        }
-    }
-}
-
 #[derive(Deserialize, Debug)]
 pub struct MetadataItem {
     pub key: String,
@@ -256,6 +213,7 @@ mod tests {
     use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
     use mockito;
 
+    use crate::input_parser::LnUrlRequestData::*;
     use crate::input_parser::*;
     use crate::models::Network;
 
@@ -504,20 +462,15 @@ mod tests {
         // Test URL from https://lnurl.fiatjaf.com/
         // LNURL resolves to https://lnurl.fiatjaf.com/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81
         let lnurl_withdraw_encoded = "lightning:LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKHW6T5DPJ8YCTH8AEK2UMND9HKU0TZVVURJVMXV9NX2C3E8QCNJVP5XCMNSVTZXSMKGD3CVEJXXE3C8PNXZVEEVYERSWPE8QMNSDRRXYURXC35XF3RWCTRXYENSV3SVSURZKAMCCN";
-        match parse(lnurl_withdraw_encoded)? {
-            LnUrlPay(data) => {
-                let wd = data.withdraw_request_data()?;
-
-                assert_eq!(wd.callback, "https://lnurl.fiatjaf.com/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
-                assert_eq!(
-                    wd.k1,
-                    "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81"
-                );
-                assert_eq!(wd.min_withdrawable, 3000);
-                assert_eq!(wd.max_withdrawable, 12000);
-                assert_eq!(wd.default_description, "sample withdraw");
-            }
-            _ => return Err(anyhow!("Unexpected type"))?,
+        if let LnUrl(WithdrawRequest(wd)) = parse(lnurl_withdraw_encoded)? {
+            assert_eq!(wd.callback, "https://lnurl.fiatjaf.com/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
+            assert_eq!(
+                wd.k1,
+                "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81"
+            );
+            assert_eq!(wd.min_withdrawable, 3000);
+            assert_eq!(wd.max_withdrawable, 12000);
+            assert_eq!(wd.default_description, "sample withdraw");
         }
 
         Ok(())
@@ -532,15 +485,11 @@ mod tests {
         let lnurl_auth_encoded = "LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKKCMM8D9HR7ARPVU7KCMM8D9HZV6E385CKZWP4X56NQDFK8YUKXVM9XQCKYEF5X93XGERYXVERQVPHVFNXXCE4VENRJVE4XQ6KGETRXP3KYCMPXC6XYDRZ8PNXVDFEXP3RSV3JQC0MHQ";
         assert_eq!(lnurl_decode(lnurl_auth_encoded)?, decoded_url);
 
-        match parse(lnurl_auth_encoded)? {
-            LnUrlAuth(data) => {
-                let ad = data.auth_request_data()?;
-                assert_eq!(
-                    ad.k1,
-                    "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822"
-                );
-            }
-            _ => return Err(anyhow!("Unexpected type"))?,
+        if let LnUrl(AuthRequest(ad)) = parse(lnurl_auth_encoded)? {
+            assert_eq!(
+                ad.k1,
+                "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822"
+            );
         }
 
         Ok(())
@@ -583,32 +532,27 @@ mod tests {
         // Test URL from https://lnurl.fiatjaf.com/
         // LNURL resolves to https://lnurl.fiatjaf.com/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7
         let lnurl_pay_encoded = "lightning:LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKHQCTE8AEK2UMND9HKU0TYVGUNGDTZXCERGV3KX4NXXDMXX4SNSEPHXANRYD3EVCMN2WPEVSMNSWTPXUMNZCNYVEJRYVR98YCKZVMRVCMXVDFSXVURYCFE8PJRW2CN9F5";
-        match parse(lnurl_pay_encoded)? {
-            LnUrlPay(data) => {
-                let pd = data.pay_request_data()?;
+        if let LnUrl(PayRequest(pd)) = parse(lnurl_pay_encoded)? {
+            assert_eq!(pd.callback, "https://lnurl.fiatjaf.com/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
+            assert_eq!(pd.max_sendable, 16000);
+            assert_eq!(pd.min_sendable, 4000);
+            assert_eq!(pd.comment_allowed, 0);
 
-                assert_eq!(pd.callback, "https://lnurl.fiatjaf.com/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
-                assert_eq!(pd.max_sendable, 16000);
-                assert_eq!(pd.min_sendable, 4000);
-                assert_eq!(pd.comment_allowed, 0);
-
-                assert_eq!(pd.metadata.len(), 3);
-                assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
-                assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
-                assert_eq!(
-                    pd.metadata.get(1).ok_or("Key not found")?.key,
-                    "text/long-desc"
-                );
-                assert_eq!(
-                    pd.metadata.get(1).ok_or("Key not found")?.value,
-                    "MBTrTiLCFS"
-                );
-                assert_eq!(
-                    pd.metadata.get(2).ok_or("Key not found")?.key,
-                    "image/png;base64"
-                );
-            }
-            _ => return Err(anyhow!("Unexpected type"))?,
+            assert_eq!(pd.metadata.len(), 3);
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.key,
+                "text/long-desc"
+            );
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.value,
+                "MBTrTiLCFS"
+            );
+            assert_eq!(
+                pd.metadata.get(2).ok_or("Key not found")?.key,
+                "image/png;base64"
+            );
         }
 
         Ok(())

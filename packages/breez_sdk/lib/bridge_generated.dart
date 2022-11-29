@@ -310,35 +310,9 @@ class InputType with _$InputType {
   /// # Not supported (yet)
   ///
   /// - LUD 17 Support for the lnurlp:// prefix and non bech32-encoded URLs
-  const factory InputType.lnUrlPay(
+  const factory InputType.lnUrl(
     LnUrlRequestData field0,
-  ) = InputType_LnUrlPay;
-
-  /// # Supported standards
-  ///
-  /// - LUD-01 LNURL bech32 encoding
-  /// - LUD-03 `withdrawRequest` spec
-  ///
-  /// # Not supported (yet)
-  ///
-  /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
-  /// - LUD 17 Support for the lnurlw:// prefix and non bech32-encoded URLs
-  /// - LUD-19 Pay link discoverable from withdraw link
-  const factory InputType.lnUrlWithdraw(
-    LnUrlRequestData field0,
-  ) = InputType_LnUrlWithdraw;
-
-  /// # Supported standards
-  ///
-  /// - LUD-01 LNURL bech32 encoding
-  /// - LUD-04 `auth` base spec
-  ///
-  /// # Not supported (yet)
-  ///
-  /// - LUD 17 Support for the keyauth:// prefix and non bech32-encoded URLs
-  const factory InputType.lnUrlAuth(
-    LnUrlRequestData field0,
-  ) = InputType_LnUrlAuth;
+  ) = InputType_LnUrl;
 }
 
 class InvoicePaidDetails {
@@ -1245,15 +1219,7 @@ class LightningToolkitImpl implements LightningToolkit {
           _wire2api_String(raw[1]),
         );
       case 4:
-        return InputType_LnUrlPay(
-          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
-        );
-      case 5:
-        return InputType_LnUrlWithdraw(
-          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
-        );
-      case 6:
-        return InputType_LnUrlAuth(
+        return InputType_LnUrl(
           _wire2api_box_autoadd_ln_url_request_data(raw[1]),
         );
       default:

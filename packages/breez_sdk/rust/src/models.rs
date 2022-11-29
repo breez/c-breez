@@ -47,6 +47,7 @@ pub trait NodeAPI: Send + Sync {
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String>;
     async fn close_peer_channels(&self, node_id: String) -> Result<CloseChannelResponse>;
     async fn stream_incoming_payments(&self) -> Result<Streaming<gl_client::pb::IncomingPayment>>;
+    async fn stream_log_messages(&self) -> Result<Streaming<gl_client::pb::LogEntry>>;
 }
 
 #[tonic::async_trait]
@@ -86,6 +87,12 @@ pub trait SwapperAPI: Send + Sync {
     ) -> Result<Swap>;
 
     async fn complete_swap(&self, bolt11: String) -> Result<()>;
+}
+
+#[derive(Clone, Debug)]
+pub struct LogEntry {
+    pub line: String,
+    pub level: String,
 }
 
 #[derive(Clone)]

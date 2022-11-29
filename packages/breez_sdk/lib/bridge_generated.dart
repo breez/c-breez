@@ -65,6 +65,10 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kBreezEventsStreamConstMeta;
 
+  Stream<LogEntry> breezLogStream({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kBreezLogStreamConstMeta;
+
   /// Cleanup node resources and stop the signer.
   Future<void> stopNode({dynamic hint});
 
@@ -358,6 +362,16 @@ class LocalizedName {
   LocalizedName({
     required this.locale,
     required this.name,
+  });
+}
+
+class LogEntry {
+  final String line;
+  final String level;
+
+  LogEntry({
+    required this.line,
+    required this.level,
   });
 }
 
@@ -658,6 +672,21 @@ class LightningToolkitImpl implements LightningToolkit {
   FlutterRustBridgeTaskConstMeta get kBreezEventsStreamConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "breez_events_stream",
+        argNames: [],
+      );
+
+  Stream<LogEntry> breezLogStream({dynamic hint}) =>
+      _platform.executeStream(FlutterRustBridgeTask(
+        callFfi: (port_) => _platform.inner.wire_breez_log_stream(port_),
+        parseSuccessData: _wire2api_log_entry,
+        constMeta: kBreezLogStreamConstMeta,
+        argValues: [],
+        hint: hint,
+      ));
+
+  FlutterRustBridgeTaskConstMeta get kBreezLogStreamConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "breez_log_stream",
         argNames: [],
       );
 
@@ -1219,6 +1248,16 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
+  LogEntry _wire2api_log_entry(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return LogEntry(
+      line: _wire2api_String(arr[0]),
+      level: _wire2api_String(arr[1]),
+    );
+  }
+
   LspInformation _wire2api_lsp_information(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 15)
@@ -1657,6 +1696,20 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           'wire_breez_events_stream');
   late final _wire_breez_events_stream =
       _wire_breez_events_streamPtr.asFunction<void Function(int)>();
+
+  void wire_breez_log_stream(
+    int port_,
+  ) {
+    return _wire_breez_log_stream(
+      port_,
+    );
+  }
+
+  late final _wire_breez_log_streamPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_breez_log_stream');
+  late final _wire_breez_log_stream =
+      _wire_breez_log_streamPtr.asFunction<void Function(int)>();
 
   void wire_stop_node(
     int port_,

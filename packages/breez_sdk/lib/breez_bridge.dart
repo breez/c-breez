@@ -2,10 +2,22 @@ import 'dart:async';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/native_toolkit.dart';
+import 'package:fimber/fimber.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:rxdart/rxdart.dart';
 
 class BreezBridge {
   final _lnToolkit = getNativeToolkit();
+  final _log = FimberLog("BreezBridge");
+
+  BreezBridge() {
+    _lnToolkit.breezEventsStream().listen((event) {
+      _log.v("Received breez event: $event");
+      if (event is BreezEvent_InvoicePaid) {
+        _invoicePaidStream.add(event.field0);
+      }
+    });
+  }
 
   /// Register a new node in the cloud and return credentials to interact with it
   ///
@@ -108,7 +120,7 @@ class BreezBridge {
 
   /// get the node state from the persistent storage
   Future<NodeState?> getNodeState() async {
-    final nodeState = await _lnToolkit.getNodeState();
+    final nodeState = await _lnToolkit.nodeInfo();
     nodeStateController.add(nodeState);
     return nodeState;
   }
@@ -199,4 +211,10 @@ class BreezBridge {
   /// If the phrase is not a valid mnemonic, an error is returned.
   Future<Uint8List> mnemonicToSeed(String phrase) async =>
       await _lnToolkit.mnemonicToSeed(phrase: phrase);
+
+  /// Listen to paid Invoice events
+  final StreamController<InvoicePaidDetails> _invoicePaidStream =
+      BehaviorSubject<InvoicePaidDetails>();
+
+  Stream<InvoicePaidDetails> get invoicePaidStream => _invoicePaidStream.stream;
 }

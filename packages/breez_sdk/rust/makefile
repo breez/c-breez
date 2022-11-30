@@ -103,10 +103,10 @@ target/aarch64-apple-darwin/release/liblightning_toolkit.dylib: $(SOURCES)
 	fi
 	@echo "[DONE] $@"
 
-## android: Compile the android targets (arm64, armv7 and i686)
-android: target/aarch64-linux-android/release/liblightning_toolkit.so target/armv7-linux-androideabi/release/liblightning_toolkit.so target/i686-linux-android/release/liblightning_toolkit.so target/x86_64-linux-android/release/liblightning_toolkit.so
+## android: Compile all android supported targets
+android: android-aarch64 android-armv7 android-i686 android-x86_64
 
-target/aarch64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
+android-aarch64: $(SOURCES) ndk-home
 	@mkdir -p target/aarch64-linux-android/release/deps
 	@echo "INPUT(-lunwind)" > target/aarch64-linux-android/release/deps/libgcc.a
 	CC_aarch64_linux_android=$(ANDROID_AARCH64_CC) \
@@ -119,7 +119,7 @@ target/aarch64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-hom
 	cp target/aarch64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
-target/armv7-linux-androideabi/release/liblightning_toolkit.so: $(SOURCES) ndk-home
+android-armv7: $(SOURCES) ndk-home
 	@mkdir -p target/armv7-linux-androideabi/release/deps
 	@echo "INPUT(-lunwind)" > target/armv7-linux-androideabi/release/deps/libgcc.a
 	CC_armv7_linux_androideabi=$(ANDROID_ARMV7_CC) \
@@ -132,7 +132,7 @@ target/armv7-linux-androideabi/release/liblightning_toolkit.so: $(SOURCES) ndk-h
 	cp target/armv7-linux-androideabi/release/liblightning_toolkit.so ../android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
-target/i686-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
+android-i686: $(SOURCES) ndk-home
 	@mkdir -p target/i686-linux-android/release/deps
 	@echo "INPUT(-lunwind)" > target/i686-linux-android/release/deps/libgcc.a
 	CC_i686_linux_android=$(ANDROID_I686_CC) \
@@ -145,7 +145,7 @@ target/i686-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	cp target/i686-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86/liblightning_toolkit.so
 	@echo "[DONE] $@"
 
-target/x86_64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
+android-x86_64: $(SOURCES) ndk-home
 	@mkdir -p target/x86_64-linux-android/release/deps
 	@echo "INPUT(-lunwind)" > target/x86_64-linux-android/release/deps/libgcc.a
 	CC_x86_64_linux_android=$(ANDROID_X86_64_CC) \
@@ -157,7 +157,7 @@ target/x86_64-linux-android/release/liblightning_toolkit.so: $(SOURCES) ndk-home
 	cp -a $(ANDROID_NDK_HOME)/toolchains/llvm/prebuilt/$(OS_NAME)-x86_64/sysroot/usr/lib/x86_64-linux-android/libc++_shared.so ../android/src/main/jniLibs/x86_64/
 	cp target/x86_64-linux-android/release/liblightning_toolkit.so ../android/src/main/jniLibs/x86_64/liblightning_toolkit.so
 	@echo "[DONE] $@"
-		
+
 .PHONY: ndk-home
 ndk-home:
 	@if [ ! -d "${ANDROID_NDK_HOME}" ] ; then \

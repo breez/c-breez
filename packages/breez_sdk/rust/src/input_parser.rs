@@ -89,7 +89,7 @@ fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<S
 }
 
 #[cfg(not(test))]
-fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String>  {
+fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
     /// When not called from a test, we fallback to keeping the URL intact
     Ok(lnurl_endpoint)
 }
@@ -452,7 +452,7 @@ mod tests {
         let expected_lnurl_withdraw_data = r#"
 {
     "tag":"withdrawRequest",
-    "callback":"https://lnurl.fiatjaf.com/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538",
+    "callback":"https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538",
     "k1":"37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81",
     "minWithdrawable":3000,
     "maxWithdrawable":12000,
@@ -467,11 +467,12 @@ mod tests {
             .with_body(expected_lnurl_withdraw_data)
             .create();
 
-        // Test URL from https://lnurl.fiatjaf.com/
-        // LNURL resolves to https://lnurl.fiatjaf.com/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81
-        let lnurl_withdraw_encoded = "lightning:LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKHW6T5DPJ8YCTH8AEK2UMND9HKU0TZVVURJVMXV9NX2C3E8QCNJVP5XCMNSVTZXSMKGD3CVEJXXE3C8PNXZVEEVYERSWPE8QMNSDRRXYURXC35XF3RWCTRXYENSV3SVSURZKAMCCN";
+        let lnurl_withdraw_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
+        let decoded_url = "https://localhost/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81";
+        assert_eq!(lnurl_decode(lnurl_withdraw_encoded)?, decoded_url);
+
         if let LnUrl(WithdrawRequest(wd)) = parse(lnurl_withdraw_encoded)? {
-            assert_eq!(wd.callback, "https://lnurl.fiatjaf.com/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
+            assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
             assert_eq!(
                 wd.k1,
                 "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81"
@@ -489,8 +490,8 @@ mod tests {
         // Covers cases in LUD-04: `auth` base spec
         // https://github.com/lnurl/luds/blob/luds/04.md
 
-        let decoded_url = "https://lnurl.fiatjaf.com/lnurl-login?tag=login&k1=1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822";
-        let lnurl_auth_encoded = "LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKKCMM8D9HR7ARPVU7KCMM8D9HZV6E385CKZWP4X56NQDFK8YUKXVM9XQCKYEF5X93XGERYXVERQVPHVFNXXCE4VENRJVE4XQ6KGETRXP3KYCMPXC6XYDRZ8PNXVDFEXP3RSV3JQC0MHQ";
+        let decoded_url = "https://localhost/lnurl-login?tag=login&k1=1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822";
+        let lnurl_auth_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttvdankjm3lw3skw0tvdankjm3xdvcn6vtp8q6n2dfsx5mrjwtrxdjnqvtzv56rzcnyv3jrxv3sxqmkyenrvv6kve3exv6nqdtyv43nqcmzvdsnvdrzx33rsenxx5unqc3cxgeqgntfgu";
         assert_eq!(lnurl_decode(lnurl_auth_encoded)?, decoded_url);
 
         if let LnUrl(AuthRequest(ad)) = parse(lnurl_auth_encoded)? {
@@ -510,7 +511,7 @@ mod tests {
 
         let expected_lnurl_pay_data = r#"
 {
-    "callback":"https://lnurl.fiatjaf.com/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7",
+    "callback":"https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7",
     "tag":"payRequest",
     "maxSendable":16000,
     "minSendable":4000,
@@ -537,11 +538,12 @@ mod tests {
         .with_body(expected_lnurl_pay_data)
         .create();
 
-        // Test URL from https://lnurl.fiatjaf.com/
-        // LNURL resolves to https://lnurl.fiatjaf.com/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7
-        let lnurl_pay_encoded = "lightning:LNURL1DP68GURN8GHJ7MRWW4EXCTNXD9SHG6NPVCHXXMMD9AKXUATJDSKHQCTE8AEK2UMND9HKU0TYVGUNGDTZXCERGV3KX4NXXDMXX4SNSEPHXANRYD3EVCMN2WPEVSMNSWTPXUMNZCNYVEJRYVR98YCKZVMRVCMXVDFSXVURYCFE8PJRW2CN9F5";
+        let lnurl_pay_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
+        let decoded_url = "https://localhost/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
+        assert_eq!(lnurl_decode(lnurl_pay_encoded)?, decoded_url);
+
         if let LnUrl(PayRequest(pd)) = parse(lnurl_pay_encoded)? {
-            assert_eq!(pd.callback, "https://lnurl.fiatjaf.com/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
+            assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
             assert_eq!(pd.max_sendable, 16000);
             assert_eq!(pd.min_sendable, 4000);
             assert_eq!(pd.comment_allowed, 0);

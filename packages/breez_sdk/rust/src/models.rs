@@ -41,7 +41,7 @@ pub trait NodeAPI: Send + Sync {
         to_address: String,
         feerate_preset: FeeratePreset,
     ) -> Result<WithdrawResponse>;
-    fn start_signer(&self, shutdown: mpsc::Receiver<()>);
+    async fn start_signer(&self, shutdown: mpsc::Receiver<()>);
     async fn list_peers(&self) -> Result<Vec<Peer>>;
     async fn connect_peer(&self, node_id: String, addr: String) -> Result<()>;
     fn sign_invoice(&self, invoice: RawInvoice) -> Result<String>;

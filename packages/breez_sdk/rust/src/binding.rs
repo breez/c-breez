@@ -1,4 +1,4 @@
-use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
+use crate::breez_services::{rt, BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
@@ -6,7 +6,6 @@ use flutter_rust_bridge::StreamSink;
 use log::{Metadata, Record};
 use once_cell::sync::OnceCell;
 use std::future::Future;
-use std::io::Write;
 use std::sync::Arc;
 use tokio::sync::mpsc;
 
@@ -292,11 +291,7 @@ fn get_breez_services() -> Result<&'static BreezServices> {
 }
 
 fn block_on<F: Future>(future: F) -> F::Output {
-    tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .unwrap()
-        .block_on(future)
+    rt().block_on(future)
 }
 
 // These functions are exposed temporarily for integration purposes

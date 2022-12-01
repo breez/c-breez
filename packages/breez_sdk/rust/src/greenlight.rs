@@ -8,8 +8,8 @@ use bitcoin::bech32::{u5, ToBase32};
 use bitcoin::secp256k1::ecdsa::{RecoverableSignature, RecoveryId};
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{
-    Amount, BtcAddressType, CloseChannelRequest, CloseChannelResponse, Invoice, InvoiceRequest,
-    InvoiceStatus, Payment, WithdrawResponse,
+    Amount, CloseChannelRequest, CloseChannelResponse, Invoice, InvoiceRequest, InvoiceStatus,
+    PayStatus, Payment, WithdrawResponse,
 };
 use gl_client::scheduler::Scheduler;
 use gl_client::signer::Signer;
@@ -93,18 +93,9 @@ impl NodeAPI for Greenlight {
         Ok(())
     }
 
-    fn start_signer(&self, shutdown: mpsc::Receiver<()>) {
-        let signer = self.signer.clone();
-        std::thread::spawn(move || {
-            _ = tokio::runtime::Builder::new_current_thread()
-                .enable_all()
-                .build()
-                .unwrap()
-                .block_on(async move {
-                    _ = signer.run_forever(shutdown).await;
-                    error!("signer exited");
-                });
-        });
+    async fn start_signer(&self, shutdown: mpsc::Receiver<()>) {
+        _ = self.signer.run_forever(shutdown).await;
+        error!("signer exited");
     }
 
     async fn stream_incoming_payments(&self) -> Result<Streaming<gl_client::pb::IncomingPayment>> {
@@ -403,12 +394,12 @@ async fn pull_transactions(
         .list_payments(pb::ListPaymentsRequest::default())
         .await?
         .into_inner();
-
+    debug!("list payments: {:?}", payments);
     // construct the payment transactions
     let sent_transactions: Result<Vec<crate::models::Payment>> = payments
         .payments
         .into_iter()
-        .filter(|p| p.created_at as i64 > since_timestamp)
+        .filter(|p| p.created_at as i64 > since_timestamp && p.status() == PayStatus::Complete)
         .map(|p| payment_to_transaction(p))
         .collect();
 
@@ -460,7 +451,7 @@ fn payment_to_transaction(payment: pb::Payment) -> Result<crate::models::Payment
         amount_msat: payment_amount,
         fees_msat: payment_amount - payment_amount_sent,
         payment_preimage: hex::encode(payment.payment_preimage),
-        keysend: !payment.bolt11.is_empty(),
+        keysend: payment.bolt11.is_empty(),
         bolt11: payment.bolt11,
         pending: pb::PayStatus::from_i32(payment.status) == Some(pb::PayStatus::Pending),
         description: description,

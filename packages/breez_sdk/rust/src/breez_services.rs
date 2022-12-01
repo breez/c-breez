@@ -1,8 +1,3 @@
-use core::time;
-use std::cmp::max;
-use std::str::FromStr;
-use std::sync::Arc;
-
 use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
@@ -12,17 +7,29 @@ use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{
-    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LspAPI, Network, NodeAPI, NodeState,
-    Payment, PaymentTypeFilter, SwapInfo, SwapperAPI,
+    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LspAPI, NodeAPI, NodeState, Payment,
+    PaymentTypeFilter, SwapInfo, SwapperAPI,
 };
 use crate::persist;
 use crate::persist::db::SqliteStorage;
 use crate::swap::BTCReceiveSwap;
 use anyhow::{anyhow, Result};
 use bip39::*;
+use core::time;
+use lazy_static::lazy_static;
+use std::cmp::max;
+use std::str::FromStr;
+use std::sync::Arc;
 use tokio::sync::mpsc;
 use tokio::time::{sleep, Duration};
 use tonic::transport::{Channel, Uri};
+
+pub(crate) fn rt() -> &'static tokio::runtime::Runtime {
+    lazy_static! {
+        static ref RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
+    }
+    &RT
+}
 
 #[tonic::async_trait]
 pub trait BreezEventListener: Send + Sync {
@@ -48,37 +55,42 @@ pub async fn start(
 ) -> Result<()> {
     // start the signer
     let (shutdown_signer_sender, signer_signer_receiver) = mpsc::channel(1);
-    breez_services.node_api.start_signer(signer_signer_receiver);
+    let signer_api = breez_services.clone();
+    rt().spawn(async move {
+        signer_api
+            .node_api
+            .start_signer(signer_signer_receiver)
+            .await;
+    });
 
-    std::thread::spawn(move || {
-        tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap()
-            .block_on(async move {
-                let current_block: u32 = 0;
-                loop {
-                    tokio::select! {
-                      poll_result = poll_events(breez_services.clone(), current_block) => {
-                       match poll_result {
-                        Ok(()) => {
-                         return;
-                        },
-                        Err(err) => {
-                         debug!("poll_events returned with error: {:?}", err);
-                         sleep(Duration::from_millis(1000)).await;
-                         continue
-                        }
-                       }
-                      },
-                      _ = shutdown_receiver.recv() => {
-                       _ = shutdown_signer_sender.send(()).await;
-                       debug!("Received the signal to exit the chain monitoring loop");
-                       return;
-                     }
-                    }
+    // sync with remote state
+    breez_services.clone().sync().await?;
+
+    // poll sdk events
+    rt().spawn(async move {
+        let current_block: u32 = 0;
+        loop {
+            tokio::select! {
+
+              poll_result = poll_events(breez_services.clone(), current_block) => {
+               match poll_result {
+                Ok(()) => {
+                 return;
+                },
+                Err(err) => {
+                 debug!("poll_events returned with error: {:?}", err);
+                 sleep(Duration::from_millis(1000)).await;
+                 return;
                 }
-            })
+               }
+              },
+              _ = shutdown_receiver.recv() => {
+               _ = shutdown_signer_sender.send(()).await;
+               debug!("Received the signal to exit the chain monitoring loop");
+               return;
+             }
+            }
+        }
     });
 
     Ok(())
@@ -178,7 +190,8 @@ impl BreezServices {
         self.node_api
             .close_peer_channels(lsp.pubkey)
             .await
-            .map(|_| ())
+            .map(|_| ())?;
+        self.sync().await
     }
 
     /// Onchain receive swap API
@@ -210,6 +223,10 @@ impl BreezServices {
 
         let new_data = &self.node_api.pull_changed(since_timestamp).await?;
 
+        debug!(
+            "pull changed time={:?} {:?}",
+            since_timestamp, new_data.payments
+        );
         self.persister.set_node_state(&new_data.node_state)?;
         self.persister.insert_payments(&new_data.payments)?;
         Ok(())
@@ -221,20 +238,12 @@ impl BreezServices {
             let lsp_info = lsp.unwrap().clone();
             let node_id = lsp_info.pubkey;
             let address = lsp_info.host;
-            match self.node_info() {
-                Ok(Some(state)) => {
-                    if !state.connected_peers.contains(&node_id) {
-                        self.node_api
-                            .connect_peer(node_id, address)
-                            .await
-                            .map_err(anyhow::Error::msg)
-                    } else {
-                        Ok(())
-                    }
-                }
-                Ok(None) => Ok(()),
-                Err(e) => Err(anyhow!(e)),
-            }?
+            debug!("connecting to lsp {}@{}", node_id.clone(), address.clone());
+            self.node_api
+                .connect_peer(node_id.clone(), address.clone())
+                .await
+                .map_err(anyhow::Error::msg)?;
+            debug!("connected to lsp {}@{}", node_id.clone(), address.clone());
         }
         Ok(())
     }
@@ -276,9 +285,10 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
 
          // handle chain events
          _ = interval.tick() => {
-          let tip_res = breez_services.chain_service.current_tip().await;// monitor.poll_tip(current_block).await;
+          let tip_res = breez_services.chain_service.current_tip().await;
           match tip_res {
            Ok(next_block) => {
+            debug!("got tip {:?}", next_block);
             if next_block > current_block {
              _  = breez_services.on_event(BreezEvent::NewBlock(next_block)).await;
             }
@@ -290,26 +300,27 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
           };
          },
          paid_invoice_res = invoice_stream.message() => {
-           match paid_invoice_res {
-            Ok(Some(i)) => {
-             match i.details {
-              Some(gl_client::pb::incoming_payment::Details::Offchain(p)) => {
-               _  = breez_services.on_event(BreezEvent::InvoicePaid(InvoicePaidDetails { payment_hash: p.payment_hash, bolt11: p.bolt11 })).await;
-              },
-              None => {}
-             }
+          match paid_invoice_res {
+           Ok(Some(i)) => {
+            debug!("invoice stream got new invoice");
+            match i.details {
+             Some(gl_client::pb::incoming_payment::Details::Offchain(p)) => {
+              _  = breez_services.on_event(BreezEvent::InvoicePaid(InvoicePaidDetails { payment_hash: p.payment_hash, bolt11: p.bolt11 })).await;
+             },
+             None => {}
             }
-            // stream is closed, renew it
-            Ok(None) => {
-             debug!("invoice stream closed, renewing");
-             invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
-            }
-            Err(err) => {
-             debug!("failed to process incoming payment {:?}", err);
-             invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
-            }
-           };
-         },
+           }
+           // stream is closed, renew it
+           Ok(None) => {
+            debug!("invoice stream closed, renewing");
+            invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
+           }
+           Err(err) => {
+            debug!("failed to process incoming payment {:?}", err);
+            invoice_stream = breez_services.node_api.stream_incoming_payments().await?;
+           }
+          };
+        },
          log_message_res = log_stream.message() => {
           match log_message_res {
            Ok(Some(l)) => {
@@ -389,8 +400,8 @@ impl BreezServicesBuilder {
 
         persister.init().unwrap();
         let current_lsp_id = persister.get_lsp_id()?;
-        if let Some(default_lsp_id) = current_lsp_id {
-            persister.set_lsp_id(default_lsp_id)?;
+        if current_lsp_id.is_none() && self.config.default_lsp_id.is_some() {
+            persister.set_lsp_id(self.config.default_lsp_id.clone().unwrap())?;
         }
 
         let payment_receiver = Arc::new(PaymentReceiver {
@@ -521,7 +532,10 @@ impl PaymentReceiver {
                         .ok_or("No open channel found")
                         .map_err(|err| anyhow!(err))?;
                     short_channel_id = parse_short_channel_id(&active_channel.short_channel_id)?;
-                    info!("Found channel ID: {}", short_channel_id);
+                    info!(
+                        "Found channel ID: {} {:?}",
+                        short_channel_id, active_channel
+                    );
                     break;
                 }
             }

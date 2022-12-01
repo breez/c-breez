@@ -13,6 +13,92 @@ use crate::input_parser::LnUrlRequestData::AuthRequest;
 use crate::invoice::{parse_invoice, LNInvoice};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
+///
+/// # Examples
+///
+/// ## On-chain BTC addresses (incl. BIP 21 URIs)
+///
+/// ```
+/// use lightning_toolkit::input_parser::{InputType::*, parse};
+///
+/// assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd"), Ok(BitcoinAddress(_)) ));
+/// assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000"), Ok(BitcoinAddress(_)) ));
+/// assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello"), Ok(BitcoinAddress(_)) ));
+/// assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello&message=Msg"), Ok(BitcoinAddress(_)) ));
+///
+/// assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd"), Ok(BitcoinAddress(_)) ));
+/// assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000"), Ok(BitcoinAddress(_)) ));
+/// assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello"), Ok(BitcoinAddress(_)) ));
+/// assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello&message=Msg"), Ok(BitcoinAddress(_)) ));
+/// ```
+///
+/// ## BOLT 11 invoices
+///
+/// ```
+/// use lightning_toolkit::input_parser::{InputType::*, parse};
+///
+/// let invoice = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
+/// assert!(matches!( parse(invoice), Ok(Bolt11(_)) ));
+/// assert!(matches!( parse( &format!("lightning:{}", invoice) ), Ok(Bolt11(_)) ));
+///
+/// // BIP 21 with LN fallback parses to a LN invoice
+/// let btc_address = "1andreas3batLhQa2FawWjeyjCqyBzypd";
+/// assert!(matches!( parse( &format!("bitcoin:{}?lightning={}", btc_address, invoice) ), Ok(Bolt11(_)) ));
+/// ```
+///
+/// ## Web URLs
+///
+/// ```
+/// use lightning_toolkit::input_parser::{InputType::*, parse};
+///
+/// assert!(matches!( parse("https://breez.technology"), Ok(Url(_)) ));
+/// assert!(matches!( parse("https://breez.technology/test-path"), Ok(Url(_)) ));
+/// assert!(matches!( parse("https://breez.technology/test-path?arg=val"), Ok(Url(_)) ));
+/// ```
+///
+/// ## LNURL pay request
+///
+/// ```no_run
+/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+///
+/// let lnurl_pay_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
+///
+/// if let Ok(LnUrl(PayRequest(pd))) = parse(lnurl_pay_encoded) {
+///     assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
+///     assert_eq!(pd.max_sendable, 16000);
+///     assert_eq!(pd.min_sendable, 4000);
+///     assert_eq!(pd.comment_allowed, 0);
+///     assert_eq!(pd.metadata.len(), 3);
+/// }
+/// ```
+///
+/// ## LNURL withdraw request
+///
+/// ```no_run
+/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+///
+/// let lnurl_withdraw_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
+///
+/// if let Ok(LnUrl(WithdrawRequest(wd))) = parse(lnurl_withdraw_encoded) {
+///     assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
+///     assert_eq!(wd.k1, "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81");
+///     assert_eq!(wd.min_withdrawable, 3000);
+///     assert_eq!(wd.max_withdrawable, 12000);
+///     assert_eq!(wd.default_description, "sample withdraw");
+/// }
+/// ```
+///
+/// ## LNURL auth request
+///
+/// ```no_run
+/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+///
+/// let lnurl_auth_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttvdankjm3lw3skw0tvdankjm3xdvcn6vtp8q6n2dfsx5mrjwtrxdjnqvtzv56rzcnyv3jrxv3sxqmkyenrvv6kve3exv6nqdtyv43nqcmzvdsnvdrzx33rsenxx5unqc3cxgeqgntfgu";
+///
+/// if let Ok(LnUrl(AuthRequest(ad))) = parse(lnurl_auth_encoded) {
+///     assert_eq!(ad.k1, "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822");
+/// }
+/// ```
 pub fn parse(raw_input: &str) -> Result<InputType> {
     // If the `lightning:` prefix is there, strip it for the bolt11 parsing function
     let prepared_input = raw_input.trim_start_matches("lightning:");

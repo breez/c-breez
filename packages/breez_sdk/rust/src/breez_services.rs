@@ -16,20 +16,13 @@ use crate::swap::BTCReceiveSwap;
 use anyhow::{anyhow, Result};
 use bip39::*;
 use core::time;
-use lazy_static::lazy_static;
 use std::cmp::max;
 use std::str::FromStr;
 use std::sync::Arc;
+use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
 use tokio::time::{sleep, Duration};
 use tonic::transport::{Channel, Uri};
-
-pub(crate) fn rt() -> &'static tokio::runtime::Runtime {
-    lazy_static! {
-        static ref RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
-    }
-    &RT
-}
 
 #[tonic::async_trait]
 pub trait BreezEventListener: Send + Sync {
@@ -50,13 +43,14 @@ pub struct InvoicePaidDetails {
 
 /// starts the BreezServices background threads.
 pub async fn start(
+    rt: &Runtime,
     breez_services: Arc<BreezServices>,
     mut shutdown_receiver: mpsc::Receiver<()>,
 ) -> Result<()> {
     // start the signer
     let (shutdown_signer_sender, signer_signer_receiver) = mpsc::channel(1);
     let signer_api = breez_services.clone();
-    rt().spawn(async move {
+    rt.spawn(async move {
         signer_api
             .node_api
             .start_signer(signer_signer_receiver)
@@ -67,7 +61,7 @@ pub async fn start(
     breez_services.clone().sync().await?;
 
     // poll sdk events
-    rt().spawn(async move {
+    rt.spawn(async move {
         let current_block: u32 = 0;
         loop {
             tokio::select! {

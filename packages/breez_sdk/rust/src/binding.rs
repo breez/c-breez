@@ -1,15 +1,15 @@
-use crate::breez_services::{rt, BreezEvent, BreezEventListener, BreezServicesBuilder};
+use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
+use anyhow::{anyhow, Result};
 use flutter_rust_bridge::StreamSink;
+use lazy_static::lazy_static;
 use log::{Metadata, Record};
 use once_cell::sync::OnceCell;
 use std::future::Future;
 use std::sync::Arc;
 use tokio::sync::mpsc;
-
-use anyhow::{anyhow, Result};
 
 use crate::invoice::LNInvoice;
 use crate::models::{
@@ -126,7 +126,7 @@ pub fn init_node(
             .event_listener(Arc::new(BindingEventListener {}))
             .build()?;
         let (stop_sender, stop_receiver) = mpsc::channel(1);
-        _ = crate::breez_services::start(breez_services.clone(), stop_receiver).await?;
+        _ = crate::breez_services::start(rt(), breez_services.clone(), stop_receiver).await?;
         BREEZ_SERVICES_SHUTDOWN
             .set(stop_sender)
             .map_err(|_| anyhow!("static node services already set"))?;
@@ -292,6 +292,13 @@ fn get_breez_services() -> Result<&'static BreezServices> {
 
 fn block_on<F: Future>(future: F) -> F::Output {
     rt().block_on(future)
+}
+
+fn rt() -> &'static tokio::runtime::Runtime {
+    lazy_static! {
+        static ref RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
+    }
+    &RT
 }
 
 // These functions are exposed temporarily for integration purposes

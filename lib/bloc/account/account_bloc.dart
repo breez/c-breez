@@ -138,7 +138,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         workingDir: (await getApplicationDocumentsDirectory()).path,
         network: Network.values.firstWhere((n) =>
             n.name.toLowerCase() ==
-            breezConfig.get("Application Options", "network")),
+            (breezConfig.get("Application Options", "network") ?? "bitcoin")),
         paymentTimeoutSec: int.parse(
             breezConfig.get("Application Options", "paymentTimeoutSec") ??
                 "30"),

@@ -310,7 +310,7 @@ class InputType with _$InputType {
 }
 
 class InvoicePaidDetails {
-  final Uint8List paymentHash;
+  final String paymentHash;
   final String bolt11;
 
   InvoicePaidDetails({
@@ -1169,7 +1169,7 @@ class LightningToolkitImpl implements LightningToolkit {
     if (arr.length != 2)
       throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
     return InvoicePaidDetails(
-      paymentHash: _wire2api_uint_8_list(arr[0]),
+      paymentHash: _wire2api_String(arr[0]),
       bolt11: _wire2api_String(arr[1]),
     );
   }

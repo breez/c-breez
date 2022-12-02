@@ -37,7 +37,7 @@ pub enum BreezEvent {
 
 #[derive(Clone, Debug)]
 pub struct InvoicePaidDetails {
-    pub payment_hash: Vec<u8>,
+    pub payment_hash: String,
     pub bolt11: String,
 }
 
@@ -299,7 +299,10 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
             debug!("invoice stream got new invoice");
             match i.details {
              Some(gl_client::pb::incoming_payment::Details::Offchain(p)) => {
-              _  = breez_services.on_event(BreezEvent::InvoicePaid(InvoicePaidDetails { payment_hash: p.payment_hash, bolt11: p.bolt11 })).await;
+              _  = breez_services.on_event(BreezEvent::InvoicePaid(InvoicePaidDetails {
+                    payment_hash: hex::encode(p.payment_hash),
+                    bolt11: p.bolt11,
+                })).await;
              },
              None => {}
             }

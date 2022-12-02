@@ -31,8 +31,7 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future trackPayment(String paymentHash) async {
-    // TODO - real implementation, waiting 1 minute to give us time to read the qrcode
-    await Future.delayed(const Duration(minutes: 1));
+    await _breezLib.invoicePaidStream.firstWhere((invoice) => invoice.paymentHash == paymentHash);
   }
 
   Stream<InputState?> _watchIncomingInvoices() {

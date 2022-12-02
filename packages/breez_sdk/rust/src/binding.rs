@@ -4,9 +4,8 @@ use crate::lsp::LspInformation;
 use crate::models::LogEntry;
 use anyhow::{anyhow, Result};
 use flutter_rust_bridge::StreamSink;
-use lazy_static::lazy_static;
 use log::{Metadata, Record};
-use once_cell::sync::OnceCell;
+use once_cell::sync::{Lazy, OnceCell};
 use std::future::Future;
 use std::sync::Arc;
 use tokio::sync::mpsc;
@@ -26,6 +25,7 @@ static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
 static BREEZ_SERVICES_SHUTDOWN: OnceCell<mpsc::Sender<()>> = OnceCell::new();
 static NOTIFICATION_STREAM: OnceCell<StreamSink<BreezEvent>> = OnceCell::new();
 static LOG_STREAM: OnceCell<StreamSink<LogEntry>> = OnceCell::new();
+static RT: Lazy<tokio::runtime::Runtime> = Lazy::new(|| tokio::runtime::Runtime::new().unwrap());
 
 struct BindingLogger;
 
@@ -295,9 +295,6 @@ fn block_on<F: Future>(future: F) -> F::Output {
 }
 
 fn rt() -> &'static tokio::runtime::Runtime {
-    lazy_static! {
-        static ref RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
-    }
     &RT
 }
 

@@ -99,22 +99,15 @@ use crate::invoice::{parse_invoice, LNInvoice};
 ///     assert_eq!(ad.k1, "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822");
 /// }
 /// ```
-pub fn parse(raw_input: &str) -> Result<InputType> {
-    // If the `lightning:` prefix is there, strip it for the bolt11 parsing function
-    let prepared_input = raw_input.trim_start_matches("lightning:");
-
-    // Check if valid BTC onchain address
-    // For simple addresses, it prepends the "bitcoin:" prefix, thus converting it to a BIP21 URI
-    // If it already has that prefix, it keeps it. In both cases, it tries to parse it as a BIP 21 URI
-    if let Ok(uri) =
-        format!("bitcoin:{}", prepared_input.trim_start_matches("bitcoin:")).parse::<Uri<'_>>()
-    {
-        let bitcoin_addr_data = uri.into();
+pub fn parse(input: &str) -> Result<InputType> {
+    // Covers BIP 21 URIs and simple onchain BTC addresses (which are valid BIP 21 with the 'bitcoin:' prefix)
+    if let Ok(bip21_uri) = prepend_if_missing("bitcoin:", input).parse::<Uri<'_>>() {
+        let bitcoin_addr_data = bip21_uri.into();
 
         // Special case of LN BOLT11 with onchain fallback
         // Search for the `lightning=bolt11` param in the BIP21 URI and, if found, extract the bolt11
         let mut invoice_param: Option<LNInvoice> = None;
-        if let Some(query) = prepared_input.split('?').collect::<Vec<_>>().get(1) {
+        if let Some(query) = input.split('?').collect::<Vec<_>>().get(1) {
             invoice_param = querystring::querify(query)
                 .iter()
                 .find(|(key, _)| key == &"lightning")
@@ -128,22 +121,22 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
         };
     }
 
-    if let Ok(invoice) = parse_invoice(prepared_input) {
+    if let Ok(invoice) = parse_invoice(&strip_prefix_if_present("lightning:", input)) {
         return Ok(Bolt11(invoice));
     }
 
-    if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(prepared_input) {
+    if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(input) {
         // Public key serialized in compressed form
-        return Ok(NodeId(prepared_input.into()));
+        return Ok(NodeId(input.into()));
     }
 
-    if let Ok(url) = reqwest::Url::parse(prepared_input) {
+    if let Ok(url) = reqwest::Url::parse(input) {
         if ["http", "https"].contains(&url.scheme()) {
-            return Ok(Url(prepared_input.into()));
+            return Ok(Url(input.into()));
         }
     }
 
-    if let Ok(mut lnurl_endpoint) = lnurl_decode(prepared_input) {
+    if let Ok(mut lnurl_endpoint) = lnurl_decode(input) {
         // For LNURL-auth links, their type is already known if the link contains the login tag
         // No need to query the endpoint for details
         if lnurl_endpoint.contains("tag=login") {
@@ -165,6 +158,16 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
     }
 
     Err(anyhow!("Unrecognized input type"))
+}
+
+/// Prepends the given prefix to the input, if the input doesn't already start with it
+fn prepend_if_missing(prefix: &str, input: &str) -> String {
+    format!("{}{}", prefix, input.trim_start_matches(prefix))
+}
+
+/// Removes the input's prefix, if indeed it starts with that prefix
+fn strip_prefix_if_present(prefix: &str, input: &str) -> String {
+    input.trim_start_matches(prefix).to_string()
 }
 
 #[cfg(test)]
@@ -204,6 +207,7 @@ fn lnurl_decode(encoded: &str) -> Result<String> {
     Ok(decoded)
 }
 
+#[derive(Debug)]
 pub enum InputType {
     /// # Supported standards
     ///
@@ -223,11 +227,11 @@ pub enum InputType {
     /// - LUD-03 `withdrawRequest` spec
     /// - LUD-04 `auth` base spec
     /// - LUD-06 `payRequest` spec
+    /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
     ///
     /// # Not supported (yet)
     ///
     /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
-    /// - LUD 17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
     /// - LUD-19 Pay link discoverable from withdraw link
     LnUrl(LnUrlRequestData),
 }
@@ -278,6 +282,7 @@ pub struct MetadataItem {
     pub value: String,
 }
 
+#[derive(Debug)]
 pub struct BitcoinAddressData {
     pub address: String,
     pub network: crate::models::Network,
@@ -650,6 +655,16 @@ mod tests {
                 "image/png;base64"
             );
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_17() -> Result<(), Box<dyn std::error::Error>> {
+        // Covers cases in LUD-06: Protocol schemes and raw (non bech32-encoded) URLs
+        // https://github.com/lnurl/luds/blob/luds/17.md
+
+
 
         Ok(())
     }

@@ -592,10 +592,7 @@ mod tests {
 }
         "#.replace('\n', "");
 
-        mockito::mock(
-            "GET",
-            path,
-        )
+        mockito::mock("GET", path)
             .with_body(expected_lnurl_withdraw_data)
             .create()
     }
@@ -609,7 +606,10 @@ mod tests {
         let _m = mock_lnurl_withdraw_endpoint(path);
 
         let lnurl_withdraw_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
-        assert_eq!(lnurl_decode(lnurl_withdraw_encoded)?, format!("https://localhost{}", path));
+        assert_eq!(
+            lnurl_decode(lnurl_withdraw_encoded)?,
+            format!("https://localhost{}", path)
+        );
 
         if let LnUrl(WithdrawRequest(wd)) = parse(lnurl_withdraw_encoded)? {
             assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
@@ -780,7 +780,8 @@ mod tests {
         let withdraw_path = "/lnurl-withdraw?session=e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538";
         let _m = mock_lnurl_withdraw_endpoint(withdraw_path);
 
-        if let LnUrl(WithdrawRequest(wd)) = parse(&format!("lnurlw://localhost{}", withdraw_path))? {
+        if let LnUrl(WithdrawRequest(wd)) = parse(&format!("lnurlw://localhost{}", withdraw_path))?
+        {
             assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
             assert_eq!(
                 wd.k1,

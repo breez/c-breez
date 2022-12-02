@@ -2,15 +2,13 @@ use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
+use anyhow::{anyhow, Result};
 use flutter_rust_bridge::StreamSink;
 use log::{Metadata, Record};
-use once_cell::sync::OnceCell;
+use once_cell::sync::{Lazy, OnceCell};
 use std::future::Future;
-use std::io::Write;
 use std::sync::Arc;
 use tokio::sync::mpsc;
-
-use anyhow::{anyhow, Result};
 
 use crate::invoice::LNInvoice;
 use crate::models::{
@@ -27,6 +25,7 @@ static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
 static BREEZ_SERVICES_SHUTDOWN: OnceCell<mpsc::Sender<()>> = OnceCell::new();
 static NOTIFICATION_STREAM: OnceCell<StreamSink<BreezEvent>> = OnceCell::new();
 static LOG_STREAM: OnceCell<StreamSink<LogEntry>> = OnceCell::new();
+static RT: Lazy<tokio::runtime::Runtime> = Lazy::new(|| tokio::runtime::Runtime::new().unwrap());
 
 struct BindingLogger;
 
@@ -127,7 +126,7 @@ pub fn init_node(
             .event_listener(Arc::new(BindingEventListener {}))
             .build()?;
         let (stop_sender, stop_receiver) = mpsc::channel(1);
-        _ = crate::breez_services::start(breez_services.clone(), stop_receiver).await?;
+        _ = crate::breez_services::start(rt(), breez_services.clone(), stop_receiver).await?;
         BREEZ_SERVICES_SHUTDOWN
             .set(stop_sender)
             .map_err(|_| anyhow!("static node services already set"))?;
@@ -292,11 +291,11 @@ fn get_breez_services() -> Result<&'static BreezServices> {
 }
 
 fn block_on<F: Future>(future: F) -> F::Output {
-    tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .unwrap()
-        .block_on(future)
+    rt().block_on(future)
+}
+
+fn rt() -> &'static tokio::runtime::Runtime {
+    &RT
 }
 
 // These functions are exposed temporarily for integration purposes

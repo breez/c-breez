@@ -84,7 +84,7 @@ impl NodeAPI for MockNodeAPI {
         })
     }
 
-    fn start_signer(&self, _shutdown: mpsc::Receiver<()>) {}
+    async fn start_signer(&self, _shutdown: mpsc::Receiver<()>) {}
 
     async fn list_peers(&self) -> Result<Vec<Peer>> {
         Ok(vec![])

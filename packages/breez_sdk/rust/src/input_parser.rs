@@ -227,12 +227,26 @@ fn lnurl_decode(encoded: &str) -> Result<String> {
             Ok(decoded)
         }
         Err(_) => {
-            let url = reqwest::Url::parse(encoded)?;
+            let supported_prefixes = ["lnurlp", "lnurlw", "keyauth"];
+            let mut encoded = encoded.to_string();
+
+            // Treat prefix: and prefix:// the same, to cover both vendor implementations
+            // https://github.com/lnbits/lnbits/pull/762#issue-1309702380
+            for pref in supported_prefixes {
+                let scheme_simple = &format!("{pref}:");
+                let scheme_authority = &format!("{pref}://");
+                if encoded.starts_with(scheme_simple) && !encoded.starts_with(scheme_authority) {
+                    encoded = encoded.replace(scheme_simple, scheme_authority);
+                    break;
+                }
+            }
+
+            let url = reqwest::Url::parse(&encoded)?;
             let domain = url
                 .domain()
                 .ok_or_else(|| anyhow!("Could not determine domain"))?;
 
-            if !["lnurlp", "lnurlw", "keyauth"].contains(&url.scheme()) {
+            if !supported_prefixes.contains(&url.scheme()) {
                 return Err(anyhow!("Invalid prefix scheme"));
             }
 
@@ -738,6 +752,24 @@ mod tests {
         assert_eq!(&lnurl_decode("lnurlp://domain.com")?, "https://domain.com");
         assert_eq!(&lnurl_decode("lnurlw://domain.com")?, "https://domain.com");
         assert_eq!(&lnurl_decode("keyauth://domain.com")?, "https://domain.com");
+
+        // Same as above, but prefix: approach instead of prefix://
+        assert_eq!(
+            &lnurl_decode("lnurlp:asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+        assert_eq!(
+            &lnurl_decode("lnurlw:asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+        assert_eq!(
+            &lnurl_decode("keyauth:asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+
+        assert_eq!(&lnurl_decode("lnurlp:domain.com")?, "https://domain.com");
+        assert_eq!(&lnurl_decode("lnurlw:domain.com")?, "https://domain.com");
+        assert_eq!(&lnurl_decode("keyauth:domain.com")?, "https://domain.com");
 
         Ok(())
     }

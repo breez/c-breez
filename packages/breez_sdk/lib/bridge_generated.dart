@@ -308,6 +308,7 @@ class InputType with _$InputType {
   /// - LUD-03 `withdrawRequest` spec
   /// - LUD-04 `auth` base spec
   /// - LUD-06 `payRequest` spec
+  /// - LUD-16 LN Address
   /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
   ///
   /// # Not supported (yet)

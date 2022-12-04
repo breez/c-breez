@@ -308,11 +308,11 @@ class InputType with _$InputType {
   /// - LUD-03 `withdrawRequest` spec
   /// - LUD-04 `auth` base spec
   /// - LUD-06 `payRequest` spec
+  /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
   ///
   /// # Not supported (yet)
   ///
   /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
-  /// - LUD 17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
   /// - LUD-19 Pay link discoverable from withdraw link
   const factory InputType.lnUrl(
     LnUrlRequestData field0,
@@ -361,6 +361,14 @@ class LnUrlAuthRequestData {
   });
 }
 
+class LnUrlErrorData {
+  final String reason;
+
+  LnUrlErrorData({
+    required this.reason,
+  });
+}
+
 class LnUrlPayRequestData {
   final String callback;
   final int minSendable;
@@ -392,6 +400,9 @@ class LnUrlRequestData with _$LnUrlRequestData {
   const factory LnUrlRequestData.authRequest(
     LnUrlAuthRequestData field0,
   ) = LnUrlRequestData_AuthRequest;
+  const factory LnUrlRequestData.error(
+    LnUrlErrorData field0,
+  ) = LnUrlRequestData_Error;
 }
 
 class LnUrlWithdrawRequestData {
@@ -1112,6 +1123,10 @@ class LightningToolkitImpl implements LightningToolkit {
     return _wire2api_ln_url_auth_request_data(raw);
   }
 
+  LnUrlErrorData _wire2api_box_autoadd_ln_url_error_data(dynamic raw) {
+    return _wire2api_ln_url_error_data(raw);
+  }
+
   LnUrlPayRequestData _wire2api_box_autoadd_ln_url_pay_request_data(
       dynamic raw) {
     return _wire2api_ln_url_pay_request_data(raw);
@@ -1307,6 +1322,15 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
+  LnUrlErrorData _wire2api_ln_url_error_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return LnUrlErrorData(
+      reason: _wire2api_String(arr[0]),
+    );
+  }
+
   LnUrlPayRequestData _wire2api_ln_url_pay_request_data(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 5)
@@ -1333,6 +1357,10 @@ class LightningToolkitImpl implements LightningToolkit {
       case 2:
         return LnUrlRequestData_AuthRequest(
           _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
+        );
+      case 3:
+        return LnUrlRequestData_Error(
+          _wire2api_box_autoadd_ln_url_error_data(raw[1]),
         );
       default:
         throw Exception("unreachable");

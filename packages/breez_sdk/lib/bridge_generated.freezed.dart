@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'bridge_generated.dart';
 
@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$BreezEvent {
+  Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(int field0) newBlock,
@@ -202,6 +203,7 @@ class _$BreezEvent_NewBlock implements BreezEvent_NewBlock {
 abstract class BreezEvent_NewBlock implements BreezEvent {
   const factory BreezEvent_NewBlock(final int field0) = _$BreezEvent_NewBlock;
 
+  @override
   int get field0;
   @JsonKey(ignore: true)
   _$$BreezEvent_NewBlockCopyWith<_$BreezEvent_NewBlock> get copyWith =>
@@ -337,6 +339,7 @@ abstract class BreezEvent_InvoicePaid implements BreezEvent {
   const factory BreezEvent_InvoicePaid(final InvoicePaidDetails field0) =
       _$BreezEvent_InvoicePaid;
 
+  @override
   InvoicePaidDetails get field0;
   @JsonKey(ignore: true)
   _$$BreezEvent_InvoicePaidCopyWith<_$BreezEvent_InvoicePaid> get copyWith =>
@@ -345,6 +348,7 @@ abstract class BreezEvent_InvoicePaid implements BreezEvent {
 
 /// @nodoc
 mixin _$InputType {
+  Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(BitcoinAddressData field0) bitcoinAddress,
@@ -568,6 +572,7 @@ abstract class InputType_BitcoinAddress implements InputType {
   const factory InputType_BitcoinAddress(final BitcoinAddressData field0) =
       _$InputType_BitcoinAddress;
 
+  @override
   BitcoinAddressData get field0;
   @JsonKey(ignore: true)
   _$$InputType_BitcoinAddressCopyWith<_$InputType_BitcoinAddress>
@@ -719,6 +724,7 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
 abstract class InputType_Bolt11 implements InputType {
   const factory InputType_Bolt11(final LNInvoice field0) = _$InputType_Bolt11;
 
+  @override
   LNInvoice get field0;
   @JsonKey(ignore: true)
   _$$InputType_Bolt11CopyWith<_$InputType_Bolt11> get copyWith =>
@@ -870,6 +876,7 @@ class _$InputType_NodeId implements InputType_NodeId {
 abstract class InputType_NodeId implements InputType {
   const factory InputType_NodeId(final String field0) = _$InputType_NodeId;
 
+  @override
   String get field0;
   @JsonKey(ignore: true)
   _$$InputType_NodeIdCopyWith<_$InputType_NodeId> get copyWith =>
@@ -1021,6 +1028,7 @@ class _$InputType_Url implements InputType_Url {
 abstract class InputType_Url implements InputType {
   const factory InputType_Url(final String field0) = _$InputType_Url;
 
+  @override
   String get field0;
   @JsonKey(ignore: true)
   _$$InputType_UrlCopyWith<_$InputType_Url> get copyWith =>
@@ -1183,6 +1191,7 @@ abstract class InputType_LnUrl implements InputType {
   const factory InputType_LnUrl(final LnUrlRequestData field0) =
       _$InputType_LnUrl;
 
+  @override
   LnUrlRequestData get field0;
   @JsonKey(ignore: true)
   _$$InputType_LnUrlCopyWith<_$InputType_LnUrl> get copyWith =>
@@ -1191,11 +1200,13 @@ abstract class InputType_LnUrl implements InputType {
 
 /// @nodoc
 mixin _$LnUrlRequestData {
+  Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(LnUrlPayRequestData field0) payRequest,
     required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
     required TResult Function(LnUrlAuthRequestData field0) authRequest,
+    required TResult Function(LnUrlErrorData field0) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -1203,6 +1214,7 @@ mixin _$LnUrlRequestData {
     TResult? Function(LnUrlPayRequestData field0)? payRequest,
     TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult? Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult? Function(LnUrlErrorData field0)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -1210,6 +1222,7 @@ mixin _$LnUrlRequestData {
     TResult Function(LnUrlPayRequestData field0)? payRequest,
     TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult Function(LnUrlErrorData field0)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -1219,6 +1232,7 @@ mixin _$LnUrlRequestData {
     required TResult Function(LnUrlRequestData_WithdrawRequest value)
         withdrawRequest,
     required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
+    required TResult Function(LnUrlRequestData_Error value) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -1226,6 +1240,7 @@ mixin _$LnUrlRequestData {
     TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult? Function(LnUrlRequestData_Error value)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -1233,6 +1248,7 @@ mixin _$LnUrlRequestData {
     TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult Function(LnUrlRequestData_Error value)? error,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -1326,6 +1342,7 @@ class _$LnUrlRequestData_PayRequest implements LnUrlRequestData_PayRequest {
     required TResult Function(LnUrlPayRequestData field0) payRequest,
     required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
     required TResult Function(LnUrlAuthRequestData field0) authRequest,
+    required TResult Function(LnUrlErrorData field0) error,
   }) {
     return payRequest(field0);
   }
@@ -1336,6 +1353,7 @@ class _$LnUrlRequestData_PayRequest implements LnUrlRequestData_PayRequest {
     TResult? Function(LnUrlPayRequestData field0)? payRequest,
     TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult? Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult? Function(LnUrlErrorData field0)? error,
   }) {
     return payRequest?.call(field0);
   }
@@ -1346,6 +1364,7 @@ class _$LnUrlRequestData_PayRequest implements LnUrlRequestData_PayRequest {
     TResult Function(LnUrlPayRequestData field0)? payRequest,
     TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult Function(LnUrlErrorData field0)? error,
     required TResult orElse(),
   }) {
     if (payRequest != null) {
@@ -1361,6 +1380,7 @@ class _$LnUrlRequestData_PayRequest implements LnUrlRequestData_PayRequest {
     required TResult Function(LnUrlRequestData_WithdrawRequest value)
         withdrawRequest,
     required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
+    required TResult Function(LnUrlRequestData_Error value) error,
   }) {
     return payRequest(this);
   }
@@ -1371,6 +1391,7 @@ class _$LnUrlRequestData_PayRequest implements LnUrlRequestData_PayRequest {
     TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult? Function(LnUrlRequestData_Error value)? error,
   }) {
     return payRequest?.call(this);
   }
@@ -1381,6 +1402,7 @@ class _$LnUrlRequestData_PayRequest implements LnUrlRequestData_PayRequest {
     TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult Function(LnUrlRequestData_Error value)? error,
     required TResult orElse(),
   }) {
     if (payRequest != null) {
@@ -1394,6 +1416,7 @@ abstract class LnUrlRequestData_PayRequest implements LnUrlRequestData {
   const factory LnUrlRequestData_PayRequest(final LnUrlPayRequestData field0) =
       _$LnUrlRequestData_PayRequest;
 
+  @override
   LnUrlPayRequestData get field0;
   @JsonKey(ignore: true)
   _$$LnUrlRequestData_PayRequestCopyWith<_$LnUrlRequestData_PayRequest>
@@ -1473,6 +1496,7 @@ class _$LnUrlRequestData_WithdrawRequest
     required TResult Function(LnUrlPayRequestData field0) payRequest,
     required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
     required TResult Function(LnUrlAuthRequestData field0) authRequest,
+    required TResult Function(LnUrlErrorData field0) error,
   }) {
     return withdrawRequest(field0);
   }
@@ -1483,6 +1507,7 @@ class _$LnUrlRequestData_WithdrawRequest
     TResult? Function(LnUrlPayRequestData field0)? payRequest,
     TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult? Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult? Function(LnUrlErrorData field0)? error,
   }) {
     return withdrawRequest?.call(field0);
   }
@@ -1493,6 +1518,7 @@ class _$LnUrlRequestData_WithdrawRequest
     TResult Function(LnUrlPayRequestData field0)? payRequest,
     TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult Function(LnUrlErrorData field0)? error,
     required TResult orElse(),
   }) {
     if (withdrawRequest != null) {
@@ -1508,6 +1534,7 @@ class _$LnUrlRequestData_WithdrawRequest
     required TResult Function(LnUrlRequestData_WithdrawRequest value)
         withdrawRequest,
     required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
+    required TResult Function(LnUrlRequestData_Error value) error,
   }) {
     return withdrawRequest(this);
   }
@@ -1518,6 +1545,7 @@ class _$LnUrlRequestData_WithdrawRequest
     TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult? Function(LnUrlRequestData_Error value)? error,
   }) {
     return withdrawRequest?.call(this);
   }
@@ -1528,6 +1556,7 @@ class _$LnUrlRequestData_WithdrawRequest
     TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult Function(LnUrlRequestData_Error value)? error,
     required TResult orElse(),
   }) {
     if (withdrawRequest != null) {
@@ -1542,6 +1571,7 @@ abstract class LnUrlRequestData_WithdrawRequest implements LnUrlRequestData {
           final LnUrlWithdrawRequestData field0) =
       _$LnUrlRequestData_WithdrawRequest;
 
+  @override
   LnUrlWithdrawRequestData get field0;
   @JsonKey(ignore: true)
   _$$LnUrlRequestData_WithdrawRequestCopyWith<
@@ -1619,6 +1649,7 @@ class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
     required TResult Function(LnUrlPayRequestData field0) payRequest,
     required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
     required TResult Function(LnUrlAuthRequestData field0) authRequest,
+    required TResult Function(LnUrlErrorData field0) error,
   }) {
     return authRequest(field0);
   }
@@ -1629,6 +1660,7 @@ class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
     TResult? Function(LnUrlPayRequestData field0)? payRequest,
     TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult? Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult? Function(LnUrlErrorData field0)? error,
   }) {
     return authRequest?.call(field0);
   }
@@ -1639,6 +1671,7 @@ class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
     TResult Function(LnUrlPayRequestData field0)? payRequest,
     TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
     TResult Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult Function(LnUrlErrorData field0)? error,
     required TResult orElse(),
   }) {
     if (authRequest != null) {
@@ -1654,6 +1687,7 @@ class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
     required TResult Function(LnUrlRequestData_WithdrawRequest value)
         withdrawRequest,
     required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
+    required TResult Function(LnUrlRequestData_Error value) error,
   }) {
     return authRequest(this);
   }
@@ -1664,6 +1698,7 @@ class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
     TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult? Function(LnUrlRequestData_Error value)? error,
   }) {
     return authRequest?.call(this);
   }
@@ -1674,6 +1709,7 @@ class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
     TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
     TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
     TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult Function(LnUrlRequestData_Error value)? error,
     required TResult orElse(),
   }) {
     if (authRequest != null) {
@@ -1687,8 +1723,158 @@ abstract class LnUrlRequestData_AuthRequest implements LnUrlRequestData {
   const factory LnUrlRequestData_AuthRequest(
       final LnUrlAuthRequestData field0) = _$LnUrlRequestData_AuthRequest;
 
+  @override
   LnUrlAuthRequestData get field0;
   @JsonKey(ignore: true)
   _$$LnUrlRequestData_AuthRequestCopyWith<_$LnUrlRequestData_AuthRequest>
       get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$LnUrlRequestData_ErrorCopyWith<$Res> {
+  factory _$$LnUrlRequestData_ErrorCopyWith(_$LnUrlRequestData_Error value,
+          $Res Function(_$LnUrlRequestData_Error) then) =
+      __$$LnUrlRequestData_ErrorCopyWithImpl<$Res>;
+  @useResult
+  $Res call({LnUrlErrorData field0});
+}
+
+/// @nodoc
+class __$$LnUrlRequestData_ErrorCopyWithImpl<$Res>
+    extends _$LnUrlRequestDataCopyWithImpl<$Res, _$LnUrlRequestData_Error>
+    implements _$$LnUrlRequestData_ErrorCopyWith<$Res> {
+  __$$LnUrlRequestData_ErrorCopyWithImpl(_$LnUrlRequestData_Error _value,
+      $Res Function(_$LnUrlRequestData_Error) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$LnUrlRequestData_Error(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as LnUrlErrorData,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$LnUrlRequestData_Error implements LnUrlRequestData_Error {
+  const _$LnUrlRequestData_Error(this.field0);
+
+  @override
+  final LnUrlErrorData field0;
+
+  @override
+  String toString() {
+    return 'LnUrlRequestData.error(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$LnUrlRequestData_Error &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$LnUrlRequestData_ErrorCopyWith<_$LnUrlRequestData_Error> get copyWith =>
+      __$$LnUrlRequestData_ErrorCopyWithImpl<_$LnUrlRequestData_Error>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(LnUrlPayRequestData field0) payRequest,
+    required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
+    required TResult Function(LnUrlAuthRequestData field0) authRequest,
+    required TResult Function(LnUrlErrorData field0) error,
+  }) {
+    return error(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(LnUrlPayRequestData field0)? payRequest,
+    TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
+    TResult? Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult? Function(LnUrlErrorData field0)? error,
+  }) {
+    return error?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(LnUrlPayRequestData field0)? payRequest,
+    TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
+    TResult Function(LnUrlAuthRequestData field0)? authRequest,
+    TResult Function(LnUrlErrorData field0)? error,
+    required TResult orElse(),
+  }) {
+    if (error != null) {
+      return error(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(LnUrlRequestData_PayRequest value) payRequest,
+    required TResult Function(LnUrlRequestData_WithdrawRequest value)
+        withdrawRequest,
+    required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
+    required TResult Function(LnUrlRequestData_Error value) error,
+  }) {
+    return error(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
+    TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
+    TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult? Function(LnUrlRequestData_Error value)? error,
+  }) {
+    return error?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
+    TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
+    TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
+    TResult Function(LnUrlRequestData_Error value)? error,
+    required TResult orElse(),
+  }) {
+    if (error != null) {
+      return error(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class LnUrlRequestData_Error implements LnUrlRequestData {
+  const factory LnUrlRequestData_Error(final LnUrlErrorData field0) =
+      _$LnUrlRequestData_Error;
+
+  @override
+  LnUrlErrorData get field0;
+  @JsonKey(ignore: true)
+  _$$LnUrlRequestData_ErrorCopyWith<_$LnUrlRequestData_Error> get copyWith =>
+      throw _privateConstructorUsedError;
 }

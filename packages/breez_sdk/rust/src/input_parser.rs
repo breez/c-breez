@@ -293,11 +293,17 @@ pub enum InputType {
 #[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-#[serde(tag = "tag")]
+#[serde(untagged)]
 pub enum LnUrlRequestData {
     PayRequest(LnUrlPayRequestData),
     WithdrawRequest(LnUrlWithdrawRequestData),
     AuthRequest(LnUrlAuthRequestData),
+    Error(LnUrlErrorData),
+}
+
+#[derive(Deserialize, Debug)]
+pub struct LnUrlErrorData {
+    pub reason: String,
 }
 
 #[serde_as]
@@ -594,7 +600,7 @@ mod tests {
         Ok(())
     }
 
-    fn mock_lnurl_withdraw_endpoint(path: &str) -> Mock {
+    fn mock_lnurl_withdraw_endpoint(path: &str, return_lnurl_error: Option<String>) -> Mock {
         let expected_lnurl_withdraw_data = r#"
 {
     "tag":"withdrawRequest",
@@ -606,9 +612,13 @@ mod tests {
 }
         "#.replace('\n', "");
 
-        mockito::mock("GET", path)
-            .with_body(expected_lnurl_withdraw_data)
-            .create()
+        let response_body = match return_lnurl_error {
+            None => expected_lnurl_withdraw_data,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        mockito::mock("GET", path).with_body(response_body).create()
     }
 
     #[test]
@@ -617,7 +627,7 @@ mod tests {
         // https://github.com/lnurl/luds/blob/luds/03.md
 
         let path = "/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81";
-        let _m = mock_lnurl_withdraw_endpoint(path);
+        let _m = mock_lnurl_withdraw_endpoint(path, None);
 
         let lnurl_withdraw_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
         assert_eq!(
@@ -658,7 +668,7 @@ mod tests {
         Ok(())
     }
 
-    fn mock_lnurl_pay_endpoint(path: &str) -> Mock {
+    fn mock_lnurl_pay_endpoint(path: &str, return_lnurl_error: Option<String>) -> Mock {
         let expected_lnurl_pay_data = r#"
 {
     "callback":"https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7",
@@ -681,9 +691,13 @@ mod tests {
 }
         "#.replace('\n', "");
 
-        mockito::mock("GET", path)
-            .with_body(expected_lnurl_pay_data)
-            .create()
+        let response_body = match return_lnurl_error {
+            None => expected_lnurl_pay_data,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        mockito::mock("GET", path).with_body(response_body).create()
     }
 
     #[test]
@@ -693,7 +707,7 @@ mod tests {
 
         let path =
             "/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
-        let _m = mock_lnurl_pay_endpoint(path);
+        let _m = mock_lnurl_pay_endpoint(path, None);
 
         let lnurl_pay_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
         assert_eq!(
@@ -778,7 +792,7 @@ mod tests {
     fn test_lnurl_pay_lud_17() -> Result<(), Box<dyn std::error::Error>> {
         let pay_path =
             "/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
-        let _m = mock_lnurl_pay_endpoint(pay_path);
+        let _m = mock_lnurl_pay_endpoint(pay_path, None);
 
         let lnurl_pay_url = format!("lnurlp://localhost{}", pay_path);
         if let LnUrl(PayRequest(pd)) = parse(&lnurl_pay_url)? {
@@ -810,7 +824,7 @@ mod tests {
     #[test]
     fn test_lnurl_withdraw_lud_17() -> Result<(), Box<dyn std::error::Error>> {
         let withdraw_path = "/lnurl-withdraw?session=e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538";
-        let _m = mock_lnurl_withdraw_endpoint(withdraw_path);
+        let _m = mock_lnurl_withdraw_endpoint(withdraw_path, None);
 
         if let LnUrl(WithdrawRequest(wd)) = parse(&format!("lnurlw://localhost{}", withdraw_path))?
         {
@@ -839,5 +853,34 @@ mod tests {
         }
 
         Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_17_error() -> Result<()> {
+        let pay_path =
+            "/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
+        let expected_error_msg = "test pay error";
+        let _m = mock_lnurl_pay_endpoint(pay_path, Some(expected_error_msg.to_string()));
+
+        if let LnUrl(Error(msg)) = parse(&format!("lnurlp://localhost{}", pay_path))? {
+            assert_eq!(msg.reason, expected_error_msg);
+            return Ok(());
+        }
+
+        Err(anyhow!("Unrecognized input type"))
+    }
+
+    #[test]
+    fn test_lnurl_withdraw_lud_17_error() -> Result<()> {
+        let withdraw_path = "/lnurl-withdraw?session=e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538";
+        let expected_error_msg = "test withdraw error";
+        let _m = mock_lnurl_withdraw_endpoint(withdraw_path, Some(expected_error_msg.to_string()));
+
+        if let LnUrl(Error(msg)) = parse(&format!("lnurlw://localhost{}", withdraw_path))? {
+            assert_eq!(msg.reason, expected_error_msg);
+            return Ok(());
+        }
+
+        Err(anyhow!("Unrecognized input type"))
     }
 }

@@ -17,6 +17,7 @@ class BreezBridge {
         _invoicePaidStream.add(event.field0);
       }
     });
+    _lnToolkit.breezLogStream().listen(_registerToolkitLog);
   }
 
   /// Register a new node in the cloud and return credentials to interact with it
@@ -217,4 +218,24 @@ class BreezBridge {
       BehaviorSubject<InvoicePaidDetails>();
 
   Stream<InvoicePaidDetails> get invoicePaidStream => _invoicePaidStream.stream;
+
+  void _registerToolkitLog(LogEntry log) {
+    switch (log.level) {
+      case "ERROR":
+        _log.e(log.line);
+        break;
+      case "WARN":
+        _log.w(log.line);
+        break;
+      case "INFO":
+        _log.i(log.line);
+        break;
+      case "DEBUG":
+        _log.d(log.line);
+        break;
+      default:
+        _log.v(log.line);
+        break;
+    }
+  }
 }

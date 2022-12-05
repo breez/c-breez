@@ -93,13 +93,19 @@ fn main() -> Result<()> {
                             seed.to_vec(),
                             Option::None,
                         );
-                        let greenlight_credentials = Some(r.unwrap());
-                        info!(
-                            "device_cert: {}; device_key: {}",
-                            hex::encode(greenlight_credentials.clone().unwrap().device_cert),
-                            hex::encode_upper(greenlight_credentials.clone().unwrap().device_key)
-                        );
-                        save_creds(greenlight_credentials.unwrap())?;
+                        match r {
+                            Ok(greenlight_credentials) => {
+                                info!(
+                                    "device_cert: {}; device_key: {}",
+                                    hex::encode(greenlight_credentials.device_cert.clone()),
+                                    hex::encode_upper(greenlight_credentials.device_key.clone())
+                                );
+                                save_creds(greenlight_credentials)?;
+                            }
+                            Err(e) => {
+                                error!("recover_node failed: {}", e);
+                            }
+                        }
                     }
 
                     Some("init") => {
@@ -210,6 +216,7 @@ fn main() -> Result<()> {
                             sat_per_vbyte,
                         )
                     }),
+                    Some("exit") => break,
 
                     Some(_) => {
                         info!("Unrecognized command: {}", line.as_str());

@@ -1,5 +1,7 @@
 use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
+use crate::lnurl::input_parser::LnUrlPayRequestData;
+use crate::lnurl::pay::SuccessAction;
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
 use anyhow::{anyhow, Result};
@@ -306,6 +308,16 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
 
 pub fn parse(s: String) -> Result<InputType> {
     crate::lnurl::input_parser::parse(&s)
+}
+
+pub fn pay(
+    user_amount_sat: u64,
+    comment: Option<&str>,
+    req_data: LnUrlPayRequestData,
+) -> Result<Option<SuccessAction>> {
+    block_on(async {
+        crate::lnurl::pay::pay(get_breez_services()?, user_amount_sat, comment, req_data).await
+    })
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

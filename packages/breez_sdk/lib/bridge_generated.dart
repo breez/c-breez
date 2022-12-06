@@ -1390,10 +1390,10 @@ class LightningToolkitImpl implements LightningToolkit {
       throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return LnUrlPayRequestData(
       callback: _wire2api_String(arr[0]),
-      minSendable: _wire2api_u16(arr[1]),
-      maxSendable: _wire2api_u16(arr[2]),
+      minSendable: _wire2api_u64(arr[1]),
+      maxSendable: _wire2api_u64(arr[2]),
       metadata: _wire2api_list_metadata_item(arr[3]),
-      commentAllowed: _wire2api_u16(arr[4]),
+      commentAllowed: _wire2api_usize(arr[4]),
     );
   }
 
@@ -1664,6 +1664,10 @@ class LightningToolkitImpl implements LightningToolkit {
 
   void _wire2api_unit(dynamic raw) {
     return;
+  }
+
+  int _wire2api_usize(dynamic raw) {
+    return castInt(raw);
   }
 }
 

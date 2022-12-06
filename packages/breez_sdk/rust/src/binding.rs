@@ -17,8 +17,8 @@ use crate::models::{
 };
 use crate::{breez_services::BreezServices, greenlight::Greenlight};
 
-use crate::input_parser::InputType;
 use crate::invoice::{self};
+use crate::lnurl::input_parser::InputType;
 use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();

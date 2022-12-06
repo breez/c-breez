@@ -8,9 +8,11 @@ use serde::Deserialize;
 use serde_with::json::JsonString;
 use serde_with::serde_as;
 
-use crate::input_parser::InputType::*;
-use crate::input_parser::LnUrlRequestData::AuthRequest;
 use crate::invoice::{parse_invoice, LNInvoice};
+use crate::lnurl::input_parser::InputType::*;
+use crate::lnurl::input_parser::LnUrlRequestData::AuthRequest;
+
+use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 ///
@@ -19,7 +21,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ## On-chain BTC addresses (incl. BIP 21 URIs)
 ///
 /// ```
-/// use lightning_toolkit::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::lnurl::input_parser::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -38,7 +40,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ## BOLT 11 invoices
 ///
 /// ```
-/// use lightning_toolkit::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::lnurl::input_parser::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -55,7 +57,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ## Web URLs
 ///
 /// ```
-/// use lightning_toolkit::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::lnurl::input_parser::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -73,7 +75,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL pay request
 ///
 /// ```no_run
-/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::lnurl::input_parser::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -96,7 +98,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL withdraw request
 ///
 /// ```no_run
-/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::lnurl::input_parser::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -118,7 +120,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL auth request
 ///
 /// ```no_run
-/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::lnurl::input_parser::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -201,19 +203,6 @@ fn prepend_if_missing(prefix: &str, input: &str) -> String {
 /// Removes the input's prefix, if indeed it starts with that prefix
 fn strip_prefix_if_present(prefix: &str, input: &str) -> String {
     input.trim_start_matches(prefix).to_string()
-}
-
-#[cfg(test)]
-fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
-    /// During tests, the mockito test URL chooses a free port. This cannot be known in advance,
-    /// so the URL has to be adjusted dynamically.
-    tests::replace_host_with_mockito_test_host(lnurl_endpoint)
-}
-
-#[cfg(not(test))]
-fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
-    /// When not called from a test, we fallback to keeping the URL intact
-    Ok(lnurl_endpoint)
 }
 
 /// Converts the LN Address to the corresponding LNURL-pay endpoint, as per LUD-16:
@@ -370,18 +359,18 @@ pub struct LnUrlErrorData {
 }
 
 #[serde_as]
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LnUrlPayRequestData {
     pub callback: String,
-    pub min_sendable: u16,
-    pub max_sendable: u16,
+    pub min_sendable: u64,
+    pub max_sendable: u64,
     /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
     ///
     /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
     #[serde_as(as = "JsonString")]
     pub metadata: Vec<MetadataItem>,
-    pub comment_allowed: u16,
+    pub comment_allowed: usize,
 }
 
 #[derive(Deserialize, Debug)]
@@ -399,7 +388,7 @@ pub struct LnUrlAuthRequestData {
     pub k1: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct MetadataItem {
     pub key: String,
     pub value: String,
@@ -436,21 +425,9 @@ mod tests {
     use mockito;
     use mockito::Mock;
 
-    use crate::input_parser::LnUrlRequestData::*;
-    use crate::input_parser::*;
+    use crate::lnurl::input_parser::LnUrlRequestData::*;
+    use crate::lnurl::input_parser::*;
     use crate::models::Network;
-
-    /// Replaces the scheme, host and port with a local mockito host. Preserves the rest of the path.
-    pub(crate) fn replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
-        let mockito_endpoint_url = reqwest::Url::parse(&mockito::server_url())?;
-        let mut parsed_lnurl_endpoint = reqwest::Url::parse(&lnurl_endpoint)?;
-
-        parsed_lnurl_endpoint.set_host(mockito_endpoint_url.host_str())?;
-        let _ = parsed_lnurl_endpoint.set_scheme(mockito_endpoint_url.scheme());
-        let _ = parsed_lnurl_endpoint.set_port(mockito_endpoint_url.port());
-
-        Ok(parsed_lnurl_endpoint.to_string())
-    }
 
     #[tokio::test]
     async fn test_generic_invalid_input() -> Result<(), Box<dyn std::error::Error>> {

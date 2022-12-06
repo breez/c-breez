@@ -1,6 +1,5 @@
 use crate::binding::send_payment;
 use crate::invoice::parse_invoice;
-use crate::lnurl::input_parser::LnUrlRequestData::*;
 use crate::lnurl::input_parser::{LnUrlPayRequestData, LnUrlRequestData};
 use std::str::FromStr;
 // use crate::lnurl::pay::ResultType::*;
@@ -8,8 +7,10 @@ use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 use anyhow::{anyhow, Result};
 use serde::Deserialize;
 use serde_with::serde_as;
+use crate::breez_services::BreezServices;
 
-pub async fn pay(
+pub(crate) async fn pay(
+    breez_services: &BreezServices,
     user_amount_sat: u64,
     comment: Option<&str>,
     req_data: LnUrlPayRequestData,
@@ -30,7 +31,6 @@ pub async fn pay(
     let payreq = &callback_resp.pr;
     validate_invoice(user_amount_sat, payreq)?;
 
-    let breez_services = crate::breez_services::test::breez_services().await;
     breez_services.send_payment(payreq.into()).await?;
 
     Ok(callback_resp.success_action)
@@ -175,7 +175,7 @@ mod tests {
     use mockito;
     use mockito::Mock;
 
-    use crate::test_utils::rand_string;
+    use crate::test_utils::{MockNodeAPI, rand_string};
 
     fn mock_lnurl_pay_callback_endpoint_msg_success_action(
         pay_req: &LnUrlPayRequestData,
@@ -296,7 +296,15 @@ mod tests {
         let pay_req = get_test_pay_req_data(0, 100, 0);
         let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(&pay_req, user_amount_sat, None)?;
 
-        match pay(user_amount_sat, None, pay_req).await? {
+        // let node_api = MockNodeAPI {
+        //     node_state: get_dummy_node_state(),
+        //     transactions: vec![],
+        // };
+
+        let mock_breez_services = crate::breez_services::test::breez_services().await;
+        // breez_services.send_payment(payreq.into()).await?;
+
+        match pay(&mock_breez_services, user_amount_sat, None, pay_req).await? {
             None => Err(anyhow!("Expected success action in callback, but none provided")),
             Some(success_action) => {
                 match success_action {

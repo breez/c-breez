@@ -142,6 +142,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         paymentTimeoutSec: int.parse(
             breezConfig.get("Application Options", "paymentTimeoutSec") ??
                 "30"),
+        defaultLspId: breezConfig.get("Application Options", "defaultLspId"),
       );
       return config;
     } catch (e) {

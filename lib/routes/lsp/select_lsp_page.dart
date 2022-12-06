@@ -5,6 +5,7 @@ import 'package:c_breez/routes/lsp/widgets/lsp_list_widget.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SelectLSPPage extends StatefulWidget {
@@ -43,12 +44,14 @@ class SelectLSPPageState extends State<SelectLSPPage> {
       ),
       body: LspListWidget(
         selectedLsp: _selectedLsp,
-        onError: (error) {
+        onError: (error) async {
+          if (!await rebuild()) return;
           setState(() {
             _error = error;
           });
         },
-        onSelected: (selectedLsp) {
+        onSelected: (selectedLsp) async {
+          if (!await rebuild()) return;
           setState(() {
             _selectedLsp = selectedLsp;
           });
@@ -64,6 +67,15 @@ class SelectLSPPageState extends State<SelectLSPPage> {
         },
       ),
     );
+  }
+
+  Future<bool> rebuild() async {
+    if (!mounted) return false;
+    if (SchedulerBinding.instance.schedulerPhase != SchedulerPhase.idle) {
+      await SchedulerBinding.instance.endOfFrame;
+      if (!mounted) return false;
+    }
+    return true;
   }
 }
 

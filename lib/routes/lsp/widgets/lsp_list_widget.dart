@@ -50,9 +50,13 @@ class _LspListWidgetState extends State<LspListWidget> {
               return const _LspErrorText();
             }
 
+            if (widget.selectedLsp == null && currentLspSnapshot.data != null) {
+              widget.onSelected(currentLspSnapshot.data!);
+            }
+
             return LspList(
               lspList: lspListSnapshot.data!,
-              selectedLsp: currentLspSnapshot.data,
+              selectedLsp: widget.selectedLsp,
               onSelected: (selectedLsp) => widget.onSelected(selectedLsp),
             );
           },

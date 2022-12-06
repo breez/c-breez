@@ -17,8 +17,8 @@ use crate::models::{
 };
 use crate::{breez_services::BreezServices, greenlight::Greenlight};
 
-use crate::input_parser::InputType;
 use crate::invoice::{self};
+use crate::lnurl::input_parser::InputType;
 use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
@@ -305,7 +305,7 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
 }
 
 pub fn parse(s: String) -> Result<InputType> {
-    crate::input_parser::parse(&s)
+    crate::lnurl::input_parser::parse(&s)
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

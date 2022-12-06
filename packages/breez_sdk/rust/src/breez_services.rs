@@ -613,7 +613,7 @@ async fn get_lsp(persister: Arc<SqliteStorage>, lsp: Arc<dyn LspAPI>) -> Result<
         .cloned()
 }
 
-mod test {
+pub(crate) mod test {
     use std::sync::Arc;
     use tokio::sync::mpsc;
 
@@ -749,7 +749,7 @@ mod test {
     }
 
     /// build node service for tests
-    async fn breez_services() -> Arc<BreezServices> {
+    pub(crate) async fn breez_services() -> Arc<BreezServices> {
         let node_api = Arc::new(MockNodeAPI {
             node_state: get_dummy_node_state(),
             transactions: vec![],

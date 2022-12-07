@@ -56,14 +56,23 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// assert!(matches!( parse("https://breez.technology/test-path?arg=val"), Ok(Url(_)) ));
 /// ```
 ///
-/// ## LNURL pay request
+/// ## LNURL
+///
+/// Both the bech32 and the raw (non-bech32, but with specific prefixes) variants are supported.
+///
+///
+/// ### LNURL pay request
 ///
 /// ```no_run
 /// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
 ///
-/// let lnurl_pay_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
+/// let lnurl_pay_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
 ///
-/// if let Ok(LnUrl(PayRequest(pd))) = parse(lnurl_pay_encoded) {
+/// assert!(matches!( parse(lnurl_pay_url), Ok(LnUrl(PayRequest(_))) ));
+/// // assert!(matches!( parse("lnurlp://domain.com/lnurl-pay?key=val"), Ok(LnUrl(PayRequest(_))) ));
+/// // assert!(matches!( parse("lightning@address.com"), Ok(LnUrl(PayRequest(_))) ));
+///
+/// if let Ok(LnUrl(PayRequest(pd))) = parse(lnurl_pay_url) {
 ///     assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
 ///     assert_eq!(pd.max_sendable, 16000);
 ///     assert_eq!(pd.min_sendable, 4000);
@@ -72,14 +81,17 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// }
 /// ```
 ///
-/// ## LNURL withdraw request
+/// ### LNURL withdraw request
 ///
 /// ```no_run
 /// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
 ///
-/// let lnurl_withdraw_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
+/// let lnurl_withdraw_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
 ///
-/// if let Ok(LnUrl(WithdrawRequest(wd))) = parse(lnurl_withdraw_encoded) {
+/// assert!(matches!( parse(lnurl_withdraw_url), Ok(LnUrl(WithdrawRequest(_))) ));
+/// // assert!(matches!( parse("lnurlw://domain.com/lnurl-withdraw?key=val"), Ok(LnUrl(WithdrawRequest(_))) ));
+///
+/// if let Ok(LnUrl(WithdrawRequest(wd))) = parse(lnurl_withdraw_url) {
 ///     assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
 ///     assert_eq!(wd.k1, "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81");
 ///     assert_eq!(wd.min_withdrawable, 3000);
@@ -88,33 +100,29 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// }
 /// ```
 ///
-/// ## LNURL auth request
+/// ### LNURL auth request
 ///
 /// ```no_run
 /// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
 ///
-/// let lnurl_auth_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttvdankjm3lw3skw0tvdankjm3xdvcn6vtp8q6n2dfsx5mrjwtrxdjnqvtzv56rzcnyv3jrxv3sxqmkyenrvv6kve3exv6nqdtyv43nqcmzvdsnvdrzx33rsenxx5unqc3cxgeqgntfgu";
+/// let lnurl_auth_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttvdankjm3lw3skw0tvdankjm3xdvcn6vtp8q6n2dfsx5mrjwtrxdjnqvtzv56rzcnyv3jrxv3sxqmkyenrvv6kve3exv6nqdtyv43nqcmzvdsnvdrzx33rsenxx5unqc3cxgeqgntfgu";
 ///
-/// if let Ok(LnUrl(AuthRequest(ad))) = parse(lnurl_auth_encoded) {
+/// assert!(matches!( parse(lnurl_auth_url), Ok(LnUrl(AuthRequest(_))) ));
+/// // assert!(matches!( parse("keyauth://domain.com/auth?key=val"), Ok(LnUrl(AuthRequest(_))) ));
+///
+/// if let Ok(LnUrl(AuthRequest(ad))) = parse(lnurl_auth_url) {
 ///     assert_eq!(ad.k1, "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822");
 /// }
 /// ```
-pub fn parse(raw_input: &str) -> Result<InputType> {
-    // If the `lightning:` prefix is there, strip it for the bolt11 parsing function
-    let prepared_input = raw_input.trim_start_matches("lightning:");
-
-    // Check if valid BTC onchain address
-    // For simple addresses, it prepends the "bitcoin:" prefix, thus converting it to a BIP21 URI
-    // If it already has that prefix, it keeps it. In both cases, it tries to parse it as a BIP 21 URI
-    if let Ok(uri) =
-        format!("bitcoin:{}", prepared_input.trim_start_matches("bitcoin:")).parse::<Uri<'_>>()
-    {
-        let bitcoin_addr_data = uri.into();
+pub fn parse(input: &str) -> Result<InputType> {
+    // Covers BIP 21 URIs and simple onchain BTC addresses (which are valid BIP 21 with the 'bitcoin:' prefix)
+    if let Ok(bip21_uri) = prepend_if_missing("bitcoin:", input).parse::<Uri<'_>>() {
+        let bitcoin_addr_data = bip21_uri.into();
 
         // Special case of LN BOLT11 with onchain fallback
         // Search for the `lightning=bolt11` param in the BIP21 URI and, if found, extract the bolt11
         let mut invoice_param: Option<LNInvoice> = None;
-        if let Some(query) = prepared_input.split('?').collect::<Vec<_>>().get(1) {
+        if let Some(query) = input.split('?').collect::<Vec<_>>().get(1) {
             invoice_param = querystring::querify(query)
                 .iter()
                 .find(|(key, _)| key == &"lightning")
@@ -128,22 +136,22 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
         };
     }
 
-    if let Ok(invoice) = parse_invoice(prepared_input) {
+    if let Ok(invoice) = parse_invoice(&strip_prefix_if_present("lightning:", input)) {
         return Ok(Bolt11(invoice));
     }
 
-    if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(prepared_input) {
+    if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(input) {
         // Public key serialized in compressed form
-        return Ok(NodeId(prepared_input.into()));
+        return Ok(NodeId(input.into()));
     }
 
-    if let Ok(url) = reqwest::Url::parse(prepared_input) {
+    if let Ok(url) = reqwest::Url::parse(input) {
         if ["http", "https"].contains(&url.scheme()) {
-            return Ok(Url(prepared_input.into()));
+            return Ok(Url(input.into()));
         }
     }
 
-    if let Ok(mut lnurl_endpoint) = lnurl_decode(prepared_input) {
+    if let Ok(mut lnurl_endpoint) = lnurl_decode(input) {
         // For LNURL-auth links, their type is already known if the link contains the login tag
         // No need to query the endpoint for details
         if lnurl_endpoint.contains("tag=login") {
@@ -167,6 +175,16 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
     Err(anyhow!("Unrecognized input type"))
 }
 
+/// Prepends the given prefix to the input, if the input doesn't already start with it
+fn prepend_if_missing(prefix: &str, input: &str) -> String {
+    format!("{}{}", prefix, input.trim_start_matches(prefix))
+}
+
+/// Removes the input's prefix, if indeed it starts with that prefix
+fn strip_prefix_if_present(prefix: &str, input: &str) -> String {
+    input.trim_start_matches(prefix).to_string()
+}
+
 #[cfg(test)]
 fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
     /// During tests, the mockito test URL chooses a free port. This cannot be known in advance,
@@ -180,30 +198,114 @@ fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<S
     Ok(lnurl_endpoint)
 }
 
-/// Decodes the bech32-encoded LNURL and returns the payload
+/// Converts the LN Address to the corresponding LNURL-pay endpoint, as per LUD-16:
 ///
-/// The only allowed schemes are http (for onion domains) and https (for clearnet domains)
+/// - https://<domain>/.well-known/lnurlp/<username> for clearnet domains
+/// - http://<domain>/.well-known/lnurlp/<username> for onion domains
 ///
-/// LNURLs in all uppercase or all lowercase are valid, but mixed case ones are invalid.
-fn lnurl_decode(encoded: &str) -> Result<String> {
-    let (_hrp, payload, _variant) = bech32::decode(encoded)?;
-    let decoded = String::from_utf8(Vec::from_base32(&payload)?).map_err(|e| anyhow!(e))?;
+/// Valid characters for the username are `a-z0-9-_.`
+fn ln_address_decode(ln_address: &str) -> Result<String> {
+    if ln_address.contains('@') {
+        let split = ln_address.split('@').collect::<Vec<&str>>();
+        let user = split[0];
+        let domain = split[1];
 
-    let url = reqwest::Url::parse(&decoded)?;
-    let domain = url
-        .domain()
-        .ok_or_else(|| anyhow!("Could not determine domain"))?;
+        if user.to_lowercase() != user {
+            return Err(anyhow!("Invalid username"));
+        }
 
-    if url.scheme() == "http" && !domain.ends_with(".onion") {
-        return Err(anyhow!("HTTP scheme only allowed for onion domains"));
+        if !user
+            .chars()
+            .all(|c| c.is_alphanumeric() || ['-', '_', '.'].contains(&c))
+        {
+            return Err(anyhow!("Invalid username"));
+        }
+
+        let schema = match domain.ends_with(".onion") {
+            true => "http://",
+            false => "https://",
+        };
+
+        return Ok(format!("{schema}{domain}/.well-known/lnurlp/{user}"));
     }
-    if url.scheme() == "https" && domain.ends_with(".onion") {
-        return Err(anyhow!("HTTPS scheme not allowed for onion domains"));
-    }
 
-    Ok(decoded)
+    Err(anyhow!("Invalid LN address"))
 }
 
+/// Decodes the input to a human-readable http or https LNURL.
+///
+/// It can handle three kinds of input:
+///
+/// - bech32-based (LUD-01), like LNURL1...
+/// - LN addresses (LUD-16), like user@domain.com
+/// - prefix-based (LUD-17), like lnurlp:// or lnurlp:
+///
+/// ## Validation notes
+///
+/// For bech32-encoded LNURLs, the only allowed schemes are http (for onion domains) and https (for clearnet domains).
+///
+/// LNURLs in all uppercase or all lowercase are valid, but mixed case ones are invalid.
+///
+/// For LN addresses, the username is limited to `a-z0-9-_.`, which is more restrictive than email addresses.
+fn lnurl_decode(encoded: &str) -> Result<String> {
+    if let Ok(lnurl_pay_endpoint) = ln_address_decode(encoded) {
+        return Ok(lnurl_pay_endpoint);
+    }
+
+    match bech32::decode(encoded) {
+        Ok((_hrp, payload, _variant)) => {
+            let decoded = String::from_utf8(Vec::from_base32(&payload)?).map_err(|e| anyhow!(e))?;
+
+            let url = reqwest::Url::parse(&decoded)?;
+            let domain = url
+                .domain()
+                .ok_or_else(|| anyhow!("Could not determine domain"))?;
+
+            if url.scheme() == "http" && !domain.ends_with(".onion") {
+                return Err(anyhow!("HTTP scheme only allowed for onion domains"));
+            }
+            if url.scheme() == "https" && domain.ends_with(".onion") {
+                return Err(anyhow!("HTTPS scheme not allowed for onion domains"));
+            }
+
+            Ok(decoded)
+        }
+        Err(_) => {
+            let supported_prefixes = ["lnurlp", "lnurlw", "keyauth"];
+            let mut encoded = encoded.to_string();
+
+            // Treat prefix: and prefix:// the same, to cover both vendor implementations
+            // https://github.com/lnbits/lnbits/pull/762#issue-1309702380
+            for pref in supported_prefixes {
+                let scheme_simple = &format!("{pref}:");
+                let scheme_authority = &format!("{pref}://");
+                if encoded.starts_with(scheme_simple) && !encoded.starts_with(scheme_authority) {
+                    encoded = encoded.replace(scheme_simple, scheme_authority);
+                    break;
+                }
+            }
+
+            let url = reqwest::Url::parse(&encoded)?;
+            let domain = url
+                .domain()
+                .ok_or_else(|| anyhow!("Could not determine domain"))?;
+
+            if !supported_prefixes.contains(&url.scheme()) {
+                return Err(anyhow!("Invalid prefix scheme"));
+            }
+
+            let scheme = url.scheme();
+            let new_scheme = match domain.ends_with(".onion") {
+                true => "http",
+                false => "https",
+            };
+
+            Ok(encoded.replace(scheme, new_scheme))
+        }
+    }
+}
+
+#[derive(Debug)]
 pub enum InputType {
     /// # Supported standards
     ///
@@ -223,11 +325,12 @@ pub enum InputType {
     /// - LUD-03 `withdrawRequest` spec
     /// - LUD-04 `auth` base spec
     /// - LUD-06 `payRequest` spec
+    /// - LUD-16 LN Address
+    /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
     ///
     /// # Not supported (yet)
     ///
     /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
-    /// - LUD 17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
     /// - LUD-19 Pay link discoverable from withdraw link
     LnUrl(LnUrlRequestData),
 }
@@ -235,11 +338,17 @@ pub enum InputType {
 #[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-#[serde(tag = "tag")]
+#[serde(untagged)]
 pub enum LnUrlRequestData {
     PayRequest(LnUrlPayRequestData),
     WithdrawRequest(LnUrlWithdrawRequestData),
     AuthRequest(LnUrlAuthRequestData),
+    Error(LnUrlErrorData),
+}
+
+#[derive(Deserialize, Debug)]
+pub struct LnUrlErrorData {
+    pub reason: String,
 }
 
 #[serde_as]
@@ -278,6 +387,7 @@ pub struct MetadataItem {
     pub value: String,
 }
 
+#[derive(Debug)]
 pub struct BitcoinAddressData {
     pub address: String,
     pub network: crate::models::Network,
@@ -306,6 +416,7 @@ mod tests {
     use bitcoin::bech32::{ToBase32, Variant};
     use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
     use mockito;
+    use mockito::Mock;
 
     use crate::input_parser::LnUrlRequestData::*;
     use crate::input_parser::*;
@@ -481,12 +592,14 @@ mod tests {
         // https://github.com/lnurl/luds/blob/luds/01.md
 
         // HTTPS allowed with clearnet domains
-        assert!(lnurl_decode(&bech32::encode(
-            "LNURL",
-            "https://domain.com".to_base32(),
-            Variant::Bech32
-        )?)
-        .is_ok());
+        assert_eq!(
+            &lnurl_decode(&bech32::encode(
+                "LNURL",
+                "https://domain.com".to_base32(),
+                Variant::Bech32
+            )?)?,
+            "https://domain.com"
+        );
 
         // HTTP not allowed with clearnet domains
         assert!(lnurl_decode(&bech32::encode(
@@ -497,12 +610,14 @@ mod tests {
         .is_err());
 
         // HTTP allowed with onion domains
-        assert!(lnurl_decode(&bech32::encode(
-            "LNURL",
-            "http://3fdsf.onion".to_base32(),
-            Variant::Bech32
-        )?)
-        .is_ok());
+        assert_eq!(
+            &lnurl_decode(&bech32::encode(
+                "LNURL",
+                "http://3fdsf.onion".to_base32(),
+                Variant::Bech32
+            )?)?,
+            "http://3fdsf.onion"
+        );
 
         // HTTPS not allowed with onion domains
         assert!(lnurl_decode(&bech32::encode(
@@ -530,11 +645,7 @@ mod tests {
         Ok(())
     }
 
-    #[test]
-    fn test_lnurl_withdraw_lud_03() -> Result<(), Box<dyn std::error::Error>> {
-        // Covers cases in LUD-03: withdrawRequest base spec
-        // https://github.com/lnurl/luds/blob/luds/03.md
-
+    fn mock_lnurl_withdraw_endpoint(path: &str, return_lnurl_error: Option<String>) -> Mock {
         let expected_lnurl_withdraw_data = r#"
 {
     "tag":"withdrawRequest",
@@ -546,16 +657,28 @@ mod tests {
 }
         "#.replace('\n', "");
 
-        let _m = mockito::mock(
-            "GET",
-            "/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81",
-        )
-            .with_body(expected_lnurl_withdraw_data)
-            .create();
+        let response_body = match return_lnurl_error {
+            None => expected_lnurl_withdraw_data,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        mockito::mock("GET", path).with_body(response_body).create()
+    }
+
+    #[test]
+    fn test_lnurl_withdraw_lud_03() -> Result<(), Box<dyn std::error::Error>> {
+        // Covers cases in LUD-03: withdrawRequest base spec
+        // https://github.com/lnurl/luds/blob/luds/03.md
+
+        let path = "/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81";
+        let _m = mock_lnurl_withdraw_endpoint(path, None);
 
         let lnurl_withdraw_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
-        let decoded_url = "https://localhost/lnurl-withdraw?session=bc893fafeb9819046781b47d68fdcf88fa39a28898784c183b42b7ac13820d81";
-        assert_eq!(lnurl_decode(lnurl_withdraw_encoded)?, decoded_url);
+        assert_eq!(
+            lnurl_decode(lnurl_withdraw_encoded)?,
+            format!("https://localhost{}", path)
+        );
 
         if let LnUrl(WithdrawRequest(wd)) = parse(lnurl_withdraw_encoded)? {
             assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
@@ -590,10 +713,45 @@ mod tests {
         Ok(())
     }
 
-    #[test]
-    fn test_lnurl_pay_lud_06() -> Result<(), Box<dyn std::error::Error>> {
-        // Covers cases in LUD-06: payRequest base spec
-        // https://github.com/lnurl/luds/blob/luds/06.md
+    fn mock_lnurl_pay_endpoint(path: &str, return_lnurl_error: Option<String>) -> Mock {
+        let expected_lnurl_pay_data = r#"
+{
+    "callback":"https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7",
+    "tag":"payRequest",
+    "maxSendable":16000,
+    "minSendable":4000,
+    "metadata":"[
+        [\"text/plain\",\"WRhtV\"],
+        [\"text/long-desc\",\"MBTrTiLCFS\"],
+        [\"image/png;base64\",\"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\"]
+    ]",
+    "commentAllowed":0,
+    "payerData":{
+        "name":{"mandatory":false},
+        "pubkey":{"mandatory":false},
+        "identifier":{"mandatory":false},
+        "email":{"mandatory":false},
+        "auth":{"mandatory":false,"k1":"18ec6d5b96db6f219baed2f188aee7359fcf5bea11bb7d5b47157519474c2222"}
+    }
+}
+        "#.replace('\n', "");
+
+        let response_body = match return_lnurl_error {
+            None => expected_lnurl_pay_data,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        mockito::mock("GET", path).with_body(response_body).create()
+    }
+
+    fn mock_lnurl_ln_address_endpoint(
+        ln_address: &str,
+        return_lnurl_error: Option<String>,
+    ) -> Result<Mock> {
+        let lnurl_pay_url = ln_address_decode(ln_address)?;
+        let url = reqwest::Url::parse(&lnurl_pay_url)?;
+        let path = url.path();
 
         let expected_lnurl_pay_data = r#"
 {
@@ -617,16 +775,29 @@ mod tests {
 }
         "#.replace('\n', "");
 
-        let _m = mockito::mock(
-            "GET",
-            "/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7",
-        )
-        .with_body(expected_lnurl_pay_data)
-        .create();
+        let response_body = match return_lnurl_error {
+            None => expected_lnurl_pay_data,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        Ok(mockito::mock("GET", path).with_body(response_body).create())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_06() -> Result<(), Box<dyn std::error::Error>> {
+        // Covers cases in LUD-06: payRequest base spec
+        // https://github.com/lnurl/luds/blob/luds/06.md
+
+        let path =
+            "/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
+        let _m = mock_lnurl_pay_endpoint(path, None);
 
         let lnurl_pay_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
-        let decoded_url = "https://localhost/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
-        assert_eq!(lnurl_decode(lnurl_pay_encoded)?, decoded_url);
+        assert_eq!(
+            lnurl_decode(lnurl_pay_encoded)?,
+            format!("https://localhost{}", path)
+        );
 
         if let LnUrl(PayRequest(pd)) = parse(lnurl_pay_encoded)? {
             assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
@@ -652,5 +823,223 @@ mod tests {
         }
 
         Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_16_ln_address() -> Result<(), Box<dyn std::error::Error>> {
+        // Covers cases in LUD-16: Paying to static internet identifiers (LN Address)
+        // https://github.com/lnurl/luds/blob/luds/16.md
+
+        let ln_address = "user@domain.net";
+        let _m = mock_lnurl_ln_address_endpoint(ln_address, None)?;
+
+        if let LnUrl(PayRequest(pd)) = parse(ln_address)? {
+            assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
+            assert_eq!(pd.max_sendable, 16000);
+            assert_eq!(pd.min_sendable, 4000);
+            assert_eq!(pd.comment_allowed, 0);
+
+            assert_eq!(pd.metadata.len(), 3);
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.key,
+                "text/long-desc"
+            );
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.value,
+                "MBTrTiLCFS"
+            );
+            assert_eq!(
+                pd.metadata.get(2).ok_or("Key not found")?.key,
+                "image/png;base64"
+            );
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_16_ln_address_error() -> Result<()> {
+        // Covers cases in LUD-16: Paying to static internet identifiers (LN Address)
+        // https://github.com/lnurl/luds/blob/luds/16.md
+
+        let ln_address = "user@domain.com";
+        let expected_err = "Error msg from LNURL endpoint found via LN Address";
+        let _m = mock_lnurl_ln_address_endpoint(ln_address, Some(expected_err.to_string()))?;
+
+        if let LnUrl(Error(msg)) = parse(ln_address)? {
+            assert_eq!(msg.reason, expected_err);
+            return Ok(());
+        }
+
+        Err(anyhow!("Unrecognized input type"))
+    }
+
+    #[test]
+    fn test_ln_address_lud_16_decode() -> Result<(), Box<dyn std::error::Error>> {
+        assert_eq!(
+            &lnurl_decode("user@domain.onion")?,
+            "http://domain.onion/.well-known/lnurlp/user"
+        );
+        assert_eq!(
+            &lnurl_decode("user@domain.com")?,
+            "https://domain.com/.well-known/lnurlp/user"
+        );
+        assert_eq!(
+            &lnurl_decode("user@domain.net")?,
+            "https://domain.net/.well-known/lnurlp/user"
+        );
+        assert!(ln_address_decode("invalid_ln_address").is_err());
+
+        // Valid chars are a-z0-9-_.
+        assert!(lnurl_decode("user.testy_test1@domain.com").is_ok());
+        assert!(lnurl_decode("user+1@domain.com").is_err());
+        assert!(lnurl_decode("User@domain.com").is_err());
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_lud_17_prefixes() -> Result<(), Box<dyn std::error::Error>> {
+        // Covers cases in LUD-17: Protocol schemes and raw (non bech32-encoded) URLs
+        // https://github.com/lnurl/luds/blob/luds/17.md
+
+        // Variant-specific prefix replaces https for clearnet and http for onion
+
+        // For onion addresses, the prefix maps to an equivalent HTTP URL
+        assert_eq!(
+            &lnurl_decode("lnurlp://asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+        assert_eq!(
+            &lnurl_decode("lnurlw://asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+        assert_eq!(
+            &lnurl_decode("keyauth://asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+
+        // For non-onion addresses, the prefix maps to an equivalent HTTPS URL
+        assert_eq!(&lnurl_decode("lnurlp://domain.com")?, "https://domain.com");
+        assert_eq!(&lnurl_decode("lnurlw://domain.com")?, "https://domain.com");
+        assert_eq!(&lnurl_decode("keyauth://domain.com")?, "https://domain.com");
+
+        // Same as above, but prefix: approach instead of prefix://
+        assert_eq!(
+            &lnurl_decode("lnurlp:asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+        assert_eq!(
+            &lnurl_decode("lnurlw:asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+        assert_eq!(
+            &lnurl_decode("keyauth:asfddf2dsf3f.onion")?,
+            "http://asfddf2dsf3f.onion"
+        );
+
+        assert_eq!(&lnurl_decode("lnurlp:domain.com")?, "https://domain.com");
+        assert_eq!(&lnurl_decode("lnurlw:domain.com")?, "https://domain.com");
+        assert_eq!(&lnurl_decode("keyauth:domain.com")?, "https://domain.com");
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_17() -> Result<(), Box<dyn std::error::Error>> {
+        let pay_path =
+            "/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
+        let _m = mock_lnurl_pay_endpoint(pay_path, None);
+
+        let lnurl_pay_url = format!("lnurlp://localhost{}", pay_path);
+        if let LnUrl(PayRequest(pd)) = parse(&lnurl_pay_url)? {
+            assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
+            assert_eq!(pd.max_sendable, 16000);
+            assert_eq!(pd.min_sendable, 4000);
+            assert_eq!(pd.comment_allowed, 0);
+
+            assert_eq!(pd.metadata.len(), 3);
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.key,
+                "text/long-desc"
+            );
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.value,
+                "MBTrTiLCFS"
+            );
+            assert_eq!(
+                pd.metadata.get(2).ok_or("Key not found")?.key,
+                "image/png;base64"
+            );
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_withdraw_lud_17() -> Result<(), Box<dyn std::error::Error>> {
+        let withdraw_path = "/lnurl-withdraw?session=e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538";
+        let _m = mock_lnurl_withdraw_endpoint(withdraw_path, None);
+
+        if let LnUrl(WithdrawRequest(wd)) = parse(&format!("lnurlw://localhost{}", withdraw_path))?
+        {
+            assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
+            assert_eq!(
+                wd.k1,
+                "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81"
+            );
+            assert_eq!(wd.min_withdrawable, 3000);
+            assert_eq!(wd.max_withdrawable, 12000);
+            assert_eq!(wd.default_description, "sample withdraw");
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_auth_lud_17() -> Result<()> {
+        let auth_path = "/lnurl-login?tag=login&k1=1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822";
+
+        if let LnUrl(AuthRequest(ad)) = parse(&format!("keyauth://localhost{}", auth_path))? {
+            assert_eq!(
+                ad.k1,
+                "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822"
+            );
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_17_error() -> Result<()> {
+        let pay_path =
+            "/lnurl-pay?session=db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7";
+        let expected_error_msg = "test pay error";
+        let _m = mock_lnurl_pay_endpoint(pay_path, Some(expected_error_msg.to_string()));
+
+        if let LnUrl(Error(msg)) = parse(&format!("lnurlp://localhost{}", pay_path))? {
+            assert_eq!(msg.reason, expected_error_msg);
+            return Ok(());
+        }
+
+        Err(anyhow!("Unrecognized input type"))
+    }
+
+    #[test]
+    fn test_lnurl_withdraw_lud_17_error() -> Result<()> {
+        let withdraw_path = "/lnurl-withdraw?session=e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538";
+        let expected_error_msg = "test withdraw error";
+        let _m = mock_lnurl_withdraw_endpoint(withdraw_path, Some(expected_error_msg.to_string()));
+
+        if let LnUrl(Error(msg)) = parse(&format!("lnurlw://localhost{}", withdraw_path))? {
+            assert_eq!(msg.reason, expected_error_msg);
+            return Ok(());
+        }
+
+        Err(anyhow!("Unrecognized input type"))
     }
 }

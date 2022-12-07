@@ -28,6 +28,7 @@ use crate::fiat::Symbol;
 use crate::input_parser::BitcoinAddressData;
 use crate::input_parser::InputType;
 use crate::input_parser::LnUrlAuthRequestData;
+use crate::input_parser::LnUrlErrorData;
 use crate::input_parser::LnUrlPayRequestData;
 use crate::input_parser::LnUrlRequestData;
 use crate::input_parser::LnUrlWithdrawRequestData;
@@ -554,6 +555,13 @@ impl support::IntoDart for LnUrlAuthRequestData {
 }
 impl support::IntoDartExceptPrimitive for LnUrlAuthRequestData {}
 
+impl support::IntoDart for LnUrlErrorData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.reason.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlErrorData {}
+
 impl support::IntoDart for LnUrlPayRequestData {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -574,6 +582,7 @@ impl support::IntoDart for LnUrlRequestData {
             Self::PayRequest(field0) => vec![0.into_dart(), field0.into_dart()],
             Self::WithdrawRequest(field0) => vec![1.into_dart(), field0.into_dart()],
             Self::AuthRequest(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::Error(field0) => vec![3.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }

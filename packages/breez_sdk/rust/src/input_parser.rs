@@ -70,6 +70,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 ///
 /// assert!(matches!( parse(lnurl_pay_url), Ok(LnUrl(PayRequest(_))) ));
 /// // assert!(matches!( parse("lnurlp://domain.com/lnurl-pay?key=val"), Ok(LnUrl(PayRequest(_))) ));
+/// // assert!(matches!( parse("lightning@address.com"), Ok(LnUrl(PayRequest(_))) ));
 ///
 /// if let Ok(LnUrl(PayRequest(pd))) = parse(lnurl_pay_url) {
 ///     assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
@@ -197,17 +198,60 @@ fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<S
     Ok(lnurl_endpoint)
 }
 
-/// Decodes the LNURL to an http or https URL.
+/// Converts the LN Address to the corresponding LNURL-pay endpoint, as per LUD-16:
 ///
-/// Handles two kinds of LNURL encoding:
+/// - https://<domain>/.well-known/lnurlp/<username> for clearnet domains
+/// - http://<domain>/.well-known/lnurlp/<username> for onion domains
 ///
-/// - bech32-based (LUD-01)
-/// - prefix-based (LUD-17)
+/// Valid characters for the username are `a-z0-9-_.`
+fn ln_address_decode(ln_address: &str) -> Result<String> {
+    if ln_address.contains('@') {
+        let split = ln_address.split('@').collect::<Vec<&str>>();
+        let user = split[0];
+        let domain = split[1];
+
+        if user.to_lowercase() != user {
+            return Err(anyhow!("Invalid username"));
+        }
+
+        if !user
+            .chars()
+            .all(|c| c.is_alphanumeric() || ['-', '_', '.'].contains(&c))
+        {
+            return Err(anyhow!("Invalid username"));
+        }
+
+        let schema = match domain.ends_with(".onion") {
+            true => "http://",
+            false => "https://",
+        };
+
+        return Ok(format!("{schema}{domain}/.well-known/lnurlp/{user}"));
+    }
+
+    Err(anyhow!("Invalid LN address"))
+}
+
+/// Decodes the input to a human-readable http or https LNURL.
 ///
-/// For bech32-encoded, the only allowed schemes are http (for onion domains) and https (for clearnet domains).
+/// It can handle three kinds of input:
+///
+/// - bech32-based (LUD-01), like LNURL1...
+/// - LN addresses (LUD-16), like user@domain.com
+/// - prefix-based (LUD-17), like lnurlp:// or lnurlp:
+///
+/// ## Validation notes
+///
+/// For bech32-encoded LNURLs, the only allowed schemes are http (for onion domains) and https (for clearnet domains).
 ///
 /// LNURLs in all uppercase or all lowercase are valid, but mixed case ones are invalid.
+///
+/// For LN addresses, the username is limited to `a-z0-9-_.`, which is more restrictive than email addresses.
 fn lnurl_decode(encoded: &str) -> Result<String> {
+    if let Ok(lnurl_pay_endpoint) = ln_address_decode(encoded) {
+        return Ok(lnurl_pay_endpoint);
+    }
+
     match bech32::decode(encoded) {
         Ok((_hrp, payload, _variant)) => {
             let decoded = String::from_utf8(Vec::from_base32(&payload)?).map_err(|e| anyhow!(e))?;
@@ -281,6 +325,7 @@ pub enum InputType {
     /// - LUD-03 `withdrawRequest` spec
     /// - LUD-04 `auth` base spec
     /// - LUD-06 `payRequest` spec
+    /// - LUD-16 LN Address
     /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
     ///
     /// # Not supported (yet)
@@ -700,6 +745,45 @@ mod tests {
         mockito::mock("GET", path).with_body(response_body).create()
     }
 
+    fn mock_lnurl_ln_address_endpoint(
+        ln_address: &str,
+        return_lnurl_error: Option<String>,
+    ) -> Result<Mock> {
+        let lnurl_pay_url = ln_address_decode(ln_address)?;
+        let url = reqwest::Url::parse(&lnurl_pay_url)?;
+        let path = url.path();
+
+        let expected_lnurl_pay_data = r#"
+{
+    "callback":"https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7",
+    "tag":"payRequest",
+    "maxSendable":16000,
+    "minSendable":4000,
+    "metadata":"[
+        [\"text/plain\",\"WRhtV\"],
+        [\"text/long-desc\",\"MBTrTiLCFS\"],
+        [\"image/png;base64\",\"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\"]
+    ]",
+    "commentAllowed":0,
+    "payerData":{
+        "name":{"mandatory":false},
+        "pubkey":{"mandatory":false},
+        "identifier":{"mandatory":false},
+        "email":{"mandatory":false},
+        "auth":{"mandatory":false,"k1":"18ec6d5b96db6f219baed2f188aee7359fcf5bea11bb7d5b47157519474c2222"}
+    }
+}
+        "#.replace('\n', "");
+
+        let response_body = match return_lnurl_error {
+            None => expected_lnurl_pay_data,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        Ok(mockito::mock("GET", path).with_body(response_body).create())
+    }
+
     #[test]
     fn test_lnurl_pay_lud_06() -> Result<(), Box<dyn std::error::Error>> {
         // Covers cases in LUD-06: payRequest base spec
@@ -737,6 +821,81 @@ mod tests {
                 "image/png;base64"
             );
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_16_ln_address() -> Result<(), Box<dyn std::error::Error>> {
+        // Covers cases in LUD-16: Paying to static internet identifiers (LN Address)
+        // https://github.com/lnurl/luds/blob/luds/16.md
+
+        let ln_address = "user@domain.net";
+        let _m = mock_lnurl_ln_address_endpoint(ln_address, None)?;
+
+        if let LnUrl(PayRequest(pd)) = parse(ln_address)? {
+            assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
+            assert_eq!(pd.max_sendable, 16000);
+            assert_eq!(pd.min_sendable, 4000);
+            assert_eq!(pd.comment_allowed, 0);
+
+            assert_eq!(pd.metadata.len(), 3);
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
+            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.key,
+                "text/long-desc"
+            );
+            assert_eq!(
+                pd.metadata.get(1).ok_or("Key not found")?.value,
+                "MBTrTiLCFS"
+            );
+            assert_eq!(
+                pd.metadata.get(2).ok_or("Key not found")?.key,
+                "image/png;base64"
+            );
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_lnurl_pay_lud_16_ln_address_error() -> Result<()> {
+        // Covers cases in LUD-16: Paying to static internet identifiers (LN Address)
+        // https://github.com/lnurl/luds/blob/luds/16.md
+
+        let ln_address = "user@domain.com";
+        let expected_err = "Error msg from LNURL endpoint found via LN Address";
+        let _m = mock_lnurl_ln_address_endpoint(ln_address, Some(expected_err.to_string()))?;
+
+        if let LnUrl(Error(msg)) = parse(ln_address)? {
+            assert_eq!(msg.reason, expected_err);
+            return Ok(());
+        }
+
+        Err(anyhow!("Unrecognized input type"))
+    }
+
+    #[test]
+    fn test_ln_address_lud_16_decode() -> Result<(), Box<dyn std::error::Error>> {
+        assert_eq!(
+            &lnurl_decode("user@domain.onion")?,
+            "http://domain.onion/.well-known/lnurlp/user"
+        );
+        assert_eq!(
+            &lnurl_decode("user@domain.com")?,
+            "https://domain.com/.well-known/lnurlp/user"
+        );
+        assert_eq!(
+            &lnurl_decode("user@domain.net")?,
+            "https://domain.net/.well-known/lnurlp/user"
+        );
+        assert!(ln_address_decode("invalid_ln_address").is_err());
+
+        // Valid chars are a-z0-9-_.
+        assert!(lnurl_decode("user.testy_test1@domain.com").is_ok());
+        assert!(lnurl_decode("user+1@domain.com").is_err());
+        assert!(lnurl_decode("User@domain.com").is_err());
 
         Ok(())
     }

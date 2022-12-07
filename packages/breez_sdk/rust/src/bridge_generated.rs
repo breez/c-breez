@@ -27,6 +27,12 @@ use crate::fiat::Rate;
 use crate::fiat::Symbol;
 use crate::input_parser::BitcoinAddressData;
 use crate::input_parser::InputType;
+use crate::input_parser::LnUrlAuthRequestData;
+use crate::input_parser::LnUrlErrorData;
+use crate::input_parser::LnUrlPayRequestData;
+use crate::input_parser::LnUrlRequestData;
+use crate::input_parser::LnUrlWithdrawRequestData;
+use crate::input_parser::MetadataItem;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
@@ -522,8 +528,7 @@ impl support::IntoDart for InputType {
             Self::Bolt11(field0) => vec![1.into_dart(), field0.into_dart()],
             Self::NodeId(field0) => vec![2.into_dart(), field0.into_dart()],
             Self::Url(field0) => vec![3.into_dart(), field0.into_dart()],
-            Self::LnUrlPay(field0) => vec![4.into_dart(), field0.into_dart()],
-            Self::LnUrlWithdraw(field0) => vec![5.into_dart(), field0.into_dart()],
+            Self::LnUrl(field0) => vec![4.into_dart(), field0.into_dart()],
         }
         .into_dart()
     }
@@ -553,6 +558,60 @@ impl support::IntoDart for LNInvoice {
     }
 }
 impl support::IntoDartExceptPrimitive for LNInvoice {}
+
+impl support::IntoDart for LnUrlAuthRequestData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.k1.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlAuthRequestData {}
+
+impl support::IntoDart for LnUrlErrorData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.reason.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlErrorData {}
+
+impl support::IntoDart for LnUrlPayRequestData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.callback.into_dart(),
+            self.min_sendable.into_dart(),
+            self.max_sendable.into_dart(),
+            self.metadata.into_dart(),
+            self.comment_allowed.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlPayRequestData {}
+
+impl support::IntoDart for LnUrlRequestData {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::PayRequest(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::WithdrawRequest(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::AuthRequest(field0) => vec![2.into_dart(), field0.into_dart()],
+            Self::Error(field0) => vec![3.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlRequestData {}
+impl support::IntoDart for LnUrlWithdrawRequestData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![
+            self.callback.into_dart(),
+            self.k1.into_dart(),
+            self.default_description.into_dart(),
+            self.min_withdrawable.into_dart(),
+            self.max_withdrawable.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlWithdrawRequestData {}
 
 impl support::IntoDart for LocaleOverrides {
     fn into_dart(self) -> support::DartAbi {
@@ -603,6 +662,13 @@ impl support::IntoDart for LspInformation {
     }
 }
 impl support::IntoDartExceptPrimitive for LspInformation {}
+
+impl support::IntoDart for MetadataItem {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.key.into_dart(), self.value.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for MetadataItem {}
 
 impl support::IntoDart for Network {
     fn into_dart(self) -> support::DartAbi {

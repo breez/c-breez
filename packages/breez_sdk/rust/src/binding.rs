@@ -312,7 +312,7 @@ pub fn parse(s: String) -> Result<InputType> {
 
 pub fn pay(
     user_amount_sat: u64,
-    comment: Option<&str>,
+    comment: Option<String>,
     req_data: LnUrlPayRequestData,
 ) -> Result<Option<SuccessAction>> {
     block_on(async {

@@ -1878,3 +1878,335 @@ abstract class LnUrlRequestData_Error implements LnUrlRequestData {
   _$$LnUrlRequestData_ErrorCopyWith<_$LnUrlRequestData_Error> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+mixin _$SuccessAction {
+  Object get field0 => throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(MessageSuccessActionData field0) message,
+    required TResult Function(UrlSuccessActionData field0) url,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(MessageSuccessActionData field0)? message,
+    TResult? Function(UrlSuccessActionData field0)? url,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(MessageSuccessActionData field0)? message,
+    TResult Function(UrlSuccessActionData field0)? url,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(SuccessAction_Message value) message,
+    required TResult Function(SuccessAction_Url value) url,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(SuccessAction_Message value)? message,
+    TResult? Function(SuccessAction_Url value)? url,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(SuccessAction_Message value)? message,
+    TResult Function(SuccessAction_Url value)? url,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SuccessActionCopyWith<$Res> {
+  factory $SuccessActionCopyWith(
+          SuccessAction value, $Res Function(SuccessAction) then) =
+      _$SuccessActionCopyWithImpl<$Res, SuccessAction>;
+}
+
+/// @nodoc
+class _$SuccessActionCopyWithImpl<$Res, $Val extends SuccessAction>
+    implements $SuccessActionCopyWith<$Res> {
+  _$SuccessActionCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+}
+
+/// @nodoc
+abstract class _$$SuccessAction_MessageCopyWith<$Res> {
+  factory _$$SuccessAction_MessageCopyWith(_$SuccessAction_Message value,
+          $Res Function(_$SuccessAction_Message) then) =
+      __$$SuccessAction_MessageCopyWithImpl<$Res>;
+  @useResult
+  $Res call({MessageSuccessActionData field0});
+}
+
+/// @nodoc
+class __$$SuccessAction_MessageCopyWithImpl<$Res>
+    extends _$SuccessActionCopyWithImpl<$Res, _$SuccessAction_Message>
+    implements _$$SuccessAction_MessageCopyWith<$Res> {
+  __$$SuccessAction_MessageCopyWithImpl(_$SuccessAction_Message _value,
+      $Res Function(_$SuccessAction_Message) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$SuccessAction_Message(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as MessageSuccessActionData,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$SuccessAction_Message implements SuccessAction_Message {
+  const _$SuccessAction_Message(this.field0);
+
+  @override
+  final MessageSuccessActionData field0;
+
+  @override
+  String toString() {
+    return 'SuccessAction.message(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SuccessAction_Message &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SuccessAction_MessageCopyWith<_$SuccessAction_Message> get copyWith =>
+      __$$SuccessAction_MessageCopyWithImpl<_$SuccessAction_Message>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(MessageSuccessActionData field0) message,
+    required TResult Function(UrlSuccessActionData field0) url,
+  }) {
+    return message(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(MessageSuccessActionData field0)? message,
+    TResult? Function(UrlSuccessActionData field0)? url,
+  }) {
+    return message?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(MessageSuccessActionData field0)? message,
+    TResult Function(UrlSuccessActionData field0)? url,
+    required TResult orElse(),
+  }) {
+    if (message != null) {
+      return message(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(SuccessAction_Message value) message,
+    required TResult Function(SuccessAction_Url value) url,
+  }) {
+    return message(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(SuccessAction_Message value)? message,
+    TResult? Function(SuccessAction_Url value)? url,
+  }) {
+    return message?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(SuccessAction_Message value)? message,
+    TResult Function(SuccessAction_Url value)? url,
+    required TResult orElse(),
+  }) {
+    if (message != null) {
+      return message(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class SuccessAction_Message implements SuccessAction {
+  const factory SuccessAction_Message(final MessageSuccessActionData field0) =
+      _$SuccessAction_Message;
+
+  @override
+  MessageSuccessActionData get field0;
+  @JsonKey(ignore: true)
+  _$$SuccessAction_MessageCopyWith<_$SuccessAction_Message> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$SuccessAction_UrlCopyWith<$Res> {
+  factory _$$SuccessAction_UrlCopyWith(
+          _$SuccessAction_Url value, $Res Function(_$SuccessAction_Url) then) =
+      __$$SuccessAction_UrlCopyWithImpl<$Res>;
+  @useResult
+  $Res call({UrlSuccessActionData field0});
+}
+
+/// @nodoc
+class __$$SuccessAction_UrlCopyWithImpl<$Res>
+    extends _$SuccessActionCopyWithImpl<$Res, _$SuccessAction_Url>
+    implements _$$SuccessAction_UrlCopyWith<$Res> {
+  __$$SuccessAction_UrlCopyWithImpl(
+      _$SuccessAction_Url _value, $Res Function(_$SuccessAction_Url) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? field0 = null,
+  }) {
+    return _then(_$SuccessAction_Url(
+      null == field0
+          ? _value.field0
+          : field0 // ignore: cast_nullable_to_non_nullable
+              as UrlSuccessActionData,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$SuccessAction_Url implements SuccessAction_Url {
+  const _$SuccessAction_Url(this.field0);
+
+  @override
+  final UrlSuccessActionData field0;
+
+  @override
+  String toString() {
+    return 'SuccessAction.url(field0: $field0)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SuccessAction_Url &&
+            (identical(other.field0, field0) || other.field0 == field0));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, field0);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SuccessAction_UrlCopyWith<_$SuccessAction_Url> get copyWith =>
+      __$$SuccessAction_UrlCopyWithImpl<_$SuccessAction_Url>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(MessageSuccessActionData field0) message,
+    required TResult Function(UrlSuccessActionData field0) url,
+  }) {
+    return url(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(MessageSuccessActionData field0)? message,
+    TResult? Function(UrlSuccessActionData field0)? url,
+  }) {
+    return url?.call(field0);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(MessageSuccessActionData field0)? message,
+    TResult Function(UrlSuccessActionData field0)? url,
+    required TResult orElse(),
+  }) {
+    if (url != null) {
+      return url(field0);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(SuccessAction_Message value) message,
+    required TResult Function(SuccessAction_Url value) url,
+  }) {
+    return url(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(SuccessAction_Message value)? message,
+    TResult? Function(SuccessAction_Url value)? url,
+  }) {
+    return url?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(SuccessAction_Message value)? message,
+    TResult Function(SuccessAction_Url value)? url,
+    required TResult orElse(),
+  }) {
+    if (url != null) {
+      return url(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class SuccessAction_Url implements SuccessAction {
+  const factory SuccessAction_Url(final UrlSuccessActionData field0) =
+      _$SuccessAction_Url;
+
+  @override
+  UrlSuccessActionData get field0;
+  @JsonKey(ignore: true)
+  _$$SuccessAction_UrlCopyWith<_$SuccessAction_Url> get copyWith =>
+      throw _privateConstructorUsedError;
+}

@@ -12,7 +12,7 @@ use crate::breez_services::BreezServices;
 pub(crate) async fn pay(
     breez_services: &BreezServices,
     user_amount_sat: u64,
-    comment: Option<&str>,
+    comment: Option<String>,
     req_data: LnUrlPayRequestData,
 ) -> Result<Option<SuccessAction>> {
     validate_input(user_amount_sat, comment, req_data.clone())?;
@@ -127,7 +127,7 @@ pub struct UrlSuccessActionData {
 
 fn validate_input(
     user_amount_sat: u64,
-    comment: Option<&str>,
+    comment: Option<String>,
     req_data: LnUrlPayRequestData,
 ) -> Result<()> {
     if user_amount_sat < req_data.min_sendable {
@@ -221,11 +221,11 @@ mod tests {
     #[test]
     fn test_lnurl_pay_validate_input() -> Result<()> {
         assert!(validate_input(100, None, get_test_pay_req_data(0, 100, 0)).is_ok());
-        assert!(validate_input(100, Some("test"), get_test_pay_req_data(0, 100, 5)).is_ok());
+        assert!(validate_input(100, Some("test".into()), get_test_pay_req_data(0, 100, 5)).is_ok());
 
         assert!(validate_input(5, None, get_test_pay_req_data(10, 100, 5)).is_err());
         assert!(validate_input(200, None, get_test_pay_req_data(10, 100, 5)).is_err());
-        assert!(validate_input(100, Some("test"), get_test_pay_req_data(10, 100, 0)).is_err());
+        assert!(validate_input(100, Some("test".into()), get_test_pay_req_data(10, 100, 0)).is_err());
 
         Ok(())
     }

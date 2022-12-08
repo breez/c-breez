@@ -786,7 +786,7 @@
   "connect_to_pay_error_wrong_amount": "Montant erroné dans la demande de paiement",
   "connect_to_pay_error_status_tracking_already_started": "Le suivi du statut a déjà commencé, il faut l'arrêter avant de le relancer.",
   "connect_to_pay_error_link_expired": "Ce lien a expiré et n'est plus valable pour le paiement.",
-  "security_and_backup_title": "Sécurité et sauvegarde",
+  "security_and_backup_title": "Sécurité",
   "security_and_backup_last_backup_no_account": "Dernière sauvegarde : {lastBackup}",
   "@security_and_backup_last_backup_no_account": {
     "placeholders": {

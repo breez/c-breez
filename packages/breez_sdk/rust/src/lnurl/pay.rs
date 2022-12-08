@@ -18,7 +18,7 @@ pub(crate) async fn pay(
     validate_input(user_amount_sat, comment, req_data.clone())?;
 
     let callback_url = build_callback_url(&req_data, user_amount_sat)?;
-    let callback_resp: CallbackResponse = reqwest::blocking::get(&callback_url)?.json()?;
+    let callback_resp : CallbackResponse = reqwest::get(&callback_url).await?.json().await?;
 
     // TODO optional successActions (test result with no successActions)
     // TODO check if action result supported / e.g. test unsupported success action
@@ -290,28 +290,28 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
-    async fn test_lnurl_pay_msg_success_action() -> Result<()> {
+    #[test]
+    fn test_lnurl_pay_msg_success_action() -> Result<()> {
         let user_amount_sat = 11;
         let pay_req = get_test_pay_req_data(0, 100, 0);
         let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(&pay_req, user_amount_sat, None)?;
 
-        // let node_api = MockNodeAPI {
-        //     node_state: get_dummy_node_state(),
-        //     transactions: vec![],
-        // };
-
-        let mock_breez_services = crate::breez_services::test::breez_services().await;
-        // breez_services.send_payment(payreq.into()).await?;
-
-        match pay(&mock_breez_services, user_amount_sat, None, pay_req).await? {
-            None => Err(anyhow!("Expected success action in callback, but none provided")),
-            Some(success_action) => {
-                match success_action {
-                    SuccessAction::Message(_) => Ok(()),
-                    SuccessAction::Url(_) => Err(anyhow!("Unexpected success action type"))
+        crate::binding::block_on(async {
+            let mock_breez_services = crate::breez_services::test::breez_services().await;
+            match pay(&mock_breez_services, user_amount_sat, None, pay_req).await? {
+                None => Err(anyhow!("Expected success action in callback, but none provided")),
+                Some(success_action) => {
+                    match success_action {
+                        SuccessAction::Message(msg) => {
+                            match msg.message {
+                                s if s == "test msg" => Ok(()),
+                                _ => Err(anyhow!("Unexpected success action message content"))
+                            }
+                        },
+                        SuccessAction::Url(_) => Err(anyhow!("Unexpected success action type"))
+                    }
                 }
             }
-        }
+        })
     }
 }

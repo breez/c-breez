@@ -12,7 +12,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 use crate::lnurl::input_parser::InputType::*;
 use crate::lnurl::input_parser::LnUrlRequestData::AuthRequest;
 
-use crate::lnurl::maybe_replace_host_with_mockito_test_host;
+use crate::lnurl::{maybe_replace_host_with_mockito_test_host, LnUrlErrorData};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 ///
@@ -351,11 +351,6 @@ pub enum LnUrlRequestData {
     WithdrawRequest(LnUrlWithdrawRequestData),
     AuthRequest(LnUrlAuthRequestData),
     Error(LnUrlErrorData),
-}
-
-#[derive(Deserialize, Debug)]
-pub struct LnUrlErrorData {
-    pub reason: String,
 }
 
 #[serde_as]

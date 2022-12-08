@@ -6,14 +6,15 @@ use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lnurl::input_parser::LnUrlPayRequestData;
+use crate::lnurl::pay::Resp;
 use crate::lsp::LspInformation;
 use crate::models::{
     parse_short_channel_id, Config, FeeratePreset, FiatAPI, LspAPI, NodeAPI, NodeState, Payment,
     PaymentTypeFilter, SwapInfo, SwapperAPI,
 };
-use crate::{lnurl, persist};
 use crate::persist::db::SqliteStorage;
 use crate::swap::BTCReceiveSwap;
+use crate::{lnurl, persist};
 use anyhow::{anyhow, Result};
 use bip39::*;
 use core::time;
@@ -127,15 +128,18 @@ impl BreezServices {
         user_amount_sat: u64,
         comment: Option<String>,
         req_data: LnUrlPayRequestData,
-    ) -> Result<Option<lnurl::pay::SuccessAction>> {
+    ) -> Result<lnurl::pay::Resp> {
         lnurl::pay::validate_input(user_amount_sat, comment, req_data.clone())?;
 
         let callback_url = lnurl::pay::build_callback_url(&req_data, user_amount_sat)?;
-        let callback_resp: lnurl::pay::CallbackResponse = reqwest::get(&callback_url).await?.json().await?;
+        let callback_resp_text = reqwest::get(&callback_url).await?.text().await?;
 
-        // TODO optional successActions (test result with no successActions)
-        // TODO check if action result supported / e.g. test unsupported success action
-        // https://github.com/lnurl/luds/blob/luds/09.md
+        if let Ok(err) = serde_json::from_str::<lnurl::LnUrlErrorData>(&callback_resp_text) {
+            return Ok(lnurl::pay::Resp::EndpointError(err));
+        }
+
+        let callback_resp: lnurl::pay::CallbackResponse =
+            reqwest::get(&callback_url).await?.json().await?;
 
         if let Some(ref sa) = callback_resp.success_action {
             sa.validate(&req_data)?;
@@ -146,7 +150,7 @@ impl BreezServices {
 
         self.send_payment(payreq.into()).await?;
 
-        Ok(callback_resp.success_action)
+        Ok(Resp::EndpointSuccess(callback_resp.success_action))
     }
 
     pub async fn receive_payment(

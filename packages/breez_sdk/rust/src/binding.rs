@@ -305,7 +305,7 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
 }
 
 pub fn parse(s: String) -> Result<InputType> {
-    crate::input_parser::parse(&s)
+    block_on(async { crate::input_parser::parse(&s).await })
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

@@ -121,7 +121,10 @@ pub fn add_routing_hints(
 
 // parse_invoice parse a bolt11 payment request and returns a structure contains the parsed fields.
 pub fn parse_invoice(bolt11: &str) -> Result<LNInvoice> {
-    let signed = bolt11.parse::<SignedRawInvoice>()?;
+    let signed = bolt11
+        .strip_prefix("lightning:")
+        .unwrap_or(bolt11)
+        .parse::<SignedRawInvoice>()?;
     let invoice = Invoice::from_signed(signed)?;
 
     let since_the_epoch = invoice.timestamp().duration_since(UNIX_EPOCH)?;

@@ -316,7 +316,7 @@ pub fn pay(
     req_data: LnUrlPayRequestData,
 ) -> Result<Option<SuccessAction>> {
     block_on(async {
-        crate::lnurl::pay::pay(get_breez_services()?, user_amount_sat, comment, req_data).await
+        get_breez_services()?.pay_lnurl(user_amount_sat, comment, req_data).await
     })
 }
 

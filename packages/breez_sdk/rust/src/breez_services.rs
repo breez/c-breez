@@ -5,12 +5,13 @@ use crate::grpc::fund_manager_client::FundManagerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
+use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lsp::LspInformation;
 use crate::models::{
     parse_short_channel_id, Config, FeeratePreset, FiatAPI, LspAPI, NodeAPI, NodeState, Payment,
     PaymentTypeFilter, SwapInfo, SwapperAPI,
 };
-use crate::persist;
+use crate::{lnurl, persist};
 use crate::persist::db::SqliteStorage;
 use crate::swap::BTCReceiveSwap;
 use anyhow::{anyhow, Result};
@@ -119,6 +120,33 @@ impl BreezServices {
             .await?;
         self.sync().await?;
         Ok(())
+    }
+
+    pub async fn pay_lnurl(
+        &self,
+        user_amount_sat: u64,
+        comment: Option<String>,
+        req_data: LnUrlPayRequestData,
+    ) -> Result<Option<lnurl::pay::SuccessAction>> {
+        lnurl::pay::validate_input(user_amount_sat, comment, req_data.clone())?;
+
+        let callback_url = lnurl::pay::build_callback_url(&req_data, user_amount_sat)?;
+        let callback_resp: lnurl::pay::CallbackResponse = reqwest::get(&callback_url).await?.json().await?;
+
+        // TODO optional successActions (test result with no successActions)
+        // TODO check if action result supported / e.g. test unsupported success action
+        // https://github.com/lnurl/luds/blob/luds/09.md
+
+        if let Some(ref sa) = callback_resp.success_action {
+            sa.validate(&req_data)?;
+        }
+
+        let payreq = &callback_resp.pr;
+        lnurl::pay::validate_invoice(user_amount_sat, payreq)?;
+
+        self.send_payment(payreq.into()).await?;
+
+        Ok(callback_resp.success_action)
     }
 
     pub async fn receive_payment(

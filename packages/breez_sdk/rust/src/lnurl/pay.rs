@@ -1,38 +1,10 @@
 use crate::invoice::parse_invoice;
 use crate::lnurl::input_parser::LnUrlPayRequestData;
-use std::str::FromStr;
-use crate::breez_services::BreezServices;
 use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 use anyhow::{anyhow, Result};
 use serde::Deserialize;
 use serde_with::serde_as;
-
-pub(crate) async fn pay(
-    breez_services: &BreezServices,
-    user_amount_sat: u64,
-    comment: Option<String>,
-    req_data: LnUrlPayRequestData,
-) -> Result<Option<SuccessAction>> {
-    validate_input(user_amount_sat, comment, req_data.clone())?;
-
-    let callback_url = build_callback_url(&req_data, user_amount_sat)?;
-    let callback_resp: CallbackResponse = reqwest::get(&callback_url).await?.json().await?;
-
-    // TODO optional successActions (test result with no successActions)
-    // TODO check if action result supported / e.g. test unsupported success action
-    // https://github.com/lnurl/luds/blob/luds/09.md
-
-    if let Some(ref sa) = callback_resp.success_action {
-        sa.validate(&req_data)?;
-    }
-
-    let payreq = &callback_resp.pr;
-    validate_invoice(user_amount_sat, payreq)?;
-
-    breez_services.send_payment(payreq.into()).await?;
-
-    Ok(callback_resp.success_action)
-}
+use std::str::FromStr;
 
 pub(crate) fn build_callback_url(
     req_data: &LnUrlPayRequestData,
@@ -123,7 +95,7 @@ pub struct UrlSuccessActionData {
     pub url: String,
 }
 
-fn validate_input(
+pub(crate) fn validate_input(
     user_amount_sat: u64,
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
@@ -147,7 +119,7 @@ fn validate_input(
     }
 }
 
-fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
+pub(crate) fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
     let invoice = parse_invoice(bolt11)?;
 
     // TODO LN WALLET Verifies that h tag in provided invoice is a hash of metadata string converted to byte array in UTF-8 encoding.
@@ -173,7 +145,7 @@ mod tests {
     use mockito;
     use mockito::Mock;
 
-    use crate::test_utils::{rand_string};
+    use crate::test_utils::rand_string;
 
     fn mock_lnurl_pay_callback_endpoint_msg_success_action(
         pay_req: &LnUrlPayRequestData,
@@ -300,7 +272,7 @@ mod tests {
             mock_lnurl_pay_callback_endpoint_msg_success_action(&pay_req, user_amount_sat, None)?;
 
         let mock_breez_services = crate::breez_services::test::breez_services().await;
-        match pay(&mock_breez_services, user_amount_sat, None, pay_req).await? {
+        match mock_breez_services.pay_lnurl(user_amount_sat, None, pay_req).await? {
             None => Err(anyhow!(
                 "Expected success action in callback, but none provided"
             )),

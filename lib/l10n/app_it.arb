@@ -2,7 +2,7 @@
     "home_drawer_item_title_preferences": "Preferenze",
     "home_drawer_item_title_fiat_currencies": "Monete fiat",
     "home_drawer_item_title_network": "Rete",
-    "home_drawer_item_title_security": "Sicurezza e Backup",
+    "home_drawer_item_title_security": "Sicurezza",
     "home_drawer_item_title_transactions": "Transazioni",
     "home_drawer_item_title_balance": "Bilancio",
     "home_drawer_item_title_podcasts": "Podcast",
@@ -786,7 +786,7 @@
     "connect_to_pay_error_wrong_amount": "Importo errato nella richiesta di pagamento",
     "connect_to_pay_error_status_tracking_already_started": "Il rilevamento dello stato è già iniziato, deve essere interrotto prima di ricominciare",
     "connect_to_pay_error_link_expired": "Questo link è scaduto e non è più valido per il pagamento",
-    "security_and_backup_title": "Sicurezza e Backup",
+    "security_and_backup_title": "Sicurezza",
     "security_and_backup_last_backup_no_account": "Ultimo backup: {lastBackup}",
     "@security_and_backup_last_backup_no_account": {
         "placeholders": {

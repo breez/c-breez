@@ -47,18 +47,6 @@ class SendOptionsBottomSheet extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               indent: 72.0,
             ),
-            ListTile(
-              enabled: connected,
-              leading: BottomActionItemImage(
-                iconAssetPath: "src/icon/connect_to_pay.png",
-                enabled: connected,
-              ),
-              title: Text(
-                texts.bottom_action_bar_connect_to_pay,
-                style: theme.bottomSheetTextStyle,
-              ),
-              onTap: () => _push(context, "/connect_to_pay"),
-            ),
             Divider(
               height: 0.0,
               color: Colors.white.withOpacity(0.2),

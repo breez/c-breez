@@ -292,7 +292,7 @@ fn get_breez_services() -> Result<&'static BreezServices> {
     }
 }
 
-fn block_on<F: Future>(future: F) -> F::Output {
+pub(crate) fn block_on<F: Future>(future: F) -> F::Output {
     rt().block_on(future)
 }
 

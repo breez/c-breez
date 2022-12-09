@@ -307,7 +307,7 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
 }
 
 pub fn parse(s: String) -> Result<InputType> {
-    crate::lnurl::input_parser::parse(&s)
+    block_on(async { crate::input_parser::parse(&s).await })
 }
 
 pub fn pay(

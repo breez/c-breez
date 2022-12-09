@@ -2,6 +2,12 @@ pub mod input_parser;
 pub mod pay;
 
 use anyhow::Result;
+use serde::Deserialize;
+
+#[derive(Deserialize, Debug)]
+pub struct LnUrlErrorData {
+    pub reason: String,
+}
 
 /// Replaces the scheme, host and port with a local mockito host. Preserves the rest of the path.
 #[cfg(test)]

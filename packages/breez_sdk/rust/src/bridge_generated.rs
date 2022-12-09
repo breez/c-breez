@@ -33,14 +33,15 @@ use crate::invoice::RouteHintHop;
 use crate::lnurl::input_parser::BitcoinAddressData;
 use crate::lnurl::input_parser::InputType;
 use crate::lnurl::input_parser::LnUrlAuthRequestData;
-use crate::lnurl::input_parser::LnUrlErrorData;
 use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lnurl::input_parser::LnUrlRequestData;
 use crate::lnurl::input_parser::LnUrlWithdrawRequestData;
 use crate::lnurl::input_parser::MetadataItem;
 use crate::lnurl::pay::MessageSuccessActionData;
+use crate::lnurl::pay::Resp;
 use crate::lnurl::pay::SuccessAction;
 use crate::lnurl::pay::UrlSuccessActionData;
+use crate::lnurl::LnUrlErrorData;
 use crate::lsp::LspInformation;
 use crate::models::Config;
 use crate::models::FeeratePreset;
@@ -768,6 +769,16 @@ impl support::IntoDart for Rate {
 }
 impl support::IntoDartExceptPrimitive for Rate {}
 
+impl support::IntoDart for Resp {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::EndpointSuccess(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::EndpointError(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Resp {}
 impl support::IntoDart for RouteHint {
     fn into_dart(self) -> support::DartAbi {
         vec![self.0.into_dart()].into_dart()

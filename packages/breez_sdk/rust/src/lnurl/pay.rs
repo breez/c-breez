@@ -1,38 +1,11 @@
 use crate::invoice::parse_invoice;
 use crate::lnurl::input_parser::LnUrlPayRequestData;
-use std::str::FromStr;
-use crate::breez_services::BreezServices;
 use crate::lnurl::maybe_replace_host_with_mockito_test_host;
+use crate::lnurl::LnUrlErrorData;
 use anyhow::{anyhow, Result};
 use serde::Deserialize;
 use serde_with::serde_as;
-
-pub(crate) async fn pay(
-    breez_services: &BreezServices,
-    user_amount_sat: u64,
-    comment: Option<String>,
-    req_data: LnUrlPayRequestData,
-) -> Result<Option<SuccessAction>> {
-    validate_input(user_amount_sat, comment, req_data.clone())?;
-
-    let callback_url = build_callback_url(&req_data, user_amount_sat)?;
-    let callback_resp: CallbackResponse = reqwest::get(&callback_url).await?.json().await?;
-
-    // TODO optional successActions (test result with no successActions)
-    // TODO check if action result supported / e.g. test unsupported success action
-    // https://github.com/lnurl/luds/blob/luds/09.md
-
-    if let Some(ref sa) = callback_resp.success_action {
-        sa.validate(&req_data)?;
-    }
-
-    let payreq = &callback_resp.pr;
-    validate_invoice(user_amount_sat, payreq)?;
-
-    breez_services.send_payment(payreq.into()).await?;
-
-    Ok(callback_resp.success_action)
-}
+use std::str::FromStr;
 
 pub(crate) fn build_callback_url(
     req_data: &LnUrlPayRequestData,
@@ -54,6 +27,15 @@ pub(crate) fn build_callback_url(
 #[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+#[serde(untagged)]
+pub enum Resp {
+    EndpointSuccess(Option<SuccessAction>),
+    EndpointError(LnUrlErrorData),
+}
+
+#[serde_as]
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct CallbackResponse {
     pub pr: String,
     pub success_action: Option<SuccessAction>,
@@ -62,7 +44,7 @@ pub struct CallbackResponse {
 #[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-#[serde(untagged)]
+#[serde(tag = "tag")]
 pub enum SuccessAction {
     // Any other successAction type is considered not supported, so the parsing would fail
     // and abort payment, as per LUD-09
@@ -123,7 +105,7 @@ pub struct UrlSuccessActionData {
     pub url: String,
 }
 
-fn validate_input(
+pub(crate) fn validate_input(
     user_amount_sat: u64,
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
@@ -147,7 +129,7 @@ fn validate_input(
     }
 }
 
-fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
+pub(crate) fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
     let invoice = parse_invoice(bolt11)?;
 
     // TODO LN WALLET Verifies that h tag in provided invoice is a hash of metadata string converted to byte array in UTF-8 encoding.
@@ -165,16 +147,75 @@ fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use crate::invoice::LNInvoice;
-    use crate::lnurl::input_parser::LnUrlRequestData::*;
     use crate::lnurl::input_parser::*;
     use crate::lnurl::pay::*;
     use anyhow::{anyhow, Result};
     use mockito;
     use mockito::Mock;
 
-    use crate::test_utils::{rand_string};
+    use crate::test_utils::rand_string;
 
+    /// Mock an LNURL-pay endpoint that responds with no Success Action
+    fn mock_lnurl_pay_callback_endpoint_no_success_action(
+        pay_req: &LnUrlPayRequestData,
+        user_amount_sat: u64,
+        error: Option<String>,
+    ) -> Result<Mock> {
+        let callback_url = build_callback_url(pay_req, user_amount_sat)?;
+        let url = reqwest::Url::parse(&callback_url)?;
+        let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
+
+        let expected_payload = r#"
+{
+    "pr":"lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz",
+    "routes":[]
+}
+        "#.replace('\n', "");
+
+        let response_body = match error {
+            None => expected_payload,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        Ok(mockito::mock("GET", mockito_path)
+            .with_body(response_body)
+            .create())
+    }
+
+    /// Mock an LNURL-pay endpoint that responds with an unsupported Success Action
+    fn mock_lnurl_pay_callback_endpoint_unsupported_success_action(
+        pay_req: &LnUrlPayRequestData,
+        user_amount_sat: u64,
+        error: Option<String>,
+    ) -> Result<Mock> {
+        let callback_url = build_callback_url(pay_req, user_amount_sat)?;
+        let url = reqwest::Url::parse(&callback_url)?;
+        let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
+
+        let expected_payload = r#"
+{
+    "pr":"lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz",
+    "routes":[],
+    "successAction": {
+        "tag":"random-type-that-is-not-supported",
+        "message":"test msg"
+    }
+}
+        "#.replace('\n', "");
+
+        let response_body = match error {
+            None => expected_payload,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        Ok(mockito::mock("GET", mockito_path)
+            .with_body(response_body)
+            .create())
+    }
+
+    /// Mock an LNURL-pay endpoint that responds with a Success Action of type message
     fn mock_lnurl_pay_callback_endpoint_msg_success_action(
         pay_req: &LnUrlPayRequestData,
         user_amount_sat: u64,
@@ -206,7 +247,38 @@ mod tests {
             .create())
     }
 
-    // TODO test error response to callback
+    /// Mock an LNURL-pay endpoint that responds with a Success Action of type URL
+    fn mock_lnurl_pay_callback_endpoint_url_success_action(
+        pay_req: &LnUrlPayRequestData,
+        user_amount_sat: u64,
+        error: Option<String>,
+    ) -> Result<Mock> {
+        let callback_url = build_callback_url(pay_req, user_amount_sat)?;
+        let url = reqwest::Url::parse(&callback_url)?;
+        let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
+
+        let expected_payload = r#"
+{
+    "pr":"lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz",
+    "routes":[],
+    "successAction": {
+        "tag":"url",
+        "description":"test description",
+        "url":"https://localhost/test-url"
+    }
+}
+        "#.replace('\n', "");
+
+        let response_body = match error {
+            None => expected_payload,
+            Some(err_reason) => {
+                ["{\"status\": \"ERROR\", \"reason\": \"", &err_reason, "\"}"].join("")
+            }
+        };
+        Ok(mockito::mock("GET", mockito_path)
+            .with_body(response_body)
+            .create())
+    }
 
     fn get_test_pay_req_data(min: u64, max: u64, comment_len: usize) -> LnUrlPayRequestData {
         LnUrlPayRequestData {
@@ -293,6 +365,44 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_lnurl_pay_no_success_action() -> Result<()> {
+        let user_amount_sat = 11;
+        let pay_req = get_test_pay_req_data(0, 100, 0);
+        let _m =
+            mock_lnurl_pay_callback_endpoint_no_success_action(&pay_req, user_amount_sat, None)?;
+
+        let mock_breez_services = crate::breez_services::test::breez_services().await;
+        match mock_breez_services
+            .pay_lnurl(user_amount_sat, None, pay_req)
+            .await?
+        {
+            Resp::EndpointSuccess(None) => Ok(()),
+            Resp::EndpointSuccess(Some(_)) => Err(anyhow!("Unexpected success action")),
+            _ => Err(anyhow!("Unexpected success action type")),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_lnurl_pay_unsupported_success_action() -> Result<()> {
+        let user_amount_sat = 11;
+        let pay_req = get_test_pay_req_data(0, 100, 0);
+        let _m = mock_lnurl_pay_callback_endpoint_unsupported_success_action(
+            &pay_req,
+            user_amount_sat,
+            None,
+        )?;
+
+        let mock_breez_services = crate::breez_services::test::breez_services().await;
+        let r = mock_breez_services
+            .pay_lnurl(user_amount_sat, None, pay_req)
+            .await;
+        // An unsupported Success Action results in an error
+        assert!(r.is_err());
+
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn test_lnurl_pay_msg_success_action() -> Result<()> {
         let user_amount_sat = 11;
         let pay_req = get_test_pay_req_data(0, 100, 0);
@@ -300,17 +410,89 @@ mod tests {
             mock_lnurl_pay_callback_endpoint_msg_success_action(&pay_req, user_amount_sat, None)?;
 
         let mock_breez_services = crate::breez_services::test::breez_services().await;
-        match pay(&mock_breez_services, user_amount_sat, None, pay_req).await? {
-            None => Err(anyhow!(
+        match mock_breez_services
+            .pay_lnurl(user_amount_sat, None, pay_req)
+            .await?
+        {
+            Resp::EndpointSuccess(None) => Err(anyhow!(
                 "Expected success action in callback, but none provided"
             )),
-            Some(success_action) => match success_action {
-                SuccessAction::Message(msg) => match msg.message {
-                    s if s == "test msg" => Ok(()),
-                    _ => Err(anyhow!("Unexpected success action message content")),
-                },
-                SuccessAction::Url(_) => Err(anyhow!("Unexpected success action type")),
+            Resp::EndpointSuccess(Some(SuccessAction::Message(msg))) => match msg.message {
+                s if s == "test msg" => Ok(()),
+                _ => Err(anyhow!("Unexpected success action message content")),
             },
+            _ => Err(anyhow!("Unexpected success action type")),
+        }
+    }
+
+    #[tokio::test]
+    async fn test_lnurl_pay_msg_success_action_incorrect_amount() -> Result<()> {
+        let user_amount_sat = 110;
+        let pay_req = get_test_pay_req_data(0, 100, 0);
+        let _m =
+            mock_lnurl_pay_callback_endpoint_msg_success_action(&pay_req, user_amount_sat, None)?;
+
+        let mock_breez_services = crate::breez_services::test::breez_services().await;
+        assert!(mock_breez_services
+            .pay_lnurl(user_amount_sat, None, pay_req)
+            .await
+            .is_err());
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_lnurl_pay_msg_success_action_error_from_endpoint() -> Result<()> {
+        let expected_error_msg = "Error message from LNURL endpoint";
+        let user_amount_sat = 11;
+        let pay_req = get_test_pay_req_data(0, 100, 0);
+        let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(
+            &pay_req,
+            user_amount_sat,
+            Some(expected_error_msg.to_string()),
+        )?;
+
+        let mock_breez_services = crate::breez_services::test::breez_services().await;
+        let res = mock_breez_services
+            .pay_lnurl(user_amount_sat, None, pay_req)
+            .await;
+        assert!(matches!(res, Ok(Resp::EndpointError(_))));
+
+        if let Ok(Resp::EndpointError(err_msg)) = res {
+            assert_eq!(expected_error_msg, err_msg.reason);
+        } else {
+            return Err(anyhow!(
+                "Expected error type but received another Success Action type"
+            ));
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_lnurl_pay_url_success_action() -> Result<()> {
+        let user_amount_sat = 11;
+        let pay_req = get_test_pay_req_data(0, 100, 0);
+        let _m =
+            mock_lnurl_pay_callback_endpoint_url_success_action(&pay_req, user_amount_sat, None)?;
+
+        let mock_breez_services = crate::breez_services::test::breez_services().await;
+        match mock_breez_services
+            .pay_lnurl(user_amount_sat, None, pay_req)
+            .await?
+        {
+            Resp::EndpointSuccess(Some(SuccessAction::Url(url))) => {
+                if url.url == "https://localhost/test-url" && url.description == "test description"
+                {
+                    Ok(())
+                } else {
+                    Err(anyhow!("Unexpected success action content"))
+                }
+            }
+            Resp::EndpointSuccess(None) => Err(anyhow!(
+                "Expected success action in callback, but none provided"
+            )),
+            _ => Err(anyhow!("Unexpected success action type")),
         }
     }
 }

@@ -1,7 +1,7 @@
 use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lnurl::input_parser::LnUrlPayRequestData;
-use crate::lnurl::pay::SuccessAction;
+use crate::lnurl::pay::Resp;
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
 use anyhow::{anyhow, Result};
@@ -307,7 +307,19 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
 }
 
 pub fn parse(s: String) -> Result<InputType> {
-    block_on(async { crate::input_parser::parse(&s).await })
+    block_on(async { crate::lnurl::input_parser::parse(&s).await })
+}
+
+pub fn pay(
+    user_amount_sat: u64,
+    comment: Option<String>,
+    req_data: LnUrlPayRequestData,
+) -> Result<Resp> {
+    block_on(async {
+        get_breez_services()?
+            .pay_lnurl(user_amount_sat, comment, req_data)
+            .await
+    })
 }
 
 pub fn pay(

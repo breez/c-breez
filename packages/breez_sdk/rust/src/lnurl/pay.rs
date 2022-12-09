@@ -1,23 +1,17 @@
 use crate::invoice::parse_invoice;
 use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lnurl::maybe_replace_host_with_mockito_test_host;
+use crate::lnurl::pay::model::{CallbackResponse, ValidatedCallbackResponse};
 use crate::lnurl::LnUrlErrorData;
 use anyhow::{anyhow, Result};
-use serde::Deserialize;
-use serde_with::serde_as;
 use std::str::FromStr;
-
-pub(crate) enum ValidatedCallbackResponse {
-    EndpointSuccess(CallbackResponse),
-    EndpointError(LnUrlErrorData),
-}
 
 pub(crate) async fn validate_lnurl_pay(
     user_amount_sat: u64,
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
 ) -> Result<ValidatedCallbackResponse> {
-    validate_input(user_amount_sat, comment, req_data.clone())?;
+    validate_user_input(user_amount_sat, comment, req_data.clone())?;
 
     let callback_url = build_callback_url(&req_data, user_amount_sat)?;
     let callback_resp_text = reqwest::get(&callback_url).await?.text().await?;
@@ -26,7 +20,6 @@ pub(crate) async fn validate_lnurl_pay(
         Ok(ValidatedCallbackResponse::EndpointError(err))
     } else {
         let callback_resp: CallbackResponse = reqwest::get(&callback_url).await?.json().await?;
-
         if let Some(ref sa) = callback_resp.success_action {
             sa.validate(&req_data)?;
         }
@@ -50,88 +43,7 @@ fn build_callback_url(req_data: &LnUrlPayRequestData, user_amount_sat: u64) -> R
     Ok(callback_url)
 }
 
-#[serde_as]
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-#[serde(untagged)]
-pub enum Resp {
-    EndpointSuccess(Option<SuccessAction>),
-    EndpointError(LnUrlErrorData),
-}
-
-#[serde_as]
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct CallbackResponse {
-    pub pr: String,
-    pub success_action: Option<SuccessAction>,
-}
-
-#[serde_as]
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-#[serde(tag = "tag")]
-pub enum SuccessAction {
-    // Any other successAction type is considered not supported, so the parsing would fail
-    // and abort payment, as per LUD-09
-    Message(MessageSuccessActionData),
-    Url(UrlSuccessActionData),
-}
-
-impl SuccessAction {
-    pub fn validate(&self, req_data: &LnUrlPayRequestData) -> Result<()> {
-        match self {
-            SuccessAction::Message(msg_action_data) => match msg_action_data.message.len() <= 144 {
-                true => Ok(()),
-                false => Err(anyhow!(
-                    "Success action message is longer than the maximum allowed length"
-                )),
-            },
-
-            SuccessAction::Url(url_action_data) => match url_action_data.description.len() <= 144 {
-                true => Ok(()),
-                false => Err(anyhow!(
-                    "Success action description is longer than the maximum allowed length"
-                )),
-            }
-            .and_then(|_| {
-                let req_url = reqwest::Url::parse(&req_data.callback)?;
-                let req_domain = req_url
-                    .domain()
-                    .ok_or_else(|| anyhow!("Could not determine callback domain"))?;
-
-                let action_res_url = reqwest::Url::parse(&url_action_data.url)?;
-                let action_res_domain = action_res_url
-                    .domain()
-                    .ok_or_else(|| anyhow!("Could not determine Success Action URL domain"))?;
-
-                match req_domain == action_res_domain {
-                    true => Ok(()),
-                    false => Err(anyhow!(
-                        "Success action description is longer than the maximum allowed length"
-                    )),
-                }
-            }),
-        }
-    }
-}
-
-#[serde_as]
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct MessageSuccessActionData {
-    pub message: String,
-}
-
-#[serde_as]
-#[derive(Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct UrlSuccessActionData {
-    pub description: String,
-    pub url: String,
-}
-
-fn validate_input(
+fn validate_user_input(
     user_amount_sat: u64,
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
@@ -171,9 +83,103 @@ fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
     }
 }
 
+pub(crate) mod model {
+    use crate::lnurl::input_parser::LnUrlPayRequestData;
+    use crate::lnurl::LnUrlErrorData;
+
+    use anyhow::{anyhow, Result};
+    use serde::Deserialize;
+    use serde_with::serde_as;
+
+    pub(crate) enum ValidatedCallbackResponse {
+        EndpointSuccess(CallbackResponse),
+        EndpointError(LnUrlErrorData),
+    }
+
+    pub enum Resp {
+        EndpointSuccess(Option<SuccessAction>),
+        EndpointError(LnUrlErrorData),
+    }
+
+    #[serde_as]
+    #[derive(Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
+    pub struct CallbackResponse {
+        pub pr: String,
+        pub success_action: Option<SuccessAction>,
+    }
+
+    #[derive(Deserialize, Debug)]
+    pub struct MessageSuccessActionData {
+        pub message: String,
+    }
+
+    #[derive(Deserialize, Debug)]
+    pub struct UrlSuccessActionData {
+        pub description: String,
+        pub url: String,
+    }
+
+    #[serde_as]
+    #[derive(Deserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
+    #[serde(tag = "tag")]
+    pub enum SuccessAction {
+        // Any other successAction type is considered not supported, so the parsing would fail
+        // and abort payment, as per LUD-09
+        Message(MessageSuccessActionData),
+        Url(UrlSuccessActionData),
+    }
+
+    impl SuccessAction {
+        pub fn validate(&self, req_data: &LnUrlPayRequestData) -> Result<()> {
+            match self {
+                SuccessAction::Message(msg_action_data) => {
+                    match msg_action_data.message.len() <= 144 {
+                        true => Ok(()),
+                        false => Err(anyhow!(
+                            "Success action message is longer than the maximum allowed length"
+                        )),
+                    }
+                }
+
+                SuccessAction::Url(url_action_data) => {
+                    match url_action_data.description.len() <= 144 {
+                        true => Ok(()),
+                        false => Err(anyhow!(
+                            "Success action description is longer than the maximum allowed length"
+                        )),
+                    }
+                    .and_then(|_| {
+                        let req_url = reqwest::Url::parse(&req_data.callback)?;
+                        let req_domain = req_url
+                            .domain()
+                            .ok_or_else(|| anyhow!("Could not determine callback domain"))?;
+
+                        let action_res_url = reqwest::Url::parse(&url_action_data.url)?;
+                        let action_res_domain = action_res_url.domain().ok_or_else(|| {
+                            anyhow!("Could not determine Success Action URL domain")
+                        })?;
+
+                        match req_domain == action_res_domain {
+                            true => Ok(()),
+                            false => Err(anyhow!(
+                        "Success action description is longer than the maximum allowed length"
+                    )),
+                        }
+                    })
+                }
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::lnurl::input_parser::*;
+    use crate::lnurl::pay::model::{
+        MessageSuccessActionData, Resp, SuccessAction, UrlSuccessActionData,
+    };
     use crate::lnurl::pay::*;
     use anyhow::{anyhow, Result};
     use mockito;
@@ -318,13 +324,16 @@ mod tests {
 
     #[test]
     fn test_lnurl_pay_validate_input() -> Result<()> {
-        assert!(validate_input(100, None, get_test_pay_req_data(0, 100, 0)).is_ok());
-        assert!(validate_input(100, Some("test".into()), get_test_pay_req_data(0, 100, 5)).is_ok());
-
-        assert!(validate_input(5, None, get_test_pay_req_data(10, 100, 5)).is_err());
-        assert!(validate_input(200, None, get_test_pay_req_data(10, 100, 5)).is_err());
+        assert!(validate_user_input(100, None, get_test_pay_req_data(0, 100, 0)).is_ok());
         assert!(
-            validate_input(100, Some("test".into()), get_test_pay_req_data(10, 100, 0)).is_err()
+            validate_user_input(100, Some("test".into()), get_test_pay_req_data(0, 100, 5)).is_ok()
+        );
+
+        assert!(validate_user_input(5, None, get_test_pay_req_data(10, 100, 5)).is_err());
+        assert!(validate_user_input(200, None, get_test_pay_req_data(10, 100, 5)).is_err());
+        assert!(
+            validate_user_input(100, Some("test".into()), get_test_pay_req_data(10, 100, 0))
+                .is_err()
         );
 
         Ok(())

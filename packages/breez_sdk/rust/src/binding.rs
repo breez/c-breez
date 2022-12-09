@@ -1,7 +1,6 @@
 use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lnurl::input_parser::LnUrlPayRequestData;
-use crate::lnurl::pay::Resp;
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
 use anyhow::{anyhow, Result};
@@ -21,6 +20,7 @@ use crate::{breez_services::BreezServices, greenlight::Greenlight};
 
 use crate::invoice::{self};
 use crate::lnurl::input_parser::InputType;
+use crate::lnurl::pay::model::Resp;
 use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();

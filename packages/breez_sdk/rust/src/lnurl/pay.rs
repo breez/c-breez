@@ -4,6 +4,9 @@ use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 use crate::lnurl::pay::model::{CallbackResponse, ValidatedCallbackResponse};
 use crate::lnurl::LnUrlErrorData;
 use anyhow::{anyhow, Result};
+use bitcoin_hashes::{Hash, sha256};
+use lightning_invoice::{Sha256};
+use serde_json::json;
 use std::str::FromStr;
 
 pub(crate) async fn validate_lnurl_pay(
@@ -24,7 +27,7 @@ pub(crate) async fn validate_lnurl_pay(
             sa.validate(&req_data)?;
         }
 
-        validate_invoice(user_amount_sat, &callback_resp.pr)?;
+        validate_invoice(user_amount_sat, &callback_resp.pr, &req_data)?;
         Ok(ValidatedCallbackResponse::EndpointSuccess(callback_resp))
     }
 }
@@ -67,10 +70,25 @@ fn validate_user_input(
     }
 }
 
-fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
+fn validate_invoice(
+    user_amount_sat: u64,
+    bolt11: &str,
+    req_data: &LnUrlPayRequestData,
+) -> Result<()> {
     let invoice = parse_invoice(bolt11)?;
 
-    // TODO LN WALLET Verifies that h tag in provided invoice is a hash of metadata string converted to byte array in UTF-8 encoding.
+    match invoice.description_hash {
+        None => return Err(anyhow!("Invoice is missing description hash")),
+        Some(received_hash) => {
+            let metadata_str: String = json!(req_data.metadata).to_string();
+            let calculated_hash: Sha256 =
+                lightning_invoice::Sha256(sha256::Hash::hash(metadata_str.as_bytes()));
+
+            if received_hash != calculated_hash.0.to_string() {
+                return Err(anyhow!("Invoice has an invalid description hash"));
+            }
+        }
+    }
 
     match invoice.amount_msat {
         None => Err(anyhow!("Amount is bigger than the maximum allowed")),
@@ -185,13 +203,14 @@ mod tests {
     use mockito;
     use mockito::Mock;
 
-    use crate::test_utils::rand_string;
+    use crate::test_utils::{rand_invoice_with_description_hash, rand_string};
 
     /// Mock an LNURL-pay endpoint that responds with no Success Action
     fn mock_lnurl_pay_callback_endpoint_no_success_action(
         pay_req: &LnUrlPayRequestData,
         user_amount_sat: u64,
         error: Option<String>,
+        pr: String,
     ) -> Result<Mock> {
         let callback_url = build_callback_url(pay_req, user_amount_sat)?;
         let url = reqwest::Url::parse(&callback_url)?;
@@ -199,10 +218,12 @@ mod tests {
 
         let expected_payload = r#"
 {
-    "pr":"lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz",
+    "pr":"token-invoice",
     "routes":[]
 }
-        "#.replace('\n', "");
+        "#
+        .replace('\n', "")
+        .replace("token-invoice", &pr);
 
         let response_body = match error {
             None => expected_payload,
@@ -252,6 +273,7 @@ mod tests {
         pay_req: &LnUrlPayRequestData,
         user_amount_sat: u64,
         error: Option<String>,
+        pr: String,
     ) -> Result<Mock> {
         let callback_url = build_callback_url(pay_req, user_amount_sat)?;
         let url = reqwest::Url::parse(&callback_url)?;
@@ -259,14 +281,16 @@ mod tests {
 
         let expected_payload = r#"
 {
-    "pr":"lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz",
+    "pr":"token-invoice",
     "routes":[],
     "successAction": {
         "tag":"message",
         "message":"test msg"
     }
 }
-        "#.replace('\n', "");
+        "#
+        .replace('\n', "")
+        .replace("token-invoice", &pr);
 
         let response_body = match error {
             None => expected_payload,
@@ -284,6 +308,7 @@ mod tests {
         pay_req: &LnUrlPayRequestData,
         user_amount_sat: u64,
         error: Option<String>,
+        pr: String,
     ) -> Result<Mock> {
         let callback_url = build_callback_url(pay_req, user_amount_sat)?;
         let url = reqwest::Url::parse(&callback_url)?;
@@ -291,7 +316,7 @@ mod tests {
 
         let expected_payload = r#"
 {
-    "pr":"lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz",
+    "pr":"token-invoice",
     "routes":[],
     "successAction": {
         "tag":"url",
@@ -299,7 +324,9 @@ mod tests {
         "url":"https://localhost/test-url"
     }
 }
-        "#.replace('\n', "");
+        "#
+        .replace('\n', "")
+        .replace("token-invoice", &pr);
 
         let response_body = match error {
             None => expected_payload,
@@ -341,10 +368,20 @@ mod tests {
 
     #[test]
     fn test_lnurl_pay_validate_invoice() -> Result<()> {
-        let payreq = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
+        let req = get_test_pay_req_data(0, 100, 0);
+        let temp_desc = json!(req.metadata).to_string();
+        let inv = rand_invoice_with_description_hash(temp_desc.clone());
+        let payreq: String = rand_invoice_with_description_hash(temp_desc).to_string();
 
-        assert!(validate_invoice(11, payreq).is_ok());
-        assert!(validate_invoice(12, payreq).is_err());
+        assert!(
+            validate_invoice(inv.amount_milli_satoshis().unwrap() / 1000, &payreq, &req).is_ok()
+        );
+        assert!(validate_invoice(
+            (inv.amount_milli_satoshis().unwrap() / 1000) + 1,
+            &payreq,
+            &req
+        )
+        .is_err());
 
         Ok(())
     }
@@ -401,10 +438,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_lnurl_pay_no_success_action() -> Result<()> {
-        let user_amount_sat = 11;
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let _m =
-            mock_lnurl_pay_callback_endpoint_no_success_action(&pay_req, user_amount_sat, None)?;
+        let temp_desc = json!(pay_req.metadata).to_string();
+        let inv = rand_invoice_with_description_hash(temp_desc);
+        let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
+        let _m = mock_lnurl_pay_callback_endpoint_no_success_action(
+            &pay_req,
+            user_amount_sat,
+            None,
+            inv.to_string(),
+        )?;
 
         let mock_breez_services = crate::breez_services::test::breez_services().await;
         match mock_breez_services
@@ -439,10 +482,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_lnurl_pay_msg_success_action() -> Result<()> {
-        let user_amount_sat = 11;
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let _m =
-            mock_lnurl_pay_callback_endpoint_msg_success_action(&pay_req, user_amount_sat, None)?;
+        let temp_desc = json!(pay_req.metadata).to_string();
+        let inv = rand_invoice_with_description_hash(temp_desc);
+        let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
+        let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(
+            &pay_req,
+            user_amount_sat,
+            None,
+            inv.to_string(),
+        )?;
 
         let mock_breez_services = crate::breez_services::test::breez_services().await;
         match mock_breez_services
@@ -462,10 +511,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_lnurl_pay_msg_success_action_incorrect_amount() -> Result<()> {
-        let user_amount_sat = 110;
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let _m =
-            mock_lnurl_pay_callback_endpoint_msg_success_action(&pay_req, user_amount_sat, None)?;
+        let temp_desc = json!(pay_req.metadata).to_string();
+        let inv = rand_invoice_with_description_hash(temp_desc);
+        let user_amount_sat = (inv.amount_milli_satoshis().unwrap() / 1000) + 1;
+        let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(
+            &pay_req,
+            user_amount_sat,
+            None,
+            inv.to_string(),
+        )?;
 
         let mock_breez_services = crate::breez_services::test::breez_services().await;
         assert!(mock_breez_services
@@ -478,13 +533,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_lnurl_pay_msg_success_action_error_from_endpoint() -> Result<()> {
-        let expected_error_msg = "Error message from LNURL endpoint";
-        let user_amount_sat = 11;
         let pay_req = get_test_pay_req_data(0, 100, 0);
+        let temp_desc = json!(pay_req.metadata).to_string();
+        let inv = rand_invoice_with_description_hash(temp_desc);
+        let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
+        let expected_error_msg = "Error message from LNURL endpoint";
         let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(
             &pay_req,
             user_amount_sat,
             Some(expected_error_msg.to_string()),
+            inv.to_string(),
         )?;
 
         let mock_breez_services = crate::breez_services::test::breez_services().await;
@@ -506,10 +564,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_lnurl_pay_url_success_action() -> Result<()> {
-        let user_amount_sat = 11;
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let _m =
-            mock_lnurl_pay_callback_endpoint_url_success_action(&pay_req, user_amount_sat, None)?;
+        let temp_desc = json!(pay_req.metadata).to_string();
+        let inv = rand_invoice_with_description_hash(temp_desc);
+        let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
+        let _m = mock_lnurl_pay_callback_endpoint_url_success_action(
+            &pay_req,
+            user_amount_sat,
+            None,
+            inv.to_string(),
+        )?;
 
         let mock_breez_services = crate::breez_services::test::breez_services().await;
         match mock_breez_services

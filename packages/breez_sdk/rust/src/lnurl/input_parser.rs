@@ -4,7 +4,7 @@ use anyhow::{anyhow, Result};
 use bip21::Uri;
 use bitcoin::bech32;
 use bitcoin::bech32::FromBase32;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_with::json::JsonString;
 use serde_with::serde_as;
 
@@ -354,7 +354,7 @@ pub enum LnUrlRequestData {
 }
 
 #[serde_as]
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LnUrlPayRequestData {
     pub callback: String,
@@ -383,7 +383,7 @@ pub struct LnUrlAuthRequestData {
     pub k1: String,
 }
 
-#[derive(Clone, Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, Serialize)]
 pub struct MetadataItem {
     pub key: String,
     pub value: String,

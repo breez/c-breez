@@ -1,14 +1,17 @@
+use crate::fiat::{FiatCurrency, Rate};
 use anyhow::{anyhow, Result};
+use bitcoin::secp256k1::KeyPair;
+use bitcoin::util::key::Secp256k1;
+use bitcoin_hashes::Hash;
 use gl_client::pb::amount::Unit;
 use gl_client::pb::{
     Amount, CloseChannelResponse, CloseChannelType, Invoice, Peer, WithdrawResponse,
 };
-use lightning_invoice::RawInvoice;
+use lightning::ln::PaymentSecret;
+use lightning_invoice::{Currency, InvoiceBuilder, RawInvoice};
 use rand::distributions::{Alphanumeric, DistString, Standard};
 use rand::{random, Rng};
 use tonic::Streaming;
-
-use crate::fiat::{FiatCurrency, Rate};
 
 use crate::grpc::{PaymentInformation, RegisterPaymentReply};
 use crate::lsp::LspInformation;
@@ -183,6 +186,29 @@ impl SwapperAPI for MockSwapperAPI {
     async fn complete_swap(&self, bolt11: String) -> Result<()> {
         Ok(())
     }
+}
+
+pub(crate) fn rand_invoice_with_description_hash(
+    expected_desc: String,
+) -> lightning_invoice::Invoice {
+    let expected_desc_hash = Hash::hash(expected_desc.as_bytes());
+
+    let payment_hash = Hash::from_slice(&[0; 32][..]).unwrap();
+    let payment_secret = PaymentSecret([42u8; 32]);
+
+    let secp = Secp256k1::new();
+    let key_pair = KeyPair::new(&secp, &mut rand::thread_rng());
+    let private_key = key_pair.secret_key();
+
+    InvoiceBuilder::new(Currency::Bitcoin)
+        .description_hash(expected_desc_hash)
+        .amount_milli_satoshis(50 * 1000)
+        .payment_hash(payment_hash)
+        .payment_secret(payment_secret)
+        .current_timestamp()
+        .min_final_cltv_expiry(144)
+        .build_signed(|hash| Secp256k1::new().sign_ecdsa_recoverable(hash, &private_key))
+        .unwrap()
 }
 
 pub fn rand_string(len: usize) -> String {

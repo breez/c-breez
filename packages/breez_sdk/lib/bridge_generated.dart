@@ -186,14 +186,6 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kParseConstMeta;
 
-  Future<Resp> pay(
-      {required int userAmountSat,
-      String? comment,
-      required LnUrlPayRequestData reqData,
-      dynamic hint});
-
-  FlutterRustBridgeTaskConstMeta get kPayConstMeta;
-
   /// Attempts to convert the phrase to a mnemonic, then to a seed.
   ///
   /// If the phrase is not a valid mnemonic, an error is returned.
@@ -346,7 +338,8 @@ class LNInvoice {
   final String bolt11;
   final String payeePubkey;
   final String paymentHash;
-  final String description;
+  final String? description;
+  final String? descriptionHash;
   final int? amountMsat;
   final int timestamp;
   final int expiry;
@@ -357,7 +350,8 @@ class LNInvoice {
     required this.bolt11,
     required this.payeePubkey,
     required this.paymentHash,
-    required this.description,
+    this.description,
+    this.descriptionHash,
     this.amountMsat,
     required this.timestamp,
     required this.expiry,
@@ -502,14 +496,6 @@ class LspInformation {
   });
 }
 
-class MessageSuccessActionData {
-  final String message;
-
-  MessageSuccessActionData({
-    required this.message,
-  });
-}
-
 class MetadataItem {
   final String key;
   final String value;
@@ -600,16 +586,6 @@ class Rate {
   });
 }
 
-@freezed
-class Resp with _$Resp {
-  const factory Resp.endpointSuccess([
-    SuccessAction? field0,
-  ]) = Resp_EndpointSuccess;
-  const factory Resp.endpointError(
-    LnUrlErrorData field0,
-  ) = Resp_EndpointError;
-}
-
 class RouteHint {
   final List<RouteHintHop> field0;
 
@@ -647,16 +623,6 @@ class RouteHintHop {
     this.htlcMinimumMsat,
     this.htlcMaximumMsat,
   });
-}
-
-@freezed
-class SuccessAction with _$SuccessAction {
-  const factory SuccessAction.message(
-    MessageSuccessActionData field0,
-  ) = SuccessAction_Message;
-  const factory SuccessAction.url(
-    UrlSuccessActionData field0,
-  ) = SuccessAction_Url;
 }
 
 class SwapInfo {
@@ -708,16 +674,6 @@ class Symbol {
     this.template,
     this.rtl,
     this.position,
-  });
-}
-
-class UrlSuccessActionData {
-  final String description;
-  final String url;
-
-  UrlSuccessActionData({
-    required this.description,
-    required this.url,
   });
 }
 
@@ -1154,29 +1110,6 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["s"],
       );
 
-  Future<Resp> pay(
-      {required int userAmountSat,
-      String? comment,
-      required LnUrlPayRequestData reqData,
-      dynamic hint}) {
-    var arg0 = _platform.api2wire_u64(userAmountSat);
-    var arg1 = _platform.api2wire_opt_String(comment);
-    var arg2 = _platform.api2wire_box_autoadd_ln_url_pay_request_data(reqData);
-    return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_pay(port_, arg0, arg1, arg2),
-      parseSuccessData: _wire2api_resp,
-      constMeta: kPayConstMeta,
-      argValues: [userAmountSat, comment, reqData],
-      hint: hint,
-    ));
-  }
-
-  FlutterRustBridgeTaskConstMeta get kPayConstMeta =>
-      const FlutterRustBridgeTaskConstMeta(
-        debugName: "pay",
-        argNames: ["userAmountSat", "comment", "reqData"],
-      );
-
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) {
     var arg0 = _platform.api2wire_String(phrase);
     return _platform.executeNormal(FlutterRustBridgeTask(
@@ -1263,11 +1196,6 @@ class LightningToolkitImpl implements LightningToolkit {
     return _wire2api_ln_url_withdraw_request_data(raw);
   }
 
-  MessageSuccessActionData _wire2api_box_autoadd_message_success_action_data(
-      dynamic raw) {
-    return _wire2api_message_success_action_data(raw);
-  }
-
   NodeState _wire2api_box_autoadd_node_state(dynamic raw) {
     return _wire2api_node_state(raw);
   }
@@ -1282,11 +1210,6 @@ class LightningToolkitImpl implements LightningToolkit {
 
   int _wire2api_box_autoadd_u64(dynamic raw) {
     return _wire2api_u64(raw);
-  }
-
-  UrlSuccessActionData _wire2api_box_autoadd_url_success_action_data(
-      dynamic raw) {
-    return _wire2api_url_success_action_data(raw);
   }
 
   BreezEvent _wire2api_breez_event(dynamic raw) {
@@ -1430,18 +1353,19 @@ class LightningToolkitImpl implements LightningToolkit {
 
   LNInvoice _wire2api_ln_invoice(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 9)
-      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
     return LNInvoice(
       bolt11: _wire2api_String(arr[0]),
       payeePubkey: _wire2api_String(arr[1]),
       paymentHash: _wire2api_String(arr[2]),
-      description: _wire2api_String(arr[3]),
-      amountMsat: _wire2api_opt_box_autoadd_u64(arr[4]),
-      timestamp: _wire2api_u64(arr[5]),
-      expiry: _wire2api_u64(arr[6]),
-      routingHints: _wire2api_list_route_hint(arr[7]),
-      paymentSecret: _wire2api_uint_8_list(arr[8]),
+      description: _wire2api_opt_String(arr[3]),
+      descriptionHash: _wire2api_opt_String(arr[4]),
+      amountMsat: _wire2api_opt_box_autoadd_u64(arr[5]),
+      timestamp: _wire2api_u64(arr[6]),
+      expiry: _wire2api_u64(arr[7]),
+      routingHints: _wire2api_list_route_hint(arr[8]),
+      paymentSecret: _wire2api_uint_8_list(arr[9]),
     );
   }
 
@@ -1469,10 +1393,10 @@ class LightningToolkitImpl implements LightningToolkit {
       throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
     return LnUrlPayRequestData(
       callback: _wire2api_String(arr[0]),
-      minSendable: _wire2api_u64(arr[1]),
-      maxSendable: _wire2api_u64(arr[2]),
+      minSendable: _wire2api_u16(arr[1]),
+      maxSendable: _wire2api_u16(arr[2]),
       metadata: _wire2api_list_metadata_item(arr[3]),
-      commentAllowed: _wire2api_usize(arr[4]),
+      commentAllowed: _wire2api_u16(arr[4]),
     );
   }
 
@@ -1566,15 +1490,6 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
-  MessageSuccessActionData _wire2api_message_success_action_data(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 1)
-      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-    return MessageSuccessActionData(
-      message: _wire2api_String(arr[0]),
-    );
-  }
-
   MetadataItem _wire2api_metadata_item(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 2)
@@ -1639,10 +1554,6 @@ class LightningToolkitImpl implements LightningToolkit {
     return raw == null ? null : _wire2api_list_localized_name(raw);
   }
 
-  SuccessAction? _wire2api_opt_success_action(dynamic raw) {
-    return raw == null ? null : _wire2api_success_action(raw);
-  }
-
   Payment _wire2api_payment(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 12)
@@ -1673,21 +1584,6 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
-  Resp _wire2api_resp(dynamic raw) {
-    switch (raw[0]) {
-      case 0:
-        return Resp_EndpointSuccess(
-          _wire2api_opt_success_action(raw[1]),
-        );
-      case 1:
-        return Resp_EndpointError(
-          _wire2api_box_autoadd_ln_url_error_data(raw[1]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
-  }
-
   RouteHint _wire2api_route_hint(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 1)
@@ -1710,21 +1606,6 @@ class LightningToolkitImpl implements LightningToolkit {
       htlcMinimumMsat: _wire2api_opt_box_autoadd_u64(arr[5]),
       htlcMaximumMsat: _wire2api_opt_box_autoadd_u64(arr[6]),
     );
-  }
-
-  SuccessAction _wire2api_success_action(dynamic raw) {
-    switch (raw[0]) {
-      case 0:
-        return SuccessAction_Message(
-          _wire2api_box_autoadd_message_success_action_data(raw[1]),
-        );
-      case 1:
-        return SuccessAction_Url(
-          _wire2api_box_autoadd_url_success_action_data(raw[1]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
   }
 
   SwapInfo _wire2api_swap_info(dynamic raw) {
@@ -1787,20 +1668,6 @@ class LightningToolkitImpl implements LightningToolkit {
   void _wire2api_unit(dynamic raw) {
     return;
   }
-
-  UrlSuccessActionData _wire2api_url_success_action_data(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return UrlSuccessActionData(
-      description: _wire2api_String(arr[0]),
-      url: _wire2api_String(arr[1]),
-    );
-  }
-
-  int _wire2api_usize(dynamic raw) {
-    return castInt(raw);
-  }
 }
 
 // Section: api2wire
@@ -1835,10 +1702,6 @@ int api2wire_u8(int raw) {
   return raw;
 }
 
-@protected
-int api2wire_usize(int raw) {
-  return raw;
-}
 // Section: finalizer
 
 class LightningToolkitPlatform
@@ -1874,26 +1737,8 @@ class LightningToolkitPlatform
   }
 
   @protected
-  ffi.Pointer<wire_LnUrlPayRequestData>
-      api2wire_box_autoadd_ln_url_pay_request_data(LnUrlPayRequestData raw) {
-    final ptr = inner.new_box_autoadd_ln_url_pay_request_data_0();
-    _api_fill_to_wire_ln_url_pay_request_data(raw, ptr.ref);
-    return ptr;
-  }
-
-  @protected
   int api2wire_i64(int raw) {
     return raw;
-  }
-
-  @protected
-  ffi.Pointer<wire_list_metadata_item> api2wire_list_metadata_item(
-      List<MetadataItem> raw) {
-    final ans = inner.new_list_metadata_item_0(raw.length);
-    for (var i = 0; i < raw.length; ++i) {
-      _api_fill_to_wire_metadata_item(raw[i], ans.ref.ptr[i]);
-    }
-    return ans;
   }
 
   @protected
@@ -1922,7 +1767,6 @@ class LightningToolkitPlatform
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
     return ans;
   }
-
 // Section: finalizer
 
 // Section: api_fill_to_wire
@@ -1938,12 +1782,6 @@ class LightningToolkitPlatform
     _api_fill_to_wire_greenlight_credentials(apiObj, wireObj.ref);
   }
 
-  void _api_fill_to_wire_box_autoadd_ln_url_pay_request_data(
-      LnUrlPayRequestData apiObj,
-      ffi.Pointer<wire_LnUrlPayRequestData> wireObj) {
-    _api_fill_to_wire_ln_url_pay_request_data(apiObj, wireObj.ref);
-  }
-
   void _api_fill_to_wire_config(Config apiObj, wire_Config wireObj) {
     wireObj.breezserver = api2wire_String(apiObj.breezserver);
     wireObj.mempoolspace_url = api2wire_String(apiObj.mempoolspaceUrl);
@@ -1957,21 +1795,6 @@ class LightningToolkitPlatform
       GreenlightCredentials apiObj, wire_GreenlightCredentials wireObj) {
     wireObj.device_key = api2wire_uint_8_list(apiObj.deviceKey);
     wireObj.device_cert = api2wire_uint_8_list(apiObj.deviceCert);
-  }
-
-  void _api_fill_to_wire_ln_url_pay_request_data(
-      LnUrlPayRequestData apiObj, wire_LnUrlPayRequestData wireObj) {
-    wireObj.callback = api2wire_String(apiObj.callback);
-    wireObj.min_sendable = api2wire_u64(apiObj.minSendable);
-    wireObj.max_sendable = api2wire_u64(apiObj.maxSendable);
-    wireObj.metadata = api2wire_list_metadata_item(apiObj.metadata);
-    wireObj.comment_allowed = api2wire_usize(apiObj.commentAllowed);
-  }
-
-  void _api_fill_to_wire_metadata_item(
-      MetadataItem apiObj, wire_MetadataItem wireObj) {
-    wireObj.key = api2wire_String(apiObj.key);
-    wireObj.value = api2wire_String(apiObj.value);
   }
 
   void _api_fill_to_wire_opt_box_autoadd_config(
@@ -2470,31 +2293,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_parse = _wire_parsePtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_pay(
-    int port_,
-    int user_amount_sat,
-    ffi.Pointer<wire_uint_8_list> comment,
-    ffi.Pointer<wire_LnUrlPayRequestData> req_data,
-  ) {
-    return _wire_pay(
-      port_,
-      user_amount_sat,
-      comment,
-      req_data,
-    );
-  }
-
-  late final _wire_payPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Int64,
-              ffi.Uint64,
-              ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_LnUrlPayRequestData>)>>('wire_pay');
-  late final _wire_pay = _wire_payPtr.asFunction<
-      void Function(int, int, ffi.Pointer<wire_uint_8_list>,
-          ffi.Pointer<wire_LnUrlPayRequestData>)>();
-
   void wire_mnemonic_to_seed(
     int port_,
     ffi.Pointer<wire_uint_8_list> phrase,
@@ -2548,33 +2346,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
           'new_box_autoadd_i64_0');
   late final _new_box_autoadd_i64_0 = _new_box_autoadd_i64_0Ptr
       .asFunction<ffi.Pointer<ffi.Int64> Function(int)>();
-
-  ffi.Pointer<wire_LnUrlPayRequestData>
-      new_box_autoadd_ln_url_pay_request_data_0() {
-    return _new_box_autoadd_ln_url_pay_request_data_0();
-  }
-
-  late final _new_box_autoadd_ln_url_pay_request_data_0Ptr = _lookup<
-          ffi.NativeFunction<ffi.Pointer<wire_LnUrlPayRequestData> Function()>>(
-      'new_box_autoadd_ln_url_pay_request_data_0');
-  late final _new_box_autoadd_ln_url_pay_request_data_0 =
-      _new_box_autoadd_ln_url_pay_request_data_0Ptr
-          .asFunction<ffi.Pointer<wire_LnUrlPayRequestData> Function()>();
-
-  ffi.Pointer<wire_list_metadata_item> new_list_metadata_item_0(
-    int len,
-  ) {
-    return _new_list_metadata_item_0(
-      len,
-    );
-  }
-
-  late final _new_list_metadata_item_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_list_metadata_item> Function(
-              ffi.Int32)>>('new_list_metadata_item_0');
-  late final _new_list_metadata_item_0 = _new_list_metadata_item_0Ptr
-      .asFunction<ffi.Pointer<wire_list_metadata_item> Function(int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
@@ -2637,34 +2408,5 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-class wire_MetadataItem extends ffi.Struct {
-  external ffi.Pointer<wire_uint_8_list> key;
-
-  external ffi.Pointer<wire_uint_8_list> value;
-}
-
-class wire_list_metadata_item extends ffi.Struct {
-  external ffi.Pointer<wire_MetadataItem> ptr;
-
-  @ffi.Int32()
-  external int len;
-}
-
-class wire_LnUrlPayRequestData extends ffi.Struct {
-  external ffi.Pointer<wire_uint_8_list> callback;
-
-  @ffi.Uint64()
-  external int min_sendable;
-
-  @ffi.Uint64()
-  external int max_sendable;
-
-  external ffi.Pointer<wire_list_metadata_item> metadata;
-
-  @uintptr_t()
-  external int comment_allowed;
-}
-
-typedef uintptr_t = ffi.UnsignedLong;
-
 typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;
+typedef uintptr_t = ffi.UnsignedLong;

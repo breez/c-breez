@@ -12,7 +12,8 @@ pub struct LNInvoice {
     pub bolt11: String,
     pub payee_pubkey: String,
     pub payment_hash: String,
-    pub description: String,
+    pub description: Option<String>,
+    pub description_hash: Option<String>,
     pub amount_msat: Option<u64>,
     pub timestamp: u64,
     pub expiry: u64,
@@ -160,8 +161,12 @@ pub fn parse_invoice(bolt11: &str) -> Result<LNInvoice> {
         payment_hash: invoice.payment_hash().encode_hex::<String>(),
         payment_secret: invoice.payment_secret().0.to_vec(),
         description: match invoice.description() {
-            InvoiceDescription::Direct(msg) => msg.to_string(),
-            InvoiceDescription::Hash(_) => String::from(""),
+            InvoiceDescription::Direct(msg) => Some(msg.to_string()),
+            InvoiceDescription::Hash(_) => None,
+        },
+        description_hash: match invoice.description() {
+            InvoiceDescription::Direct(_) => None,
+            InvoiceDescription::Hash(h) => Some(h.0.to_string()),
         },
     };
     Ok(ln_invoice)

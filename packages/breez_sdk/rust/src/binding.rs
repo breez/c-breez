@@ -4,6 +4,7 @@ use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
 use anyhow::{anyhow, Result};
+use bitcoin::Address;
 use flutter_rust_bridge::StreamSink;
 use log::{Metadata, Record};
 use once_cell::sync::{Lazy, OnceCell};

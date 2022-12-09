@@ -50,6 +50,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
               child: BitcoinAddressTextFormField(
                 context: context,
                 controller: _addressController,
+                validatorHolder: ValidatorHolder(),
               ),
             ),
           ),

@@ -213,6 +213,17 @@ class BreezBridge {
   Future<Uint8List> mnemonicToSeed(String phrase) async =>
       await _lnToolkit.mnemonicToSeed(phrase: phrase);
 
+  Future<bool> isValidBitcoinAddress(
+    String address,
+  ) async {
+    try {
+      final inputType = await _lnToolkit.parse(s: address);
+      return inputType is InputType_BitcoinAddress;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Listen to paid Invoice events
   final StreamController<InvoicePaidDetails> _invoicePaidStream =
       BehaviorSubject<InvoicePaidDetails>();

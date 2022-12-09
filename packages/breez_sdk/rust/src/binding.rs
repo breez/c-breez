@@ -322,16 +322,6 @@ pub fn pay(
     })
 }
 
-pub fn pay(
-    user_amount_sat: u64,
-    comment: Option<String>,
-    req_data: LnUrlPayRequestData,
-) -> Result<Option<SuccessAction>> {
-    block_on(async {
-        crate::lnurl::pay::pay(get_breez_services()?, user_amount_sat, comment, req_data).await
-    })
-}
-
 /// Attempts to convert the phrase to a mnemonic, then to a seed.
 ///
 /// If the phrase is not a valid mnemonic, an error is returned.

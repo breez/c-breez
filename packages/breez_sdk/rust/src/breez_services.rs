@@ -6,7 +6,7 @@ use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lnurl::input_parser::LnUrlPayRequestData;
-use crate::lnurl::pay::Resp;
+use crate::lnurl::pay::{validate_lnurl_pay, Resp, ValidatedCallbackResponse};
 use crate::lsp::LspInformation;
 use crate::models::{
     parse_short_channel_id, Config, FeeratePreset, FiatAPI, LspAPI, NodeAPI, NodeState, Payment,
@@ -129,28 +129,13 @@ impl BreezServices {
         comment: Option<String>,
         req_data: LnUrlPayRequestData,
     ) -> Result<lnurl::pay::Resp> {
-        lnurl::pay::validate_input(user_amount_sat, comment, req_data.clone())?;
-
-        let callback_url = lnurl::pay::build_callback_url(&req_data, user_amount_sat)?;
-        let callback_resp_text = reqwest::get(&callback_url).await?.text().await?;
-
-        if let Ok(err) = serde_json::from_str::<lnurl::LnUrlErrorData>(&callback_resp_text) {
-            return Ok(lnurl::pay::Resp::EndpointError(err));
+        match validate_lnurl_pay(user_amount_sat, comment, req_data).await? {
+            ValidatedCallbackResponse::EndpointSuccess(cb) => {
+                self.send_payment(cb.pr).await?;
+                Ok(Resp::EndpointSuccess(cb.success_action))
+            }
+            ValidatedCallbackResponse::EndpointError(e) => Ok(Resp::EndpointError(e)),
         }
-
-        let callback_resp: lnurl::pay::CallbackResponse =
-            reqwest::get(&callback_url).await?.json().await?;
-
-        if let Some(ref sa) = callback_resp.success_action {
-            sa.validate(&req_data)?;
-        }
-
-        let payreq = &callback_resp.pr;
-        lnurl::pay::validate_invoice(user_amount_sat, payreq)?;
-
-        self.send_payment(payreq.into()).await?;
-
-        Ok(Resp::EndpointSuccess(callback_resp.success_action))
     }
 
     pub async fn receive_payment(

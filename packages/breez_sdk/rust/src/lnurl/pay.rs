@@ -7,10 +7,36 @@ use serde::Deserialize;
 use serde_with::serde_as;
 use std::str::FromStr;
 
-pub(crate) fn build_callback_url(
-    req_data: &LnUrlPayRequestData,
+pub(crate) enum ValidatedCallbackResponse {
+    EndpointSuccess(CallbackResponse),
+    EndpointError(LnUrlErrorData),
+}
+
+pub(crate) async fn validate_lnurl_pay(
     user_amount_sat: u64,
-) -> Result<String> {
+    comment: Option<String>,
+    req_data: LnUrlPayRequestData,
+) -> Result<ValidatedCallbackResponse> {
+    validate_input(user_amount_sat, comment, req_data.clone())?;
+
+    let callback_url = build_callback_url(&req_data, user_amount_sat)?;
+    let callback_resp_text = reqwest::get(&callback_url).await?.text().await?;
+
+    if let Ok(err) = serde_json::from_str::<LnUrlErrorData>(&callback_resp_text) {
+        Ok(ValidatedCallbackResponse::EndpointError(err))
+    } else {
+        let callback_resp: CallbackResponse = reqwest::get(&callback_url).await?.json().await?;
+
+        if let Some(ref sa) = callback_resp.success_action {
+            sa.validate(&req_data)?;
+        }
+
+        validate_invoice(user_amount_sat, &callback_resp.pr)?;
+        Ok(ValidatedCallbackResponse::EndpointSuccess(callback_resp))
+    }
+}
+
+fn build_callback_url(req_data: &LnUrlPayRequestData, user_amount_sat: u64) -> Result<String> {
     // TODO add comments arg
 
     let amount_msat = (user_amount_sat * 1000).to_string();
@@ -105,7 +131,7 @@ pub struct UrlSuccessActionData {
     pub url: String,
 }
 
-pub(crate) fn validate_input(
+fn validate_input(
     user_amount_sat: u64,
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
@@ -129,7 +155,7 @@ pub(crate) fn validate_input(
     }
 }
 
-pub(crate) fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
+fn validate_invoice(user_amount_sat: u64, bolt11: &str) -> Result<()> {
     let invoice = parse_invoice(bolt11)?;
 
     // TODO LN WALLET Verifies that h tag in provided invoice is a hash of metadata string converted to byte array in UTF-8 encoding.

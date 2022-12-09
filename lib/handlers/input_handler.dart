@@ -100,7 +100,7 @@ class InputHandler {
     }
 
     if (!visible && _loaderRoute != null) {
-      Navigator.removeRoute(_context, _loaderRoute!);
+      _loaderRoute?.navigator?.removeRoute(_loaderRoute!);
       _loaderRoute = null;
     }
   }

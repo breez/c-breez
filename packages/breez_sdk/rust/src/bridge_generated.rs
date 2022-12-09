@@ -552,6 +552,7 @@ impl support::IntoDart for LNInvoice {
             self.payee_pubkey.into_dart(),
             self.payment_hash.into_dart(),
             self.description.into_dart(),
+            self.description_hash.into_dart(),
             self.amount_msat.into_dart(),
             self.timestamp.into_dart(),
             self.expiry.into_dart(),

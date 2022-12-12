@@ -338,7 +338,8 @@ class LNInvoice {
   final String bolt11;
   final String payeePubkey;
   final String paymentHash;
-  final String description;
+  final String? description;
+  final String? descriptionHash;
   final int? amountMsat;
   final int timestamp;
   final int expiry;
@@ -349,7 +350,8 @@ class LNInvoice {
     required this.bolt11,
     required this.payeePubkey,
     required this.paymentHash,
-    required this.description,
+    this.description,
+    this.descriptionHash,
     this.amountMsat,
     required this.timestamp,
     required this.expiry,
@@ -1351,18 +1353,19 @@ class LightningToolkitImpl implements LightningToolkit {
 
   LNInvoice _wire2api_ln_invoice(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 9)
-      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
     return LNInvoice(
       bolt11: _wire2api_String(arr[0]),
       payeePubkey: _wire2api_String(arr[1]),
       paymentHash: _wire2api_String(arr[2]),
-      description: _wire2api_String(arr[3]),
-      amountMsat: _wire2api_opt_box_autoadd_u64(arr[4]),
-      timestamp: _wire2api_u64(arr[5]),
-      expiry: _wire2api_u64(arr[6]),
-      routingHints: _wire2api_list_route_hint(arr[7]),
-      paymentSecret: _wire2api_uint_8_list(arr[8]),
+      description: _wire2api_opt_String(arr[3]),
+      descriptionHash: _wire2api_opt_String(arr[4]),
+      amountMsat: _wire2api_opt_box_autoadd_u64(arr[5]),
+      timestamp: _wire2api_u64(arr[6]),
+      expiry: _wire2api_u64(arr[7]),
+      routingHints: _wire2api_list_route_hint(arr[8]),
+      paymentSecret: _wire2api_uint_8_list(arr[9]),
     );
   }
 
@@ -1826,7 +1829,7 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       : _lookup = lookup;
 
   void store_dart_post_cobject(
-    DartPostCObjectFnType ptr,
+    int ptr,
   ) {
     return _store_dart_post_cobject(
       ptr,
@@ -1834,10 +1837,10 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   }
 
   late final _store_dart_post_cobjectPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(DartPostCObjectFnType)>>(
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int)>>(
           'store_dart_post_cobject');
-  late final _store_dart_post_cobject = _store_dart_post_cobjectPtr
-      .asFunction<void Function(DartPostCObjectFnType)>();
+  late final _store_dart_post_cobject =
+      _store_dart_post_cobjectPtr.asFunction<void Function(int)>();
 
   Object get_dart_object(
     int ptr,
@@ -2405,7 +2408,5 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-typedef DartPostCObjectFnType = ffi.Pointer<
-    ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
-typedef DartPort = ffi.Int64;
+typedef bool = ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Int>)>;
 typedef uintptr_t = ffi.UnsignedLong;

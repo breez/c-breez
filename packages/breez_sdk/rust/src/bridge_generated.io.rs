@@ -187,15 +187,6 @@ pub extern "C" fn new_box_autoadd_ln_url_pay_request_data_0() -> *mut wire_LnUrl
 }
 
 #[no_mangle]
-pub extern "C" fn new_list_metadata_item_0(len: i32) -> *mut wire_list_metadata_item {
-    let wrap = wire_list_metadata_item {
-        ptr: support::new_leak_vec_ptr(<wire_MetadataItem>::new_with_null_ptr(), len),
-        len,
-    };
-    support::new_leak_box_ptr(wrap)
-}
-
-#[no_mangle]
 pub extern "C" fn new_uint_8_list_0(len: i32) -> *mut wire_uint_8_list {
     let ans = wire_uint_8_list {
         ptr: support::new_leak_vec_ptr(Default::default(), len),
@@ -255,31 +246,14 @@ impl Wire2Api<GreenlightCredentials> for wire_GreenlightCredentials {
     }
 }
 
-impl Wire2Api<Vec<MetadataItem>> for *mut wire_list_metadata_item {
-    fn wire2api(self) -> Vec<MetadataItem> {
-        let vec = unsafe {
-            let wrap = support::box_from_leak_ptr(self);
-            support::vec_from_leak_ptr(wrap.ptr, wrap.len)
-        };
-        vec.into_iter().map(Wire2Api::wire2api).collect()
-    }
-}
 impl Wire2Api<LnUrlPayRequestData> for wire_LnUrlPayRequestData {
     fn wire2api(self) -> LnUrlPayRequestData {
         LnUrlPayRequestData {
             callback: self.callback.wire2api(),
             min_sendable: self.min_sendable.wire2api(),
             max_sendable: self.max_sendable.wire2api(),
-            metadata: self.metadata.wire2api(),
+            metadata_str: self.metadata_str.wire2api(),
             comment_allowed: self.comment_allowed.wire2api(),
-        }
-    }
-}
-impl Wire2Api<MetadataItem> for wire_MetadataItem {
-    fn wire2api(self) -> MetadataItem {
-        MetadataItem {
-            key: self.key.wire2api(),
-            value: self.value.wire2api(),
         }
     }
 }
@@ -315,26 +289,12 @@ pub struct wire_GreenlightCredentials {
 
 #[repr(C)]
 #[derive(Clone)]
-pub struct wire_list_metadata_item {
-    ptr: *mut wire_MetadataItem,
-    len: i32,
-}
-
-#[repr(C)]
-#[derive(Clone)]
 pub struct wire_LnUrlPayRequestData {
     callback: *mut wire_uint_8_list,
     min_sendable: u64,
     max_sendable: u64,
-    metadata: *mut wire_list_metadata_item,
+    metadata_str: *mut wire_uint_8_list,
     comment_allowed: usize,
-}
-
-#[repr(C)]
-#[derive(Clone)]
-pub struct wire_MetadataItem {
-    key: *mut wire_uint_8_list,
-    value: *mut wire_uint_8_list,
 }
 
 #[repr(C)]
@@ -384,17 +344,8 @@ impl NewWithNullPtr for wire_LnUrlPayRequestData {
             callback: core::ptr::null_mut(),
             min_sendable: Default::default(),
             max_sendable: Default::default(),
-            metadata: core::ptr::null_mut(),
+            metadata_str: core::ptr::null_mut(),
             comment_allowed: Default::default(),
-        }
-    }
-}
-
-impl NewWithNullPtr for wire_MetadataItem {
-    fn new_with_null_ptr() -> Self {
-        Self {
-            key: core::ptr::null_mut(),
-            value: core::ptr::null_mut(),
         }
     }
 }

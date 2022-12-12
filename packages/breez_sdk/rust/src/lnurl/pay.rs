@@ -5,8 +5,6 @@ use crate::lnurl::pay::model::{CallbackResponse, ValidatedCallbackResponse};
 use crate::lnurl::LnUrlErrorData;
 use anyhow::{anyhow, Result};
 use bitcoin_hashes::{sha256, Hash};
-use lightning_invoice::Sha256;
-use serde_json::json;
 use std::str::FromStr;
 
 pub(crate) async fn validate_lnurl_pay(
@@ -55,11 +53,11 @@ fn validate_user_input(
     comment: &Option<String>,
     req_data: &LnUrlPayRequestData,
 ) -> Result<()> {
-    if user_amount_sat < req_data.min_sendable {
+    if user_amount_sat * 1000 < req_data.min_sendable {
         return Err(anyhow!("Amount is smaller than the minimum allowed"));
     }
 
-    if user_amount_sat > req_data.max_sendable {
+    if user_amount_sat * 1000 > req_data.max_sendable {
         return Err(anyhow!("Amount is bigger than the maximum allowed"));
     }
 
@@ -84,11 +82,9 @@ fn validate_invoice(
     match invoice.description_hash {
         None => return Err(anyhow!("Invoice is missing description hash")),
         Some(received_hash) => {
-            let metadata_str: String = json!(req_data.metadata).to_string();
-            let calculated_hash: Sha256 =
-                lightning_invoice::Sha256(sha256::Hash::hash(metadata_str.as_bytes()));
-
-            if received_hash != calculated_hash.0.to_string() {
+            // The hash is calculated from the exact metadata string, as received from the LNURL endpoint
+            let calculated_hash = sha256::Hash::hash(req_data.metadata_str.as_bytes());
+            if received_hash != calculated_hash.to_string() {
                 return Err(anyhow!("Invoice has an invalid description hash"));
             }
         }
@@ -111,19 +107,18 @@ pub(crate) mod model {
 
     use anyhow::{anyhow, Result};
     use serde::Deserialize;
-    use serde_with::serde_as;
 
     pub(crate) enum ValidatedCallbackResponse {
         EndpointSuccess(CallbackResponse),
         EndpointError(LnUrlErrorData),
     }
 
+    #[derive(Debug)]
     pub enum Resp {
         EndpointSuccess(Option<SuccessAction>),
         EndpointError(LnUrlErrorData),
     }
 
-    #[serde_as]
     #[derive(Deserialize, Debug)]
     #[serde(rename_all = "camelCase")]
     pub struct CallbackResponse {
@@ -142,7 +137,6 @@ pub(crate) mod model {
         pub url: String,
     }
 
-    #[serde_as]
     #[derive(Deserialize, Debug)]
     #[serde(rename_all = "camelCase")]
     #[serde(tag = "tag")]
@@ -343,12 +337,16 @@ mod tests {
             .create())
     }
 
-    fn get_test_pay_req_data(min: u64, max: u64, comment_len: usize) -> LnUrlPayRequestData {
+    fn get_test_pay_req_data(
+        min_sat: u64,
+        max_sat: u64,
+        comment_len: usize,
+    ) -> LnUrlPayRequestData {
         LnUrlPayRequestData {
-            min_sendable: min,
-            max_sendable: max,
+            min_sendable: min_sat * 1000,
+            max_sendable: max_sat * 1000,
             comment_allowed: comment_len,
-            metadata: vec![],
+            metadata_str: "".into(),
             callback: "https://localhost/callback".into(),
         }
     }
@@ -376,7 +374,7 @@ mod tests {
     #[test]
     fn test_lnurl_pay_validate_invoice() -> Result<()> {
         let req = get_test_pay_req_data(0, 100, 0);
-        let temp_desc = json!(req.metadata).to_string();
+        let temp_desc = req.metadata_str.clone();
         let inv = rand_invoice_with_description_hash(temp_desc.clone());
         let payreq: String = rand_invoice_with_description_hash(temp_desc).to_string();
 
@@ -446,7 +444,7 @@ mod tests {
     #[tokio::test]
     async fn test_lnurl_pay_no_success_action() -> Result<()> {
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let temp_desc = json!(pay_req.metadata).to_string();
+        let temp_desc = pay_req.metadata_str.clone();
         let inv = rand_invoice_with_description_hash(temp_desc);
         let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
         let _m = mock_lnurl_pay_callback_endpoint_no_success_action(
@@ -490,7 +488,7 @@ mod tests {
     #[tokio::test]
     async fn test_lnurl_pay_msg_success_action() -> Result<()> {
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let temp_desc = json!(pay_req.metadata).to_string();
+        let temp_desc = pay_req.metadata_str.clone();
         let inv = rand_invoice_with_description_hash(temp_desc);
         let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
         let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(
@@ -519,7 +517,7 @@ mod tests {
     #[tokio::test]
     async fn test_lnurl_pay_msg_success_action_incorrect_amount() -> Result<()> {
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let temp_desc = json!(pay_req.metadata).to_string();
+        let temp_desc = pay_req.metadata_str.clone();
         let inv = rand_invoice_with_description_hash(temp_desc);
         let user_amount_sat = (inv.amount_milli_satoshis().unwrap() / 1000) + 1;
         let _m = mock_lnurl_pay_callback_endpoint_msg_success_action(
@@ -541,7 +539,7 @@ mod tests {
     #[tokio::test]
     async fn test_lnurl_pay_msg_success_action_error_from_endpoint() -> Result<()> {
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let temp_desc = json!(pay_req.metadata).to_string();
+        let temp_desc = pay_req.metadata_str.clone();
         let inv = rand_invoice_with_description_hash(temp_desc);
         let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
         let expected_error_msg = "Error message from LNURL endpoint";
@@ -572,7 +570,7 @@ mod tests {
     #[tokio::test]
     async fn test_lnurl_pay_url_success_action() -> Result<()> {
         let pay_req = get_test_pay_req_data(0, 100, 0);
-        let temp_desc = json!(pay_req.metadata).to_string();
+        let temp_desc = pay_req.metadata_str.clone();
         let inv = rand_invoice_with_description_hash(temp_desc);
         let user_amount_sat = inv.amount_milli_satoshis().unwrap() / 1000;
         let _m = mock_lnurl_pay_callback_endpoint_url_success_action(

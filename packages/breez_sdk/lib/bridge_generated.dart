@@ -389,17 +389,16 @@ class LnUrlPayRequestData {
   final int minSendable;
   final int maxSendable;
 
-  /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
-  ///
-  /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
-  final List<MetadataItem> metadata;
+  /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map).
+  /// Use `metadata_vec()` to get the parsed items.
+  final String metadataStr;
   final int commentAllowed;
 
   LnUrlPayRequestData({
     required this.callback,
     required this.minSendable,
     required this.maxSendable,
-    required this.metadata,
+    required this.metadataStr,
     required this.commentAllowed,
   });
 }
@@ -509,16 +508,6 @@ class MessageSuccessActionData {
 
   MessageSuccessActionData({
     required this.message,
-  });
-}
-
-class MetadataItem {
-  final String key;
-  final String value;
-
-  MetadataItem({
-    required this.key,
-    required this.value,
   });
 }
 
@@ -1406,10 +1395,6 @@ class LightningToolkitImpl implements LightningToolkit {
     return (raw as List<dynamic>).map(_wire2api_lsp_information).toList();
   }
 
-  List<MetadataItem> _wire2api_list_metadata_item(dynamic raw) {
-    return (raw as List<dynamic>).map(_wire2api_metadata_item).toList();
-  }
-
   List<Payment> _wire2api_list_payment(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_payment).toList();
   }
@@ -1474,7 +1459,7 @@ class LightningToolkitImpl implements LightningToolkit {
       callback: _wire2api_String(arr[0]),
       minSendable: _wire2api_u64(arr[1]),
       maxSendable: _wire2api_u64(arr[2]),
-      metadata: _wire2api_list_metadata_item(arr[3]),
+      metadataStr: _wire2api_String(arr[3]),
       commentAllowed: _wire2api_usize(arr[4]),
     );
   }
@@ -1575,16 +1560,6 @@ class LightningToolkitImpl implements LightningToolkit {
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
     return MessageSuccessActionData(
       message: _wire2api_String(arr[0]),
-    );
-  }
-
-  MetadataItem _wire2api_metadata_item(dynamic raw) {
-    final arr = raw as List<dynamic>;
-    if (arr.length != 2)
-      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
-    return MetadataItem(
-      key: _wire2api_String(arr[0]),
-      value: _wire2api_String(arr[1]),
     );
   }
 
@@ -1890,16 +1865,6 @@ class LightningToolkitPlatform
   }
 
   @protected
-  ffi.Pointer<wire_list_metadata_item> api2wire_list_metadata_item(
-      List<MetadataItem> raw) {
-    final ans = inner.new_list_metadata_item_0(raw.length);
-    for (var i = 0; i < raw.length; ++i) {
-      _api_fill_to_wire_metadata_item(raw[i], ans.ref.ptr[i]);
-    }
-    return ans;
-  }
-
-  @protected
   ffi.Pointer<wire_uint_8_list> api2wire_opt_String(String? raw) {
     return raw == null ? ffi.nullptr : api2wire_String(raw);
   }
@@ -1967,14 +1932,8 @@ class LightningToolkitPlatform
     wireObj.callback = api2wire_String(apiObj.callback);
     wireObj.min_sendable = api2wire_u64(apiObj.minSendable);
     wireObj.max_sendable = api2wire_u64(apiObj.maxSendable);
-    wireObj.metadata = api2wire_list_metadata_item(apiObj.metadata);
+    wireObj.metadata_str = api2wire_String(apiObj.metadataStr);
     wireObj.comment_allowed = api2wire_usize(apiObj.commentAllowed);
-  }
-
-  void _api_fill_to_wire_metadata_item(
-      MetadataItem apiObj, wire_MetadataItem wireObj) {
-    wireObj.key = api2wire_String(apiObj.key);
-    wireObj.value = api2wire_String(apiObj.value);
   }
 
   void _api_fill_to_wire_opt_box_autoadd_config(
@@ -2564,21 +2523,6 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       _new_box_autoadd_ln_url_pay_request_data_0Ptr
           .asFunction<ffi.Pointer<wire_LnUrlPayRequestData> Function()>();
 
-  ffi.Pointer<wire_list_metadata_item> new_list_metadata_item_0(
-    int len,
-  ) {
-    return _new_list_metadata_item_0(
-      len,
-    );
-  }
-
-  late final _new_list_metadata_item_0Ptr = _lookup<
-      ffi.NativeFunction<
-          ffi.Pointer<wire_list_metadata_item> Function(
-              ffi.Int32)>>('new_list_metadata_item_0');
-  late final _new_list_metadata_item_0 = _new_list_metadata_item_0Ptr
-      .asFunction<ffi.Pointer<wire_list_metadata_item> Function(int)>();
-
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
   ) {
@@ -2640,19 +2584,6 @@ class wire_GreenlightCredentials extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> device_cert;
 }
 
-class wire_MetadataItem extends ffi.Struct {
-  external ffi.Pointer<wire_uint_8_list> key;
-
-  external ffi.Pointer<wire_uint_8_list> value;
-}
-
-class wire_list_metadata_item extends ffi.Struct {
-  external ffi.Pointer<wire_MetadataItem> ptr;
-
-  @ffi.Int32()
-  external int len;
-}
-
 class wire_LnUrlPayRequestData extends ffi.Struct {
   external ffi.Pointer<wire_uint_8_list> callback;
 
@@ -2662,7 +2593,7 @@ class wire_LnUrlPayRequestData extends ffi.Struct {
   @ffi.Uint64()
   external int max_sendable;
 
-  external ffi.Pointer<wire_list_metadata_item> metadata;
+  external ffi.Pointer<wire_uint_8_list> metadata_str;
 
   @uintptr_t()
   external int comment_allowed;

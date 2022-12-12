@@ -5,8 +5,6 @@ use bip21::Uri;
 use bitcoin::bech32;
 use bitcoin::bech32::FromBase32;
 use serde::{Deserialize, Serialize};
-use serde_with::json::JsonString;
-use serde_with::serde_as;
 
 use crate::invoice::{parse_invoice, LNInvoice};
 use crate::lnurl::input_parser::InputType::*;
@@ -90,7 +88,7 @@ use crate::lnurl::{maybe_replace_host_with_mockito_test_host, LnUrlErrorData};
 ///         assert_eq!(pd.max_sendable, 16000);
 ///         assert_eq!(pd.min_sendable, 4000);
 ///         assert_eq!(pd.comment_allowed, 0);
-///         assert_eq!(pd.metadata.len(), 3);
+///         assert_eq!(pd.metadata_vec()?.len(), 3);
 ///     }
 /// }
 /// ```
@@ -342,7 +340,6 @@ pub enum InputType {
     LnUrl(LnUrlRequestData),
 }
 
-#[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
@@ -353,19 +350,25 @@ pub enum LnUrlRequestData {
     Error(LnUrlErrorData),
 }
 
-#[serde_as]
 #[derive(Clone, Deserialize, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LnUrlPayRequestData {
     pub callback: String,
     pub min_sendable: u64,
     pub max_sendable: u64,
-    /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
-    ///
-    /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
-    #[serde_as(as = "JsonString")]
-    pub metadata: Vec<MetadataItem>,
+    /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map).
+    /// Use `metadata_vec()` to get the parsed items.
+    #[serde(rename(deserialize = "metadata"))]
+    pub metadata_str: String,
     pub comment_allowed: usize,
+}
+
+impl LnUrlPayRequestData {
+    /// Parsed metadata items. Use `metadata_str` to get the raw metadata string, as received from
+    /// the LNURL endpoint.
+    pub fn metadata_vec(&self) -> Result<Vec<MetadataItem>> {
+        serde_json::from_str::<Vec<MetadataItem>>(&self.metadata_str).map_err(|err| anyhow!(err))
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -801,19 +804,25 @@ mod tests {
             assert_eq!(pd.min_sendable, 4000);
             assert_eq!(pd.comment_allowed, 0);
 
-            assert_eq!(pd.metadata.len(), 3);
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(pd.metadata_vec()?.len(), 3);
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.key,
+                "text/plain"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.value,
+                "WRhtV"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.key,
                 "text/long-desc"
             );
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.value,
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.value,
                 "MBTrTiLCFS"
             );
             assert_eq!(
-                pd.metadata.get(2).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(2).ok_or("Key not found")?.key,
                 "image/png;base64"
             );
         }
@@ -835,19 +844,25 @@ mod tests {
             assert_eq!(pd.min_sendable, 4000);
             assert_eq!(pd.comment_allowed, 0);
 
-            assert_eq!(pd.metadata.len(), 3);
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(pd.metadata_vec()?.len(), 3);
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.key,
+                "text/plain"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.value,
+                "WRhtV"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.key,
                 "text/long-desc"
             );
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.value,
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.value,
                 "MBTrTiLCFS"
             );
             assert_eq!(
-                pd.metadata.get(2).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(2).ok_or("Key not found")?.key,
                 "image/png;base64"
             );
         }
@@ -956,19 +971,25 @@ mod tests {
             assert_eq!(pd.min_sendable, 4000);
             assert_eq!(pd.comment_allowed, 0);
 
-            assert_eq!(pd.metadata.len(), 3);
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(pd.metadata_vec()?.len(), 3);
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.key,
+                "text/plain"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.value,
+                "WRhtV"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.key,
                 "text/long-desc"
             );
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.value,
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.value,
                 "MBTrTiLCFS"
             );
             assert_eq!(
-                pd.metadata.get(2).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(2).ok_or("Key not found")?.key,
                 "image/png;base64"
             );
         }

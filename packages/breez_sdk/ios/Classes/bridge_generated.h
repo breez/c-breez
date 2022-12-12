@@ -26,21 +26,11 @@ typedef struct wire_GreenlightCredentials {
   struct wire_uint_8_list *device_cert;
 } wire_GreenlightCredentials;
 
-typedef struct wire_MetadataItem {
-  struct wire_uint_8_list *key;
-  struct wire_uint_8_list *value;
-} wire_MetadataItem;
-
-typedef struct wire_list_metadata_item {
-  struct wire_MetadataItem *ptr;
-  int32_t len;
-} wire_list_metadata_item;
-
 typedef struct wire_LnUrlPayRequestData {
   struct wire_uint_8_list *callback;
   uint64_t min_sendable;
   uint64_t max_sendable;
-  struct wire_list_metadata_item *metadata;
+  struct wire_uint_8_list *metadata_str;
   uintptr_t comment_allowed;
 } wire_LnUrlPayRequestData;
 
@@ -140,8 +130,6 @@ int64_t *new_box_autoadd_i64_0(int64_t value);
 
 struct wire_LnUrlPayRequestData *new_box_autoadd_ln_url_pay_request_data_0(void);
 
-struct wire_list_metadata_item *new_list_metadata_item_0(int32_t len);
-
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
 void free_WireSyncReturnStruct(struct WireSyncReturnStruct val);
@@ -177,7 +165,6 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_greenlight_credentials_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_i64_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_ln_url_pay_request_data_0);
-    dummy_var ^= ((int64_t) (void*) new_list_metadata_item_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

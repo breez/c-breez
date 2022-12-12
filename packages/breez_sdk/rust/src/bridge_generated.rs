@@ -36,7 +36,6 @@ use crate::lnurl::input_parser::LnUrlAuthRequestData;
 use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lnurl::input_parser::LnUrlRequestData;
 use crate::lnurl::input_parser::LnUrlWithdrawRequestData;
-use crate::lnurl::input_parser::MetadataItem;
 use crate::lnurl::pay::model::MessageSuccessActionData;
 use crate::lnurl::pay::model::Resp;
 use crate::lnurl::pay::model::SuccessAction;
@@ -614,7 +613,7 @@ impl support::IntoDart for LnUrlPayRequestData {
             self.callback.into_dart(),
             self.min_sendable.into_dart(),
             self.max_sendable.into_dart(),
-            self.metadata.into_dart(),
+            self.metadata_str.into_dart(),
             self.comment_allowed.into_dart(),
         ]
         .into_dart()
@@ -704,13 +703,6 @@ impl support::IntoDart for MessageSuccessActionData {
     }
 }
 impl support::IntoDartExceptPrimitive for MessageSuccessActionData {}
-
-impl support::IntoDart for MetadataItem {
-    fn into_dart(self) -> support::DartAbi {
-        vec![self.key.into_dart(), self.value.into_dart()].into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for MetadataItem {}
 
 impl support::IntoDart for Network {
     fn into_dart(self) -> support::DartAbi {

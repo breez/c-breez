@@ -308,7 +308,7 @@ impl NodeAPI for Greenlight {
         let mut client = self.get_client().await?;
 
         let request = pb::KeysendRequest {
-            node_id: node_id.into(),
+            node_id: hex::decode(node_id)?,
             amount: Some(Amount {
                 unit: Some(Unit::Satoshi(amount_sats)),
             }),

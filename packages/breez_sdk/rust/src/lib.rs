@@ -21,7 +21,10 @@ pub use breez_services::{
     mnemonic_to_seed, BreezEvent, BreezEventListener, BreezServices, InvoicePaidDetails,
 };
 pub use fiat::{CurrencyInfo, FiatCurrency, LocaleOverrides, LocalizedName, Rate, Symbol};
-pub use input_parser::{parse, BitcoinAddressData, InputType};
+pub use input_parser::{
+    parse, BitcoinAddressData, InputType, LnUrlAuthRequestData, LnUrlErrorData,
+    LnUrlPayRequestData, LnUrlRequestData, LnUrlResponse, LnUrlWithdrawRequestData, MetadataItem,
+};
 pub use invoice::{parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 pub use lsp::LspInformation;
 pub use models::*;

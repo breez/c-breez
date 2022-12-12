@@ -428,7 +428,7 @@ fn invoice_to_transaction(
         keysend: false,
         bolt11: invoice.bolt11,
         pending: false,
-        description: Some(ln_invoice.description),
+        description: ln_invoice.description,
     })
 }
 
@@ -436,7 +436,7 @@ fn invoice_to_transaction(
 fn payment_to_transaction(payment: pb::Payment) -> Result<crate::models::Payment> {
     let mut description = None;
     if !payment.bolt11.is_empty() {
-        description = Some(parse_invoice(&payment.bolt11)?.description);
+        description = parse_invoice(&payment.bolt11)?.description;
     }
 
     let payment_amount = amount_to_msat(payment.amount.unwrap_or_default()) as i32;
@@ -454,7 +454,7 @@ fn payment_to_transaction(payment: pb::Payment) -> Result<crate::models::Payment
         keysend: payment.bolt11.is_empty(),
         bolt11: payment.bolt11,
         pending: pb::PayStatus::from_i32(payment.status) == Some(pb::PayStatus::Pending),
-        description: description,
+        description,
     })
 }
 

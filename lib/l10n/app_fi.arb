@@ -2,7 +2,7 @@
   "home_drawer_item_title_preferences": "Asetukset",
   "home_drawer_item_title_fiat_currencies": "Valuutat",
   "home_drawer_item_title_network": "Verkko",
-  "home_drawer_item_title_security": "Turvallisuus & varmuuskopio",
+  "home_drawer_item_title_security": "Turvallisuus",
   "home_drawer_item_title_transactions": "Tapahtumat",
   "home_drawer_item_title_balance": "Saldo",
   "home_drawer_item_title_podcasts": "Podcastit",
@@ -786,7 +786,7 @@
   "connect_to_pay_error_wrong_amount": "Maksupyynnössä oleva summa on väärä",
   "connect_to_pay_error_status_tracking_already_started": "Tilanteen seuranta on jo käynnistetty, se pitää pysäyttää ennen uudelleen aloitusta",
   "connect_to_pay_error_link_expired": "Tämä linkki on vanhentunut, eikä se ole kelvollinen maksun suorittamiseksi.",
-  "security_and_backup_title": "Turvallisuus & varmuuskopiointi",
+  "security_and_backup_title": "Turvallisuus",
   "security_and_backup_last_backup_no_account": "Varmuuskopioitu viimeksi {lastBackup}",
   "@security_and_backup_last_backup_no_account": {
     "placeholders": {

@@ -286,8 +286,12 @@ class GreenlightCredentials {
 
 @freezed
 class InputType with _$InputType {
+  /// # Supported standards
+  ///
+  /// - plain on-chain BTC address
+  /// - BIP21
   const factory InputType.bitcoinAddress({
-    required BitcoinAddressData data,
+    required BitcoinAddressData address,
   }) = InputType_BitcoinAddress;
 
   /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
@@ -301,12 +305,23 @@ class InputType with _$InputType {
   const factory InputType.url({
     required String url,
   }) = InputType_Url;
-  const factory InputType.lnUrlPay({
-    required String lnurl,
-  }) = InputType_LnUrlPay;
-  const factory InputType.lnUrlWithdraw({
-    required String lnurl,
-  }) = InputType_LnUrlWithdraw;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-03 `withdrawRequest` spec
+  /// - LUD-04 `auth` base spec
+  /// - LUD-06 `payRequest` spec
+  /// - LUD-16 LN Address
+  /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
+  ///
+  /// # Not supported (yet)
+  ///
+  /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
+  /// - LUD-19 Pay link discoverable from withdraw link
+  const factory InputType.lnUrl({
+    required LnUrlResponse data,
+  }) = InputType_LnUrl;
 }
 
 class InvoicePaidDetails {
@@ -323,7 +338,8 @@ class LNInvoice {
   final String bolt11;
   final String payeePubkey;
   final String paymentHash;
-  final String description;
+  final String? description;
+  final String? descriptionHash;
   final int? amountMsat;
   final int timestamp;
   final int expiry;
@@ -334,12 +350,81 @@ class LNInvoice {
     required this.bolt11,
     required this.payeePubkey,
     required this.paymentHash,
-    required this.description,
+    this.description,
+    this.descriptionHash,
     this.amountMsat,
     required this.timestamp,
     required this.expiry,
     required this.routingHints,
     required this.paymentSecret,
+  });
+}
+
+class LnUrlAuthRequestData {
+  final String k1;
+
+  LnUrlAuthRequestData({
+    required this.k1,
+  });
+}
+
+class LnUrlErrorData {
+  final String reason;
+
+  LnUrlErrorData({
+    required this.reason,
+  });
+}
+
+class LnUrlPayRequestData {
+  final String callback;
+  final int minSendable;
+  final int maxSendable;
+
+  /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
+  ///
+  /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
+  final List<MetadataItem> metadata;
+  final int commentAllowed;
+
+  LnUrlPayRequestData({
+    required this.callback,
+    required this.minSendable,
+    required this.maxSendable,
+    required this.metadata,
+    required this.commentAllowed,
+  });
+}
+
+@freezed
+class LnUrlResponse with _$LnUrlResponse {
+  const factory LnUrlResponse.pay({
+    required LnUrlPayRequestData data,
+  }) = LnUrlResponse_Pay;
+  const factory LnUrlResponse.withdraw({
+    required LnUrlWithdrawRequestData data,
+  }) = LnUrlResponse_Withdraw;
+  const factory LnUrlResponse.auth({
+    required LnUrlAuthRequestData data,
+  }) = LnUrlResponse_Auth;
+  const factory LnUrlResponse.errorResponse({
+    required LnUrlErrorData data,
+  }) = LnUrlResponse_ErrorResponse;
+}
+
+class LnUrlWithdrawRequestData {
+  final String callback;
+  final String k1;
+  final String defaultDescription;
+  final int minWithdrawable;
+  final int maxWithdrawable;
+
+  LnUrlWithdrawRequestData({
+    required this.callback,
+    required this.k1,
+    required this.defaultDescription,
+    required this.minWithdrawable,
+    required this.maxWithdrawable,
   });
 }
 
@@ -408,6 +493,16 @@ class LspInformation {
     required this.lspPubkey,
     required this.maxInactiveDuration,
     required this.channelMinimumFeeMsat,
+  });
+}
+
+class MetadataItem {
+  final String key;
+  final String value;
+
+  MetadataItem({
+    required this.key,
+    required this.value,
   });
 }
 
@@ -1055,6 +1150,29 @@ class LightningToolkitImpl implements LightningToolkit {
     return _wire2api_ln_invoice(raw);
   }
 
+  LnUrlAuthRequestData _wire2api_box_autoadd_ln_url_auth_request_data(
+      dynamic raw) {
+    return _wire2api_ln_url_auth_request_data(raw);
+  }
+
+  LnUrlErrorData _wire2api_box_autoadd_ln_url_error_data(dynamic raw) {
+    return _wire2api_ln_url_error_data(raw);
+  }
+
+  LnUrlPayRequestData _wire2api_box_autoadd_ln_url_pay_request_data(
+      dynamic raw) {
+    return _wire2api_ln_url_pay_request_data(raw);
+  }
+
+  LnUrlResponse _wire2api_box_autoadd_ln_url_response(dynamic raw) {
+    return _wire2api_ln_url_response(raw);
+  }
+
+  LnUrlWithdrawRequestData _wire2api_box_autoadd_ln_url_withdraw_request_data(
+      dynamic raw) {
+    return _wire2api_ln_url_withdraw_request_data(raw);
+  }
+
   NodeState _wire2api_box_autoadd_node_state(dynamic raw) {
     return _wire2api_node_state(raw);
   }
@@ -1137,7 +1255,7 @@ class LightningToolkitImpl implements LightningToolkit {
     switch (raw[0]) {
       case 0:
         return InputType_BitcoinAddress(
-          data: _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
+          address: _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
         );
       case 1:
         return InputType_Bolt11(
@@ -1152,12 +1270,8 @@ class LightningToolkitImpl implements LightningToolkit {
           url: _wire2api_String(raw[1]),
         );
       case 4:
-        return InputType_LnUrlPay(
-          lnurl: _wire2api_String(raw[1]),
-        );
-      case 5:
-        return InputType_LnUrlWithdraw(
-          lnurl: _wire2api_String(raw[1]),
+        return InputType_LnUrl(
+          data: _wire2api_box_autoadd_ln_url_response(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -1190,6 +1304,10 @@ class LightningToolkitImpl implements LightningToolkit {
     return (raw as List<dynamic>).map(_wire2api_lsp_information).toList();
   }
 
+  List<MetadataItem> _wire2api_list_metadata_item(dynamic raw) {
+    return (raw as List<dynamic>).map(_wire2api_metadata_item).toList();
+  }
+
   List<Payment> _wire2api_list_payment(dynamic raw) {
     return (raw as List<dynamic>).map(_wire2api_payment).toList();
   }
@@ -1212,18 +1330,86 @@ class LightningToolkitImpl implements LightningToolkit {
 
   LNInvoice _wire2api_ln_invoice(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 9)
-      throw Exception('unexpected arr length: expect 9 but see ${arr.length}');
+    if (arr.length != 10)
+      throw Exception('unexpected arr length: expect 10 but see ${arr.length}');
     return LNInvoice(
       bolt11: _wire2api_String(arr[0]),
       payeePubkey: _wire2api_String(arr[1]),
       paymentHash: _wire2api_String(arr[2]),
-      description: _wire2api_String(arr[3]),
-      amountMsat: _wire2api_opt_box_autoadd_u64(arr[4]),
-      timestamp: _wire2api_u64(arr[5]),
-      expiry: _wire2api_u64(arr[6]),
-      routingHints: _wire2api_list_route_hint(arr[7]),
-      paymentSecret: _wire2api_uint_8_list(arr[8]),
+      description: _wire2api_opt_String(arr[3]),
+      descriptionHash: _wire2api_opt_String(arr[4]),
+      amountMsat: _wire2api_opt_box_autoadd_u64(arr[5]),
+      timestamp: _wire2api_u64(arr[6]),
+      expiry: _wire2api_u64(arr[7]),
+      routingHints: _wire2api_list_route_hint(arr[8]),
+      paymentSecret: _wire2api_uint_8_list(arr[9]),
+    );
+  }
+
+  LnUrlAuthRequestData _wire2api_ln_url_auth_request_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return LnUrlAuthRequestData(
+      k1: _wire2api_String(arr[0]),
+    );
+  }
+
+  LnUrlErrorData _wire2api_ln_url_error_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return LnUrlErrorData(
+      reason: _wire2api_String(arr[0]),
+    );
+  }
+
+  LnUrlPayRequestData _wire2api_ln_url_pay_request_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return LnUrlPayRequestData(
+      callback: _wire2api_String(arr[0]),
+      minSendable: _wire2api_u16(arr[1]),
+      maxSendable: _wire2api_u16(arr[2]),
+      metadata: _wire2api_list_metadata_item(arr[3]),
+      commentAllowed: _wire2api_u16(arr[4]),
+    );
+  }
+
+  LnUrlResponse _wire2api_ln_url_response(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return LnUrlResponse_Pay(
+          data: _wire2api_box_autoadd_ln_url_pay_request_data(raw[1]),
+        );
+      case 1:
+        return LnUrlResponse_Withdraw(
+          data: _wire2api_box_autoadd_ln_url_withdraw_request_data(raw[1]),
+        );
+      case 2:
+        return LnUrlResponse_Auth(
+          data: _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
+        );
+      case 3:
+        return LnUrlResponse_ErrorResponse(
+          data: _wire2api_box_autoadd_ln_url_error_data(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  LnUrlWithdrawRequestData _wire2api_ln_url_withdraw_request_data(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 5)
+      throw Exception('unexpected arr length: expect 5 but see ${arr.length}');
+    return LnUrlWithdrawRequestData(
+      callback: _wire2api_String(arr[0]),
+      k1: _wire2api_String(arr[1]),
+      defaultDescription: _wire2api_String(arr[2]),
+      minWithdrawable: _wire2api_u16(arr[3]),
+      maxWithdrawable: _wire2api_u16(arr[4]),
     );
   }
 
@@ -1278,6 +1464,16 @@ class LightningToolkitImpl implements LightningToolkit {
       lspPubkey: _wire2api_uint_8_list(arr[12]),
       maxInactiveDuration: _wire2api_i64(arr[13]),
       channelMinimumFeeMsat: _wire2api_i64(arr[14]),
+    );
+  }
+
+  MetadataItem _wire2api_metadata_item(dynamic raw) {
+    final arr = raw as List<dynamic>;
+    if (arr.length != 2)
+      throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+    return MetadataItem(
+      key: _wire2api_String(arr[0]),
+      value: _wire2api_String(arr[1]),
     );
   }
 
@@ -1424,6 +1620,10 @@ class LightningToolkitImpl implements LightningToolkit {
       rtl: _wire2api_opt_box_autoadd_bool(arr[2]),
       position: _wire2api_opt_box_autoadd_u32(arr[3]),
     );
+  }
+
+  int _wire2api_u16(dynamic raw) {
+    return raw as int;
   }
 
   int _wire2api_u32(dynamic raw) {

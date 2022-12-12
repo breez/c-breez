@@ -2,7 +2,7 @@
   "home_drawer_item_title_preferences": "Preferences",
   "home_drawer_item_title_fiat_currencies": "Fiat Currencies",
   "home_drawer_item_title_network": "Network",
-  "home_drawer_item_title_security": "Security & Backup",
+  "home_drawer_item_title_security": "Security",
   "home_drawer_item_title_transactions": "Transactions",
   "home_drawer_item_title_balance": "Balance",
   "home_drawer_item_title_podcasts": "Podcasts",
@@ -786,7 +786,7 @@
   "connect_to_pay_error_wrong_amount": "Wrong amount in payment request",
   "connect_to_pay_error_status_tracking_already_started": "Status tracking already started, must be stopped before start again",
   "connect_to_pay_error_link_expired": "This link had expired and is no longer valid for payment.",
-  "security_and_backup_title": "Security & Backup",
+  "security_and_backup_title": "Security",
   "security_and_backup_last_backup_no_account": "Last backup: {lastBackup}",
   "@security_and_backup_last_backup_no_account": {
     "placeholders": {

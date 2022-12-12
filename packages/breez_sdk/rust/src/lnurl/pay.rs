@@ -4,8 +4,8 @@ use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 use crate::lnurl::pay::model::{CallbackResponse, ValidatedCallbackResponse};
 use crate::lnurl::LnUrlErrorData;
 use anyhow::{anyhow, Result};
-use bitcoin_hashes::{Hash, sha256};
-use lightning_invoice::{Sha256};
+use bitcoin_hashes::{sha256, Hash};
+use lightning_invoice::Sha256;
 use serde_json::json;
 use std::str::FromStr;
 
@@ -14,9 +14,9 @@ pub(crate) async fn validate_lnurl_pay(
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
 ) -> Result<ValidatedCallbackResponse> {
-    validate_user_input(user_amount_sat, comment, req_data.clone())?;
+    validate_user_input(user_amount_sat, &comment, &req_data)?;
 
-    let callback_url = build_callback_url(&req_data, user_amount_sat)?;
+    let callback_url = build_callback_url(user_amount_sat, &comment, &req_data)?;
     let callback_resp_text = reqwest::get(&callback_url).await?.text().await?;
 
     if let Ok(err) = serde_json::from_str::<LnUrlErrorData>(&callback_resp_text) {
@@ -32,24 +32,28 @@ pub(crate) async fn validate_lnurl_pay(
     }
 }
 
-fn build_callback_url(req_data: &LnUrlPayRequestData, user_amount_sat: u64) -> Result<String> {
-    // TODO add comments arg
-
+fn build_callback_url(
+    user_amount_sat: u64,
+    user_comment: &Option<String>,
+    req_data: &LnUrlPayRequestData,
+) -> Result<String> {
     let amount_msat = (user_amount_sat * 1000).to_string();
-    let mut callback_url = reqwest::Url::from_str(&req_data.callback)?
-        .query_pairs_mut()
-        .append_pair("amount", &amount_msat)
-        .finish()
-        .to_string();
+    let mut url = reqwest::Url::from_str(&req_data.callback)?;
 
+    url.query_pairs_mut().append_pair("amount", &amount_msat);
+    if let Some(comment) = user_comment {
+        url.query_pairs_mut().append_pair("comment", comment);
+    }
+
+    let mut callback_url = url.to_string();
     callback_url = maybe_replace_host_with_mockito_test_host(callback_url)?;
     Ok(callback_url)
 }
 
 fn validate_user_input(
     user_amount_sat: u64,
-    comment: Option<String>,
-    req_data: LnUrlPayRequestData,
+    comment: &Option<String>,
+    req_data: &LnUrlPayRequestData,
 ) -> Result<()> {
     if user_amount_sat < req_data.min_sendable {
         return Err(anyhow!("Amount is smaller than the minimum allowed"));
@@ -212,7 +216,7 @@ mod tests {
         error: Option<String>,
         pr: String,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(pay_req, user_amount_sat)?;
+        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -242,7 +246,7 @@ mod tests {
         user_amount_sat: u64,
         error: Option<String>,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(pay_req, user_amount_sat)?;
+        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -275,7 +279,7 @@ mod tests {
         error: Option<String>,
         pr: String,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(pay_req, user_amount_sat)?;
+        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -310,7 +314,7 @@ mod tests {
         error: Option<String>,
         pr: String,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(pay_req, user_amount_sat)?;
+        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -351,17 +355,20 @@ mod tests {
 
     #[test]
     fn test_lnurl_pay_validate_input() -> Result<()> {
-        assert!(validate_user_input(100, None, get_test_pay_req_data(0, 100, 0)).is_ok());
+        assert!(validate_user_input(100, &None, &get_test_pay_req_data(0, 100, 0)).is_ok());
         assert!(
-            validate_user_input(100, Some("test".into()), get_test_pay_req_data(0, 100, 5)).is_ok()
+            validate_user_input(100, &Some("test".into()), &get_test_pay_req_data(0, 100, 5))
+                .is_ok()
         );
 
-        assert!(validate_user_input(5, None, get_test_pay_req_data(10, 100, 5)).is_err());
-        assert!(validate_user_input(200, None, get_test_pay_req_data(10, 100, 5)).is_err());
-        assert!(
-            validate_user_input(100, Some("test".into()), get_test_pay_req_data(10, 100, 0))
-                .is_err()
-        );
+        assert!(validate_user_input(5, &None, &get_test_pay_req_data(10, 100, 5)).is_err());
+        assert!(validate_user_input(200, &None, &get_test_pay_req_data(10, 100, 5)).is_err());
+        assert!(validate_user_input(
+            100,
+            &Some("test".into()),
+            &get_test_pay_req_data(10, 100, 0)
+        )
+        .is_err());
 
         Ok(())
     }
@@ -593,5 +600,26 @@ mod tests {
             )),
             _ => Err(anyhow!("Unexpected success action type")),
         }
+    }
+
+    #[test]
+    fn test_lnurl_pay_build_callback_url() -> Result<()> {
+        let pay_req = get_test_pay_req_data(0, 100, 0);
+        let user_amount_sat = 50;
+
+        let amount_arg = format!("amount={}", user_amount_sat * 1000);
+        let user_comment = "test comment".to_string();
+        let comment_arg = format!("comment={}", user_comment);
+
+        let url_amount_no_comment = build_callback_url(user_amount_sat, &None, &pay_req)?;
+        assert!(url_amount_no_comment.contains(&amount_arg));
+        assert!(!url_amount_no_comment.contains(&comment_arg));
+
+        let url_amount_with_comment =
+            build_callback_url(user_amount_sat, &Some(user_comment), &pay_req)?;
+        assert!(url_amount_with_comment.contains(&amount_arg));
+        assert!(url_amount_with_comment.contains("comment=test+comment"));
+
+        Ok(())
     }
 }

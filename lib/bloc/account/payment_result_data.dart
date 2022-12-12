@@ -1,6 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/locale.dart';
 
 class PaymentResultData {
@@ -8,7 +9,7 @@ class PaymentResultData {
   final Object? error;
   final SuccessActionData? successActionData;
 
-  PaymentResultData({
+  const PaymentResultData({
     this.paymentInfo,
     this.error,
     this.successActionData,
@@ -16,12 +17,9 @@ class PaymentResultData {
 
   String errorMessage(CurrencyState currencyState) {
     final texts = getSystemAppLocalizations();
-    String? displayMessage = error?.toString();
-    if (displayMessage != null) {
-      displayMessage =
-          RegExp(r'(?<=message: ")(.*)(?=",)').stringMatch(displayMessage);
-    }
-    return displayMessage ??=
-        texts.payment_error_to_send('').replaceAll(':', '');
+    String? displayMessage = error != null ? extractExceptionMessage(error!) : null;
+    return displayMessage != null
+        ? texts.payment_error_to_send(displayMessage)
+        : texts.payment_error_to_send_unknown_reason;
   }
 }

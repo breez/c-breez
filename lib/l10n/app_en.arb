@@ -2107,6 +2107,7 @@
   "payment_info_title_send_to_node": "Send to Node",
   "payment_info_title_unknown": "Unknown",
   "payment_info_title_pending_closed_channel": "Pending Closed Channel",
+  "payment_error_to_send_unknown_reason": "Failed to send payment",
   "payment_error_to_send": "Failed to send payment: {error}",
   "@payment_error_to_send": {
     "placeholders": {

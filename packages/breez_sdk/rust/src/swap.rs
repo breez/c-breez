@@ -98,7 +98,7 @@ impl BTCReceiveSwap {
 
     pub(crate) async fn on_event(&self, e: BreezEvent) -> Result<()> {
         match e {
-            BreezEvent::NewBlock(tip) => {
+            BreezEvent::NewBlock { block: tip } => {
                 debug!("got chain event {:?}", e);
                 let swaps = self.list_swaps(SwapStatus::Initial)?;
                 let to_check: Vec<SwapInfo> = swaps

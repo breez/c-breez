@@ -478,8 +478,8 @@ impl support::IntoDartExceptPrimitive for BitcoinAddressData {}
 impl support::IntoDart for BreezEvent {
     fn into_dart(self) -> support::DartAbi {
         match self {
-            Self::NewBlock(field0) => vec![0.into_dart(), field0.into_dart()],
-            Self::InvoicePaid(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::NewBlock { block } => vec![0.into_dart(), block.into_dart()],
+            Self::InvoicePaid { details } => vec![1.into_dart(), details.into_dart()],
         }
         .into_dart()
     }
@@ -518,12 +518,12 @@ impl support::IntoDartExceptPrimitive for GreenlightCredentials {}
 impl support::IntoDart for InputType {
     fn into_dart(self) -> support::DartAbi {
         match self {
-            Self::BitcoinAddress(field0) => vec![0.into_dart(), field0.into_dart()],
-            Self::Bolt11(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::NodeId(field0) => vec![2.into_dart(), field0.into_dart()],
-            Self::Url(field0) => vec![3.into_dart(), field0.into_dart()],
-            Self::LnUrlPay(field0) => vec![4.into_dart(), field0.into_dart()],
-            Self::LnUrlWithdraw(field0) => vec![5.into_dart(), field0.into_dart()],
+            Self::BitcoinAddress { data } => vec![0.into_dart(), data.into_dart()],
+            Self::Bolt11 { invoice } => vec![1.into_dart(), invoice.into_dart()],
+            Self::NodeId { node_id } => vec![2.into_dart(), node_id.into_dart()],
+            Self::Url { url } => vec![3.into_dart(), url.into_dart()],
+            Self::LnUrlPay { lnurl } => vec![4.into_dart(), lnurl.into_dart()],
+            Self::LnUrlWithdraw { lnurl } => vec![5.into_dart(), lnurl.into_dart()],
         }
         .into_dart()
     }
@@ -664,7 +664,7 @@ impl support::IntoDartExceptPrimitive for Rate {}
 
 impl support::IntoDart for RouteHint {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.0.into_dart()].into_dart()
+        vec![self.hops.into_dart()].into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for RouteHint {}

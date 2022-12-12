@@ -212,12 +212,12 @@ class BitcoinAddressData {
 
 @freezed
 class BreezEvent with _$BreezEvent {
-  const factory BreezEvent.newBlock(
-    int field0,
-  ) = BreezEvent_NewBlock;
-  const factory BreezEvent.invoicePaid(
-    InvoicePaidDetails field0,
-  ) = BreezEvent_InvoicePaid;
+  const factory BreezEvent.newBlock({
+    required int block,
+  }) = BreezEvent_NewBlock;
+  const factory BreezEvent.invoicePaid({
+    required InvoicePaidDetails details,
+  }) = BreezEvent_InvoicePaid;
 }
 
 class Config {
@@ -286,27 +286,27 @@ class GreenlightCredentials {
 
 @freezed
 class InputType with _$InputType {
-  const factory InputType.bitcoinAddress(
-    BitcoinAddressData field0,
-  ) = InputType_BitcoinAddress;
+  const factory InputType.bitcoinAddress({
+    required BitcoinAddressData data,
+  }) = InputType_BitcoinAddress;
 
   /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
   /// and discards all other data.
-  const factory InputType.bolt11(
-    LNInvoice field0,
-  ) = InputType_Bolt11;
-  const factory InputType.nodeId(
-    String field0,
-  ) = InputType_NodeId;
-  const factory InputType.url(
-    String field0,
-  ) = InputType_Url;
-  const factory InputType.lnUrlPay(
-    String field0,
-  ) = InputType_LnUrlPay;
-  const factory InputType.lnUrlWithdraw(
-    String field0,
-  ) = InputType_LnUrlWithdraw;
+  const factory InputType.bolt11({
+    required LNInvoice invoice,
+  }) = InputType_Bolt11;
+  const factory InputType.nodeId({
+    required String nodeId,
+  }) = InputType_NodeId;
+  const factory InputType.url({
+    required String url,
+  }) = InputType_Url;
+  const factory InputType.lnUrlPay({
+    required String lnurl,
+  }) = InputType_LnUrlPay;
+  const factory InputType.lnUrlWithdraw({
+    required String lnurl,
+  }) = InputType_LnUrlWithdraw;
 }
 
 class InvoicePaidDetails {
@@ -492,10 +492,10 @@ class Rate {
 }
 
 class RouteHint {
-  final List<RouteHintHop> field0;
+  final List<RouteHintHop> hops;
 
   RouteHint({
-    required this.field0,
+    required this.hops,
   });
 }
 
@@ -1075,11 +1075,11 @@ class LightningToolkitImpl implements LightningToolkit {
     switch (raw[0]) {
       case 0:
         return BreezEvent_NewBlock(
-          _wire2api_u32(raw[1]),
+          block: _wire2api_u32(raw[1]),
         );
       case 1:
         return BreezEvent_InvoicePaid(
-          _wire2api_box_autoadd_invoice_paid_details(raw[1]),
+          details: _wire2api_box_autoadd_invoice_paid_details(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -1137,27 +1137,27 @@ class LightningToolkitImpl implements LightningToolkit {
     switch (raw[0]) {
       case 0:
         return InputType_BitcoinAddress(
-          _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
+          data: _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
         );
       case 1:
         return InputType_Bolt11(
-          _wire2api_box_autoadd_ln_invoice(raw[1]),
+          invoice: _wire2api_box_autoadd_ln_invoice(raw[1]),
         );
       case 2:
         return InputType_NodeId(
-          _wire2api_String(raw[1]),
+          nodeId: _wire2api_String(raw[1]),
         );
       case 3:
         return InputType_Url(
-          _wire2api_String(raw[1]),
+          url: _wire2api_String(raw[1]),
         );
       case 4:
         return InputType_LnUrlPay(
-          _wire2api_String(raw[1]),
+          lnurl: _wire2api_String(raw[1]),
         );
       case 5:
         return InputType_LnUrlWithdraw(
-          _wire2api_String(raw[1]),
+          lnurl: _wire2api_String(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -1370,7 +1370,7 @@ class LightningToolkitImpl implements LightningToolkit {
     if (arr.length != 1)
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
     return RouteHint(
-      field0: _wire2api_list_route_hint_hop(arr[0]),
+      hops: _wire2api_list_route_hint_hop(arr[0]),
     );
   }
 

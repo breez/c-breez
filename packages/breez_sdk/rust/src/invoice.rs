@@ -39,12 +39,14 @@ pub struct RouteHintHop {
 }
 
 #[derive(Default, Debug, PartialEq)]
-pub struct RouteHint(pub Vec<RouteHintHop>);
+pub struct RouteHint {
+    pub hops: Vec<RouteHintHop>,
+}
 
 impl RouteHint {
     pub fn to_ldk_hint(&self) -> Result<router::RouteHint> {
         let mut hops = Vec::new();
-        for hop in self.0.iter() {
+        for hop in self.hops.iter() {
             let pubkey_res = PublicKey::from_str(&hop.src_node_id)?;
 
             let router_hop = router::RouteHintHop {
@@ -79,7 +81,7 @@ impl RouteHint {
             };
             hops.push(router_hop);
         }
-        RouteHint(hops)
+        RouteHint { hops }
     }
 }
 
@@ -187,7 +189,9 @@ mod tests {
             htlc_minimum_msat: Some(3000),
             htlc_maximum_msat: Some(4000),
         };
-        let route_hint = RouteHint(vec![hint_hop]);
+        let route_hint = RouteHint {
+            hops: vec![hint_hop],
+        };
 
         let encoded = add_routing_hints(&payreq, vec![route_hint], 100).unwrap();
 

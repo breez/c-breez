@@ -31,23 +31,29 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
         }
 
         return match invoice_param {
-            None => Ok(BitcoinAddress(bitcoin_addr_data)),
-            Some(invoice) => Ok(Bolt11(invoice)),
+            None => Ok(BitcoinAddress {
+                data: bitcoin_addr_data,
+            }),
+            Some(invoice) => Ok(Bolt11 { invoice }),
         };
     }
 
     if let Ok(invoice) = parse_invoice(prepared_input) {
-        return Ok(Bolt11(invoice));
+        return Ok(Bolt11 { invoice });
     }
 
     if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(prepared_input) {
         // Public key serialized in compressed form
-        return Ok(NodeId(prepared_input.into()));
+        return Ok(NodeId {
+            node_id: prepared_input.into(),
+        });
     }
 
     if let Ok(url) = reqwest::Url::parse(prepared_input) {
         if ["http", "https"].contains(&url.scheme()) {
-            return Ok(Url(prepared_input.into()));
+            return Ok(Url {
+                url: prepared_input.into(),
+            });
         }
     }
     // TODO Parse the other InputTypes
@@ -56,14 +62,26 @@ pub fn parse(raw_input: &str) -> Result<InputType> {
 }
 
 pub enum InputType {
-    BitcoinAddress(BitcoinAddressData),
+    BitcoinAddress {
+        data: BitcoinAddressData,
+    },
     /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
     /// and discards all other data.
-    Bolt11(LNInvoice),
-    NodeId(String),
-    Url(String),
-    LnUrlPay(String),
-    LnUrlWithdraw(String),
+    Bolt11 {
+        invoice: LNInvoice,
+    },
+    NodeId {
+        node_id: String,
+    },
+    Url {
+        url: String,
+    },
+    LnUrlPay {
+        lnurl: String,
+    },
+    LnUrlWithdraw {
+        lnurl: String,
+    },
 }
 
 pub struct BitcoinAddressData {
@@ -106,7 +124,7 @@ mod tests {
     fn test_bitcoin_address() -> Result<()> {
         assert!(matches!(
             parse("1andreas3batLhQa2FawWjeyjCqyBzypd")?,
-            InputType::BitcoinAddress(_)
+            InputType::BitcoinAddress { data: _ }
         ));
 
         Ok(())
@@ -125,7 +143,9 @@ mod tests {
         // Address with amount
         let addr_1 = format!("bitcoin:{}?amount=0.00002000", addr);
         match parse(&addr_1)? {
-            InputType::BitcoinAddress(addr_with_amount_parsed) => {
+            InputType::BitcoinAddress {
+                data: addr_with_amount_parsed,
+            } => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
                 assert_eq!(addr_with_amount_parsed.amount_sat, Some(2000));
@@ -139,7 +159,9 @@ mod tests {
         let label = "test-label";
         let addr_2 = format!("bitcoin:{}?amount=0.00002000&label={}", addr, label);
         match parse(&addr_2)? {
-            InputType::BitcoinAddress(addr_with_amount_parsed) => {
+            InputType::BitcoinAddress {
+                data: addr_with_amount_parsed,
+            } => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
                 assert_eq!(addr_with_amount_parsed.amount_sat, Some(2000));
@@ -156,7 +178,9 @@ mod tests {
             addr, label, message
         );
         match parse(&addr_3)? {
-            InputType::BitcoinAddress(addr_with_amount_parsed) => {
+            InputType::BitcoinAddress {
+                data: addr_with_amount_parsed,
+            } => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
                 assert_eq!(addr_with_amount_parsed.amount_sat, Some(2000));
@@ -174,13 +198,16 @@ mod tests {
         let bolt11 = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
 
         // Invoice without prefix
-        assert!(matches!(parse(bolt11)?, InputType::Bolt11(_invoice)));
+        assert!(matches!(
+            parse(bolt11)?,
+            InputType::Bolt11 { invoice: _invoice }
+        ));
 
         // Invoice with prefix
         let invoice_with_prefix = format!("lightning:{}", bolt11);
         assert!(matches!(
             parse(&invoice_with_prefix)?,
-            InputType::Bolt11(_invoice)
+            InputType::Bolt11 { invoice: _invoice }
         ));
 
         Ok(())
@@ -194,12 +221,18 @@ mod tests {
         // Address and invoice
         // BOLT11 is the first URI arg (preceded by '?')
         let addr_1 = format!("bitcoin:{}?lightning={}", addr, bolt11);
-        assert!(matches!(parse(&addr_1)?, InputType::Bolt11(_invoice)));
+        assert!(matches!(
+            parse(&addr_1)?,
+            InputType::Bolt11 { invoice: _invoice }
+        ));
 
         // Address, amount and invoice
         // BOLT11 is not the first URI arg (preceded by '&')
         let addr_2 = format!("bitcoin:{}?amount=0.00002000&lightning={}", addr, bolt11);
-        assert!(matches!(parse(&addr_2)?, InputType::Bolt11(_invoice)));
+        assert!(matches!(
+            parse(&addr_2)?,
+            InputType::Bolt11 { invoice: _invoice }
+        ));
 
         Ok(())
     }
@@ -208,19 +241,19 @@ mod tests {
     fn test_url() -> Result<()> {
         assert!(matches!(
             parse("https://breez.technology")?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
         assert!(matches!(
             parse("https://breez.technology/")?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
         assert!(matches!(
             parse("https://breez.technology/test-path")?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
         assert!(matches!(
             parse("https://breez.technology/test-path?arg1=val1&arg2=val2")?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
 
         Ok(())
@@ -233,7 +266,7 @@ mod tests {
         let public_key = PublicKey::from_secret_key(&secp, &secret_key);
 
         match parse(&public_key.to_string())? {
-            InputType::NodeId(node_id) => {
+            InputType::NodeId { node_id } => {
                 assert_eq!(node_id, public_key.to_string());
             }
             _ => return Err(anyhow!("Unexpected type")),

@@ -73,17 +73,17 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL pay request
 ///
 /// ```no_run
-/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, LnUrlResponse::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let lnurl_pay_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
 ///
-///     assert!(matches!( parse(lnurl_pay_url).await, Ok(LnUrl{data: Pay{data: _}}) ));
+///     assert!(matches!( parse(lnurl_pay_url).await, Ok(LnUrl{data: PayRequest{data: _}}) ));
 ///     // assert!(matches!( parse("lnurlp://domain.com/lnurl-pay?key=val").await, Ok(LnUrl{data: Pay{data: _}}) ));
 ///     // assert!(matches!( parse("lightning@address.com").await, Ok(LnUrl{Pay{data: _}}) ));
 ///
-///     if let Ok(LnUrl{data: Pay{data: pd}}) = parse(lnurl_pay_url).await {
+///     if let Ok(LnUrl{data: PayRequest{data: pd}}) = parse(lnurl_pay_url).await {
 ///         assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
 ///         assert_eq!(pd.max_sendable, 16000);
 ///         assert_eq!(pd.min_sendable, 4000);
@@ -96,16 +96,16 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL withdraw request
 ///
 /// ```no_run
-/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, LnUrlResponse::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let lnurl_withdraw_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
 ///
-///     assert!(matches!( parse(lnurl_withdraw_url).await, Ok(LnUrl{data: Withdraw{data: _}}) ));
+///     assert!(matches!( parse(lnurl_withdraw_url).await, Ok(LnUrl{data: WithdrawRequest{data: _}}) ));
 ///     // assert!(matches!( parse("lnurlw://domain.com/lnurl-withdraw?key=val").await, Ok(LnUrl{data: Withdraw{data: _}} ));
 ///
-///     if let Ok(LnUrl{data: Withdraw{data: wd}}) = parse(lnurl_withdraw_url).await {
+///     if let Ok(LnUrl{data: WithdrawRequest{data: wd}}) = parse(lnurl_withdraw_url).await {
 ///         assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
 ///         assert_eq!(wd.k1, "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81");
 ///         assert_eq!(wd.min_withdrawable, 3000);
@@ -118,16 +118,16 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL auth request
 ///
 /// ```no_run
-/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, LnUrlResponse::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let lnurl_auth_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttvdankjm3lw3skw0tvdankjm3xdvcn6vtp8q6n2dfsx5mrjwtrxdjnqvtzv56rzcnyv3jrxv3sxqmkyenrvv6kve3exv6nqdtyv43nqcmzvdsnvdrzx33rsenxx5unqc3cxgeqgntfgu";
 ///
-///     assert!(matches!( parse(lnurl_auth_url).await, Ok(LnUrl{data: Auth{data: _}}) ));
+///     assert!(matches!( parse(lnurl_auth_url).await, Ok(LnUrl{data: AuthRequest{data: _}}) ));
 ///     // assert!(matches!( parse("keyauth://domain.com/auth?key=val").await, Ok(LnUrl{data: Auth{data: _}}) ));
 ///
-///     if let Ok(LnUrl{data: Auth{data: ad}}) = parse(lnurl_auth_url).await {
+///     if let Ok(LnUrl{data: AuthRequest{data: ad}}) = parse(lnurl_auth_url).await {
 ///         assert_eq!(ad.k1, "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822");
 ///     }
 /// }
@@ -186,14 +186,16 @@ pub async fn parse(input: &str) -> Result<InputType> {
                 })
             {
                 return Ok(LnUrl {
-                    data: AuthRequest(auth_request_data).into(),
+                    data: AuthRequest {
+                        data: auth_request_data,
+                    },
                 });
             }
         }
 
         lnurl_endpoint = maybe_replace_host_with_mockito_test_host(lnurl_endpoint)?;
         let data: LnUrlRequestData = reqwest::get(lnurl_endpoint).await?.json().await?;
-        return Ok(LnUrl { data: data.into() });
+        return Ok(LnUrl { data });
     }
 
     Err(anyhow!("Unrecognized input type"))
@@ -365,40 +367,34 @@ pub enum InputType {
     /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
     /// - LUD-19 Pay link discoverable from withdraw link
     LnUrl {
-        data: LnUrlResponse,
+        data: LnUrlRequestData,
     },
 }
 
+// The uniffi bindings only supports enums with named fields.
+// We use #[serde(flatten)] to map the JSON payload fields to the inner enum "data" field
+// https://serde.rs/attr-flatten.html
 #[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum LnUrlRequestData {
-    PayRequest(LnUrlPayRequestData),
-    WithdrawRequest(LnUrlWithdrawRequestData),
-    AuthRequest(LnUrlAuthRequestData),
-    Error(LnUrlErrorData),
-}
-
-// We need this enum duplication as the uniffi bindings only supports enums with
-// named fields.
-#[derive(Debug)]
-pub enum LnUrlResponse {
-    Pay { data: LnUrlPayRequestData },
-    Withdraw { data: LnUrlWithdrawRequestData },
-    Auth { data: LnUrlAuthRequestData },
-    ErrorResponse { data: LnUrlErrorData },
-}
-
-impl From<LnUrlRequestData> for LnUrlResponse {
-    fn from(request: LnUrlRequestData) -> Self {
-        match request {
-            LnUrlRequestData::PayRequest(data) => LnUrlResponse::Pay { data },
-            LnUrlRequestData::WithdrawRequest(data) => LnUrlResponse::Withdraw { data },
-            LnUrlRequestData::AuthRequest(data) => LnUrlResponse::Auth { data },
-            LnUrlRequestData::Error(data) => LnUrlResponse::ErrorResponse { data },
-        }
-    }
+    PayRequest {
+        #[serde(flatten)]
+        data: LnUrlPayRequestData,
+    },
+    WithdrawRequest {
+        #[serde(flatten)]
+        data: LnUrlWithdrawRequestData,
+    },
+    AuthRequest {
+        #[serde(flatten)]
+        data: LnUrlAuthRequestData,
+    },
+    Error {
+        #[serde(flatten)]
+        data: LnUrlErrorData,
+    },
 }
 
 #[derive(Deserialize, Debug)]
@@ -470,7 +466,6 @@ mod tests {
     use bitcoin::bech32;
     use bitcoin::bech32::{ToBase32, Variant};
     use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
-    use mockito;
     use mockito::Mock;
 
     use crate::input_parser::LnUrlRequestData::*;
@@ -757,7 +752,7 @@ mod tests {
         );
 
         if let LnUrl {
-            data: LnUrlResponse::Withdraw { data: wd },
+            data: WithdrawRequest { data: wd },
         } = parse(lnurl_withdraw_encoded).await?
         {
             assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
@@ -783,7 +778,7 @@ mod tests {
         assert_eq!(lnurl_decode(lnurl_auth_encoded)?, decoded_url);
 
         if let LnUrl {
-            data: LnUrlResponse::Auth { data: ad },
+            data: AuthRequest { data: ad },
         } = parse(lnurl_auth_encoded).await?
         {
             assert_eq!(
@@ -882,7 +877,7 @@ mod tests {
         );
 
         if let LnUrl {
-            data: LnUrlResponse::Pay { data: pd },
+            data: PayRequest { data: pd },
         } = parse(lnurl_pay_encoded).await?
         {
             assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
@@ -919,7 +914,7 @@ mod tests {
         let _m = mock_lnurl_ln_address_endpoint(ln_address, None)?;
 
         if let LnUrl {
-            data: LnUrlResponse::Pay { data: pd },
+            data: PayRequest { data: pd },
         } = parse(ln_address).await?
         {
             assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
@@ -957,7 +952,7 @@ mod tests {
         let _m = mock_lnurl_ln_address_endpoint(ln_address, Some(expected_err.to_string()))?;
 
         if let LnUrl {
-            data: LnUrlResponse::ErrorResponse { data: msg },
+            data: Error { data: msg },
         } = parse(ln_address).await?
         {
             assert_eq!(msg.reason, expected_err);
@@ -1046,7 +1041,7 @@ mod tests {
 
         let lnurl_pay_url = format!("lnurlp://localhost{}", pay_path);
         if let LnUrl {
-            data: LnUrlResponse::Pay { data: pd },
+            data: PayRequest { data: pd },
         } = parse(&lnurl_pay_url).await?
         {
             assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
@@ -1080,7 +1075,7 @@ mod tests {
         let _m = mock_lnurl_withdraw_endpoint(withdraw_path, None);
 
         if let LnUrl {
-            data: LnUrlResponse::Withdraw { data: wd },
+            data: WithdrawRequest { data: wd },
         } = parse(&format!("lnurlw://localhost{}", withdraw_path)).await?
         {
             assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
@@ -1101,7 +1096,7 @@ mod tests {
         let auth_path = "/lnurl-login?tag=login&k1=1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822";
 
         if let LnUrl {
-            data: LnUrlResponse::Auth { data: ad },
+            data: AuthRequest { data: ad },
         } = parse(&format!("keyauth://localhost{}", auth_path)).await?
         {
             assert_eq!(
@@ -1121,7 +1116,7 @@ mod tests {
         let _m = mock_lnurl_pay_endpoint(pay_path, Some(expected_error_msg.to_string()));
 
         if let LnUrl {
-            data: LnUrlResponse::ErrorResponse { data: msg },
+            data: Error { data: msg },
         } = parse(&format!("lnurlp://localhost{}", pay_path)).await?
         {
             assert_eq!(msg.reason, expected_error_msg);
@@ -1138,7 +1133,7 @@ mod tests {
         let _m = mock_lnurl_withdraw_endpoint(withdraw_path, Some(expected_error_msg.to_string()));
 
         if let LnUrl {
-            data: LnUrlResponse::ErrorResponse { data: msg },
+            data: Error { data: msg },
         } = parse(&format!("lnurlw://localhost{}", withdraw_path)).await?
         {
             assert_eq!(msg.reason, expected_error_msg);

@@ -23,7 +23,7 @@ pub use breez_services::{
 pub use fiat::{CurrencyInfo, FiatCurrency, LocaleOverrides, LocalizedName, Rate, Symbol};
 pub use input_parser::{
     parse, BitcoinAddressData, InputType, LnUrlAuthRequestData, LnUrlErrorData,
-    LnUrlPayRequestData, LnUrlRequestData, LnUrlResponse, LnUrlWithdrawRequestData, MetadataItem,
+    LnUrlPayRequestData, LnUrlRequestData, LnUrlWithdrawRequestData, MetadataItem,
 };
 pub use invoice::{parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 pub use lsp::LspInformation;

@@ -6,11 +6,11 @@ use bitcoin::bech32;
 use bitcoin::bech32::FromBase32;
 use serde::Deserialize;
 
-use crate::input_parser::InputType::*;
-use crate::input_parser::LnUrlRequestData::*;
 use crate::invoice::{parse_invoice, LNInvoice};
+use crate::lnurl::input_parser::InputType::*;
+use crate::lnurl::input_parser::LnUrlRequestData::*;
 
-use crate::lnurl::{maybe_replace_host_with_mockito_test_host};
+use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 ///
@@ -19,7 +19,7 @@ use crate::lnurl::{maybe_replace_host_with_mockito_test_host};
 /// ## On-chain BTC addresses (incl. BIP 21 URIs)
 ///
 /// ```
-/// use lightning_toolkit::lnurl::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -38,7 +38,7 @@ use crate::lnurl::{maybe_replace_host_with_mockito_test_host};
 /// ## BOLT 11 invoices
 ///
 /// ```
-/// use lightning_toolkit::lnurl::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -55,7 +55,7 @@ use crate::lnurl::{maybe_replace_host_with_mockito_test_host};
 /// ## Web URLs
 ///
 /// ```
-/// use lightning_toolkit::lnurl::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -73,10 +73,11 @@ use crate::lnurl::{maybe_replace_host_with_mockito_test_host};
 /// ### LNURL pay request
 ///
 /// ```no_run
-/// use lightning_toolkit::lnurl::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
+/// use anyhow::Result;
 ///
 /// #[tokio::main]
-/// async fn main() {
+/// async fn main() -> Result<()> {
 ///     let lnurl_pay_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
 ///
 ///     assert!(matches!( parse(lnurl_pay_url).await, Ok(LnUrlPay{data: _}) ));
@@ -90,13 +91,15 @@ use crate::lnurl::{maybe_replace_host_with_mockito_test_host};
 ///         assert_eq!(pd.comment_allowed, 0);
 ///         assert_eq!(pd.metadata_vec()?.len(), 3);
 ///     }
+///
+///     Ok(())
 /// }
 /// ```
 ///
 /// ### LNURL withdraw request
 ///
 /// ```no_run
-/// use lightning_toolkit::lnurl::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -118,7 +121,7 @@ use crate::lnurl::{maybe_replace_host_with_mockito_test_host};
 /// ### LNURL auth request
 ///
 /// ```no_run
-/// use lightning_toolkit::lnurl::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -417,7 +420,7 @@ pub struct LnUrlErrorData {
     pub reason: String,
 }
 
-#[derive(Clone, Deserialize, Debug, Serialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LnUrlPayRequestData {
     pub callback: String,

@@ -1,8 +1,8 @@
 use crate::invoice::parse_invoice;
-use crate::lnurl::input_parser::LnUrlPayRequestData;
+use crate::lnurl::input_parser::*;
 use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 use crate::lnurl::pay::model::{CallbackResponse, ValidatedCallbackResponse};
-use crate::lnurl::LnUrlErrorData;
+use crate::LnUrlErrorData;
 use anyhow::{anyhow, Result};
 use bitcoin_hashes::{sha256, Hash};
 use std::str::FromStr;
@@ -102,8 +102,7 @@ fn validate_invoice(
 }
 
 pub(crate) mod model {
-    use crate::lnurl::input_parser::LnUrlPayRequestData;
-    use crate::lnurl::LnUrlErrorData;
+    use crate::lnurl::input_parser::*;
 
     use anyhow::{anyhow, Result};
     use serde::Deserialize;
@@ -417,7 +416,7 @@ mod tests {
 
         assert!(SuccessAction::Url(UrlSuccessActionData {
             description: "short msg".into(),
-            url: pay_req_data.clone().callback
+            url: pay_req_data.callback.clone()
         })
         .validate(&pay_req_data)
         .is_ok());
@@ -425,7 +424,7 @@ mod tests {
         // Too long description
         assert!(SuccessAction::Url(UrlSuccessActionData {
             description: rand_string(150),
-            url: pay_req_data.clone().callback
+            url: pay_req_data.callback.clone()
         })
         .validate(&pay_req_data)
         .is_err());

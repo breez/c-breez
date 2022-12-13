@@ -27,16 +27,19 @@ use crate::fiat::LocaleOverrides;
 use crate::fiat::LocalizedName;
 use crate::fiat::Rate;
 use crate::fiat::Symbol;
-use crate::input_parser::BitcoinAddressData;
-use crate::input_parser::InputType;
-use crate::input_parser::LnUrlAuthRequestData;
-use crate::input_parser::LnUrlErrorData;
-use crate::input_parser::LnUrlPayRequestData;
-use crate::input_parser::LnUrlWithdrawRequestData;
-use crate::input_parser::MetadataItem;
 use crate::invoice::LNInvoice;
 use crate::invoice::RouteHint;
 use crate::invoice::RouteHintHop;
+use crate::lnurl::input_parser::BitcoinAddressData;
+use crate::lnurl::input_parser::InputType;
+use crate::lnurl::input_parser::LnUrlAuthRequestData;
+use crate::lnurl::input_parser::LnUrlErrorData;
+use crate::lnurl::input_parser::LnUrlPayRequestData;
+use crate::lnurl::input_parser::LnUrlWithdrawRequestData;
+use crate::lnurl::pay::model::MessageSuccessActionData;
+use crate::lnurl::pay::model::Resp;
+use crate::lnurl::pay::model::SuccessAction;
+use crate::lnurl::pay::model::UrlSuccessActionData;
 use crate::lsp::LspInformation;
 use crate::models::Config;
 use crate::models::FeeratePreset;
@@ -367,6 +370,26 @@ fn wire_parse_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
         },
     )
 }
+fn wire_pay_impl(
+    port_: MessagePort,
+    user_amount_sat: impl Wire2Api<u64> + UnwindSafe,
+    comment: impl Wire2Api<Option<String>> + UnwindSafe,
+    req_data: impl Wire2Api<LnUrlPayRequestData> + UnwindSafe,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "pay",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || {
+            let api_user_amount_sat = user_amount_sat.wire2api();
+            let api_comment = comment.wire2api();
+            let api_req_data = req_data.wire2api();
+            move |task_callback| pay(api_user_amount_sat, api_comment, api_req_data)
+        },
+    )
+}
 fn wire_mnemonic_to_seed_impl(port_: MessagePort, phrase: impl Wire2Api<String> + UnwindSafe) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -430,6 +453,7 @@ impl Wire2Api<i64> for i64 {
         self
     }
 }
+
 impl Wire2Api<Network> for i32 {
     fn wire2api(self) -> Network {
         match self {
@@ -468,6 +492,11 @@ impl Wire2Api<u8> for u8 {
     }
 }
 
+impl Wire2Api<usize> for usize {
+    fn wire2api(self) -> usize {
+        self
+    }
+}
 // Section: impl IntoDart
 
 impl support::IntoDart for BitcoinAddressData {
@@ -586,7 +615,7 @@ impl support::IntoDart for LnUrlPayRequestData {
             self.callback.into_dart(),
             self.min_sendable.into_dart(),
             self.max_sendable.into_dart(),
-            self.metadata.into_dart(),
+            self.metadata_str.into_dart(),
             self.comment_allowed.into_dart(),
         ]
         .into_dart()
@@ -658,12 +687,12 @@ impl support::IntoDart for LspInformation {
 }
 impl support::IntoDartExceptPrimitive for LspInformation {}
 
-impl support::IntoDart for MetadataItem {
+impl support::IntoDart for MessageSuccessActionData {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.key.into_dart(), self.value.into_dart()].into_dart()
+        vec![self.message.into_dart()].into_dart()
     }
 }
-impl support::IntoDartExceptPrimitive for MetadataItem {}
+impl support::IntoDartExceptPrimitive for MessageSuccessActionData {}
 
 impl support::IntoDart for Network {
     fn into_dart(self) -> support::DartAbi {
@@ -723,6 +752,16 @@ impl support::IntoDart for Rate {
 }
 impl support::IntoDartExceptPrimitive for Rate {}
 
+impl support::IntoDart for Resp {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::EndpointSuccess(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::EndpointError(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Resp {}
 impl support::IntoDart for RouteHint {
     fn into_dart(self) -> support::DartAbi {
         vec![self.hops.into_dart()].into_dart()
@@ -746,6 +785,16 @@ impl support::IntoDart for RouteHintHop {
 }
 impl support::IntoDartExceptPrimitive for RouteHintHop {}
 
+impl support::IntoDart for SuccessAction {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::Message(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::Url(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for SuccessAction {}
 impl support::IntoDart for SwapInfo {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -790,6 +839,13 @@ impl support::IntoDart for Symbol {
     }
 }
 impl support::IntoDartExceptPrimitive for Symbol {}
+
+impl support::IntoDart for UrlSuccessActionData {
+    fn into_dart(self) -> support::DartAbi {
+        vec![self.description.into_dart(), self.url.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for UrlSuccessActionData {}
 
 // Section: executor
 

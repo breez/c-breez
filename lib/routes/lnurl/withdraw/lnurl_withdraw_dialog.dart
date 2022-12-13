@@ -144,12 +144,12 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                           iconColor: themeData.primaryIconTheme.color,
                         ),
                         AutoSizeText(
-                          '${texts.lnurl_fetch_invoice_limit(
+                          texts.lnurl_fetch_invoice_limit(
                             (widget.withdrawParams.minWithdrawable ~/ 1000)
                                 .toString(),
                             (widget.withdrawParams.maxWithdrawable ~/ 1000)
                                 .toString(),
-                          )} sats.',
+                          ),
                           maxLines: 2,
                           style: themeData.dialogTheme.contentTextStyle,
                           minFontSize: MinFontSize(context).minFontSize,
@@ -236,15 +236,17 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                     widget.withdrawParams, qParams);
                 navigator.removeRoute(loaderRoute);
                 if (!isSent) {
-                  String error =
-                      texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
-                  navigator.pop(LNURLWithdrawPageResult(error: error));
+                  navigator.pop(LNURLWithdrawPageResult(
+                    error: texts.lnurl_withdraw_dialog_error_unknown,
+                  ));
                 } else {
                   navigator.pop();
                 }
               } catch (e) {
                 navigator.removeRoute(loaderRoute);
-                navigator.pop(LNURLWithdrawPageResult(error: e.toString()));
+                navigator.pop(LNURLWithdrawPageResult(
+                  error: texts.lnurl_withdraw_dialog_error(e.toString()),
+                ));
               }
             }
           },
@@ -258,15 +260,18 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
   }
 
   String? validatePayment(int amount) {
-    var accBloc = context.read<AccountBloc>();
-    late final lsp = context.read<LSPBloc>().state;
-    late final currencyState = context.read<CurrencyBloc>().state;
+    final texts = context.texts();
+    final accBloc = context.read<AccountBloc>();
+     final lsp = context.read<LSPBloc>().state;
+     final currencyState = context.read<CurrencyBloc>().state;
 
-    if (amount > (widget.withdrawParams.maxWithdrawable ~/ 1000)) {
-      return "Exceeds maximum withdrawable amount: ${widget.withdrawParams.maxWithdrawable ~/ 1000}";
+    final maxSats = widget.withdrawParams.maxWithdrawable ~/ 1000;
+    if (amount > maxSats) {
+      return texts.lnurl_withdraw_dialog_error_amount_exceeds(maxSats);
     }
-    if (amount < (widget.withdrawParams.minWithdrawable ~/ 1000)) {
-      return "Below minimum withdrawable amount: ${widget.withdrawParams.minWithdrawable ~/ 1000}";
+    final minSats = widget.withdrawParams.minWithdrawable ~/ 1000;
+    if (amount < minSats) {
+      return texts.lnurl_withdraw_dialog_error_amount_below(minSats);
     }
 
     int? channelMinimumFee;

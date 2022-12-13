@@ -3,6 +3,7 @@ import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
@@ -35,11 +36,17 @@ class InputHandler {
       }
       _setLoading(inputState.isLoading);
       _handlingRequest = true;
-      handleInput(inputState).whenComplete(() => _handlingRequest = false);
+      handleInput(inputState).whenComplete(() => _handlingRequest = false).onError((error, _) {
+        _handlingRequest = false;
+        _setLoading(false);
+        if (error != null) {
+          showFlushbar(_context, message: extractExceptionMessage(error));
+        }
+      });
     }).onError((error) {
       _handlingRequest = false;
       _setLoading(false);
-      showFlushbar(_context, message: error.toString());
+      showFlushbar(_context, message: extractExceptionMessage(error));
     });
   }
 

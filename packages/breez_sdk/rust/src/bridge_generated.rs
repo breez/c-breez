@@ -32,7 +32,6 @@ use crate::input_parser::InputType;
 use crate::input_parser::LnUrlAuthRequestData;
 use crate::input_parser::LnUrlErrorData;
 use crate::input_parser::LnUrlPayRequestData;
-use crate::input_parser::LnUrlRequestData;
 use crate::input_parser::LnUrlWithdrawRequestData;
 use crate::input_parser::MetadataItem;
 use crate::invoice::LNInvoice;
@@ -532,7 +531,10 @@ impl support::IntoDart for InputType {
             Self::Bolt11 { invoice } => vec![1.into_dart(), invoice.into_dart()],
             Self::NodeId { node_id } => vec![2.into_dart(), node_id.into_dart()],
             Self::Url { url } => vec![3.into_dart(), url.into_dart()],
-            Self::LnUrl { data } => vec![4.into_dart(), data.into_dart()],
+            Self::LnUrlPay { data } => vec![4.into_dart(), data.into_dart()],
+            Self::LnUrlWithdraw { data } => vec![5.into_dart(), data.into_dart()],
+            Self::LnUrlAuth { data } => vec![6.into_dart(), data.into_dart()],
+            Self::LnUrlError { data } => vec![7.into_dart(), data.into_dart()],
         }
         .into_dart()
     }
@@ -592,18 +594,6 @@ impl support::IntoDart for LnUrlPayRequestData {
 }
 impl support::IntoDartExceptPrimitive for LnUrlPayRequestData {}
 
-impl support::IntoDart for LnUrlRequestData {
-    fn into_dart(self) -> support::DartAbi {
-        match self {
-            Self::PayRequest { data } => vec![0.into_dart(), data.into_dart()],
-            Self::WithdrawRequest { data } => vec![1.into_dart(), data.into_dart()],
-            Self::AuthRequest { data } => vec![2.into_dart(), data.into_dart()],
-            Self::Error { data } => vec![3.into_dart(), data.into_dart()],
-        }
-        .into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for LnUrlRequestData {}
 impl support::IntoDart for LnUrlWithdrawRequestData {
     fn into_dart(self) -> support::DartAbi {
         vec![

@@ -309,19 +309,38 @@ class InputType with _$InputType {
   /// # Supported standards
   ///
   /// - LUD-01 LNURL bech32 encoding
-  /// - LUD-03 `withdrawRequest` spec
-  /// - LUD-04 `auth` base spec
   /// - LUD-06 `payRequest` spec
   /// - LUD-16 LN Address
-  /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
+  /// - LUD-17 Support for lnurlp prefix with non-bech32-encoded LNURL URLs
+  const factory InputType.lnUrlPay({
+    required LnUrlPayRequestData data,
+  }) = InputType_LnUrlPay;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-03 `withdrawRequest` spec
+  /// - LUD-17 Support for lnurlw prefix with non-bech32-encoded LNURL URLs
   ///
   /// # Not supported (yet)
   ///
   /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
   /// - LUD-19 Pay link discoverable from withdraw link
-  const factory InputType.lnUrl({
-    required LnUrlRequestData data,
-  }) = InputType_LnUrl;
+  const factory InputType.lnUrlWithdraw({
+    required LnUrlWithdrawRequestData data,
+  }) = InputType_LnUrlWithdraw;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-04 `auth` base spec
+  /// - LUD-17 Support for keyauth prefix with non-bech32-encoded LNURL URLs
+  const factory InputType.lnUrlAuth({
+    required LnUrlAuthRequestData data,
+  }) = InputType_LnUrlAuth;
+  const factory InputType.lnUrlError({
+    required LnUrlErrorData data,
+  }) = InputType_LnUrlError;
 }
 
 class InvoicePaidDetails {
@@ -394,22 +413,6 @@ class LnUrlPayRequestData {
     required this.metadata,
     required this.commentAllowed,
   });
-}
-
-@freezed
-class LnUrlRequestData with _$LnUrlRequestData {
-  const factory LnUrlRequestData.payRequest({
-    required LnUrlPayRequestData data,
-  }) = LnUrlRequestData_PayRequest;
-  const factory LnUrlRequestData.withdrawRequest({
-    required LnUrlWithdrawRequestData data,
-  }) = LnUrlRequestData_WithdrawRequest;
-  const factory LnUrlRequestData.authRequest({
-    required LnUrlAuthRequestData data,
-  }) = LnUrlRequestData_AuthRequest;
-  const factory LnUrlRequestData.error({
-    required LnUrlErrorData data,
-  }) = LnUrlRequestData_Error;
 }
 
 class LnUrlWithdrawRequestData {
@@ -1187,10 +1190,6 @@ class LightningToolkitImpl implements LightningToolkit {
     return _wire2api_ln_url_pay_request_data(raw);
   }
 
-  LnUrlRequestData _wire2api_box_autoadd_ln_url_request_data(dynamic raw) {
-    return _wire2api_ln_url_request_data(raw);
-  }
-
   LnUrlWithdrawRequestData _wire2api_box_autoadd_ln_url_withdraw_request_data(
       dynamic raw) {
     return _wire2api_ln_url_withdraw_request_data(raw);
@@ -1293,8 +1292,20 @@ class LightningToolkitImpl implements LightningToolkit {
           url: _wire2api_String(raw[1]),
         );
       case 4:
-        return InputType_LnUrl(
-          data: _wire2api_box_autoadd_ln_url_request_data(raw[1]),
+        return InputType_LnUrlPay(
+          data: _wire2api_box_autoadd_ln_url_pay_request_data(raw[1]),
+        );
+      case 5:
+        return InputType_LnUrlWithdraw(
+          data: _wire2api_box_autoadd_ln_url_withdraw_request_data(raw[1]),
+        );
+      case 6:
+        return InputType_LnUrlAuth(
+          data: _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
+        );
+      case 7:
+        return InputType_LnUrlError(
+          data: _wire2api_box_autoadd_ln_url_error_data(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -1398,29 +1409,6 @@ class LightningToolkitImpl implements LightningToolkit {
       metadata: _wire2api_list_metadata_item(arr[3]),
       commentAllowed: _wire2api_u16(arr[4]),
     );
-  }
-
-  LnUrlRequestData _wire2api_ln_url_request_data(dynamic raw) {
-    switch (raw[0]) {
-      case 0:
-        return LnUrlRequestData_PayRequest(
-          data: _wire2api_box_autoadd_ln_url_pay_request_data(raw[1]),
-        );
-      case 1:
-        return LnUrlRequestData_WithdrawRequest(
-          data: _wire2api_box_autoadd_ln_url_withdraw_request_data(raw[1]),
-        );
-      case 2:
-        return LnUrlRequestData_AuthRequest(
-          data: _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
-        );
-      case 3:
-        return LnUrlRequestData_Error(
-          data: _wire2api_box_autoadd_ln_url_error_data(raw[1]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
   }
 
   LnUrlWithdrawRequestData _wire2api_ln_url_withdraw_request_data(dynamic raw) {

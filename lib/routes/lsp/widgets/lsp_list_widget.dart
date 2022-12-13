@@ -36,13 +36,15 @@ class _LspListWidgetState extends State<LspListWidget> {
       future: lspBloc.lspList,
       builder: (context, lspListSnapshot) {
         if (!lspListSnapshot.hasData) {
-          return const Center(child: Loader());
+          return const Center(child: Loader(
+            color: Colors.white,
+          ));
         }
 
         return FutureBuilder(
           future: lspBloc.currentLSP,
           builder: (context, currentLspSnapshot) {
-            error = currentLspSnapshot.error ?? lspListSnapshot.error;
+            error = lspListSnapshot.error;
 
             if (error != null) {
               _log.e("Error: $error");

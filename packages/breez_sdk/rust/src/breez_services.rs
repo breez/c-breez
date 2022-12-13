@@ -25,8 +25,7 @@ use tokio::sync::mpsc;
 use tokio::time::{sleep, Duration};
 use tonic::transport::{Channel, Uri};
 
-#[tonic::async_trait]
-pub trait BreezEventListener: Send + Sync {
+pub trait EventListener: Send + Sync {
     fn on_event(&self, e: BreezEvent);
 }
 
@@ -102,7 +101,7 @@ pub struct BreezServices {
     persister: Arc<persist::db::SqliteStorage>,
     payment_receiver: Arc<PaymentReceiver>,
     btc_receive_swapper: Arc<BTCReceiveSwap>,
-    event_listener: Mutex<Option<Arc<dyn BreezEventListener>>>,
+    event_listener: Option<Box<dyn EventListener>>,
     shutdown_sender: Mutex<Option<mpsc::Sender<()>>>,
 }
 
@@ -122,13 +121,14 @@ impl BreezServices {
         config: Option<Config>,
         seed: Vec<u8>,
         creds: GreenlightCredentials,
+        event_listener: Box<dyn EventListener>,
     ) -> Result<Arc<BreezServices>> {
         let sdk_config = config.unwrap_or(Config::default());
 
         // create the node services instance and set it globally
         let breez_services = BreezServicesBuilder::new(sdk_config.clone())
             .greenlight_credentials(creds, seed)
-            .build()?;
+            .build(None)?;
 
         // create a shutdown channel (sender and receiver)
         let (stop_sender, stop_receiver) = mpsc::channel(1);
@@ -252,10 +252,6 @@ impl BreezServices {
             .await
     }
 
-    pub fn set_notifications_listener(&self, listener: Arc<dyn BreezEventListener>) {
-        *self.event_listener.lock().unwrap() = Some(listener);
-    }
-
     async fn sync(&self) -> Result<()> {
         self.start_node().await?;
         self.connect_lsp_peer().await?;
@@ -302,15 +298,11 @@ impl BreezServices {
                 e, err
             )
         };
-        let l = self.get_listener();
-        if !l.is_none() {
-            l.unwrap().on_event(e.clone())
+
+        if !self.event_listener.is_none() {
+            self.event_listener.as_ref().unwrap().on_event(e.clone())
         }
         Ok(())
-    }
-
-    fn get_listener(&self) -> Option<Arc<dyn BreezEventListener>> {
-        self.event_listener.lock().unwrap().clone()
     }
 
     fn set_shutdown_sender(&self, sender: mpsc::Sender<()>) {
@@ -445,7 +437,7 @@ impl BreezServicesBuilder {
         self
     }
 
-    pub fn build(&self) -> Result<Arc<BreezServices>> {
+    pub fn build(&self, listener: Option<Box<dyn EventListener>>) -> Result<Arc<BreezServices>> {
         if self.node_api.is_none() && (self.creds.is_none() || self.seed.is_none()) {
             return Err(anyhow!(
                 "Either node_api or both credentials and seed should be provided"
@@ -512,7 +504,7 @@ impl BreezServicesBuilder {
             persister: persister.clone(),
             btc_receive_swapper: btc_receive_swapper.clone(),
             payment_receiver,
-            event_listener: Mutex::new(None),
+            event_listener: listener,
             shutdown_sender: Mutex::new(None),
         });
 
@@ -771,7 +763,7 @@ mod test {
             .lsp_api(Arc::new(MockBreezServer {}))
             .fiat_api(Arc::new(MockBreezServer {}))
             .node_api(node_api)
-            .build()?;
+            .build(None)?;
 
         breez_services.sync().await?;
         let fetched_state = breez_services
@@ -851,7 +843,7 @@ mod test {
             .lsp_api(Arc::new(MockBreezServer {}))
             .fiat_api(Arc::new(MockBreezServer {}))
             .node_api(node_api)
-            .build()
+            .build(None)
             .unwrap();
 
         breez_services

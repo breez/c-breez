@@ -1,4 +1,4 @@
-use crate::breez_services::{self, BreezEvent, BreezEventListener, BreezServicesBuilder};
+use crate::breez_services::{self, BreezEvent, BreezServicesBuilder, EventListener};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
@@ -55,8 +55,7 @@ impl log::Log for BindingLogger {
 
 struct BindingEventListener;
 
-#[tonic::async_trait]
-impl BreezEventListener for BindingEventListener {
+impl EventListener for BindingEventListener {
     fn on_event(&self, e: BreezEvent) {
         let s = NOTIFICATION_STREAM.get();
         if s.is_some() {
@@ -115,7 +114,9 @@ pub fn init_node(
     creds: GreenlightCredentials,
 ) -> Result<()> {
     block_on(async move {
-        let breez_services = BreezServices::start(rt(), config, seed, creds).await?;
+        let breez_services =
+            BreezServices::start(rt(), config, seed, creds, Box::new(BindingEventListener {}))
+                .await?;
         BREEZ_SERVICES_INSTANCE
             .set(breez_services.clone())
             .map_err(|_| anyhow!("static node services already set"))?;

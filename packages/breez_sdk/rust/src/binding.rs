@@ -1,4 +1,4 @@
-use crate::breez_services::{BreezEvent, BreezEventListener, BreezServicesBuilder};
+use crate::breez_services::{self, BreezEvent, BreezServicesBuilder, EventListener};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lsp::LspInformation;
@@ -11,12 +11,12 @@ use std::future::Future;
 use std::sync::Arc;
 use tokio::sync::mpsc;
 
+use crate::breez_services::BreezServices;
 use crate::invoice::LNInvoice;
 use crate::models::{
     Config, FeeratePreset, GreenlightCredentials, Network, NodeState, Payment, PaymentTypeFilter,
     SwapInfo,
 };
-use crate::{breez_services::BreezServices, greenlight::Greenlight};
 
 use crate::invoice::{self};
 use crate::lnurl::input_parser::InputType;
@@ -57,14 +57,12 @@ impl log::Log for BindingLogger {
 
 struct BindingEventListener;
 
-#[tonic::async_trait]
-impl BreezEventListener for BindingEventListener {
-    async fn on_event(&self, e: BreezEvent) -> Result<()> {
+impl EventListener for BindingEventListener {
+    fn on_event(&self, e: BreezEvent) {
         let s = NOTIFICATION_STREAM.get();
         if s.is_some() {
             s.unwrap().add(e);
         }
-        Ok(())
     }
 }
 
@@ -80,7 +78,7 @@ pub fn register_node(
     seed: Vec<u8>,
     config: Option<Config>,
 ) -> Result<GreenlightCredentials> {
-    let creds = block_on(Greenlight::register(network, seed.clone()))?;
+    let creds = block_on(BreezServices::register_node(network, seed.clone()))?;
     init_node(config, seed, creds.clone())?;
     Ok(creds)
 }
@@ -97,7 +95,7 @@ pub fn recover_node(
     seed: Vec<u8>,
     config: Option<Config>,
 ) -> Result<GreenlightCredentials> {
-    let creds = block_on(Greenlight::recover(network, seed.clone()))?;
+    let creds = block_on(BreezServices::recover_node(network, seed.clone()))?;
     init_node(config, seed, creds.clone())?;
 
     Ok(creds)
@@ -118,20 +116,9 @@ pub fn init_node(
     creds: GreenlightCredentials,
 ) -> Result<()> {
     block_on(async move {
-        let sdk_config = config.unwrap_or(Config::default());
-
-        // greenlight is the implementation of NodeAPI
-        let node_api = Greenlight::new(sdk_config.clone(), seed, creds).await?; //block_on(Greenlight::new(sdk_config.clone(), seed, creds))?;
-
-        // create the node services instance and set it globally
-        let breez_services = BreezServicesBuilder::new(sdk_config.clone(), Arc::new(node_api))
-            .event_listener(Arc::new(BindingEventListener {}))
-            .build()?;
-        let (stop_sender, stop_receiver) = mpsc::channel(1);
-        _ = crate::breez_services::start(rt(), breez_services.clone(), stop_receiver).await?;
-        BREEZ_SERVICES_SHUTDOWN
-            .set(stop_sender)
-            .map_err(|_| anyhow!("static node services already set"))?;
+        let breez_services =
+            BreezServices::start(rt(), config, seed, creds, Box::new(BindingEventListener {}))
+                .await?;
         BREEZ_SERVICES_INSTANCE
             .set(breez_services.clone())
             .map_err(|_| anyhow!("static node services already set"))?;
@@ -296,7 +283,7 @@ fn block_on<F: Future>(future: F) -> F::Output {
     rt().block_on(future)
 }
 
-fn rt() -> &'static tokio::runtime::Runtime {
+pub(crate) fn rt() -> &'static tokio::runtime::Runtime {
     &RT
 }
 
@@ -326,7 +313,5 @@ pub fn pay(
 ///
 /// If the phrase is not a valid mnemonic, an error is returned.
 pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
-    let mnemonic = Mnemonic::from_phrase(&phrase, Language::English)?;
-    let seed = Seed::new(&mnemonic, "");
-    Ok(seed.as_bytes().to_vec())
+    breez_services::mnemonic_to_seed(phrase)
 }

@@ -1619,12 +1619,31 @@
   "lnurl_withdraw_dialog_title": "Recevoir des fonds",
   "lnurl_withdraw_dialog_wait": "Veuillez patienter pendant que votre paiement est en cours de traitement",
   "lnurl_withdraw_dialog_action_close": "FERMER",
+  "lnurl_withdraw_dialog_error_unknown": "Echec de réception des fonds",
   "lnurl_withdraw_dialog_error": "Echec de réception des fonds : {error}",
   "@lnurl_withdraw_dialog_error": {
     "placeholders": {
       "error": {
         "type": "String",
         "example": "Une erreur"
+      }
+    }
+  },
+  "lnurl_withdraw_dialog_error_amount_exceeds": "Exceeds maximum withdrawable amount: {maxSats}",
+  "@lnurl_withdraw_dialog_error_amount_exceeds": {
+    "placeholders": {
+      "maxSats": {
+        "type": "int",
+        "example": "1000"
+      }
+    }
+  },
+  "lnurl_withdraw_dialog_error_amount_below": "Below minimum withdrawable amount: {minSats}",
+  "@lnurl_withdraw_dialog_error_amount_below": {
+    "placeholders": {
+      "minSats": {
+        "type": "int",
+        "example": "1000"
       }
     }
   },
@@ -1767,7 +1786,7 @@
       }
     }
   },
-  "lnurl_fetch_invoice_limit": "Entrez un montant compris entre {min} et {max}.",
+  "lnurl_fetch_invoice_limit": "Entrez un montant compris entre {min} et {max} sats.",
   "@lnurl_fetch_invoice_limit": {
     "placeholders": {
       "min": {

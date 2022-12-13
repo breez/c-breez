@@ -1,3 +1,4 @@
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -19,7 +20,7 @@ Future handleLNURL(
     return handleWithdrawRequest(context, lnurlParseResult.withdrawalParams!);
   }
 
-  throw "Unsupported lnurl";
+  throw context.texts().lnurl_error_unsupported;
 }
 
 Future<LNURLPayResult?> handlePayRequest(

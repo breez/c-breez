@@ -1619,12 +1619,31 @@
   "lnurl_withdraw_dialog_title": "Recibir fondos",
   "lnurl_withdraw_dialog_wait": "Por favor espere mientras se procesa su pago",
   "lnurl_withdraw_dialog_action_close": "CERRAR",
+  "lnurl_withdraw_dialog_error_unknown": "Error al recibir fondos",
   "lnurl_withdraw_dialog_error": "Error al recibir fondos: {error}",
   "@lnurl_withdraw_dialog_error": {
     "placeholders": {
       "error": {
         "type": "String",
         "example": "An error"
+      }
+    }
+  },
+  "lnurl_withdraw_dialog_error_amount_exceeds": "Valor superior al máximo: {maxSats}",
+  "@lnurl_withdraw_dialog_error_amount_exceeds": {
+    "placeholders": {
+      "maxSats": {
+        "type": "int",
+        "example": "1000"
+      }
+    }
+  },
+  "lnurl_withdraw_dialog_error_amount_below": "Valor inferior al mínimo: {minSats}",
+  "@lnurl_withdraw_dialog_error_amount_below": {
+    "placeholders": {
+      "minSats": {
+        "type": "int",
+        "example": "1000"
       }
     }
   },
@@ -1767,7 +1786,7 @@
       }
     }
   },
-  "lnurl_fetch_invoice_limit": "Ingrese un valor entre {min} y {max}",
+  "lnurl_fetch_invoice_limit": "Ingrese un valor entre {min} y {max} sats.",
   "@lnurl_fetch_invoice_limit": {
     "placeholders": {
       "min": {

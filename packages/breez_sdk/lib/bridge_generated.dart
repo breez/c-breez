@@ -220,12 +220,12 @@ class BitcoinAddressData {
 
 @freezed
 class BreezEvent with _$BreezEvent {
-  const factory BreezEvent.newBlock(
-    int field0,
-  ) = BreezEvent_NewBlock;
-  const factory BreezEvent.invoicePaid(
-    InvoicePaidDetails field0,
-  ) = BreezEvent_InvoicePaid;
+  const factory BreezEvent.newBlock({
+    required int block,
+  }) = BreezEvent_NewBlock;
+  const factory BreezEvent.invoicePaid({
+    required InvoicePaidDetails details,
+  }) = BreezEvent_InvoicePaid;
 }
 
 class Config {
@@ -298,38 +298,57 @@ class InputType with _$InputType {
   ///
   /// - plain on-chain BTC address
   /// - BIP21
-  const factory InputType.bitcoinAddress(
-    BitcoinAddressData field0,
-  ) = InputType_BitcoinAddress;
+  const factory InputType.bitcoinAddress({
+    required BitcoinAddressData address,
+  }) = InputType_BitcoinAddress;
 
   /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
   /// and discards all other data.
-  const factory InputType.bolt11(
-    LNInvoice field0,
-  ) = InputType_Bolt11;
-  const factory InputType.nodeId(
-    String field0,
-  ) = InputType_NodeId;
-  const factory InputType.url(
-    String field0,
-  ) = InputType_Url;
+  const factory InputType.bolt11({
+    required LNInvoice invoice,
+  }) = InputType_Bolt11;
+  const factory InputType.nodeId({
+    required String nodeId,
+  }) = InputType_NodeId;
+  const factory InputType.url({
+    required String url,
+  }) = InputType_Url;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-06 `payRequest` spec
+  /// - LUD-16 LN Address
+  /// - LUD-17 Support for lnurlp prefix with non-bech32-encoded LNURL URLs
+  const factory InputType.lnUrlPay({
+    required LnUrlPayRequestData data,
+  }) = InputType_LnUrlPay;
 
   /// # Supported standards
   ///
   /// - LUD-01 LNURL bech32 encoding
   /// - LUD-03 `withdrawRequest` spec
-  /// - LUD-04 `auth` base spec
-  /// - LUD-06 `payRequest` spec
-  /// - LUD-16 LN Address
-  /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
+  /// - LUD-17 Support for lnurlw prefix with non-bech32-encoded LNURL URLs
   ///
   /// # Not supported (yet)
   ///
   /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
   /// - LUD-19 Pay link discoverable from withdraw link
-  const factory InputType.lnUrl(
-    LnUrlRequestData field0,
-  ) = InputType_LnUrl;
+  const factory InputType.lnUrlWithdraw({
+    required LnUrlWithdrawRequestData data,
+  }) = InputType_LnUrlWithdraw;
+
+  /// # Supported standards
+  ///
+  /// - LUD-01 LNURL bech32 encoding
+  /// - LUD-04 `auth` base spec
+  /// - LUD-17 Support for keyauth prefix with non-bech32-encoded LNURL URLs
+  const factory InputType.lnUrlAuth({
+    required LnUrlAuthRequestData data,
+  }) = InputType_LnUrlAuth;
+  const factory InputType.lnUrlError({
+    required LnUrlErrorData data,
+  }) = InputType_LnUrlError;
 }
 
 class InvoicePaidDetails {
@@ -401,22 +420,6 @@ class LnUrlPayRequestData {
     required this.metadataStr,
     required this.commentAllowed,
   });
-}
-
-@freezed
-class LnUrlRequestData with _$LnUrlRequestData {
-  const factory LnUrlRequestData.payRequest(
-    LnUrlPayRequestData field0,
-  ) = LnUrlRequestData_PayRequest;
-  const factory LnUrlRequestData.withdrawRequest(
-    LnUrlWithdrawRequestData field0,
-  ) = LnUrlRequestData_WithdrawRequest;
-  const factory LnUrlRequestData.authRequest(
-    LnUrlAuthRequestData field0,
-  ) = LnUrlRequestData_AuthRequest;
-  const factory LnUrlRequestData.error(
-    LnUrlErrorData field0,
-  ) = LnUrlRequestData_Error;
 }
 
 class LnUrlWithdrawRequestData {
@@ -602,10 +605,10 @@ class Resp with _$Resp {
 }
 
 class RouteHint {
-  final List<RouteHintHop> field0;
+  final List<RouteHintHop> hops;
 
   RouteHint({
-    required this.field0,
+    required this.hops,
   });
 }
 
@@ -1245,10 +1248,6 @@ class LightningToolkitImpl implements LightningToolkit {
     return _wire2api_ln_url_pay_request_data(raw);
   }
 
-  LnUrlRequestData _wire2api_box_autoadd_ln_url_request_data(dynamic raw) {
-    return _wire2api_ln_url_request_data(raw);
-  }
-
   LnUrlWithdrawRequestData _wire2api_box_autoadd_ln_url_withdraw_request_data(
       dynamic raw) {
     return _wire2api_ln_url_withdraw_request_data(raw);
@@ -1284,11 +1283,11 @@ class LightningToolkitImpl implements LightningToolkit {
     switch (raw[0]) {
       case 0:
         return BreezEvent_NewBlock(
-          _wire2api_u32(raw[1]),
+          block: _wire2api_u32(raw[1]),
         );
       case 1:
         return BreezEvent_InvoicePaid(
-          _wire2api_box_autoadd_invoice_paid_details(raw[1]),
+          details: _wire2api_box_autoadd_invoice_paid_details(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -1346,23 +1345,35 @@ class LightningToolkitImpl implements LightningToolkit {
     switch (raw[0]) {
       case 0:
         return InputType_BitcoinAddress(
-          _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
+          address: _wire2api_box_autoadd_bitcoin_address_data(raw[1]),
         );
       case 1:
         return InputType_Bolt11(
-          _wire2api_box_autoadd_ln_invoice(raw[1]),
+          invoice: _wire2api_box_autoadd_ln_invoice(raw[1]),
         );
       case 2:
         return InputType_NodeId(
-          _wire2api_String(raw[1]),
+          nodeId: _wire2api_String(raw[1]),
         );
       case 3:
         return InputType_Url(
-          _wire2api_String(raw[1]),
+          url: _wire2api_String(raw[1]),
         );
       case 4:
-        return InputType_LnUrl(
-          _wire2api_box_autoadd_ln_url_request_data(raw[1]),
+        return InputType_LnUrlPay(
+          data: _wire2api_box_autoadd_ln_url_pay_request_data(raw[1]),
+        );
+      case 5:
+        return InputType_LnUrlWithdraw(
+          data: _wire2api_box_autoadd_ln_url_withdraw_request_data(raw[1]),
+        );
+      case 6:
+        return InputType_LnUrlAuth(
+          data: _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
+        );
+      case 7:
+        return InputType_LnUrlError(
+          data: _wire2api_box_autoadd_ln_url_error_data(raw[1]),
         );
       default:
         throw Exception("unreachable");
@@ -1462,29 +1473,6 @@ class LightningToolkitImpl implements LightningToolkit {
       metadataStr: _wire2api_String(arr[3]),
       commentAllowed: _wire2api_usize(arr[4]),
     );
-  }
-
-  LnUrlRequestData _wire2api_ln_url_request_data(dynamic raw) {
-    switch (raw[0]) {
-      case 0:
-        return LnUrlRequestData_PayRequest(
-          _wire2api_box_autoadd_ln_url_pay_request_data(raw[1]),
-        );
-      case 1:
-        return LnUrlRequestData_WithdrawRequest(
-          _wire2api_box_autoadd_ln_url_withdraw_request_data(raw[1]),
-        );
-      case 2:
-        return LnUrlRequestData_AuthRequest(
-          _wire2api_box_autoadd_ln_url_auth_request_data(raw[1]),
-        );
-      case 3:
-        return LnUrlRequestData_Error(
-          _wire2api_box_autoadd_ln_url_error_data(raw[1]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
   }
 
   LnUrlWithdrawRequestData _wire2api_ln_url_withdraw_request_data(dynamic raw) {
@@ -1671,7 +1659,7 @@ class LightningToolkitImpl implements LightningToolkit {
     if (arr.length != 1)
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
     return RouteHint(
-      field0: _wire2api_list_route_hint_hop(arr[0]),
+      hops: _wire2api_list_route_hint_hop(arr[0]),
     );
   }
 

@@ -8,13 +8,11 @@ use std::str::SplitWhitespace;
 use anyhow::{anyhow, Result};
 use bip39::{Language, Mnemonic, MnemonicType, Seed};
 use env_logger::Env;
-use lightning_toolkit::binding;
-use lightning_toolkit::lsp::LspInformation;
-use lightning_toolkit::models::{self, GreenlightCredentials};
+use lightning_toolkit::{
+    binding, FeeratePreset, GreenlightCredentials, LspInformation, Network, PaymentTypeFilter,
+};
 use rustyline::error::ReadlineError;
 use rustyline::Editor;
-
-use crate::models::FeeratePreset;
 
 fn get_seed() -> Vec<u8> {
     let filename = "phrase";
@@ -74,11 +72,8 @@ fn main() -> Result<()> {
                 let mut command: SplitWhitespace = line.as_str().split_whitespace();
                 match command.next() {
                     Some("register_node") => {
-                        let r = binding::register_node(
-                            models::Network::Bitcoin,
-                            seed.to_vec(),
-                            Option::None,
-                        );
+                        let r =
+                            binding::register_node(Network::Bitcoin, seed.to_vec(), Option::None);
                         let greenlight_credentials = Some(r.unwrap());
                         info!(
                             "device_cert: {}; device_key: {}",
@@ -88,11 +83,8 @@ fn main() -> Result<()> {
                         save_creds(greenlight_credentials.unwrap())?;
                     }
                     Some("recover_node") => {
-                        let r = binding::recover_node(
-                            models::Network::Bitcoin,
-                            seed.to_vec(),
-                            Option::None,
-                        );
+                        let r =
+                            binding::recover_node(Network::Bitcoin, seed.to_vec(), Option::None);
                         match r {
                             Ok(greenlight_credentials) => {
                                 info!(
@@ -148,11 +140,9 @@ fn main() -> Result<()> {
                             amount_sats.parse()?,
                         ))
                     }
-                    Some("list_payments") => show_results(binding::list_payments(
-                        models::PaymentTypeFilter::All,
-                        None,
-                        None,
-                    )),
+                    Some("list_payments") => {
+                        show_results(binding::list_payments(PaymentTypeFilter::All, None, None))
+                    }
                     Some("sweep") => {
                         let to_address = command
                             .next()

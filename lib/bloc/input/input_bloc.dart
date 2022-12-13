@@ -38,7 +38,7 @@ class InputBloc extends Cubit<InputState> {
     return Rx.merge([
       _decodeInvoiceController.stream,
       _lightningLinks.linksNotifications,
-      _device.distinctClipboardStream
+      _device.clipboardStream.distinct().skip(1),
     ]).asyncMap((s) async {
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
@@ -82,7 +82,7 @@ class InputBloc extends Cubit<InputState> {
     return InputState(protocol: command.protocol, inputData: invoice);
   }
 
-  Stream<DecodedClipboardData> get decodedClipboardStream => _device.rawClipboardStream.map((clipboardData) {
+  Stream<DecodedClipboardData> get decodedClipboardStream => _device.clipboardStream.distinct().skip(1).map((clipboardData) {
         if (clipboardData.isEmpty) {
           return DecodedClipboardData.unrecognized();
         }

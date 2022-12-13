@@ -138,7 +138,7 @@ class UserApp extends StatelessWidget {
                                 case '/select_lsp':
                                   return MaterialPageRoute(
                                     fullscreenDialog: true,
-                                    builder: (_) => const SelectLSPPage(),
+                                    builder: (_) => SelectLSPPage(),
                                     settings: settings,
                                   );
                                 case '/create_invoice':

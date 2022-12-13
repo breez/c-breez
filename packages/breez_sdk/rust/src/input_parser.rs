@@ -9,7 +9,7 @@ use serde_with::json::JsonString;
 use serde_with::serde_as;
 
 use crate::input_parser::InputType::*;
-use crate::input_parser::LnUrlRequestData::AuthRequest;
+use crate::input_parser::LnUrlRequestData::*;
 use crate::invoice::{parse_invoice, LNInvoice};
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
@@ -19,49 +19,49 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ## On-chain BTC addresses (incl. BIP 21 URIs)
 ///
 /// ```
-/// use lightning_toolkit::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
-///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd").await, Ok(BitcoinAddress(_)) ));
-///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000").await, Ok(BitcoinAddress(_)) ));
-///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello").await, Ok(BitcoinAddress(_)) ));
-///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello&message=Msg").await, Ok(BitcoinAddress(_)) ));
+///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd").await, Ok(BitcoinAddress{address: _}) ));
+///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000").await, Ok(BitcoinAddress{address: _}) ));
+///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello").await, Ok(BitcoinAddress{address: _}) ));
+///     assert!(matches!( parse("1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello&message=Msg").await, Ok(BitcoinAddress{address: _}) ));
 ///
-///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd").await, Ok(BitcoinAddress(_)) ));
-///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000").await, Ok(BitcoinAddress(_)) ));
-///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello").await, Ok(BitcoinAddress(_)) ));
-///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello&message=Msg").await, Ok(BitcoinAddress(_)) ));
+///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd").await, Ok(BitcoinAddress{address: _}) ));
+///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000").await, Ok(BitcoinAddress{address: _}) ));
+///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello").await, Ok(BitcoinAddress{address: _}) ));
+///     assert!(matches!( parse("bitcoin:1andreas3batLhQa2FawWjeyjCqyBzypd?amount=0.00002000&label=Hello&message=Msg").await, Ok(BitcoinAddress{address: _}) ));
 /// }
 /// ```
 ///
 /// ## BOLT 11 invoices
 ///
 /// ```
-/// use lightning_toolkit::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let invoice = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
-///     assert!(matches!( parse(invoice).await, Ok(Bolt11(_)) ));
-///     assert!(matches!( parse( &format!("lightning:{}", invoice) ).await, Ok(Bolt11(_)) ));
+///     assert!(matches!( parse(invoice).await, Ok(Bolt11{invoice: _}) ));
+///     assert!(matches!( parse( &format!("lightning:{}", invoice) ).await, Ok(Bolt11{invoice: _}) ));
 ///
 ///     // BIP 21 with LN fallback parses to a LN invoice
 ///     let btc_address = "1andreas3batLhQa2FawWjeyjCqyBzypd";
-///     assert!(matches!( parse( &format!("bitcoin:{}?lightning={}", btc_address, invoice) ).await, Ok(Bolt11(_)) ));
+///     assert!(matches!( parse( &format!("bitcoin:{}?lightning={}", btc_address, invoice) ).await, Ok(Bolt11{invoice: _}) ));
 /// }
 /// ```
 ///
 /// ## Web URLs
 ///
 /// ```
-/// use lightning_toolkit::input_parser::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
-///     assert!(matches!( parse("https://breez.technology").await, Ok(Url(_)) ));
-///     assert!(matches!( parse("https://breez.technology/test-path").await, Ok(Url(_)) ));
-///     assert!(matches!( parse("https://breez.technology/test-path?arg=val").await, Ok(Url(_)) ));
+///     assert!(matches!( parse("https://breez.technology").await, Ok(Url{url: _}) ));
+///     assert!(matches!( parse("https://breez.technology/test-path").await, Ok(Url{url: _}) ));
+///     assert!(matches!( parse("https://breez.technology/test-path?arg=val").await, Ok(Url{url: _}) ));
 /// }
 /// ```
 ///
@@ -73,17 +73,17 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL pay request
 ///
 /// ```no_run
-/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let lnurl_pay_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
 ///
-///     assert!(matches!( parse(lnurl_pay_url).await, Ok(LnUrl(PayRequest(_))) ));
-///     // assert!(matches!( parse("lnurlp://domain.com/lnurl-pay?key=val").await, Ok(LnUrl(PayRequest(_))) ));
-///     // assert!(matches!( parse("lightning@address.com").await, Ok(LnUrl(PayRequest(_))) ));
+///     assert!(matches!( parse(lnurl_pay_url).await, Ok(LnUrlPay{data: _}) ));
+///     // assert!(matches!( parse("lnurlp://domain.com/lnurl-pay?key=val").await, Ok(LnUrlPay{data: _}) ));
+///     // assert!(matches!( parse("lightning@address.com").await, Ok(LnUrlPay{data: _}) ));
 ///
-///     if let Ok(LnUrl(PayRequest(pd))) = parse(lnurl_pay_url).await {
+///     if let Ok(LnUrlPay{data: pd}) = parse(lnurl_pay_url).await {
 ///         assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
 ///         assert_eq!(pd.max_sendable, 16000);
 ///         assert_eq!(pd.min_sendable, 4000);
@@ -96,16 +96,16 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL withdraw request
 ///
 /// ```no_run
-/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let lnurl_withdraw_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4exctthd96xserjv9mn7um9wdekjmmw843xxwpexdnxzen9vgunsvfexq6rvdecx93rgdmyxcuxverrvcursenpxvukzv3c8qunsdecx33nzwpnvg6ryc3hv93nzvecxgcxgwp3h33lxk";
 ///
-///     assert!(matches!( parse(lnurl_withdraw_url).await, Ok(LnUrl(WithdrawRequest(_))) ));
-///     // assert!(matches!( parse("lnurlw://domain.com/lnurl-withdraw?key=val").await, Ok(LnUrl(WithdrawRequest(_))) ));
+///     assert!(matches!( parse(lnurl_withdraw_url).await, Ok(LnUrlWithdraw{data: _}) ));
+///     // assert!(matches!( parse("lnurlw://domain.com/lnurl-withdraw?key=val").await, Ok(LnUrlWithdraw{data: _} ));
 ///
-///     if let Ok(LnUrl(WithdrawRequest(wd))) = parse(lnurl_withdraw_url).await {
+///     if let Ok(LnUrlWithdraw{data: wd}) = parse(lnurl_withdraw_url).await {
 ///         assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
 ///         assert_eq!(wd.k1, "37b4c919f871c090830cc47b92a544a30097f03430bc39670b8ec0da89f01a81");
 ///         assert_eq!(wd.min_withdrawable, 3000);
@@ -118,16 +118,16 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL auth request
 ///
 /// ```no_run
-/// use lightning_toolkit::input_parser::{InputType::*, LnUrlRequestData::*, parse};
+/// use lightning_toolkit::{InputType::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let lnurl_auth_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttvdankjm3lw3skw0tvdankjm3xdvcn6vtp8q6n2dfsx5mrjwtrxdjnqvtzv56rzcnyv3jrxv3sxqmkyenrvv6kve3exv6nqdtyv43nqcmzvdsnvdrzx33rsenxx5unqc3cxgeqgntfgu";
 ///
-///     assert!(matches!( parse(lnurl_auth_url).await, Ok(LnUrl(AuthRequest(_))) ));
-///     // assert!(matches!( parse("keyauth://domain.com/auth?key=val").await, Ok(LnUrl(AuthRequest(_))) ));
+///     assert!(matches!( parse(lnurl_auth_url).await, Ok(LnUrlAuth{data: _}) ));
+///     // assert!(matches!( parse("keyauth://domain.com/auth?key=val").await, Ok(LnUrlAuth{data: _}) ));
 ///
-///     if let Ok(LnUrl(AuthRequest(ad))) = parse(lnurl_auth_url).await {
+///     if let Ok(LnUrlAuth{data: ad}) = parse(lnurl_auth_url).await {
 ///         assert_eq!(ad.k1, "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822");
 ///     }
 /// }
@@ -149,23 +149,27 @@ pub async fn parse(input: &str) -> Result<InputType> {
         }
 
         return match invoice_param {
-            None => Ok(BitcoinAddress(bitcoin_addr_data)),
-            Some(invoice) => Ok(Bolt11(invoice)),
+            None => Ok(BitcoinAddress {
+                address: bitcoin_addr_data,
+            }),
+            Some(invoice) => Ok(Bolt11 { invoice }),
         };
     }
 
-    if let Ok(invoice) = parse_invoice(&strip_prefix_if_present("lightning:", input)) {
-        return Ok(Bolt11(invoice));
+    if let Ok(invoice) = parse_invoice(input) {
+        return Ok(Bolt11 { invoice });
     }
 
     if let Ok(_node_id) = bitcoin::secp256k1::PublicKey::from_str(input) {
         // Public key serialized in compressed form
-        return Ok(NodeId(input.into()));
+        return Ok(NodeId {
+            node_id: input.into(),
+        });
     }
 
     if let Ok(url) = reqwest::Url::parse(input) {
         if ["http", "https"].contains(&url.scheme()) {
-            return Ok(Url(input.into()));
+            return Ok(Url { url: input.into() });
         }
     }
 
@@ -181,13 +185,15 @@ pub async fn parse(input: &str) -> Result<InputType> {
                     k1: val.to_string(),
                 })
             {
-                return Ok(LnUrl(AuthRequest(auth_request_data)));
+                return Ok(LnUrlAuth {
+                    data: auth_request_data,
+                });
             }
         }
 
         lnurl_endpoint = maybe_replace_host_with_mockito_test_host(lnurl_endpoint)?;
-        let data: LnUrlRequestData = reqwest::get(lnurl_endpoint).await?.json().await?;
-        return Ok(LnUrl(data));
+        let lnurl_data: LnUrlRequestData = reqwest::get(lnurl_endpoint).await?.json().await?;
+        return Ok(lnurl_data.into());
     }
 
     Err(anyhow!("Unrecognized input type"))
@@ -329,39 +335,95 @@ pub enum InputType {
     ///
     /// - plain on-chain BTC address
     /// - BIP21
-    BitcoinAddress(BitcoinAddressData),
+    BitcoinAddress {
+        address: BitcoinAddressData,
+    },
 
     /// Also covers URIs like `bitcoin:...&lightning=bolt11`. In this case, it returns the BOLT11
     /// and discards all other data.
-    Bolt11(LNInvoice),
-    NodeId(String),
-    Url(String),
+    Bolt11 {
+        invoice: LNInvoice,
+    },
+    NodeId {
+        node_id: String,
+    },
+    Url {
+        url: String,
+    },
+
+    /// # Supported standards
+    ///
+    /// - LUD-01 LNURL bech32 encoding
+    /// - LUD-06 `payRequest` spec
+    /// - LUD-16 LN Address
+    /// - LUD-17 Support for lnurlp prefix with non-bech32-encoded LNURL URLs
+    LnUrlPay {
+        data: LnUrlPayRequestData,
+    },
 
     /// # Supported standards
     ///
     /// - LUD-01 LNURL bech32 encoding
     /// - LUD-03 `withdrawRequest` spec
-    /// - LUD-04 `auth` base spec
-    /// - LUD-06 `payRequest` spec
-    /// - LUD-16 LN Address
-    /// - LUD-17 Support for lnurlp, lnurlw, keyauth prefixes and non bech32-encoded LNURL URLs
+    /// - LUD-17 Support for lnurlw prefix with non-bech32-encoded LNURL URLs
     ///
     /// # Not supported (yet)
     ///
     /// - LUD-14 `balanceCheck`: reusable `withdrawRequest`s
     /// - LUD-19 Pay link discoverable from withdraw link
-    LnUrl(LnUrlRequestData),
+    LnUrlWithdraw {
+        data: LnUrlWithdrawRequestData,
+    },
+
+    /// # Supported standards
+    ///
+    /// - LUD-01 LNURL bech32 encoding
+    /// - LUD-04 `auth` base spec
+    /// - LUD-17 Support for keyauth prefix with non-bech32-encoded LNURL URLs
+    LnUrlAuth {
+        data: LnUrlAuthRequestData,
+    },
+
+    LnUrlError {
+        data: LnUrlErrorData,
+    },
 }
 
+// The uniffi bindings only supports enums with named fields.
+// We use #[serde(flatten)] to map the JSON payload fields to the inner enum "data" field
+// https://serde.rs/attr-flatten.html
 #[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum LnUrlRequestData {
-    PayRequest(LnUrlPayRequestData),
-    WithdrawRequest(LnUrlWithdrawRequestData),
-    AuthRequest(LnUrlAuthRequestData),
-    Error(LnUrlErrorData),
+    PayRequest {
+        #[serde(flatten)]
+        data: LnUrlPayRequestData,
+    },
+    WithdrawRequest {
+        #[serde(flatten)]
+        data: LnUrlWithdrawRequestData,
+    },
+    AuthRequest {
+        #[serde(flatten)]
+        data: LnUrlAuthRequestData,
+    },
+    Error {
+        #[serde(flatten)]
+        data: LnUrlErrorData,
+    },
+}
+
+impl From<LnUrlRequestData> for InputType {
+    fn from(lnurl_data: LnUrlRequestData) -> Self {
+        match lnurl_data {
+            PayRequest { data } => LnUrlPay { data },
+            WithdrawRequest { data } => LnUrlWithdraw { data },
+            AuthRequest { data } => LnUrlAuth { data },
+            Error { data } => LnUrlError { data },
+        }
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -433,7 +495,6 @@ mod tests {
     use bitcoin::bech32;
     use bitcoin::bech32::{ToBase32, Variant};
     use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
-    use mockito;
     use mockito::Mock;
 
     use crate::input_parser::LnUrlRequestData::*;
@@ -463,7 +524,7 @@ mod tests {
     async fn test_bitcoin_address() -> Result<()> {
         assert!(matches!(
             parse("1andreas3batLhQa2FawWjeyjCqyBzypd").await?,
-            InputType::BitcoinAddress(_)
+            InputType::BitcoinAddress { address: _ }
         ));
 
         Ok(())
@@ -484,7 +545,9 @@ mod tests {
         // Address with amount
         let addr_1 = format!("bitcoin:{}?amount=0.00002000", addr);
         match parse(&addr_1).await? {
-            InputType::BitcoinAddress(addr_with_amount_parsed) => {
+            InputType::BitcoinAddress {
+                address: addr_with_amount_parsed,
+            } => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
                 assert_eq!(addr_with_amount_parsed.amount_sat, Some(2000));
@@ -498,7 +561,9 @@ mod tests {
         let label = "test-label";
         let addr_2 = format!("bitcoin:{}?amount=0.00002000&label={}", addr, label);
         match parse(&addr_2).await? {
-            InputType::BitcoinAddress(addr_with_amount_parsed) => {
+            InputType::BitcoinAddress {
+                address: addr_with_amount_parsed,
+            } => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
                 assert_eq!(addr_with_amount_parsed.amount_sat, Some(2000));
@@ -515,7 +580,9 @@ mod tests {
             addr, label, message
         );
         match parse(&addr_3).await? {
-            InputType::BitcoinAddress(addr_with_amount_parsed) => {
+            InputType::BitcoinAddress {
+                address: addr_with_amount_parsed,
+            } => {
                 assert_eq!(addr_with_amount_parsed.address, addr);
                 assert_eq!(addr_with_amount_parsed.network, Network::Bitcoin);
                 assert_eq!(addr_with_amount_parsed.amount_sat, Some(2000));
@@ -533,13 +600,16 @@ mod tests {
         let bolt11 = "lnbc110n1p38q3gtpp5ypz09jrd8p993snjwnm68cph4ftwp22le34xd4r8ftspwshxhmnsdqqxqyjw5qcqpxsp5htlg8ydpywvsa7h3u4hdn77ehs4z4e844em0apjyvmqfkzqhhd2q9qgsqqqyssqszpxzxt9uuqzymr7zxcdccj5g69s8q7zzjs7sgxn9ejhnvdh6gqjcy22mss2yexunagm5r2gqczh8k24cwrqml3njskm548aruhpwssq9nvrvz";
 
         // Invoice without prefix
-        assert!(matches!(parse(bolt11).await?, InputType::Bolt11(_invoice)));
+        assert!(matches!(
+            parse(bolt11).await?,
+            InputType::Bolt11 { invoice: _invoice }
+        ));
 
         // Invoice with prefix
         let invoice_with_prefix = format!("lightning:{}", bolt11);
         assert!(matches!(
             parse(&invoice_with_prefix).await?,
-            InputType::Bolt11(_invoice)
+            InputType::Bolt11 { invoice: _invoice }
         ));
 
         Ok(())
@@ -553,12 +623,18 @@ mod tests {
         // Address and invoice
         // BOLT11 is the first URI arg (preceded by '?')
         let addr_1 = format!("bitcoin:{}?lightning={}", addr, bolt11);
-        assert!(matches!(parse(&addr_1).await?, InputType::Bolt11(_invoice)));
+        assert!(matches!(
+            parse(&addr_1).await?,
+            InputType::Bolt11 { invoice: _invoice }
+        ));
 
         // Address, amount and invoice
         // BOLT11 is not the first URI arg (preceded by '&')
         let addr_2 = format!("bitcoin:{}?amount=0.00002000&lightning={}", addr, bolt11);
-        assert!(matches!(parse(&addr_2).await?, InputType::Bolt11(_invoice)));
+        assert!(matches!(
+            parse(&addr_2).await?,
+            InputType::Bolt11 { invoice: _invoice }
+        ));
 
         Ok(())
     }
@@ -567,19 +643,19 @@ mod tests {
     async fn test_url() -> Result<()> {
         assert!(matches!(
             parse("https://breez.technology").await?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
         assert!(matches!(
             parse("https://breez.technology/").await?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
         assert!(matches!(
             parse("https://breez.technology/test-path").await?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
         assert!(matches!(
             parse("https://breez.technology/test-path?arg1=val1&arg2=val2").await?,
-            InputType::Url(_url)
+            InputType::Url { url: _url }
         ));
 
         Ok(())
@@ -592,7 +668,7 @@ mod tests {
         let public_key = PublicKey::from_secret_key(&secp, &secret_key);
 
         match parse(&public_key.to_string()).await? {
-            InputType::NodeId(node_id) => {
+            InputType::NodeId { node_id } => {
                 assert_eq!(node_id, public_key.to_string());
             }
             _ => return Err(anyhow!("Unexpected type")),
@@ -704,7 +780,7 @@ mod tests {
             format!("https://localhost{}", path)
         );
 
-        if let LnUrl(WithdrawRequest(wd)) = parse(lnurl_withdraw_encoded).await? {
+        if let LnUrlWithdraw { data: wd } = parse(lnurl_withdraw_encoded).await? {
             assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
             assert_eq!(
                 wd.k1,
@@ -727,7 +803,7 @@ mod tests {
         let lnurl_auth_encoded = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttvdankjm3lw3skw0tvdankjm3xdvcn6vtp8q6n2dfsx5mrjwtrxdjnqvtzv56rzcnyv3jrxv3sxqmkyenrvv6kve3exv6nqdtyv43nqcmzvdsnvdrzx33rsenxx5unqc3cxgeqgntfgu";
         assert_eq!(lnurl_decode(lnurl_auth_encoded)?, decoded_url);
 
-        if let LnUrl(AuthRequest(ad)) = parse(lnurl_auth_encoded).await? {
+        if let LnUrlAuth { data: ad } = parse(lnurl_auth_encoded).await? {
             assert_eq!(
                 ad.k1,
                 "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822"
@@ -823,7 +899,7 @@ mod tests {
             format!("https://localhost{}", path)
         );
 
-        if let LnUrl(PayRequest(pd)) = parse(lnurl_pay_encoded).await? {
+        if let LnUrlPay { data: pd } = parse(lnurl_pay_encoded).await? {
             assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
             assert_eq!(pd.max_sendable, 16000);
             assert_eq!(pd.min_sendable, 4000);
@@ -857,7 +933,7 @@ mod tests {
         let ln_address = "user@domain.net";
         let _m = mock_lnurl_ln_address_endpoint(ln_address, None)?;
 
-        if let LnUrl(PayRequest(pd)) = parse(ln_address).await? {
+        if let LnUrlPay { data: pd } = parse(ln_address).await? {
             assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
             assert_eq!(pd.max_sendable, 16000);
             assert_eq!(pd.min_sendable, 4000);
@@ -892,7 +968,7 @@ mod tests {
         let expected_err = "Error msg from LNURL endpoint found via LN Address";
         let _m = mock_lnurl_ln_address_endpoint(ln_address, Some(expected_err.to_string()))?;
 
-        if let LnUrl(Error(msg)) = parse(ln_address).await? {
+        if let LnUrlError { data: msg } = parse(ln_address).await? {
             assert_eq!(msg.reason, expected_err);
             return Ok(());
         }
@@ -978,7 +1054,7 @@ mod tests {
         let _m = mock_lnurl_pay_endpoint(pay_path, None);
 
         let lnurl_pay_url = format!("lnurlp://localhost{}", pay_path);
-        if let LnUrl(PayRequest(pd)) = parse(&lnurl_pay_url).await? {
+        if let LnUrlPay { data: pd } = parse(&lnurl_pay_url).await? {
             assert_eq!(pd.callback, "https://localhost/lnurl-pay/callback/db945b624265fc7f5a8d77f269f7589d789a771bdfd20e91a3cf6f50382a98d7");
             assert_eq!(pd.max_sendable, 16000);
             assert_eq!(pd.min_sendable, 4000);
@@ -1009,7 +1085,7 @@ mod tests {
         let withdraw_path = "/lnurl-withdraw?session=e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538";
         let _m = mock_lnurl_withdraw_endpoint(withdraw_path, None);
 
-        if let LnUrl(WithdrawRequest(wd)) =
+        if let LnUrlWithdraw { data: wd } =
             parse(&format!("lnurlw://localhost{}", withdraw_path)).await?
         {
             assert_eq!(wd.callback, "https://localhost/lnurl-withdraw/callback/e464f841c44dbdd86cee4f09f4ccd3ced58d2e24f148730ec192748317b74538");
@@ -1029,7 +1105,7 @@ mod tests {
     async fn test_lnurl_auth_lud_17() -> Result<()> {
         let auth_path = "/lnurl-login?tag=login&k1=1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822";
 
-        if let LnUrl(AuthRequest(ad)) = parse(&format!("keyauth://localhost{}", auth_path)).await? {
+        if let LnUrlAuth { data: ad } = parse(&format!("keyauth://localhost{}", auth_path)).await? {
             assert_eq!(
                 ad.k1,
                 "1a855505699c3e01be41bddd32007bfcc5ff93505dec0cbca64b4b8ff590b822"
@@ -1046,7 +1122,7 @@ mod tests {
         let expected_error_msg = "test pay error";
         let _m = mock_lnurl_pay_endpoint(pay_path, Some(expected_error_msg.to_string()));
 
-        if let LnUrl(Error(msg)) = parse(&format!("lnurlp://localhost{}", pay_path)).await? {
+        if let LnUrlError { data: msg } = parse(&format!("lnurlp://localhost{}", pay_path)).await? {
             assert_eq!(msg.reason, expected_error_msg);
             return Ok(());
         }
@@ -1060,7 +1136,9 @@ mod tests {
         let expected_error_msg = "test withdraw error";
         let _m = mock_lnurl_withdraw_endpoint(withdraw_path, Some(expected_error_msg.to_string()));
 
-        if let LnUrl(Error(msg)) = parse(&format!("lnurlw://localhost{}", withdraw_path)).await? {
+        if let LnUrlError { data: msg } =
+            parse(&format!("lnurlw://localhost{}", withdraw_path)).await?
+        {
             assert_eq!(msg.reason, expected_error_msg);
             return Ok(());
         }

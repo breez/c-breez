@@ -34,7 +34,7 @@ pub(crate) struct Greenlight {
 }
 
 impl Greenlight {
-    pub(crate) async fn new(
+    pub(crate) fn new(
         sdk_config: Config,
         seed: Vec<u8>,
         creds: GreenlightCredentials,

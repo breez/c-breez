@@ -1,5 +1,6 @@
 use crate::chain::MempoolSpace;
 use crate::fiat::{FiatCurrency, Rate};
+use crate::greenlight::Greenlight;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
 use crate::grpc::fund_manager_client::FundManagerClient;
 use crate::grpc::information_client::InformationClient;
@@ -7,8 +8,8 @@ use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lsp::LspInformation;
 use crate::models::{
-    parse_short_channel_id, Config, FeeratePreset, FiatAPI, LspAPI, NodeAPI, NodeState, Payment,
-    PaymentTypeFilter, SwapInfo, SwapperAPI,
+    parse_short_channel_id, Config, FeeratePreset, FiatAPI, GreenlightCredentials, LspAPI, Network,
+    NodeAPI, NodeState, Payment, PaymentTypeFilter, SwapInfo, SwapperAPI,
 };
 use crate::persist;
 use crate::persist::db::SqliteStorage;
@@ -18,21 +19,20 @@ use bip39::*;
 use core::time;
 use std::cmp::max;
 use std::str::FromStr;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
 use tokio::time::{sleep, Duration};
 use tonic::transport::{Channel, Uri};
 
-#[tonic::async_trait]
-pub trait BreezEventListener: Send + Sync {
-    async fn on_event(&self, e: BreezEvent) -> Result<()>;
+pub trait EventListener: Send + Sync {
+    fn on_event(&self, e: BreezEvent);
 }
 
 #[derive(Clone, Debug)]
 pub enum BreezEvent {
-    NewBlock(u32),
-    InvoicePaid(InvoicePaidDetails),
+    NewBlock { block: u32 },
+    InvoicePaid { details: InvoicePaidDetails },
 }
 
 #[derive(Clone, Debug)]
@@ -42,7 +42,7 @@ pub struct InvoicePaidDetails {
 }
 
 /// starts the BreezServices background threads.
-pub async fn start(
+pub(crate) async fn start(
     rt: &Runtime,
     breez_services: Arc<BreezServices>,
     mut shutdown_receiver: mpsc::Receiver<()>,
@@ -101,10 +101,52 @@ pub struct BreezServices {
     persister: Arc<persist::db::SqliteStorage>,
     payment_receiver: Arc<PaymentReceiver>,
     btc_receive_swapper: Arc<BTCReceiveSwap>,
-    event_listener: Option<Arc<dyn BreezEventListener>>,
+    event_listener: Option<Box<dyn EventListener>>,
+    shutdown_sender: Mutex<Option<mpsc::Sender<()>>>,
 }
 
 impl BreezServices {
+    pub async fn register_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+        let creds = Greenlight::register(network, seed.clone()).await?;
+        Ok(creds)
+    }
+
+    pub async fn recover_node(network: Network, seed: Vec<u8>) -> Result<GreenlightCredentials> {
+        let creds = Greenlight::recover(network, seed.clone()).await?;
+        Ok(creds)
+    }
+
+    pub async fn start(
+        runtime: &Runtime,
+        config: Option<Config>,
+        seed: Vec<u8>,
+        creds: GreenlightCredentials,
+        event_listener: Box<dyn EventListener>,
+    ) -> Result<Arc<BreezServices>> {
+        let sdk_config = config.unwrap_or(Config::default());
+
+        // create the node services instance and set it globally
+        let breez_services = BreezServicesBuilder::new(sdk_config.clone())
+            .greenlight_credentials(creds, seed)
+            .build(None)?;
+
+        // create a shutdown channel (sender and receiver)
+        let (stop_sender, stop_receiver) = mpsc::channel(1);
+        breez_services.set_shutdown_sender(stop_sender);
+
+        _ = crate::breez_services::start(&runtime, breez_services.clone(), stop_receiver).await?;
+        Ok(breez_services.clone())
+    }
+
+    pub async fn stop(&self) -> Result<()> {
+        let unlocked = self.shutdown_sender.lock().unwrap();
+        if unlocked.is_none() {
+            return Err(anyhow!("node has not been started"));
+        }
+        let sender = unlocked.as_ref().unwrap();
+        sender.send(()).await.map_err(anyhow::Error::msg)
+    }
+
     pub async fn send_payment(&self, bolt11: String) -> Result<()> {
         self.start_node().await?;
         self.node_api.send_payment(bolt11, None).await?;
@@ -245,8 +287,8 @@ impl BreezServices {
     async fn on_event(&self, e: BreezEvent) -> Result<()> {
         debug!("breez services got event {:?}", e);
         match e {
-            BreezEvent::InvoicePaid(_) => self.sync().await?,
-            BreezEvent::NewBlock(_) => self.sync().await?,
+            BreezEvent::InvoicePaid { details: _ } => self.sync().await?,
+            BreezEvent::NewBlock { block: _ } => self.sync().await?,
             _ => {}
         }
 
@@ -256,12 +298,15 @@ impl BreezServices {
                 e, err
             )
         };
-        if let Some(l) = self.event_listener.clone() {
-            if let Err(err) = l.on_event(e.clone()).await {
-                debug!("failed to processed event {:?}: {:?}", e, err)
-            };
+
+        if !self.event_listener.is_none() {
+            self.event_listener.as_ref().unwrap().on_event(e.clone())
         }
         Ok(())
+    }
+
+    fn set_shutdown_sender(&self, sender: mpsc::Sender<()>) {
+        *self.shutdown_sender.lock().unwrap() = Some(sender);
     }
 
     pub(crate) async fn start_node(&self) -> Result<()> {
@@ -284,7 +329,7 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
            Ok(next_block) => {
             debug!("got tip {:?}", next_block);
             if next_block > current_block {
-             _  = breez_services.on_event(BreezEvent::NewBlock(next_block)).await;
+             _  = breez_services.on_event(BreezEvent::NewBlock{block: next_block}).await;
             }
             current_block = next_block
            },
@@ -299,10 +344,10 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
             debug!("invoice stream got new invoice");
             match i.details {
              Some(gl_client::pb::incoming_payment::Details::Offchain(p)) => {
-              _  = breez_services.on_event(BreezEvent::InvoicePaid(InvoicePaidDetails {
+              _  = breez_services.on_event(BreezEvent::InvoicePaid{details: InvoicePaidDetails {
                     payment_hash: hex::encode(p.payment_hash),
                     bolt11: p.bolt11,
-                })).await;
+                }}).await;
              },
              None => {}
             }
@@ -321,11 +366,11 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
          log_message_res = log_stream.message() => {
           match log_message_res {
            Ok(Some(l)) => {
-            debug!("{}", l.line);
+            //debug!("{}", l.line);
            },
            // stream is closed, renew it
            Ok(None) => {
-            debug!("log stream closed, renewing");
+            //debug!("log stream closed, renewing");
             log_stream = breez_services.node_api.stream_log_messages().await?;
            }
            Err(err) => {
@@ -341,23 +386,30 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
 /// A helper struct to configure and build BreezServices
 pub struct BreezServicesBuilder {
     config: Config,
-    node_api: Arc<dyn NodeAPI>,
+    node_api: Option<Arc<dyn NodeAPI>>,
+    creds: Option<GreenlightCredentials>,
+    seed: Option<Vec<u8>>,
     lsp_api: Option<Arc<dyn LspAPI>>,
     fiat_api: Option<Arc<dyn FiatAPI>>,
     swapper_api: Option<Arc<dyn SwapperAPI>>,
-    event_listener: Option<Arc<dyn BreezEventListener>>,
 }
 
 impl BreezServicesBuilder {
-    pub fn new(config: Config, node_api: Arc<dyn NodeAPI>) -> BreezServicesBuilder {
+    pub fn new(config: Config) -> BreezServicesBuilder {
         BreezServicesBuilder {
             config: config,
-            node_api: node_api.clone(),
+            node_api: None,
+            creds: None,
+            seed: None,
             lsp_api: None,
             fiat_api: None,
             swapper_api: None,
-            event_listener: None,
         }
+    }
+
+    pub fn node_api(&mut self, node_api: Arc<dyn NodeAPI>) -> &mut Self {
+        self.node_api = Some(node_api);
+        self
     }
 
     pub fn lsp_api(&mut self, lsp_api: Arc<dyn LspAPI>) -> &mut Self {
@@ -375,12 +427,39 @@ impl BreezServicesBuilder {
         self
     }
 
-    pub fn event_listener(&mut self, event_listener: Arc<dyn BreezEventListener>) -> &mut Self {
-        self.event_listener = Some(event_listener.clone());
+    pub fn greenlight_credentials(
+        &mut self,
+        creds: GreenlightCredentials,
+        seed: Vec<u8>,
+    ) -> &mut Self {
+        self.creds = Some(creds);
+        self.seed = Some(seed);
         self
     }
 
-    pub fn build(&self) -> Result<Arc<BreezServices>> {
+    pub fn build(&self, listener: Option<Box<dyn EventListener>>) -> Result<Arc<BreezServices>> {
+        if self.node_api.is_none() && (self.creds.is_none() || self.seed.is_none()) {
+            return Err(anyhow!(
+                "Either node_api or both credentials and seed should be provided"
+            ));
+        }
+
+        let mut node_api = self.node_api.clone();
+        if node_api.is_none() {
+            if self.creds.is_none() || self.seed.is_none() {
+                return Err(anyhow!(
+                    "Either node_api or both credentials and seed should be provided"
+                ));
+            }
+            let greenlight = Greenlight::new(
+                self.config.clone(),
+                self.seed.clone().unwrap(),
+                self.creds.clone().unwrap(),
+            )?;
+            node_api = Some(Arc::new(greenlight));
+        }
+        let unwrapped_node_api = node_api.unwrap();
+
         // breez_server provides both FiatAPI & LspAPI implementations
         let breez_server = Arc::new(BreezServer::new(self.config.breezserver.clone()));
 
@@ -402,7 +481,7 @@ impl BreezServicesBuilder {
         }
 
         let payment_receiver = Arc::new(PaymentReceiver {
-            node_api: self.node_api.clone(),
+            node_api: unwrapped_node_api.clone(),
             lsp: breez_server.clone(),
             persister: persister.clone(),
         });
@@ -418,14 +497,15 @@ impl BreezServicesBuilder {
         // Create the node services and it them statically
         let breez_services = Arc::new(BreezServices {
             config: self.config.clone(),
-            node_api: self.node_api.clone(),
+            node_api: unwrapped_node_api.clone(),
             lsp_api: self.lsp_api.clone().unwrap_or(breez_server.clone()),
             fiat_api: self.fiat_api.clone().unwrap_or(breez_server.clone()),
             chain_service: chain_service.clone(),
             persister: persister.clone(),
             btc_receive_swapper: btc_receive_swapper.clone(),
             payment_receiver,
-            event_listener: self.event_listener.clone(),
+            event_listener: listener,
+            shutdown_sender: Mutex::new(None),
         });
 
         Ok(breez_services)
@@ -560,7 +640,9 @@ impl PaymentReceiver {
 
         let raw_invoice_with_hint = add_routing_hints(
             &invoice.bolt11,
-            vec![RouteHint(vec![lsp_hop])],
+            vec![RouteHint {
+                hops: vec![lsp_hop],
+            }],
             amount_sats * 1000,
         )?;
         info!("Routing hint added");
@@ -676,11 +758,12 @@ mod test {
             transactions: dummy_transactions.clone(),
         });
 
-        let mut builder = BreezServicesBuilder::new(create_test_config(), node_api);
+        let mut builder = BreezServicesBuilder::new(create_test_config());
         let breez_services = builder
             .lsp_api(Arc::new(MockBreezServer {}))
             .fiat_api(Arc::new(MockBreezServer {}))
-            .build()?;
+            .node_api(node_api)
+            .build(None)?;
 
         breez_services.sync().await?;
         let fetched_state = breez_services
@@ -755,11 +838,12 @@ mod test {
             transactions: vec![],
         });
 
-        let mut builder = BreezServicesBuilder::new(create_test_config(), node_api);
+        let mut builder = BreezServicesBuilder::new(create_test_config());
         let breez_services = builder
             .lsp_api(Arc::new(MockBreezServer {}))
             .fiat_api(Arc::new(MockBreezServer {}))
-            .build()
+            .node_api(node_api)
+            .build(None)
             .unwrap();
 
         breez_services

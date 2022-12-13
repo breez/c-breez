@@ -3,16 +3,28 @@ mod bridge_generated; /* AUTO INJECTED BY flutter_rust_bridge. This line may not
 extern crate log;
 
 pub mod binding;
-pub mod breez_services;
+mod breez_services;
 mod chain;
 mod crypt;
 mod fiat;
 mod greenlight;
-pub mod grpc;
-pub mod input_parser;
+mod grpc;
+mod input_parser;
 mod invoice;
-pub mod lsp;
-pub mod models;
+mod lsp;
+mod models;
 mod persist;
 mod swap;
 mod test_utils;
+
+pub use breez_services::{
+    mnemonic_to_seed, BreezEvent, BreezServices, EventListener, InvoicePaidDetails,
+};
+pub use fiat::{CurrencyInfo, FiatCurrency, LocaleOverrides, LocalizedName, Rate, Symbol};
+pub use input_parser::{
+    parse, BitcoinAddressData, InputType, LnUrlAuthRequestData, LnUrlErrorData,
+    LnUrlPayRequestData, LnUrlRequestData, LnUrlWithdrawRequestData, MetadataItem,
+};
+pub use invoice::{parse_invoice, LNInvoice, RouteHint, RouteHintHop};
+pub use lsp::LspInformation;
+pub use models::*;

@@ -32,7 +32,6 @@ use crate::input_parser::InputType;
 use crate::input_parser::LnUrlAuthRequestData;
 use crate::input_parser::LnUrlErrorData;
 use crate::input_parser::LnUrlPayRequestData;
-use crate::input_parser::LnUrlRequestData;
 use crate::input_parser::LnUrlWithdrawRequestData;
 use crate::input_parser::MetadataItem;
 use crate::invoice::LNInvoice;
@@ -488,8 +487,8 @@ impl support::IntoDartExceptPrimitive for BitcoinAddressData {}
 impl support::IntoDart for BreezEvent {
     fn into_dart(self) -> support::DartAbi {
         match self {
-            Self::NewBlock(field0) => vec![0.into_dart(), field0.into_dart()],
-            Self::InvoicePaid(field0) => vec![1.into_dart(), field0.into_dart()],
+            Self::NewBlock { block } => vec![0.into_dart(), block.into_dart()],
+            Self::InvoicePaid { details } => vec![1.into_dart(), details.into_dart()],
         }
         .into_dart()
     }
@@ -528,11 +527,14 @@ impl support::IntoDartExceptPrimitive for GreenlightCredentials {}
 impl support::IntoDart for InputType {
     fn into_dart(self) -> support::DartAbi {
         match self {
-            Self::BitcoinAddress(field0) => vec![0.into_dart(), field0.into_dart()],
-            Self::Bolt11(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::NodeId(field0) => vec![2.into_dart(), field0.into_dart()],
-            Self::Url(field0) => vec![3.into_dart(), field0.into_dart()],
-            Self::LnUrl(field0) => vec![4.into_dart(), field0.into_dart()],
+            Self::BitcoinAddress { address } => vec![0.into_dart(), address.into_dart()],
+            Self::Bolt11 { invoice } => vec![1.into_dart(), invoice.into_dart()],
+            Self::NodeId { node_id } => vec![2.into_dart(), node_id.into_dart()],
+            Self::Url { url } => vec![3.into_dart(), url.into_dart()],
+            Self::LnUrlPay { data } => vec![4.into_dart(), data.into_dart()],
+            Self::LnUrlWithdraw { data } => vec![5.into_dart(), data.into_dart()],
+            Self::LnUrlAuth { data } => vec![6.into_dart(), data.into_dart()],
+            Self::LnUrlError { data } => vec![7.into_dart(), data.into_dart()],
         }
         .into_dart()
     }
@@ -592,18 +594,6 @@ impl support::IntoDart for LnUrlPayRequestData {
 }
 impl support::IntoDartExceptPrimitive for LnUrlPayRequestData {}
 
-impl support::IntoDart for LnUrlRequestData {
-    fn into_dart(self) -> support::DartAbi {
-        match self {
-            Self::PayRequest(field0) => vec![0.into_dart(), field0.into_dart()],
-            Self::WithdrawRequest(field0) => vec![1.into_dart(), field0.into_dart()],
-            Self::AuthRequest(field0) => vec![2.into_dart(), field0.into_dart()],
-            Self::Error(field0) => vec![3.into_dart(), field0.into_dart()],
-        }
-        .into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for LnUrlRequestData {}
 impl support::IntoDart for LnUrlWithdrawRequestData {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -735,7 +725,7 @@ impl support::IntoDartExceptPrimitive for Rate {}
 
 impl support::IntoDart for RouteHint {
     fn into_dart(self) -> support::DartAbi {
-        vec![self.0.into_dart()].into_dart()
+        vec![self.hops.into_dart()].into_dart()
     }
 }
 impl support::IntoDartExceptPrimitive for RouteHint {}

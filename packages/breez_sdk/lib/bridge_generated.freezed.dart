@@ -16,23 +16,22 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$BreezEvent {
-  Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int field0) newBlock,
-    required TResult Function(InvoicePaidDetails field0) invoicePaid,
+    required TResult Function(int block) newBlock,
+    required TResult Function(InvoicePaidDetails details) invoicePaid,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int field0)? newBlock,
-    TResult? Function(InvoicePaidDetails field0)? invoicePaid,
+    TResult? Function(int block)? newBlock,
+    TResult? Function(InvoicePaidDetails details)? invoicePaid,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int field0)? newBlock,
-    TResult Function(InvoicePaidDetails field0)? invoicePaid,
+    TResult Function(int block)? newBlock,
+    TResult Function(InvoicePaidDetails details)? invoicePaid,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -81,7 +80,7 @@ abstract class _$$BreezEvent_NewBlockCopyWith<$Res> {
           $Res Function(_$BreezEvent_NewBlock) then) =
       __$$BreezEvent_NewBlockCopyWithImpl<$Res>;
   @useResult
-  $Res call({int field0});
+  $Res call({int block});
 }
 
 /// @nodoc
@@ -95,12 +94,12 @@ class __$$BreezEvent_NewBlockCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? block = null,
   }) {
     return _then(_$BreezEvent_NewBlock(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+      block: null == block
+          ? _value.block
+          : block // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
@@ -109,14 +108,14 @@ class __$$BreezEvent_NewBlockCopyWithImpl<$Res>
 /// @nodoc
 
 class _$BreezEvent_NewBlock implements BreezEvent_NewBlock {
-  const _$BreezEvent_NewBlock(this.field0);
+  const _$BreezEvent_NewBlock({required this.block});
 
   @override
-  final int field0;
+  final int block;
 
   @override
   String toString() {
-    return 'BreezEvent.newBlock(field0: $field0)';
+    return 'BreezEvent.newBlock(block: $block)';
   }
 
   @override
@@ -124,11 +123,11 @@ class _$BreezEvent_NewBlock implements BreezEvent_NewBlock {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BreezEvent_NewBlock &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            (identical(other.block, block) || other.block == block));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, block);
 
   @JsonKey(ignore: true)
   @override
@@ -140,30 +139,30 @@ class _$BreezEvent_NewBlock implements BreezEvent_NewBlock {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int field0) newBlock,
-    required TResult Function(InvoicePaidDetails field0) invoicePaid,
+    required TResult Function(int block) newBlock,
+    required TResult Function(InvoicePaidDetails details) invoicePaid,
   }) {
-    return newBlock(field0);
+    return newBlock(block);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int field0)? newBlock,
-    TResult? Function(InvoicePaidDetails field0)? invoicePaid,
+    TResult? Function(int block)? newBlock,
+    TResult? Function(InvoicePaidDetails details)? invoicePaid,
   }) {
-    return newBlock?.call(field0);
+    return newBlock?.call(block);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int field0)? newBlock,
-    TResult Function(InvoicePaidDetails field0)? invoicePaid,
+    TResult Function(int block)? newBlock,
+    TResult Function(InvoicePaidDetails details)? invoicePaid,
     required TResult orElse(),
   }) {
     if (newBlock != null) {
-      return newBlock(field0);
+      return newBlock(block);
     }
     return orElse();
   }
@@ -201,10 +200,10 @@ class _$BreezEvent_NewBlock implements BreezEvent_NewBlock {
 }
 
 abstract class BreezEvent_NewBlock implements BreezEvent {
-  const factory BreezEvent_NewBlock(final int field0) = _$BreezEvent_NewBlock;
+  const factory BreezEvent_NewBlock({required final int block}) =
+      _$BreezEvent_NewBlock;
 
-  @override
-  int get field0;
+  int get block;
   @JsonKey(ignore: true)
   _$$BreezEvent_NewBlockCopyWith<_$BreezEvent_NewBlock> get copyWith =>
       throw _privateConstructorUsedError;
@@ -216,7 +215,7 @@ abstract class _$$BreezEvent_InvoicePaidCopyWith<$Res> {
           $Res Function(_$BreezEvent_InvoicePaid) then) =
       __$$BreezEvent_InvoicePaidCopyWithImpl<$Res>;
   @useResult
-  $Res call({InvoicePaidDetails field0});
+  $Res call({InvoicePaidDetails details});
 }
 
 /// @nodoc
@@ -230,12 +229,12 @@ class __$$BreezEvent_InvoicePaidCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? details = null,
   }) {
     return _then(_$BreezEvent_InvoicePaid(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+      details: null == details
+          ? _value.details
+          : details // ignore: cast_nullable_to_non_nullable
               as InvoicePaidDetails,
     ));
   }
@@ -244,14 +243,14 @@ class __$$BreezEvent_InvoicePaidCopyWithImpl<$Res>
 /// @nodoc
 
 class _$BreezEvent_InvoicePaid implements BreezEvent_InvoicePaid {
-  const _$BreezEvent_InvoicePaid(this.field0);
+  const _$BreezEvent_InvoicePaid({required this.details});
 
   @override
-  final InvoicePaidDetails field0;
+  final InvoicePaidDetails details;
 
   @override
   String toString() {
-    return 'BreezEvent.invoicePaid(field0: $field0)';
+    return 'BreezEvent.invoicePaid(details: $details)';
   }
 
   @override
@@ -259,11 +258,11 @@ class _$BreezEvent_InvoicePaid implements BreezEvent_InvoicePaid {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BreezEvent_InvoicePaid &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            (identical(other.details, details) || other.details == details));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, details);
 
   @JsonKey(ignore: true)
   @override
@@ -275,30 +274,30 @@ class _$BreezEvent_InvoicePaid implements BreezEvent_InvoicePaid {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(int field0) newBlock,
-    required TResult Function(InvoicePaidDetails field0) invoicePaid,
+    required TResult Function(int block) newBlock,
+    required TResult Function(InvoicePaidDetails details) invoicePaid,
   }) {
-    return invoicePaid(field0);
+    return invoicePaid(details);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(int field0)? newBlock,
-    TResult? Function(InvoicePaidDetails field0)? invoicePaid,
+    TResult? Function(int block)? newBlock,
+    TResult? Function(InvoicePaidDetails details)? invoicePaid,
   }) {
-    return invoicePaid?.call(field0);
+    return invoicePaid?.call(details);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(int field0)? newBlock,
-    TResult Function(InvoicePaidDetails field0)? invoicePaid,
+    TResult Function(int block)? newBlock,
+    TResult Function(InvoicePaidDetails details)? invoicePaid,
     required TResult orElse(),
   }) {
     if (invoicePaid != null) {
-      return invoicePaid(field0);
+      return invoicePaid(details);
     }
     return orElse();
   }
@@ -336,11 +335,10 @@ class _$BreezEvent_InvoicePaid implements BreezEvent_InvoicePaid {
 }
 
 abstract class BreezEvent_InvoicePaid implements BreezEvent {
-  const factory BreezEvent_InvoicePaid(final InvoicePaidDetails field0) =
-      _$BreezEvent_InvoicePaid;
+  const factory BreezEvent_InvoicePaid(
+      {required final InvoicePaidDetails details}) = _$BreezEvent_InvoicePaid;
 
-  @override
-  InvoicePaidDetails get field0;
+  InvoicePaidDetails get details;
   @JsonKey(ignore: true)
   _$$BreezEvent_InvoicePaidCopyWith<_$BreezEvent_InvoicePaid> get copyWith =>
       throw _privateConstructorUsedError;
@@ -348,32 +346,40 @@ abstract class BreezEvent_InvoicePaid implements BreezEvent {
 
 /// @nodoc
 mixin _$InputType {
-  Object get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
-    required TResult Function(LNInvoice field0) bolt11,
-    required TResult Function(String field0) nodeId,
-    required TResult Function(String field0) url,
-    required TResult Function(LnUrlRequestData field0) lnUrl,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult? Function(LNInvoice field0)? bolt11,
-    TResult? Function(String field0)? nodeId,
-    TResult? Function(String field0)? url,
-    TResult? Function(LnUrlRequestData field0)? lnUrl,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(LnUrlRequestData field0)? lnUrl,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -383,7 +389,10 @@ mixin _$InputType {
     required TResult Function(InputType_Bolt11 value) bolt11,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
-    required TResult Function(InputType_LnUrl value) lnUrl,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -392,7 +401,10 @@ mixin _$InputType {
     TResult? Function(InputType_Bolt11 value)? bolt11,
     TResult? Function(InputType_NodeId value)? nodeId,
     TResult? Function(InputType_Url value)? url,
-    TResult? Function(InputType_LnUrl value)? lnUrl,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -401,7 +413,10 @@ mixin _$InputType {
     TResult Function(InputType_Bolt11 value)? bolt11,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrl value)? lnUrl,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -430,7 +445,7 @@ abstract class _$$InputType_BitcoinAddressCopyWith<$Res> {
           $Res Function(_$InputType_BitcoinAddress) then) =
       __$$InputType_BitcoinAddressCopyWithImpl<$Res>;
   @useResult
-  $Res call({BitcoinAddressData field0});
+  $Res call({BitcoinAddressData address});
 }
 
 /// @nodoc
@@ -444,12 +459,12 @@ class __$$InputType_BitcoinAddressCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? address = null,
   }) {
     return _then(_$InputType_BitcoinAddress(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+      address: null == address
+          ? _value.address
+          : address // ignore: cast_nullable_to_non_nullable
               as BitcoinAddressData,
     ));
   }
@@ -458,14 +473,14 @@ class __$$InputType_BitcoinAddressCopyWithImpl<$Res>
 /// @nodoc
 
 class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
-  const _$InputType_BitcoinAddress(this.field0);
+  const _$InputType_BitcoinAddress({required this.address});
 
   @override
-  final BitcoinAddressData field0;
+  final BitcoinAddressData address;
 
   @override
   String toString() {
-    return 'InputType.bitcoinAddress(field0: $field0)';
+    return 'InputType.bitcoinAddress(address: $address)';
   }
 
   @override
@@ -473,11 +488,11 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_BitcoinAddress &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            (identical(other.address, address) || other.address == address));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, address);
 
   @JsonKey(ignore: true)
   @override
@@ -490,39 +505,48 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
-    required TResult Function(LNInvoice field0) bolt11,
-    required TResult Function(String field0) nodeId,
-    required TResult Function(String field0) url,
-    required TResult Function(LnUrlRequestData field0) lnUrl,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return bitcoinAddress(field0);
+    return bitcoinAddress(address);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult? Function(LNInvoice field0)? bolt11,
-    TResult? Function(String field0)? nodeId,
-    TResult? Function(String field0)? url,
-    TResult? Function(LnUrlRequestData field0)? lnUrl,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return bitcoinAddress?.call(field0);
+    return bitcoinAddress?.call(address);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(LnUrlRequestData field0)? lnUrl,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
     if (bitcoinAddress != null) {
-      return bitcoinAddress(field0);
+      return bitcoinAddress(address);
     }
     return orElse();
   }
@@ -534,7 +558,10 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     required TResult Function(InputType_Bolt11 value) bolt11,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
-    required TResult Function(InputType_LnUrl value) lnUrl,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
     return bitcoinAddress(this);
   }
@@ -546,7 +573,10 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     TResult? Function(InputType_Bolt11 value)? bolt11,
     TResult? Function(InputType_NodeId value)? nodeId,
     TResult? Function(InputType_Url value)? url,
-    TResult? Function(InputType_LnUrl value)? lnUrl,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
     return bitcoinAddress?.call(this);
   }
@@ -558,7 +588,10 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
     TResult Function(InputType_Bolt11 value)? bolt11,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrl value)? lnUrl,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
     if (bitcoinAddress != null) {
@@ -569,11 +602,10 @@ class _$InputType_BitcoinAddress implements InputType_BitcoinAddress {
 }
 
 abstract class InputType_BitcoinAddress implements InputType {
-  const factory InputType_BitcoinAddress(final BitcoinAddressData field0) =
-      _$InputType_BitcoinAddress;
+  const factory InputType_BitcoinAddress(
+      {required final BitcoinAddressData address}) = _$InputType_BitcoinAddress;
 
-  @override
-  BitcoinAddressData get field0;
+  BitcoinAddressData get address;
   @JsonKey(ignore: true)
   _$$InputType_BitcoinAddressCopyWith<_$InputType_BitcoinAddress>
       get copyWith => throw _privateConstructorUsedError;
@@ -585,7 +617,7 @@ abstract class _$$InputType_Bolt11CopyWith<$Res> {
           _$InputType_Bolt11 value, $Res Function(_$InputType_Bolt11) then) =
       __$$InputType_Bolt11CopyWithImpl<$Res>;
   @useResult
-  $Res call({LNInvoice field0});
+  $Res call({LNInvoice invoice});
 }
 
 /// @nodoc
@@ -599,12 +631,12 @@ class __$$InputType_Bolt11CopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? invoice = null,
   }) {
     return _then(_$InputType_Bolt11(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+      invoice: null == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
               as LNInvoice,
     ));
   }
@@ -613,14 +645,14 @@ class __$$InputType_Bolt11CopyWithImpl<$Res>
 /// @nodoc
 
 class _$InputType_Bolt11 implements InputType_Bolt11 {
-  const _$InputType_Bolt11(this.field0);
+  const _$InputType_Bolt11({required this.invoice});
 
   @override
-  final LNInvoice field0;
+  final LNInvoice invoice;
 
   @override
   String toString() {
-    return 'InputType.bolt11(field0: $field0)';
+    return 'InputType.bolt11(invoice: $invoice)';
   }
 
   @override
@@ -628,11 +660,11 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_Bolt11 &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            (identical(other.invoice, invoice) || other.invoice == invoice));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, invoice);
 
   @JsonKey(ignore: true)
   @override
@@ -643,39 +675,48 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
-    required TResult Function(LNInvoice field0) bolt11,
-    required TResult Function(String field0) nodeId,
-    required TResult Function(String field0) url,
-    required TResult Function(LnUrlRequestData field0) lnUrl,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return bolt11(field0);
+    return bolt11(invoice);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult? Function(LNInvoice field0)? bolt11,
-    TResult? Function(String field0)? nodeId,
-    TResult? Function(String field0)? url,
-    TResult? Function(LnUrlRequestData field0)? lnUrl,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return bolt11?.call(field0);
+    return bolt11?.call(invoice);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(LnUrlRequestData field0)? lnUrl,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
     if (bolt11 != null) {
-      return bolt11(field0);
+      return bolt11(invoice);
     }
     return orElse();
   }
@@ -687,7 +728,10 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     required TResult Function(InputType_Bolt11 value) bolt11,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
-    required TResult Function(InputType_LnUrl value) lnUrl,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
     return bolt11(this);
   }
@@ -699,7 +743,10 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     TResult? Function(InputType_Bolt11 value)? bolt11,
     TResult? Function(InputType_NodeId value)? nodeId,
     TResult? Function(InputType_Url value)? url,
-    TResult? Function(InputType_LnUrl value)? lnUrl,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
     return bolt11?.call(this);
   }
@@ -711,7 +758,10 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
     TResult Function(InputType_Bolt11 value)? bolt11,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrl value)? lnUrl,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
     if (bolt11 != null) {
@@ -722,10 +772,10 @@ class _$InputType_Bolt11 implements InputType_Bolt11 {
 }
 
 abstract class InputType_Bolt11 implements InputType {
-  const factory InputType_Bolt11(final LNInvoice field0) = _$InputType_Bolt11;
+  const factory InputType_Bolt11({required final LNInvoice invoice}) =
+      _$InputType_Bolt11;
 
-  @override
-  LNInvoice get field0;
+  LNInvoice get invoice;
   @JsonKey(ignore: true)
   _$$InputType_Bolt11CopyWith<_$InputType_Bolt11> get copyWith =>
       throw _privateConstructorUsedError;
@@ -737,7 +787,7 @@ abstract class _$$InputType_NodeIdCopyWith<$Res> {
           _$InputType_NodeId value, $Res Function(_$InputType_NodeId) then) =
       __$$InputType_NodeIdCopyWithImpl<$Res>;
   @useResult
-  $Res call({String field0});
+  $Res call({String nodeId});
 }
 
 /// @nodoc
@@ -751,12 +801,12 @@ class __$$InputType_NodeIdCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? nodeId = null,
   }) {
     return _then(_$InputType_NodeId(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+      nodeId: null == nodeId
+          ? _value.nodeId
+          : nodeId // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -765,14 +815,14 @@ class __$$InputType_NodeIdCopyWithImpl<$Res>
 /// @nodoc
 
 class _$InputType_NodeId implements InputType_NodeId {
-  const _$InputType_NodeId(this.field0);
+  const _$InputType_NodeId({required this.nodeId});
 
   @override
-  final String field0;
+  final String nodeId;
 
   @override
   String toString() {
-    return 'InputType.nodeId(field0: $field0)';
+    return 'InputType.nodeId(nodeId: $nodeId)';
   }
 
   @override
@@ -780,11 +830,11 @@ class _$InputType_NodeId implements InputType_NodeId {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_NodeId &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            (identical(other.nodeId, nodeId) || other.nodeId == nodeId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, nodeId);
 
   @JsonKey(ignore: true)
   @override
@@ -795,39 +845,48 @@ class _$InputType_NodeId implements InputType_NodeId {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
-    required TResult Function(LNInvoice field0) bolt11,
-    required TResult Function(String field0) nodeId,
-    required TResult Function(String field0) url,
-    required TResult Function(LnUrlRequestData field0) lnUrl,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return nodeId(field0);
+    return nodeId(this.nodeId);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult? Function(LNInvoice field0)? bolt11,
-    TResult? Function(String field0)? nodeId,
-    TResult? Function(String field0)? url,
-    TResult? Function(LnUrlRequestData field0)? lnUrl,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return nodeId?.call(field0);
+    return nodeId?.call(this.nodeId);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(LnUrlRequestData field0)? lnUrl,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
     if (nodeId != null) {
-      return nodeId(field0);
+      return nodeId(this.nodeId);
     }
     return orElse();
   }
@@ -839,7 +898,10 @@ class _$InputType_NodeId implements InputType_NodeId {
     required TResult Function(InputType_Bolt11 value) bolt11,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
-    required TResult Function(InputType_LnUrl value) lnUrl,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
     return nodeId(this);
   }
@@ -851,7 +913,10 @@ class _$InputType_NodeId implements InputType_NodeId {
     TResult? Function(InputType_Bolt11 value)? bolt11,
     TResult? Function(InputType_NodeId value)? nodeId,
     TResult? Function(InputType_Url value)? url,
-    TResult? Function(InputType_LnUrl value)? lnUrl,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
     return nodeId?.call(this);
   }
@@ -863,7 +928,10 @@ class _$InputType_NodeId implements InputType_NodeId {
     TResult Function(InputType_Bolt11 value)? bolt11,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrl value)? lnUrl,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
     if (nodeId != null) {
@@ -874,10 +942,10 @@ class _$InputType_NodeId implements InputType_NodeId {
 }
 
 abstract class InputType_NodeId implements InputType {
-  const factory InputType_NodeId(final String field0) = _$InputType_NodeId;
+  const factory InputType_NodeId({required final String nodeId}) =
+      _$InputType_NodeId;
 
-  @override
-  String get field0;
+  String get nodeId;
   @JsonKey(ignore: true)
   _$$InputType_NodeIdCopyWith<_$InputType_NodeId> get copyWith =>
       throw _privateConstructorUsedError;
@@ -889,7 +957,7 @@ abstract class _$$InputType_UrlCopyWith<$Res> {
           _$InputType_Url value, $Res Function(_$InputType_Url) then) =
       __$$InputType_UrlCopyWithImpl<$Res>;
   @useResult
-  $Res call({String field0});
+  $Res call({String url});
 }
 
 /// @nodoc
@@ -903,12 +971,12 @@ class __$$InputType_UrlCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? url = null,
   }) {
     return _then(_$InputType_Url(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+      url: null == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -917,14 +985,14 @@ class __$$InputType_UrlCopyWithImpl<$Res>
 /// @nodoc
 
 class _$InputType_Url implements InputType_Url {
-  const _$InputType_Url(this.field0);
+  const _$InputType_Url({required this.url});
 
   @override
-  final String field0;
+  final String url;
 
   @override
   String toString() {
-    return 'InputType.url(field0: $field0)';
+    return 'InputType.url(url: $url)';
   }
 
   @override
@@ -932,11 +1000,11 @@ class _$InputType_Url implements InputType_Url {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$InputType_Url &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            (identical(other.url, url) || other.url == url));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, url);
 
   @JsonKey(ignore: true)
   @override
@@ -947,39 +1015,48 @@ class _$InputType_Url implements InputType_Url {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
-    required TResult Function(LNInvoice field0) bolt11,
-    required TResult Function(String field0) nodeId,
-    required TResult Function(String field0) url,
-    required TResult Function(LnUrlRequestData field0) lnUrl,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return url(field0);
+    return url(this.url);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult? Function(LNInvoice field0)? bolt11,
-    TResult? Function(String field0)? nodeId,
-    TResult? Function(String field0)? url,
-    TResult? Function(LnUrlRequestData field0)? lnUrl,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return url?.call(field0);
+    return url?.call(this.url);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(LnUrlRequestData field0)? lnUrl,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
     if (url != null) {
-      return url(field0);
+      return url(this.url);
     }
     return orElse();
   }
@@ -991,7 +1068,10 @@ class _$InputType_Url implements InputType_Url {
     required TResult Function(InputType_Bolt11 value) bolt11,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
-    required TResult Function(InputType_LnUrl value) lnUrl,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
     return url(this);
   }
@@ -1003,7 +1083,10 @@ class _$InputType_Url implements InputType_Url {
     TResult? Function(InputType_Bolt11 value)? bolt11,
     TResult? Function(InputType_NodeId value)? nodeId,
     TResult? Function(InputType_Url value)? url,
-    TResult? Function(InputType_LnUrl value)? lnUrl,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
     return url?.call(this);
   }
@@ -1015,7 +1098,10 @@ class _$InputType_Url implements InputType_Url {
     TResult Function(InputType_Bolt11 value)? bolt11,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrl value)? lnUrl,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
     if (url != null) {
@@ -1026,122 +1112,121 @@ class _$InputType_Url implements InputType_Url {
 }
 
 abstract class InputType_Url implements InputType {
-  const factory InputType_Url(final String field0) = _$InputType_Url;
+  const factory InputType_Url({required final String url}) = _$InputType_Url;
 
-  @override
-  String get field0;
+  String get url;
   @JsonKey(ignore: true)
   _$$InputType_UrlCopyWith<_$InputType_Url> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$InputType_LnUrlCopyWith<$Res> {
-  factory _$$InputType_LnUrlCopyWith(
-          _$InputType_LnUrl value, $Res Function(_$InputType_LnUrl) then) =
-      __$$InputType_LnUrlCopyWithImpl<$Res>;
+abstract class _$$InputType_LnUrlPayCopyWith<$Res> {
+  factory _$$InputType_LnUrlPayCopyWith(_$InputType_LnUrlPay value,
+          $Res Function(_$InputType_LnUrlPay) then) =
+      __$$InputType_LnUrlPayCopyWithImpl<$Res>;
   @useResult
-  $Res call({LnUrlRequestData field0});
-
-  $LnUrlRequestDataCopyWith<$Res> get field0;
+  $Res call({LnUrlPayRequestData data});
 }
 
 /// @nodoc
-class __$$InputType_LnUrlCopyWithImpl<$Res>
-    extends _$InputTypeCopyWithImpl<$Res, _$InputType_LnUrl>
-    implements _$$InputType_LnUrlCopyWith<$Res> {
-  __$$InputType_LnUrlCopyWithImpl(
-      _$InputType_LnUrl _value, $Res Function(_$InputType_LnUrl) _then)
+class __$$InputType_LnUrlPayCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_LnUrlPay>
+    implements _$$InputType_LnUrlPayCopyWith<$Res> {
+  __$$InputType_LnUrlPayCopyWithImpl(
+      _$InputType_LnUrlPay _value, $Res Function(_$InputType_LnUrlPay) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? data = null,
   }) {
-    return _then(_$InputType_LnUrl(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
-              as LnUrlRequestData,
+    return _then(_$InputType_LnUrlPay(
+      data: null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
+              as LnUrlPayRequestData,
     ));
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $LnUrlRequestDataCopyWith<$Res> get field0 {
-    return $LnUrlRequestDataCopyWith<$Res>(_value.field0, (value) {
-      return _then(_value.copyWith(field0: value));
-    });
   }
 }
 
 /// @nodoc
 
-class _$InputType_LnUrl implements InputType_LnUrl {
-  const _$InputType_LnUrl(this.field0);
+class _$InputType_LnUrlPay implements InputType_LnUrlPay {
+  const _$InputType_LnUrlPay({required this.data});
 
   @override
-  final LnUrlRequestData field0;
+  final LnUrlPayRequestData data;
 
   @override
   String toString() {
-    return 'InputType.lnUrl(field0: $field0)';
+    return 'InputType.lnUrlPay(data: $data)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$InputType_LnUrl &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            other is _$InputType_LnUrlPay &&
+            (identical(other.data, data) || other.data == data));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, data);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$InputType_LnUrlCopyWith<_$InputType_LnUrl> get copyWith =>
-      __$$InputType_LnUrlCopyWithImpl<_$InputType_LnUrl>(this, _$identity);
+  _$$InputType_LnUrlPayCopyWith<_$InputType_LnUrlPay> get copyWith =>
+      __$$InputType_LnUrlPayCopyWithImpl<_$InputType_LnUrlPay>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(BitcoinAddressData field0) bitcoinAddress,
-    required TResult Function(LNInvoice field0) bolt11,
-    required TResult Function(String field0) nodeId,
-    required TResult Function(String field0) url,
-    required TResult Function(LnUrlRequestData field0) lnUrl,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return lnUrl(field0);
+    return lnUrlPay(data);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult? Function(LNInvoice field0)? bolt11,
-    TResult? Function(String field0)? nodeId,
-    TResult? Function(String field0)? url,
-    TResult? Function(LnUrlRequestData field0)? lnUrl,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return lnUrl?.call(field0);
+    return lnUrlPay?.call(data);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(BitcoinAddressData field0)? bitcoinAddress,
-    TResult Function(LNInvoice field0)? bolt11,
-    TResult Function(String field0)? nodeId,
-    TResult Function(String field0)? url,
-    TResult Function(LnUrlRequestData field0)? lnUrl,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (lnUrl != null) {
-      return lnUrl(field0);
+    if (lnUrlPay != null) {
+      return lnUrlPay(data);
     }
     return orElse();
   }
@@ -1153,9 +1238,12 @@ class _$InputType_LnUrl implements InputType_LnUrl {
     required TResult Function(InputType_Bolt11 value) bolt11,
     required TResult Function(InputType_NodeId value) nodeId,
     required TResult Function(InputType_Url value) url,
-    required TResult Function(InputType_LnUrl value) lnUrl,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
-    return lnUrl(this);
+    return lnUrlPay(this);
   }
 
   @override
@@ -1165,9 +1253,12 @@ class _$InputType_LnUrl implements InputType_LnUrl {
     TResult? Function(InputType_Bolt11 value)? bolt11,
     TResult? Function(InputType_NodeId value)? nodeId,
     TResult? Function(InputType_Url value)? url,
-    TResult? Function(InputType_LnUrl value)? lnUrl,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
-    return lnUrl?.call(this);
+    return lnUrlPay?.call(this);
   }
 
   @override
@@ -1177,281 +1268,55 @@ class _$InputType_LnUrl implements InputType_LnUrl {
     TResult Function(InputType_Bolt11 value)? bolt11,
     TResult Function(InputType_NodeId value)? nodeId,
     TResult Function(InputType_Url value)? url,
-    TResult Function(InputType_LnUrl value)? lnUrl,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (lnUrl != null) {
-      return lnUrl(this);
+    if (lnUrlPay != null) {
+      return lnUrlPay(this);
     }
     return orElse();
   }
 }
 
-abstract class InputType_LnUrl implements InputType {
-  const factory InputType_LnUrl(final LnUrlRequestData field0) =
-      _$InputType_LnUrl;
+abstract class InputType_LnUrlPay implements InputType {
+  const factory InputType_LnUrlPay({required final LnUrlPayRequestData data}) =
+      _$InputType_LnUrlPay;
 
-  @override
-  LnUrlRequestData get field0;
+  LnUrlPayRequestData get data;
   @JsonKey(ignore: true)
-  _$$InputType_LnUrlCopyWith<_$InputType_LnUrl> get copyWith =>
+  _$$InputType_LnUrlPayCopyWith<_$InputType_LnUrlPay> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-mixin _$LnUrlRequestData {
-  Object get field0 => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(LnUrlPayRequestData field0) payRequest,
-    required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
-    required TResult Function(LnUrlAuthRequestData field0) authRequest,
-    required TResult Function(LnUrlErrorData field0) error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayRequestData field0)? payRequest,
-    TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult? Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult? Function(LnUrlErrorData field0)? error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(LnUrlPayRequestData field0)? payRequest,
-    TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult Function(LnUrlErrorData field0)? error,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlRequestData_PayRequest value) payRequest,
-    required TResult Function(LnUrlRequestData_WithdrawRequest value)
-        withdrawRequest,
-    required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
-    required TResult Function(LnUrlRequestData_Error value) error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult? Function(LnUrlRequestData_Error value)? error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult Function(LnUrlRequestData_Error value)? error,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $LnUrlRequestDataCopyWith<$Res> {
-  factory $LnUrlRequestDataCopyWith(
-          LnUrlRequestData value, $Res Function(LnUrlRequestData) then) =
-      _$LnUrlRequestDataCopyWithImpl<$Res, LnUrlRequestData>;
-}
-
-/// @nodoc
-class _$LnUrlRequestDataCopyWithImpl<$Res, $Val extends LnUrlRequestData>
-    implements $LnUrlRequestDataCopyWith<$Res> {
-  _$LnUrlRequestDataCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-}
-
-/// @nodoc
-abstract class _$$LnUrlRequestData_PayRequestCopyWith<$Res> {
-  factory _$$LnUrlRequestData_PayRequestCopyWith(
-          _$LnUrlRequestData_PayRequest value,
-          $Res Function(_$LnUrlRequestData_PayRequest) then) =
-      __$$LnUrlRequestData_PayRequestCopyWithImpl<$Res>;
+abstract class _$$InputType_LnUrlWithdrawCopyWith<$Res> {
+  factory _$$InputType_LnUrlWithdrawCopyWith(_$InputType_LnUrlWithdraw value,
+          $Res Function(_$InputType_LnUrlWithdraw) then) =
+      __$$InputType_LnUrlWithdrawCopyWithImpl<$Res>;
   @useResult
-  $Res call({LnUrlPayRequestData field0});
+  $Res call({LnUrlWithdrawRequestData data});
 }
 
 /// @nodoc
-class __$$LnUrlRequestData_PayRequestCopyWithImpl<$Res>
-    extends _$LnUrlRequestDataCopyWithImpl<$Res, _$LnUrlRequestData_PayRequest>
-    implements _$$LnUrlRequestData_PayRequestCopyWith<$Res> {
-  __$$LnUrlRequestData_PayRequestCopyWithImpl(
-      _$LnUrlRequestData_PayRequest _value,
-      $Res Function(_$LnUrlRequestData_PayRequest) _then)
+class __$$InputType_LnUrlWithdrawCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_LnUrlWithdraw>
+    implements _$$InputType_LnUrlWithdrawCopyWith<$Res> {
+  __$$InputType_LnUrlWithdrawCopyWithImpl(_$InputType_LnUrlWithdraw _value,
+      $Res Function(_$InputType_LnUrlWithdraw) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? data = null,
   }) {
-    return _then(_$LnUrlRequestData_PayRequest(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
-              as LnUrlPayRequestData,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$LnUrlRequestData_PayRequest implements LnUrlRequestData_PayRequest {
-  const _$LnUrlRequestData_PayRequest(this.field0);
-
-  @override
-  final LnUrlPayRequestData field0;
-
-  @override
-  String toString() {
-    return 'LnUrlRequestData.payRequest(field0: $field0)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LnUrlRequestData_PayRequest &&
-            (identical(other.field0, field0) || other.field0 == field0));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, field0);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$LnUrlRequestData_PayRequestCopyWith<_$LnUrlRequestData_PayRequest>
-      get copyWith => __$$LnUrlRequestData_PayRequestCopyWithImpl<
-          _$LnUrlRequestData_PayRequest>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(LnUrlPayRequestData field0) payRequest,
-    required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
-    required TResult Function(LnUrlAuthRequestData field0) authRequest,
-    required TResult Function(LnUrlErrorData field0) error,
-  }) {
-    return payRequest(field0);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayRequestData field0)? payRequest,
-    TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult? Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult? Function(LnUrlErrorData field0)? error,
-  }) {
-    return payRequest?.call(field0);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(LnUrlPayRequestData field0)? payRequest,
-    TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult Function(LnUrlErrorData field0)? error,
-    required TResult orElse(),
-  }) {
-    if (payRequest != null) {
-      return payRequest(field0);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlRequestData_PayRequest value) payRequest,
-    required TResult Function(LnUrlRequestData_WithdrawRequest value)
-        withdrawRequest,
-    required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
-    required TResult Function(LnUrlRequestData_Error value) error,
-  }) {
-    return payRequest(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult? Function(LnUrlRequestData_Error value)? error,
-  }) {
-    return payRequest?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult Function(LnUrlRequestData_Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (payRequest != null) {
-      return payRequest(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class LnUrlRequestData_PayRequest implements LnUrlRequestData {
-  const factory LnUrlRequestData_PayRequest(final LnUrlPayRequestData field0) =
-      _$LnUrlRequestData_PayRequest;
-
-  @override
-  LnUrlPayRequestData get field0;
-  @JsonKey(ignore: true)
-  _$$LnUrlRequestData_PayRequestCopyWith<_$LnUrlRequestData_PayRequest>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$LnUrlRequestData_WithdrawRequestCopyWith<$Res> {
-  factory _$$LnUrlRequestData_WithdrawRequestCopyWith(
-          _$LnUrlRequestData_WithdrawRequest value,
-          $Res Function(_$LnUrlRequestData_WithdrawRequest) then) =
-      __$$LnUrlRequestData_WithdrawRequestCopyWithImpl<$Res>;
-  @useResult
-  $Res call({LnUrlWithdrawRequestData field0});
-}
-
-/// @nodoc
-class __$$LnUrlRequestData_WithdrawRequestCopyWithImpl<$Res>
-    extends _$LnUrlRequestDataCopyWithImpl<$Res,
-        _$LnUrlRequestData_WithdrawRequest>
-    implements _$$LnUrlRequestData_WithdrawRequestCopyWith<$Res> {
-  __$$LnUrlRequestData_WithdrawRequestCopyWithImpl(
-      _$LnUrlRequestData_WithdrawRequest _value,
-      $Res Function(_$LnUrlRequestData_WithdrawRequest) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? field0 = null,
-  }) {
-    return _then(_$LnUrlRequestData_WithdrawRequest(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+    return _then(_$InputType_LnUrlWithdraw(
+      data: null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
               as LnUrlWithdrawRequestData,
     ));
   }
@@ -1459,70 +1324,80 @@ class __$$LnUrlRequestData_WithdrawRequestCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LnUrlRequestData_WithdrawRequest
-    implements LnUrlRequestData_WithdrawRequest {
-  const _$LnUrlRequestData_WithdrawRequest(this.field0);
+class _$InputType_LnUrlWithdraw implements InputType_LnUrlWithdraw {
+  const _$InputType_LnUrlWithdraw({required this.data});
 
   @override
-  final LnUrlWithdrawRequestData field0;
+  final LnUrlWithdrawRequestData data;
 
   @override
   String toString() {
-    return 'LnUrlRequestData.withdrawRequest(field0: $field0)';
+    return 'InputType.lnUrlWithdraw(data: $data)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LnUrlRequestData_WithdrawRequest &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            other is _$InputType_LnUrlWithdraw &&
+            (identical(other.data, data) || other.data == data));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, data);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LnUrlRequestData_WithdrawRequestCopyWith<
-          _$LnUrlRequestData_WithdrawRequest>
-      get copyWith => __$$LnUrlRequestData_WithdrawRequestCopyWithImpl<
-          _$LnUrlRequestData_WithdrawRequest>(this, _$identity);
+  _$$InputType_LnUrlWithdrawCopyWith<_$InputType_LnUrlWithdraw> get copyWith =>
+      __$$InputType_LnUrlWithdrawCopyWithImpl<_$InputType_LnUrlWithdraw>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(LnUrlPayRequestData field0) payRequest,
-    required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
-    required TResult Function(LnUrlAuthRequestData field0) authRequest,
-    required TResult Function(LnUrlErrorData field0) error,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return withdrawRequest(field0);
+    return lnUrlWithdraw(data);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayRequestData field0)? payRequest,
-    TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult? Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult? Function(LnUrlErrorData field0)? error,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return withdrawRequest?.call(field0);
+    return lnUrlWithdraw?.call(data);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(LnUrlPayRequestData field0)? payRequest,
-    TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult Function(LnUrlErrorData field0)? error,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (withdrawRequest != null) {
-      return withdrawRequest(field0);
+    if (lnUrlWithdraw != null) {
+      return lnUrlWithdraw(data);
     }
     return orElse();
   }
@@ -1530,83 +1405,90 @@ class _$LnUrlRequestData_WithdrawRequest
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlRequestData_PayRequest value) payRequest,
-    required TResult Function(LnUrlRequestData_WithdrawRequest value)
-        withdrawRequest,
-    required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
-    required TResult Function(LnUrlRequestData_Error value) error,
+    required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
+    required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_NodeId value) nodeId,
+    required TResult Function(InputType_Url value) url,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
-    return withdrawRequest(this);
+    return lnUrlWithdraw(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult? Function(LnUrlRequestData_Error value)? error,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
-    return withdrawRequest?.call(this);
+    return lnUrlWithdraw?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult Function(LnUrlRequestData_Error value)? error,
+    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_NodeId value)? nodeId,
+    TResult Function(InputType_Url value)? url,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (withdrawRequest != null) {
-      return withdrawRequest(this);
+    if (lnUrlWithdraw != null) {
+      return lnUrlWithdraw(this);
     }
     return orElse();
   }
 }
 
-abstract class LnUrlRequestData_WithdrawRequest implements LnUrlRequestData {
-  const factory LnUrlRequestData_WithdrawRequest(
-          final LnUrlWithdrawRequestData field0) =
-      _$LnUrlRequestData_WithdrawRequest;
+abstract class InputType_LnUrlWithdraw implements InputType {
+  const factory InputType_LnUrlWithdraw(
+          {required final LnUrlWithdrawRequestData data}) =
+      _$InputType_LnUrlWithdraw;
 
-  @override
-  LnUrlWithdrawRequestData get field0;
+  LnUrlWithdrawRequestData get data;
   @JsonKey(ignore: true)
-  _$$LnUrlRequestData_WithdrawRequestCopyWith<
-          _$LnUrlRequestData_WithdrawRequest>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$InputType_LnUrlWithdrawCopyWith<_$InputType_LnUrlWithdraw> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$LnUrlRequestData_AuthRequestCopyWith<$Res> {
-  factory _$$LnUrlRequestData_AuthRequestCopyWith(
-          _$LnUrlRequestData_AuthRequest value,
-          $Res Function(_$LnUrlRequestData_AuthRequest) then) =
-      __$$LnUrlRequestData_AuthRequestCopyWithImpl<$Res>;
+abstract class _$$InputType_LnUrlAuthCopyWith<$Res> {
+  factory _$$InputType_LnUrlAuthCopyWith(_$InputType_LnUrlAuth value,
+          $Res Function(_$InputType_LnUrlAuth) then) =
+      __$$InputType_LnUrlAuthCopyWithImpl<$Res>;
   @useResult
-  $Res call({LnUrlAuthRequestData field0});
+  $Res call({LnUrlAuthRequestData data});
 }
 
 /// @nodoc
-class __$$LnUrlRequestData_AuthRequestCopyWithImpl<$Res>
-    extends _$LnUrlRequestDataCopyWithImpl<$Res, _$LnUrlRequestData_AuthRequest>
-    implements _$$LnUrlRequestData_AuthRequestCopyWith<$Res> {
-  __$$LnUrlRequestData_AuthRequestCopyWithImpl(
-      _$LnUrlRequestData_AuthRequest _value,
-      $Res Function(_$LnUrlRequestData_AuthRequest) _then)
+class __$$InputType_LnUrlAuthCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_LnUrlAuth>
+    implements _$$InputType_LnUrlAuthCopyWith<$Res> {
+  __$$InputType_LnUrlAuthCopyWithImpl(
+      _$InputType_LnUrlAuth _value, $Res Function(_$InputType_LnUrlAuth) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? data = null,
   }) {
-    return _then(_$LnUrlRequestData_AuthRequest(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+    return _then(_$InputType_LnUrlAuth(
+      data: null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
               as LnUrlAuthRequestData,
     ));
   }
@@ -1614,68 +1496,80 @@ class __$$LnUrlRequestData_AuthRequestCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
-  const _$LnUrlRequestData_AuthRequest(this.field0);
+class _$InputType_LnUrlAuth implements InputType_LnUrlAuth {
+  const _$InputType_LnUrlAuth({required this.data});
 
   @override
-  final LnUrlAuthRequestData field0;
+  final LnUrlAuthRequestData data;
 
   @override
   String toString() {
-    return 'LnUrlRequestData.authRequest(field0: $field0)';
+    return 'InputType.lnUrlAuth(data: $data)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LnUrlRequestData_AuthRequest &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            other is _$InputType_LnUrlAuth &&
+            (identical(other.data, data) || other.data == data));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, data);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LnUrlRequestData_AuthRequestCopyWith<_$LnUrlRequestData_AuthRequest>
-      get copyWith => __$$LnUrlRequestData_AuthRequestCopyWithImpl<
-          _$LnUrlRequestData_AuthRequest>(this, _$identity);
+  _$$InputType_LnUrlAuthCopyWith<_$InputType_LnUrlAuth> get copyWith =>
+      __$$InputType_LnUrlAuthCopyWithImpl<_$InputType_LnUrlAuth>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(LnUrlPayRequestData field0) payRequest,
-    required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
-    required TResult Function(LnUrlAuthRequestData field0) authRequest,
-    required TResult Function(LnUrlErrorData field0) error,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return authRequest(field0);
+    return lnUrlAuth(data);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayRequestData field0)? payRequest,
-    TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult? Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult? Function(LnUrlErrorData field0)? error,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return authRequest?.call(field0);
+    return lnUrlAuth?.call(data);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(LnUrlPayRequestData field0)? payRequest,
-    TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult Function(LnUrlErrorData field0)? error,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (authRequest != null) {
-      return authRequest(field0);
+    if (lnUrlAuth != null) {
+      return lnUrlAuth(data);
     }
     return orElse();
   }
@@ -1683,79 +1577,89 @@ class _$LnUrlRequestData_AuthRequest implements LnUrlRequestData_AuthRequest {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlRequestData_PayRequest value) payRequest,
-    required TResult Function(LnUrlRequestData_WithdrawRequest value)
-        withdrawRequest,
-    required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
-    required TResult Function(LnUrlRequestData_Error value) error,
+    required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
+    required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_NodeId value) nodeId,
+    required TResult Function(InputType_Url value) url,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
-    return authRequest(this);
+    return lnUrlAuth(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult? Function(LnUrlRequestData_Error value)? error,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
-    return authRequest?.call(this);
+    return lnUrlAuth?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult Function(LnUrlRequestData_Error value)? error,
+    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_NodeId value)? nodeId,
+    TResult Function(InputType_Url value)? url,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (authRequest != null) {
-      return authRequest(this);
+    if (lnUrlAuth != null) {
+      return lnUrlAuth(this);
     }
     return orElse();
   }
 }
 
-abstract class LnUrlRequestData_AuthRequest implements LnUrlRequestData {
-  const factory LnUrlRequestData_AuthRequest(
-      final LnUrlAuthRequestData field0) = _$LnUrlRequestData_AuthRequest;
+abstract class InputType_LnUrlAuth implements InputType {
+  const factory InputType_LnUrlAuth(
+      {required final LnUrlAuthRequestData data}) = _$InputType_LnUrlAuth;
 
-  @override
-  LnUrlAuthRequestData get field0;
+  LnUrlAuthRequestData get data;
   @JsonKey(ignore: true)
-  _$$LnUrlRequestData_AuthRequestCopyWith<_$LnUrlRequestData_AuthRequest>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$InputType_LnUrlAuthCopyWith<_$InputType_LnUrlAuth> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$LnUrlRequestData_ErrorCopyWith<$Res> {
-  factory _$$LnUrlRequestData_ErrorCopyWith(_$LnUrlRequestData_Error value,
-          $Res Function(_$LnUrlRequestData_Error) then) =
-      __$$LnUrlRequestData_ErrorCopyWithImpl<$Res>;
+abstract class _$$InputType_LnUrlErrorCopyWith<$Res> {
+  factory _$$InputType_LnUrlErrorCopyWith(_$InputType_LnUrlError value,
+          $Res Function(_$InputType_LnUrlError) then) =
+      __$$InputType_LnUrlErrorCopyWithImpl<$Res>;
   @useResult
-  $Res call({LnUrlErrorData field0});
+  $Res call({LnUrlErrorData data});
 }
 
 /// @nodoc
-class __$$LnUrlRequestData_ErrorCopyWithImpl<$Res>
-    extends _$LnUrlRequestDataCopyWithImpl<$Res, _$LnUrlRequestData_Error>
-    implements _$$LnUrlRequestData_ErrorCopyWith<$Res> {
-  __$$LnUrlRequestData_ErrorCopyWithImpl(_$LnUrlRequestData_Error _value,
-      $Res Function(_$LnUrlRequestData_Error) _then)
+class __$$InputType_LnUrlErrorCopyWithImpl<$Res>
+    extends _$InputTypeCopyWithImpl<$Res, _$InputType_LnUrlError>
+    implements _$$InputType_LnUrlErrorCopyWith<$Res> {
+  __$$InputType_LnUrlErrorCopyWithImpl(_$InputType_LnUrlError _value,
+      $Res Function(_$InputType_LnUrlError) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? field0 = null,
+    Object? data = null,
   }) {
-    return _then(_$LnUrlRequestData_Error(
-      null == field0
-          ? _value.field0
-          : field0 // ignore: cast_nullable_to_non_nullable
+    return _then(_$InputType_LnUrlError(
+      data: null == data
+          ? _value.data
+          : data // ignore: cast_nullable_to_non_nullable
               as LnUrlErrorData,
     ));
   }
@@ -1763,68 +1667,80 @@ class __$$LnUrlRequestData_ErrorCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LnUrlRequestData_Error implements LnUrlRequestData_Error {
-  const _$LnUrlRequestData_Error(this.field0);
+class _$InputType_LnUrlError implements InputType_LnUrlError {
+  const _$InputType_LnUrlError({required this.data});
 
   @override
-  final LnUrlErrorData field0;
+  final LnUrlErrorData data;
 
   @override
   String toString() {
-    return 'LnUrlRequestData.error(field0: $field0)';
+    return 'InputType.lnUrlError(data: $data)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LnUrlRequestData_Error &&
-            (identical(other.field0, field0) || other.field0 == field0));
+            other is _$InputType_LnUrlError &&
+            (identical(other.data, data) || other.data == data));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, field0);
+  int get hashCode => Object.hash(runtimeType, data);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LnUrlRequestData_ErrorCopyWith<_$LnUrlRequestData_Error> get copyWith =>
-      __$$LnUrlRequestData_ErrorCopyWithImpl<_$LnUrlRequestData_Error>(
+  _$$InputType_LnUrlErrorCopyWith<_$InputType_LnUrlError> get copyWith =>
+      __$$InputType_LnUrlErrorCopyWithImpl<_$InputType_LnUrlError>(
           this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(LnUrlPayRequestData field0) payRequest,
-    required TResult Function(LnUrlWithdrawRequestData field0) withdrawRequest,
-    required TResult Function(LnUrlAuthRequestData field0) authRequest,
-    required TResult Function(LnUrlErrorData field0) error,
+    required TResult Function(BitcoinAddressData address) bitcoinAddress,
+    required TResult Function(LNInvoice invoice) bolt11,
+    required TResult Function(String nodeId) nodeId,
+    required TResult Function(String url) url,
+    required TResult Function(LnUrlPayRequestData data) lnUrlPay,
+    required TResult Function(LnUrlWithdrawRequestData data) lnUrlWithdraw,
+    required TResult Function(LnUrlAuthRequestData data) lnUrlAuth,
+    required TResult Function(LnUrlErrorData data) lnUrlError,
   }) {
-    return error(field0);
+    return lnUrlError(data);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayRequestData field0)? payRequest,
-    TResult? Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult? Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult? Function(LnUrlErrorData field0)? error,
+    TResult? Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult? Function(LNInvoice invoice)? bolt11,
+    TResult? Function(String nodeId)? nodeId,
+    TResult? Function(String url)? url,
+    TResult? Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult? Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult? Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult? Function(LnUrlErrorData data)? lnUrlError,
   }) {
-    return error?.call(field0);
+    return lnUrlError?.call(data);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(LnUrlPayRequestData field0)? payRequest,
-    TResult Function(LnUrlWithdrawRequestData field0)? withdrawRequest,
-    TResult Function(LnUrlAuthRequestData field0)? authRequest,
-    TResult Function(LnUrlErrorData field0)? error,
+    TResult Function(BitcoinAddressData address)? bitcoinAddress,
+    TResult Function(LNInvoice invoice)? bolt11,
+    TResult Function(String nodeId)? nodeId,
+    TResult Function(String url)? url,
+    TResult Function(LnUrlPayRequestData data)? lnUrlPay,
+    TResult Function(LnUrlWithdrawRequestData data)? lnUrlWithdraw,
+    TResult Function(LnUrlAuthRequestData data)? lnUrlAuth,
+    TResult Function(LnUrlErrorData data)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (error != null) {
-      return error(field0);
+    if (lnUrlError != null) {
+      return lnUrlError(data);
     }
     return orElse();
   }
@@ -1832,49 +1748,59 @@ class _$LnUrlRequestData_Error implements LnUrlRequestData_Error {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlRequestData_PayRequest value) payRequest,
-    required TResult Function(LnUrlRequestData_WithdrawRequest value)
-        withdrawRequest,
-    required TResult Function(LnUrlRequestData_AuthRequest value) authRequest,
-    required TResult Function(LnUrlRequestData_Error value) error,
+    required TResult Function(InputType_BitcoinAddress value) bitcoinAddress,
+    required TResult Function(InputType_Bolt11 value) bolt11,
+    required TResult Function(InputType_NodeId value) nodeId,
+    required TResult Function(InputType_Url value) url,
+    required TResult Function(InputType_LnUrlPay value) lnUrlPay,
+    required TResult Function(InputType_LnUrlWithdraw value) lnUrlWithdraw,
+    required TResult Function(InputType_LnUrlAuth value) lnUrlAuth,
+    required TResult Function(InputType_LnUrlError value) lnUrlError,
   }) {
-    return error(this);
+    return lnUrlError(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult? Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult? Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult? Function(LnUrlRequestData_Error value)? error,
+    TResult? Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult? Function(InputType_Bolt11 value)? bolt11,
+    TResult? Function(InputType_NodeId value)? nodeId,
+    TResult? Function(InputType_Url value)? url,
+    TResult? Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult? Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult? Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult? Function(InputType_LnUrlError value)? lnUrlError,
   }) {
-    return error?.call(this);
+    return lnUrlError?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlRequestData_PayRequest value)? payRequest,
-    TResult Function(LnUrlRequestData_WithdrawRequest value)? withdrawRequest,
-    TResult Function(LnUrlRequestData_AuthRequest value)? authRequest,
-    TResult Function(LnUrlRequestData_Error value)? error,
+    TResult Function(InputType_BitcoinAddress value)? bitcoinAddress,
+    TResult Function(InputType_Bolt11 value)? bolt11,
+    TResult Function(InputType_NodeId value)? nodeId,
+    TResult Function(InputType_Url value)? url,
+    TResult Function(InputType_LnUrlPay value)? lnUrlPay,
+    TResult Function(InputType_LnUrlWithdraw value)? lnUrlWithdraw,
+    TResult Function(InputType_LnUrlAuth value)? lnUrlAuth,
+    TResult Function(InputType_LnUrlError value)? lnUrlError,
     required TResult orElse(),
   }) {
-    if (error != null) {
-      return error(this);
+    if (lnUrlError != null) {
+      return lnUrlError(this);
     }
     return orElse();
   }
 }
 
-abstract class LnUrlRequestData_Error implements LnUrlRequestData {
-  const factory LnUrlRequestData_Error(final LnUrlErrorData field0) =
-      _$LnUrlRequestData_Error;
+abstract class InputType_LnUrlError implements InputType {
+  const factory InputType_LnUrlError({required final LnUrlErrorData data}) =
+      _$InputType_LnUrlError;
 
-  @override
-  LnUrlErrorData get field0;
+  LnUrlErrorData get data;
   @JsonKey(ignore: true)
-  _$$LnUrlRequestData_ErrorCopyWith<_$LnUrlRequestData_Error> get copyWith =>
+  _$$InputType_LnUrlErrorCopyWith<_$InputType_LnUrlError> get copyWith =>
       throw _privateConstructorUsedError;
 }

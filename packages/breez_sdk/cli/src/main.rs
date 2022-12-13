@@ -9,7 +9,8 @@ use anyhow::{anyhow, Result};
 use bip39::{Language, Mnemonic, MnemonicType, Seed};
 use env_logger::Env;
 use lightning_toolkit::{
-    binding, FeeratePreset, GreenlightCredentials, LspInformation, Network, PaymentTypeFilter,
+    binding, FeeratePreset, GreenlightCredentials, InputType::LnUrlPay, LspInformation, Network,
+    PaymentTypeFilter,
 };
 use rustyline::error::ReadlineError;
 use rustyline::Editor;
@@ -116,6 +117,28 @@ fn main() -> Result<()> {
                             amount_sats,
                             description.to_string(),
                         ));
+                    }
+                    Some("send-lnurl") => {
+                        let lnurl_endpoint =
+                            rl.readline("Destination LNURL-pay or LN Address: ")?;
+
+                        match binding::parse(lnurl_endpoint)? {
+                            LnUrlPay { data: pd } => {
+                                let prompt = format!(
+                                    "Amount in sats (min {} sat, max {} sat: ",
+                                    pd.min_sendable / 1000,
+                                    pd.max_sendable / 1000
+                                );
+
+                                let amount_sat = rl.readline(&prompt)?;
+                                let pay_res = binding::pay(amount_sat.parse::<u64>()?, None, pd);
+                                show_results(pay_res);
+                            }
+                            _ => {
+                                error!("Unexpected result type");
+                                break;
+                            }
+                        }
                     }
                     Some("send_payment") => {
                         let bolt11 = command

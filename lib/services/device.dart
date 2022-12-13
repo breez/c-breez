@@ -8,23 +8,24 @@ import 'package:share_extend/share_extend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Device {
-  final _distinctClipboardController = BehaviorSubject<String>();
-  Stream get distinctClipboardStream => _distinctClipboardController.stream;
+  final _clipboardController = BehaviorSubject<String>();
+  Stream<String> get clipboardStream => _clipboardController.stream;
 
-  final _rawClipboardController = BehaviorSubject<String>();
-  Stream<String> get rawClipboardStream => _rawClipboardController.stream;
-
-  String _lastClipping = "";
   static const String LAST_CLIPPING_PREFERENCES_KEY = "lastClipping";
 
   Device() {
     var sharedPreferences = SharedPreferences.getInstance();
     sharedPreferences.then((preferences) {
-      _lastClipping =
-          preferences.getString(LAST_CLIPPING_PREFERENCES_KEY) ?? "";
+      _clipboardController.add(preferences.getString(LAST_CLIPPING_PREFERENCES_KEY) ?? "");
       fetchClipboard(preferences);
     });
     FGBGEvents.stream.where((event) => event == FGBGType.foreground).listen((event) async {
+      fetchClipboard(await SharedPreferences.getInstance());
+    });
+    // TODO replace this pulling logic by a plugin (to be created) using the following native apis
+    // https://developer.android.com/reference/android/content/ClipboardManager#addPrimaryClipChangedListener
+    // https://developer.apple.com/documentation/uikit/uipasteboard/1622104-changednotification
+    Stream.periodic(const Duration(seconds: 10)).listen((_) async {
       fetchClipboard(await SharedPreferences.getInstance());
     });
   }
@@ -35,23 +36,15 @@ class Device {
   }
 
   Future shareText(String text) {
-    // if (defaultTargetPlatform == TargetPlatform.android) {
-    //   return _breezShareChannel.invokeMethod("share", {"text": text});
-    // }
     return ShareExtend.share(text, "text");
   }
 
-  fetchClipboard(SharedPreferences preferences) {
+  void fetchClipboard(SharedPreferences preferences) {
     Clipboard.getData("text/plain").then((clipboardData) {
-      if (clipboardData != null && clipboardData.text != null) {
-        var text = clipboardData.text!;
-
-        _rawClipboardController.add(text);
-        if (text != _lastClipping) {
-          _distinctClipboardController.add(text);
-          preferences.setString(LAST_CLIPPING_PREFERENCES_KEY, text);
-          _lastClipping = text;
-        }
+      final text = clipboardData?.text;
+      if (text != null) {
+        _clipboardController.add(text);
+        preferences.setString(LAST_CLIPPING_PREFERENCES_KEY, text);
       }
     });
   }

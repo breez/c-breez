@@ -14,7 +14,7 @@ class BreezBridge {
     _lnToolkit.breezEventsStream().listen((event) {
       _log.v("Received breez event: $event");
       if (event is BreezEvent_InvoicePaid) {
-        _invoicePaidStream.add(event.field0);
+        _invoicePaidStream.add(event.details);
       }
     });
     _lnToolkit.breezLogStream().listen(_registerToolkitLog);

@@ -1,0 +1,2 @@
+[bindings.swift]
+cdylib_name = "breez_sdk_bindings"

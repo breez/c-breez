@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
+import 'package:c_breez/routes/lnurl/widgets/lnurl_metadata.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
@@ -13,17 +15,28 @@ import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../widgets/lnurl_metadata.dart';
+final _log = FimberLog("LNURLPaymentPage");
 
 class LNURLPaymentPage extends StatefulWidget {
-  final LNURLPayParams payParams;
+  final LnUrlPayRequestData requestData;
+  final String domain;
+  final PayerDataRecordField? name;
+  final AuthRecord? auth;
+  final PayerDataRecordField? email;
+  final PayerDataRecordField? identifier;
 
-  const LNURLPaymentPage(
-    this.payParams, {
+  const LNURLPaymentPage({
+    required this.requestData,
+    required this.domain,
+    this.name,
+    this.auth,
+    this.email,
+    this.identifier,
     Key? key,
   }) : super(key: key);
 
@@ -47,16 +60,16 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   @override
   void initState() {
     super.initState();
-    fixedAmount = widget.payParams.minSendable == widget.payParams.maxSendable;
+    fixedAmount = widget.requestData.minSendable == widget.requestData.maxSendable;
     if (fixedAmount) {
-      _amountController.text =
-          (widget.payParams.maxSendable ~/ 1000).toString();
+      _amountController.text = (widget.requestData.maxSendable ~/ 1000).toString();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
+    final themeData = Theme.of(context);
     final currencyState = context.read<CurrencyBloc>().state;
 
     return Scaffold(
@@ -64,7 +77,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       appBar: AppBar(
         leading: const back_button.BackButton(),
         actions: const [],
-        title: const Text("LNURL Invoice"),
+        title: Text(texts.lnurl_payment_page_title),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -75,34 +88,33 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (widget.payParams.domain.isNotEmpty) ...[
+                if (widget.domain.isNotEmpty) ...[
                   Center(
                     child: Text(
                       fixedAmount
-                          ? '${widget.payParams.domain} is requesting you to pay ${widget.payParams.maxSendable ~/ 1000} sats.'
-                          : widget.payParams.domain,
-                      style: Theme.of(context).textTheme.headline6,
+                          ? texts.lnurl_payment_page_domain_pay(
+                              widget.domain,
+                              widget.requestData.maxSendable,
+                            )
+                          : widget.domain,
+                      style: themeData.textTheme.headline6,
                       textAlign: TextAlign.center,
                     ),
                   )
                 ],
-                LNURLMetadata(
-                  {
-                    for (var v in json.decode(widget.payParams.metadata))
-                      v[0] as String: v[1]
-                  },
-                ),
-                if (widget.payParams.commentAllowed > 0) ...[
+                LNURLMetadata({
+                  for (var v in json.decode(widget.requestData.metadataStr)) v[0] as String: v[1],
+                }),
+                if (widget.requestData.commentAllowed > 0) ...[
                   TextFormField(
                     controller: _commentController,
                     keyboardType: TextInputType.multiline,
                     textInputAction: TextInputAction.done,
                     maxLines: null,
-                    maxLength: widget.payParams.commentAllowed,
+                    maxLength: widget.requestData.commentAllowed,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
-                      labelText:
-                          '${texts.payment_details_dialog_share_comment} (optional)',
+                      labelText: texts.lnurl_payment_page_comment,
                     ),
                   )
                 ],
@@ -115,13 +127,13 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     validatorFn: validatePayment,
                   ),
                   ReceivableBTCBox(
-                    receiveLabel: '${texts.lnurl_fetch_invoice_limit(
-                      (widget.payParams.minSendable ~/ 1000).toString(),
-                      (widget.payParams.maxSendable ~/ 1000).toString(),
-                    )} sats.',
+                    receiveLabel: texts.lnurl_fetch_invoice_limit(
+                      (widget.requestData.minSendable ~/ 1000).toString(),
+                      (widget.requestData.maxSendable ~/ 1000).toString(),
+                    ),
                   ),
                 ],
-                if (widget.payParams.payerData?.name?.mandatory == true) ...[
+                if (widget.name?.mandatory == true) ...[
                   TextFormField(
                     controller: _nameController,
                     keyboardType: TextInputType.name,
@@ -130,15 +142,14 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                         : texts.breez_avatar_dialog_your_name,
                   )
                 ],
-                if (widget.payParams.payerData?.auth?.mandatory == true) ...[
+                if (widget.auth?.mandatory == true) ...[
                   TextFormField(
                     controller: _k1Controller,
                     keyboardType: TextInputType.text,
-                    validator: (value) =>
-                        value != null ? null : "Please enter a k1",
+                    validator: (value) => value != null ? null : texts.lnurl_payment_page_enter_k1,
                   )
                 ],
-                if (widget.payParams.payerData?.email?.mandatory == true) ...[
+                if (widget.email?.mandatory == true) ...[
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -149,8 +160,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                         : texts.order_card_country_email_empty,
                   )
                 ],
-                if (widget.payParams.payerData?.identifier?.mandatory ==
-                    true) ...[
+                if (widget.identifier?.mandatory == true) ...[
                   TextFormField(
                     controller: _identifierController,
                   )
@@ -162,50 +172,44 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       ),
       bottomNavigationBar: SingleButtonBottomBar(
         stickToBottom: true,
-        text: "PAY",
+        text: texts.lnurl_payment_page_action_pay,
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            final AccountBloc accountBloc = context.read<AccountBloc>();
-
-            // Create payerDataMap
-            final int amount = int.parse(_amountController.text) * 1000;
-            final String comment = _commentController.text;
-            final PayerData payerData = PayerData(
-              name:
-                  _nameController.text.isNotEmpty ? _nameController.text : null,
-              pubkey: widget.payParams.payerData?.pubkey?.mandatory == true
-                  ? 'hex(<randomly generated secp256k1 pubkey>)'
-                  : null,
-              auth: _k1Controller.text.isNotEmpty
-                  ? Auth(
-                      key: 'hex(<linkingKey>)',
-                      k1: _k1Controller.text,
-                      sig:
-                          'hex(sign(hexToBytes(<${_k1Controller.text}>), <linkingPrivKey>))')
-                  : null,
-              email: _emailController.text.isNotEmpty
-                  ? _emailController.text
-                  : null,
-              identifier: _identifierController.text.isNotEmpty
-                  ? _identifierController.text
-                  : null,
-            );
-            final Map<String, String> payerDataMap = {
-              "amount": amount.toString(),
-              "comment": comment.toString(),
-              "payerData": json.encode(payerData.toJson()),
-            };
-            // Create loader and process payment
+            final accountBloc = context.read<AccountBloc>();
             final navigator = Navigator.of(context);
             var loaderRoute = createLoaderRoute(context);
             navigator.push(loaderRoute);
+
             try {
-              LNURLPayResult lnurlPayResult = await accountBloc
-                  .getPaymentResult(widget.payParams, payerDataMap);
-              await accountBloc.sendLNURLPayment(lnurlPayResult, payerDataMap);
+              final amount = int.parse(_amountController.text);
+              final comment = _commentController.text;
+              _log.v("LNURL payment of $amount sats where "
+                  "min is ${widget.requestData.minSendable} msats "
+                  "and max is ${widget.requestData.maxSendable} msats.");
+              final resp = await accountBloc.sendLNURLPayment(
+                amount: amount,
+                comment: comment,
+                reqData: widget.requestData,
+              );
               navigator.removeRoute(loaderRoute);
-              navigator.pop(LNURLPaymentPageResult(result: lnurlPayResult));
+              if (resp is Resp_EndpointSuccess) {
+                _log.v("LNURL payment success, action: ${resp.field0}");
+                navigator.pop(LNURLPaymentPageResult(
+                  successAction: resp.field0,
+                ));
+              } else if (resp is Resp_EndpointError) {
+                _log.v("LNURL payment failed: ${resp.field0.reason}");
+                navigator.pop(LNURLPaymentPageResult(
+                  error: resp.field0.reason,
+                ));
+              } else {
+                _log.w("Unknown response from sendLNURLPayment: $resp");
+                navigator.pop(LNURLPaymentPageResult(
+                  error: texts.lnurl_payment_page_unknown_error,
+                ));
+              }
             } catch (e) {
+              _log.w("Error sending LNURL payment: $e");
               navigator.removeRoute(loaderRoute);
               navigator.pop(LNURLPaymentPageResult(error: e));
             }
@@ -216,15 +220,19 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   }
 
   String? validatePayment(int amount) {
-    var accBloc = context.read<AccountBloc>();
-    late final lsp = context.read<LSPBloc>().state;
-    late final currencyState = context.read<CurrencyBloc>().state;
+    final texts = context.texts();
+    final accBloc = context.read<AccountBloc>();
+    final lsp = context.read<LSPBloc>().state;
+    final currencyState = context.read<CurrencyBloc>().state;
 
-    if (amount > (widget.payParams.maxSendable ~/ 1000)) {
-      return "Exceeds maximum sendable amount: ${widget.payParams.maxSendable ~/ 1000}";
+    final maxSendable = widget.requestData.maxSendable ~/ 1000;
+    if (amount > maxSendable) {
+      return texts.lnurl_payment_page_error_exceeds_limit(maxSendable);
     }
-    if (amount < (widget.payParams.minSendable ~/ 1000)) {
-      return "Below minimum accepted amount: ${widget.payParams.minSendable ~/ 1000}";
+
+    final minSendable = widget.requestData.minSendable ~/ 1000;
+    if (amount < minSendable) {
+      return texts.lnurl_payment_page_error_below_limit(minSendable);
     }
 
     int? channelMinimumFee;

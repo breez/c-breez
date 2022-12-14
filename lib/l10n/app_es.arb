@@ -2158,6 +2158,42 @@
   "mempool_settings_custom_url_error": "URL de la API Mempool inválida",
   "mempool_settings_action_reset": "Restablecer",
   "mempool_settings_action_save": "Guardar",
+  "lnurl_payment_page_title": "LNURL Invoice",
+  "lnurl_payment_page_domain_pay": "{domain} requiere que pagues {amount} sats.",
+  "@lnurl_payment_page_domain_pay": {
+    "placeholders": {
+      "domain": {
+        "type": "String",
+        "example": "example.com"
+      },
+      "amount": {
+        "type": "int",
+        "example": "100"
+      }
+    }
+  },
+  "lnurl_payment_page_comment": "Comentario (opcional)",
+  "lnurl_payment_page_enter_k1": "Por favor, ingrese el K1",
+  "lnurl_payment_page_action_pay": "PAGAR",
+  "lnurl_payment_page_error_exceeds_limit": "El pago supera el límite de {amount}",
+  "@lnurl_payment_page_error_exceeds_limit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "123"
+      }
+    }
+  },
+  "lnurl_payment_page_error_below_limit": "El pago es inferior al límite de {amount}",
+  "@lnurl_payment_page_error_below_limit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "123"
+      }
+    }
+  },
+  "lnurl_payment_page_unknown_error": "Hubo un error desconocido",
   "locale": "es",
   "app_name": "Breez"
 }

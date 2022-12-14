@@ -2158,6 +2158,42 @@
   "mempool_settings_custom_url_error": "URL da API Mempool inválida",
   "mempool_settings_action_reset": "Resetar",
   "mempool_settings_action_save": "Salvar",
+  "lnurl_payment_page_title": "LNURL Invoice",
+  "lnurl_payment_page_domain_pay": "{domain} esta solicitando que você pague {amount} sats.",
+  "@lnurl_payment_page_domain_pay": {
+    "placeholders": {
+      "domain": {
+        "type": "String",
+        "example": "example.com"
+      },
+      "amount": {
+        "type": "int",
+        "example": "100"
+      }
+    }
+  },
+  "lnurl_payment_page_comment": "Comentário (opcional)",
+  "lnurl_payment_page_enter_k1": "Por favor, insira o K1",
+  "lnurl_payment_page_action_pay": "PAGAR",
+  "lnurl_payment_page_error_exceeds_limit": "Excede a quantia máxima permitida: {amount}",
+  "@lnurl_payment_page_error_exceeds_limit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "123"
+      }
+    }
+  },
+  "lnurl_payment_page_error_below_limit": "A quantia é menor que a quantia mínima permitida: {amount}",
+  "@lnurl_payment_page_error_below_limit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "123"
+      }
+    }
+  },
+  "lnurl_payment_page_unknown_error": "Houve um erro desconhecido",
   "locale": "pt",
   "app_name": "Breez"
 }

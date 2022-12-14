@@ -155,14 +155,22 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     throw Exception("not implemented");
   }
 
-  Future sendLNURLPayment(
-      LNURLPayResult lnurlPayResult, Map<String, String> qParams) async {
-    throw Exception("not implemented");
-  }
-
-  Future<LNURLPayResult> getPaymentResult(
-      LNURLPayParams payParams, Map<String, String> qParams) async {
-    throw Exception("not implemented");
+  Future<Resp> sendLNURLPayment({
+    required int amount,
+    required LnUrlPayRequestData reqData,
+    String? comment,
+  }) async {
+    _log.v("sendLNURLPayment amount: $amount, comment: '$comment', reqData: $reqData");
+    try {
+      return _breezLib.payLnUrl(
+        userAmountSat: amount,
+        reqData: reqData,
+        comment: comment,
+      );
+    } catch (e) {
+      _log.e("sendLNURLPayment error: $e");
+      rethrow;
+    }
   }
 
   Future sendPayment(String bolt11, int amountSat) async {

@@ -131,7 +131,7 @@ fn main() -> Result<()> {
                                 );
 
                                 let amount_sat = rl.readline(&prompt)?;
-                                let pay_res = binding::pay(amount_sat.parse::<u64>()?, None, pd);
+                                let pay_res = binding::pay_lnurl(amount_sat.parse::<u64>()?, None, pd);
                                 show_results(pay_res);
                             }
                             _ => {

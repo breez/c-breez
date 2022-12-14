@@ -150,13 +150,13 @@ pub extern "C" fn wire_parse(port_: i64, s: *mut wire_uint_8_list) {
 }
 
 #[no_mangle]
-pub extern "C" fn wire_pay(
+pub extern "C" fn wire_pay_lnurl(
     port_: i64,
     user_amount_sat: u64,
     comment: *mut wire_uint_8_list,
     req_data: *mut wire_LnUrlPayRequestData,
 ) {
-    wire_pay_impl(port_, user_amount_sat, comment, req_data)
+    wire_pay_lnurl_impl(port_, user_amount_sat, comment, req_data)
 }
 
 #[no_mangle]

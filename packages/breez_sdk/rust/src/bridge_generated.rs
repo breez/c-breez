@@ -370,7 +370,7 @@ fn wire_parse_impl(port_: MessagePort, s: impl Wire2Api<String> + UnwindSafe) {
         },
     )
 }
-fn wire_pay_impl(
+fn wire_pay_lnurl_impl(
     port_: MessagePort,
     user_amount_sat: impl Wire2Api<u64> + UnwindSafe,
     comment: impl Wire2Api<Option<String>> + UnwindSafe,
@@ -378,7 +378,7 @@ fn wire_pay_impl(
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
-            debug_name: "pay",
+            debug_name: "pay_lnurl",
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
@@ -386,7 +386,7 @@ fn wire_pay_impl(
             let api_user_amount_sat = user_amount_sat.wire2api();
             let api_comment = comment.wire2api();
             let api_req_data = req_data.wire2api();
-            move |task_callback| pay(api_user_amount_sat, api_comment, api_req_data)
+            move |task_callback| pay_lnurl(api_user_amount_sat, api_comment, api_req_data)
         },
     )
 }

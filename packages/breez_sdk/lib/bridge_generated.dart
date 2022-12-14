@@ -186,13 +186,15 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kParseConstMeta;
 
-  Future<Resp> pay(
+  /// Second step of LNURL-pay. The first step is `parse()`, which also validates the LNURL destination
+  /// and generates the `LnUrlPayRequestData` payload needed here.
+  Future<Resp> payLnurl(
       {required int userAmountSat,
       String? comment,
       required LnUrlPayRequestData reqData,
       dynamic hint});
 
-  FlutterRustBridgeTaskConstMeta get kPayConstMeta;
+  FlutterRustBridgeTaskConstMeta get kPayLnurlConstMeta;
 
   /// Attempts to convert the phrase to a mnemonic, then to a seed.
   ///
@@ -1148,7 +1150,7 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["s"],
       );
 
-  Future<Resp> pay(
+  Future<Resp> payLnurl(
       {required int userAmountSat,
       String? comment,
       required LnUrlPayRequestData reqData,
@@ -1157,17 +1159,18 @@ class LightningToolkitImpl implements LightningToolkit {
     var arg1 = _platform.api2wire_opt_String(comment);
     var arg2 = _platform.api2wire_box_autoadd_ln_url_pay_request_data(reqData);
     return _platform.executeNormal(FlutterRustBridgeTask(
-      callFfi: (port_) => _platform.inner.wire_pay(port_, arg0, arg1, arg2),
+      callFfi: (port_) =>
+          _platform.inner.wire_pay_lnurl(port_, arg0, arg1, arg2),
       parseSuccessData: _wire2api_resp,
-      constMeta: kPayConstMeta,
+      constMeta: kPayLnurlConstMeta,
       argValues: [userAmountSat, comment, reqData],
       hint: hint,
     ));
   }
 
-  FlutterRustBridgeTaskConstMeta get kPayConstMeta =>
+  FlutterRustBridgeTaskConstMeta get kPayLnurlConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
-        debugName: "pay",
+        debugName: "pay_lnurl",
         argNames: ["userAmountSat", "comment", "reqData"],
       );
 
@@ -2420,13 +2423,13 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _wire_parse = _wire_parsePtr
       .asFunction<void Function(int, ffi.Pointer<wire_uint_8_list>)>();
 
-  void wire_pay(
+  void wire_pay_lnurl(
     int port_,
     int user_amount_sat,
     ffi.Pointer<wire_uint_8_list> comment,
     ffi.Pointer<wire_LnUrlPayRequestData> req_data,
   ) {
-    return _wire_pay(
+    return _wire_pay_lnurl(
       port_,
       user_amount_sat,
       comment,
@@ -2434,14 +2437,14 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
     );
   }
 
-  late final _wire_payPtr = _lookup<
+  late final _wire_pay_lnurlPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
               ffi.Int64,
               ffi.Uint64,
               ffi.Pointer<wire_uint_8_list>,
-              ffi.Pointer<wire_LnUrlPayRequestData>)>>('wire_pay');
-  late final _wire_pay = _wire_payPtr.asFunction<
+              ffi.Pointer<wire_LnUrlPayRequestData>)>>('wire_pay_lnurl');
+  late final _wire_pay_lnurl = _wire_pay_lnurlPtr.asFunction<
       void Function(int, int, ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_LnUrlPayRequestData>)>();
 

@@ -297,7 +297,9 @@ pub fn parse(s: String) -> Result<InputType> {
     block_on(async { crate::lnurl::input_parser::parse(&s).await })
 }
 
-pub fn pay(
+/// Second step of LNURL-pay. The first step is `parse()`, which also validates the LNURL destination
+/// and generates the `LnUrlPayRequestData` payload needed here.
+pub fn pay_lnurl(
     user_amount_sat: u64,
     comment: Option<String>,
     req_data: LnUrlPayRequestData,

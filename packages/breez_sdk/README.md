@@ -14,10 +14,10 @@ make all
 Generated artifacts:
 
 * Android libraries
- >* androi/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
- >* androi/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
- >* androi/src/main/jniLibs/x86/liblightning_toolkit.so
- >* androi/src/main/jniLibs/x86_64/liblightning_toolkit.so
+ >* android/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
+ >* android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
+ >* android/src/main/jniLibs/x86/liblightning_toolkit.so
+ >* android/src/main/jniLibs/x86_64/liblightning_toolkit.so
 * iOS library
  >* ios/liblightning_toolkit.a
 * Bindings header

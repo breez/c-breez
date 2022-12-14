@@ -66,7 +66,7 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
       return ProcessingPaymentDialog(
         firstPaymentItemKey: widget.firstPaymentItemKey,
         minHeight: minHeight,
-        paymentFunc: () => context.read<AccountBloc>().sendPayment(widget.invoice.bolt11, _amountToPay!),
+        paymentFunc: () => context.read<AccountBloc>().sendPayment(widget.invoice.bolt11, widget.invoice.amountMsat == 0 ? _amountToPay! : null),
         onStateChange: (state) => _onStateChange(context, state),
       );
     } else if (_state == PaymentRequestState.WAITING_FOR_CONFIRMATION) {

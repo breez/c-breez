@@ -173,9 +173,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  Future sendPayment(String bolt11, int amountSat) async {
+  Future sendPayment(String bolt11, int? amountSats) async {
     try {
-      await _breezLib.sendPayment(bolt11: bolt11);
+      await _breezLib.sendPayment(bolt11: bolt11, amountSats: amountSats);
     } catch (e) {
       _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);

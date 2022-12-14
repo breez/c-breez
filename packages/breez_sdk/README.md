@@ -1,35 +1,36 @@
-# breez-sdk-bindings
+# lightning_toolkit
 
-This project provides bindings for breez_sdk to various languages.
-Currently supported languges are kotlin, swift and dart.
-For dart currenty the [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) to generate the bindings.
-For kotlin & swift we are using [uniffi](https://github.com/mozilla/uniffi-rs)
- 
+A flutter plugin project that wraps a rust library and expose its interface using ffi
+
 ## Build
 
-At the root folder:
+On the rust folder:
 
 ```
 make init
+make all
 ```
 
-### swift
+Generated artifacts:
+
+* Android libraries
+ >* android/src/main/jniLibs/arm64-v8a/liblightning_toolkit.so
+ >* android/src/main/jniLibs/armeabi-v7a/liblightning_toolkit.so
+ >* android/src/main/jniLibs/x86/liblightning_toolkit.so
+ >* android/src/main/jniLibs/x86_64/liblightning_toolkit.so
+* iOS library
+ >* ios/liblightning_toolkit.a
+* Bindings header
+ >* target/bindings.h
+
+Now that the bindings is generated and the native libraries are built we can generate the dart interface.
+We are using [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) to generate the rust and dart bindings, please refer to the documentation for [prerequisites](http://cjycode.com/flutter_rust_bridge/integrate/deps.html)
+This requires an installation of llvm then from the root folder, run the following:
 
 ```
-make swift-ios
+flutter_rust_bridge_codegen -r rust/src/binding.rs -d lib/bridge_generated.dart -c ios/Classes/bridge_generated.h --llvm-path=<path to llvm>
 ```
 
-This will generate all the artifacts needed to for an iOS app to start writing code that uses breez sdk in swift.
-All files are generated in the bindings/swift-ios folder.
-We also provides the same binding for mac os by running the following command:
 
-```
-make swift-darwing
-```
-The above will generate the artifacts in the bindings/swift-darwin folder.
 
-### kotlin
-TODO
-
-### dart
-TODO
+The rust interface is now exposed in lib/lightning_toolkit.dart

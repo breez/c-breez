@@ -13,7 +13,7 @@ At the root folder:
 make init
 ```
 
-### swift
+### Swift
 
 ```
 make swift-ios
@@ -28,7 +28,7 @@ make swift-darwing
 ```
 The above will generate the artifacts in the bindings/swift-darwin folder.
 
-### kotlin
+### Kotlin
 ```
 make kotlin
 ```
@@ -36,5 +36,19 @@ make kotlin
 This will build the android libraries for different platforms copy them to the binding/android/jniLibs folder.
 In addition the kotlin binding code is generated and copied to the binding/android/breez_sdk folder.
 
-### dart
+### Dart
 TODO
+
+## Test
+
+In the tests directory there are some small scripts with some examples on how to use the sdk.
+  * Kotlin `tests/bindings/test_breez_sdk.kts`
+  * Swift `tests/bindings/test_breez_sdk.swift`  
+
+If you want to try them out, you will need:
+
+* The [Kotlin command-line tools](https://kotlinlang.org/docs/tutorials/command-line.html), particularly `kotlinc`.
+* The [Java Native Access](https://github.com/java-native-access/jna#download) JAR downloaded and its path
+  added to your `$CLASSPATH` environment variable.
+* The [Swift command-line tools](https://swift.org/download/), particularly `swift`, `swiftc` and
+  the `Foundation` package.

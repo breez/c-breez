@@ -6,14 +6,17 @@ use crate::grpc::fund_manager_client::FundManagerClient;
 use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
+use crate::lnurl::input_parser::LnUrlPayRequestData;
+use crate::lnurl::pay::model::{Resp, ValidatedCallbackResponse};
+use crate::lnurl::pay::validate_lnurl_pay;
 use crate::lsp::LspInformation;
 use crate::models::{
     parse_short_channel_id, Config, FeeratePreset, FiatAPI, GreenlightCredentials, LspAPI, Network,
     NodeAPI, NodeState, Payment, PaymentTypeFilter, SwapInfo, SwapperAPI,
 };
-use crate::persist;
 use crate::persist::db::SqliteStorage;
 use crate::swap::BTCReceiveSwap;
+use crate::{lnurl, persist};
 use anyhow::{anyhow, Result};
 use bip39::*;
 use core::time;
@@ -161,6 +164,21 @@ impl BreezServices {
             .await?;
         self.sync().await?;
         Ok(())
+    }
+
+    pub async fn pay_lnurl(
+        &self,
+        user_amount_sat: u64,
+        comment: Option<String>,
+        req_data: LnUrlPayRequestData,
+    ) -> Result<Resp> {
+        match validate_lnurl_pay(user_amount_sat, comment, req_data).await? {
+            ValidatedCallbackResponse::EndpointError(e) => Ok(Resp::EndpointError(e)),
+            ValidatedCallbackResponse::EndpointSuccess(cb) => {
+                self.send_payment(cb.pr).await?;
+                Ok(Resp::EndpointSuccess(cb.success_action))
+            }
+        }
     }
 
     pub async fn receive_payment(
@@ -695,7 +713,7 @@ async fn get_lsp(persister: Arc<SqliteStorage>, lsp: Arc<dyn LspAPI>) -> Result<
         .cloned()
 }
 
-mod test {
+pub(crate) mod test {
     use std::sync::Arc;
     use tokio::sync::mpsc;
 
@@ -832,7 +850,7 @@ mod test {
     }
 
     /// build node service for tests
-    async fn breez_services() -> Arc<BreezServices> {
+    pub(crate) async fn breez_services() -> Arc<BreezServices> {
         let node_api = Arc::new(MockNodeAPI {
             node_state: get_dummy_node_state(),
             transactions: vec![],

@@ -1,5 +1,6 @@
 use crate::breez_services::{self, BreezEvent, BreezServicesBuilder, EventListener};
 use crate::fiat::{FiatCurrency, Rate};
+use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lsp::LspInformation;
 use crate::models::LogEntry;
 use anyhow::{anyhow, Result};
@@ -17,8 +18,9 @@ use crate::models::{
     SwapInfo,
 };
 
-use crate::input_parser::InputType;
 use crate::invoice::{self};
+use crate::lnurl::input_parser::InputType;
+use crate::lnurl::pay::model::Resp;
 use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
@@ -292,7 +294,21 @@ pub fn parse_invoice(invoice: String) -> Result<LNInvoice> {
 }
 
 pub fn parse(s: String) -> Result<InputType> {
-    block_on(async { crate::input_parser::parse(&s).await })
+    block_on(async { crate::lnurl::input_parser::parse(&s).await })
+}
+
+/// Second step of LNURL-pay. The first step is `parse()`, which also validates the LNURL destination
+/// and generates the `LnUrlPayRequestData` payload needed here.
+pub fn pay_lnurl(
+    user_amount_sat: u64,
+    comment: Option<String>,
+    req_data: LnUrlPayRequestData,
+) -> Result<Resp> {
+    block_on(async {
+        get_breez_services()?
+            .pay_lnurl(user_amount_sat, comment, req_data)
+            .await
+    })
 }
 
 /// Attempts to convert the phrase to a mnemonic, then to a seed.

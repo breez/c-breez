@@ -5,12 +5,12 @@ use bip21::Uri;
 use bitcoin::bech32;
 use bitcoin::bech32::FromBase32;
 use serde::Deserialize;
-use serde_with::json::JsonString;
-use serde_with::serde_as;
 
-use crate::input_parser::InputType::*;
-use crate::input_parser::LnUrlRequestData::*;
 use crate::invoice::{parse_invoice, LNInvoice};
+use crate::lnurl::input_parser::InputType::*;
+use crate::lnurl::input_parser::LnUrlRequestData::*;
+
+use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 
 /// Parses generic user input, typically pasted from clipboard or scanned from a QR
 ///
@@ -73,10 +73,11 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL pay request
 ///
 /// ```no_run
-/// use lightning_toolkit::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
+/// use anyhow::Result;
 ///
 /// #[tokio::main]
-/// async fn main() {
+/// async fn main() -> Result<()> {
 ///     let lnurl_pay_url = "lnurl1dp68gurn8ghj7mr0vdskc6r0wd6z7mrww4excttsv9un7um9wdekjmmw84jxywf5x43rvv35xgmr2enrxanr2cfcvsmnwe3jxcukvde48qukgdec89snwde3vfjxvepjxpjnjvtpxd3kvdnxx5crxwpjvyunsephsz36jf";
 ///
 ///     assert!(matches!( parse(lnurl_pay_url).await, Ok(LnUrlPay{data: _}) ));
@@ -88,15 +89,17 @@ use crate::invoice::{parse_invoice, LNInvoice};
 ///         assert_eq!(pd.max_sendable, 16000);
 ///         assert_eq!(pd.min_sendable, 4000);
 ///         assert_eq!(pd.comment_allowed, 0);
-///         assert_eq!(pd.metadata.len(), 3);
+///         assert_eq!(pd.metadata_vec()?.len(), 3);
 ///     }
+///
+///     Ok(())
 /// }
 /// ```
 ///
 /// ### LNURL withdraw request
 ///
 /// ```no_run
-/// use lightning_toolkit::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -118,7 +121,7 @@ use crate::invoice::{parse_invoice, LNInvoice};
 /// ### LNURL auth request
 ///
 /// ```no_run
-/// use lightning_toolkit::{InputType::*, parse};
+/// use lightning_toolkit::{InputType::*, LnUrlRequestData::*, parse};
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -207,19 +210,6 @@ fn prepend_if_missing(prefix: &str, input: &str) -> String {
 /// Removes the input's prefix, if indeed it starts with that prefix
 fn strip_prefix_if_present(prefix: &str, input: &str) -> String {
     input.trim_start_matches(prefix).to_string()
-}
-
-#[cfg(test)]
-fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
-    /// During tests, the mockito test URL chooses a free port. This cannot be known in advance,
-    /// so the URL has to be adjusted dynamically.
-    tests::replace_host_with_mockito_test_host(lnurl_endpoint)
-}
-
-#[cfg(not(test))]
-fn maybe_replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
-    /// When not called from a test, we fallback to keeping the URL intact
-    Ok(lnurl_endpoint)
 }
 
 /// Converts the LN Address to the corresponding LNURL-pay endpoint, as per LUD-16:
@@ -392,7 +382,6 @@ pub enum InputType {
 // The uniffi bindings only supports enums with named fields.
 // We use #[serde(flatten)] to map the JSON payload fields to the inner enum "data" field
 // https://serde.rs/attr-flatten.html
-#[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
@@ -431,19 +420,25 @@ pub struct LnUrlErrorData {
     pub reason: String,
 }
 
-#[serde_as]
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LnUrlPayRequestData {
     pub callback: String,
-    pub min_sendable: u16,
-    pub max_sendable: u16,
-    /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map)
-    ///
-    /// See <https://docs.rs/serde_with/latest/serde_with/guide/serde_as_transformations/index.html#value-into-json-string>
-    #[serde_as(as = "JsonString")]
-    pub metadata: Vec<MetadataItem>,
-    pub comment_allowed: u16,
+    pub min_sendable: u64,
+    pub max_sendable: u64,
+    /// As per LUD-06, `metadata` is a raw string (e.g. a json representation of the inner map).
+    /// Use `metadata_vec()` to get the parsed items.
+    #[serde(rename(deserialize = "metadata"))]
+    pub metadata_str: String,
+    pub comment_allowed: usize,
+}
+
+impl LnUrlPayRequestData {
+    /// Parsed metadata items. Use `metadata_str` to get the raw metadata string, as received from
+    /// the LNURL endpoint.
+    pub fn metadata_vec(&self) -> Result<Vec<MetadataItem>> {
+        serde_json::from_str::<Vec<MetadataItem>>(&self.metadata_str).map_err(|err| anyhow!(err))
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -497,21 +492,9 @@ mod tests {
     use bitcoin::secp256k1::{PublicKey, Secp256k1, SecretKey};
     use mockito::Mock;
 
-    use crate::input_parser::LnUrlRequestData::*;
-    use crate::input_parser::*;
+    use crate::lnurl::input_parser::LnUrlRequestData::*;
+    use crate::lnurl::input_parser::*;
     use crate::models::Network;
-
-    /// Replaces the scheme, host and port with a local mockito host. Preserves the rest of the path.
-    pub(crate) fn replace_host_with_mockito_test_host(lnurl_endpoint: String) -> Result<String> {
-        let mockito_endpoint_url = reqwest::Url::parse(&mockito::server_url())?;
-        let mut parsed_lnurl_endpoint = reqwest::Url::parse(&lnurl_endpoint)?;
-
-        parsed_lnurl_endpoint.set_host(mockito_endpoint_url.host_str())?;
-        let _ = parsed_lnurl_endpoint.set_scheme(mockito_endpoint_url.scheme());
-        let _ = parsed_lnurl_endpoint.set_port(mockito_endpoint_url.port());
-
-        Ok(parsed_lnurl_endpoint.to_string())
-    }
 
     #[tokio::test]
     async fn test_generic_invalid_input() -> Result<(), Box<dyn std::error::Error>> {
@@ -905,19 +888,25 @@ mod tests {
             assert_eq!(pd.min_sendable, 4000);
             assert_eq!(pd.comment_allowed, 0);
 
-            assert_eq!(pd.metadata.len(), 3);
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(pd.metadata_vec()?.len(), 3);
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.key,
+                "text/plain"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.value,
+                "WRhtV"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.key,
                 "text/long-desc"
             );
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.value,
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.value,
                 "MBTrTiLCFS"
             );
             assert_eq!(
-                pd.metadata.get(2).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(2).ok_or("Key not found")?.key,
                 "image/png;base64"
             );
         }
@@ -939,19 +928,25 @@ mod tests {
             assert_eq!(pd.min_sendable, 4000);
             assert_eq!(pd.comment_allowed, 0);
 
-            assert_eq!(pd.metadata.len(), 3);
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(pd.metadata_vec()?.len(), 3);
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.key,
+                "text/plain"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.value,
+                "WRhtV"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.key,
                 "text/long-desc"
             );
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.value,
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.value,
                 "MBTrTiLCFS"
             );
             assert_eq!(
-                pd.metadata.get(2).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(2).ok_or("Key not found")?.key,
                 "image/png;base64"
             );
         }
@@ -1060,19 +1055,25 @@ mod tests {
             assert_eq!(pd.min_sendable, 4000);
             assert_eq!(pd.comment_allowed, 0);
 
-            assert_eq!(pd.metadata.len(), 3);
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.key, "text/plain");
-            assert_eq!(pd.metadata.get(0).ok_or("Key not found")?.value, "WRhtV");
+            assert_eq!(pd.metadata_vec()?.len(), 3);
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.key,
+                "text/plain"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(0).ok_or("Key not found")?.value,
+                "WRhtV"
+            );
+            assert_eq!(
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.key,
                 "text/long-desc"
             );
             assert_eq!(
-                pd.metadata.get(1).ok_or("Key not found")?.value,
+                pd.metadata_vec()?.get(1).ok_or("Key not found")?.value,
                 "MBTrTiLCFS"
             );
             assert_eq!(
-                pd.metadata.get(2).ok_or("Key not found")?.key,
+                pd.metadata_vec()?.get(2).ok_or("Key not found")?.key,
                 "image/png;base64"
             );
         }

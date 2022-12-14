@@ -150,6 +150,16 @@ pub extern "C" fn wire_parse(port_: i64, s: *mut wire_uint_8_list) {
 }
 
 #[no_mangle]
+pub extern "C" fn wire_pay_lnurl(
+    port_: i64,
+    user_amount_sat: u64,
+    comment: *mut wire_uint_8_list,
+    req_data: *mut wire_LnUrlPayRequestData,
+) {
+    wire_pay_lnurl_impl(port_, user_amount_sat, comment, req_data)
+}
+
+#[no_mangle]
 pub extern "C" fn wire_mnemonic_to_seed(port_: i64, phrase: *mut wire_uint_8_list) {
     wire_mnemonic_to_seed_impl(port_, phrase)
 }
@@ -169,6 +179,11 @@ pub extern "C" fn new_box_autoadd_greenlight_credentials_0() -> *mut wire_Greenl
 #[no_mangle]
 pub extern "C" fn new_box_autoadd_i64_0(value: i64) -> *mut i64 {
     support::new_leak_box_ptr(value)
+}
+
+#[no_mangle]
+pub extern "C" fn new_box_autoadd_ln_url_pay_request_data_0() -> *mut wire_LnUrlPayRequestData {
+    support::new_leak_box_ptr(wire_LnUrlPayRequestData::new_with_null_ptr())
 }
 
 #[no_mangle]
@@ -203,6 +218,12 @@ impl Wire2Api<GreenlightCredentials> for *mut wire_GreenlightCredentials {
     }
 }
 
+impl Wire2Api<LnUrlPayRequestData> for *mut wire_LnUrlPayRequestData {
+    fn wire2api(self) -> LnUrlPayRequestData {
+        let wrap = unsafe { support::box_from_leak_ptr(self) };
+        Wire2Api::<LnUrlPayRequestData>::wire2api(*wrap).into()
+    }
+}
 impl Wire2Api<Config> for wire_Config {
     fn wire2api(self) -> Config {
         Config {
@@ -225,6 +246,18 @@ impl Wire2Api<GreenlightCredentials> for wire_GreenlightCredentials {
     }
 }
 
+impl Wire2Api<LnUrlPayRequestData> for wire_LnUrlPayRequestData {
+    fn wire2api(self) -> LnUrlPayRequestData {
+        LnUrlPayRequestData {
+            callback: self.callback.wire2api(),
+            min_sendable: self.min_sendable.wire2api(),
+            max_sendable: self.max_sendable.wire2api(),
+            metadata_str: self.metadata_str.wire2api(),
+            comment_allowed: self.comment_allowed.wire2api(),
+        }
+    }
+}
+
 impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
     fn wire2api(self) -> Vec<u8> {
         unsafe {
@@ -233,6 +266,7 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
         }
     }
 }
+
 // Section: wire structs
 
 #[repr(C)]
@@ -251,6 +285,16 @@ pub struct wire_Config {
 pub struct wire_GreenlightCredentials {
     device_key: *mut wire_uint_8_list,
     device_cert: *mut wire_uint_8_list,
+}
+
+#[repr(C)]
+#[derive(Clone)]
+pub struct wire_LnUrlPayRequestData {
+    callback: *mut wire_uint_8_list,
+    min_sendable: u64,
+    max_sendable: u64,
+    metadata_str: *mut wire_uint_8_list,
+    comment_allowed: usize,
 }
 
 #[repr(C)]
@@ -290,6 +334,18 @@ impl NewWithNullPtr for wire_GreenlightCredentials {
         Self {
             device_key: core::ptr::null_mut(),
             device_cert: core::ptr::null_mut(),
+        }
+    }
+}
+
+impl NewWithNullPtr for wire_LnUrlPayRequestData {
+    fn new_with_null_ptr() -> Self {
+        Self {
+            callback: core::ptr::null_mut(),
+            min_sendable: Default::default(),
+            max_sendable: Default::default(),
+            metadata_str: core::ptr::null_mut(),
+            comment_allowed: Default::default(),
         }
     }
 }

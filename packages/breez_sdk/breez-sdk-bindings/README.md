@@ -52,3 +52,5 @@ If you want to try them out, you will need:
   added to your `$CLASSPATH` environment variable.
 * The [Swift command-line tools](https://swift.org/download/), particularly `swift`, `swiftc` and
   the `Foundation` package.
+
+Then you can run ```cargo test```

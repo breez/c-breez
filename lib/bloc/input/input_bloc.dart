@@ -75,7 +75,7 @@ class InputBloc extends Cubit<InputState> {
     var invoice = Invoice(
         bolt11: raw,
         paymentHash: lnInvoice.paymentHash,
-        description: lnInvoice.description,
+        description: lnInvoice.description ?? "",
         amountMsat: lnInvoice.amountMsat ?? 0,
         expiry: lnInvoice.expiry);
 

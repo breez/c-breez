@@ -2159,6 +2159,42 @@
     "mempool_settings_custom_url_error": "Invalid Mempool API URL",
     "mempool_settings_action_reset": "Reset",
     "mempool_settings_action_save": "Save",
+    "lnurl_payment_page_title": "LNURL Invoice",
+    "lnurl_payment_page_domain_pay": "{domain} is requesting you to pay {amount} sats.",
+    "@lnurl_payment_page_domain_pay": {
+        "placeholders": {
+            "domain": {
+                "type": "String",
+                "example": "example.com"
+            },
+            "amount": {
+                "type": "int",
+                "example": "100"
+            }
+        }
+    },
+    "lnurl_payment_page_comment": "Comment (optional)",
+    "lnurl_payment_page_enter_k1": "Please enter a k1",
+    "lnurl_payment_page_action_pay": "PAY",
+    "lnurl_payment_page_error_exceeds_limit": "Exceeds maximum sendable amount: {amount}",
+    "@lnurl_payment_page_error_exceeds_limit": {
+        "placeholders": {
+            "amount": {
+                "type": "int",
+                "example": "123"
+            }
+        }
+    },
+    "lnurl_payment_page_error_below_limit": "Below minimum accepted amount: {amount}",
+    "@lnurl_payment_page_error_below_limit": {
+        "placeholders": {
+            "amount": {
+                "type": "int",
+                "example": "123"
+            }
+        }
+    },
+    "lnurl_payment_page_unknown_error": "Unknown error",
     "locale": "en",
     "app_name": "Breez"
 }

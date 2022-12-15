@@ -219,6 +219,14 @@ class BreezBridge {
 
   Stream<InvoicePaidDetails> get invoicePaidStream => _invoicePaidStream.stream;
 
+  Future<Resp> payLnUrl({
+    required int userAmountSat,
+    String? comment,
+    required LnUrlPayRequestData reqData,
+  }) {
+    return _lnToolkit.payLnurl(userAmountSat: userAmountSat, reqData: reqData, comment: comment);
+  }
+
   void _registerToolkitLog(LogEntry log) {
     switch (log.level) {
       case "ERROR":

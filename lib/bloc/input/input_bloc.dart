@@ -11,10 +11,12 @@ import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 class InputBloc extends Cubit<InputState> {
+  final _log = FimberLog("InputBloc");
   final BreezBridge _breezLib;
   final LightningLinksService _lightningLinks;
   final Device _device;
@@ -40,10 +42,12 @@ class InputBloc extends Cubit<InputState> {
       _lightningLinks.linksNotifications,
       _device.clipboardStream.distinct().skip(1),
     ]).asyncMap((s) async {
+      _log.v("Incoming input: '$s'");
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
       try {
         final command = await breez_sdk.InputParser().parse(s);
+        _log.v("Parsed command: '$command'");
         switch (command.protocol) {
           case breez_sdk.InputProtocol.paymentRequest:
             return handlePaymentRequest(s, command);
@@ -60,6 +64,7 @@ class InputBloc extends Cubit<InputState> {
             return InputState(isLoading: false);
         }
       } catch (e) {
+        _log.e("Failed to parse input", ex: e);
         return InputState(isLoading: false);
       }
     }).where((inputState) => inputState != null);

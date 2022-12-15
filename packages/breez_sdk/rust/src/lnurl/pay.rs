@@ -187,8 +187,8 @@ pub(crate) mod model {
                         match req_domain == action_res_domain {
                             true => Ok(()),
                             false => Err(anyhow!(
-                        "Success action description is longer than the maximum allowed length"
-                    )),
+                                "Success Action URL has different domain than the callback domain"
+                            )),
                         }
                     })
                 }

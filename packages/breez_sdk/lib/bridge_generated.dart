@@ -188,7 +188,7 @@ abstract class LightningToolkit {
 
   /// Second step of LNURL-pay. The first step is `parse()`, which also validates the LNURL destination
   /// and generates the `LnUrlPayRequestData` payload needed here.
-  Future<LnUrlPayOperationResult> payLnurl(
+  Future<LnUrlPayResult> payLnurl(
       {required int userAmountSat,
       String? comment,
       required LnUrlPayRequestData reqData,
@@ -405,16 +405,6 @@ class LnUrlErrorData {
   });
 }
 
-@freezed
-class LnUrlPayOperationResult with _$LnUrlPayOperationResult {
-  const factory LnUrlPayOperationResult.endpointSuccess([
-    SuccessAction? field0,
-  ]) = LnUrlPayOperationResult_EndpointSuccess;
-  const factory LnUrlPayOperationResult.endpointError(
-    LnUrlErrorData field0,
-  ) = LnUrlPayOperationResult_EndpointError;
-}
-
 class LnUrlPayRequestData {
   final String callback;
   final int minSendable;
@@ -432,6 +422,16 @@ class LnUrlPayRequestData {
     required this.metadataStr,
     required this.commentAllowed,
   });
+}
+
+@freezed
+class LnUrlPayResult with _$LnUrlPayResult {
+  const factory LnUrlPayResult.endpointSuccess([
+    SuccessAction? field0,
+  ]) = LnUrlPayResult_EndpointSuccess;
+  const factory LnUrlPayResult.endpointError(
+    LnUrlErrorData field0,
+  ) = LnUrlPayResult_EndpointError;
 }
 
 class LnUrlWithdrawRequestData {
@@ -1150,7 +1150,7 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["s"],
       );
 
-  Future<LnUrlPayOperationResult> payLnurl(
+  Future<LnUrlPayResult> payLnurl(
       {required int userAmountSat,
       String? comment,
       required LnUrlPayRequestData reqData,
@@ -1161,7 +1161,7 @@ class LightningToolkitImpl implements LightningToolkit {
     return _platform.executeNormal(FlutterRustBridgeTask(
       callFfi: (port_) =>
           _platform.inner.wire_pay_lnurl(port_, arg0, arg1, arg2),
-      parseSuccessData: _wire2api_ln_url_pay_operation_result,
+      parseSuccessData: _wire2api_ln_url_pay_result,
       constMeta: kPayLnurlConstMeta,
       argValues: [userAmountSat, comment, reqData],
       hint: hint,
@@ -1465,21 +1465,6 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
-  LnUrlPayOperationResult _wire2api_ln_url_pay_operation_result(dynamic raw) {
-    switch (raw[0]) {
-      case 0:
-        return LnUrlPayOperationResult_EndpointSuccess(
-          _wire2api_opt_success_action(raw[1]),
-        );
-      case 1:
-        return LnUrlPayOperationResult_EndpointError(
-          _wire2api_box_autoadd_ln_url_error_data(raw[1]),
-        );
-      default:
-        throw Exception("unreachable");
-    }
-  }
-
   LnUrlPayRequestData _wire2api_ln_url_pay_request_data(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 5)
@@ -1491,6 +1476,21 @@ class LightningToolkitImpl implements LightningToolkit {
       metadataStr: _wire2api_String(arr[3]),
       commentAllowed: _wire2api_usize(arr[4]),
     );
+  }
+
+  LnUrlPayResult _wire2api_ln_url_pay_result(dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return LnUrlPayResult_EndpointSuccess(
+          _wire2api_opt_success_action(raw[1]),
+        );
+      case 1:
+        return LnUrlPayResult_EndpointError(
+          _wire2api_box_autoadd_ln_url_error_data(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
   }
 
   LnUrlWithdrawRequestData _wire2api_ln_url_withdraw_request_data(dynamic raw) {

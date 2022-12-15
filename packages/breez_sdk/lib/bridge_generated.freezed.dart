@@ -1806,7 +1806,7 @@ abstract class InputType_LnUrlError implements InputType {
 }
 
 /// @nodoc
-mixin _$LnUrlPayOperationResult {
+mixin _$LnUrlPayResult {
   Object? get field0 => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
@@ -1829,43 +1829,37 @@ mixin _$LnUrlPayOperationResult {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlPayOperationResult_EndpointSuccess value)
+    required TResult Function(LnUrlPayResult_EndpointSuccess value)
         endpointSuccess,
-    required TResult Function(LnUrlPayOperationResult_EndpointError value)
-        endpointError,
+    required TResult Function(LnUrlPayResult_EndpointError value) endpointError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayOperationResult_EndpointSuccess value)?
-        endpointSuccess,
-    TResult? Function(LnUrlPayOperationResult_EndpointError value)?
-        endpointError,
+    TResult? Function(LnUrlPayResult_EndpointSuccess value)? endpointSuccess,
+    TResult? Function(LnUrlPayResult_EndpointError value)? endpointError,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlPayOperationResult_EndpointSuccess value)?
-        endpointSuccess,
-    TResult Function(LnUrlPayOperationResult_EndpointError value)?
-        endpointError,
+    TResult Function(LnUrlPayResult_EndpointSuccess value)? endpointSuccess,
+    TResult Function(LnUrlPayResult_EndpointError value)? endpointError,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $LnUrlPayOperationResultCopyWith<$Res> {
-  factory $LnUrlPayOperationResultCopyWith(LnUrlPayOperationResult value,
-          $Res Function(LnUrlPayOperationResult) then) =
-      _$LnUrlPayOperationResultCopyWithImpl<$Res, LnUrlPayOperationResult>;
+abstract class $LnUrlPayResultCopyWith<$Res> {
+  factory $LnUrlPayResultCopyWith(
+          LnUrlPayResult value, $Res Function(LnUrlPayResult) then) =
+      _$LnUrlPayResultCopyWithImpl<$Res, LnUrlPayResult>;
 }
 
 /// @nodoc
-class _$LnUrlPayOperationResultCopyWithImpl<$Res,
-        $Val extends LnUrlPayOperationResult>
-    implements $LnUrlPayOperationResultCopyWith<$Res> {
-  _$LnUrlPayOperationResultCopyWithImpl(this._value, this._then);
+class _$LnUrlPayResultCopyWithImpl<$Res, $Val extends LnUrlPayResult>
+    implements $LnUrlPayResultCopyWith<$Res> {
+  _$LnUrlPayResultCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -1874,11 +1868,11 @@ class _$LnUrlPayOperationResultCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$LnUrlPayOperationResult_EndpointSuccessCopyWith<$Res> {
-  factory _$$LnUrlPayOperationResult_EndpointSuccessCopyWith(
-          _$LnUrlPayOperationResult_EndpointSuccess value,
-          $Res Function(_$LnUrlPayOperationResult_EndpointSuccess) then) =
-      __$$LnUrlPayOperationResult_EndpointSuccessCopyWithImpl<$Res>;
+abstract class _$$LnUrlPayResult_EndpointSuccessCopyWith<$Res> {
+  factory _$$LnUrlPayResult_EndpointSuccessCopyWith(
+          _$LnUrlPayResult_EndpointSuccess value,
+          $Res Function(_$LnUrlPayResult_EndpointSuccess) then) =
+      __$$LnUrlPayResult_EndpointSuccessCopyWithImpl<$Res>;
   @useResult
   $Res call({SuccessAction? field0});
 
@@ -1886,13 +1880,12 @@ abstract class _$$LnUrlPayOperationResult_EndpointSuccessCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$LnUrlPayOperationResult_EndpointSuccessCopyWithImpl<$Res>
-    extends _$LnUrlPayOperationResultCopyWithImpl<$Res,
-        _$LnUrlPayOperationResult_EndpointSuccess>
-    implements _$$LnUrlPayOperationResult_EndpointSuccessCopyWith<$Res> {
-  __$$LnUrlPayOperationResult_EndpointSuccessCopyWithImpl(
-      _$LnUrlPayOperationResult_EndpointSuccess _value,
-      $Res Function(_$LnUrlPayOperationResult_EndpointSuccess) _then)
+class __$$LnUrlPayResult_EndpointSuccessCopyWithImpl<$Res>
+    extends _$LnUrlPayResultCopyWithImpl<$Res, _$LnUrlPayResult_EndpointSuccess>
+    implements _$$LnUrlPayResult_EndpointSuccessCopyWith<$Res> {
+  __$$LnUrlPayResult_EndpointSuccessCopyWithImpl(
+      _$LnUrlPayResult_EndpointSuccess _value,
+      $Res Function(_$LnUrlPayResult_EndpointSuccess) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1900,7 +1893,7 @@ class __$$LnUrlPayOperationResult_EndpointSuccessCopyWithImpl<$Res>
   $Res call({
     Object? field0 = freezed,
   }) {
-    return _then(_$LnUrlPayOperationResult_EndpointSuccess(
+    return _then(_$LnUrlPayResult_EndpointSuccess(
       freezed == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -1923,23 +1916,23 @@ class __$$LnUrlPayOperationResult_EndpointSuccessCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LnUrlPayOperationResult_EndpointSuccess
-    implements LnUrlPayOperationResult_EndpointSuccess {
-  const _$LnUrlPayOperationResult_EndpointSuccess([this.field0]);
+class _$LnUrlPayResult_EndpointSuccess
+    implements LnUrlPayResult_EndpointSuccess {
+  const _$LnUrlPayResult_EndpointSuccess([this.field0]);
 
   @override
   final SuccessAction? field0;
 
   @override
   String toString() {
-    return 'LnUrlPayOperationResult.endpointSuccess(field0: $field0)';
+    return 'LnUrlPayResult.endpointSuccess(field0: $field0)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LnUrlPayOperationResult_EndpointSuccess &&
+            other is _$LnUrlPayResult_EndpointSuccess &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -1949,10 +1942,9 @@ class _$LnUrlPayOperationResult_EndpointSuccess
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LnUrlPayOperationResult_EndpointSuccessCopyWith<
-          _$LnUrlPayOperationResult_EndpointSuccess>
-      get copyWith => __$$LnUrlPayOperationResult_EndpointSuccessCopyWithImpl<
-          _$LnUrlPayOperationResult_EndpointSuccess>(this, _$identity);
+  _$$LnUrlPayResult_EndpointSuccessCopyWith<_$LnUrlPayResult_EndpointSuccess>
+      get copyWith => __$$LnUrlPayResult_EndpointSuccessCopyWithImpl<
+          _$LnUrlPayResult_EndpointSuccess>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1988,10 +1980,9 @@ class _$LnUrlPayOperationResult_EndpointSuccess
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlPayOperationResult_EndpointSuccess value)
+    required TResult Function(LnUrlPayResult_EndpointSuccess value)
         endpointSuccess,
-    required TResult Function(LnUrlPayOperationResult_EndpointError value)
-        endpointError,
+    required TResult Function(LnUrlPayResult_EndpointError value) endpointError,
   }) {
     return endpointSuccess(this);
   }
@@ -1999,10 +1990,8 @@ class _$LnUrlPayOperationResult_EndpointSuccess
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayOperationResult_EndpointSuccess value)?
-        endpointSuccess,
-    TResult? Function(LnUrlPayOperationResult_EndpointError value)?
-        endpointError,
+    TResult? Function(LnUrlPayResult_EndpointSuccess value)? endpointSuccess,
+    TResult? Function(LnUrlPayResult_EndpointError value)? endpointError,
   }) {
     return endpointSuccess?.call(this);
   }
@@ -2010,10 +1999,8 @@ class _$LnUrlPayOperationResult_EndpointSuccess
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlPayOperationResult_EndpointSuccess value)?
-        endpointSuccess,
-    TResult Function(LnUrlPayOperationResult_EndpointError value)?
-        endpointError,
+    TResult Function(LnUrlPayResult_EndpointSuccess value)? endpointSuccess,
+    TResult Function(LnUrlPayResult_EndpointError value)? endpointError,
     required TResult orElse(),
   }) {
     if (endpointSuccess != null) {
@@ -2023,38 +2010,34 @@ class _$LnUrlPayOperationResult_EndpointSuccess
   }
 }
 
-abstract class LnUrlPayOperationResult_EndpointSuccess
-    implements LnUrlPayOperationResult {
-  const factory LnUrlPayOperationResult_EndpointSuccess(
-          [final SuccessAction? field0]) =
-      _$LnUrlPayOperationResult_EndpointSuccess;
+abstract class LnUrlPayResult_EndpointSuccess implements LnUrlPayResult {
+  const factory LnUrlPayResult_EndpointSuccess([final SuccessAction? field0]) =
+      _$LnUrlPayResult_EndpointSuccess;
 
   @override
   SuccessAction? get field0;
   @JsonKey(ignore: true)
-  _$$LnUrlPayOperationResult_EndpointSuccessCopyWith<
-          _$LnUrlPayOperationResult_EndpointSuccess>
+  _$$LnUrlPayResult_EndpointSuccessCopyWith<_$LnUrlPayResult_EndpointSuccess>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$LnUrlPayOperationResult_EndpointErrorCopyWith<$Res> {
-  factory _$$LnUrlPayOperationResult_EndpointErrorCopyWith(
-          _$LnUrlPayOperationResult_EndpointError value,
-          $Res Function(_$LnUrlPayOperationResult_EndpointError) then) =
-      __$$LnUrlPayOperationResult_EndpointErrorCopyWithImpl<$Res>;
+abstract class _$$LnUrlPayResult_EndpointErrorCopyWith<$Res> {
+  factory _$$LnUrlPayResult_EndpointErrorCopyWith(
+          _$LnUrlPayResult_EndpointError value,
+          $Res Function(_$LnUrlPayResult_EndpointError) then) =
+      __$$LnUrlPayResult_EndpointErrorCopyWithImpl<$Res>;
   @useResult
   $Res call({LnUrlErrorData field0});
 }
 
 /// @nodoc
-class __$$LnUrlPayOperationResult_EndpointErrorCopyWithImpl<$Res>
-    extends _$LnUrlPayOperationResultCopyWithImpl<$Res,
-        _$LnUrlPayOperationResult_EndpointError>
-    implements _$$LnUrlPayOperationResult_EndpointErrorCopyWith<$Res> {
-  __$$LnUrlPayOperationResult_EndpointErrorCopyWithImpl(
-      _$LnUrlPayOperationResult_EndpointError _value,
-      $Res Function(_$LnUrlPayOperationResult_EndpointError) _then)
+class __$$LnUrlPayResult_EndpointErrorCopyWithImpl<$Res>
+    extends _$LnUrlPayResultCopyWithImpl<$Res, _$LnUrlPayResult_EndpointError>
+    implements _$$LnUrlPayResult_EndpointErrorCopyWith<$Res> {
+  __$$LnUrlPayResult_EndpointErrorCopyWithImpl(
+      _$LnUrlPayResult_EndpointError _value,
+      $Res Function(_$LnUrlPayResult_EndpointError) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2062,7 +2045,7 @@ class __$$LnUrlPayOperationResult_EndpointErrorCopyWithImpl<$Res>
   $Res call({
     Object? field0 = null,
   }) {
-    return _then(_$LnUrlPayOperationResult_EndpointError(
+    return _then(_$LnUrlPayResult_EndpointError(
       null == field0
           ? _value.field0
           : field0 // ignore: cast_nullable_to_non_nullable
@@ -2073,23 +2056,22 @@ class __$$LnUrlPayOperationResult_EndpointErrorCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LnUrlPayOperationResult_EndpointError
-    implements LnUrlPayOperationResult_EndpointError {
-  const _$LnUrlPayOperationResult_EndpointError(this.field0);
+class _$LnUrlPayResult_EndpointError implements LnUrlPayResult_EndpointError {
+  const _$LnUrlPayResult_EndpointError(this.field0);
 
   @override
   final LnUrlErrorData field0;
 
   @override
   String toString() {
-    return 'LnUrlPayOperationResult.endpointError(field0: $field0)';
+    return 'LnUrlPayResult.endpointError(field0: $field0)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$LnUrlPayOperationResult_EndpointError &&
+            other is _$LnUrlPayResult_EndpointError &&
             (identical(other.field0, field0) || other.field0 == field0));
   }
 
@@ -2099,10 +2081,9 @@ class _$LnUrlPayOperationResult_EndpointError
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$LnUrlPayOperationResult_EndpointErrorCopyWith<
-          _$LnUrlPayOperationResult_EndpointError>
-      get copyWith => __$$LnUrlPayOperationResult_EndpointErrorCopyWithImpl<
-          _$LnUrlPayOperationResult_EndpointError>(this, _$identity);
+  _$$LnUrlPayResult_EndpointErrorCopyWith<_$LnUrlPayResult_EndpointError>
+      get copyWith => __$$LnUrlPayResult_EndpointErrorCopyWithImpl<
+          _$LnUrlPayResult_EndpointError>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -2138,10 +2119,9 @@ class _$LnUrlPayOperationResult_EndpointError
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(LnUrlPayOperationResult_EndpointSuccess value)
+    required TResult Function(LnUrlPayResult_EndpointSuccess value)
         endpointSuccess,
-    required TResult Function(LnUrlPayOperationResult_EndpointError value)
-        endpointError,
+    required TResult Function(LnUrlPayResult_EndpointError value) endpointError,
   }) {
     return endpointError(this);
   }
@@ -2149,10 +2129,8 @@ class _$LnUrlPayOperationResult_EndpointError
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(LnUrlPayOperationResult_EndpointSuccess value)?
-        endpointSuccess,
-    TResult? Function(LnUrlPayOperationResult_EndpointError value)?
-        endpointError,
+    TResult? Function(LnUrlPayResult_EndpointSuccess value)? endpointSuccess,
+    TResult? Function(LnUrlPayResult_EndpointError value)? endpointError,
   }) {
     return endpointError?.call(this);
   }
@@ -2160,10 +2138,8 @@ class _$LnUrlPayOperationResult_EndpointError
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(LnUrlPayOperationResult_EndpointSuccess value)?
-        endpointSuccess,
-    TResult Function(LnUrlPayOperationResult_EndpointError value)?
-        endpointError,
+    TResult Function(LnUrlPayResult_EndpointSuccess value)? endpointSuccess,
+    TResult Function(LnUrlPayResult_EndpointError value)? endpointError,
     required TResult orElse(),
   }) {
     if (endpointError != null) {
@@ -2173,16 +2149,14 @@ class _$LnUrlPayOperationResult_EndpointError
   }
 }
 
-abstract class LnUrlPayOperationResult_EndpointError
-    implements LnUrlPayOperationResult {
-  const factory LnUrlPayOperationResult_EndpointError(
-      final LnUrlErrorData field0) = _$LnUrlPayOperationResult_EndpointError;
+abstract class LnUrlPayResult_EndpointError implements LnUrlPayResult {
+  const factory LnUrlPayResult_EndpointError(final LnUrlErrorData field0) =
+      _$LnUrlPayResult_EndpointError;
 
   @override
   LnUrlErrorData get field0;
   @JsonKey(ignore: true)
-  _$$LnUrlPayOperationResult_EndpointErrorCopyWith<
-          _$LnUrlPayOperationResult_EndpointError>
+  _$$LnUrlPayResult_EndpointErrorCopyWith<_$LnUrlPayResult_EndpointError>
       get copyWith => throw _privateConstructorUsedError;
 }
 

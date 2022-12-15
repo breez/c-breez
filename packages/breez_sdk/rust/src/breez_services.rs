@@ -7,7 +7,7 @@ use crate::grpc::information_client::InformationClient;
 use crate::grpc::PaymentInformation;
 use crate::invoice::{add_routing_hints, parse_invoice, LNInvoice, RouteHint, RouteHintHop};
 use crate::lnurl::input_parser::LnUrlPayRequestData;
-use crate::lnurl::pay::model::{LnUrlPayOperationResult, ValidatedCallbackResponse};
+use crate::lnurl::pay::model::{LnUrlPayResult, ValidatedCallbackResponse};
 use crate::lnurl::pay::validate_lnurl_pay;
 use crate::lsp::LspInformation;
 use crate::models::{
@@ -171,12 +171,12 @@ impl BreezServices {
         user_amount_sat: u64,
         comment: Option<String>,
         req_data: LnUrlPayRequestData,
-    ) -> Result<LnUrlPayOperationResult> {
+    ) -> Result<LnUrlPayResult> {
         match validate_lnurl_pay(user_amount_sat, comment, req_data).await? {
-            ValidatedCallbackResponse::EndpointError(e) => Ok(LnUrlPayOperationResult::EndpointError(e)),
+            ValidatedCallbackResponse::EndpointError(e) => Ok(LnUrlPayResult::EndpointError(e)),
             ValidatedCallbackResponse::EndpointSuccess(cb) => {
                 self.send_payment(cb.pr).await?;
-                Ok(LnUrlPayOperationResult::EndpointSuccess(cb.success_action))
+                Ok(LnUrlPayResult::EndpointSuccess(cb.success_action))
             }
         }
     }

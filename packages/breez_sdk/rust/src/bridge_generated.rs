@@ -36,8 +36,8 @@ use crate::lnurl::input_parser::LnUrlAuthRequestData;
 use crate::lnurl::input_parser::LnUrlErrorData;
 use crate::lnurl::input_parser::LnUrlPayRequestData;
 use crate::lnurl::input_parser::LnUrlWithdrawRequestData;
-use crate::lnurl::pay::model::MessageSuccessActionData;
 use crate::lnurl::pay::model::LnUrlPayOperationResult;
+use crate::lnurl::pay::model::MessageSuccessActionData;
 use crate::lnurl::pay::model::SuccessAction;
 use crate::lnurl::pay::model::UrlSuccessActionData;
 use crate::lsp::LspInformation;
@@ -609,6 +609,16 @@ impl support::IntoDart for LnUrlErrorData {
 }
 impl support::IntoDartExceptPrimitive for LnUrlErrorData {}
 
+impl support::IntoDart for LnUrlPayOperationResult {
+    fn into_dart(self) -> support::DartAbi {
+        match self {
+            Self::EndpointSuccess(field0) => vec![0.into_dart(), field0.into_dart()],
+            Self::EndpointError(field0) => vec![1.into_dart(), field0.into_dart()],
+        }
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for LnUrlPayOperationResult {}
 impl support::IntoDart for LnUrlPayRequestData {
     fn into_dart(self) -> support::DartAbi {
         vec![
@@ -752,16 +762,6 @@ impl support::IntoDart for Rate {
 }
 impl support::IntoDartExceptPrimitive for Rate {}
 
-impl support::IntoDart for LnUrlPayOperationResult {
-    fn into_dart(self) -> support::DartAbi {
-        match self {
-            Self::EndpointSuccess(field0) => vec![0.into_dart(), field0.into_dart()],
-            Self::EndpointError(field0) => vec![1.into_dart(), field0.into_dart()],
-        }
-        .into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for LnUrlPayOperationResult {}
 impl support::IntoDart for RouteHint {
     fn into_dart(self) -> support::DartAbi {
         vec![self.hops.into_dart()].into_dart()

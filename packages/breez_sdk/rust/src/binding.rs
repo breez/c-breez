@@ -20,7 +20,7 @@ use crate::models::{
 
 use crate::invoice::{self};
 use crate::lnurl::input_parser::InputType;
-use crate::lnurl::pay::model::Resp;
+use crate::lnurl::pay::model::LnUrlPayResult;
 use bip39::{Language, Mnemonic, Seed};
 
 static BREEZ_SERVICES_INSTANCE: OnceCell<Arc<BreezServices>> = OnceCell::new();
@@ -303,7 +303,7 @@ pub fn pay_lnurl(
     user_amount_sat: u64,
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
-) -> Result<Resp> {
+) -> Result<LnUrlPayResult> {
     block_on(async {
         get_breez_services()?
             .pay_lnurl(user_amount_sat, comment, req_data)

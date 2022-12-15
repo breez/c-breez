@@ -112,8 +112,16 @@ pub(crate) mod model {
         EndpointError(LnUrlErrorData),
     }
 
+    /// Contains the result of the entire LNURL-pay interaction, as reported by the LNURL endpoint.
+    ///
+    /// * `EndpointSuccess` indicates the payment is complete. The endpoint may return a `SuccessAction`,
+    /// in which case, the wallet has to present it to the user as described in
+    /// <https://github.com/lnurl/luds/blob/luds/09.md>
+    ///
+    /// * `EndpointError` indicates a generic issue the LNURL endpoint encountered, including a freetext
+    /// field with the reason.
     #[derive(Debug)]
-    pub enum Resp {
+    pub enum LnUrlPayResult {
         EndpointSuccess(Option<SuccessAction>),
         EndpointError(LnUrlErrorData),
     }
@@ -193,7 +201,7 @@ pub(crate) mod model {
 mod tests {
     use crate::lnurl::input_parser::*;
     use crate::lnurl::pay::model::{
-        MessageSuccessActionData, Resp, SuccessAction, UrlSuccessActionData,
+        MessageSuccessActionData, LnUrlPayResult, SuccessAction, UrlSuccessActionData,
     };
     use crate::lnurl::pay::*;
     use anyhow::{anyhow, Result};
@@ -458,8 +466,8 @@ mod tests {
             .pay_lnurl(user_amount_sat, None, pay_req)
             .await?
         {
-            Resp::EndpointSuccess(None) => Ok(()),
-            Resp::EndpointSuccess(Some(_)) => Err(anyhow!("Unexpected success action")),
+            LnUrlPayResult::EndpointSuccess(None) => Ok(()),
+            LnUrlPayResult::EndpointSuccess(Some(_)) => Err(anyhow!("Unexpected success action")),
             _ => Err(anyhow!("Unexpected success action type")),
         }
     }
@@ -502,10 +510,10 @@ mod tests {
             .pay_lnurl(user_amount_sat, None, pay_req)
             .await?
         {
-            Resp::EndpointSuccess(None) => Err(anyhow!(
+            LnUrlPayResult::EndpointSuccess(None) => Err(anyhow!(
                 "Expected success action in callback, but none provided"
             )),
-            Resp::EndpointSuccess(Some(SuccessAction::Message(msg))) => match msg.message {
+            LnUrlPayResult::EndpointSuccess(Some(SuccessAction::Message(msg))) => match msg.message {
                 s if s == "test msg" => Ok(()),
                 _ => Err(anyhow!("Unexpected success action message content")),
             },
@@ -553,9 +561,9 @@ mod tests {
         let res = mock_breez_services
             .pay_lnurl(user_amount_sat, None, pay_req)
             .await;
-        assert!(matches!(res, Ok(Resp::EndpointError(_))));
+        assert!(matches!(res, Ok(LnUrlPayResult::EndpointError(_))));
 
-        if let Ok(Resp::EndpointError(err_msg)) = res {
+        if let Ok(LnUrlPayResult::EndpointError(err_msg)) = res {
             assert_eq!(expected_error_msg, err_msg.reason);
         } else {
             return Err(anyhow!(
@@ -584,7 +592,7 @@ mod tests {
             .pay_lnurl(user_amount_sat, None, pay_req)
             .await?
         {
-            Resp::EndpointSuccess(Some(SuccessAction::Url(url))) => {
+            LnUrlPayResult::EndpointSuccess(Some(SuccessAction::Url(url))) => {
                 if url.url == "https://localhost/test-url" && url.description == "test description"
                 {
                     Ok(())
@@ -592,7 +600,7 @@ mod tests {
                     Err(anyhow!("Unexpected success action content"))
                 }
             }
-            Resp::EndpointSuccess(None) => Err(anyhow!(
+            LnUrlPayResult::EndpointSuccess(None) => Err(anyhow!(
                 "Expected success action in callback, but none provided"
             )),
             _ => Err(anyhow!("Unexpected success action type")),

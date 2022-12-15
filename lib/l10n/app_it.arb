@@ -2126,6 +2126,7 @@
     "payment_info_title_send_to_node": "Invia al nodo",
     "payment_info_title_unknown": "Sconosciuto",
     "payment_info_title_pending_closed_channel": "Canale chiuso in pending",
+    "payment_error_to_send_unknown_reason": "Impossibile inviare il pagamento",
     "payment_error_to_send": "Impossibile inviare il pagamento: {error}",
     "@payment_error_to_send": {
         "placeholders": {

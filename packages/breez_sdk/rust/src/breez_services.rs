@@ -176,6 +176,7 @@ impl BreezServices {
             ValidatedCallbackResponse::EndpointError(e) => Ok(LnUrlPayResult::EndpointError(e)),
             ValidatedCallbackResponse::EndpointSuccess(cb) => {
                 self.send_payment(cb.pr).await?;
+                self.sync().await?;
                 Ok(LnUrlPayResult::EndpointSuccess(cb.success_action))
             }
         }

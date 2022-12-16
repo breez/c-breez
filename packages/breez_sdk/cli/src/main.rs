@@ -8,6 +8,7 @@ use std::str::SplitWhitespace;
 use anyhow::{anyhow, Result};
 use bip39::{Language, Mnemonic, MnemonicType, Seed};
 use env_logger::Env;
+use lightning_toolkit::InputType::LnUrlWithdraw;
 use lightning_toolkit::{
     binding, FeeratePreset, GreenlightCredentials, InputType::LnUrlPay, LspInformation, Network,
     PaymentTypeFilter,
@@ -118,26 +119,65 @@ fn main() -> Result<()> {
                             description.to_string(),
                         ));
                     }
-                    Some("send-lnurl") => {
+                    Some("lnurl-pay") => {
                         let lnurl_endpoint =
                             rl.readline("Destination LNURL-pay or LN Address: ")?;
 
                         match binding::parse(lnurl_endpoint)? {
                             LnUrlPay { data: pd } => {
                                 let prompt = format!(
-                                    "Amount in sats (min {} sat, max {} sat: ",
+                                    "Amount to pay in sats (min {} sat, max {} sat: ",
                                     pd.min_sendable / 1000,
                                     pd.max_sendable / 1000
                                 );
 
                                 let amount_sat = rl.readline(&prompt)?;
-                                let pay_res = binding::pay_lnurl(amount_sat.parse::<u64>()?, None, pd);
+                                let pay_res =
+                                    binding::pay_lnurl(amount_sat.parse::<u64>()?, None, pd);
                                 show_results(pay_res);
                             }
-                            _ => {
-                                error!("Unexpected result type");
-                                break;
+                            _ => error!("Unexpected result type")
+                        }
+                    }
+                    Some("lnurl-withdraw") => {
+                        let lnurl_endpoint = rl.readline("LNURL-withdraw link: ")?;
+
+                        match binding::parse(lnurl_endpoint)? {
+                            LnUrlWithdraw { data: wd } => {
+                                info!("Endpoint description: {}", wd.default_description);
+
+                                // Bounds for a withdrawal amount. Normally these would also consider NodeState params:
+                                // max can receive = min(maxWithdrawable, local estimation of how much can be routed into wallet)
+                                // min can receive = max(minWithdrawable, local minimal value allowed by wallet)
+                                // However, for simplicity, we just use the LNURL-withdraw min/max bounds
+                                let user_input_max_sat = wd.max_withdrawable / 1000;
+                                let user_input_min_sat = 2001;
+
+                                if user_input_max_sat < user_input_min_sat {
+                                    error!("The LNURLw endpoint needs to accept at least {} sats, but min / max withdrawable are {} sat / {} sat",
+                                        user_input_min_sat,
+                                        wd.min_withdrawable / 1000,
+                                        wd.max_withdrawable / 1000
+                                    );
+                                    break;
+                                }
+
+                                let prompt = format!(
+                                    "Amount to withdraw in sats (min {} sat, max {} sat: ",
+                                    user_input_min_sat, user_input_max_sat
+                                );
+                                let user_input_withdraw_amount_sat = rl.readline(&prompt)?;
+
+                                let amount_sats: u64 = user_input_withdraw_amount_sat.parse()?;
+                                let description = "LNURL-withdraw";
+
+                                let invoice =
+                                    binding::receive_payment(amount_sats, description.to_string())?;
+
+                                let withdraw_res = binding::withdraw_lnurl(wd, invoice);
+                                show_results(withdraw_res);
                             }
+                            _ => error!("Unexpected result type"),
                         }
                     }
                     Some("send_payment") => {

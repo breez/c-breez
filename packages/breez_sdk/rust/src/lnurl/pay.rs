@@ -20,7 +20,7 @@ pub(crate) async fn validate_lnurl_pay(
         req_data.comment_allowed,
     )?;
 
-    let callback_url = build_callback_url(user_amount_sat, &comment, &req_data)?;
+    let callback_url = build_pay_callback_url(user_amount_sat, &comment, &req_data)?;
     let callback_resp_text = reqwest::get(&callback_url).await?.text().await?;
 
     if let Ok(err) = serde_json::from_str::<LnUrlErrorData>(&callback_resp_text) {
@@ -36,7 +36,7 @@ pub(crate) async fn validate_lnurl_pay(
     }
 }
 
-fn build_callback_url(
+fn build_pay_callback_url(
     user_amount_sat: u64,
     user_comment: &Option<String>,
     req_data: &LnUrlPayRequestData,
@@ -207,7 +207,6 @@ pub(crate) mod model {
 
 #[cfg(test)]
 mod tests {
-    use crate::input_parser::*;
     use crate::lnurl::pay::model::{
         LnUrlPayResult, MessageSuccessActionData, SuccessAction, UrlSuccessActionData,
     };
@@ -224,7 +223,7 @@ mod tests {
         error: Option<String>,
         pr: String,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
+        let callback_url = build_pay_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -254,7 +253,7 @@ mod tests {
         user_amount_sat: u64,
         error: Option<String>,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
+        let callback_url = build_pay_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -287,7 +286,7 @@ mod tests {
         error: Option<String>,
         pr: String,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
+        let callback_url = build_pay_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -322,7 +321,7 @@ mod tests {
         error: Option<String>,
         pr: String,
     ) -> Result<Mock> {
-        let callback_url = build_callback_url(user_amount_sat, &None, pay_req)?;
+        let callback_url = build_pay_callback_url(user_amount_sat, &None, pay_req)?;
         let url = reqwest::Url::parse(&callback_url)?;
         let mockito_path: &str = &format!("{}?{}", url.path(), url.query().unwrap());
 
@@ -608,7 +607,7 @@ mod tests {
     }
 
     #[test]
-    fn test_lnurl_pay_build_callback_url() -> Result<()> {
+    fn test_lnurl_pay_build_pay_callback_url() -> Result<()> {
         let pay_req = get_test_pay_req_data(0, 100, 0);
         let user_amount_sat = 50;
 
@@ -616,12 +615,12 @@ mod tests {
         let user_comment = "test comment".to_string();
         let comment_arg = format!("comment={}", user_comment);
 
-        let url_amount_no_comment = build_callback_url(user_amount_sat, &None, &pay_req)?;
+        let url_amount_no_comment = build_pay_callback_url(user_amount_sat, &None, &pay_req)?;
         assert!(url_amount_no_comment.contains(&amount_arg));
         assert!(!url_amount_no_comment.contains(&comment_arg));
 
         let url_amount_with_comment =
-            build_callback_url(user_amount_sat, &Some(user_comment), &pay_req)?;
+            build_pay_callback_url(user_amount_sat, &Some(user_comment), &pay_req)?;
         assert!(url_amount_with_comment.contains(&amount_arg));
         assert!(url_amount_with_comment.contains("comment=test+comment"));
 

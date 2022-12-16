@@ -447,8 +447,8 @@ pub struct LnUrlWithdrawRequestData {
     pub callback: String,
     pub k1: String,
     pub default_description: String,
-    pub min_withdrawable: u16,
-    pub max_withdrawable: u16,
+    pub min_withdrawable: u64,
+    pub max_withdrawable: u64,
 }
 
 #[derive(Deserialize, Debug)]

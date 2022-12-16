@@ -6,9 +6,9 @@ use bitcoin::bech32;
 use bitcoin::bech32::FromBase32;
 use serde::Deserialize;
 
-use crate::invoice::{parse_invoice, LNInvoice};
 use crate::input_parser::InputType::*;
 use crate::input_parser::LnUrlRequestData::*;
+use crate::invoice::{parse_invoice, LNInvoice};
 
 use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 

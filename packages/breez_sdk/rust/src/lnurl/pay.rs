@@ -1,5 +1,5 @@
-use crate::invoice::parse_invoice;
 use crate::input_parser::*;
+use crate::invoice::parse_invoice;
 use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 use crate::lnurl::pay::model::{CallbackResponse, ValidatedCallbackResponse};
 use crate::LnUrlErrorData;
@@ -12,7 +12,13 @@ pub(crate) async fn validate_lnurl_pay(
     comment: Option<String>,
     req_data: LnUrlPayRequestData,
 ) -> Result<ValidatedCallbackResponse> {
-    validate_user_input(user_amount_sat, &comment, &req_data)?;
+    validate_user_input(
+        user_amount_sat * 1000,
+        &comment,
+        req_data.min_sendable,
+        req_data.max_sendable,
+        req_data.comment_allowed,
+    )?;
 
     let callback_url = build_callback_url(user_amount_sat, &comment, &req_data)?;
     let callback_resp_text = reqwest::get(&callback_url).await?.text().await?;
@@ -49,21 +55,23 @@ fn build_callback_url(
 }
 
 fn validate_user_input(
-    user_amount_sat: u64,
+    user_amount_msat: u64,
     comment: &Option<String>,
-    req_data: &LnUrlPayRequestData,
+    condition_min_amount_msat: u64,
+    condition_max_amount_msat: u64,
+    condition_max_comment_len: usize,
 ) -> Result<()> {
-    if user_amount_sat * 1000 < req_data.min_sendable {
+    if user_amount_msat < condition_min_amount_msat {
         return Err(anyhow!("Amount is smaller than the minimum allowed"));
     }
 
-    if user_amount_sat * 1000 > req_data.max_sendable {
+    if user_amount_msat > condition_max_amount_msat {
         return Err(anyhow!("Amount is bigger than the maximum allowed"));
     }
 
     match comment {
         None => Ok(()),
-        Some(msg) => match msg.len() <= req_data.comment_allowed {
+        Some(msg) => match msg.len() <= condition_max_comment_len {
             true => Ok(()),
             false => Err(anyhow!(
                 "Comment is longer than the maximum allowed comment length"
@@ -201,11 +209,10 @@ pub(crate) mod model {
 mod tests {
     use crate::input_parser::*;
     use crate::lnurl::pay::model::{
-        MessageSuccessActionData, LnUrlPayResult, SuccessAction, UrlSuccessActionData,
+        LnUrlPayResult, MessageSuccessActionData, SuccessAction, UrlSuccessActionData,
     };
     use crate::lnurl::pay::*;
     use anyhow::{anyhow, Result};
-    use mockito;
     use mockito::Mock;
 
     use crate::test_utils::{rand_invoice_with_description_hash, rand_string};
@@ -360,20 +367,12 @@ mod tests {
 
     #[test]
     fn test_lnurl_pay_validate_input() -> Result<()> {
-        assert!(validate_user_input(100, &None, &get_test_pay_req_data(0, 100, 0)).is_ok());
-        assert!(
-            validate_user_input(100, &Some("test".into()), &get_test_pay_req_data(0, 100, 5))
-                .is_ok()
-        );
+        assert!(validate_user_input(100, &None, 0, 100, 0).is_ok());
+        assert!(validate_user_input(100, &Some("test".into()), 0, 100, 5).is_ok());
 
-        assert!(validate_user_input(5, &None, &get_test_pay_req_data(10, 100, 5)).is_err());
-        assert!(validate_user_input(200, &None, &get_test_pay_req_data(10, 100, 5)).is_err());
-        assert!(validate_user_input(
-            100,
-            &Some("test".into()),
-            &get_test_pay_req_data(10, 100, 0)
-        )
-        .is_err());
+        assert!(validate_user_input(5, &None, 10, 100, 5).is_err());
+        assert!(validate_user_input(200, &None, 10, 100, 5).is_err());
+        assert!(validate_user_input(100, &Some("test".into()), 10, 100, 0).is_err());
 
         Ok(())
     }
@@ -513,7 +512,8 @@ mod tests {
             LnUrlPayResult::EndpointSuccess(None) => Err(anyhow!(
                 "Expected success action in callback, but none provided"
             )),
-            LnUrlPayResult::EndpointSuccess(Some(SuccessAction::Message(msg))) => match msg.message {
+            LnUrlPayResult::EndpointSuccess(Some(SuccessAction::Message(msg))) => match msg.message
+            {
                 s if s == "test msg" => Ok(()),
                 _ => Err(anyhow!("Unexpected success action message content")),
             },

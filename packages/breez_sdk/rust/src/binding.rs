@@ -18,8 +18,8 @@ use crate::models::{
     SwapInfo,
 };
 
-use crate::invoice::{self};
 use crate::input_parser::InputType;
+use crate::invoice::{self};
 use crate::lnurl::pay::model::LnUrlPayResult;
 use bip39::{Language, Mnemonic, Seed};
 

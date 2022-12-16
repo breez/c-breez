@@ -196,6 +196,15 @@ abstract class LightningToolkit {
 
   FlutterRustBridgeTaskConstMeta get kPayLnurlConstMeta;
 
+  /// Second step of LNURL-withdraw. The first step is `parse()`, which also validates the LNURL destination
+  /// and generates the `LnUrlW` payload needed here.
+  Future<LnUrlWithdrawCallbackStatus> withdrawLnurl(
+      {required LnUrlWithdrawRequestData reqData,
+      required LNInvoice invoice,
+      dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kWithdrawLnurlConstMeta;
+
   /// Attempts to convert the phrase to a mnemonic, then to a seed.
   ///
   /// If the phrase is not a valid mnemonic, an error is returned.
@@ -432,6 +441,18 @@ class LnUrlPayResult with _$LnUrlPayResult {
   const factory LnUrlPayResult.endpointError(
     LnUrlErrorData field0,
   ) = LnUrlPayResult_EndpointError;
+}
+
+@freezed
+class LnUrlWithdrawCallbackStatus with _$LnUrlWithdrawCallbackStatus {
+  /// On-wire format is: `{"status": "OK"}`
+  const factory LnUrlWithdrawCallbackStatus.ok() =
+      LnUrlWithdrawCallbackStatus_Ok;
+
+  /// On-wire format is: `{"status": "ERROR", "reason": "error details..."}`
+  const factory LnUrlWithdrawCallbackStatus.error(
+    LnUrlErrorData field0,
+  ) = LnUrlWithdrawCallbackStatus_Error;
 }
 
 class LnUrlWithdrawRequestData {
@@ -1174,6 +1195,29 @@ class LightningToolkitImpl implements LightningToolkit {
         argNames: ["userAmountSat", "comment", "reqData"],
       );
 
+  Future<LnUrlWithdrawCallbackStatus> withdrawLnurl(
+      {required LnUrlWithdrawRequestData reqData,
+      required LNInvoice invoice,
+      dynamic hint}) {
+    var arg0 =
+        _platform.api2wire_box_autoadd_ln_url_withdraw_request_data(reqData);
+    var arg1 = _platform.api2wire_box_autoadd_ln_invoice(invoice);
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) =>
+          _platform.inner.wire_withdraw_lnurl(port_, arg0, arg1),
+      parseSuccessData: _wire2api_ln_url_withdraw_callback_status,
+      constMeta: kWithdrawLnurlConstMeta,
+      argValues: [reqData, invoice],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kWithdrawLnurlConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "withdraw_lnurl",
+        argNames: ["reqData", "invoice"],
+      );
+
   Future<Uint8List> mnemonicToSeed({required String phrase, dynamic hint}) {
     var arg0 = _platform.api2wire_String(phrase);
     return _platform.executeNormal(FlutterRustBridgeTask(
@@ -1493,6 +1537,20 @@ class LightningToolkitImpl implements LightningToolkit {
     }
   }
 
+  LnUrlWithdrawCallbackStatus _wire2api_ln_url_withdraw_callback_status(
+      dynamic raw) {
+    switch (raw[0]) {
+      case 0:
+        return LnUrlWithdrawCallbackStatus_Ok();
+      case 1:
+        return LnUrlWithdrawCallbackStatus_Error(
+          _wire2api_box_autoadd_ln_url_error_data(raw[1]),
+        );
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
   LnUrlWithdrawRequestData _wire2api_ln_url_withdraw_request_data(dynamic raw) {
     final arr = raw as List<dynamic>;
     if (arr.length != 5)
@@ -1501,8 +1559,8 @@ class LightningToolkitImpl implements LightningToolkit {
       callback: _wire2api_String(arr[0]),
       k1: _wire2api_String(arr[1]),
       defaultDescription: _wire2api_String(arr[2]),
-      minWithdrawable: _wire2api_u16(arr[3]),
-      maxWithdrawable: _wire2api_u16(arr[4]),
+      minWithdrawable: _wire2api_u64(arr[3]),
+      maxWithdrawable: _wire2api_u64(arr[4]),
     );
   }
 
@@ -1733,10 +1791,6 @@ class LightningToolkitImpl implements LightningToolkit {
     );
   }
 
-  int _wire2api_u16(dynamic raw) {
-    return raw as int;
-  }
-
   int _wire2api_u32(dynamic raw) {
     return raw as int;
   }
@@ -1843,6 +1897,13 @@ class LightningToolkitPlatform
   }
 
   @protected
+  ffi.Pointer<wire_LNInvoice> api2wire_box_autoadd_ln_invoice(LNInvoice raw) {
+    final ptr = inner.new_box_autoadd_ln_invoice_0();
+    _api_fill_to_wire_ln_invoice(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
   ffi.Pointer<wire_LnUrlPayRequestData>
       api2wire_box_autoadd_ln_url_pay_request_data(LnUrlPayRequestData raw) {
     final ptr = inner.new_box_autoadd_ln_url_pay_request_data_0();
@@ -1851,8 +1912,42 @@ class LightningToolkitPlatform
   }
 
   @protected
+  ffi.Pointer<wire_LnUrlWithdrawRequestData>
+      api2wire_box_autoadd_ln_url_withdraw_request_data(
+          LnUrlWithdrawRequestData raw) {
+    final ptr = inner.new_box_autoadd_ln_url_withdraw_request_data_0();
+    _api_fill_to_wire_ln_url_withdraw_request_data(raw, ptr.ref);
+    return ptr;
+  }
+
+  @protected
+  ffi.Pointer<ffi.Uint64> api2wire_box_autoadd_u64(int raw) {
+    return inner.new_box_autoadd_u64_0(api2wire_u64(raw));
+  }
+
+  @protected
   int api2wire_i64(int raw) {
     return raw;
+  }
+
+  @protected
+  ffi.Pointer<wire_list_route_hint> api2wire_list_route_hint(
+      List<RouteHint> raw) {
+    final ans = inner.new_list_route_hint_0(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_route_hint(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
+  }
+
+  @protected
+  ffi.Pointer<wire_list_route_hint_hop> api2wire_list_route_hint_hop(
+      List<RouteHintHop> raw) {
+    final ans = inner.new_list_route_hint_hop_0(raw.length);
+    for (var i = 0; i < raw.length; ++i) {
+      _api_fill_to_wire_route_hint_hop(raw[i], ans.ref.ptr[i]);
+    }
+    return ans;
   }
 
   @protected
@@ -1868,6 +1963,11 @@ class LightningToolkitPlatform
   @protected
   ffi.Pointer<ffi.Int64> api2wire_opt_box_autoadd_i64(int? raw) {
     return raw == null ? ffi.nullptr : api2wire_box_autoadd_i64(raw);
+  }
+
+  @protected
+  ffi.Pointer<ffi.Uint64> api2wire_opt_box_autoadd_u64(int? raw) {
+    return raw == null ? ffi.nullptr : api2wire_box_autoadd_u64(raw);
   }
 
   @protected
@@ -1897,10 +1997,21 @@ class LightningToolkitPlatform
     _api_fill_to_wire_greenlight_credentials(apiObj, wireObj.ref);
   }
 
+  void _api_fill_to_wire_box_autoadd_ln_invoice(
+      LNInvoice apiObj, ffi.Pointer<wire_LNInvoice> wireObj) {
+    _api_fill_to_wire_ln_invoice(apiObj, wireObj.ref);
+  }
+
   void _api_fill_to_wire_box_autoadd_ln_url_pay_request_data(
       LnUrlPayRequestData apiObj,
       ffi.Pointer<wire_LnUrlPayRequestData> wireObj) {
     _api_fill_to_wire_ln_url_pay_request_data(apiObj, wireObj.ref);
+  }
+
+  void _api_fill_to_wire_box_autoadd_ln_url_withdraw_request_data(
+      LnUrlWithdrawRequestData apiObj,
+      ffi.Pointer<wire_LnUrlWithdrawRequestData> wireObj) {
+    _api_fill_to_wire_ln_url_withdraw_request_data(apiObj, wireObj.ref);
   }
 
   void _api_fill_to_wire_config(Config apiObj, wire_Config wireObj) {
@@ -1918,6 +2029,19 @@ class LightningToolkitPlatform
     wireObj.device_cert = api2wire_uint_8_list(apiObj.deviceCert);
   }
 
+  void _api_fill_to_wire_ln_invoice(LNInvoice apiObj, wire_LNInvoice wireObj) {
+    wireObj.bolt11 = api2wire_String(apiObj.bolt11);
+    wireObj.payee_pubkey = api2wire_String(apiObj.payeePubkey);
+    wireObj.payment_hash = api2wire_String(apiObj.paymentHash);
+    wireObj.description = api2wire_opt_String(apiObj.description);
+    wireObj.description_hash = api2wire_opt_String(apiObj.descriptionHash);
+    wireObj.amount_msat = api2wire_opt_box_autoadd_u64(apiObj.amountMsat);
+    wireObj.timestamp = api2wire_u64(apiObj.timestamp);
+    wireObj.expiry = api2wire_u64(apiObj.expiry);
+    wireObj.routing_hints = api2wire_list_route_hint(apiObj.routingHints);
+    wireObj.payment_secret = api2wire_uint_8_list(apiObj.paymentSecret);
+  }
+
   void _api_fill_to_wire_ln_url_pay_request_data(
       LnUrlPayRequestData apiObj, wire_LnUrlPayRequestData wireObj) {
     wireObj.callback = api2wire_String(apiObj.callback);
@@ -1927,9 +2051,36 @@ class LightningToolkitPlatform
     wireObj.comment_allowed = api2wire_usize(apiObj.commentAllowed);
   }
 
+  void _api_fill_to_wire_ln_url_withdraw_request_data(
+      LnUrlWithdrawRequestData apiObj, wire_LnUrlWithdrawRequestData wireObj) {
+    wireObj.callback = api2wire_String(apiObj.callback);
+    wireObj.k1 = api2wire_String(apiObj.k1);
+    wireObj.default_description = api2wire_String(apiObj.defaultDescription);
+    wireObj.min_withdrawable = api2wire_u64(apiObj.minWithdrawable);
+    wireObj.max_withdrawable = api2wire_u64(apiObj.maxWithdrawable);
+  }
+
   void _api_fill_to_wire_opt_box_autoadd_config(
       Config? apiObj, ffi.Pointer<wire_Config> wireObj) {
     if (apiObj != null) _api_fill_to_wire_box_autoadd_config(apiObj, wireObj);
+  }
+
+  void _api_fill_to_wire_route_hint(RouteHint apiObj, wire_RouteHint wireObj) {
+    wireObj.hops = api2wire_list_route_hint_hop(apiObj.hops);
+  }
+
+  void _api_fill_to_wire_route_hint_hop(
+      RouteHintHop apiObj, wire_RouteHintHop wireObj) {
+    wireObj.src_node_id = api2wire_String(apiObj.srcNodeId);
+    wireObj.short_channel_id = api2wire_u64(apiObj.shortChannelId);
+    wireObj.fees_base_msat = api2wire_u32(apiObj.feesBaseMsat);
+    wireObj.fees_proportional_millionths =
+        api2wire_u32(apiObj.feesProportionalMillionths);
+    wireObj.cltv_expiry_delta = api2wire_u64(apiObj.cltvExpiryDelta);
+    wireObj.htlc_minimum_msat =
+        api2wire_opt_box_autoadd_u64(apiObj.htlcMinimumMsat);
+    wireObj.htlc_maximum_msat =
+        api2wire_opt_box_autoadd_u64(apiObj.htlcMaximumMsat);
   }
 }
 
@@ -2448,6 +2599,28 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
       void Function(int, int, ffi.Pointer<wire_uint_8_list>,
           ffi.Pointer<wire_LnUrlPayRequestData>)>();
 
+  void wire_withdraw_lnurl(
+    int port_,
+    ffi.Pointer<wire_LnUrlWithdrawRequestData> req_data,
+    ffi.Pointer<wire_LNInvoice> invoice,
+  ) {
+    return _wire_withdraw_lnurl(
+      port_,
+      req_data,
+      invoice,
+    );
+  }
+
+  late final _wire_withdraw_lnurlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.Int64,
+              ffi.Pointer<wire_LnUrlWithdrawRequestData>,
+              ffi.Pointer<wire_LNInvoice>)>>('wire_withdraw_lnurl');
+  late final _wire_withdraw_lnurl = _wire_withdraw_lnurlPtr.asFunction<
+      void Function(int, ffi.Pointer<wire_LnUrlWithdrawRequestData>,
+          ffi.Pointer<wire_LNInvoice>)>();
+
   void wire_mnemonic_to_seed(
     int port_,
     ffi.Pointer<wire_uint_8_list> phrase,
@@ -2502,6 +2675,16 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_i64_0 = _new_box_autoadd_i64_0Ptr
       .asFunction<ffi.Pointer<ffi.Int64> Function(int)>();
 
+  ffi.Pointer<wire_LNInvoice> new_box_autoadd_ln_invoice_0() {
+    return _new_box_autoadd_ln_invoice_0();
+  }
+
+  late final _new_box_autoadd_ln_invoice_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<wire_LNInvoice> Function()>>(
+          'new_box_autoadd_ln_invoice_0');
+  late final _new_box_autoadd_ln_invoice_0 = _new_box_autoadd_ln_invoice_0Ptr
+      .asFunction<ffi.Pointer<wire_LNInvoice> Function()>();
+
   ffi.Pointer<wire_LnUrlPayRequestData>
       new_box_autoadd_ln_url_pay_request_data_0() {
     return _new_box_autoadd_ln_url_pay_request_data_0();
@@ -2513,6 +2696,63 @@ class LightningToolkitWire implements FlutterRustBridgeWireBase {
   late final _new_box_autoadd_ln_url_pay_request_data_0 =
       _new_box_autoadd_ln_url_pay_request_data_0Ptr
           .asFunction<ffi.Pointer<wire_LnUrlPayRequestData> Function()>();
+
+  ffi.Pointer<wire_LnUrlWithdrawRequestData>
+      new_box_autoadd_ln_url_withdraw_request_data_0() {
+    return _new_box_autoadd_ln_url_withdraw_request_data_0();
+  }
+
+  late final _new_box_autoadd_ln_url_withdraw_request_data_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_LnUrlWithdrawRequestData>
+              Function()>>('new_box_autoadd_ln_url_withdraw_request_data_0');
+  late final _new_box_autoadd_ln_url_withdraw_request_data_0 =
+      _new_box_autoadd_ln_url_withdraw_request_data_0Ptr
+          .asFunction<ffi.Pointer<wire_LnUrlWithdrawRequestData> Function()>();
+
+  ffi.Pointer<ffi.Uint64> new_box_autoadd_u64_0(
+    int value,
+  ) {
+    return _new_box_autoadd_u64_0(
+      value,
+    );
+  }
+
+  late final _new_box_autoadd_u64_0Ptr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint64> Function(ffi.Uint64)>>(
+          'new_box_autoadd_u64_0');
+  late final _new_box_autoadd_u64_0 = _new_box_autoadd_u64_0Ptr
+      .asFunction<ffi.Pointer<ffi.Uint64> Function(int)>();
+
+  ffi.Pointer<wire_list_route_hint> new_list_route_hint_0(
+    int len,
+  ) {
+    return _new_list_route_hint_0(
+      len,
+    );
+  }
+
+  late final _new_list_route_hint_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_list_route_hint> Function(
+              ffi.Int32)>>('new_list_route_hint_0');
+  late final _new_list_route_hint_0 = _new_list_route_hint_0Ptr
+      .asFunction<ffi.Pointer<wire_list_route_hint> Function(int)>();
+
+  ffi.Pointer<wire_list_route_hint_hop> new_list_route_hint_hop_0(
+    int len,
+  ) {
+    return _new_list_route_hint_hop_0(
+      len,
+    );
+  }
+
+  late final _new_list_route_hint_hop_0Ptr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<wire_list_route_hint_hop> Function(
+              ffi.Int32)>>('new_list_route_hint_hop_0');
+  late final _new_list_route_hint_hop_0 = _new_list_route_hint_hop_0Ptr
+      .asFunction<ffi.Pointer<wire_list_route_hint_hop> Function(int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,
@@ -2591,6 +2831,82 @@ class wire_LnUrlPayRequestData extends ffi.Struct {
 }
 
 typedef uintptr_t = ffi.UnsignedLong;
+
+class wire_LnUrlWithdrawRequestData extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> callback;
+
+  external ffi.Pointer<wire_uint_8_list> k1;
+
+  external ffi.Pointer<wire_uint_8_list> default_description;
+
+  @ffi.Uint64()
+  external int min_withdrawable;
+
+  @ffi.Uint64()
+  external int max_withdrawable;
+}
+
+class wire_RouteHintHop extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> src_node_id;
+
+  @ffi.Uint64()
+  external int short_channel_id;
+
+  @ffi.Uint32()
+  external int fees_base_msat;
+
+  @ffi.Uint32()
+  external int fees_proportional_millionths;
+
+  @ffi.Uint64()
+  external int cltv_expiry_delta;
+
+  external ffi.Pointer<ffi.Uint64> htlc_minimum_msat;
+
+  external ffi.Pointer<ffi.Uint64> htlc_maximum_msat;
+}
+
+class wire_list_route_hint_hop extends ffi.Struct {
+  external ffi.Pointer<wire_RouteHintHop> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+class wire_RouteHint extends ffi.Struct {
+  external ffi.Pointer<wire_list_route_hint_hop> hops;
+}
+
+class wire_list_route_hint extends ffi.Struct {
+  external ffi.Pointer<wire_RouteHint> ptr;
+
+  @ffi.Int32()
+  external int len;
+}
+
+class wire_LNInvoice extends ffi.Struct {
+  external ffi.Pointer<wire_uint_8_list> bolt11;
+
+  external ffi.Pointer<wire_uint_8_list> payee_pubkey;
+
+  external ffi.Pointer<wire_uint_8_list> payment_hash;
+
+  external ffi.Pointer<wire_uint_8_list> description;
+
+  external ffi.Pointer<wire_uint_8_list> description_hash;
+
+  external ffi.Pointer<ffi.Uint64> amount_msat;
+
+  @ffi.Uint64()
+  external int timestamp;
+
+  @ffi.Uint64()
+  external int expiry;
+
+  external ffi.Pointer<wire_list_route_hint> routing_hints;
+
+  external ffi.Pointer<wire_uint_8_list> payment_secret;
+}
 
 typedef DartPostCObjectFnType = ffi.Pointer<
     ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;

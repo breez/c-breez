@@ -8,6 +8,7 @@ mod chain;
 mod crypt;
 mod fiat;
 mod greenlight;
+mod input_parser;
 mod grpc;
 mod invoice;
 mod lnurl;
@@ -22,7 +23,7 @@ pub use breez_services::{
 };
 pub use fiat::{CurrencyInfo, FiatCurrency, LocaleOverrides, LocalizedName, Rate, Symbol};
 pub use invoice::{parse_invoice, LNInvoice, RouteHint, RouteHintHop};
-pub use lnurl::input_parser::{
+pub use input_parser::{
     parse, BitcoinAddressData, InputType, LnUrlAuthRequestData, LnUrlErrorData,
     LnUrlPayRequestData, LnUrlRequestData, LnUrlWithdrawRequestData, MetadataItem,
 };

@@ -1,5 +1,5 @@
 use crate::invoice::parse_invoice;
-use crate::lnurl::input_parser::*;
+use crate::input_parser::*;
 use crate::lnurl::maybe_replace_host_with_mockito_test_host;
 use crate::lnurl::pay::model::{CallbackResponse, ValidatedCallbackResponse};
 use crate::LnUrlErrorData;
@@ -102,7 +102,7 @@ fn validate_invoice(
 }
 
 pub(crate) mod model {
-    use crate::lnurl::input_parser::*;
+    use crate::input_parser::*;
 
     use anyhow::{anyhow, Result};
     use serde::Deserialize;
@@ -199,7 +199,7 @@ pub(crate) mod model {
 
 #[cfg(test)]
 mod tests {
-    use crate::lnurl::input_parser::*;
+    use crate::input_parser::*;
     use crate::lnurl::pay::model::{
         MessageSuccessActionData, LnUrlPayResult, SuccessAction, UrlSuccessActionData,
     };

@@ -492,11 +492,6 @@ impl Wire2Api<u8> for u8 {
     }
 }
 
-impl Wire2Api<usize> for usize {
-    fn wire2api(self) -> usize {
-        self
-    }
-}
 // Section: impl IntoDart
 
 impl support::IntoDart for BitcoinAddressData {
@@ -811,6 +806,8 @@ impl support::IntoDart for SwapInfo {
             self.paid_sats.into_dart(),
             self.confirmed_sats.into_dart(),
             self.status.into_dart(),
+            self.refund_tx_ids.into_dart(),
+            self.confirmed_tx_ids.into_dart(),
         ]
         .into_dart()
     }
@@ -822,7 +819,6 @@ impl support::IntoDart for SwapStatus {
         match self {
             Self::Initial => 0,
             Self::Expired => 1,
-            Self::Refunded => 2,
         }
         .into_dart()
     }

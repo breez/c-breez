@@ -1,5 +1,8 @@
 use anyhow::{anyhow, Result};
-use rusqlite::Connection;
+use rusqlite::{
+    types::{FromSql, FromSqlError, ToSqlOutput},
+    Connection, ToSql,
+};
 use rusqlite_migration::{Migrations, M};
 
 pub struct SqliteStorage {
@@ -51,7 +54,9 @@ impl SqliteStorage {
                bolt11 TEXT,
                paid_sats INTEGER NOT NULL DEFAULT 0,
                confirmed_sats INTEGER NOT NULL DEFAULT 0,               
-               status INTEGER NOT NULL DEFAULT 0        
+               status INTEGER NOT NULL DEFAULT 0,
+               refund_tx_ids TEXT NOT NULL, 
+               confirmed_tx_ids TEXT NOT NULL
              ) STRICT;
         ",
         )]);
@@ -65,5 +70,22 @@ impl SqliteStorage {
 
     pub(crate) fn get_connection(&self) -> Result<Connection> {
         Connection::open(self.file.clone()).map_err(anyhow::Error::msg)
+    }
+}
+
+pub(crate) struct StringArray(pub Vec<String>);
+
+impl FromSql for StringArray {
+    fn column_result(value: rusqlite::types::ValueRef<'_>) -> rusqlite::types::FromSqlResult<Self> {
+        let res: Result<Vec<String>, FromSqlError> =
+            serde_json::from_str(value.as_str()?).map_err(|_| FromSqlError::InvalidType);
+        Ok(StringArray(res?))
+    }
+}
+
+impl ToSql for StringArray {
+    fn to_sql(&self) -> rusqlite::Result<rusqlite::types::ToSqlOutput<'_>> {
+        let res = serde_json::to_string(&self.0).map_err(|_| FromSqlError::InvalidType);
+        Ok(ToSqlOutput::from(res?))
     }
 }

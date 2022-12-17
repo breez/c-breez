@@ -2,7 +2,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use crate::binding::parse_invoice;
-use crate::chain::{MempoolSpace, OnchainTx};
+use crate::chain::{ChainService, MempoolSpace, OnchainTx};
 use crate::grpc::{AddFundInitRequest, GetSwapPaymentRequest};
 use anyhow::{anyhow, Result};
 use bitcoin::blockdata::constants::WITNESS_SCALE_FACTOR;
@@ -12,17 +12,18 @@ use bitcoin::psbt::serialize::Serialize;
 use bitcoin::secp256k1::{Message, PublicKey, Secp256k1, SecretKey};
 use bitcoin::util::sighash::SighashCache;
 use bitcoin::{
-    Address, EcdsaSighashType, Network, OutPoint, Script, Sequence, Transaction, TxIn, TxOut, Txid,
-    Witness,
+    Address, EcdsaSighashType, OutPoint, Script, Sequence, Transaction, TxIn, TxOut, Txid, Witness,
 };
+
 use bitcoin_hashes::hex::FromHex;
 use bitcoin_hashes::sha256;
 use rand::Rng;
 use ripemd::{Digest, Ripemd160};
 
-use crate::breez_services::{BreezEvent, BreezServer, PaymentReceiver};
+use crate::breez_services::{BreezEvent, BreezServer, PaymentReceiver, Receiver};
 use crate::models::{Swap, SwapInfo, SwapStatus, SwapperAPI};
 
+#[derive(Clone)]
 struct Utxo {
     out: OutPoint,
     value: u32,
@@ -71,16 +72,16 @@ impl SwapperAPI for BreezServer {
 }
 
 pub struct BTCReceiveSwap {
-    network: Network,
+    network: bitcoin::Network,
     swapper_api: Arc<dyn SwapperAPI>,
     persister: Arc<crate::persist::db::SqliteStorage>,
-    chain_service: Arc<MempoolSpace>,
-    payment_receiver: Arc<PaymentReceiver>,
+    chain_service: Arc<dyn ChainService>,
+    payment_receiver: Arc<dyn Receiver>,
 }
 
 impl BTCReceiveSwap {
     pub(crate) fn new(
-        network: Network,
+        network: bitcoin::Network,
         swapper_api: Arc<dyn SwapperAPI>,
         persister: Arc<crate::persist::db::SqliteStorage>,
         chain_service: Arc<MempoolSpace>,
@@ -100,11 +101,8 @@ impl BTCReceiveSwap {
         match e {
             BreezEvent::NewBlock { block: tip } => {
                 debug!("got chain event {:?}", e);
-                let swaps = self.list_swaps(SwapStatus::Initial)?;
-                let to_check: Vec<SwapInfo> = swaps
-                    .into_iter()
-                    .filter(|s| s.status == SwapStatus::Initial)
-                    .collect();
+                let mut to_check = self.list_swaps(SwapStatus::Initial)?;
+                to_check.extend(self.list_refundables()?);
 
                 let mut redeemable_swaps: Vec<SwapInfo> = Vec::new();
                 for s in to_check {
@@ -148,6 +146,20 @@ impl BTCReceiveSwap {
         Ok(())
     }
 
+    /// Create a SwapInfo that represents all the up to date details of an on-going swap.
+    /// Once this SwapInfo is created it will be monitored on-chain and its state is
+    /// updated in the persistent storage.
+    ///
+    /// The SwapInfo has a status which is changes accordingly:
+    ///
+    /// Initial - The swap address has been created and either there aren't any confirmed transactions associated with it
+    /// or there are confirmed transactions that are bellow the lock timeout which means the funds are still
+    /// eligible for completing the swap.
+    ///
+    /// Expired - The swap address has confirmed transactions associated with it and the lock timeout has passed since
+    /// the earliest confirmed transaction. This means the only way to spend the funds from this address is by
+    /// broadcasting a refund transaction.
+    ///
     pub(crate) async fn create_swap_address(&self) -> Result<SwapInfo> {
         let node_state = self.persister.get_node_state()?;
         if node_state.is_none() {
@@ -200,6 +212,8 @@ impl BTCReceiveSwap {
             bolt11: None,
             paid_sats: 0,
             confirmed_sats: 0,
+            refund_tx_ids: Vec::new(),
+            confirmed_tx_ids: Vec::new(),
             status: SwapStatus::Initial,
         };
 
@@ -210,15 +224,31 @@ impl BTCReceiveSwap {
         // return swap.bitcoinAddress;
     }
 
-    pub(crate) async fn list_refundables(&self) -> Result<Vec<SwapInfo>> {
-        self.list_swaps(SwapStatus::Expired)
+    pub(crate) fn list_refundables(&self) -> Result<Vec<SwapInfo>> {
+        Ok(self
+            .list_swaps(SwapStatus::Expired)?
+            .into_iter()
+            .filter(|s| s.confirmed_sats > s.paid_sats)
+            .collect())
+    }
+
+    pub(crate) fn list_redeemables(&self) -> Result<Vec<SwapInfo>> {
+        Ok(self
+            .list_swaps(SwapStatus::Initial)?
+            .into_iter()
+            .filter(SwapInfo::redeemable)
+            .collect())
+    }
+
+    pub(crate) fn get_swap_info(&self, address: String) -> Result<Option<SwapInfo>> {
+        self.persister.get_swap_info(address)
     }
 
     fn list_swaps(&self, status: SwapStatus) -> Result<Vec<SwapInfo>> {
         self.persister.list_swaps_with_status(status)
     }
 
-    async fn refresh_swap_on_chain_status(
+    pub(crate) async fn refresh_swap_on_chain_status(
         &self,
         bitcoin_address: String,
         current_tip: u32,
@@ -236,32 +266,41 @@ impl BTCReceiveSwap {
             .chain_service
             .address_transactions(bitcoin_address.clone())
             .await?;
-        let utxos = get_utxos(bitcoin_address.clone(), txs)?;
+        let utxos = get_utxos(bitcoin_address.clone(), txs.clone())?;
         let confirmed_sats: u32 = utxos.iter().fold(0, |accum, item| accum + item.value);
 
         let confirmed_block = utxos.iter().fold(0, |b, item| {
-            if item.block_height > b {
+            if item.block_height != 0 || item.block_height < b {
                 item.block_height
             } else {
                 b
             }
         });
 
-        let mut swap_status = swap_info.status;
-        debug!(
-            "refreshing swap status current_tip: {}, lock_height={}, confirmed block: {}",
-            current_tip, swap_info.lock_height, confirmed_block
-        );
+        let mut swap_status = swap_info.status.clone();
 
-        if confirmed_sats > 0
-            && (swap_status != SwapStatus::Refunded
-                && current_tip - confirmed_block >= swap_info.lock_height as u32)
-            || swap_info.paid_sats > 0
-        {
+        if txs.len() > 0 && current_tip - confirmed_block >= swap_info.lock_height as u32 {
             swap_status = SwapStatus::Expired
         }
-        self.persister
-            .update_swap_chain_info(bitcoin_address, confirmed_sats, swap_status)
+
+        let confirmed_txs = utxos
+            .clone()
+            .into_iter()
+            .map(|u| u.out.txid.to_string())
+            .collect();
+
+        debug!(
+            "updating swap on-chain info {:?}: confirmed_sats={:?} refund_tx_ids={:?}, confirmed_tx_ids={:?} swap_status={:?}",
+            bitcoin_address, confirmed_sats, swap_info.refund_tx_ids, confirmed_txs, swap_status
+        );
+
+        self.persister.update_swap_chain_info(
+            bitcoin_address,
+            confirmed_sats,
+            swap_info.refund_tx_ids,
+            confirmed_txs,
+            swap_status,
+        )
     }
 
     /// redeem_swap executes the final step of receiving lightning payment
@@ -294,14 +333,19 @@ impl BTCReceiveSwap {
         // Making sure the invoice amount matches the on-chain amount
         let payreq = swap_info.bolt11.unwrap();
         let ln_invoice = parse_invoice(payreq.clone())?;
-        if ln_invoice.amount_msat.unwrap() != (swap_info.confirmed_sats * 1000) as u64 {
+        println!("confirmed = {}", swap_info.confirmed_sats);
+        if ln_invoice.amount_msat.unwrap() != (swap_info.confirmed_sats as u64 * 1000) {
+            println!(
+                "invoice amount doesn't match confirmed sats {:?}",
+                ln_invoice.amount_msat.unwrap()
+            );
             return Err(anyhow!("invoice amount doesn't match confirmed sats"));
         }
 
         // Asking the service to initiate the lightning payment
         let result = self.swapper_api.complete_swap(payreq.clone()).await;
         match result {
-            Ok(r) => self
+            Ok(_) => self
                 .persister
                 .update_swap_paid_amount(bitcoin_address, swap_info.confirmed_sats),
             Err(e) => Err(e),
@@ -333,7 +377,7 @@ impl BTCReceiveSwap {
             swap_info.lock_height,
         )?;
         let refund_tx = create_refund_tx(
-            utxos,
+            utxos.clone(),
             swap_info.private_key,
             to_address,
             swap_info.lock_height as u32,
@@ -341,10 +385,19 @@ impl BTCReceiveSwap {
             sat_per_vbyte,
         )?;
         let txid = self.chain_service.broadcast_transaction(refund_tx).await?;
+        let mut refunded_tx_ids = swap_info.refund_tx_ids.clone();
+        refunded_tx_ids.push(txid.clone());
+
         self.persister.update_swap_chain_info(
             swap_info.bitcoin_address,
             swap_info.confirmed_sats,
-            SwapStatus::Refunded,
+            refunded_tx_ids,
+            utxos
+                .clone()
+                .into_iter()
+                .map(|u| u.out.txid.to_string())
+                .collect(),
+            swap_info.status,
         )?;
 
         Ok(txid)
@@ -362,7 +415,7 @@ fn create_swap_keys() -> Result<SwapKeys> {
     Ok(SwapKeys { priv_key, preimage })
 }
 
-fn create_submarine_swap_script(
+pub(crate) fn create_submarine_swap_script(
     invoice_hash: Vec<u8>,
     swapper_pub_key: Vec<u8>,
     payer_pub_key: Vec<u8>,
@@ -477,7 +530,6 @@ fn create_refund_tx(
     let refund_witness_input_size: u32 = 1 + 1 + 73 + 1 + 0 + 1 + 100;
     let tx_weight = tx.strippedsize() as u32 * WITNESS_SCALE_FACTOR as u32
         + refund_witness_input_size * txins.len() as u32;
-    debug!("tx weight = {}", tx_weight);
     let fees: u64 = (tx_weight * sat_per_vbyte / WITNESS_SCALE_FACTOR as u32) as u64;
     tx.output[0].value = confirmed_amount - fees;
 
@@ -517,6 +569,8 @@ fn create_refund_tx(
 }
 
 mod tests {
+    use std::sync::Arc;
+
     use bitcoin::{
         secp256k1::{Message, PublicKey, Secp256k1, SecretKey},
         OutPoint, Txid,
@@ -525,9 +579,14 @@ mod tests {
     use ripemd::{Digest, Ripemd160};
 
     use crate::{
-        chain::{MempoolSpace, OnchainTx},
+        breez_services::test::get_dummy_node_state,
+        chain::{ChainService, MempoolSpace, OnchainTx, RecommendedFees},
         swap::{BTCReceiveSwap, Utxo},
-        test_utils::{create_test_config, create_test_persister, MockSwapperAPI},
+        test_utils::{
+            create_test_config, create_test_persister, MockChainService, MockReceiver,
+            MockSwapperAPI,
+        },
+        BreezEvent, Network, SwapInfo, SwapStatus,
     };
 
     use super::{create_refund_tx, create_submarine_swap_script, create_swap_keys, get_utxos};
@@ -590,6 +649,141 @@ mod tests {
         let txs: Vec<OnchainTx> = serde_json::from_str(r#"[{"txid":"9f13dd16167430c2ccb3b89b5f915a3c836722c486e30505791c9604f1017a99","version":1,"locktime":0,"vin":[{"txid":"3d8e3b3e7ad5a396902f8814a5446139dd55757c6f3fa5fc63e905f1fef00a10","vout":66,"prevout":{"scriptpubkey":"a914b0f4345fad758790048c03d46fccf66b852ec9e387","scriptpubkey_asm":"OP_HASH160 OP_PUSHBYTES_20 b0f4345fad758790048c03d46fccf66b852ec9e3 OP_EQUAL","scriptpubkey_type":"p2sh","scriptpubkey_address":"3HpfPwMTCggpmwMNxebnJB6y8jJP8Y3mdM","value":8832100},"scriptsig":"160014716588545d5a9ddcc2e38802d7382b8fc37e90ba","scriptsig_asm":"OP_PUSHBYTES_22 0014716588545d5a9ddcc2e38802d7382b8fc37e90ba","witness":["30450221008d73700314bd2de9e56256ce0548fe08f220f5c928075a242ca9a7980b0e7f5602202701318e9a6c3ba128dcf915c6c3997928e9870d4023150e6bfb84a783617a1c01","025dddb140932a1247c1cdc2dec534ba2a7647bb03c989a88e6d18117517f388f3"],"is_coinbase":false,"sequence":4294967293,"inner_redeemscript_asm":"OP_0 OP_PUSHBYTES_20 716588545d5a9ddcc2e38802d7382b8fc37e90ba"},{"txid":"9e64ea8118b13871d02d941552fa42af6d079e4e9384aa71a7da747d52cb468b","vout":0,"prevout":{"scriptpubkey":"a914b7969fec4adfad203881f98b6c04dfeeff774f5487","scriptpubkey_asm":"OP_HASH160 OP_PUSHBYTES_20 b7969fec4adfad203881f98b6c04dfeeff774f54 OP_EQUAL","scriptpubkey_type":"p2sh","scriptpubkey_address":"3JRk2EfAr1mjYmXSMf5heBRnA6ym7WFsX1","value":23093207},"scriptsig":"160014d7f0a22aab7bd11dcb977e43f06ecfd6c44b7c2d","scriptsig_asm":"OP_PUSHBYTES_22 0014d7f0a22aab7bd11dcb977e43f06ecfd6c44b7c2d","witness":["30440220368b9584a2837542b600bbce16293811b01d0c5f919d153eb0d6c6716c4357000220379b6f91cb24c3d8193e39acaed2dbb973084bff10aff48059a1086672c5cde401","02074b5af43b526fedea5527edf1d246d1821867f161ebd9ca26295e21aeddb30a"],"is_coinbase":false,"sequence":4294967293,"inner_redeemscript_asm":"OP_0 OP_PUSHBYTES_20 d7f0a22aab7bd11dcb977e43f06ecfd6c44b7c2d"}],"vout":[{"scriptpubkey":"a9142c85a9b818d3cdf89bd3a1057bb21b2c7e64ad6087","scriptpubkey_asm":"OP_HASH160 OP_PUSHBYTES_20 2c85a9b818d3cdf89bd3a1057bb21b2c7e64ad60 OP_EQUAL","scriptpubkey_type":"p2sh","scriptpubkey_address":"35kRn3rF7oDFU1BFRHuQM9txBWBXqipoJ3","value":31461100}],"size":387,"weight":897,"fee":464207,"status":{"confirmed":true,"block_height":764153,"block_hash":"00000000000000000000199349a95526c4f83959f0ef06697048a297f25e7fac","block_time":1669044812}}]"#).unwrap();
         let utxos = get_utxos(swap_address.clone(), txs).unwrap();
         assert_eq!(utxos.len(), 1);
+    }
+
+    // 1. User sent funds to swap address
+    // 2. Swap didn't complete before timeout
+    // Swap should move to Expired status and returned in the refundable list.
+    #[tokio::test]
+    async fn test_expired_swap() {
+        let chain_service = Arc::new(MockChainService::default());
+        let mut swapper = create_swapper(chain_service.clone());
+        let swap_info = swapper.create_swap_address().await.unwrap();
+
+        // We test the case that a confirmed transaction was detected on chain that
+        // sent funds to this address but the lock timeout has expired.
+        swapper.chain_service = chain_service_with_confirmed_txs(swap_info.clone().bitcoin_address);
+        swapper
+            .on_event(BreezEvent::NewBlock {
+                block: chain_service.tip + 145,
+            })
+            .await
+            .unwrap();
+
+        let swap = swapper
+            .get_swap_info(swap_info.clone().bitcoin_address)
+            .unwrap()
+            .unwrap();
+        assert_eq!(swap.refund_tx_ids, Vec::<String>::new());
+        assert_eq!(
+            swap.confirmed_tx_ids,
+            vec!["ec901bcab07df7d475d98fff2933dcb56d57bbdaa029c4142aed93462b6928fe".to_string()]
+        );
+
+        assert_eq!(swap.confirmed_sats, 50000);
+        assert_eq!(swap.paid_sats, 0);
+        assert_eq!(swap.status, SwapStatus::Expired);
+        assert_eq!(swapper.list_redeemables().unwrap().len(), 0);
+        assert_eq!(swapper.list_refundables().unwrap().len(), 1);
+
+        // broadcast refund transaction
+        let address = swapper
+            .refund_swap(
+                swap.bitcoin_address,
+                String::from("34RQERthXaruAXtW6q1bvrGTeUbqi2Sm1i"),
+                1,
+            )
+            .await
+            .unwrap();
+        let swap = swapper
+            .get_swap_info(swap_info.clone().bitcoin_address)
+            .unwrap()
+            .unwrap();
+        assert_eq!(swap.status, SwapStatus::Expired);
+        assert_eq!(swapper.list_redeemables().unwrap().len(), 0);
+        let refundables = swapper.list_refundables().unwrap();
+        assert_eq!(refundables.len(), 1);
+        assert_eq!(refundables[0].clone().refund_tx_ids.len(), 1);
+        assert_eq!(refundables[0].clone().refund_tx_ids[0], address);
+    }
+
+    // 1. User sent funds to swap address
+    // 2. Funds are redeemed in lightning transaction
+    // Swap paid amount is updated and no longer redeemable.
+    #[tokio::test]
+    async fn test_redeem_swap() {
+        let chain_service = Arc::new(MockChainService::default());
+        let mut swapper = create_swapper(chain_service.clone());
+        let swap_info = swapper.create_swap_address().await.unwrap();
+
+        // We test the case that a confirmed transaction was detected on chain that
+        // sent funds to this address.
+        swapper.chain_service = chain_service_with_confirmed_txs(swap_info.clone().bitcoin_address);
+        swapper
+            .on_event(BreezEvent::NewBlock {
+                block: chain_service.tip + 1,
+            })
+            .await
+            .unwrap();
+
+        let swap = swapper
+            .get_swap_info(swap_info.clone().bitcoin_address)
+            .unwrap()
+            .unwrap();
+        assert_eq!(swap.refund_tx_ids, Vec::<String>::new());
+        assert_eq!(
+            swap.confirmed_tx_ids,
+            vec!["ec901bcab07df7d475d98fff2933dcb56d57bbdaa029c4142aed93462b6928fe".to_string()]
+        );
+        assert_eq!(swap.confirmed_sats, 50000);
+        assert_eq!(swap.paid_sats, 50000);
+        assert_eq!(swapper.list_redeemables().unwrap().len(), 0);
+        assert_eq!(swapper.list_refundables().unwrap().len(), 0);
+    }
+
+    // 1. User sent funds to swap address
+    // 2. Funds are redeemed in lightning transaction
+    // Swap paid amount is updated and no longer redeemable.
+    #[tokio::test]
+    async fn test_spent_swap() {
+        let chain_service = Arc::new(MockChainService::default());
+        let mut swapper = create_swapper(chain_service.clone());
+        let swap_info = swapper.create_swap_address().await.unwrap();
+
+        // Once swap is spent on-chain the confirmed_sats whould be set to zero again.
+        swapper.chain_service = chain_service_after_spent(swap_info.clone().bitcoin_address);
+        swapper
+            .on_event(BreezEvent::NewBlock {
+                block: chain_service.tip + 1,
+            })
+            .await
+            .unwrap();
+
+        let swap = swapper
+            .get_swap_info(swap_info.clone().bitcoin_address)
+            .unwrap()
+            .unwrap();
+        assert_eq!(swap.refund_tx_ids, Vec::<String>::new());
+        assert_eq!(swap.confirmed_tx_ids, Vec::<String>::new());
+        assert_eq!(swap.confirmed_sats, 0);
+        assert_eq!(swapper.list_redeemables().unwrap().len(), 0);
+        assert_eq!(swapper.list_refundables().unwrap().len(), 0);
+
+        // timeout expired
+        swapper
+            .on_event(BreezEvent::NewBlock {
+                block: chain_service.tip + 145,
+            })
+            .await
+            .unwrap();
+
+        let swap = swapper
+            .get_swap_info(swap_info.clone().bitcoin_address)
+            .unwrap()
+            .unwrap();
+        assert_eq!(swap.status, SwapStatus::Expired);
+        assert_eq!(swapper.list_redeemables().unwrap().len(), 0);
+        assert_eq!(swapper.list_refundables().unwrap().len(), 0);
     }
 
     #[test]
@@ -689,5 +883,57 @@ mod tests {
         }
         */
         assert_eq!(hex::encode(refund_tx), "0200000000010130037fa97f58d7f685ce861f7862112d8377364c4898f1d63213ff949ffeb31a00000000002001000001204e00000000000016001465c96c830168b8f0b584294d3b9716bb8584c2d80347304402203285efcf44640551a56c53bde677988964ef1b4d11182d5d6634096042c320120220227b625f7827993aca5b9d2f4690c5e5fae44d8d42fdd5f3778ba21df8ba7c7b010064a9148a486ff2e31d6158bf39e2608864d63fefd09d5b876321024d4b6cd1361032ca9bd2aeb9d900aa4d45d9ead80ac9423374c451a7254d076667022001b27521031b84c5567b126440995d3ed5aaba0565d71e1834604819ff9c17f5e9d5dd078f68ac80af0a00");
+    }
+
+    fn create_swapper(chain_service: Arc<dyn ChainService>) -> BTCReceiveSwap {
+        let config = create_test_config();
+        println!("working = {}", config.working_dir);
+
+        let persister = Arc::new(create_test_persister(config.clone()));
+        persister.init().unwrap();
+
+        let dummy_node_state = get_dummy_node_state();
+        persister.set_node_state(&dummy_node_state).unwrap();
+
+        let swapper = BTCReceiveSwap {
+            network: bitcoin::Network::Bitcoin,
+            swapper_api: Arc::new(MockSwapperAPI {}),
+            persister: persister,
+            chain_service: chain_service.clone(),
+            payment_receiver: Arc::new(MockReceiver::default()),
+        };
+        swapper
+    }
+
+    fn chain_service_with_confirmed_txs(address: String) -> Arc<dyn ChainService> {
+        let confirmed_txs_raw = r#"[{"txid":"ec901bcab07df7d475d98fff2933dcb56d57bbdaa029c4142aed93462b6928fe","version":1,"locktime":767636,"vin":[{"txid":"d4344fc9e7f66b3a1a50d1d76836a157629ba0c6ede093e94f1c809d334c9146","vout":0,"prevout":{"scriptpubkey":"0014cab22290b7adc75f861de820baa97d319c1110a6","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 cab22290b7adc75f861de820baa97d319c1110a6","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1qe2ez9y9h4hr4lpsaaqst42taxxwpzy9xlzqt8k","value":209639471},"scriptsig":"","scriptsig_asm":"","witness":["304402202e914c35b75da798f0898c7cfe6ead207aaee41219afd77124fd56971f05d9030220123ce5d124f4635171b7622995dae35e00373a5fbf8117bfdca5e5080ad6554101","02122fa6d20413bb5da5c7e3fb42228be5436b1bd84e29b294bfc200db5eac460e"],"is_coinbase":false,"sequence":4294967293}],"vout":[{"scriptpubkey":"0014b34b7da80e662d1db3fcfbe34b7f4cacc4fac34d","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 b34b7da80e662d1db3fcfbe34b7f4cacc4fac34d","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1qkd9hm2qwvck3mvlul035kl6v4nz04s6dmryeq5","value":50000},{"scriptpubkey":"0014f0e2a057d0e60411ac3d7218e29bf9489a59df18","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 f0e2a057d0e60411ac3d7218e29bf9489a59df18","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1q7r32q47suczprtpawgvw9xlefzd9nhccyatxvu","value":12140465}],"size":222,"weight":561,"fee":1753,"status":{"confirmed":true,"block_height":767637,"block_hash":"000000000000000000077769f3b2e6a28b9ed688f0d773f9ff2d73c622a2cfac","block_time":1671174562}}]"#;
+        let confirmed_txs = confirmed_txs_raw.replace(
+            "bc1qkd9hm2qwvck3mvlul035kl6v4nz04s6dmryeq5",
+            address.as_str(),
+        );
+        chain_service_with_transactions(address, confirmed_txs)
+    }
+
+    fn chain_service_after_spent(address: String) -> Arc<dyn ChainService> {
+        let txs_raw = r#"[{"txid":"a418e856bb22b6345868dc0b1ac1dd7a6b7fae1d231b275b74172f9584fa0bdf","version":1,"locktime":0,"vin":[{"txid":"ec901bcab07df7d475d98fff2933dcb56d57bbdaa029c4142aed93462b6928fe","vout":0,"prevout":{"scriptpubkey":"0014b34b7da80e662d1db3fcfbe34b7f4cacc4fac34d","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 b34b7da80e662d1db3fcfbe34b7f4cacc4fac34d","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1qkd9hm2qwvck3mvlul035kl6v4nz04s6dmryeq5","value":50000},"scriptsig":"","scriptsig_asm":"","witness":["304502210089933e46614114e060d3d681c54af71e3d47f8be8131d9310ef8fe231c060f3302204103910a6790e3a678964df6f0f9ae2107666a91e777bd87f9172a28653e374701","0356f385879fefb8c52758126f6e7b9ac57374c2f73f2ee9047b4c61df0ba390b9"],"is_coinbase":false,"sequence":4294967293},{"txid":"fda3ce37f5fb849502e2027958d51efebd1841cb43bbfdd5f3d354c93a551ef9","vout":0,"prevout":{"scriptpubkey":"00145c7f3b6ceb79d03d5a5397df83f2334394ebdd2c","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 5c7f3b6ceb79d03d5a5397df83f2334394ebdd2c","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1qt3lnkm8t08gr6kjnjl0c8u3ngw2whhfvzwsxrg","value":786885},"scriptsig":"","scriptsig_asm":"","witness":["304402200ae5465efe824609f7faf1094cce0195763df52e5409dd9ae0526568bf3bcaa20220103749041a87e082cf95bf1e12c5174881e5e4c55e75ab2db29a68538dbabbad01","03dfd8cc1f72f46d259dc0afc6d756bce551fce2fbf58a9ad36409a1b82a17e64f"],"is_coinbase":false,"sequence":4294967293}],"vout":[{"scriptpubkey":"a9141df45814863edfd6d87457e8f8bd79607a116a8f87","scriptpubkey_asm":"OP_HASH160 OP_PUSHBYTES_20 1df45814863edfd6d87457e8f8bd79607a116a8f OP_EQUAL","scriptpubkey_type":"p2sh","scriptpubkey_address":"34RQERthXaruAXtW6q1bvrGTeUbqi2Sm1i","value":26087585},{"scriptpubkey":"001479001aa5f4b981a0b654c3f834d0573595b0ed53","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 79001aa5f4b981a0b654c3f834d0573595b0ed53","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1q0yqp4f05hxq6pdj5c0urf5zhxk2mpm2ndx85za","value":171937413}],"size":372,"weight":837,"fee":259140,"status":{"confirmed":true,"block_height":767637,"block_hash":"000000000000000000077769f3b2e6a28b9ed688f0d773f9ff2d73c622a2cfac","block_time":1671174562}},{"txid":"ec901bcab07df7d475d98fff2933dcb56d57bbdaa029c4142aed93462b6928fe","version":1,"locktime":767636,"vin":[{"txid":"d4344fc9e7f66b3a1a50d1d76836a157629ba0c6ede093e94f1c809d334c9146","vout":0,"prevout":{"scriptpubkey":"0014cab22290b7adc75f861de820baa97d319c1110a6","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 cab22290b7adc75f861de820baa97d319c1110a6","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1qe2ez9y9h4hr4lpsaaqst42taxxwpzy9xlzqt8k","value":209639471},"scriptsig":"","scriptsig_asm":"","witness":["304402202e914c35b75da798f0898c7cfe6ead207aaee41219afd77124fd56971f05d9030220123ce5d124f4635171b7622995dae35e00373a5fbf8117bfdca5e5080ad6554101","02122fa6d20413bb5da5c7e3fb42228be5436b1bd84e29b294bfc200db5eac460e"],"is_coinbase":false,"sequence":4294967293}],"vout":[{"scriptpubkey":"0014b34b7da80e662d1db3fcfbe34b7f4cacc4fac34d","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 b34b7da80e662d1db3fcfbe34b7f4cacc4fac34d","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1qkd9hm2qwvck3mvlul035kl6v4nz04s6dmryeq5","value":50000},{"scriptpubkey":"0014f0e2a057d0e60411ac3d7218e29bf9489a59df18","scriptpubkey_asm":"OP_0 OP_PUSHBYTES_20 f0e2a057d0e60411ac3d7218e29bf9489a59df18","scriptpubkey_type":"v0_p2wpkh","scriptpubkey_address":"bc1q7r32q47suczprtpawgvw9xlefzd9nhccyatxvu","value":12140465}],"size":222,"weight":561,"fee":1753,"status":{"confirmed":true,"block_height":767637,"block_hash":"000000000000000000077769f3b2e6a28b9ed688f0d773f9ff2d73c622a2cfac","block_time":1671174562}}]"#;
+        let with_spent_txs = txs_raw.replace(
+            "bc1qkd9hm2qwvck3mvlul035kl6v4nz04s6dmryeq5",
+            address.as_str(),
+        );
+        chain_service_with_transactions(address, with_spent_txs)
+    }
+
+    fn chain_service_with_transactions(
+        address: String,
+        transactions: String,
+    ) -> Arc<dyn ChainService> {
+        let mut chain_service = MockChainService::default();
+        let spent_txs_json: Vec<OnchainTx> = serde_json::from_str(&transactions).unwrap();
+        chain_service.address_to_transactions.clear();
+        chain_service
+            .address_to_transactions
+            .insert(address.clone(), spent_txs_json);
+
+        Arc::new(chain_service)
     }
 }

@@ -63,7 +63,7 @@ fn validate_user_input(
 
     match comment {
         None => Ok(()),
-        Some(msg) => match msg.len() <= req_data.comment_allowed {
+        Some(msg) => match msg.len() <= req_data.comment_allowed as usize {
             true => Ok(()),
             false => Err(anyhow!(
                 "Comment is longer than the maximum allowed comment length"
@@ -201,7 +201,7 @@ pub(crate) mod model {
 mod tests {
     use crate::lnurl::input_parser::*;
     use crate::lnurl::pay::model::{
-        MessageSuccessActionData, LnUrlPayResult, SuccessAction, UrlSuccessActionData,
+        LnUrlPayResult, MessageSuccessActionData, SuccessAction, UrlSuccessActionData,
     };
     use crate::lnurl::pay::*;
     use anyhow::{anyhow, Result};
@@ -352,7 +352,7 @@ mod tests {
         LnUrlPayRequestData {
             min_sendable: min_sat * 1000,
             max_sendable: max_sat * 1000,
-            comment_allowed: comment_len,
+            comment_allowed: comment_len as u64,
             metadata_str: "".into(),
             callback: "https://localhost/callback".into(),
         }
@@ -513,7 +513,8 @@ mod tests {
             LnUrlPayResult::EndpointSuccess(None) => Err(anyhow!(
                 "Expected success action in callback, but none provided"
             )),
-            LnUrlPayResult::EndpointSuccess(Some(SuccessAction::Message(msg))) => match msg.message {
+            LnUrlPayResult::EndpointSuccess(Some(SuccessAction::Message(msg))) => match msg.message
+            {
                 s if s == "test msg" => Ok(()),
                 _ => Err(anyhow!("Unexpected success action message content")),
             },

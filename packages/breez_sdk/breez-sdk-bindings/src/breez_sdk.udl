@@ -173,8 +173,7 @@ dictionary LspInformation {
 
 enum SwapStatus {
     "Initial",
-    "Expired",
-    "Refunded",
+    "Expired",    
 };
 
 dictionary SwapInfo {
@@ -191,6 +190,8 @@ dictionary SwapInfo {
     u32 paid_sats;
     u32 confirmed_sats;
     SwapStatus status;
+    sequence<string> refund_tx_ids;
+    sequence<string> confirmed_tx_ids;
 };
 
 dictionary BitcoinAddressData {
@@ -207,10 +208,10 @@ dictionary LnUrlErrorData {
 
 dictionary LnUrlPayRequestData {
     string callback;
-    u16 min_sendable;
-    u16 max_sendable; 
-    sequence<MetadataItem> metadata;
-    u16 comment_allowed;
+    u64 min_sendable;
+    u64 max_sendable; 
+    string metadata_str;
+    u64 comment_allowed;
 };
 
 dictionary LnUrlWithdrawRequestData {

@@ -18,8 +18,9 @@ use gl_client::{node, pb};
 
 use gl_client::pb::Peer;
 use lightning_invoice::{RawInvoice, SignedRawInvoice};
-use std::cmp::max;
+use std::cmp::{max, min};
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::usize::MIN;
 use tokio::sync::mpsc;
 use tonic::Streaming;
 
@@ -247,7 +248,7 @@ impl NodeAPI for Greenlight {
             max_payable_msat: max_payable,
             max_receivable_msat: max_allowed_to_receive_msats,
             max_single_payment_amount_msat: MAX_PAYMENT_AMOUNT_MSAT,
-            max_chan_reserve_msats: channels_balance - max_payable,
+            max_chan_reserve_msats: channels_balance - min(max_payable, channels_balance),
             connected_peers: connected_peers,
             inbound_liquidity_msats: max_receivable_single_channel,
         };

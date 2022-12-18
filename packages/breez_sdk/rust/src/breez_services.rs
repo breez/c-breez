@@ -75,9 +75,9 @@ pub(crate) async fn start(
                  return;
                 },
                 Err(err) => {
-                 debug!("poll_events returned with error: {:?}", err);
-                 sleep(Duration::from_millis(1000)).await;
-                 return;
+                 debug!("poll_events returned with error: {:?} waiting...", err);
+                 sleep(Duration::from_secs(1)).await;
+                 continue
                 }
                }
               },
@@ -384,7 +384,7 @@ async fn poll_events(breez_services: Arc<BreezServices>, mut current_block: u32)
          log_message_res = log_stream.message() => {
           match log_message_res {
            Ok(Some(l)) => {
-            //debug!("{}", l.line);
+            debug!("{}", l.line);
            },
            // stream is closed, renew it
            Ok(None) => {

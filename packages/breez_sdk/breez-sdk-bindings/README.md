@@ -4,7 +4,13 @@ This project provides bindings for breez_sdk to various languages.
 Currently supported languges are kotlin, swift and dart.
 For dart currenty the [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge) to generate the bindings.
 For kotlin & swift we are using [uniffi](https://github.com/mozilla/uniffi-rs)
- 
+
+## prerequisite
+Install the uniffi-bindgen binary version 0.21.0 on your system using:
+ ```
+ cargo install --version 0.21.0 uniffi_bindgen
+ ```
+
 ## Build
 
 At the root folder:

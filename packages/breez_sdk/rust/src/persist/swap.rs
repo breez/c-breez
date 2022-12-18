@@ -1,14 +1,14 @@
 use crate::models::{SwapInfo, SwapStatus};
 
-use super::db::SqliteStorage;
+use super::db::{SqliteStorage, StringArray};
 use anyhow::{anyhow, Result};
 use rusqlite::{named_params, Connection, OptionalExtension};
 
 impl SqliteStorage {
     pub fn insert_swap(&self, swap_info: SwapInfo) -> Result<()> {
         self.get_connection()?.execute(
-         "INSERT INTO swaps (bitcoin_address, created_at, lock_height, payment_hash, preimage, private_key, public_key, swapper_public_key, bolt11, paid_sats, confirmed_sats, script, status)
-          VALUES (:bitcoin_address, :created_at, :lock_height, :payment_hash, :preimage, :private_key, :public_key, :swapper_public_key, :bolt11, :paid_sats, :confirmed_sats,  :script, :status)",
+         "INSERT INTO swaps (bitcoin_address, created_at, lock_height, payment_hash, preimage, private_key, public_key, swapper_public_key, bolt11, paid_sats, confirmed_sats, script, status, refund_tx_ids, confirmed_tx_ids)
+          VALUES (:bitcoin_address, :created_at, :lock_height, :payment_hash, :preimage, :private_key, :public_key, :swapper_public_key, :bolt11, :paid_sats, :confirmed_sats, :script, :status, :refund_tx_ids, :confirmed_tx_ids)",
          named_params! {
              ":bitcoin_address": swap_info.bitcoin_address,
              ":created_at": swap_info.created_at,
@@ -23,6 +23,8 @@ impl SqliteStorage {
              ":script": swap_info.script,
              ":bolt11": None::<String>,
              ":status": swap_info.status as u32,
+             ":refund_tx_ids": StringArray(swap_info.refund_tx_ids),
+             ":confirmed_tx_ids": StringArray(swap_info.confirmed_tx_ids)
          },
         )?;
 
@@ -57,13 +59,17 @@ impl SqliteStorage {
         &self,
         bitcoin_address: String,
         confirmed_sats: u32,
+        refund_tx_ids: Vec<String>,
+        confirmed_tx_ids: Vec<String>,
         status: SwapStatus,
     ) -> Result<SwapInfo> {
         self.get_connection()?.execute(
-            "UPDATE swaps SET confirmed_sats=:confirmed_sats, status=:status where bitcoin_address=:bitcoin_address",
+            "UPDATE swaps SET confirmed_sats=:confirmed_sats, refund_tx_ids=:refund_tx_ids, confirmed_tx_ids=:confirmed_tx_ids, status=:status where bitcoin_address=:bitcoin_address",
             named_params! {
              ":confirmed_sats": confirmed_sats,
              ":bitcoin_address": bitcoin_address,
+             ":refund_tx_ids": StringArray(refund_tx_ids),
+             ":confirmed_tx_ids": StringArray(confirmed_tx_ids),
              ":status": status as u32
             },
         )?;
@@ -78,6 +84,8 @@ impl SqliteStorage {
                 |row| {
                     let status: i32 = row.get(12)?;
                     let status: SwapStatus = status.try_into().map_or(SwapStatus::Initial, |v| v);
+                    let refund_txs_raw: StringArray = row.get(13)?;
+                    let confirmed_txs_raw: StringArray = row.get(14)?;
                     Ok(SwapInfo {
                         bitcoin_address: row.get(0)?,
                         created_at: row.get(1)?,
@@ -91,6 +99,8 @@ impl SqliteStorage {
                         bolt11: row.get(9)?,
                         paid_sats: row.get(10)?,
                         confirmed_sats: row.get(11)?,
+                        refund_tx_ids: refund_txs_raw.0,
+                        confirmed_tx_ids: confirmed_txs_raw.0,
                         status: status,
                     })
                 },
@@ -114,6 +124,9 @@ impl SqliteStorage {
             .query_map([status as u32], |row| {
                 let status: i32 = row.get(12)?;
                 let status: SwapStatus = status.try_into().map_or(SwapStatus::Initial, |v| v);
+
+                let refund_tx_ids: StringArray = row.get(13)?;
+                let confirmed_tx_ids: StringArray = row.get(14)?;
                 Ok(SwapInfo {
                     bitcoin_address: row.get(0)?,
                     created_at: row.get(1)?,
@@ -128,6 +141,8 @@ impl SqliteStorage {
                     paid_sats: row.get(10)?,
                     confirmed_sats: row.get(11)?,
                     status: status,
+                    confirmed_tx_ids: confirmed_tx_ids.0,
+                    refund_tx_ids: refund_tx_ids.0,
                 })
             })?
             .map(|i| i.unwrap())
@@ -143,6 +158,7 @@ fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
 
     let storage = SqliteStorage::from_file(test_utils::create_test_sql_file("swap".to_string()));
 
+    println!("before init");
     storage.init()?;
     let tested_swap_info = SwapInfo {
         bitcoin_address: String::from("1"),
@@ -158,6 +174,8 @@ fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
         paid_sats: 0,
         confirmed_sats: 0,
         status: crate::models::SwapStatus::Initial,
+        refund_tx_ids: Vec::new(),
+        confirmed_tx_ids: Vec::new(),
     };
     storage.insert_swap(tested_swap_info.clone())?;
     let item_value = storage.get_swap_info("1".to_string())?.unwrap();
@@ -179,6 +197,8 @@ fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
     storage.update_swap_chain_info(
         tested_swap_info.bitcoin_address.clone(),
         20,
+        vec![String::from("111"), String::from("222")],
+        vec![String::from("333"), String::from("444")],
         SwapStatus::Expired,
     )?;
 
@@ -188,6 +208,14 @@ fn test_swaps() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap();
     assert_eq!(updated_swap.paid_sats, 30);
     assert_eq!(updated_swap.confirmed_sats, 20);
+    assert_eq!(
+        updated_swap.refund_tx_ids,
+        vec![String::from("111"), String::from("222")]
+    );
+    assert_eq!(
+        updated_swap.confirmed_tx_ids,
+        vec![String::from("333"), String::from("444")]
+    );
     assert_eq!(updated_swap.status, SwapStatus::Expired);
 
     Ok(())

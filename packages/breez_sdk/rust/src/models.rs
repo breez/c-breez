@@ -219,7 +219,6 @@ pub struct Payment {
 pub enum SwapStatus {
     Initial = 0,
     Expired = 1,
-    Refunded = 2,
 }
 
 impl TryFrom<i32> for SwapStatus {
@@ -229,7 +228,6 @@ impl TryFrom<i32> for SwapStatus {
         match value {
             0 => Ok(SwapStatus::Initial),
             1 => Ok(SwapStatus::Expired),
-            2 => Ok(SwapStatus::Refunded),
             _ => Err(anyhow!("illegal value")),
         }
     }
@@ -253,11 +251,13 @@ pub struct SwapInfo {
     pub paid_sats: u32,
     pub confirmed_sats: u32,
     pub status: SwapStatus,
+    pub refund_tx_ids: Vec<String>,
+    pub confirmed_tx_ids: Vec<String>,
 }
 
 impl SwapInfo {
     pub(crate) fn redeemable(&self) -> bool {
-        self.confirmed_sats > 0 && self.paid_sats == 0 && self.status == SwapStatus::Initial
+        self.confirmed_sats > 0 && self.paid_sats == 0 && self.status != SwapStatus::Expired
     }
 }
 

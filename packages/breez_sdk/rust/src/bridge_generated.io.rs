@@ -266,7 +266,6 @@ impl Wire2Api<Vec<u8>> for *mut wire_uint_8_list {
         }
     }
 }
-
 // Section: wire structs
 
 #[repr(C)]
@@ -294,7 +293,7 @@ pub struct wire_LnUrlPayRequestData {
     min_sendable: u64,
     max_sendable: u64,
     metadata_str: *mut wire_uint_8_list,
-    comment_allowed: usize,
+    comment_allowed: u64,
 }
 
 #[repr(C)]

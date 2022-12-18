@@ -1,12 +1,20 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
+#[tonic::async_trait]
+pub trait ChainService: Send + Sync {
+    async fn recommended_fees(&self) -> Result<RecommendedFees>;
+    async fn address_transactions(&self, address: String) -> Result<Vec<OnchainTx>>;
+    async fn current_tip(&self) -> Result<u32>;
+    async fn broadcast_transaction(&self, tx: Vec<u8>) -> Result<String>;
+}
+
 #[derive(Clone)]
 pub(crate) struct MempoolSpace {
     pub(crate) base_url: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct RecommendedFees {
     #[serde(rename(deserialize = "fastestFee"))]
     pub fastest_fee: u32,
@@ -24,7 +32,7 @@ pub struct RecommendedFees {
     pub minimum_fee: u32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct OnchainTx {
     pub txid: String,
     pub version: u32,
@@ -37,7 +45,7 @@ pub struct OnchainTx {
     pub status: TxStatus,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct TxStatus {
     pub confirmed: bool,
     pub block_height: u32,
@@ -45,7 +53,7 @@ pub struct TxStatus {
     pub block_time: u64,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct Vout {
     pub scriptpubkey: String,
     pub scriptpubkey_asm: String,
@@ -54,7 +62,7 @@ pub struct Vout {
     pub value: u32,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct Vin {
     pub txid: String,
     pub vout: u32,
@@ -78,7 +86,11 @@ impl MempoolSpace {
     pub fn from_base_url(base_url: String) -> MempoolSpace {
         MempoolSpace { base_url }
     }
-    pub async fn recommended_fees(&self) -> Result<RecommendedFees> {
+}
+
+#[tonic::async_trait]
+impl ChainService for MempoolSpace {
+    async fn recommended_fees(&self) -> Result<RecommendedFees> {
         Ok(
             reqwest::get(format!("{}/api/v1/fees/recommended", self.base_url))
                 .await?
@@ -86,7 +98,8 @@ impl MempoolSpace {
                 .await?,
         )
     }
-    pub async fn address_transactions(&self, address: String) -> Result<Vec<OnchainTx>> {
+
+    async fn address_transactions(&self, address: String) -> Result<Vec<OnchainTx>> {
         Ok(
             reqwest::get(format!("{}/api/address/{}/txs", self.base_url, address))
                 .await?
@@ -95,7 +108,7 @@ impl MempoolSpace {
         )
     }
 
-    pub async fn current_tip(&self) -> Result<u32> {
+    async fn current_tip(&self) -> Result<u32> {
         Ok(
             reqwest::get(format!("{}/api/blocks/tip/height", self.base_url))
                 .await?
@@ -105,7 +118,7 @@ impl MempoolSpace {
         )
     }
 
-    pub async fn broadcast_transaction(&self, tx: Vec<u8>) -> Result<String> {
+    async fn broadcast_transaction(&self, tx: Vec<u8>) -> Result<String> {
         let client = reqwest::Client::new();
         client
             .post(format!("{}/api/tx", self.base_url))
@@ -122,9 +135,13 @@ mod tests {
     use crate::chain::{MempoolSpace, OnchainTx};
     use tokio::test;
 
+    use super::ChainService;
+
     #[tokio::test]
     async fn test_recommended_fees() {
-        let ms = MempoolSpace::from_base_url("https://mempool.space".to_string());
+        let ms = Box::new(MempoolSpace::from_base_url(
+            "https://mempool.space".to_string(),
+        ));
         let fees = ms.recommended_fees().await.unwrap();
         assert!(fees.economy_fee > 0);
         assert!(fees.fastest_fee > 0);

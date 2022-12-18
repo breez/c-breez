@@ -669,6 +669,8 @@ class SwapInfo {
   final int paidSats;
   final int confirmedSats;
   final SwapStatus status;
+  final List<String> refundTxIds;
+  final List<String> confirmedTxIds;
 
   SwapInfo({
     required this.bitcoinAddress,
@@ -684,13 +686,14 @@ class SwapInfo {
     required this.paidSats,
     required this.confirmedSats,
     required this.status,
+    required this.refundTxIds,
+    required this.confirmedTxIds,
   });
 }
 
 enum SwapStatus {
   Initial,
   Expired,
-  Refunded,
 }
 
 class Symbol {
@@ -1474,7 +1477,7 @@ class LightningToolkitImpl implements LightningToolkit {
       minSendable: _wire2api_u64(arr[1]),
       maxSendable: _wire2api_u64(arr[2]),
       metadataStr: _wire2api_String(arr[3]),
-      commentAllowed: _wire2api_usize(arr[4]),
+      commentAllowed: _wire2api_u64(arr[4]),
     );
   }
 
@@ -1698,8 +1701,8 @@ class LightningToolkitImpl implements LightningToolkit {
 
   SwapInfo _wire2api_swap_info(dynamic raw) {
     final arr = raw as List<dynamic>;
-    if (arr.length != 13)
-      throw Exception('unexpected arr length: expect 13 but see ${arr.length}');
+    if (arr.length != 15)
+      throw Exception('unexpected arr length: expect 15 but see ${arr.length}');
     return SwapInfo(
       bitcoinAddress: _wire2api_String(arr[0]),
       createdAt: _wire2api_i64(arr[1]),
@@ -1714,6 +1717,8 @@ class LightningToolkitImpl implements LightningToolkit {
       paidSats: _wire2api_u32(arr[10]),
       confirmedSats: _wire2api_u32(arr[11]),
       status: _wire2api_swap_status(arr[12]),
+      refundTxIds: _wire2api_StringList(arr[13]),
+      confirmedTxIds: _wire2api_StringList(arr[14]),
     );
   }
 
@@ -1766,10 +1771,6 @@ class LightningToolkitImpl implements LightningToolkit {
       url: _wire2api_String(arr[1]),
     );
   }
-
-  int _wire2api_usize(dynamic raw) {
-    return castInt(raw);
-  }
 }
 
 // Section: api2wire
@@ -1804,10 +1805,6 @@ int api2wire_u8(int raw) {
   return raw;
 }
 
-@protected
-int api2wire_usize(int raw) {
-  return raw;
-}
 // Section: finalizer
 
 class LightningToolkitPlatform
@@ -1881,7 +1878,6 @@ class LightningToolkitPlatform
     ans.ref.ptr.asTypedList(raw.length).setAll(0, raw);
     return ans;
   }
-
 // Section: finalizer
 
 // Section: api_fill_to_wire
@@ -1924,7 +1920,7 @@ class LightningToolkitPlatform
     wireObj.min_sendable = api2wire_u64(apiObj.minSendable);
     wireObj.max_sendable = api2wire_u64(apiObj.maxSendable);
     wireObj.metadata_str = api2wire_String(apiObj.metadataStr);
-    wireObj.comment_allowed = api2wire_usize(apiObj.commentAllowed);
+    wireObj.comment_allowed = api2wire_u64(apiObj.commentAllowed);
   }
 
   void _api_fill_to_wire_opt_box_autoadd_config(
@@ -2586,12 +2582,11 @@ class wire_LnUrlPayRequestData extends ffi.Struct {
 
   external ffi.Pointer<wire_uint_8_list> metadata_str;
 
-  @uintptr_t()
+  @ffi.Uint64()
   external int comment_allowed;
 }
-
-typedef uintptr_t = ffi.UnsignedLong;
 
 typedef DartPostCObjectFnType = ffi.Pointer<
     ffi.NativeFunction<ffi.Bool Function(DartPort, ffi.Pointer<ffi.Void>)>>;
 typedef DartPort = ffi.Int64;
+typedef uintptr_t = ffi.UnsignedLong;

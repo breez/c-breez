@@ -1,4 +1,4 @@
-use crate::chain::MempoolSpace;
+use crate::chain::{ChainService, MempoolSpace};
 use crate::fiat::{FiatCurrency, Rate};
 use crate::greenlight::Greenlight;
 use crate::grpc::channel_opener_client::ChannelOpenerClient;
@@ -100,7 +100,7 @@ pub struct BreezServices {
     node_api: Arc<dyn NodeAPI>,
     lsp_api: Arc<dyn LspAPI>,
     fiat_api: Arc<dyn FiatAPI>,
-    chain_service: Arc<MempoolSpace>,
+    chain_service: Arc<dyn ChainService>,
     persister: Arc<persist::db::SqliteStorage>,
     payment_receiver: Arc<PaymentReceiver>,
     btc_receive_swapper: Arc<BTCReceiveSwap>,
@@ -255,7 +255,7 @@ impl BreezServices {
 
     // list swaps history (all of them: expired, refunded and active)
     pub async fn list_refundables(&self) -> Result<Vec<SwapInfo>> {
-        self.btc_receive_swapper.list_refundables().await
+        self.btc_receive_swapper.list_refundables()
     }
 
     // construct and broadcast a refund transaction for a faile/expired swap
@@ -568,14 +568,25 @@ pub fn mnemonic_to_seed(phrase: String) -> Result<Vec<u8>> {
     Ok(seed.as_bytes().to_vec())
 }
 
+#[tonic::async_trait]
+pub trait Receiver: Send + Sync {
+    async fn receive_payment(
+        &self,
+        amount_sats: u64,
+        description: String,
+        preimage: Option<Vec<u8>>,
+    ) -> Result<LNInvoice>;
+}
+
 pub(crate) struct PaymentReceiver {
     node_api: Arc<dyn NodeAPI>,
     lsp: Arc<dyn LspAPI>,
     persister: Arc<persist::db::SqliteStorage>,
 }
 
-impl PaymentReceiver {
-    pub async fn receive_payment(
+#[tonic::async_trait]
+impl Receiver for PaymentReceiver {
+    async fn receive_payment(
         &self,
         amount_sats: u64,
         description: String,
@@ -714,7 +725,9 @@ async fn get_lsp(persister: Arc<SqliteStorage>, lsp: Arc<dyn LspAPI>) -> Result<
 }
 
 pub(crate) mod test {
+    use rand::Rng;
     use std::sync::Arc;
+    use std::time::SystemTime;
     use tokio::sync::mpsc;
 
     use anyhow::anyhow;
@@ -874,11 +887,15 @@ pub(crate) mod test {
     }
 
     fn get_test_working_dir() -> String {
-        std::env::temp_dir().to_str().unwrap().to_string()
+        let mut rng = rand::thread_rng();
+        let s = std::env::temp_dir().to_str().unwrap().to_string();
+        let dir = format!("{}{}", s, rng.gen::<u32>());
+        std::fs::create_dir_all(dir.clone()).unwrap();
+        dir
     }
 
     /// Build dummy NodeState for tests
-    fn get_dummy_node_state() -> NodeState {
+    pub(crate) fn get_dummy_node_state() -> NodeState {
         NodeState {
             id: "tx1".to_string(),
             block_height: 1,

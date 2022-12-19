@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -9,7 +8,6 @@ import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = FimberLog("LNURLPaymentDialog");
 
 class LNURLPaymentDialog extends StatefulWidget {
-  final LnUrlPayRequestData requestData;
+  final sdk.LnUrlPayRequestData requestData;
   final String domain;
 
   const LNURLPaymentDialog({
@@ -166,12 +164,12 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 reqData: widget.requestData,
               );
               navigator.removeRoute(loaderRoute);
-              if (resp is Resp_EndpointSuccess) {
+              if (resp is sdk.LnUrlPayResult_EndpointSuccess) {
                 _log.v("LNURL payment success, action: ${resp.field0}");
                 navigator.pop(LNURLPaymentPageResult(
                   successAction: resp.field0,
                 ));
-              } else if (resp is Resp_EndpointError) {
+              } else if (resp is sdk.LnUrlPayResult_EndpointError) {
                 _log.v("LNURL payment failed: ${resp.field0.reason}");
                 navigator.pop(LNURLPaymentPageResult(
                   error: resp.field0.reason,

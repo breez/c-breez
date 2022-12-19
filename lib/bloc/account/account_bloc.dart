@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:breez_sdk/breez_bridge.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
@@ -63,7 +63,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   _watchAccountChanges() {
-    return Rx.combineLatest3<List<Payment>, PaymentFilters, NodeState?,
+    return Rx.combineLatest3<List<sdk.Payment>, PaymentFilters, sdk.NodeState?,
         AccountState>(
       _breezLib.paymentsStream,
       paymentFiltersStream,
@@ -88,10 +88,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // startNewNode register a new node and start it
   Future startNewNode({
-    Network network = Network.Bitcoin,
+    sdk.Network network = sdk.Network.Bitcoin,
     required Uint8List seed,
   }) async {
-    final GreenlightCredentials creds = await _breezLib.registerNode(
+    final sdk.GreenlightCredentials creds = await _breezLib.registerNode(
       config: await _getConfig(),
       network: network,
       seed: seed,
@@ -103,10 +103,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // recoverNode recovers a node from seed
   Future recoverNode({
-    Network network = Network.Bitcoin,
+    sdk.Network network = sdk.Network.Bitcoin,
     required Uint8List seed,
   }) async {
-    final GreenlightCredentials creds = await _breezLib.recoverNode(
+    final sdk.GreenlightCredentials creds = await _breezLib.recoverNode(
       config: await _getConfig(),
       network: network,
       seed: seed,
@@ -116,19 +116,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("recovered node started");
   }
 
-  Future<void> _startNode(GreenlightCredentials creds, Uint8List seed) async {
+  Future<void> _startNode(sdk.GreenlightCredentials creds, Uint8List seed) async {
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     _breezLib.nodeStateController.add(await _breezLib.getNodeState());
     emit(state.copyWith(initial: false));
   }
 
-  Future<Config> _getConfig() async {
+  Future<sdk.Config> _getConfig() async {
     try {
       // Read breez.conf ini file and organize it via ini package
       String configString = await rootBundle.loadString('conf/breez.conf');
       ini.Config breezConfig = ini.Config.fromString(configString);
       // Create a Config from breez.conf
-      Config config = Config(
+      sdk.Config config = sdk.Config(
         breezserver:
             breezConfig.get("Application Options", "breezserver") ?? "",
         mempoolspaceUrl: await _preferences.getMempoolSpaceUrl().then((url) =>
@@ -136,7 +136,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
             breezConfig.get("Application Options", "mempoolspaceurl") ??
             ""),
         workingDir: (await getApplicationDocumentsDirectory()).path,
-        network: Network.values.firstWhere((n) =>
+        network: sdk.Network.values.firstWhere((n) =>
             n.name.toLowerCase() ==
             (breezConfig.get("Application Options", "network") ?? "bitcoin")),
         paymentTimeoutSec: int.parse(
@@ -155,9 +155,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     throw Exception("not implemented");
   }
 
-  Future<Resp> sendLNURLPayment({
+  Future<sdk.LnUrlPayResult> sendLNURLPayment({
     required int amount,
-    required LnUrlPayRequestData reqData,
+    required sdk.LnUrlPayRequestData reqData,
     String? comment,
   }) async {
     _log.v("sendLNURLPayment amount: $amount, comment: '$comment', reqData: $reqData");
@@ -238,7 +238,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void changePaymentFilter({
-    PaymentTypeFilter? filter,
+    sdk.PaymentTypeFilter? filter,
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
@@ -251,7 +251,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
   }
 
-  Future<LNInvoice> addInvoice({
+  Future<sdk.LNInvoice> addInvoice({
     String description = "",
     required int amountSats,
   }) async {

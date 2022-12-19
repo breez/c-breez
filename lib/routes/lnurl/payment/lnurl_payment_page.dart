@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
@@ -192,12 +192,12 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                 reqData: widget.requestData,
               );
               navigator.removeRoute(loaderRoute);
-              if (resp is Resp_EndpointSuccess) {
+              if (resp is sdk.LnUrlPayResult_EndpointSuccess) {
                 _log.v("LNURL payment success, action: ${resp.field0}");
                 navigator.pop(LNURLPaymentPageResult(
                   successAction: resp.field0,
                 ));
-              } else if (resp is Resp_EndpointError) {
+              } else if (resp is sdk.LnUrlPayResult_EndpointError) {
                 _log.v("LNURL payment failed: ${resp.field0.reason}");
                 navigator.pop(LNURLPaymentPageResult(
                   error: resp.field0.reason,

@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
@@ -11,7 +11,6 @@ import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -98,13 +97,12 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                     ),
                     child: Text(
                       _showFiatCurrency && fiatConversion != null
-                          ? fiatConversion.format(Int64(
-                              widget.withdrawParams.maxWithdrawable ~/ 1000))
+                          ? fiatConversion.format(
+                              widget.withdrawParams.maxWithdrawable ~/ 1000)
                           : BitcoinCurrency.fromTickerSymbol(
                                   currencyState.bitcoinTicker)
-                              .format(Int64(
-                                  widget.withdrawParams.maxWithdrawable ~/
-                                      1000)),
+                              .format(widget.withdrawParams.maxWithdrawable ~/
+                                  1000),
                       style: themeData.primaryTextTheme.headline5,
                       textAlign: TextAlign.center,
                     ),
@@ -146,12 +144,12 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                           iconColor: themeData.primaryIconTheme.color,
                         ),
                         AutoSizeText(
-                          '${texts.lnurl_fetch_invoice_limit(
+                          texts.lnurl_fetch_invoice_limit(
                             (widget.withdrawParams.minWithdrawable ~/ 1000)
                                 .toString(),
                             (widget.withdrawParams.maxWithdrawable ~/ 1000)
                                 .toString(),
-                          )} sats.',
+                          ),
                           maxLines: 2,
                           style: themeData.dialogTheme.contentTextStyle,
                           minFontSize: MinFontSize(context).minFontSize,
@@ -225,9 +223,9 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               final navigator = Navigator.of(context);
               var loaderRoute = createLoaderRoute(context);
               navigator.push(loaderRoute);
-              Invoice invoice = await accountBloc.addInvoice(
+              LNInvoice invoice = await accountBloc.addInvoice(
                 description: widget.withdrawParams.defaultDescription,
-                amount: Int64.parseInt(_amountController.text),
+                amountSats: int.parse(_amountController.text),
               );
               Map<String, String> qParams = {
                 'k1': widget.withdrawParams.k1.toString(),
@@ -238,15 +236,17 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                     widget.withdrawParams, qParams);
                 navigator.removeRoute(loaderRoute);
                 if (!isSent) {
-                  String error =
-                      texts.lnurl_withdraw_dialog_error('').replaceAll(':', '');
-                  navigator.pop(LNURLWithdrawPageResult(error: error));
+                  navigator.pop(LNURLWithdrawPageResult(
+                    error: texts.lnurl_withdraw_dialog_error_unknown,
+                  ));
                 } else {
                   navigator.pop();
                 }
               } catch (e) {
                 navigator.removeRoute(loaderRoute);
-                navigator.pop(LNURLWithdrawPageResult(error: e.toString()));
+                navigator.pop(LNURLWithdrawPageResult(
+                  error: texts.lnurl_withdraw_dialog_error(e.toString()),
+                ));
               }
             }
           },
@@ -259,29 +259,31 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
     );
   }
 
-  String? validatePayment(Int64 amount) {
-    var accBloc = context.read<AccountBloc>();
-    late final lspStatus = context.read<LSPBloc>().state;
-    late final currencyState = context.read<CurrencyBloc>().state;
+  String? validatePayment(int amount) {
+    final texts = context.texts();
+    final accBloc = context.read<AccountBloc>();
+     final lsp = context.read<LSPBloc>().state;
+     final currencyState = context.read<CurrencyBloc>().state;
 
-    if (amount > (widget.withdrawParams.maxWithdrawable ~/ 1000)) {
-      return "Exceeds maximum withdrawable amount: ${widget.withdrawParams.maxWithdrawable ~/ 1000}";
+    final maxSats = widget.withdrawParams.maxWithdrawable ~/ 1000;
+    if (amount > maxSats) {
+      return texts.lnurl_withdraw_dialog_error_amount_exceeds(maxSats);
     }
-    if (amount < (widget.withdrawParams.minWithdrawable ~/ 1000)) {
-      return "Below minimum withdrawable amount: ${widget.withdrawParams.minWithdrawable ~/ 1000}";
+    final minSats = widget.withdrawParams.minWithdrawable ~/ 1000;
+    if (amount < minSats) {
+      return texts.lnurl_withdraw_dialog_error_amount_below(minSats);
     }
 
-    Int64? channelMinimumFee;
-    if (lspStatus.currentLSP != null) {
-      channelMinimumFee = Int64(
-        lspStatus.currentLSP!.channelMinimumFeeMsat ~/ 1000,
-      );
+    int? channelMinimumFee;
+    if (lsp != null) {
+      channelMinimumFee = lsp.channelMinimumFeeMsat ~/ 1000;
     }
 
     return PaymentValidator(
       accBloc.validatePayment,
       currencyState.bitcoinCurrency,
       channelMinimumFee: channelMinimumFee,
+      texts: context.texts(),
     ).validateIncoming(amount);
   }
 }

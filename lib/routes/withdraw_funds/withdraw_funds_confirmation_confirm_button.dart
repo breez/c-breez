@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
   final String address;
-  final TransactionCostSpeed speed;
+  final FeeratePreset speed;
 
   const WithdrawFundsConfirmationConfirmButton(
     this.address,

@@ -1,3 +1,5 @@
+import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -19,27 +21,44 @@ Future handleLNURL(
     return handleWithdrawRequest(context, lnurlParseResult.withdrawalParams!);
   }
 
-  throw "Unsupported lnurl";
+  throw context.texts().lnurl_error_unsupported;
 }
 
-Future<LNURLPayResult?> handlePayRequest(
+Future<LNURLPaymentPageResult?> handlePayRequest(
   BuildContext context,
   LNURLPayParams payParams,
 ) async {
   bool fixedAmount = payParams.minSendable == payParams.maxSendable;
   LNURLPaymentPageResult? pageResult;
+  final reqData = LnUrlPayRequestData(
+    callback: payParams.callback,
+    minSendable: payParams.minSendable,
+    maxSendable: payParams.maxSendable,
+    metadataStr: payParams.metadata,
+    commentAllowed: payParams.commentAllowed,
+  );
   if (fixedAmount && !(payParams.commentAllowed > 0)) {
     // Show dialog if payment is of fixed amount with no payer comment allowed
     pageResult = await showDialog<LNURLPaymentPageResult>(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => LNURLPaymentDialog(payParams),
+      builder: (_) => LNURLPaymentDialog(
+        requestData: reqData,
+        domain: payParams.domain,
+      ),
     );
   } else {
     pageResult = await Navigator.of(context).push<LNURLPaymentPageResult>(
       FadeInRoute(
-        builder: (_) => LNURLPaymentPage(payParams),
+        builder: (_) => LNURLPaymentPage(
+          requestData: reqData,
+          domain: payParams.domain,
+          name: payParams.payerData?.name,
+          auth: payParams.payerData?.auth,
+          email: payParams.payerData?.email,
+          identifier: payParams.payerData?.identifier,
+        ),
       ),
     );
   }
@@ -47,10 +66,10 @@ Future<LNURLPayResult?> handlePayRequest(
   if (pageResult == null) {
     return Future.value();
   }
-  if (pageResult.error != null) {
-    throw pageResult.error.toString();
+  if (pageResult.hasError) {
+    throw pageResult.errorMessage;
   }
-  return pageResult.result;
+  return pageResult;
 }
 
 Future handleWithdrawRequest(

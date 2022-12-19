@@ -1,7 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -28,21 +27,17 @@ import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 const String THEME_ID_PREFERENCE_KEY = "themeID";
 
 class UserApp extends StatelessWidget {
   final GlobalKey _appKey = GlobalKey();
-  final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _homeNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    final accountBloc = context.read<AccountBloc>();
-    final userProfileBloc = context.read<UserProfileBloc>();
-    final lspBloc = context.read<LSPBloc>();
-
     return ThemeProvider(
       saveThemesOnChange: true,
       onInitCallback: (controller, previouslySavedThemeFuture) async {
@@ -127,7 +122,8 @@ class UserApp extends StatelessWidget {
                       return FadeInRoute(
                         builder: (_) => WillPopScope(
                           onWillPop: () async {
-                            return !await _homeNavigatorKey.currentState!.maybePop();
+                            return !await _homeNavigatorKey.currentState!
+                                .maybePop();
                           },
                           child: Navigator(
                             initialRoute: "/",
@@ -142,8 +138,7 @@ class UserApp extends StatelessWidget {
                                 case '/select_lsp':
                                   return MaterialPageRoute(
                                     fullscreenDialog: true,
-                                    builder: (_) =>
-                                        SelectLSPPage(lstBloc: lspBloc),
+                                    builder: (_) => SelectLSPPage(),
                                     settings: settings,
                                   );
                                 case '/create_invoice':
@@ -153,10 +148,8 @@ class UserApp extends StatelessWidget {
                                   );
                                 case '/fiat_currency':
                                   return FadeInRoute(
-                                    builder: (_) => FiatCurrencySettings(
-                                      accountBloc,
-                                      userProfileBloc,
-                                    ),
+                                    builder: (_) =>
+                                        const FiatCurrencySettings(),
                                     settings: settings,
                                   );
                                 case '/security':

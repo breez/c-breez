@@ -2,7 +2,7 @@
   "home_drawer_item_title_preferences": "Ajustes",
   "home_drawer_item_title_fiat_currencies": "Monedas fiduciarias",
   "home_drawer_item_title_network": "Red",
-  "home_drawer_item_title_security": "Seguridad y Respaldo",
+  "home_drawer_item_title_security": "Seguridad",
   "home_drawer_item_title_transactions": "Transacciones",
   "home_drawer_item_title_balance": "Balance",
   "home_drawer_item_title_podcasts": "Podcasts",
@@ -214,6 +214,43 @@
   "invoice_bottom_sheet_action_pay": "PAGAR",
   "invoice_bottom_sheet_action_receive": "RECIBIR",
   "invoice_bottom_sheet_error_qrcode": "No se detectó el código QR.",
+  "invoice_payment_validator_error_payment_exceeded_limit": "Payment exceeds the limit ({maxSats})",
+  "@invoice_payment_validator_error_payment_exceeded_limit": {
+    "placeholders": {
+      "maxSats": {
+        "type": "String",
+        "example": "2 000 sats"
+      }
+    }
+  },
+  "invoice_payment_validator_error_payment_below_limit": "Breez requires you to keep {minSats} in your balance.",
+  "@invoice_payment_validator_error_payment_below_limit": {
+    "placeholders": {
+      "minSats": {
+        "type": "String",
+        "example": "2 000 sats"
+      }
+    }
+  },
+  "invoice_payment_validator_error_insufficient_local_balance": "Insufficient local balance",
+  "invoice_payment_validator_error_payment_below_setup_fees_error": "Insufficient amount to cover the setup fees of {setUpSats}",
+  "@invoice_payment_validator_error_payment_below_setup_fees_error": {
+    "placeholders": {
+      "setUpSats": {
+        "type": "String",
+        "example": "20 sats"
+      }
+    }
+  },
+  "invoice_payment_validator_error_unknown": "Validation error {error}",
+  "@invoice_payment_validator_error_unknown": {
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "An error message"
+      }
+    }
+  },
   "backup_dialog_title": "Respaldar",
   "backup_dialog_message_remote_server": "No se pudieron guardar los archivos de respaldo en el servidor remoto. Por favor, revise su configuración y vuelva a intentarlo.",
   "backup_dialog_message_default": "Si desea poder restaurar sus fondos en caso de que este dispositivo móvil o esta aplicación ya no se encuentre disponible (ej: dispositivo perdido o robado, o desinstalación de la app), requerirá haber respaldado su información.",
@@ -749,7 +786,7 @@
   "connect_to_pay_error_wrong_amount": "Monto incorrecto en la solicitud de pago",
   "connect_to_pay_error_status_tracking_already_started": "El seguimiento ya fue iniciado, es necesario detenerlo antes de comenzarlo de nuevo",
   "connect_to_pay_error_link_expired": "Este enlace ha vencido y ya no se puede usar para el pago.",
-  "security_and_backup_title": "Seguridad y Respaldo",
+  "security_and_backup_title": "Seguridad",
   "security_and_backup_last_backup_no_account": "Último respaldo: {lastBackup}",
   "@security_and_backup_last_backup_no_account": {
     "placeholders": {
@@ -1582,12 +1619,31 @@
   "lnurl_withdraw_dialog_title": "Recibir fondos",
   "lnurl_withdraw_dialog_wait": "Por favor espere mientras se procesa su pago",
   "lnurl_withdraw_dialog_action_close": "CERRAR",
+  "lnurl_withdraw_dialog_error_unknown": "Error al recibir fondos",
   "lnurl_withdraw_dialog_error": "Error al recibir fondos: {error}",
   "@lnurl_withdraw_dialog_error": {
     "placeholders": {
       "error": {
         "type": "String",
         "example": "An error"
+      }
+    }
+  },
+  "lnurl_withdraw_dialog_error_amount_exceeds": "Valor superior al máximo: {maxSats}",
+  "@lnurl_withdraw_dialog_error_amount_exceeds": {
+    "placeholders": {
+      "maxSats": {
+        "type": "int",
+        "example": "1000"
+      }
+    }
+  },
+  "lnurl_withdraw_dialog_error_amount_below": "Valor inferior al mínimo: {minSats}",
+  "@lnurl_withdraw_dialog_error_amount_below": {
+    "placeholders": {
+      "minSats": {
+        "type": "int",
+        "example": "1000"
       }
     }
   },
@@ -1730,7 +1786,7 @@
       }
     }
   },
-  "lnurl_fetch_invoice_limit": "Ingrese un valor entre {min} y {max}",
+  "lnurl_fetch_invoice_limit": "Ingrese un valor entre {min} y {max} sats.",
   "@lnurl_fetch_invoice_limit": {
     "placeholders": {
       "min": {
@@ -2070,6 +2126,7 @@
   "payment_info_title_send_to_node": "Enviar al nodo",
   "payment_info_title_unknown": "Desconocido",
   "payment_info_title_pending_closed_channel": "Cierre de canal en proceso",
+  "payment_error_to_send_unknown_reason": "Hubo un error al enviar el pago",
   "payment_error_to_send": "Hubo un error al enviar el pago: {error}",
   "@payment_error_to_send": {
     "placeholders": {
@@ -2102,6 +2159,42 @@
   "mempool_settings_custom_url_error": "URL de la API Mempool inválida",
   "mempool_settings_action_reset": "Restablecer",
   "mempool_settings_action_save": "Guardar",
+  "lnurl_payment_page_title": "LNURL Invoice",
+  "lnurl_payment_page_domain_pay": "{domain} requiere que pagues {amount} sats.",
+  "@lnurl_payment_page_domain_pay": {
+    "placeholders": {
+      "domain": {
+        "type": "String",
+        "example": "example.com"
+      },
+      "amount": {
+        "type": "int",
+        "example": "100"
+      }
+    }
+  },
+  "lnurl_payment_page_comment": "Comentario (opcional)",
+  "lnurl_payment_page_enter_k1": "Por favor, ingrese el K1",
+  "lnurl_payment_page_action_pay": "PAGAR",
+  "lnurl_payment_page_error_exceeds_limit": "El pago supera el límite de {amount}",
+  "@lnurl_payment_page_error_exceeds_limit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "123"
+      }
+    }
+  },
+  "lnurl_payment_page_error_below_limit": "El pago es inferior al límite de {amount}",
+  "@lnurl_payment_page_error_below_limit": {
+    "placeholders": {
+      "amount": {
+        "type": "int",
+        "example": "123"
+      }
+    }
+  },
+  "lnurl_payment_page_unknown_error": "Hubo un error desconocido",
   "locale": "es",
   "app_name": "Breez"
 }

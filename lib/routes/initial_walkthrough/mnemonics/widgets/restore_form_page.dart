@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:breez_sdk/native_toolkit.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/restore_form.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -97,7 +98,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
       setState(() {
         _hasError = true;
       });
-      throw Exception(e.toString());
+      throw Exception(extractExceptionMessage(e));
     }
   }
 }

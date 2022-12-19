@@ -1,8 +1,6 @@
-import 'package:breez_sdk/sdk.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
@@ -15,13 +13,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 const double ITEM_HEIGHT = 72.0;
 
 class FiatCurrencySettings extends StatefulWidget {
-  final AccountBloc accountBloc;
-  final UserProfileBloc userProfileBloc;
-
-  const FiatCurrencySettings(
-    this.accountBloc,
-    this.userProfileBloc,
-  );
+  const FiatCurrencySettings({
+    Key? key,
+  }) : super(key: key);
 
   @override
   FiatCurrencySettingsState createState() {
@@ -96,7 +90,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
         return DragAndDropItem(
           child: _buildFiatCurrencyTile(context, currencyState, index),
           canDrag: currencyState.preferredCurrencies.contains(
-            currencyState.fiatCurrenciesData[index].shortName,
+            currencyState.fiatCurrenciesData[index].id,
           ),
         );
       }),
@@ -119,11 +113,11 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
       controlAffinity: ListTileControlAffinity.leading,
       activeColor: Colors.white,
       checkColor: themeData.canvasColor,
-      value: prefCurrencies.contains(currencyData.shortName),
+      value: prefCurrencies.contains(currencyData.id),
       onChanged: (bool? checked) {
         setState(() {
           if (checked == true) {
-            prefCurrencies.add(currencyData.shortName);
+            prefCurrencies.add(currencyData.id);
             // center item in viewport
             if (_scrollController.offset >=
                 (ITEM_HEIGHT * (prefCurrencies.length - 1))) {
@@ -137,7 +131,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
             }
           } else if (currencyState.preferredCurrencies.length != 1) {
             prefCurrencies.remove(
-              currencyData.shortName,
+              currencyData.id,
             );
           }
           _updatePreferredCurrencies(context, currencyState, prefCurrencies);
@@ -149,11 +143,11 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
       ),
       title: RichText(
         text: TextSpan(
-          text: currencyData.shortName,
+          text: currencyData.id,
           style: theme.fiatConversionTitleStyle,
           children: [
             TextSpan(
-              text: " (${currencyData.symbol})",
+              text: " (${currencyData.info.symbol?.grapheme ?? ""})",
               style: theme.fiatConversionDescriptionStyle,
             ),
           ],
@@ -163,8 +157,15 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   }
 
   String _subtitle(AppLocalizations texts, FiatCurrency currencyData) {
-    final localizedName = currencyData.localizedName[texts.locale];
-    return localizedName ?? currencyData.name;
+    final localizedName = currencyData.info.localizedName;
+    if (localizedName != null) {
+      for (var localizedName in localizedName) {
+        if (localizedName.locale == texts.locale) {
+          return localizedName.name;
+        }
+      }
+    }
+    return currencyData.info.name;
   }
 
   void _onReorder(
@@ -189,7 +190,9 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     CurrencyState currencyState,
     List<String> preferredFiatCurrencies,
   ) {
-    context.read<CurrencyBloc>().setPreferredCurrencies(preferredFiatCurrencies);
+    context
+        .read<CurrencyBloc>()
+        .setPreferredCurrencies(preferredFiatCurrencies);
   }
 
   /// DragAndDropLists has a performance issue with displaying a big list

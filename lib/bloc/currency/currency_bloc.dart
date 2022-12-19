@@ -1,40 +1,79 @@
-import 'package:breez_sdk/sdk.dart';
+import 'dart:async';
+
+import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
-  final FiatService _fiatService;
+  final BreezBridge _breezLib;
 
-  CurrencyBloc(this._fiatService) : super(CurrencyState.initial()) {  
-    _fiatService.fiatCurrencies().then((jsonCurrencies) {
-      var fiatCurrencies = jsonCurrencies.values.toList();
-      var sorted =
-          _sortFiatConversionList(fiatCurrencies, state.preferredCurrencies);
-      emit(state.copyWith(fiatCurrenciesData: sorted));
-    });
-    fetchExchangeRates();
+  CurrencyBloc(this._breezLib) : super(CurrencyState.initial()) {
+    _initializeCurrencyBloc();
   }
 
-  void setFiatShortName(String fiaShortName) {
-    emit(state.copyWith(fiatShortName: fiaShortName));
+  void _initializeCurrencyBloc() {
+    late final StreamSubscription streamSubscription;
+    streamSubscription = _breezLib.nodeStateStream
+        .where((nodeState) => nodeState != null)
+        .listen((nodeState) {
+      listFiatCurrencies();
+      fetchExchangeRates();
+      streamSubscription.cancel();
+    });
+  }
+
+  void listFiatCurrencies() {
+    _breezLib.listFiatCurrencies().then((fiatCurrencies) {
+      emit(state.copyWith(
+          fiatCurrenciesData: _sortedFiatCurrenciesList(
+        fiatCurrencies,
+        state.preferredCurrencies,
+      )));
+    });
+  }
+
+  List<FiatCurrency> _sortedFiatCurrenciesList(
+    List<FiatCurrency> fiatCurrencies,
+    List<String> preferredCurrencies,
+  ) {
+    var sorted = fiatCurrencies.toList();
+    sorted.sort((f1, f2) {
+      return f1.id.compareTo(f2.id);
+    });
+
+    // Then give precedence to the preferred items.
+    for (var p in preferredCurrencies.reversed) {
+      var preferredIndex = sorted.indexWhere((e) => e.id == p);
+      if (preferredIndex >= 0) {
+        var preferred = sorted[preferredIndex];
+        sorted.removeAt(preferredIndex);
+        sorted.insert(0, preferred);
+      }
+    }
+    return sorted;
+  }
+
+  Future<Map<String, Rate>> fetchExchangeRates() async {
+    var exchangeRates = await _breezLib.fetchFiatRates();
+    emit(state.copyWith(exchangeRates: exchangeRates));
+    return exchangeRates;
+  }
+
+  void setFiatId(String fiatId) {
+    emit(state.copyWith(fiatId: fiatId));
   }
 
   void setPreferredCurrencies(List<String> preferredCurrencies) {
     emit(state.copyWith(
-        fiatCurrenciesData: _sortFiatConversionList(
+        fiatCurrenciesData: _sortedFiatCurrenciesList(
             state.fiatCurrenciesData, preferredCurrencies),
         preferredCurrencies: preferredCurrencies,
-        fiatShortName: preferredCurrencies[0]));
+        fiatId: preferredCurrencies[0]));
   }
 
   void setBitcoinTicker(String bitcoinTicker) {
     emit(state.copyWith(bitcoinTicker: bitcoinTicker));
-  }
-
-  Future<Map<String, double>> fetchExchangeRates() async {
-    var ratesMap = await _fiatService.fetchRates();   
-    emit(state.copyWith(exchangeRates: ratesMap));
-    return ratesMap;
   }
 
   @override
@@ -45,24 +84,5 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   @override
   Map<String, dynamic> toJson(CurrencyState state) {
     return state.toJson();
-  }
-
-  List<FiatCurrency> _sortFiatConversionList(
-      List<FiatCurrency> fiatCurrencies, List<String> preferredCurrencies) {
-    var sorted = fiatCurrencies.toList();
-    sorted.sort((f1, f2) {
-      return f1.shortName.compareTo(f2.shortName);
-    });
-
-    // Then give precedence to the preferred items.
-    for (var p in preferredCurrencies.reversed) {
-      var preferredIndex = sorted.indexWhere((e) => e.shortName == p);
-      if (preferredIndex >= 0) {
-        var preferred = sorted[preferredIndex];
-        sorted.removeAt(preferredIndex);
-        sorted.insert(0, preferred);
-      }
-    }
-    return sorted;
   }
 }

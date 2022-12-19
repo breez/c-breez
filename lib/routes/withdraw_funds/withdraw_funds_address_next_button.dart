@@ -3,12 +3,11 @@ import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_page.d
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:fixnum/fixnum.dart';
 
 class WithdrawFundsAddressNextButton extends StatelessWidget {
   final TextEditingController addressController;
   final bool Function() validator;
-  final Int64 amount;
+  final int amount;
 
   const WithdrawFundsAddressNextButton({
     Key? key,

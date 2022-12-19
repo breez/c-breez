@@ -1,12 +1,13 @@
 import 'dart:async';
 
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
-import 'package:c_breez/services/breez_server/server.dart';
+import 'package:breez_sdk/breez_bridge.dart';
+import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/services/notifications.dart';
+import 'package:c_breez/utils/preferences.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,22 +19,19 @@ class ServiceInjector {
 
   BreezServer? _breezServer;
   FirebaseNotifications? _notifications;
-  breez_sdk.LightningNode? _lightningService;
   DeepLinksService? _deepLinksService;
 
   // breez sdk
+  BreezBridge? _breezBridge;
   LightningLinksService? _lightningLinksService;
-  breez_sdk.LSPService? _lspService;
-  breez_sdk.LNURLService? _lnurlService;
-  breez_sdk.FiatService? _fiatService;
 
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences =
       SharedPreferences.getInstance();
   BackgroundTaskService? _backgroundTaskService;
-  breez_sdk.Storage? _appStorage;
   KeyChain? _keychain;
   Client? _client;
+  Preferences? _preferences;
 
   factory ServiceInjector() {
     return _injector ?? _singleton;
@@ -53,13 +51,7 @@ class ServiceInjector {
     return _breezServer ??= BreezServer();
   }
 
-  breez_sdk.LightningNode get lightningServices {
-    if (_lightningService != null) {
-      return _lightningService!;
-    }
-
-    return _lightningService ??= breez_sdk.LightningNode();
-  }
+  BreezBridge get breezLib => _breezBridge ??= BreezBridge();
 
   Device get device {
     return _device ??= Device();
@@ -69,15 +61,6 @@ class ServiceInjector {
 
   LightningLinksService get lightningLinks =>
       _lightningLinksService ??= LightningLinksService();
-
-  breez_sdk.LSPService get lspService =>
-      _lspService ??= lightningServices.lspService;
-
-  breez_sdk.LNURLService get lnurlService =>
-      _lnurlService ??= lightningServices.lnurlService;
-
-  breez_sdk.FiatService get fiatService =>
-      _fiatService ??= lightningServices.fiatService;
 
   Future<SharedPreferences> get sharedPreferences =>
       _sharedPreferences ??= SharedPreferences.getInstance();
@@ -90,11 +73,11 @@ class ServiceInjector {
     return _client ??= Client();
   }
 
-  breez_sdk.Storage get sdkStorage {
-    return _appStorage ??= breez_sdk.Storage.createDefault();
-  }
-
   KeyChain get keychain {
     return _keychain ??= KeyChain();
+  }
+
+  Preferences get preferences {
+    return _preferences ??= Preferences();
   }
 }

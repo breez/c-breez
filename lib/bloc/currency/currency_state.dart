@@ -1,49 +1,49 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
 
 class CurrencyState {
   final List<String> preferredCurrencies;
-  final String fiatShortName;
+  final String fiatId;
   final String bitcoinTicker;
-  final Map<String, double> exchangeRates;
+  final Map<String, Rate> exchangeRates;
   final List<FiatCurrency> fiatCurrenciesData;
 
   CurrencyState(
       {this.fiatCurrenciesData = const [],
       this.exchangeRates = const {},
       this.preferredCurrencies = const ["USD"],
-      this.fiatShortName = "USD",
+      this.fiatId = "USD",
       this.bitcoinTicker = "SAT"});
 
   CurrencyState.initial() : this();
 
   CurrencyState copyWith(
       {List<FiatCurrency>? fiatCurrenciesData,
-      Map<String, double>? exchangeRates,
-      String? fiatShortName,
+      Map<String, Rate>? exchangeRates,
+      String? fiatId,
       String? bitcoinTicker,
       List<String>? preferredCurrencies}) {
     return CurrencyState(
         fiatCurrenciesData: fiatCurrenciesData ?? this.fiatCurrenciesData,
         exchangeRates: exchangeRates ?? this.exchangeRates,
         preferredCurrencies: preferredCurrencies ?? this.preferredCurrencies,
-        fiatShortName: fiatShortName ?? this.fiatShortName,
+        fiatId: fiatId ?? this.fiatId,
         bitcoinTicker: bitcoinTicker ?? this.bitcoinTicker);
   }
 
   BitcoinCurrency get bitcoinCurrency =>
       BitcoinCurrency.fromTickerSymbol(bitcoinTicker);
 
-  FiatCurrency? get fiatCurrency => fiatByShortName(fiatShortName);
+  FiatCurrency? get fiatCurrency => fiatById(fiatId);
 
-  double? get fiatExchangeRate => exchangeRates[fiatShortName];
+  double? get fiatExchangeRate => exchangeRates[fiatId]?.value;
 
   bool get fiatEnabled => fiatCurrency != null && fiatExchangeRate != null;
 
-  FiatCurrency? fiatByShortName(String name) {
+  FiatCurrency? fiatById(String id) {
     for (var fc in fiatCurrenciesData) {
-      if (fc.shortName == name) {
+      if (fc.id == id) {
         return fc;
       }
     }
@@ -63,16 +63,14 @@ class CurrencyState {
   CurrencyState.fromJson(Map<String, dynamic> json)
       : preferredCurrencies =
             (json['preferredCurrencies'] as List<dynamic>).cast<String>(),
-        exchangeRates = (json['exchangeRates'] as Map<String, dynamic>)
-            .cast<String, double>(),
+        exchangeRates = {},
         fiatCurrenciesData = [],
-        fiatShortName = json['fiatShortName'],
+        fiatId = json['fiatId'],
         bitcoinTicker = json['bitcoinTicker'];
 
   Map<String, dynamic> toJson() => {
-        'exchangeRates': exchangeRates,
         'preferredCurrencies': preferredCurrencies,
-        'fiatShortName': fiatShortName,
+        'fiatId': fiatId,
         'bitcoinTicker': bitcoinTicker
       };
 }

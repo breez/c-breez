@@ -1,10 +1,9 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_calendar.dart';
 import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_dropdown.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,7 +20,7 @@ class PaymentsFilter extends StatefulWidget {
 
 class PaymentsFilterState extends State<PaymentsFilter> {
   String? _filter;
-  Map<String, List<breez_sdk.PaymentType>> _filterMap = {};
+  Map<String, PaymentTypeFilter> _filterMap = {};
 
   @override
   void didChangeDependencies() {
@@ -35,20 +34,15 @@ class PaymentsFilterState extends State<PaymentsFilter> {
 
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, account) {
-        final payments = account.payments;
         if (_filter == null) {
           _filterMap = {
-            texts.payments_filter_option_all: breez_sdk.PaymentType.values,
-            texts.payments_filter_option_sent: [
-              breez_sdk.PaymentType.sent,
-            ],
-            texts.payments_filter_option_received: [
-              breez_sdk.PaymentType.received,
-            ],
+            texts.payments_filter_option_all: PaymentTypeFilter.All,
+            texts.payments_filter_option_sent: PaymentTypeFilter.Sent,
+            texts.payments_filter_option_received: PaymentTypeFilter.Received,
           };
           _filter = _getFilterTypeString(
             context,
-            payments.filter.paymentType,
+            account.paymentFilters.filter,
           );
         }
 
@@ -57,15 +51,13 @@ class PaymentsFilterState extends State<PaymentsFilter> {
             PaymentsFilterCalendar(_getFilterType()),
             PaymentsFilterDropdown(
               _filter!,
-                  (value) {
+              (value) {
                 setState(() {
                   _filter = value?.toString();
                 });
                 final accountBloc = context.read<AccountBloc>();
                 accountBloc.changePaymentFilter(
-                  accountBloc.state.payments.filter.copyWith(
-                    filter: _getFilterType(),
-                  ),
+                  filter: _getFilterType(),
                 );
               },
             ),
@@ -75,16 +67,16 @@ class PaymentsFilterState extends State<PaymentsFilter> {
     );
   }
 
-  List<breez_sdk.PaymentType> _getFilterType() {
-    return _filterMap[_filter] ?? breez_sdk.PaymentType.values;
+  PaymentTypeFilter _getFilterType() {
+    return _filterMap[_filter] ?? PaymentTypeFilter.All;
   }
 
   String _getFilterTypeString(
-      BuildContext context,
-      List<breez_sdk.PaymentType> filterList,
-      ) {
+    BuildContext context,
+    PaymentTypeFilter filterType,
+  ) {
     for (var entry in _filterMap.entries) {
-      if (listEquals(filterList, entry.value)) {
+      if (filterType == entry.value) {
         return entry.key;
       }
     }

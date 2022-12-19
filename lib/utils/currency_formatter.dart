@@ -2,7 +2,6 @@ import 'package:c_breez/models/currency.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/number_symbols.dart';
 import 'package:intl/number_symbols_data.dart';
-import 'package:fixnum/fixnum.dart';
 
 class CurrencyFormatter {
   final NumberFormat formatter = _defineFormatter();
@@ -70,25 +69,25 @@ class BitcoinCurrencyFormatter {
     return formattedAmount;
   }
 
-  Int64 parse(String amount, BitcoinCurrency currency) {
+  int parse(String amount, BitcoinCurrency currency) {
     switch (currency) {
       case BitcoinCurrency.BTC:
-        return Int64((double.parse(amount) * 100000000).round());
+        return (double.parse(amount) * 100000000).round();
       case BitcoinCurrency.SAT:
-        return Int64(int.parse(amount.replaceAll(RegExp('\\s+'), '')));
+        return int.parse(amount.replaceAll(RegExp('\\s+'), ''));
       default:
-        return Int64((double.parse(amount) * 100000000).round());
+        return (double.parse(amount) * 100000000).round();
     }
   }
 
-  Int64 toSats(double amount, BitcoinCurrency currency) {
+  int toSats(double amount, BitcoinCurrency currency) {
     switch (currency) {
       case BitcoinCurrency.BTC:
-        return Int64((amount * 100000000).round());
+        return (amount * 100000000).round();
       case BitcoinCurrency.SAT:
-        return Int64(amount.toInt());
+        return amount.toInt();
       default:
-        return Int64((amount * 100000000).round());
+        return (amount * 100000000).round();
     }
   }
 }

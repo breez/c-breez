@@ -30,6 +30,7 @@
 .pub-cache/
 .pub/
 /build/
+untranslated_messages.txt
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -57,3 +58,6 @@ packages/breez_sdk/android/src/main/jniLibs/x86_64/liblightning_toolkit.so
 packages/breez_sdk/rust/Dockerfile
 packages/breez_sdk/rust/make_android.sh
 packages/breez_sdk/rust/make_docker.sh
+packages/breez_sdk/cli/creds
+packages/breez_sdk/breez-sdk-bindings/target
+packages/breez_sdk/breez-sdk-bindings/binding/

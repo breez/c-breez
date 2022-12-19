@@ -1,6 +1,8 @@
+import 'dart:typed_data';
+
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
@@ -15,6 +17,7 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hex/hex.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 class UITestPage extends StatelessWidget {
@@ -166,18 +169,26 @@ class UITestPage extends StatelessWidget {
             child: ListTile(
               title: const Text("QrCodeDialog"),
               onTap: () async {
-                Future<Invoice> invoice = Future.delayed(
-                    const Duration(seconds: 2),
-                    () => Invoice(
-                        paymentHash: "Fake Payment Hash",
-                        amountMsat: 2000000.toInt(),
-                        bolt11: "Fake bolt11",
-                        description: "Fake Description",
-                        expiry: 60.toInt()));
+                Future<LNInvoice> invoice = Future.delayed(
+                  const Duration(seconds: 2),
+                  () => LNInvoice(
+                    paymentHash: "Fake Payment Hash",
+                    amountMsat: 2000000.toInt(),
+                    bolt11: "Fake bolt11",
+                    description: "Fake Description",
+                    expiry: 60.toInt(),
+                    payeePubkey: '',
+                    timestamp: 0,
+                    routingHints: [],
+                    paymentSecret: Uint8List.fromList(
+                      HEX.decode('0c56b71ef'),
+                    ),
+                  ),
+                );
                 Widget dialog = FutureBuilder(
                   future: invoice,
                   builder:
-                      (BuildContext context, AsyncSnapshot<Invoice> invoice) {
+                      (BuildContext context, AsyncSnapshot<LNInvoice> invoice) {
                     return QrCodeDialog(invoice.data, null, (result) {});
                   },
                 );
@@ -223,7 +234,7 @@ class UITestPage extends StatelessWidget {
                     "src/icon/ic_lightmode.png",
                     height: 24,
                     width: 24,
-                    color: themeData.switchThemeIconColor,
+                    color: themeData.lightThemeSwitchIconColor,
                   ),
                   const SizedBox(
                     height: 20,
@@ -234,7 +245,7 @@ class UITestPage extends StatelessWidget {
                   ),
                   ImageIcon(
                     const AssetImage("src/icon/ic_darkmode.png"),
-                    color: themeData.switchThemeIconColor,
+                    color: themeData.darkThemeSwitchIconColor,
                     size: 24.0,
                   ),
                 ],

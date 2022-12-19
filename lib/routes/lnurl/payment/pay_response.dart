@@ -1,8 +1,16 @@
-import 'package:dart_lnurl/dart_lnurl.dart';
+import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/utils/exceptions.dart';
 
 class LNURLPaymentPageResult {
-  final LNURLPayResult? result;
+  final SuccessAction? successAction;
   final Object? error;
 
-  LNURLPaymentPageResult({this.result, this.error});
+  const LNURLPaymentPageResult({
+    this.successAction,
+    this.error,
+  });
+
+  bool get hasError => error != null;
+
+  String get errorMessage => extractExceptionMessage(error ?? "");
 }

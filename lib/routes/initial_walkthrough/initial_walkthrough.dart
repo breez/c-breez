@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -18,6 +20,7 @@ class InitialWalkthroughPage extends StatefulWidget {
 
 class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
+  final _log = FimberLog("InitialWalkthrough");
   AnimationController? _controller;
   Animation<int>? _animation;
 
@@ -171,13 +174,15 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
-    await accountBloc.recoverNode(mnemonicSeed).catchError(
-      (error) {
-        navigator.removeRoute(loaderRoute);
-        showFlushbar(context, message: error.toString());
-      },
-    );
-    navigator.removeRoute(loaderRoute);
+    try {
+      await accountBloc.recoverNode(seed: mnemonicSeed);
+    } catch (error) {
+      _log.i("Failed to restore node", ex: error);
+      showFlushbar(context, message: extractExceptionMessage(error));
+      return;
+    } finally {
+      navigator.removeRoute(loaderRoute);
+    }
     navigator.pushReplacementNamed('/');
   }
 }

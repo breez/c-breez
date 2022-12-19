@@ -144,8 +144,8 @@ class WalletDashboard extends StatelessWidget {
           accountState,
         );
         if (newFiatConversion != null) {
-          context.read<CurrencyBloc>().setFiatShortName(
-                newFiatConversion.currencyData.shortName,
+          context.read<CurrencyBloc>().setFiatId(
+                newFiatConversion.currencyData.id,
               );
         }
       },
@@ -165,11 +165,11 @@ class WalletDashboard extends StatelessWidget {
     AccountState accountState,
   ) {
     final currencies = currencyState.preferredCurrencies;
-    final currentIndex = currencies.indexOf(currencyState.fiatShortName);
+    final currentIndex = currencies.indexOf(currencyState.fiatId);
     for (var i = 1; i < currencies.length; i++) {
       final nextIndex = (i + currentIndex) % currencies.length;
       if (isAboveMinAmount(currencyState, accountState)) {
-        final conversion = currencyState.fiatByShortName(currencies[nextIndex]);
+        final conversion = currencyState.fiatById(currencies[nextIndex]);
         final exchangeRate = currencyState.fiatExchangeRate;
         if (conversion != null && exchangeRate != null) {
           return FiatConversion(conversion, exchangeRate);
@@ -187,7 +187,7 @@ class WalletDashboard extends StatelessWidget {
     if (fiatConversion == null) return false;
 
     double fiatValue = fiatConversion.satToFiat(accountState.balance);
-    int fractionSize = fiatConversion.currencyData.fractionSize;
+    int fractionSize = fiatConversion.currencyData.info.fractionSize;
     double minimumAmount = 1 / (pow(10, fractionSize));
 
     return fiatValue > minimumAmount;

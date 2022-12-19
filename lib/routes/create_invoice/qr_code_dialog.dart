@@ -1,18 +1,15 @@
 import 'dart:async';
 
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
-import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/warning_box.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_extend/share_extend.dart';
@@ -20,7 +17,7 @@ import 'package:share_extend/share_extend.dart';
 import 'widgets/compact_qr_image.dart';
 
 class QrCodeDialog extends StatefulWidget {
-  final Invoice? _invoice;
+  final LNInvoice? _invoice;
   final Object? error;
   final Function(dynamic result) _onFinish;
 
@@ -66,6 +63,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             _controller!.reverse();
           }
         });
+      }).catchError((e) {
+        showFlushbar(context, message: e.toString());
+        onFinish(false);
       });
     }
   }
@@ -76,6 +76,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget _buildQrCodeDialog() {
+    final texts = context.texts();
+
     return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
       return BlocBuilder<InputBloc, InputState>(builder: (context, inputState) {
         return FadeTransition(
@@ -84,30 +86,39 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Invoice"),
+                Text(texts.qr_code_dialog_invoice),
                 Row(
                   children: <Widget>[
-                    IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
-                      icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
-                      color: Theme.of(context).primaryTextTheme.button!.color!,
-                      onPressed: () {
-                        ShareExtend.share("lightning:${widget._invoice!.bolt11}", "text");
-                      },
+                    Tooltip(
+                      message: texts.qr_code_dialog_share,
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
+                        icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
+                        color: Theme.of(context).primaryTextTheme.button!.color!,
+                        onPressed: () {
+                          ShareExtend.share("lightning:${widget._invoice!.bolt11}", "text");
+                        },
+                      ),
                     ),
-                    IconButton(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
-                      icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
-                      color: Theme.of(context).primaryTextTheme.button!.color!,
-                      onPressed: () {
-                        ServiceInjector().device.setClipboardText(widget._invoice!.bolt11);
-                        showFlushbar(context,
-                            message: "Invoice data was copied to your clipboard.", duration: const Duration(seconds: 3));
-                      },
+                    Tooltip(
+                      message: texts.qr_code_dialog_copy,
+                      child: IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
+                        icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
+                        color: Theme.of(context).primaryTextTheme.button!.color!,
+                        onPressed: () {
+                          ServiceInjector().device.setClipboardText(widget._invoice!.bolt11);
+                          showFlushbar(
+                            context,
+                            message: texts.qr_code_dialog_copied,
+                            duration: const Duration(seconds: 3),
+                          );
+                        },
+                      ),
                     )
                   ],
                 )
@@ -197,19 +208,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
 
   Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {
     final themeData = Theme.of(context);
-    String message = "";
-
-    message = "";
-    var lspFee = widget._invoice!.lspFee;
-    if (lspFee != 0) {
-      String conversionText = "";
-      if (currencyState.fiatEnabled) {
-        FiatConversion conversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
-        conversionText = " (${conversion.format(Int64(lspFee))})";
-      }
-      message = "A setup fee of ${BitcoinCurrency.SAT.format(Int64(lspFee))}$conversionText is applied to this invoice. ";
-    }
-    message += "Keep Breez open until the payment is completed.";
+    final texts = context.texts();
 
     return WarningBox(
       boxPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -217,7 +216,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       backgroundColor: themeData.isLightTheme ? const Color(0xFFf3f8fc) : null,
       borderColor: themeData.isLightTheme ? const Color(0xFF0085fb) : null,
       child: Text(
-        message,
+        texts.qr_code_dialog_warning_message,
         textAlign: TextAlign.center,
         style: Theme.of(context).primaryTextTheme.caption,
       ),
@@ -225,11 +224,15 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   Widget _buildCloseButton() {
+    final texts = context.texts();
     return TextButton(
       onPressed: (() {
         onFinish(false);
       }),
-      child: Text("CLOSE", style: Theme.of(context).primaryTextTheme.button),
+      child: Text(
+        texts.qr_code_dialog_action_close,
+        style: Theme.of(context).primaryTextTheme.button,
+      ),
     );
   }
 

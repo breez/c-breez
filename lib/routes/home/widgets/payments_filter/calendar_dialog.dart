@@ -88,7 +88,7 @@ class CalendarDialogState extends State<CalendarDialog> {
         DateTime(_endDate.year, _endDate.month, _endDate.day, 23, 59, 59, 999),
       ]);
     } else {
-      navigator.pop([null, null]);
+      navigator.pop();
     }
   }
 

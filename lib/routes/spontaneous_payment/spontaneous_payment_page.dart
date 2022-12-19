@@ -113,9 +113,11 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                             : null,
                         focusNode: _amountFocusNode,
                         controller: _amountController,
-                        validatorFn: PaymentValidator(accBloc.validatePayment,
-                                currencyState.bitcoinCurrency)
-                            .validateOutgoing,
+                        validatorFn: PaymentValidator(
+                          accBloc.validatePayment,
+                          currencyState.bitcoinCurrency,
+                          texts: context.texts(),
+                        ).validateOutgoing,
                         style: theme.FieldTextStyle.textStyle),
                     Container(
                       width: MediaQuery.of(context).size.width,
@@ -123,34 +125,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                       padding: const EdgeInsets.only(top: 16.0),
                       child: _buildPayableBTC(currencyState, acc),
                     ),
-                    BlocBuilder<AccountBloc, AccountState>(
-                        builder: (BuildContext context, AccountState acc) {
-                      String? message;
-                      if (acc.status == AccountStatus.CONNECTING) {
-                        message = texts.spontaneous_payment_generic_message;
-                      }
-
-                      if (message != null) {
-                        final themeData = Theme.of(context);
-                        return Container(
-                            padding: const EdgeInsets.only(
-                              top: 32.0,
-                              left: 16.0,
-                              right: 16.0,
-                            ),
-                            child: Column(children: <Widget>[
-                              Text(
-                                message,
-                                textAlign: TextAlign.center,
-                                style: themeData.textTheme.headline6!.copyWith(
-                                  color: themeData.colorScheme.error,
-                                ),
-                              ),
-                            ]));
-                      } else {
-                        return const SizedBox();
-                      }
-                    })
                   ],
                 ),
               ),
@@ -199,7 +173,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
   Future _sendPayment(AccountBloc accBloc, CurrencyBloc currencyBloc) async {
     final texts = context.texts();
-    final themeData = Theme.of(context);
 
     String tipMessage = _descriptionController.text;
     var bitcoinCurrency = currencyBloc.state.bitcoinCurrency;

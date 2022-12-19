@@ -5,7 +5,6 @@ import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_confirmation_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_info_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,19 +37,12 @@ class PaymentRequestDialog extends StatefulWidget {
 class PaymentRequestDialogState extends State<PaymentRequestDialog> {
   PaymentRequestState? _state;
   String? _amountToPayStr;
-  Int64? _amountToPay;
-  ModalRoute? _currentRoute;
+  int? _amountToPay;
 
   @override
   void initState() {
     super.initState();
     _state = PaymentRequestState.PAYMENT_REQUEST;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _currentRoute ??= ModalRoute.of(context);
   }
 
   @override
@@ -106,11 +98,11 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
 
   void _onStateChange(BuildContext context, PaymentRequestState state) {
     if (state == PaymentRequestState.PAYMENT_COMPLETED) {
-      Navigator.of(context).removeRoute(_currentRoute!);
+      Navigator.of(context).pop();
       return;
     }
     if (state == PaymentRequestState.USER_CANCELLED) {
-      Navigator.of(context).removeRoute(_currentRoute!);
+      Navigator.of(context).pop();
       context.read<AccountBloc>().cancelPayment(widget.invoice.bolt11);
       return;
     }

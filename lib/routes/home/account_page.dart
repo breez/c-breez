@@ -1,8 +1,7 @@
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
@@ -32,22 +31,17 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LSPBloc, LSPState>(
-      builder: (context, lspState) {
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, account) {
-            return BlocBuilder<UserProfileBloc, UserProfileState>(
-              builder: (context, userModel) {
-                return Container(
-                  color: Theme.of(context).customData.dashboardBgColor,
-                  child: _build(
-                    context,
-                    lspState,
-                    account,
-                    userModel,
-                  ),
-                );
-              },
+    return BlocBuilder<AccountBloc, AccountState>(
+      builder: (context, account) {
+        return BlocBuilder<UserProfileBloc, UserProfileState>(
+          builder: (context, userModel) {
+            return Container(
+              color: Theme.of(context).customData.dashboardBgColor,
+              child: _build(
+                context,
+                account,
+                userModel,
+              ),
             );
           },
         );
@@ -57,12 +51,23 @@ class AccountPage extends StatelessWidget {
 
   Widget _build(
     BuildContext context,
-    LSPState lspState,
     AccountState account,
     UserProfileState userModel,
   ) {
-    final payment = account.payments;
-    final payments = payment.paymentsList;    
+    final nonFilteredPayments = account.payments;
+    final paymentFilters = account.paymentFilters;
+    final filteredPayments = nonFilteredPayments.where((tx) {
+      if (paymentFilters.fromTimestamp != null &&
+          paymentFilters.toTimestamp != null) {
+        return paymentFilters.fromTimestamp! < tx.paymentTime * 1000 &&
+            tx.paymentTime * 1000 < paymentFilters.toTimestamp!;
+      }
+      if (paymentFilters.filter != PaymentTypeFilter.All) {
+        return tx.paymentType.toLowerCase() ==
+            paymentFilters.filter.name.toLowerCase();
+      }
+      return true;
+    }).toList();
 
     List<Widget> slivers = [];
 
@@ -74,31 +79,35 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    final bool showSliver = payments.isNotEmpty || !payment.filter.allowAll();
+    final bool showSliver = nonFilteredPayments.isNotEmpty ||
+        paymentFilters.filter != PaymentTypeFilter.All;
 
     if (showSliver) {
       slivers.add(
         PaymentsFilterSliver(
           maxSize: _kFilterMaxSize,
           scrollController: scrollController,
-          hasFilter: !payment.filter.allowAll(),
+          hasFilter: paymentFilters.filter != PaymentTypeFilter.All,
         ),
       );
     }
 
-    final paymentTypes = payment.filter.paymentType;
-    final startDate = payment.filter.startDate;
-    final endDate = payment.filter.endDate;
+    int? startDate = paymentFilters.fromTimestamp;
+    int? endDate = paymentFilters.toTimestamp;
     if (startDate != null && endDate != null) {
       slivers.add(
-        HeaderFilterChip(_kFilterMaxSize, paymentTypes, startDate, endDate),
+        HeaderFilterChip(
+          _kFilterMaxSize,
+          DateTime.fromMillisecondsSinceEpoch(startDate),
+          DateTime.fromMillisecondsSinceEpoch(endDate),
+        ),
       );
     }
 
     if (showSliver) {
       slivers.add(
         PaymentsList(
-          payments,
+          filteredPayments,
           _kPaymentListItemHeight,
           firstPaymentItemKey,
         ),
@@ -107,27 +116,32 @@ class AccountPage extends StatelessWidget {
         SliverPersistentHeader(
           pinned: true,
           delegate: FixedSliverDelegate(
-            _bottomPlaceholderSpace(context, payment, payments),
+            _bottomPlaceholderSpace(context, filteredPayments),
             child: Container(),
           ),
         ),
       );
-    } else if (!account.initial) {
+    } else if (!account.initial && nonFilteredPayments.isEmpty) {
       slivers.add(
         SliverPersistentHeader(
           delegate: FixedSliverDelegate(
             250.0,
             builder: (context, shrinkedHeight, overlapContent) {
-              if (lspState.selectionRequired == true) {
-                return const Padding(
-                  padding: EdgeInsets.only(top: 120.0),
-                  child: NoLSPWidget(),
+              return BlocBuilder<LSPBloc, LspInformation?>(
+                  builder: (context, lsp) {
+                var isConnecting =
+                    account.status == ConnectionStatus.CONNECTING;
+                if (!isConnecting && lsp == null) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 120.0),
+                    child: NoLSPWidget(),
+                  );
+                }
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
+                  child: StatusText(isConnecting: isConnecting),
                 );
-              }
-              return const Padding(
-                padding: EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                child: StatusText(),
-              );
+              });
             },
           ),
         ),
@@ -151,8 +165,7 @@ class AccountPage extends StatelessWidget {
 
   double _bottomPlaceholderSpace(
     BuildContext context,
-    breez_sdk.PaymentsState payment,
-    List<breez_sdk.PaymentInfo> payments,
+    List<Payment> payments,
   ) {
     if (payments.isEmpty) return 0.0;
     double listHeightSpace = MediaQuery.of(context).size.height -
@@ -160,7 +173,8 @@ class AccountPage extends StatelessWidget {
         kToolbarHeight -
         _kFilterMaxSize -
         25.0;
-    double dateFilterSpace = payment.filter.endDate != null ? 0.65 : 0.0;
+    const endDate = null;
+    double dateFilterSpace = endDate != null ? 0.65 : 0.0;
     double bottomPlaceholderSpace = (listHeightSpace -
             (_kPaymentListItemHeight + 8) *
                 (payments.length + 1 + dateFilterSpace))

@@ -1,17 +1,21 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
+import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart'
-    as payment_request;
+import 'package:c_breez/widgets/open_link_dialog.dart';
+import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
+import 'package:c_breez/widgets/route.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../widgets/open_link_dialog.dart';
-import '../widgets/route.dart';
+final _log = FimberLog("InputHandler");
 
 class InputHandler {
   final BuildContext _context;
@@ -35,11 +39,24 @@ class InputHandler {
       }
       _setLoading(inputState.isLoading);
       _handlingRequest = true;
-      handleInput(inputState).whenComplete(() => _handlingRequest = false);
+      handleInput(inputState)
+          .then((result) {
+            if (result is LNURLPaymentPageResult) {
+              _handleLNURLPaymentPageResult(result);
+            }
+          })
+          .whenComplete(() => _handlingRequest = false)
+          .onError((error, _) {
+            _handlingRequest = false;
+            _setLoading(false);
+            if (error != null) {
+              showFlushbar(_context, message: extractExceptionMessage(error));
+            }
+          });
     }).onError((error) {
       _handlingRequest = false;
       _setLoading(false);
-      showFlushbar(_context, message: error.toString());
+      showFlushbar(_context, message: extractExceptionMessage(error));
     });
   }
 
@@ -64,7 +81,7 @@ class InputHandler {
       useRootNavigator: false,
       context: _context,
       barrierDismissible: false,
-      builder: (_) => payment_request.PaymentRequestDialog(
+      builder: (_) => PaymentRequestDialog(
         invoice,
         firstPaymentItemKey,
         scrollController,
@@ -92,6 +109,20 @@ class InputHandler {
     );
   }
 
+  void _handleLNURLPaymentPageResult(LNURLPaymentPageResult result) {
+    final action = result.successAction;
+    if (action is SuccessAction_Message) {
+      final message = action.field0.message;
+      _log.v("Handle LNURL payment page result with message action '$message'");
+    } else if (action is SuccessAction_Url) {
+      final description = action.field0.description;
+      final url = action.field0.url;
+      _log.v("Handle LNURL payment page result with url action '$description', '$url'");
+    } else {
+      _log.v("Handle LNURL payment page result with unknown action '$action'");
+    }
+  }
+
   _setLoading(bool visible) {
     if (visible && _loaderRoute == null) {
       _loaderRoute = createLoaderRoute(_context);
@@ -100,7 +131,7 @@ class InputHandler {
     }
 
     if (!visible && _loaderRoute != null) {
-      Navigator.removeRoute(_context, _loaderRoute!);
+      _loaderRoute?.navigator?.removeRoute(_loaderRoute!);
       _loaderRoute = null;
     }
   }

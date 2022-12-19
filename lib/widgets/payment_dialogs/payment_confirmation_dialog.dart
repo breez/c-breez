@@ -1,14 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PaymentConfirmationDialog extends StatelessWidget {
   final String bolt11;
-  final Int64 _amountToPay;
+  final int _amountToPay;
   final String _amountToPayStr;
   final Function() _onCancel;
-  final Function(String bolt11, Int64 amount) _onPaymentApproved;
+  final Function(String bolt11, int amount) _onPaymentApproved;
   final double minHeight;
 
   const PaymentConfirmationDialog(

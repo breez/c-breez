@@ -317,11 +317,12 @@ pub fn pay_lnurl(
 /// and generates the `LnUrlW` payload needed here.
 pub fn withdraw_lnurl(
     req_data: LnUrlWithdrawRequestData,
-    invoice: LNInvoice,
+    amount_sats: u64,
+    description: Option<String>,
 ) -> Result<LnUrlWithdrawCallbackStatus> {
     block_on(async {
         get_breez_services()?
-            .withdraw_lnurl(req_data, invoice)
+            .withdraw_lnurl(req_data, amount_sats, description)
             .await
     })
 }

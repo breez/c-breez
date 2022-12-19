@@ -394,7 +394,8 @@ fn wire_pay_lnurl_impl(
 fn wire_withdraw_lnurl_impl(
     port_: MessagePort,
     req_data: impl Wire2Api<LnUrlWithdrawRequestData> + UnwindSafe,
-    invoice: impl Wire2Api<LNInvoice> + UnwindSafe,
+    amount_sats: impl Wire2Api<u64> + UnwindSafe,
+    description: impl Wire2Api<Option<String>> + UnwindSafe,
 ) {
     FLUTTER_RUST_BRIDGE_HANDLER.wrap(
         WrapInfo {
@@ -404,8 +405,9 @@ fn wire_withdraw_lnurl_impl(
         },
         move || {
             let api_req_data = req_data.wire2api();
-            let api_invoice = invoice.wire2api();
-            move |task_callback| withdraw_lnurl(api_req_data, api_invoice)
+            let api_amount_sats = amount_sats.wire2api();
+            let api_description = description.wire2api();
+            move |task_callback| withdraw_lnurl(api_req_data, api_amount_sats, api_description)
         },
     )
 }
@@ -447,12 +449,6 @@ where
 
 impl Wire2Api<i64> for *mut i64 {
     fn wire2api(self) -> i64 {
-        unsafe { *support::box_from_leak_ptr(self) }
-    }
-}
-
-impl Wire2Api<u64> for *mut u64 {
-    fn wire2api(self) -> u64 {
         unsafe { *support::box_from_leak_ptr(self) }
     }
 }
@@ -501,7 +497,6 @@ impl Wire2Api<PaymentTypeFilter> for i32 {
         }
     }
 }
-
 impl Wire2Api<u32> for u32 {
     fn wire2api(self) -> u32 {
         self

@@ -186,8 +186,12 @@ impl BreezServices {
     pub async fn withdraw_lnurl(
         &self,
         req_data: LnUrlWithdrawRequestData,
-        invoice: LNInvoice,
+        amount_sats: u64,
+        description: Option<String>,
     ) -> Result<LnUrlWithdrawCallbackStatus> {
+        let invoice = self
+            .receive_payment(amount_sats, description.unwrap_or_default())
+            .await?;
         validate_lnurl_withdraw(req_data, invoice).await
     }
 

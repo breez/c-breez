@@ -42,43 +42,6 @@ typedef struct wire_LnUrlWithdrawRequestData {
   uint64_t max_withdrawable;
 } wire_LnUrlWithdrawRequestData;
 
-typedef struct wire_RouteHintHop {
-  struct wire_uint_8_list *src_node_id;
-  uint64_t short_channel_id;
-  uint32_t fees_base_msat;
-  uint32_t fees_proportional_millionths;
-  uint64_t cltv_expiry_delta;
-  uint64_t *htlc_minimum_msat;
-  uint64_t *htlc_maximum_msat;
-} wire_RouteHintHop;
-
-typedef struct wire_list_route_hint_hop {
-  struct wire_RouteHintHop *ptr;
-  int32_t len;
-} wire_list_route_hint_hop;
-
-typedef struct wire_RouteHint {
-  struct wire_list_route_hint_hop *hops;
-} wire_RouteHint;
-
-typedef struct wire_list_route_hint {
-  struct wire_RouteHint *ptr;
-  int32_t len;
-} wire_list_route_hint;
-
-typedef struct wire_LNInvoice {
-  struct wire_uint_8_list *bolt11;
-  struct wire_uint_8_list *payee_pubkey;
-  struct wire_uint_8_list *payment_hash;
-  struct wire_uint_8_list *description;
-  struct wire_uint_8_list *description_hash;
-  uint64_t *amount_msat;
-  uint64_t timestamp;
-  uint64_t expiry;
-  struct wire_list_route_hint *routing_hints;
-  struct wire_uint_8_list *payment_secret;
-} wire_LNInvoice;
-
 typedef struct WireSyncReturnStruct {
   uint8_t *ptr;
   int32_t len;
@@ -167,7 +130,8 @@ void wire_pay_lnurl(int64_t port_,
 
 void wire_withdraw_lnurl(int64_t port_,
                          struct wire_LnUrlWithdrawRequestData *req_data,
-                         struct wire_LNInvoice *invoice);
+                         uint64_t amount_sats,
+                         struct wire_uint_8_list *description);
 
 void wire_mnemonic_to_seed(int64_t port_, struct wire_uint_8_list *phrase);
 
@@ -177,17 +141,9 @@ struct wire_GreenlightCredentials *new_box_autoadd_greenlight_credentials_0(void
 
 int64_t *new_box_autoadd_i64_0(int64_t value);
 
-struct wire_LNInvoice *new_box_autoadd_ln_invoice_0(void);
-
 struct wire_LnUrlPayRequestData *new_box_autoadd_ln_url_pay_request_data_0(void);
 
 struct wire_LnUrlWithdrawRequestData *new_box_autoadd_ln_url_withdraw_request_data_0(void);
-
-uint64_t *new_box_autoadd_u64_0(uint64_t value);
-
-struct wire_list_route_hint *new_list_route_hint_0(int32_t len);
-
-struct wire_list_route_hint_hop *new_list_route_hint_hop_0(int32_t len);
 
 struct wire_uint_8_list *new_uint_8_list_0(int32_t len);
 
@@ -224,12 +180,8 @@ static int64_t dummy_method_to_enforce_bundling(void) {
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_config_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_greenlight_credentials_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_i64_0);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_ln_invoice_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_ln_url_pay_request_data_0);
     dummy_var ^= ((int64_t) (void*) new_box_autoadd_ln_url_withdraw_request_data_0);
-    dummy_var ^= ((int64_t) (void*) new_box_autoadd_u64_0);
-    dummy_var ^= ((int64_t) (void*) new_list_route_hint_0);
-    dummy_var ^= ((int64_t) (void*) new_list_route_hint_hop_0);
     dummy_var ^= ((int64_t) (void*) new_uint_8_list_0);
     dummy_var ^= ((int64_t) (void*) free_WireSyncReturnStruct);
     dummy_var ^= ((int64_t) (void*) store_dart_post_cobject);

@@ -136,7 +136,7 @@ fn main() -> Result<()> {
                                     binding::pay_lnurl(amount_sat.parse::<u64>()?, None, pd);
                                 show_results(pay_res);
                             }
-                            _ => error!("Unexpected result type")
+                            _ => error!("Unexpected result type"),
                         }
                     }
                     Some("lnurl-withdraw") => {
@@ -171,10 +171,11 @@ fn main() -> Result<()> {
                                 let amount_sats: u64 = user_input_withdraw_amount_sat.parse()?;
                                 let description = "LNURL-withdraw";
 
-                                let invoice =
-                                    binding::receive_payment(amount_sats, description.to_string())?;
-
-                                let withdraw_res = binding::withdraw_lnurl(wd, invoice);
+                                let withdraw_res = binding::withdraw_lnurl(
+                                    wd,
+                                    amount_sats,
+                                    Some(description.into()),
+                                );
                                 show_results(withdraw_res);
                             }
                             _ => error!("Unexpected result type"),

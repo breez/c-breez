@@ -22,7 +22,7 @@ dependencies:
   bip39: ^1.0.6
   bolt11_decoder: ^1.0.1
   breez_sdk:
-    path: ./packages/breez_sdk
+    path: ../breez-sdk/libs/sdk-flutter
   connectivity_plus: ^3.0.2
   cryptography: ^2.0.5
   cupertino_icons: ^1.0.5

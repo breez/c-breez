@@ -165,14 +165,14 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               );
               navigator.removeRoute(loaderRoute);
               if (resp is sdk.LnUrlPayResult_EndpointSuccess) {
-                _log.v("LNURL payment success, action: ${resp.field0}");
+                _log.v("LNURL payment success, action: ${resp.data}");
                 navigator.pop(LNURLPaymentPageResult(
-                  successAction: resp.field0,
+                  successAction: resp.data,
                 ));
               } else if (resp is sdk.LnUrlPayResult_EndpointError) {
-                _log.v("LNURL payment failed: ${resp.field0.reason}");
+                _log.v("LNURL payment failed: ${resp.data.reason}");
                 navigator.pop(LNURLPaymentPageResult(
-                  error: resp.field0.reason,
+                  error: resp.data.reason,
                 ));
               } else {
                 _log.w("Unknown response from sendLNURLPayment: $resp");

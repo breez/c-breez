@@ -109,7 +109,7 @@ class NavigationDrawer extends StatelessWidget {
               action.onItemSelected ?? _onItemSelected,
             ))
         .toList();
-    if (groupItems.isNotEmpty) {
+    if (group.groupTitle != null && groupItems.isNotEmpty) {
       groupItems = group.items
           .map((action) => _actionTile(
                 action,

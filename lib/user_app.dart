@@ -1,6 +1,7 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
+import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -21,6 +22,8 @@ import 'package:c_breez/routes/security/secured_page.dart';
 import 'package:c_breez/routes/security/security_page.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
+import 'package:c_breez/routes/subswap/swap/get_refund/get_refund_page.dart';
+import 'package:c_breez/routes/subswap/swap/swap_page.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/utils/locale.dart';
@@ -39,6 +42,8 @@ class UserApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final RefundBloc refundBloc = context.read<RefundBloc>();
+
     return ThemeProvider(
       saveThemesOnChange: true,
       onInitCallback: (controller, previouslySavedThemeFuture) async {

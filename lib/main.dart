@@ -7,6 +7,7 @@ import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
@@ -82,6 +83,9 @@ void main() async {
           ),
           BlocProvider<ConnectivityBloc>(
             create: (BuildContext context) => ConnectivityBloc(),
+          ),
+          BlocProvider<RefundBloc>(
+            create: (BuildContext context) => RefundBloc(breezLib),
           ),
           BlocProvider<NetworkSettingsBloc>(
             create: (BuildContext context) => NetworkSettingsBloc(

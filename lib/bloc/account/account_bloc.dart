@@ -116,7 +116,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("recovered node started");
   }
 
-  Future<void> _startNode(sdk.GreenlightCredentials creds, Uint8List seed) async {
+  Future<void> _startNode(
+      sdk.GreenlightCredentials creds, Uint8List seed) async {
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     _breezLib.nodeStateController.add(await _breezLib.getNodeState());
     emit(state.copyWith(initial: false));
@@ -160,7 +161,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required sdk.LnUrlPayRequestData reqData,
     String? comment,
   }) async {
-    _log.v("sendLNURLPayment amount: $amount, comment: '$comment', reqData: $reqData");
+    _log.v(
+        "sendLNURLPayment amount: $amount, comment: '$comment', reqData: $reqData");
     try {
       return _breezLib.payLnUrl(
         userAmountSat: amount,

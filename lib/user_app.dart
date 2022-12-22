@@ -20,6 +20,7 @@ import 'package:c_breez/routes/security/lock_screen.dart';
 import 'package:c_breez/routes/security/secured_page.dart';
 import 'package:c_breez/routes/security/security_page.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
+import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/utils/locale.dart';
@@ -173,6 +174,11 @@ class UserApp extends StatelessWidget {
                                   return MaterialPageRoute<String>(
                                     fullscreenDialog: true,
                                     builder: (_) => QRScan(),
+                                    settings: settings,
+                                  );
+                                case '/withdraw_funds':
+                                  return FadeInRoute(
+                                    builder: (_) => const WithdrawFundsAddressPage(),
                                     settings: settings,
                                   );
                               }

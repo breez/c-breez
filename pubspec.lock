@@ -1208,6 +1208,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.1"
+  sqlite3_flutter_libs:
+    dependency: "direct main"
+    description:
+      name: sqlite3_flutter_libs
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.12"
   stack_trace:
     dependency: transitive
     description:
@@ -1237,7 +1244,7 @@ packages:
     source: hosted
     version: "1.1.1"
   synchronized:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: synchronized
       url: "https://pub.dartlang.org"

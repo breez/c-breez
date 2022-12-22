@@ -203,7 +203,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
               var sendPayment = Future.delayed(
                 const Duration(seconds: 1),
                 () {
-                  // accBloc.userActionsSink.add(sendAction);
                   sendFuture = accBloc.sendSpontaneousPayment(
                     widget.nodeID!,
                     tipMessage,

@@ -1,3 +1,5 @@
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/withdraw_funds/bitcoin_address_text_form_field.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_next_button.dart';
@@ -5,12 +7,10 @@ import 'package:c_breez/routes/withdraw_funds/withdraw_funds_available_btc.dart'
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WithdrawFundsAddressPage extends StatefulWidget {
-  final int availableBtc;
-
-  const WithdrawFundsAddressPage(
-    this.availableBtc, {
+  const WithdrawFundsAddressPage({
     Key? key,
   }) : super(key: key);
 
@@ -50,6 +50,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
               child: BitcoinAddressTextFormField(
                 context: context,
                 controller: _addressController,
+                validatorHolder: ValidatorHolder(),
               ),
             ),
           ),
@@ -58,11 +59,13 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
             child: WithdrawFundsAvailableBtc(),
           ),
           Expanded(child: Container()),
-          WithdrawFundsAddressNextButton(
-            addressController: _addressController,
-            validator: () => _formKey.currentState?.validate() ?? false,
-            amount: widget.availableBtc,
-          ),
+          BlocBuilder<AccountBloc, AccountState>(builder: (context, state) {
+            return WithdrawFundsAddressNextButton(
+              addressController: _addressController,
+              validator: () => _formKey.currentState?.validate() ?? false,
+              amount: state.balance,
+            );
+          }),
         ],
       ),
     );

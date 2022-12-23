@@ -38,6 +38,7 @@ class BreezLogger {
 
     getApplicationDocumentsDirectory().then(
       (appDir) {
+        _pruneLogs(appDir);
         final tokens = [
           CustomFormatTree.timeStampToken,
           CustomFormatTree.levelToken,
@@ -46,7 +47,7 @@ class BreezLogger {
         ];
         Fimber.plantTree(
           SizeRollingFileTree(
-            DataSize(megabytes: 2),
+            DataSize(megabytes: 10),
             filenamePrefix: "${appDir.path}/logs/c_breez.",
             filenamePostfix: ".log",
             logLevels: logLevels,
@@ -61,5 +62,26 @@ class BreezLogger {
         };
       },
     );
+  }
+}
+
+void _pruneLogs(Directory appDir) {
+  final loggingFolder = Directory("${appDir.path}/logs/");
+
+  // Get and sort log files by modified date
+  List<FileSystemEntity> filesToBePruned = loggingFolder
+      .listSync(followLinks: false)
+      .where((e) => e.path.endsWith('.log'))
+      .toList()
+    ..sort((l, r) => l.statSync().modified.compareTo(r.statSync().modified));
+  // Delete all except last 2 logs
+  if (filesToBePruned.length > 2) {
+    filesToBePruned.removeRange(
+      filesToBePruned.length - 2,
+      filesToBePruned.length,
+    );
+    for (var logFile in filesToBePruned) {
+      logFile.delete();
+    }
   }
 }

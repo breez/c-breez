@@ -271,9 +271,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return state.toJson();
   }
 
-  // TODO: Export the user keys to a file
-  Future exportKeyFiles(Directory destDir) async {
-    throw Exception("not implemented");
+  Future<String> exportCredentialsFile() async {
+    return _credentialsManager.exportCredentials();
   }
 
   void recursiveFolderCopySync(String path1, String path2) {

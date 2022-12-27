@@ -1,8 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:hex/hex.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CredentialsManager {
   static const String accountCredsKey = "account_creds_key";
@@ -60,6 +63,20 @@ class CredentialsManager {
     String? seedStr = await keyChain.read(accountSeedKey);
     return Uint8List.fromList(HEX.decode(seedStr!));
   }
+
+  // TODO: Subject to change to be compatible with CLI
+  Future<String> exportCredentials() async {
+    try {
+      final Directory tempDir = await getTemporaryDirectory();
+      var keysDir = tempDir.createTempSync("keys");
+      final File file = File('${keysDir.path}/c-breez_credentials.json');
+      Credentials credentials = await restoreCredentials();
+      file.writeAsString(jsonEncode(credentials.toJson()));
+      return file.path;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }
 
 class Credentials {
@@ -67,4 +84,22 @@ class Credentials {
   final Uint8List seed;
 
   Credentials({required this.glCreds, required this.seed});
+
+  Credentials.fromJson(
+    Map<String, dynamic> json,
+  )   : glCreds = GreenlightCredentials(
+          deviceKey:
+              Uint8List.fromList(HEX.decode(json['glCreds']['deviceKey'])),
+          deviceCert:
+              Uint8List.fromList(HEX.decode(json['glCreds']['deviceCert'])),
+        ),
+        seed = Uint8List.fromList(HEX.decode(json['seed']));
+
+  Map<String, dynamic> toJson() => {
+        'glCreds': {
+          'deviceKey': HEX.encode(glCreds.deviceKey),
+          'deviceCert': HEX.encode(glCreds.deviceCert),
+        },
+        'seed': HEX.encode(seed),
+      };
 }

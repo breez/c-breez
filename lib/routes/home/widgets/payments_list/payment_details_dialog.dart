@@ -233,7 +233,7 @@ Widget _amountText(
 ) {
   final amount = currency.format(paymentInfo.amountMsat);
 
-  final text = (paymentInfo.paymentType == "received")
+  final text = (paymentInfo.paymentType == PaymentType.Received)
       ? texts.payment_details_dialog_amount_positive(amount)
       : texts.payment_details_dialog_amount_negative(amount);
   return AutoSizeText(

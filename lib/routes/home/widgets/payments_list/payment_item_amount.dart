@@ -52,7 +52,7 @@ class PaymentItemAmount extends StatelessWidget {
               Text(
                 _hideBalance
                     ? texts.wallet_dashboard_payment_item_balance_hide
-                    : _paymentInfo.paymentType == "received"
+                    : _paymentInfo.paymentType == PaymentType.Received
                         ? texts.wallet_dashboard_payment_item_balance_positive(
                             amount)
                         : texts.wallet_dashboard_payment_item_balance_negative(

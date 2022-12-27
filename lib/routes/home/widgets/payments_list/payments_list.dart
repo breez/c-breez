@@ -83,53 +83,38 @@ void main() async {
                 PaymentsList(
                   [
                     Payment(
-                      paymentType: "received",
-                      label: "A long title",
-                      bolt11: "",
-                      destinationPubkey:
-                          "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                      paymentHash:
-                          "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                      feesMsat: 0,
-                      keysend: false,
-                      paymentPreimage: "",
+                      paymentType: PaymentType.Received,                      
+                      id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feeMsat: 0,                      
                       paymentTime: 1661791810,
                       amountMsat: 4321000,
                       pending: false,
                       description: "A title",
+                      details: PaymentDetails.ln(data: LnPaymentDetails(
+                          paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
                     ),
                     Payment(
-                      paymentType: "received",
-                      label: "A long title",
-                      bolt11: "",
-                      destinationPubkey:
-                          "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                      paymentHash:
-                          "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                      feesMsat: 12,
-                      keysend: false,
-                      paymentPreimage: "",
+                      paymentType: PaymentType.Received,  
+                      id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",               
+                      feeMsat: 12,                      
                       paymentTime: 1661791810,
                       amountMsat: 4321000,
                       pending: false,
                       description: "A title",
+                      details: PaymentDetails.ln(data: LnPaymentDetails(
+                          paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
                     ),
                     Payment(
-                      paymentType: "received",
-                      label: "A long title",
-                      bolt11: "",
-                      destinationPubkey:
-                          "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                      paymentHash:
-                          "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                      feesMsat: 3456,
-                      keysend: false,
-                      paymentPreimage: "",
+                      paymentType: PaymentType.Received,                        
+                      id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feeMsat: 3456,                      
                       paymentTime:
                           DateTime.now().millisecondsSinceEpoch ~/ 1000,
                       amountMsat: 4321000,
                       pending: false,
                       description: "A title",
+                      details: PaymentDetails.ln(data: LnPaymentDetails(
+                          paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
                     ),
                   ],
                     72,

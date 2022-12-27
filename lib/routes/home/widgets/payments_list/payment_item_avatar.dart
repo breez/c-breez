@@ -19,7 +19,7 @@ class PaymentItemAvatar extends StatelessWidget {
         radius: radius,
         backgroundColor: Colors.white,
         child: Icon(
-          paymentItem.paymentType == "received" ? Icons.add_rounded : Icons.remove_rounded,
+          paymentItem.paymentType == PaymentType.Received ? Icons.add_rounded : Icons.remove_rounded,
           color: const Color(0xb3303234),
         ),
       );
@@ -29,5 +29,5 @@ class PaymentItemAvatar extends StatelessWidget {
     }
   }
 
-  bool get _shouldShowLeadingIcon => paymentItem.keysend;
+  bool get _shouldShowLeadingIcon => paymentItem.details is LnPaymentDetails &&  (paymentItem.details as LnPaymentDetails).keysend;
 }

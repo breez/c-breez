@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsConfirmationSpeedChooserItem extends StatelessWidget {
@@ -31,7 +32,11 @@ class WithdrawFundsConfirmationSpeedChooserItem extends StatelessWidget {
           maxLines: 1,
           textAlign: TextAlign.center,
           style: themeData.textTheme.button!.copyWith(
-            color: currentSpeed == transactionCostSpeed ? themeData.canvasColor : themeData.primaryColor,
+            color: themeData.isLightTheme
+                ? currentSpeed == transactionCostSpeed
+                    ? themeData.canvasColor
+                    : themeData.primaryColor
+                : Colors.white,
           ),
         ),
       ),

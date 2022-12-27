@@ -88,6 +88,25 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
                 ),
               ],
             );
+          } else if (transaction is WithdrawFudsErrorState) {
+            return Column(
+              children: [
+                Expanded(child: Container()),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                    child: Text(transaction.message),
+                  ),
+                ),
+                Expanded(child: Container()),
+                TextButton(
+                  onPressed: () => context.read<WithdrawFundsBloc>().fetchTransactionConst(),
+                  child: Text(
+                    texts.sweep_all_coins_action_retry,
+                  ),
+                ),
+              ],
+            );
           } else {
             return const Center(
               child: Loader(),

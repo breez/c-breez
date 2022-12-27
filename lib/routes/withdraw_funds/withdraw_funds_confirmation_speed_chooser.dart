@@ -38,7 +38,12 @@ class _WithdrawFundsConfirmationSpeedChooserState extends State<WithdrawFundsCon
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final third = constraints.maxWidth / 3;
-                final offset = third * widget.currentSpeed.index;
+                final offset = third *
+                    (widget.currentSpeed == FeeratePreset.Economy
+                        ? 0
+                        : widget.currentSpeed == FeeratePreset.Regular
+                            ? 1
+                            : 2);
 
                 return TweenAnimationBuilder<double>(
                   tween: Tween<double>(begin: _offset ?? offset, end: offset),

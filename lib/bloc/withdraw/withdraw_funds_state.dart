@@ -1,9 +1,12 @@
-
-
 abstract class WithdrawFudsState {
   const WithdrawFudsState();
 
   factory WithdrawFudsState.initial() => const WithdrawFudsEmptyState();
+
+  factory WithdrawFudsState.error(
+    String error,
+  ) =>
+      WithdrawFudsErrorState(error);
 
   factory WithdrawFudsState.info(
     TransactionCost economy,
@@ -19,6 +22,14 @@ abstract class WithdrawFudsState {
 
 class WithdrawFudsEmptyState extends WithdrawFudsState {
   const WithdrawFudsEmptyState();
+}
+
+class WithdrawFudsErrorState extends WithdrawFudsState {
+  final String message;
+
+  const WithdrawFudsErrorState(
+    this.message,
+  );
 }
 
 class WithdrawFudsInfoState extends WithdrawFudsState {

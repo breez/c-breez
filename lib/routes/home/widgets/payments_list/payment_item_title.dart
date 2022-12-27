@@ -23,10 +23,7 @@ class PaymentItemTitle extends StatelessWidget {
 
   String _title(BuildContext context) {
     final description = _paymentInfo.description;
-    if (description != null && description.isNotEmpty) return description;
-
-    final label = _paymentInfo.label;
-    if (label.isNotEmpty) return label;
+    if (description != null && description.isNotEmpty) return description;   
 
     return context.texts().wallet_dashboard_payment_item_no_title;
   }
@@ -37,60 +34,45 @@ void main() {
     // No title
     PaymentItemTitle(
       Payment(
-        paymentType: "received",
-        label: "",
-        bolt11: "",
-        destinationPubkey:
-            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-        paymentHash:
-            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-        feesMsat: 0,
-        keysend: false,
-        paymentPreimage: "",
+        paymentType: PaymentType.Received, 
+        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",       
+        feeMsat: 0,        
         paymentTime: 1661791810,
         amountMsat: 4321000,
         pending: false,
         description: "",
+        details: PaymentDetails.ln(data: LnPaymentDetails(
+                paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
       ),
     ),
 
     // Long title
     PaymentItemTitle(
       Payment(
-        paymentType: "received",
-        label: "A long title\nwith a new line",
-        bolt11: "",
-        destinationPubkey:
-            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-        paymentHash:
-            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-        feesMsat: 0,
-        keysend: false,
-        paymentPreimage: "",
+        paymentType: PaymentType.Received,
+        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",        
+        feeMsat: 0,  
         paymentTime: 1661791810,
         amountMsat: 4321000,
         pending: false,
-        description: "",
+        description: "A long title\nwith a new line",
+        details: PaymentDetails.ln(data: LnPaymentDetails(
+                paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
       ),
     ),
 
     // Short title
     PaymentItemTitle(
       Payment(
-        paymentType: "received",
-        label: "A short title",
-        bolt11: "",
-        destinationPubkey:
-            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-        paymentHash:
-            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-        feesMsat: 0,
-        keysend: false,
-        paymentPreimage: "",
+        paymentType: PaymentType.Received,
+        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",        
+        feeMsat: 0,        
         paymentTime: 1661791810,
         amountMsat: 4321000,
         pending: false,
-        description: "",
+        description: "A short title",
+        details: PaymentDetails.ln(data: LnPaymentDetails(
+                paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
       ),
     ),
   ]));

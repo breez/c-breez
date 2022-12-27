@@ -63,8 +63,8 @@ class AccountPage extends StatelessWidget {
             tx.paymentTime * 1000 < paymentFilters.toTimestamp!;
       }
       if (paymentFilters.filter != PaymentTypeFilter.All) {
-        return tx.paymentType.toLowerCase() ==
-            paymentFilters.filter.name.toLowerCase();
+        return tx.paymentType.name ==
+            paymentFilters.filter.name;
       }
       return true;
     }).toList();

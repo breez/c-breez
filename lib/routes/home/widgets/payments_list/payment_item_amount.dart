@@ -32,7 +32,7 @@ class PaymentItemAmount extends StatelessWidget {
       height: 44,
       child: BlocBuilder<CurrencyBloc, CurrencyState>(
         builder: (context, currencyState) {
-          final fee = _paymentInfo.feesMsat ~/ 1000;
+          final fee = _paymentInfo.feeMsat ~/ 1000;
           final amount = currencyState.bitcoinCurrency.format(
             _paymentInfo.amountMsat ~/ 1000,
             includeDisplayName: false,
@@ -44,7 +44,7 @@ class PaymentItemAmount extends StatelessWidget {
 
           return Column(
             mainAxisAlignment:
-                _paymentInfo.feesMsat == 0 || _paymentInfo.pending
+                _paymentInfo.feeMsat == 0 || _paymentInfo.pending
                     ? MainAxisAlignment.center
                     : MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -52,7 +52,7 @@ class PaymentItemAmount extends StatelessWidget {
               Text(
                 _hideBalance
                     ? texts.wallet_dashboard_payment_item_balance_hide
-                    : _paymentInfo.paymentType == "received"
+                    : _paymentInfo.paymentType == PaymentType.Received
                         ? texts.wallet_dashboard_payment_item_balance_positive(
                             amount)
                         : texts.wallet_dashboard_payment_item_balance_negative(
@@ -95,20 +95,15 @@ void main() async {
         home: Column(children: [
           PaymentItemAmount(
             Payment(
-              paymentType: "received",
-              label: "",
-              bolt11: "",
-              destinationPubkey:
-                  "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-              paymentHash:
-                  "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-              feesMsat: 0,
-              keysend: false,
-              paymentPreimage: "",
+              paymentType: PaymentType.Received,
+              id: "",
+              feeMsat: 0,              
               paymentTime: 1661791810,
               amountMsat: 4321000,
               pending: false,
               description: "",
+              details: PaymentDetails.ln(data: LnPaymentDetails(
+                paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
             ),
             false,
           ),
@@ -116,20 +111,16 @@ void main() async {
           // Pending
           PaymentItemAmount(
             Payment(
-              paymentType: "received",
-              label: "",
-              bolt11: "",
-              destinationPubkey:
-                  "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-              paymentHash:
+              paymentType: PaymentType.Received,              
+              id:
                   "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-              feesMsat: 1234,
-              keysend: false,
-              paymentPreimage: "",
+              feeMsat: 1234,             
               paymentTime: 1661791810,
               amountMsat: 4321000,
               pending: true,
               description: "",
+              details: PaymentDetails.ln(data: LnPaymentDetails(
+                paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
             ),
             false,
           ),
@@ -137,20 +128,15 @@ void main() async {
           // Show all
           PaymentItemAmount(
             Payment(
-              paymentType: "received",
-              label: "",
-              bolt11: "",
-              destinationPubkey:
-                  "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-              paymentHash:
-                  "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-              feesMsat: 1234,
-              keysend: false,
-              paymentPreimage: "",
+              paymentType: PaymentType.Received,   
+              id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",           
+              feeMsat: 1234,                            
               paymentTime: 1661791810,
               amountMsat: 4321000,
               pending: false,
               description: "",
+              details: PaymentDetails.ln(data: LnPaymentDetails(
+                paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
             ),
             false,
           ),
@@ -158,20 +144,15 @@ void main() async {
           // Hide all
           PaymentItemAmount(
             Payment(
-              paymentType: "received",
-              label: "",
-              bolt11: "",
-              destinationPubkey:
-                  "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-              paymentHash:
-                  "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-              feesMsat: 1234,
-              keysend: false,
-              paymentPreimage: "",
+              paymentType: PaymentType.Received,              
+              id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+              feeMsat: 1234,                            
               paymentTime: 1661791810,
               amountMsat: 4321000,
               pending: false,
               description: "",
+              details: PaymentDetails.ln(data: LnPaymentDetails(
+                paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de", label: "", destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d", paymentPreimage: "", keysend: false, bolt11: ""))
             ),
             true,
           ),

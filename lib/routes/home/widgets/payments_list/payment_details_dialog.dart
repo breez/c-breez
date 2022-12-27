@@ -63,26 +63,7 @@ Future<void> showPaymentDetailsDialog(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              paymentInfo.label.isEmpty
-                  ? Container()
-                  : Padding(
-                      padding: EdgeInsets.only(
-                        left: 16.0,
-                        right: 16.0,
-                        bottom: (paymentInfo.description == null ||
-                                paymentInfo.description == "")
-                            ? 16
-                            : 8,
-                      ),
-                      child: AutoSizeText(
-                        paymentInfo.label.replaceAll("\n", " "),
-                        style: themeData.primaryTextTheme.headline5,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
+            children: <Widget>[              
               (paymentInfo.description == null || paymentInfo.description == "")
                   ? Container()
                   : Padding(
@@ -252,7 +233,7 @@ Widget _amountText(
 ) {
   final amount = currency.format(paymentInfo.amountMsat);
 
-  final text = (paymentInfo.paymentType == "received")
+  final text = (paymentInfo.paymentType == PaymentType.Received)
       ? texts.payment_details_dialog_amount_positive(amount)
       : texts.payment_details_dialog_amount_negative(amount);
   return AutoSizeText(
@@ -275,20 +256,28 @@ List<Widget> _getSinglePaymentInfoDetails(
   Payment paymentInfo,
   AppLocalizations texts,
 ) {
+
+  LnPaymentDetails? paymentDetails;
+  if (paymentInfo.details is LnPaymentDetails) {
+    paymentDetails = paymentInfo.details as LnPaymentDetails;
+  }
+  if (paymentDetails == null) {
+    return List<Widget>.empty();
+  }
   return List<Widget>.from({
-    paymentInfo.paymentPreimage.isEmpty
+    paymentDetails.paymentPreimage.isEmpty
         ? Container()
         : ShareablePaymentRow(
       title: texts.payment_details_dialog_single_info_pre_image,
-            sharedValue: paymentInfo.paymentPreimage,
+            sharedValue: paymentDetails.paymentPreimage,
           ),
-    paymentInfo.destinationPubkey.isEmpty
+    paymentDetails.destinationPubkey.isEmpty
         ? Container()
         : ShareablePaymentRow(
       title: texts.payment_details_dialog_single_info_node_id,
-            sharedValue: paymentInfo.destinationPubkey,
+            sharedValue: paymentDetails.destinationPubkey,
           ),
-  });
+  });  
 }
 
 class ShareablePaymentRow extends StatelessWidget {

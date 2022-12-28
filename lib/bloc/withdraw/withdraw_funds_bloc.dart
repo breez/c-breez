@@ -16,8 +16,8 @@ class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
     this._breezLib,
   ) : super(WithdrawFudsState.initial());
 
-  Future fetchTransactionConst() async {
-    _log.v("fetchTransactionConst");
+  Future fetchTransactionCost() async {
+    _log.v("fetchTransactionCost");
     emit(WithdrawFudsState.initial());
 
     RecommendedFees recommendedFees;
@@ -39,8 +39,17 @@ class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
 
   Future<void> sweepAllCoins(
     String toAddress,
-    FeeratePreset feeratePreset,
+    int feeRate,
   ) async {
-    await _breezLib.sweep(toAddress: toAddress, feeratePreset: feeratePreset);
+    await _breezLib.sweep(
+      toAddress: toAddress,
+      // Multiply by 1000 to convert from sat/byte to sat/kbyte
+      // https://github.com/breez/c-breez/pull/312#discussion_r1058397422
+      feeratePerkw: feeRate * 1000,
+      // TODO remove this argument when this bug
+      // https://github.com/fzyzcjy/flutter_rust_bridge/issues/828 is fixed
+      // the FeeratePreset will be ignored as we are passing the feeratePerkw
+      feeratePreset: FeeratePreset.Economy,
+    );
   }
 }

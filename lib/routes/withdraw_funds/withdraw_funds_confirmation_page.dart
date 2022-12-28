@@ -30,7 +30,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
   @override
   void initState() {
     super.initState();
-    context.read<WithdrawFundsBloc>().fetchTransactionConst();
+    context.read<WithdrawFundsBloc>().fetchTransactionCost();
   }
 
   @override
@@ -83,7 +83,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
                 Center(
                   child: WithdrawFundsConfirmationConfirmButton(
                     widget.address,
-                    _speed,
+                    selected.fee,
                   ),
                 ),
               ],
@@ -100,7 +100,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
                 ),
                 Expanded(child: Container()),
                 TextButton(
-                  onPressed: () => context.read<WithdrawFundsBloc>().fetchTransactionConst(),
+                  onPressed: () => context.read<WithdrawFundsBloc>().fetchTransactionCost(),
                   child: Text(
                     texts.sweep_all_coins_action_retry,
                   ),

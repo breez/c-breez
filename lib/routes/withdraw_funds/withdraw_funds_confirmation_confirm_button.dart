@@ -1,4 +1,3 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
@@ -9,11 +8,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
   final String address;
-  final FeeratePreset speed;
+  final int rateFee;
 
   const WithdrawFundsConfirmationConfirmButton(
     this.address,
-    this.speed, {
+    this.rateFee, {
     Key? key,
   }) : super(key: key);
 
@@ -28,7 +27,7 @@ class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
         () async {
           final navigator = Navigator.of(context);
           navigator.push(createLoaderRoute(context));
-          context.read<WithdrawFundsBloc>().sweepAllCoins(address, speed).then(
+          context.read<WithdrawFundsBloc>().sweepAllCoins(address, rateFee).then(
                 (_) => _sweepCoinsFinished(context),
                 onError: (e) => _sweepCoinsError(context, e),
               );

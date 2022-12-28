@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:fimber_io/fimber_io.dart';
+import 'package:flutter_fimber/flutter_fimber.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
@@ -31,7 +32,7 @@ class BreezLogger {
     ];
 
     if (kDebugMode) {
-      Fimber.plantTree(DebugTree.elapsed(
+      Fimber.plantTree(FimberTree(
         logLevels: logLevels,
       ));
     }

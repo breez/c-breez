@@ -38,6 +38,7 @@ dependencies:
   ffi: ^2.0.1
   fimber: ^0.6.6
   fimber_io: ^0.6.6
+  flutter_fimber: ^0.6.5
   firebase_core: ^2.3.0
   firebase_dynamic_links: ^5.0.7
   firebase_messaging: ^14.1.3

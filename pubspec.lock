@@ -535,6 +535,13 @@ packages:
       url: "https://github.com/breez/flutter_fgbg.git"
     source: git
     version: "0.2.0"
+  flutter_fimber:
+    dependency: "direct main"
+    description:
+      name: flutter_fimber
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.5"
   flutter_keyboard_visibility:
     dependency: transitive
     description:

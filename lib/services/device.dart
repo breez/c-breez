@@ -9,13 +9,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Device {
   final _clipboardController = BehaviorSubject<String>();
-  Stream<String> get clipboardStream => _clipboardController.stream;
+  Stream<String> get clipboardStream => _clipboardController.stream.where((e) => e != _lastFromAppClip);
 
   static const String LAST_CLIPPING_PREFERENCES_KEY = "lastClipping";
+  static const String LAST_FROM_APP_CLIPPING_PREFERENCES_KEY = "lastFromAppClipping";
+
+  String? _lastFromAppClip;
 
   Device() {
     var sharedPreferences = SharedPreferences.getInstance();
     sharedPreferences.then((preferences) {
+      _lastFromAppClip = preferences.getString(LAST_FROM_APP_CLIPPING_PREFERENCES_KEY);
       _clipboardController.add(preferences.getString(LAST_CLIPPING_PREFERENCES_KEY) ?? "");
       fetchClipboard(preferences);
     });
@@ -31,8 +35,11 @@ class Device {
   }
 
   Future setClipboardText(String text) async {
+    _lastFromAppClip = text;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(LAST_FROM_APP_CLIPPING_PREFERENCES_KEY, text);
     await Clipboard.setData(ClipboardData(text: text));
-    fetchClipboard(await SharedPreferences.getInstance());
+    fetchClipboard(prefs);
   }
 
   Future shareText(String text) {

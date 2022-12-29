@@ -68,21 +68,22 @@ class BreezLogger {
 
 void _pruneLogs(Directory appDir) {
   final loggingFolder = Directory("${appDir.path}/logs/");
-
-  // Get and sort log files by modified date
-  List<FileSystemEntity> filesToBePruned = loggingFolder
-      .listSync(followLinks: false)
-      .where((e) => e.path.endsWith('.log'))
-      .toList()
-    ..sort((l, r) => l.statSync().modified.compareTo(r.statSync().modified));
-  // Delete all except last 2 logs
-  if (filesToBePruned.length > 2) {
-    filesToBePruned.removeRange(
-      filesToBePruned.length - 2,
-      filesToBePruned.length,
-    );
-    for (var logFile in filesToBePruned) {
-      logFile.delete();
+  if (loggingFolder.existsSync()) {
+    // Get and sort log files by modified date
+    List<FileSystemEntity> filesToBePruned = loggingFolder
+        .listSync(followLinks: false)
+        .where((e) => e.path.endsWith('.log'))
+        .toList()
+      ..sort((l, r) => l.statSync().modified.compareTo(r.statSync().modified));
+    // Delete all except last 2 logs
+    if (filesToBePruned.length > 2) {
+      filesToBePruned.removeRange(
+        filesToBePruned.length - 2,
+        filesToBePruned.length,
+      );
+      for (var logFile in filesToBePruned) {
+        logFile.delete();
+      }
     }
   }
 }

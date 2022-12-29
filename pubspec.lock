@@ -22,13 +22,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.2.0"
-  analyzer_plugin:
-    dependency: transitive
-    description:
-      name: analyzer_plugin
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.11.2"
   another_flushbar:
     dependency: "direct main"
     description:
@@ -105,7 +98,7 @@ packages:
       path: "../breez-sdk/libs/sdk-flutter"
       relative: true
     source: path
-    version: "0.0.3+1"
+    version: "0.0.3+3"
   build:
     dependency: transitive
     description:
@@ -176,13 +169,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
-  charcode:
-    dependency: transitive
-    description:
-      name: charcode
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.3.1"
   checked_yaml:
     dependency: transitive
     description:
@@ -190,13 +176,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.5"
   clock:
     dependency: transitive
     description:
@@ -297,20 +276,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.3"
-  drift:
-    dependency: transitive
-    description:
-      name: drift
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.4.0"
-  drift_dev:
-    dependency: transitive
-    description:
-      name: drift_dev
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.4.0"
   duration:
     dependency: "direct main"
     description:
@@ -636,13 +601,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
-  googleapis_auth:
-    dependency: transitive
-    description:
-      name: googleapis_auth
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.3.1"
   graphs:
     dependency: transitive
     description:
@@ -650,13 +608,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.0"
-  grpc:
-    dependency: transitive
-    description:
-      name: grpc
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.0"
   hex:
     dependency: "direct main"
     description:
@@ -678,13 +629,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.5"
-  http2:
-    dependency: transitive
-    description:
-      name: http2
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   http_client_helper:
     dependency: transitive
     description:
@@ -811,13 +755,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.7.0"
-  json_serializable:
-    dependency: transitive
-    description:
-      name: json_serializable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.5.4"
   lints:
     dependency: transitive
     description:
@@ -1063,13 +1000,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
-  protobuf:
-    dependency: transitive
-    description:
-      name: protobuf
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
   provider:
     dependency: transitive
     description:
@@ -1112,13 +1042,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
-  recase:
-    dependency: transitive
-    description:
-      name: recase
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.1.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -1243,13 +1166,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.6"
-  source_helper:
-    dependency: transitive
-    description:
-      name: source_helper
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.3.3"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -1292,20 +1208,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.1"
-  sqlite3_flutter_libs:
-    dependency: transitive
-    description:
-      name: sqlite3_flutter_libs
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.12"
-  sqlparser:
-    dependency: transitive
-    description:
-      name: sqlparser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.25.0"
   stack_trace:
     dependency: transitive
     description:

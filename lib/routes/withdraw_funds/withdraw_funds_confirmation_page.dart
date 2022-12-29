@@ -1,4 +1,3 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -25,7 +24,7 @@ class WithdrawFundsConfirmationPage extends StatefulWidget {
 }
 
 class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmationPage> {
-  var _speed = FeeratePreset.Regular;
+  TransactionCost? _transactionCost;
 
   @override
   void initState() {
@@ -45,45 +44,43 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
       body: BlocBuilder<WithdrawFundsBloc, WithdrawFudsState>(
         builder: (context, transaction) {
           if (transaction is WithdrawFudsInfoState) {
-            final selected = _speed == FeeratePreset.Regular
-                ? transaction.regular
-                : _speed == FeeratePreset.Priority
-                    ? transaction.priority
-                    : transaction.economy;
-
+            final selectedCost = _transactionCost ?? transaction.regular;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: WithdrawFundsConfirmationSpeedChooser(
-                    _speed,
-                    (speed) {
+                    currentCost: selectedCost,
+                    onCostChanged: (newCost) {
                       if (mounted) {
                         setState(() {
-                          _speed = speed;
+                          _transactionCost = newCost;
                         });
                       }
                     },
+                    economy: transaction.economy,
+                    regular: transaction.regular,
+                    priority: transaction.priority,
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: WithdrawFundsSpeedMessage(context, selected.waitingTime),
+                  child: WithdrawFundsSpeedMessage(context, selectedCost.waitingTime),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: WithdrawFundsSummary(
                     widget.amount,
-                    selected.fee,
-                    widget.amount - selected.fee,
+                    selectedCost.fee,
+                    widget.amount - selectedCost.fee,
                   ),
                 ),
                 Expanded(child: Container()),
                 Center(
                   child: WithdrawFundsConfirmationConfirmButton(
                     widget.address,
-                    selected.fee,
+                    selectedCost.fee,
                   ),
                 ),
               ],

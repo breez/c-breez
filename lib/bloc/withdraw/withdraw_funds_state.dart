@@ -47,9 +47,17 @@ class WithdrawFudsInfoState extends WithdrawFudsState {
 class TransactionCost {
   final Duration waitingTime;
   final int fee;
+  final TransactionCostKind kind;
 
   const TransactionCost(
     this.waitingTime,
     this.fee,
+    this.kind,
   );
+}
+
+enum TransactionCostKind {
+  economy,
+  regular,
+  priority,
 }

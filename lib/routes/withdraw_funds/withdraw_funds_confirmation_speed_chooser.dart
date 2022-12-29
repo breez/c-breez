@@ -1,14 +1,20 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_speed_chooser_item.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsConfirmationSpeedChooser extends StatefulWidget {
-  final FeeratePreset currentSpeed;
-  final Function(FeeratePreset) onSpeedSelected;
+  final TransactionCost currentCost;
+  final Function(TransactionCost) onCostChanged;
+  final TransactionCost economy;
+  final TransactionCost regular;
+  final TransactionCost priority;
 
-  const WithdrawFundsConfirmationSpeedChooser(
-    this.currentSpeed,
-    this.onSpeedSelected, {
+  const WithdrawFundsConfirmationSpeedChooser({
+    required this.currentCost,
+    required this.onCostChanged,
+    required this.economy,
+    required this.regular,
+    required this.priority,
     Key? key,
   }) : super(key: key);
 
@@ -39,9 +45,9 @@ class _WithdrawFundsConfirmationSpeedChooserState extends State<WithdrawFundsCon
               builder: (context, constraints) {
                 final third = constraints.maxWidth / 3;
                 final offset = third *
-                    (widget.currentSpeed == FeeratePreset.Economy
+                    (widget.currentCost.kind == TransactionCostKind.economy
                         ? 0
-                        : widget.currentSpeed == FeeratePreset.Regular
+                        : widget.currentCost.kind == TransactionCostKind.regular
                             ? 1
                             : 2);
 
@@ -78,19 +84,19 @@ class _WithdrawFundsConfirmationSpeedChooserState extends State<WithdrawFundsCon
             child: Row(
               children: [
                 WithdrawFundsConfirmationSpeedChooserItem(
-                  FeeratePreset.Economy,
-                  widget.currentSpeed,
-                  widget.onSpeedSelected,
+                  widget.economy,
+                  widget.currentCost,
+                  widget.onCostChanged,
                 ),
                 WithdrawFundsConfirmationSpeedChooserItem(
-                  FeeratePreset.Regular,
-                  widget.currentSpeed,
-                  widget.onSpeedSelected,
+                  widget.regular,
+                  widget.currentCost,
+                  widget.onCostChanged,
                 ),
                 WithdrawFundsConfirmationSpeedChooserItem(
-                  FeeratePreset.Priority,
-                  widget.currentSpeed,
-                  widget.onSpeedSelected,
+                  widget.priority,
+                  widget.currentCost,
+                  widget.onCostChanged,
                 ),
               ],
             ),

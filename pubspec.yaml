@@ -14,24 +14,16 @@ dependencies:
     sdk: flutter
 
   another_flushbar: ^1.12.29
-  app_settings: ^4.1.8
   archive: ^3.3.5
   auto_size_text: ^3.0.0
-  basic_utils: ^5.4.2
-  bip32: ^2.0.0
   bip39: ^1.0.6
-  bolt11_decoder: ^1.0.1
   breez_sdk:
     path: ../breez-sdk/libs/sdk-flutter
   connectivity_plus: ^3.0.2
-  cryptography: ^2.0.5
-  cupertino_icons: ^1.0.5
   dart_lnurl:
     git:
       url: https://github.com/breez/dart_lnurl
   drag_and_drop_lists: ^0.3.3
-  drift: ^2.3.0
-  drift_dev: ^2.3.2
   duration: ^3.0.12
   email_validator: ^2.1.17
   extended_image: ^6.3.4
@@ -39,22 +31,21 @@ dependencies:
   fimber: ^0.6.6
   fimber_io: ^0.6.6
   flutter_fimber: ^0.6.5
-  firebase_core: ^2.3.0
-  firebase_dynamic_links: ^5.0.7
-  firebase_messaging: ^14.1.3
+  firebase_core: ^2.4.1
+  firebase_dynamic_links: ^5.0.11
+  firebase_messaging: ^14.2.1
   flutter_bloc: ^8.1.1
   flutter_fgbg:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
-  flutter_rust_bridge: ^1.53.0
-  flutter_secure_storage: ^6.1.0
+  flutter_rust_bridge: 1.53.0
+  flutter_secure_storage: ^7.0.1
   flutter_svg: ^1.1.6
   flutter_typeahead:
     git:
       url: https://github.com/breez/flutter_typeahead.git
       ref: a16aa4deeff1c5e96c6da46da31cb0533f838d8d
-  grpc: ^3.1.0
   hex: ^0.2.0
   http: ^0.13.5
   hydrated_bloc: ^9.0.0
@@ -63,9 +54,9 @@ dependencies:
   image_picker: ^0.8.6
   ini: ^2.1.0
   intl: ^0.17.0
-  local_auth: ^2.1.2
-  local_auth_android: ^1.0.15
-  local_auth_ios: ^1.0.10
+  local_auth: ^2.1.3
+  local_auth_android: ^1.0.17
+  local_auth_ios: ^1.0.12
   mockito: ^5.3.2
   mobile_scanner: ^2.1.0
   package_info_plus: ^3.0.2
@@ -73,8 +64,6 @@ dependencies:
   path_provider: ^2.0.11
   path_provider_platform_interface: ^2.0.5
   plugin_platform_interface: ^2.1.3
-  pointycastle: ^3.6.2
-  protobuf: ^2.1.0
   qr_flutter: ^4.0.0
   rxdart: ^0.27.7
   scan: ^1.6.0
@@ -82,24 +71,22 @@ dependencies:
   shared_preferences: ^2.0.15
   simple_animations: ^5.0.0+3
   sqflite_common_ffi: ^2.2.0+1
-  sqlite3_flutter_libs: ^0.5.12
   theme_provider: ^0.5.0
   timeago: ^3.3.0
   uni_links: ^0.5.1
   url_launcher: ^6.1.7
-  validators: ^3.0.0
   vector_math: ^2.1.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.3.2
+  build_runner: ^2.3.3
   flutter_lints: ^2.0.1
-  test: ^1.22.0
+  test: ^1.22.1
 
 dependency_overrides:
   path: ^1.8.3
-  test_api: ^0.4.16
+  test_api: ^0.4.17
   vector_math: ^2.1.4
 
 flutter:

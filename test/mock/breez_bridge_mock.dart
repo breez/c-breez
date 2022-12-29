@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -73,10 +73,12 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   @override
   Future connectLSP(String lspId) async {}
 
-  final invoicePaidController = StreamController<InvoicePaidDetails>.broadcast();
+  final invoicePaidController =
+      StreamController<InvoicePaidDetails>.broadcast();
 
   @override
-  Stream<InvoicePaidDetails> get invoicePaidStream => invoicePaidController.stream;
+  Stream<InvoicePaidDetails> get invoicePaidStream =>
+      invoicePaidController.stream;
 
   @override
   final nodeStateController = StreamController<NodeState?>.broadcast();

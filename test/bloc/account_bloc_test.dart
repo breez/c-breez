@@ -1,6 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hex/hex.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';

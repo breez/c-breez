@@ -13,7 +13,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   );
 
   @override
-  Future initNode({
+  Future initServices({
     required Config config,
     required Uint8List seed,
     required GreenlightCredentials creds,

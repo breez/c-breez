@@ -33,7 +33,11 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future trackPayment(String paymentHash) async {
-    await _breezLib.invoicePaidStream.firstWhere((invoice) => invoice.paymentHash == paymentHash);
+    await _breezLib.invoicePaidStream.firstWhere((invoice) {
+      _log.v("invoice paid: ${invoice.paymentHash} we are waiting for "
+          "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
+      return invoice.paymentHash == paymentHash;
+    });
   }
 
   Stream<InputState?> _watchIncomingInvoices() {

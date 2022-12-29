@@ -13,11 +13,14 @@ import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_sliv
 import 'package:c_breez/routes/home/widgets/payments_list/payments_list.dart';
 import 'package:c_breez/routes/home/widgets/status_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 const _kFilterMaxSize = 64.0;
 const _kPaymentListItemHeight = 72.0;
+
+final _log = FimberLog("AccountPage");
 
 class AccountPage extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
@@ -35,6 +38,7 @@ class AccountPage extends StatelessWidget {
       builder: (context, account) {
         return BlocBuilder<UserProfileBloc, UserProfileState>(
           builder: (context, userModel) {
+            _log.v("AccountPage build with ${account.payments.length} payments");
             return Container(
               color: Theme.of(context).customData.dashboardBgColor,
               child: _build(
@@ -57,14 +61,12 @@ class AccountPage extends StatelessWidget {
     final nonFilteredPayments = account.payments;
     final paymentFilters = account.paymentFilters;
     final filteredPayments = nonFilteredPayments.where((tx) {
-      if (paymentFilters.fromTimestamp != null &&
-          paymentFilters.toTimestamp != null) {
+      if (paymentFilters.fromTimestamp != null && paymentFilters.toTimestamp != null) {
         return paymentFilters.fromTimestamp! < tx.paymentTime * 1000 &&
             tx.paymentTime * 1000 < paymentFilters.toTimestamp!;
       }
       if (paymentFilters.filter != PaymentTypeFilter.All) {
-        return tx.paymentType.name ==
-            paymentFilters.filter.name;
+        return tx.paymentType.name == paymentFilters.filter.name;
       }
       return true;
     }).toList();
@@ -79,8 +81,7 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    final bool showSliver = nonFilteredPayments.isNotEmpty ||
-        paymentFilters.filter != PaymentTypeFilter.All;
+    final bool showSliver = nonFilteredPayments.isNotEmpty || paymentFilters.filter != PaymentTypeFilter.All;
 
     if (showSliver) {
       slivers.add(
@@ -127,10 +128,8 @@ class AccountPage extends StatelessWidget {
           delegate: FixedSliverDelegate(
             250.0,
             builder: (context, shrinkedHeight, overlapContent) {
-              return BlocBuilder<LSPBloc, LspInformation?>(
-                  builder: (context, lsp) {
-                var isConnecting =
-                    account.status == ConnectionStatus.CONNECTING;
+              return BlocBuilder<LSPBloc, LspInformation?>(builder: (context, lsp) {
+                var isConnecting = account.status == ConnectionStatus.CONNECTING;
                 if (!isConnecting && lsp == null) {
                   return const Padding(
                     padding: EdgeInsets.only(top: 120.0),
@@ -152,9 +151,7 @@ class AccountPage extends StatelessWidget {
       key: const Key("account_sliver"),
       fit: StackFit.expand,
       children: [
-        !showSliver
-            ? CustomPaint(painter: BubblePainter(context))
-            : const SizedBox(),
+        !showSliver ? CustomPaint(painter: BubblePainter(context)) : const SizedBox(),
         CustomScrollView(
           controller: scrollController,
           slivers: slivers,
@@ -168,17 +165,12 @@ class AccountPage extends StatelessWidget {
     List<Payment> payments,
   ) {
     if (payments.isEmpty) return 0.0;
-    double listHeightSpace = MediaQuery.of(context).size.height -
-        kMinExtent -
-        kToolbarHeight -
-        _kFilterMaxSize -
-        25.0;
+    double listHeightSpace = MediaQuery.of(context).size.height - kMinExtent - kToolbarHeight - _kFilterMaxSize - 25.0;
     const endDate = null;
     double dateFilterSpace = endDate != null ? 0.65 : 0.0;
-    double bottomPlaceholderSpace = (listHeightSpace -
-            (_kPaymentListItemHeight + 8) *
-                (payments.length + 1 + dateFilterSpace))
-        .clamp(0.0, listHeightSpace);
+    double bottomPlaceholderSpace =
+        (listHeightSpace - (_kPaymentListItemHeight + 8) * (payments.length + 1 + dateFilterSpace))
+            .clamp(0.0, listHeightSpace);
     return bottomPlaceholderSpace;
   }
 }

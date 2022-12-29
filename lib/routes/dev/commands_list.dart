@@ -5,7 +5,6 @@ import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
-import 'package:hex/hex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_extend/share_extend.dart';
 
@@ -19,6 +18,8 @@ class CommandsList extends StatefulWidget {
 }
 
 class _CommandsListState extends State<CommandsList> {
+  final _breezLib = ServiceInjector().breezLib;
+
   final _cliInputController = TextEditingController();
   final FocusNode _cliEntryFocusNode = FocusNode();
 
@@ -28,18 +29,6 @@ class _CommandsListState extends State<CommandsList> {
   bool _showDefaultCommands = true;
   bool isLoading = false;
   var _richCliText = <TextSpan>[];
-  // ignore: prefer_typing_uninitialized_variables
-  late final breezCLILib;
-
-  @override
-  void initState() {
-    super.initState();
-    initializeCLIAPI();
-  }
-
-  void initializeCLIAPI() {
-    throw Exception("not implemented");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,9 +78,13 @@ class _CommandsListState extends State<CommandsList> {
           child: Container(
             padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
             child: Container(
-              padding: _showDefaultCommands ? const EdgeInsets.all(0.0) : const EdgeInsets.all(2.0),
+              padding: _showDefaultCommands
+                  ? const EdgeInsets.all(0.0)
+                  : const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
-                border: _showDefaultCommands ? null : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
+                border: _showDefaultCommands
+                    ? null
+                    : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -107,14 +100,17 @@ class _CommandsListState extends State<CommandsList> {
                               tooltip: 'Copy to Clipboard',
                               iconSize: 19.0,
                               onPressed: () {
-                                ServiceInjector().device.setClipboardText(_cliText);
+                                ServiceInjector()
+                                    .device
+                                    .setClipboardText(_cliText);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
                                       'Copied to clipboard.',
                                       style: theme.snackBarStyle,
                                     ),
-                                    backgroundColor: theme.snackBarBackgroundColor,
+                                    backgroundColor:
+                                        theme.snackBarBackgroundColor,
                                     duration: const Duration(seconds: 2),
                                   ),
                                 );
@@ -156,7 +152,8 @@ class _CommandsListState extends State<CommandsList> {
           children: defaultCliCommandsText(
             (command) {
               _cliInputController.text = command;
-              FocusScope.of(widget.scaffoldKey.currentState!.context).requestFocus(
+              FocusScope.of(widget.scaffoldKey.currentState!.context)
+                  .requestFocus(
                 _cliEntryFocusNode,
               );
             },
@@ -183,6 +180,7 @@ class _CommandsListState extends State<CommandsList> {
         _lastCommand = command;
         isLoading = true;
       });
+      // TODO: Style the response output from SDK
       const JsonEncoder encoder = JsonEncoder.withIndent('    ');
       try {
         var commandArgs = command.split(RegExp(r"\s"));
@@ -191,42 +189,13 @@ class _CommandsListState extends State<CommandsList> {
         }
         late String reply;
         switch (commandArgs[0]) {
-          case 'getNodeInfo':
-            final nodeInfo = await breezCLILib.getNodeInfo();
-            reply = encoder.convert(nodeInfo.toJson());
-            break;
-          case 'listFunds':
-            final funds = await breezCLILib.listFunds();
-            reply = encoder.convert(funds.toJson());
-            break;
           case 'listPeers':
-            final peers = await breezCLILib.listPeers();
-            reply = encoder.convert(peers);
-            break;
-          case 'getPayments':
-            final payments = await breezCLILib.getPayments();
-            reply = encoder.convert(payments);
-            break;
-          case 'getInvoices':
-            final invoices = await breezCLILib.getInvoices();
-            reply = encoder.convert(invoices);
-            break;
-          case 'closeChannel':
-            if (commandArgs.length < 2) {
-              throw "Missing node id";
-            }
-            var nodeID = HEX.decode(commandArgs[1]);
-            final closedResponse = await breezCLILib.closeChannel(nodeID);
-            reply = HEX.encode(closedResponse);
-            break;
+          case 'listFunds':
+          case 'listPayments':
+          case 'listInvoices':
           case 'closeAllChannels':
-            final peers = await breezCLILib.listPeers();
-            List<List<int>> closed = [];
-            await Future.wait(peers.map((p) => Future.wait(p.channels.map((e) async {
-                  final tx = await breezCLILib.closeChannel(HEX.decode(e.channelId));
-                  closed.add(tx);
-                }))));
-            reply = closed.map((e) => HEX.encode(e)).join("\n");
+            reply = encoder.convert(await _breezLib.executeCommand(
+                command: commandArgs[0].toLowerCase()));
             break;
           default:
             throw "This command is not supported yet.";
@@ -300,12 +269,10 @@ List<Widget> defaultCliCommandsText(Function(String command) onCommand) => [
       ExpansionTile(
         title: const Text("General"),
         children: <Widget>[
-          Command("getNodeInfo", onCommand),
-          Command("listFunds", onCommand),
           Command("listPeers", onCommand),
-          Command("getPayments", onCommand),
-          Command("getInvoices", onCommand),
-          Command("closeChannel", onCommand),
+          Command("listFunds", onCommand),
+          Command("listPayments", onCommand),
+          Command("listInvoices", onCommand),
           Command("closeAllChannels", onCommand),
         ],
       ),

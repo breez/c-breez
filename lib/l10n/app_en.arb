@@ -1966,6 +1966,7 @@
   },
   "spontaneous_payment_error_title": "Payment Error",
   "sweep_all_coins_speed": "Choose Processing Speed",
+  "sweep_all_coins_action_retry": "RETRY",
   "sweep_all_coins_action_confirm": "CONFIRM",
   "sweep_all_coins_label_send": "You send:",
   "sweep_all_coins_label_receive": "You receive:",

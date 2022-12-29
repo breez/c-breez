@@ -1966,6 +1966,7 @@
   },
   "spontaneous_payment_error_title": "Maksussa tapahtui virhe",
   "sweep_all_coins_speed": "Määritä vahvistuksen nopeus",
+  "sweep_all_coins_action_retry": "RETRY",
   "sweep_all_coins_action_confirm": "VAHVISTA",
   "sweep_all_coins_label_send": "Sinä lähetät:",
   "sweep_all_coins_label_receive": "Sinä vastaanotat:",

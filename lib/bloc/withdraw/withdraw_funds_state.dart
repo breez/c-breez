@@ -1,9 +1,12 @@
-
-
 abstract class WithdrawFudsState {
   const WithdrawFudsState();
 
   factory WithdrawFudsState.initial() => const WithdrawFudsEmptyState();
+
+  factory WithdrawFudsState.error(
+    String error,
+  ) =>
+      WithdrawFudsErrorState(error);
 
   factory WithdrawFudsState.info(
     TransactionCost economy,
@@ -21,6 +24,14 @@ class WithdrawFudsEmptyState extends WithdrawFudsState {
   const WithdrawFudsEmptyState();
 }
 
+class WithdrawFudsErrorState extends WithdrawFudsState {
+  final String message;
+
+  const WithdrawFudsErrorState(
+    this.message,
+  );
+}
+
 class WithdrawFudsInfoState extends WithdrawFudsState {
   final TransactionCost economy;
   final TransactionCost regular;
@@ -36,9 +47,17 @@ class WithdrawFudsInfoState extends WithdrawFudsState {
 class TransactionCost {
   final Duration waitingTime;
   final int fee;
+  final TransactionCostKind kind;
 
   const TransactionCost(
     this.waitingTime,
     this.fee,
+    this.kind,
   );
+}
+
+enum TransactionCostKind {
+  economy,
+  regular,
+  priority,
 }

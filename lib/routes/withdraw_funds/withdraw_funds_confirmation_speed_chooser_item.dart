@@ -1,17 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsConfirmationSpeedChooserItem extends StatelessWidget {
-  final FeeratePreset transactionCostSpeed;
-  final FeeratePreset currentSpeed;
-  final Function(FeeratePreset) onSpeedSelected;
+  final TransactionCost transactionCostSpeed;
+  final TransactionCost currentCost;
+  final Function(TransactionCost) onCostChanged;
 
   const WithdrawFundsConfirmationSpeedChooserItem(
     this.transactionCostSpeed,
-    this.currentSpeed,
-    this.onSpeedSelected, {
+    this.currentCost,
+    this.onCostChanged, {
     super.key,
   });
 
@@ -21,17 +22,21 @@ class WithdrawFundsConfirmationSpeedChooserItem extends StatelessWidget {
     final themeData = Theme.of(context);
     return Expanded(
       child: TextButton(
-        onPressed: () => onSpeedSelected(transactionCostSpeed),
+        onPressed: () => onCostChanged(transactionCostSpeed),
         child: AutoSizeText(
-          transactionCostSpeed == FeeratePreset.Economy
+          transactionCostSpeed.kind == TransactionCostKind.economy
               ? texts.fee_chooser_option_economy
-              : transactionCostSpeed == FeeratePreset.Regular
+              : transactionCostSpeed.kind == TransactionCostKind.regular
                   ? texts.fee_chooser_option_regular
                   : texts.fee_chooser_option_priority,
           maxLines: 1,
           textAlign: TextAlign.center,
           style: themeData.textTheme.button!.copyWith(
-            color: currentSpeed == transactionCostSpeed ? themeData.canvasColor : themeData.primaryColor,
+            color: themeData.isLightTheme
+                ? currentCost == transactionCostSpeed
+                    ? themeData.canvasColor
+                    : themeData.primaryColor
+                : Colors.white,
           ),
         ),
       ),

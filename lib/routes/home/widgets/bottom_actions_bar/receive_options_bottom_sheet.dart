@@ -44,6 +44,18 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
               ),
               onTap: () => _push(context, "/create_invoice"),
             ),
+            ListTile(
+              enabled: connected,
+              leading: BottomActionItemImage(
+                iconAssetPath: "src/icon/bitcoin.png",
+                enabled: connected,
+              ),
+              title: Text(
+                texts.bottom_action_bar_receive_btc_address,
+                style: theme.bottomSheetTextStyle,
+              ),
+              onTap: () => _push(context, "/swap_page"),
+            ),
             account.maxChanReserve == 0
                 ? const SizedBox(height: 8.0)
                 : WarningBox(

@@ -1,5 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/refund/refund_bloc.dart';
+import 'package:c_breez/bloc/refund/refund_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -46,8 +48,11 @@ class HomeDrawerState extends State<HomeDrawer> {
             for (var route in _kActiveAccountRoutes) {
               addOrRemove(route);
             }
-
-            return _build(context, settings);
+            return BlocBuilder<RefundBloc, RefundState>(
+              builder: (context, refundState) {
+                return _build(context, settings, refundState.refundables);
+              },
+            );
           },
         );
       },
@@ -57,11 +62,23 @@ class HomeDrawerState extends State<HomeDrawer> {
   Widget _build(
     BuildContext context,
     UserProfileSettings settings,
+    List<SwapInfo>? refundables,
   ) {
     final texts = context.texts();
 
     return NavigationDrawer(
       [
+        if (refundables != null && refundables.isNotEmpty) ...[
+          DrawerItemConfigGroup(
+            [
+              DrawerItemConfig(
+                "/get_refund",
+                texts.home_drawer_item_title_get_refund,
+                "src/icon/withdraw_funds.png",
+              ),
+            ],
+          ),
+        ],
         DrawerItemConfigGroup(
           _filterItems(_drawerConfigToFilter(context)),
           groupTitle: texts.home_drawer_item_title_preferences,

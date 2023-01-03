@@ -39,6 +39,12 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
         buildWhen: (s1, s2) => !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
         builder: (context, currencyState) {
           if (currencyState.fiatCurrenciesData.isEmpty || currencyState.fiatCurrency == null) {
+            return const Center(
+              child: Loader(
+                color: Colors.white,
+              ),
+            );
+          } else {
             return FutureBuilder(
               future: artificalWait(),
               builder: (context, snapshot) {
@@ -71,12 +77,6 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
                   ),
                 );
               },
-            );
-          } else {
-            return const Center(
-              child: Loader(
-                color: Colors.white,
-              ),
             );
           }
         },

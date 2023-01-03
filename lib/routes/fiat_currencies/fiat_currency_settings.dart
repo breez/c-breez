@@ -36,7 +36,17 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
       builder: (context, currencyState) {
         if (currencyState.fiatCurrenciesData.isEmpty ||
             currencyState.fiatCurrency == null) {
-          return const Loader();
+          return Scaffold(
+            appBar: AppBar(
+              leading: const back_button.BackButton(),
+              title: Text(texts.fiat_currencies_title),
+            ),
+            body: const Center(
+              child: Loader(
+                color: Colors.white,
+              ),
+            ),
+          );
         }
 
         return Scaffold(

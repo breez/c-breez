@@ -174,9 +174,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future sendPayment(String bolt11, int? amountSats) async {
+    _log.v("sendPayment: $bolt11, $amountSats");
     try {
       await _breezLib.sendPayment(bolt11: bolt11, amountSats: amountSats);
     } catch (e) {
+      _log.e("sendPayment error", ex: e);
       _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
     }
@@ -191,19 +193,20 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     String description,
     int amountSats,
   ) async {
+    _log.v("sendSpontaneousPayment: $nodeId, $description, $amountSats");
     try {
       return await _breezLib.sendSpontaneousPayment(
           nodeId: nodeId, amountSats: amountSats);
     } catch (e) {
+      _log.e("sendSpontaneousPayment error", ex: e);
       _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
     }
   }
 
-  bool validateAddress(String? address) {
+  Future<bool> isValidBitcoinAddress(String? address) async {
     if (address == null) return false;
-    // TODO real impl. Random next bool is used to simulate valid/invalid flow
-    return Random().nextBool();
+    return _breezLib.isValidBitcoinAddress(address);
   }
 
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity

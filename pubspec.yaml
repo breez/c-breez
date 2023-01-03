@@ -82,6 +82,8 @@ dependencies:
   shared_preferences: ^2.0.15
   simple_animations: ^5.0.0+3
   sqflite_common_ffi: ^2.2.0+1
+  sqlite3_flutter_libs: ^0.5.12
+  synchronized: ^3.0.0+3
   theme_provider: ^0.5.0
   timeago: ^3.3.0
   # Doesn't support: Linux Mac Windows

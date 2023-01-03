@@ -47,9 +47,7 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
       _setLockState(LockState.locked);
       throw SecurityStorageException();
     }
-    final authenticated = storedPin == pin;
-    _setLockState(authenticated ? LockState.unlocked : LockState.locked);
-    return authenticated;
+    return storedPin == pin;
   }
 
   Future clearPin() async {

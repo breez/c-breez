@@ -30,62 +30,57 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   Widget build(BuildContext context) {
     final texts = AppLocalizations.of(context)!;
 
-    return BlocBuilder<CurrencyBloc, CurrencyState>(
-      buildWhen: (s1, s2) =>
-          !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
-      builder: (context, currencyState) {
-        if (currencyState.fiatCurrenciesData.isEmpty ||
-            currencyState.fiatCurrency == null) {
-          return Scaffold(
-            appBar: AppBar(
-              leading: const back_button.BackButton(),
-              title: Text(texts.fiat_currencies_title),
-            ),
-            body: const Center(
+    return Scaffold(
+      appBar: AppBar(
+        leading: const back_button.BackButton(),
+        title: Text(texts.fiat_currencies_title),
+      ),
+      body: BlocBuilder<CurrencyBloc, CurrencyState>(
+        buildWhen: (s1, s2) => !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
+        builder: (context, currencyState) {
+          if (currencyState.fiatCurrenciesData.isEmpty || currencyState.fiatCurrency == null) {
+            return FutureBuilder(
+              future: artificalWait(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(
+                    child: Loader(
+                      color: Colors.white,
+                    ),
+                  );
+                }
+
+                return DragAndDropLists(
+                  listPadding: EdgeInsets.zero,
+                  children: [
+                    _buildList(context, currencyState),
+                  ],
+                  lastListTargetSize: 0,
+                  lastItemTargetHeight: 8,
+                  scrollController: _scrollController,
+                  onListReorder: (oldListIndex, newListIndex) => {},
+                  onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(context, currencyState, from, to),
+                  itemDragHandle: DragHandle(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.drag_handle,
+                        color: theme.BreezColors.white[200],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          } else {
+            return const Center(
               child: Loader(
                 color: Colors.white,
               ),
-            ),
-          );
-        }
-
-        return Scaffold(
-          appBar: AppBar(
-            leading: const back_button.BackButton(),
-            title: Text(texts.fiat_currencies_title),
-          ),
-          body: FutureBuilder(
-            future: artificalWait(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: Loader());
-              }
-
-              return DragAndDropLists(
-                listPadding: EdgeInsets.zero,
-                children: [
-                  _buildList(context, currencyState),
-                ],
-                lastListTargetSize: 0,
-                lastItemTargetHeight: 8,
-                scrollController: _scrollController,
-                onListReorder: (oldListIndex, newListIndex) => {},
-                onItemReorder: (from, oldListIndex, to, newListIndex) =>
-                    _onReorder(context, currencyState, from, to),
-                itemDragHandle: DragHandle(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Icon(
-                      Icons.drag_handle,
-                      color: theme.BreezColors.white[200],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
+            );
+          }
+        },
+      ),
     );
   }
 

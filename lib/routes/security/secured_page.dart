@@ -2,8 +2,11 @@ import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/security/widget/pin_code_widget.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+final _log = FimberLog("SecuredPage");
 
 class SecuredPage<T> extends StatefulWidget {
   final Widget securedWidget;
@@ -35,6 +38,7 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
           : BlocBuilder<SecurityBloc, SecurityState>(
               key: ValueKey(DateTime.now().millisecondsSinceEpoch),
               builder: (context, state) {
+                _log.v("Building with: $state");
                 if (state.pinStatus == PinStatus.enabled && !_allowed) {
                   final texts = context.texts();
                   return Scaffold(
@@ -44,21 +48,25 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
                     body: PinCodeWidget(
                       label: texts.lock_screen_enter_pin,
                       testPinCodeFunction: (pin) async {
+                        _log.v("Testing pin code");
                         bool pinMatches = false;
                         try {
                           pinMatches = await context.read<SecurityBloc>().testPin(pin);
                         } catch (e) {
+                          _log.e("Pin code test failed", ex: e);
                           return TestPinResult(
                             false,
                             errorMessage: texts.lock_screen_pin_match_exception,
                           );
                         }
                         if (pinMatches) {
+                          _log.v("Pin matches");
                           setState(() {
                             _allowed = true;
                           });
                           return const TestPinResult(true);
                         } else {
+                          _log.v("Pin didn't match");
                           return TestPinResult(
                             false,
                             errorMessage: texts.lock_screen_pin_incorrect,

@@ -48,6 +48,12 @@ class SecurityState {
         "localAuthenticationOption": localAuthenticationOption.name,
         "lockState": lockState.name,
       };
+
+  @override
+  String toString() {
+    return 'SecurityState{pinStatus: $pinStatus, lockInterval: $lockInterval, '
+        'localAuthenticationOption: $localAuthenticationOption, lockState: $lockState}';
+  }
 }
 
 enum PinStatus {

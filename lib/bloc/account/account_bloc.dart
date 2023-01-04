@@ -156,7 +156,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       required sdk.LnUrlWithdrawRequestData reqData,
       String? description}) async {
     _log.v(
-        "processLNURLWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
+        "withdrawLnurl amount: $amountSats, description: '$description', reqData: $reqData");
     try {
       return _breezLib.withdrawLnurl(
         amountSats: amountSats,
@@ -164,7 +164,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         description: description,
       );
     } catch (e) {
-      _log.e("processLNURLWithdraw error: $e");
+      _log.e("withdrawLnurl error: $e");
       rethrow;
     }
   }

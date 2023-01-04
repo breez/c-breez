@@ -21,9 +21,6 @@ class QrActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();
-    InputBloc inputBloc = context.read<InputBloc>();
-
     return BlocBuilder<LSPBloc, LspInformation?>(
       builder: (context, lsp) {
         final connected = (lsp != null);
@@ -31,31 +28,39 @@ class QrActionButton extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(top: 32.0),
           child: FloatingActionButton(
-            onPressed: connected
-                ? () async {
-                    _log.v("Start qr code scan");
-                    final navigator = Navigator.of(context);
-                    String? scannedString = await navigator.pushNamed("/qr_scan");
-                    _log.v("Scanned string: '$scannedString'");
-                    if (scannedString != null && scannedString.isEmpty) {
-                      showFlushbar(
-                        context,
-                        message: texts.qr_action_button_error_code_not_detected,
-                      );
-                    } else if (scannedString != null) {
-                      inputBloc.addIncomingInput(scannedString);
-                    }
-                  }
-                : null,
+            onPressed: (connected) ? () => _scanBarcode(context) : null,
             child: SvgPicture.asset(
               "src/icon/qr_scan.svg",
-              color: connected ? theme.BreezColors.white[500] : Theme.of(context).disabledColor,
+              color: connected
+                  ? theme.BreezColors.white[500]
+                  : Theme.of(context).disabledColor,
               fit: BoxFit.contain,
               width: 24.0,
               height: 24.0,
             ),
           ),
         );
+      },
+    );
+  }
+
+  void _scanBarcode(BuildContext context) {
+    final texts = context.texts();
+    InputBloc inputBloc = context.read<InputBloc>();
+
+    _log.v("Start qr code scan");
+    Navigator.pushNamed<String>(context, "/qr_scan").then(
+      (barcode) {
+        _log.v("Scanned string: '$barcode'");
+        if (barcode == null) return;
+        if (barcode.isEmpty) {
+          showFlushbar(
+            context,
+            message: texts.qr_action_button_error_code_not_detected,
+          );
+          return;
+        }
+        inputBloc.addIncomingInput(barcode);
       },
     );
   }

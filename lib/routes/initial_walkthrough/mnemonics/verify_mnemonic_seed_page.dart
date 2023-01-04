@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
@@ -127,7 +126,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
   }
 
   void _proceedToRegister() async {
-    final registrationBloc = context.read<UserProfileBloc>();
+    // final registrationBloc = context.read<UserProfileBloc>();
     final accountBloc = context.read<AccountBloc>();
 
     final navigator = Navigator.of(context);

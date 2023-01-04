@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
@@ -104,7 +102,7 @@ class SendOnchainFormState extends State<SendOnchainForm> {
                     height: 24.0,
                   ),
                   tooltip: texts.send_on_chain_scan_barcode,
-                  onPressed: _scanBarcode,
+                  onPressed: () => _scanBarcode(),
                 ),
               ),
               style: theme.FieldTextStyle.textStyle,
@@ -165,9 +163,9 @@ class SendOnchainFormState extends State<SendOnchainForm> {
     );
   }
 
-  Future _scanBarcode() async {
+  void _scanBarcode() {
     FocusScope.of(context).requestFocus(FocusNode());
-    await Navigator.pushNamed<String>(context, "/qr_scan").then((barcode) {
+    Navigator.pushNamed<String>(context, "/qr_scan").then((barcode) {
       if (barcode == null) return;
       if (barcode.isEmpty) {
         showFlushbar(

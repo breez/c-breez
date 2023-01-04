@@ -98,7 +98,7 @@ packages:
       path: "../breez-sdk/libs/sdk-flutter"
       relative: true
     source: path
-    version: "0.0.3+3"
+    version: "0.0.3+5"
   build:
     dependency: transitive
     description:

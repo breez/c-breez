@@ -1,16 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
-import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
+import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/utils/preferences.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -97,7 +95,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: seed,
     );
     _log.i("node registered successfully");
-    await _startNode(creds, seed);
+    await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
+    emit(state.copyWith(initial: false));
     _log.i("new node started");
   }
 
@@ -112,15 +111,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: seed,
     );
     _log.i("node recovered successfully");
-    await _startNode(creds, seed);
-    _log.i("recovered node started");
-  }
-
-  Future<void> _startNode(
-      sdk.GreenlightCredentials creds, Uint8List seed) async {
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
-    await _breezLib.startNode();
     emit(state.copyWith(initial: false));
+    _log.i("recovered node started");
   }
 
   Future<sdk.Config> _getConfig() async {

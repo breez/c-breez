@@ -4,10 +4,12 @@ import 'dart:typed_data';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/services/keychain.dart';
+import 'package:fimber/fimber.dart';
 import 'package:hex/hex.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CredentialsManager {
+  final _log = FimberLog("CredentialsManager");
   static const String accountCredsKey = "account_creds_key";
   static const String accountCredsCert = "account_creds_cert";
   static const String accountSeedKey = "account_seed_key";
@@ -23,6 +25,7 @@ class CredentialsManager {
     try {
       await _storeGreenlightCredentials(glCreds);
       await _storeSeed(seed);
+      _log.i("Stored credentials successfully");
     } catch (err) {
       throw Exception(err.toString());
     }
@@ -32,6 +35,7 @@ class CredentialsManager {
     try {
       GreenlightCredentials glCreds = await _restoreGreenlightCredentials();
       Uint8List seed = await _restoreSeed();
+      _log.i("Restored credentials successfully");
       return Credentials(glCreds: glCreds, seed: seed);
     } catch (err) {
       throw Exception(err.toString());

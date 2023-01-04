@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';

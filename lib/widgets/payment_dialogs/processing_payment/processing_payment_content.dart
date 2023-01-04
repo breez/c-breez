@@ -21,40 +21,42 @@ class ProcessingPaymentContent extends StatelessWidget {
     final customData = themeData.customData;
     final queryData = MediaQuery.of(context);
 
-    return Column(
-      key: dialogKey,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const ProcessingPaymentTitle(),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-          child: SizedBox(
-            width: queryData.size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LoadingAnimatedText(
-                  texts.processing_payment_dialog_wait,
-                  textStyle: themeData.dialogTheme.contentTextStyle,
-                  textAlign: TextAlign.center,
-                ),
-              ],
+    return SingleChildScrollView(
+      child: Column(
+        key: dialogKey,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const ProcessingPaymentTitle(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+            child: SizedBox(
+              width: queryData.size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  LoadingAnimatedText(
+                    texts.processing_payment_dialog_wait,
+                    textStyle: themeData.dialogTheme.contentTextStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 24.0),
-          child: Image.asset(
-            customData.loaderAssetPath,
-            height: 64.0,
-            colorBlendMode: customData.loaderColorBlendMode,
-            color: color,
-            gaplessPlayback: true,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 24.0),
+            child: Image.asset(
+              customData.loaderAssetPath,
+              height: 64.0,
+              colorBlendMode: customData.loaderColorBlendMode,
+              color: color,
+              gaplessPlayback: true,
+            ),
           ),
-        )
-      ],
+        ],
+      ),
     );
   }
 }

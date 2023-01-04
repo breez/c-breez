@@ -29,6 +29,34 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+    <key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>lightning.link</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>lightning</string>
+				<string>lnurlc</string>
+				<string>lnurlw</string>
+				<string>lnurlp</string>
+				<string>keyauth</string>
+				<string>LIGHTNING</string>
+				<string>LNURLC</string>
+				<string>LNURLW</string>
+				<string>LNURLP</string>
+				<string>KEYAUTH</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>breez.link</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>breez</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -60,5 +88,7 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enable secure access to Breez wallet</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>NFC is used to read payment requests</string>
 </dict>
 </plist>

@@ -63,7 +63,7 @@ Future<void> showPaymentDetailsDialog(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[              
+            children: <Widget>[
               (paymentInfo.description == null || paymentInfo.description == "")
                   ? Container()
                   : Padding(
@@ -231,11 +231,11 @@ Widget _amountText(
   AppLocalizations texts,
   ThemeData themeData,
 ) {
-  final amount = currency.format(paymentInfo.amountMsat);
+  final amountSats = currency.format(paymentInfo.amountMsat ~/ 1000);
 
   final text = (paymentInfo.paymentType == PaymentType.Received)
-      ? texts.payment_details_dialog_amount_positive(amount)
-      : texts.payment_details_dialog_amount_negative(amount);
+      ? texts.payment_details_dialog_amount_positive(amountSats)
+      : texts.payment_details_dialog_amount_negative(amountSats);
   return AutoSizeText(
     text,
     style: themeData.primaryTextTheme.headline3,
@@ -256,7 +256,6 @@ List<Widget> _getSinglePaymentInfoDetails(
   Payment paymentInfo,
   AppLocalizations texts,
 ) {
-
   LnPaymentDetails? paymentDetails;
   if (paymentInfo.details is LnPaymentDetails) {
     paymentDetails = paymentInfo.details as LnPaymentDetails;
@@ -268,16 +267,16 @@ List<Widget> _getSinglePaymentInfoDetails(
     paymentDetails.paymentPreimage.isEmpty
         ? Container()
         : ShareablePaymentRow(
-      title: texts.payment_details_dialog_single_info_pre_image,
+            title: texts.payment_details_dialog_single_info_pre_image,
             sharedValue: paymentDetails.paymentPreimage,
           ),
     paymentDetails.destinationPubkey.isEmpty
         ? Container()
         : ShareablePaymentRow(
-      title: texts.payment_details_dialog_single_info_node_id,
+            title: texts.payment_details_dialog_single_info_node_id,
             sharedValue: paymentDetails.destinationPubkey,
           ),
-  });  
+  });
 }
 
 class ShareablePaymentRow extends StatelessWidget {

@@ -151,9 +151,22 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  Future<bool> processLNURLWithdraw(
-      LNURLWithdrawParams withdrawParams, Map<String, String> qParams) async {
-    throw Exception("not implemented");
+  Future<sdk.LnUrlWithdrawCallbackStatus> withdrawLnurl(
+      {required int amountSats,
+      required sdk.LnUrlWithdrawRequestData reqData,
+      String? description}) async {
+    _log.v(
+        "processLNURLWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
+    try {
+      return _breezLib.withdrawLnurl(
+        amountSats: amountSats,
+        reqData: reqData,
+        description: description,
+      );
+    } catch (e) {
+      _log.e("processLNURLWithdraw error: $e");
+      rethrow;
+    }
   }
 
   Future<sdk.LnUrlPayResult> sendLNURLPayment({

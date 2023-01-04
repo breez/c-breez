@@ -76,12 +76,21 @@ Future handleWithdrawRequest(
   BuildContext context,
   LNURLWithdrawParams withdrawParams,
 ) async {
+  final requestData = LnUrlWithdrawRequestData(
+    callback: withdrawParams.callback,
+    minWithdrawable: withdrawParams.minWithdrawable,
+    maxWithdrawable: withdrawParams.maxWithdrawable,
+    k1: withdrawParams.k1,
+    defaultDescription: withdrawParams.defaultDescription,
+  );
+
   LNURLWithdrawPageResult? pageResult;
   pageResult = await showDialog<LNURLWithdrawPageResult>(
     useRootNavigator: false,
     context: context,
     barrierDismissible: false,
-    builder: (_) => LNURLWithdrawDialog(withdrawParams),
+    builder: (_) => LNURLWithdrawDialog(
+        requestData: requestData, domain: withdrawParams.domain),
   );
   if (pageResult == null) {
     return Future.value();

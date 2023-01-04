@@ -1,5 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
@@ -10,19 +10,23 @@ import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../bloc/lsp/lsp_bloc.dart';
 import '../../../utils/payment_validator.dart';
 
-class LNURLWithdrawDialog extends StatefulWidget {
-  final LNURLWithdrawParams withdrawParams;
+final _log = FimberLog("LNURLWithdrawDialog");
 
-  const LNURLWithdrawDialog(
-    this.withdrawParams, {
+class LNURLWithdrawDialog extends StatefulWidget {
+  final sdk.LnUrlWithdrawRequestData requestData;
+  final String domain;
+
+  const LNURLWithdrawDialog({
     Key? key,
+    required this.requestData,
+    required this.domain,
   }) : super(key: key);
 
   @override
@@ -39,11 +43,11 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
 
   @override
   void initState() {
-    fixedAmount = widget.withdrawParams.minWithdrawable ==
-        widget.withdrawParams.maxWithdrawable;
+    fixedAmount = widget.requestData.minWithdrawable ==
+        widget.requestData.maxWithdrawable;
     if (fixedAmount) {
       _amountController.text =
-          (widget.withdrawParams.minWithdrawable ~/ 1000).toString();
+          (widget.requestData.minWithdrawable ~/ 1000).toString();
     }
     super.initState();
   }
@@ -62,7 +66,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
 
     return AlertDialog(
       title: Text(
-        widget.withdrawParams.domain,
+        widget.domain,
         style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
@@ -98,11 +102,11 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                     child: Text(
                       _showFiatCurrency && fiatConversion != null
                           ? fiatConversion.format(
-                              widget.withdrawParams.maxWithdrawable ~/ 1000)
+                              widget.requestData.maxWithdrawable ~/ 1000)
                           : BitcoinCurrency.fromTickerSymbol(
                                   currencyState.bitcoinTicker)
-                              .format(widget.withdrawParams.maxWithdrawable ~/
-                                  1000),
+                              .format(
+                                  widget.requestData.maxWithdrawable ~/ 1000),
                       style: themeData.primaryTextTheme.headline5,
                       textAlign: TextAlign.center,
                     ),
@@ -145,9 +149,9 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                         ),
                         AutoSizeText(
                           texts.lnurl_fetch_invoice_limit(
-                            (widget.withdrawParams.minWithdrawable ~/ 1000)
+                            (widget.requestData.minWithdrawable ~/ 1000)
                                 .toString(),
-                            (widget.withdrawParams.maxWithdrawable ~/ 1000)
+                            (widget.requestData.maxWithdrawable ~/ 1000)
                                 .toString(),
                           ),
                           maxLines: 2,
@@ -168,13 +172,12 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                   child: Scrollbar(
                     child: SingleChildScrollView(
                       child: Text(
-                        widget.withdrawParams.defaultDescription,
+                        widget.requestData.defaultDescription,
                         style: themeData.primaryTextTheme.headline3!
                             .copyWith(fontSize: 16),
                         textAlign:
-                            widget.withdrawParams.defaultDescription.length >
-                                        40 &&
-                                    !widget.withdrawParams.defaultDescription
+                            widget.requestData.defaultDescription.length > 40 &&
+                                    !widget.requestData.defaultDescription
                                         .contains("\n")
                                 ? TextAlign.start
                                 : TextAlign.center,
@@ -223,26 +226,35 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               final navigator = Navigator.of(context);
               var loaderRoute = createLoaderRoute(context);
               navigator.push(loaderRoute);
-              LNInvoice invoice = await accountBloc.addInvoice(
-                description: widget.withdrawParams.defaultDescription,
-                amountSats: int.parse(_amountController.text),
-              );
-              Map<String, String> qParams = {
-                'k1': widget.withdrawParams.k1.toString(),
-                'pr': invoice.bolt11
-              };
+
               try {
-                bool isSent = await accountBloc.processLNURLWithdraw(
-                    widget.withdrawParams, qParams);
+                final amount = int.parse(_amountController.text);
+                _log.v("LNURL withdraw of $amount sats where "
+                    "min is ${widget.requestData.minWithdrawable} msats "
+                    "and max is ${widget.requestData.maxWithdrawable} msats.");
+                final resp = await accountBloc.withdrawLnurl(
+                  reqData: widget.requestData,
+                  amountSats: amount,
+                  description: widget.requestData.defaultDescription,
+                );
                 navigator.removeRoute(loaderRoute);
-                if (!isSent) {
+                if (resp is sdk.LnUrlWithdrawCallbackStatus_Ok) {
+                  _log.v("LNURL withdraw success");
+                  navigator.pop(LNURLWithdrawPageResult());
+                } else if (resp
+                    is sdk.LnUrlWithdrawCallbackStatus_ErrorStatus) {
+                  _log.v("LNURL withdraw failed: ${resp.data.reason}");
                   navigator.pop(LNURLWithdrawPageResult(
-                    error: texts.lnurl_withdraw_dialog_error_unknown,
+                    error: resp.data.reason,
                   ));
                 } else {
-                  navigator.pop();
+                  _log.w("Unknown response from sendLNURLPayment: $resp");
+                  navigator.pop(LNURLWithdrawPageResult(
+                    error: texts.lnurl_payment_page_unknown_error,
+                  ));
                 }
               } catch (e) {
+                _log.w("Error withdrawing LNURL payment: $e");
                 navigator.removeRoute(loaderRoute);
                 navigator.pop(LNURLWithdrawPageResult(
                   error: texts.lnurl_withdraw_dialog_error(e.toString()),
@@ -262,14 +274,14 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
   String? validatePayment(int amount) {
     final texts = context.texts();
     final accBloc = context.read<AccountBloc>();
-     final lsp = context.read<LSPBloc>().state;
-     final currencyState = context.read<CurrencyBloc>().state;
+    final lsp = context.read<LSPBloc>().state;
+    final currencyState = context.read<CurrencyBloc>().state;
 
-    final maxSats = widget.withdrawParams.maxWithdrawable ~/ 1000;
+    final maxSats = widget.requestData.maxWithdrawable ~/ 1000;
     if (amount > maxSats) {
       return texts.lnurl_withdraw_dialog_error_amount_exceeds(maxSats);
     }
-    final minSats = widget.withdrawParams.minWithdrawable ~/ 1000;
+    final minSats = widget.requestData.minWithdrawable ~/ 1000;
     if (amount < minSats) {
       return texts.lnurl_withdraw_dialog_error_amount_below(minSats);
     }

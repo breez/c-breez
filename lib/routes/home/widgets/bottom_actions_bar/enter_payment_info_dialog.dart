@@ -68,64 +68,66 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
         width: MediaQuery.of(context).size.width,
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: texts.payment_info_dialog_hint,
-                  suffixIcon: IconButton(
-                    padding: const EdgeInsets.only(top: 21.0),
-                    alignment: Alignment.bottomRight,
-                    icon: Image(
-                      image: const AssetImage("src/icon/qr_scan.png"),
-                      color: themeData.primaryIconTheme.color,
-                      fit: BoxFit.contain,
-                      width: 24.0,
-                      height: 24.0,
-                    ),
-                    tooltip: texts.payment_info_dialog_barcode,
-                    onPressed: () => _scanBarcode(context),
-                  ),
-                ),
-                focusNode: _paymentInfoFocusNode,
-                controller: _paymentInfoController,
-                style: TextStyle(
-                  color: themeData.primaryTextTheme.headline4!.color,
-                ),
-                validator: (v) {
-                  var value = v!;
-                  if (parseNodeId(value) == null &&
-                      _decodeInvoice(value) == null &&
-                      !isLightningAddress(value)) {
-                    return texts.payment_info_dialog_error;
-                  }
-                  return null;
-                },
-              ),
-              _scannerErrorMessage.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        _scannerErrorMessage,
-                        style: theme.validatorStyle,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: texts.payment_info_dialog_hint,
+                    suffixIcon: IconButton(
+                      padding: const EdgeInsets.only(top: 21.0),
+                      alignment: Alignment.bottomRight,
+                      icon: Image(
+                        image: const AssetImage("src/icon/qr_scan.png"),
+                        color: themeData.primaryIconTheme.color,
+                        fit: BoxFit.contain,
+                        width: 24.0,
+                        height: 24.0,
                       ),
-                    )
-                  : const SizedBox(),
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  texts.payment_info_dialog_hint_expanded,
-                  style: theme.FieldTextStyle.labelStyle.copyWith(
-                    fontSize: 13.0,
-                    color: themeData.isLightTheme
-                        ? theme.BreezColors.grey[500]
-                        : theme.BreezColors.white[200],
+                      tooltip: texts.payment_info_dialog_barcode,
+                      onPressed: () => _scanBarcode(context),
+                    ),
+                  ),
+                  focusNode: _paymentInfoFocusNode,
+                  controller: _paymentInfoController,
+                  style: TextStyle(
+                    color: themeData.primaryTextTheme.headline4!.color,
+                  ),
+                  validator: (v) {
+                    var value = v!;
+                    if (parseNodeId(value) == null &&
+                        _decodeInvoice(value) == null &&
+                        !isLightningAddress(value)) {
+                      return texts.payment_info_dialog_error;
+                    }
+                    return null;
+                  },
+                ),
+                _scannerErrorMessage.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          _scannerErrorMessage,
+                          style: theme.validatorStyle,
+                        ),
+                      )
+                    : const SizedBox(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    texts.payment_info_dialog_hint_expanded,
+                    style: theme.FieldTextStyle.labelStyle.copyWith(
+                      fontSize: 13.0,
+                      color: themeData.isLightTheme
+                          ? theme.BreezColors.grey[500]
+                          : theme.BreezColors.white[200],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

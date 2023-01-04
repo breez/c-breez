@@ -119,7 +119,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<void> _startNode(
       sdk.GreenlightCredentials creds, Uint8List seed) async {
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
-    _breezLib.nodeStateController.add(await _breezLib.getNodeState());
+    await _breezLib.startNode();
     emit(state.copyWith(initial: false));
   }
 

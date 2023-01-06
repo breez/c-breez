@@ -23,7 +23,8 @@ class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezLib.recommendedFees();
-      _log.v("fetchTransactionConst recommendedFees: $recommendedFees");
+      _log.v("fetchTransactionConst recommendedFees: fastestFee: ${recommendedFees.fastestFee}, "
+          "halfHourFee: ${recommendedFees.halfHourFee}, hourFee: ${recommendedFees.hourFee}");
     } catch (e) {
       _log.e("fetchTransactionConst error", ex: e);
       emit(WithdrawFudsState.error(extractExceptionMessage(e)));

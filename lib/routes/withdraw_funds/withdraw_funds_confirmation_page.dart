@@ -72,15 +72,15 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: WithdrawFundsSummary(
                     widget.amount,
-                    selectedCost.fee,
-                    widget.amount - selectedCost.fee,
+                    selectedCost.calculateFee(),
+                    widget.amount - selectedCost.calculateFee(),
                   ),
                 ),
                 Expanded(child: Container()),
                 Center(
                   child: WithdrawFundsConfirmationConfirmButton(
                     widget.address,
-                    selectedCost.fee,
+                    selectedCost.calculateFee(),
                   ),
                 ),
               ],

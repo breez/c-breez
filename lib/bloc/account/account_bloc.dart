@@ -97,6 +97,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node registered successfully");
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     emit(state.copyWith(initial: false));
+    _startRegisteredNode();
     _log.i("new node started");
   }
 
@@ -113,7 +114,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node recovered successfully");
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     emit(state.copyWith(initial: false));
-    _log.i("recovered node started");
+    _startRegisteredNode();
+    _log.i("recovered node started");    
   }
 
   Future<sdk.Config> _getConfig() async {

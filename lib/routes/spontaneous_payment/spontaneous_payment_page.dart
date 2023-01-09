@@ -166,9 +166,10 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
   Widget _buildNodeIdDescription() {
     final texts = context.texts();
     return CollapsibleListItem(
-        title: texts.spontaneous_payment_node_id,
-        sharedValue: widget.nodeID,
-        userStyle: const TextStyle(color: Colors.white));
+      title: texts.spontaneous_payment_node_id,
+      sharedValue: widget.nodeID,
+      userStyle: const TextStyle(color: Colors.white),
+    );
   }
 
   Future _sendPayment(AccountBloc accBloc, CurrencyBloc currencyBloc) async {
@@ -191,34 +192,34 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
       cancelText: texts.spontaneous_payment_action_pay,
     );
     if (ok == true) {
-        Future sendFuture = Future.value(null);
-        showDialog(
-          useRootNavigator: false,
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => ProcessingPaymentDialog(
-            firstPaymentItemKey: widget.firstPaymentItemKey,
-            popOnCompletion: true,
-            paymentFunc: () {
-              var sendPayment = Future.delayed(
-                const Duration(seconds: 1),
-                () {
-                  sendFuture = accBloc.sendSpontaneousPayment(
-                    widget.nodeID!,
-                    tipMessage,
-                    amount,
-                  );
-                  return sendFuture;
-                },
-              );
+      Future sendFuture = Future.value(null);
+      showDialog(
+        useRootNavigator: false,
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => ProcessingPaymentDialog(
+          firstPaymentItemKey: widget.firstPaymentItemKey,
+          popOnCompletion: true,
+          paymentFunc: () {
+            var sendPayment = Future.delayed(
+              const Duration(seconds: 1),
+              () {
+                sendFuture = accBloc.sendSpontaneousPayment(
+                  widget.nodeID!,
+                  tipMessage,
+                  amount,
+                );
+                return sendFuture;
+              },
+            );
 
-              return sendPayment;
-            },
-          ),
-        );
-        if (!mounted) return;
-        Navigator.of(context).removeRoute(_currentRoute!);
-        await sendFuture;
+            return sendPayment;
+          },
+        ),
+      );
+      if (!mounted) return;
+      Navigator.of(context).removeRoute(_currentRoute!);
+      await sendFuture;
     }
   }
 }

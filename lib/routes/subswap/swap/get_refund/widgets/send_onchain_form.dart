@@ -152,10 +152,8 @@ class SendOnchainFormState extends State<SendOnchainForm> {
               CollapsibleListItem(
                 title: texts.send_on_chain_original_transaction,
                 sharedValue: widget.originalTransaction,
-                userStyle: dialogTheme.contentTextStyle!.copyWith(
-                  fontWeight: FontWeight.normal,
-                ),
-              )
+                userStyle: const TextStyle(color: Colors.white),
+              ),
             ],
           ],
         ),

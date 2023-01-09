@@ -4,6 +4,7 @@ import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/locale.dart';
 import 'package:fimber/fimber.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -31,21 +32,33 @@ class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
       return;
     }
 
+    final nodeState = await _breezLib.getNodeState();
+    if (nodeState == null) {
+      _log.e("Failed to get node state");
+      emit(WithdrawFudsState.error(getSystemAppLocalizations().node_state_error));
+      return;
+    } else {
+      _log.v("NodeState outputs count: ${nodeState.onchainOutputsCount}");
+    }
+
     emit(WithdrawFudsState.info(
       TransactionCost(
+        TransactionCostKind.economy,
         const Duration(minutes: 60),
         recommendedFees.hourFee,
-        TransactionCostKind.economy,
+        nodeState.onchainOutputsCount,
       ),
       TransactionCost(
+        TransactionCostKind.regular,
         const Duration(minutes: 30),
         recommendedFees.halfHourFee,
-        TransactionCostKind.regular,
+        nodeState.onchainOutputsCount,
       ),
       TransactionCost(
+        TransactionCostKind.priority,
         const Duration(minutes: 10),
         recommendedFees.fastestFee,
-        TransactionCostKind.priority,
+        nodeState.onchainOutputsCount,
       ),
     ));
   }

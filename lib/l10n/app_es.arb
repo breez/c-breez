@@ -2196,6 +2196,7 @@
     }
   },
   "lnurl_payment_page_unknown_error": "Hubo un error desconocido",
+  "node_state_error": "Hubo un error al conectarse al nodo",
   "locale": "es",
   "app_name": "Breez"
 }

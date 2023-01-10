@@ -174,7 +174,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   String? validatePayment(int amount) {
     final lsp = context.read<LSPBloc>().state;
-    int? channelMinimumFee = lsp!.channelMinimumFeeMsat ~/ 1000;
+    int? channelMinimumFee = lsp!.lspInfo!.channelMinimumFeeMsat ~/ 1000;
 
     return PaymentValidator(
       accountBloc.validatePayment,

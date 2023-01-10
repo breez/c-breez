@@ -1,7 +1,7 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_stat.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +14,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AccountBloc, AccountState>(builder: (context, accState) {
-      return BlocBuilder<LSPBloc, LspInformation?>(
+      return BlocBuilder<LSPBloc, LspState?>(
         builder: (context, lsp) {
           final navigatorState = Navigator.of(context);
 
@@ -29,7 +29,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
             );
           }
 
-          if (accState.status != ConnectionStatus.CONNECTING && lsp == null) {
+          if (accState.status != ConnectionStatus.CONNECTING && lsp?.selectedLspId == null) {
             warnings.add(WarningAction(() {
               navigatorState.pushNamed("/select_lsp");
             }));

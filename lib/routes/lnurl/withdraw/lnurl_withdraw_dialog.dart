@@ -274,7 +274,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
   String? validatePayment(int amount) {
     final texts = context.texts();
     final accBloc = context.read<AccountBloc>();
-    final lsp = context.read<LSPBloc>().state;
+    final lspInfo = context.read<LSPBloc>().state?.lspInfo;
     final currencyState = context.read<CurrencyBloc>().state;
 
     final maxSats = widget.requestData.maxWithdrawable ~/ 1000;
@@ -287,8 +287,8 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
     }
 
     int? channelMinimumFee;
-    if (lsp != null) {
-      channelMinimumFee = lsp.channelMinimumFeeMsat ~/ 1000;
+    if (lspInfo != null) {
+      channelMinimumFee = lspInfo.channelMinimumFeeMsat ~/ 1000;
     }
 
     return PaymentValidator(

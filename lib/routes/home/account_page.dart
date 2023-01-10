@@ -2,6 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_stat.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
@@ -128,9 +129,9 @@ class AccountPage extends StatelessWidget {
           delegate: FixedSliverDelegate(
             250.0,
             builder: (context, shrinkedHeight, overlapContent) {
-              return BlocBuilder<LSPBloc, LspInformation?>(builder: (context, lsp) {
+              return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
                 var isConnecting = account.status == ConnectionStatus.CONNECTING;
-                if (!isConnecting && lsp == null) {
+                if (!isConnecting && lspState?.lspInfo == null) {
                   return const Padding(
                     padding: EdgeInsets.only(top: 120.0),
                     child: NoLSPWidget(),

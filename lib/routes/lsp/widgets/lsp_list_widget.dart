@@ -42,7 +42,7 @@ class _LspListWidgetState extends State<LspListWidget> {
         }
 
         return FutureBuilder(
-          future: lspBloc.currentLSP,
+          future: lspBloc.fetchCurrentLSP(),
           builder: (context, currentLspSnapshot) {
             error = lspListSnapshot.error;
 

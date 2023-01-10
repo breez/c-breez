@@ -4,7 +4,7 @@ import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-import 'lsp_stat.dart';
+import 'lsp_state.dart';
 
 class LSPBloc extends Cubit<LspState?> {
   final BreezBridge _breezLib;

@@ -43,7 +43,7 @@ class _DepositWidgetState extends State<DepositWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final lspInfo = context.read<LSPBloc>().state;
+    final lspInfo = context.read<LSPBloc>().state?.lspInfo;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

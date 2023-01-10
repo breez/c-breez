@@ -3,6 +3,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_stat.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
@@ -66,8 +67,9 @@ class FeeMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    return BlocBuilder<LSPBloc, LspInformation?>(builder: (context, lsp) {
-      return lsp == null
+    return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
+      final lspInfo = lspState?.lspInfo;
+      return lspInfo == null
           ? const SizedBox()
           : WarningBox(
               boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
@@ -75,7 +77,7 @@ class FeeMessage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    formatFeeMessage(context, lsp),
+                    formatFeeMessage(context, lspInfo),
                     style: themeData.textTheme.headline6,
                     textAlign: TextAlign.center,
                   ),

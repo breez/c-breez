@@ -1,6 +1,6 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_stat.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
@@ -21,9 +21,9 @@ class QrActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LSPBloc, LspInformation?>(
-      builder: (context, lsp) {
-        final connected = (lsp != null);
+    return BlocBuilder<LSPBloc, LspState?>(
+      builder: (context, lspState) {
+        final connected = (lspState?.lspInfo != null);
 
         return Padding(
           padding: const EdgeInsets.only(top: 32.0),

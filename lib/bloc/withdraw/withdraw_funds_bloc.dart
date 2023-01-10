@@ -37,28 +37,28 @@ class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
       _log.e("Failed to get node state");
       emit(WithdrawFudsState.error(getSystemAppLocalizations().node_state_error));
       return;
-    } else {
-      _log.v("NodeState outputs count: ${nodeState.onchainOutputsCount}");
     }
+    final inputs = nodeState.outpoints.length;
+    _log.v("NodeState outputs count: $inputs");
 
     emit(WithdrawFudsState.info(
       TransactionCost(
         TransactionCostKind.economy,
         const Duration(minutes: 60),
         recommendedFees.hourFee,
-        nodeState.onchainOutputsCount,
+        inputs,
       ),
       TransactionCost(
         TransactionCostKind.regular,
         const Duration(minutes: 30),
         recommendedFees.halfHourFee,
-        nodeState.onchainOutputsCount,
+        inputs,
       ),
       TransactionCost(
         TransactionCostKind.priority,
         const Duration(minutes: 10),
         recommendedFees.fastestFee,
-        nodeState.onchainOutputsCount,
+        inputs,
       ),
     ));
   }

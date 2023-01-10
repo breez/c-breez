@@ -80,7 +80,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
                 Center(
                   child: WithdrawFundsConfirmationConfirmButton(
                     widget.address,
-                    selectedCost.calculateFee(),
+                    selectedCost.fee,
                   ),
                 ),
               ],

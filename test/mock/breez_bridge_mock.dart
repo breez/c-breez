@@ -33,6 +33,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
     blockHeight: 2,
     channelsBalanceMsat: 0,
     onchainBalanceMsat: 0,
+    utxos: [],
     maxPayableMsat: 0,
     maxReceivableMsat: 0,
     maxSinglePaymentAmountMsat: 0,

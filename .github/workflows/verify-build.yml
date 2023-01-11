@@ -49,7 +49,7 @@ jobs:
           cd cbreez
           flutter pub get
 
-      - name: dart-anlayize
+      - name: dart-analyze
         run: |
           cd cbreez
           dart analyze --fatal-infos

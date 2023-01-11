@@ -18,37 +18,59 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+        path: 'cbreez'
 
-      - name: compile rust library
-        run: |
-          cd packages/breez_sdk/rust
-          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
-          make target/aarch64-linux-android/release/liblightning_toolkit.so
-          make target/armv7-linux-androideabi/release/liblightning_toolkit.so
-          make target/x86_64-linux-android/release/liblightning_toolkit.so
-
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+      - uses: actions/checkout@v3
+        with:         
+          repository: 'git@github.com:breez/breez-sdk.git'                   
+          ssh-key: ${{secrets.REPO_SSH_KEY}}          
+          path: 'breez-sdk'
 
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-          # flutter-version: '3.0.3'
+          channel: 'stable'          
+
+      - name: install dependencies
+        run: |          
+          cargo install cargo-ndk          
+          brew install protobuf
+          cd breez-sdk/sdk-flutter
+          make init
+
+      - name: build sdk
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          ssh-add ~/.ssh/id_rsa
+          cd breez-sdk/sdk-flutter
+          make android
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '17'      
 
       - name: flutter-doctor
-        run: flutter doctor
+        run: |
+          cd cbreez
+          flutter doctor
 
       - name: pub-get
-        run: flutter pub get
+        run: |
+          cd cbreez
+          flutter pub get
 
       - name: build-apk
-        run: flutter build apk --split-per-abi
+        run: |
+          cd cbreez
+          flutter build apk --split-per-abi
 
       - name: Upload apk
         uses: actions/upload-artifact@v3
         with:
           name: c-breez
-          path: build/app/outputs/flutter-apk/app-*.apk
+          path: cbreez/build/app/outputs/flutter-apk/app-*.apk

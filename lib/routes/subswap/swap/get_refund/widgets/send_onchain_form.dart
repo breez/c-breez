@@ -77,7 +77,6 @@ class SendOnchainFormState extends State<SendOnchainForm> {
 
     final texts = context.texts();
     final themeData = Theme.of(context);
-    final dialogTheme = themeData.dialogTheme;
 
     return Form(
       key: widget.formKey,

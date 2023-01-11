@@ -52,4 +52,9 @@ jobs:
       - name: dart-anlayize
         run: |
           cd cbreez
-          dart analyze --fatal-infos     
+          dart analyze --fatal-infos
+
+      - name: run-tests
+        run: |
+          cd cbreez
+          flutter test

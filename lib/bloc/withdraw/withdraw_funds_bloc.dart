@@ -38,27 +38,27 @@ class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
       emit(WithdrawFudsState.error(getSystemAppLocalizations().node_state_error));
       return;
     }
-    final inputs = nodeState.outpoints.length;
-    _log.v("NodeState outputs count: $inputs");
+    final utxos = nodeState.utxos.length;
+    _log.v("NodeState utxos: $utxos");
 
     emit(WithdrawFudsState.info(
       TransactionCost(
         TransactionCostKind.economy,
         const Duration(minutes: 60),
         recommendedFees.hourFee,
-        inputs,
+        utxos,
       ),
       TransactionCost(
         TransactionCostKind.regular,
         const Duration(minutes: 30),
         recommendedFees.halfHourFee,
-        inputs,
+        utxos,
       ),
       TransactionCost(
         TransactionCostKind.priority,
         const Duration(minutes: 10),
         recommendedFees.fastestFee,
-        inputs,
+        utxos,
       ),
     ));
   }

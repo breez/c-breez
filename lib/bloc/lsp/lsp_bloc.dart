@@ -20,10 +20,8 @@ class LSPBloc extends Cubit<LspState?> {
       
       // emit first with the current selected lsp
       emit(LspState(selectedLspId: await _breezLib.getLspId(), lspInfo: state?.lspInfo));
-      if (nodeState != null) {
-        _nodeState = nodeState;
-        _refreshLspInfo();
-      }
+      _nodeState = nodeState;
+      _refreshLspInfo();
     });
 
     Connectivity().onConnectivityChanged.listen((event) {

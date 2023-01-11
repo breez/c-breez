@@ -2,7 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_stat.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';

@@ -1,6 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_stat.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';

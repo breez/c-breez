@@ -34,7 +34,7 @@ final CustomData blueThemeCustomData = CustomData(
 final CustomData darkThemeCustomData = CustomData(
   loaderColorBlendMode: BlendMode.multiply,
   loaderAssetPath: 'src/images/breez_loader_dark.gif',
-  pendingTextColor: const Color(0xFF0085fb),
+  pendingTextColor: const Color(0xff4D88EC),
   dashboardBgColor: const Color(0xFF0D1F33),
   paymentListBgColor: const Color(0xFF152a3d),
   navigationDrawerBgColor: const Color(0xFF152a3d),

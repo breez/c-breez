@@ -66,7 +66,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   );
 
   @override
-  Future<LspInformation> getLspInfo() async {
+  Future<LspInformation?> fetchLspInfo(String lspId) async {
     return lspInformation;
   }
 

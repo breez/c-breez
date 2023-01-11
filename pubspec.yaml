@@ -44,6 +44,7 @@ dependencies:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
+  flutter_inappwebview: ^6.0.0-beta.22
   flutter_rust_bridge: 1.53.0
   flutter_secure_storage: ^7.0.1
   flutter_svg: ^1.1.6
@@ -83,7 +84,7 @@ dependencies:
   simple_animations: ^5.0.0+3
   sqflite_common_ffi: ^2.2.0+1
   sqlite3_flutter_libs: ^0.5.12
-  synchronized: ^3.0.0+3
+  synchronized: ^3.0.1
   theme_provider: ^0.5.0
   timeago: ^3.3.0
   # Doesn't support: Linux Mac Windows

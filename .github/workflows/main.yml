@@ -38,6 +38,8 @@ jobs:
           brew install protobuf
           cd breez-sdk/libs/sdk-flutter
           make init
+          cd ../sdk-core
+          make init
 
       - name: build sdk
         env:

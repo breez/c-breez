@@ -2196,6 +2196,7 @@
         }
     },
     "lnurl_payment_page_unknown_error": "Unknown error",
+    "node_state_error": "Failed to get node state",
     "locale": "en",
     "app_name": "Breez"
 }

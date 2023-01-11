@@ -45,15 +45,25 @@ class WithdrawFudsInfoState extends WithdrawFudsState {
 }
 
 class TransactionCost {
+  final TransactionCostKind kind;
   final Duration waitingTime;
   final int fee;
-  final TransactionCostKind kind;
+  final int inputs;
 
   const TransactionCost(
+    this.kind,
     this.waitingTime,
     this.fee,
-    this.kind,
+    this.inputs,
   );
+
+  int calculateFee() {
+    final input = inputs * 148;
+    const output = 2 * 34;
+    const extra = 10;
+    final size = input + output + extra;
+    return fee * size;
+  }
 }
 
 enum TransactionCostKind {

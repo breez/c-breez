@@ -2196,6 +2196,7 @@
     }
   },
   "lnurl_payment_page_unknown_error": "Houve um erro desconhecido",
+  "node_state_error": "Houve uma falha ao conectar ao servidor",
   "locale": "pt",
   "app_name": "Breez"
 }

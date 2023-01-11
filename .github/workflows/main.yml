@@ -36,7 +36,7 @@ jobs:
         run: |          
           cargo install cargo-ndk          
           brew install protobuf
-          cd breez-sdk/sdk-flutter
+          cd breez-sdk/libs/sdk-flutter
           make init
 
       - name: build sdk
@@ -47,7 +47,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           sudo chmod 600 ~/.ssh/id_rsa
           ssh-add ~/.ssh/id_rsa
-          cd breez-sdk/sdk-flutter
+          cd breez-sdk/libs/sdk-flutter
           make android
 
       - uses: actions/setup-java@v2

@@ -14,15 +14,15 @@ final ThemeData breezDarkTheme = ThemeData(
   ),
   primaryColor: const Color(0xFF7aa5eb),
   primaryColorDark: const Color(0xFF00081C),
-  primaryColorLight: const Color(0xFF4B89EB),
+  primaryColorLight: const Color(0xFF0085fb),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
-    backgroundColor: Color(0xFF4B89EB),
+    backgroundColor: Color(0xFF0085fb),
     sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
   ),
   canvasColor: const Color(0xFF0c2031),
   backgroundColor: const Color(0xFF152a3d),
   bottomAppBarTheme:
-      const BottomAppBarTheme(elevation: 0, color: Color(0xff4D88EC)),
+      const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
   appBarTheme: AppBarTheme(
     backgroundColor: const Color(0xFF0c2031),
     iconTheme: const IconThemeData(
@@ -46,7 +46,7 @@ final ThemeData breezDarkTheme = ThemeData(
   dividerColor: const Color(0x337aa5eb),
   cardColor: const Color(0xFF121212), // will be replaced with CardTheme.color
   cardTheme: const CardTheme(color: Color(0xFF121212)),
-  highlightColor: const Color(0xFF81acf1),
+  highlightColor: const Color(0xFF0085fb),
   textTheme: const TextTheme(
       subtitle2:
           TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 0.2),
@@ -94,7 +94,7 @@ final ThemeData breezDarkTheme = ThemeData(
   ),
   textSelectionTheme: const TextSelectionThemeData(
     selectionColor: Color.fromRGBO(255, 255, 255, 0.5),
-    selectionHandleColor: Color(0xff4D88EC),
+    selectionHandleColor: Color(0xFF0085fb),
   ),
   primaryIconTheme: const IconThemeData(color: Color(0xFF7aa5eb)),
   fontFamily: 'IBMPlexSans',
@@ -106,13 +106,13 @@ final ThemeData breezDarkTheme = ThemeData(
       return Colors.white;
     }),
   ),
-  chipTheme: const ChipThemeData(backgroundColor: Color(0xff4D88EC)),
+  chipTheme: const ChipThemeData(backgroundColor: Color(0xFF0085fb)),
   errorColor: const Color(0xFFeddc97),
 );
 
 final ThemeData calendarDarkTheme = ThemeData.dark().copyWith(
   colorScheme: const ColorScheme.light(
-    primary: Color(0xFF4B89EB), // header bg color
+    primary: Color(0xFF0085fb), // header bg color
     onPrimary: Colors.white, // header text color
     onSurface: Colors.white, // body text color
   ),

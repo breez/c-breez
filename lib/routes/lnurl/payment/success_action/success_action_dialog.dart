@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
+import 'package:c_breez/utils/external_browser.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class SuccessActionDialog extends StatefulWidget {
   final SuccessActionData successActionData;
@@ -74,12 +74,15 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             ),
             onPressed: () async {
               final navigator = Navigator.of(context);
-              if (await canLaunchUrlString(widget.successActionData.url!)) {
-                await launchUrlString(widget.successActionData.url!);
+              try {
+                await launchLinkOnExternalBrowser(
+                  context,
+                  linkAddress: widget.successActionData.url!,
+                );
                 navigator.pop();
-              } else {
+              } catch (e) {
                 navigator.pop();
-                showFlushbar(context, message: "Can't launch url.");
+                showFlushbar(context, message: e.toString());
               }
             },
           )

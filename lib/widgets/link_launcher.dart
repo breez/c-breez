@@ -1,6 +1,6 @@
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/utils/external_browser.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 class LinkLauncher extends StatelessWidget {
   final double iconSize;
@@ -52,7 +52,12 @@ class LinkLauncher extends StatelessWidget {
                       iconSize: iconSize,
                       color: style.color,
                       icon: const Icon(Icons.launch),
-                      onPressed: () => launchUrlString(linkAddress),
+                      onPressed: () async {
+                        await launchLinkOnExternalBrowser(
+                          context,
+                          linkAddress: linkAddress,
+                        );
+                      },
                     ),
                   ],
                 ),

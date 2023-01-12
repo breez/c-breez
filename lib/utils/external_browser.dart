@@ -37,10 +37,10 @@ Future<void> launchLinkOnExternalBrowser(
         ),
       );
     } else {
-      throw Exception("Can't launch url.");
+      throw Exception(texts.link_launcher_failed_to_launch(linkAddress));
     }
   } catch (error) {
-    _log.w("Can't launch url.", ex: error);
+    _log.w(error.toString(), ex: error);
     rethrow;
   } finally {
     navigator.removeRoute(loaderRoute);

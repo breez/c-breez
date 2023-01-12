@@ -969,6 +969,7 @@
   "account_page_activation_provider_action_select": "SELECT…",
   "account_page_activation_provider_label": "Select a Lightning Provider",
   "account_page_activation_provider_hint": "Please select one of the following providers in order to activate Breez and connect to the Lightning network.",
+  "account_page_activation_provider_unavailable": "There are no available LSP's.\nPlease check your configuration and restart Breez.",
   "account_page_activation_error": "There was an error fetching lightning providers. Please check your internet connection and try again.",
   "account_page_activation_action_retry": "RETRY",
   "account_page_activation_action_select": "SELECT",
@@ -1244,6 +1245,15 @@
   "order_card_full_name_error": "Please enter your full name",
   "link_launcher_title": "Transaction ID:",
   "link_launcher_link_name": "",
+  "link_launcher_failed_to_launch": "Could not launch {$url}",
+  "@link_launcher_failed_to_launch": {
+    "placeholders": {
+      "$url": {
+        "type": "String",
+        "example": "https://abc.def.ghi"
+      }
+    }
+  },
   "keyboard_done_action": "Done",
   "flushbar_default_message": "",
   "flushbar_default_action": "OK",

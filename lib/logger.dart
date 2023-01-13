@@ -7,7 +7,7 @@ import 'package:fimber_io/fimber_io.dart';
 import 'package:flutter_fimber/flutter_fimber.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
 
 final _log = FimberLog("logger");
 
@@ -18,7 +18,7 @@ void shareLog() async {
   encoder.create(zipFilePath);
   encoder.addDirectory(Directory("${appDir.path}/logs/"));
   encoder.close();
-  ShareExtend.share(zipFilePath, "file");
+  Share.shareFiles([zipFilePath]);
 }
 
 class BreezLogger {

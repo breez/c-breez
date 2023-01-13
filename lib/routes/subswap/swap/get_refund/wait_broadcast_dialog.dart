@@ -4,7 +4,7 @@ import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
 
 class WaitBroadcastDialog extends StatefulWidget {
   final String _fromAddress;
@@ -283,10 +283,7 @@ class _ShareAndCopyTxID extends StatelessWidget {
               iconSize: 16.0,
               color: themeData.primaryTextTheme.button!.color!,
               icon: const Icon(Icons.share),
-              onPressed: () => ShareExtend.share(
-                _response.txID,
-                "text",
-              ),
+              onPressed: () => Share.share(_response.txID),
             ),
           ],
         ),

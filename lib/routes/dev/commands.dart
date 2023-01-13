@@ -5,7 +5,7 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'commands_list.dart';
 
@@ -92,6 +92,6 @@ class DevelopersView extends StatelessWidget {
   void _exportKeys(BuildContext context) async {
     final accBloc = context.read<AccountBloc>();
     final credentialsFilePath = await accBloc.exportCredentialsFile();
-    ShareExtend.share(credentialsFilePath, "file");
+    Share.shareFiles([credentialsFilePath]);
   }
 }

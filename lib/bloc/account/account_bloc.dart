@@ -8,13 +8,12 @@ import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
+import 'package:c_breez/config.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:ini/ini.dart' as ini;
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'account_state_assembler.dart';
@@ -77,7 +76,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     emit(state.copyWith(status: ConnectionStatus.CONNECTING));
     final credentials = await _credentialsManager.restoreCredentials();
     await _breezLib.initServices(
-      config: await _getConfig(),
+      config: (await Config.instance()).sdkConfig,
       seed: credentials.seed,
       creds: credentials.glCreds,
     );
@@ -90,7 +89,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required Uint8List seed,
   }) async {
     final sdk.GreenlightCredentials creds = await _breezLib.registerNode(
-      config: await _getConfig(),
+      config: (await Config.instance()).sdkConfig,
       network: network,
       seed: seed,
     );
@@ -106,7 +105,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required Uint8List seed,
   }) async {
     final sdk.GreenlightCredentials creds = await _breezLib.recoverNode(
-      config: await _getConfig(),
+      config: (await Config.instance()).sdkConfig,
       network: network,
       seed: seed,
     );
@@ -114,35 +113,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     emit(state.copyWith(initial: false));
     _log.i("recovered node started");
-  }
-
-  Future<sdk.Config> _getConfig() async {
-    try {
-      // Read breez.conf ini file and organize it via ini package
-      String configString = await rootBundle.loadString('conf/breez.conf');
-      ini.Config breezConfig = ini.Config.fromString(configString);
-      // Create a Config from breez.conf
-      sdk.Config config = sdk.Config(
-        breezserver:
-            breezConfig.get("Application Options", "breezserver") ?? "",
-        mempoolspaceUrl: await _preferences.getMempoolSpaceUrl().then((url) =>
-            url ??
-            breezConfig.get("Application Options", "mempoolspaceurl") ??
-            ""),
-        workingDir: (await getApplicationDocumentsDirectory()).path,
-        network: sdk.Network.values.firstWhere((n) =>
-            n.name.toLowerCase() ==
-            (breezConfig.get("Application Options", "network") ?? "bitcoin")),
-        paymentTimeoutSec: int.parse(
-            breezConfig.get("Application Options", "paymentTimeoutSec") ??
-                "30"),
-        defaultLspId: breezConfig.get("Application Options", "defaultLspId"),
-        apiKey: breezConfig.get("Application Options", "apiKey"),
-      );
-      return config;
-    } catch (e) {
-      throw Exception(e.toString());
-    }
   }
 
   Future<sdk.LnUrlWithdrawCallbackStatus> withdrawLnurl(

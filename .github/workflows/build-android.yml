@@ -26,9 +26,11 @@ jobs:
       - name: copy-config
         env:
           CBREEZ_CONFIG: ${{secrets.CBREEZ_CONFIG}}
+          GOOGLE_SERVICES: ${{secrets.GOOGLE_SERVICES}}
         run: |
           cd cbreez
           echo "$CBREEZ_CONFIG" > conf/breez.conf
+          echo "$GOOGLE_SERVICES" > android/app/google-services.json
 
       - uses: actions/checkout@v3
         with:         

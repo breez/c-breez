@@ -106,20 +106,27 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles      
 
       - name: Build Flutter
-        run: flutter build ios --release --no-codesign
+        run: |
+          cd cbreez
+          flutter build ios --release --no-codesign
 
       - name: Build resolve Swift dependencies
-        run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme ${{ env.SHEME }} -configuration ${{ env.BUILD_CONFIGURATION }}
+        run: |
+          cd cbreez
+          xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme ${{ env.SHEME }} -configuration ${{ env.BUILD_CONFIGURATION }}
 
       - name: Build xArchive
         run: |
+          cd cbreez
           xcodebuild -workspace ios/Runner.xcworkspace -scheme ${{ env.SHEME }} -configuration ${{ env.BUILD_CONFIGURATION }} DEVELOPMENT_TEAM=${{ env.TEAM_ID }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=106bdc42-25d3-4f77-a431-e69c56fc0b49 clean archive CODE_SIGN_IDENTITY="Apple Distribution: Damien Aicheh"
       - name: Export ipa
-        run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
+        run: |
+          cd cbreez
+          xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
 
       - name: Publish iOS Artefacts
         uses: actions/upload-artifact@v1
         with:
           name: release-ios
-          path: build-output/ios
+          path: cbreez/build-output/ios
       

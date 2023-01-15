@@ -1,4 +1,4 @@
-name: CI
+name: Build Android
 
 # Controls when the workflow will run
 on:
@@ -21,7 +21,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
         with: 
-          path: 'cbreez'     
+          path: 'cbreez'
+
+      - name: copy-config
+        env:
+          CBREEZ_CONFIG: ${{secrets.CBREEZ_CONFIG}}
+        run: |
+          cd cbreez
+          echo "$CBREEZ_CONFIG" > conf/breez.conf
 
       - uses: actions/checkout@v3
         with:         
@@ -33,6 +40,26 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'          
+
+      - name: install dependencies
+        run: |          
+          cargo install cargo-ndk          
+          brew install protobuf
+          cd breez-sdk/libs/sdk-flutter
+          make init
+          cd ../sdk-core
+          make init
+
+      - name: build sdk
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          sudo chmod 600 ~/.ssh/id_rsa
+          ssh-add ~/.ssh/id_rsa
+          cd breez-sdk/libs/sdk-flutter
+          make android
 
       - uses: actions/setup-java@v2
         with:
@@ -48,7 +75,7 @@ jobs:
         run: |
           cd cbreez
           flutter pub get
-
+          
       - name: dart-analyze
         run: |
           cd cbreez
@@ -58,3 +85,14 @@ jobs:
         run: |
           cd cbreez
           flutter test
+
+      - name: build-apk
+        run: |
+          cd cbreez
+          flutter build apk --split-per-abi
+
+      - name: Upload apk
+        uses: actions/upload-artifact@v3
+        with:
+          name: c-breez
+          path: cbreez/build/app/outputs/flutter-apk/app-*.apk

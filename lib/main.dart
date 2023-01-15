@@ -11,7 +11,6 @@ import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
-import 'package:c_breez/firebase_options.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
@@ -27,6 +26,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'bloc/network/network_settings_bloc.dart';
+import 'config.dart';
 
 final _log = FimberLog("Main");
 
@@ -38,9 +38,9 @@ void main() async {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     //initializeDateFormatting(Platform.localeName, null);
-    BreezDateUtils.setupLocales();
+    BreezDateUtils.setupLocales();    
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      options: (await Config.instance()).firebaseOptions,
     );
     var injector = ServiceInjector();
     final breezLib = injector.breezLib;

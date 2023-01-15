@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
+import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hex/hex.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -16,8 +17,10 @@ var testSeed =
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final platform = FakePathProviderPlatform();
+  InjectorMock injector = InjectorMock();  
   group('account', () {
     setUp(() async {
+      ServiceInjector.configure(injector);
       await platform.setUp();
       PathProviderPlatform.instance = platform;
       await setUpHydratedBloc();

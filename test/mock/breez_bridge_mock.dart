@@ -25,6 +25,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
     required Network network,
     required Uint8List seed,
   }) async {
+    await getNodeState();
     return credentials;
   }
 

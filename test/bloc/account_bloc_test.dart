@@ -35,8 +35,7 @@ void main() {
       injector.keychain.write(CredentialsManager.accountSeedKey, "a3eed");
       AccountBloc accBloc = AccountBloc(
         breezLib,
-        CredentialsManager(keyChain: injector.keychain),
-        injector.preferences,
+        CredentialsManager(keyChain: injector.keychain)        
       );
 
       await accBloc.recoverNode(

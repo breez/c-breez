@@ -57,8 +57,7 @@ void main() async {
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(
               breezLib,
-              CredentialsManager(keyChain: injector.keychain),
-              injector.preferences,
+              CredentialsManager(keyChain: injector.keychain),              
             ),
           ),
           BlocProvider<InputBloc>(

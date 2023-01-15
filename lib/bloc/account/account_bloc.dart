@@ -9,7 +9,6 @@ import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/config.dart';
-import 'package:c_breez/utils/preferences.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -41,14 +40,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Stream<PaymentFilters> get paymentFiltersStream =>
       _paymentFiltersStreamController.stream;
 
-  final BreezBridge _breezLib;
-  final Preferences _preferences;
+  final BreezBridge _breezLib;  
   final CredentialsManager _credentialsManager;
 
   AccountBloc(
     this._breezLib,
-    this._credentialsManager,
-    this._preferences,
+    this._credentialsManager,    
   ) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) => emit(acc));

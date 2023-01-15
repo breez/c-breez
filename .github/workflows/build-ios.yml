@@ -16,6 +16,9 @@ jobs:
   build:
 
     runs-on: macOS-latest
+    env:
+      SHEME: Runner
+      BUILD_CONFIGURATION: Release
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it

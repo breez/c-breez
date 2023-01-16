@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Device {
@@ -43,7 +43,7 @@ class Device {
   }
 
   Future shareText(String text) {
-    return ShareExtend.share(text, "text");
+    return Share.share(text);
   }
 
   void fetchClipboard(SharedPreferences preferences) {

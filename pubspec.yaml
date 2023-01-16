@@ -78,8 +78,7 @@ dependencies:
   rxdart: ^0.27.7
   # Doesn't support: Linux Mac Windows
   scan: ^1.6.0
-  # Doesn't support: Linux Mac Windows
-  share_extend: ^2.0.0
+  share_plus: ^6.3.0
   shared_preferences: ^2.0.15
   simple_animations: ^5.0.0+3
   sqflite_common_ffi: ^2.2.0+1

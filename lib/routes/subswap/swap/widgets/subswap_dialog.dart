@@ -1,7 +1,7 @@
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SwapDialog extends StatelessWidget {
   final String backupJson;
@@ -28,13 +28,15 @@ class SwapDialog extends StatelessWidget {
               style: const TextStyle(color: Colors.blue),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
-                  final RenderBox? box =
-                      context.findRenderObject() as RenderBox?;
-                  ShareExtend.share(
+                  final RenderBox? box = context.findRenderObject() as RenderBox?;
+                  final offset = box != null ? box.localToGlobal(Offset.zero) & box.size : Rect.zero;
+                  final rect = Rect.fromPoints(
+                    offset.topLeft,
+                    offset.bottomRight,
+                  );
+                  Share.share(
                     backupJson,
-                    "text",
-                    sharePositionOrigin:
-                        box!.localToGlobal(Offset.zero) & box.size,
+                    sharePositionOrigin: rect,
                   );
                 },
             ),

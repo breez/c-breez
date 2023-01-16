@@ -10,9 +10,8 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:share_extend/share_extend.dart';
-
-import 'payment_item_avatar.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/payment_item_avatar.dart';
+import 'package:share_plus/share_plus.dart';
 
 final AutoSizeGroup _labelGroup = AutoSizeGroup();
 final AutoSizeGroup _valueGroup = AutoSizeGroup();
@@ -363,9 +362,7 @@ class ShareablePaymentRow extends StatelessWidget {
                         iconSize: 16.0,
                         color: themeData.primaryTextTheme.button!.color!,
                         icon: const Icon(Icons.share),
-                        onPressed: () {
-                          ShareExtend.share(sharedValue, "text");
-                        },
+                        onPressed: () => Share.share(sharedValue),
                       ),
                     ],
                   ),

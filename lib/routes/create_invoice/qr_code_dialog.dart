@@ -12,9 +12,8 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_extend/share_extend.dart';
-
-import 'widgets/compact_qr_image.dart';
+import 'package:c_breez/routes/create_invoice/widgets/compact_qr_image.dart';
+import 'package:share_plus/share_plus.dart';
 
 class QrCodeDialog extends StatefulWidget {
   final LNInvoice? _invoice;
@@ -98,7 +97,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
                         color: Theme.of(context).primaryTextTheme.button!.color!,
                         onPressed: () {
-                          ShareExtend.share("lightning:${widget._invoice!.bolt11}", "text");
+                          Share.share("lightning:${widget._invoice!.bolt11}");
                         },
                       ),
                     ),

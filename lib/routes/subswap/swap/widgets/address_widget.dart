@@ -3,9 +3,8 @@ import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:share_extend/share_extend.dart';
-
-import 'address_qr_widget.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/address_qr_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AddressWidget extends StatelessWidget {
   final String address;
@@ -71,10 +70,14 @@ class _ShareIcon extends StatelessWidget {
       icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
       onPressed: () {
         final RenderBox? box = context.findRenderObject() as RenderBox?;
-        ShareExtend.share(
+        final offset = box != null ? box.localToGlobal(Offset.zero) & box.size : Rect.zero;
+        final rect = Rect.fromPoints(
+          offset.topLeft,
+          offset.bottomRight,
+        );
+        Share.share(
           address,
-          "text",
-          sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+          sharePositionOrigin: rect,
         );
       },
     );

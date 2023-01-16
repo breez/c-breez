@@ -6,7 +6,7 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_extend/share_extend.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CommandsList extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -226,7 +226,7 @@ class _CommandsListState extends State<CommandsList> {
     String filePath = '${tempDir.path}/$command.json';
     File file = File(filePath);
     await file.writeAsString(text, flush: true);
-    ShareExtend.share(filePath, "file");
+    Share.shareFiles([filePath]);
   }
 }
 

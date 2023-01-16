@@ -55,7 +55,7 @@ dependencies:
   hex: ^0.2.0
   http: ^0.13.5
   hydrated_bloc: ^9.0.0
-  image: ^3.2.2
+  image: ^4.0.10
   # Doesn't support: Linux Mac Windows
   image_cropper: ^3.0.1
   # Doesn't support: Linux Mac Windows
@@ -79,9 +79,9 @@ dependencies:
   # Doesn't support: Linux Mac Windows
   scan: ^1.6.0
   share_plus: ^6.3.0
-  shared_preferences: ^2.0.15
+  shared_preferences: ^2.0.16
   simple_animations: ^5.0.0+3
-  sqflite_common_ffi: ^2.2.0+1
+  sqflite_common_ffi: ^2.2.1
   sqlite3_flutter_libs: ^0.5.12
   synchronized: ^3.0.1
   theme_provider: ^0.5.0

@@ -53,11 +53,8 @@ class SendOnchainState extends State<SendOnchain> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    widget.onBroadcast(_addressController.text, _getFee()).then((msg) {
+                    widget.onBroadcast(_addressController.text, _getFee()).then((txId) {
                       Navigator.of(context).pop();
-                      if (msg != null) {
-                        showFlushbar(context, message: msg);
-                      }
                     });
                   }
                 },

@@ -1026,6 +1026,7 @@
   "get_refund_transaction": "Refund Transaction",
   "get_refund_failed": "failed",
   "get_refund_no_refundable_items": "No refundable items left.",
+  "get_refund_transaction_id_copied": "The transaction id was copied to your clipboard.",
   "send_on_chain_broadcast": "BROADCAST",
   "send_on_chain_btc_address": "BTC Address",
   "send_on_chain_scan_barcode": "Scan Barcode",

@@ -1026,6 +1026,7 @@
   "get_refund_transaction": "Lunastuksen tapahtumatunnus",
   "get_refund_failed": "epäonnistui",
   "get_refund_no_refundable_items": "No refundable items left.",
+  "get_refund_transaction_id_copied": "The transaction id was copied to your clipboard.",
   "send_on_chain_broadcast": "LÄHETÄ",
   "send_on_chain_btc_address": "Bitcoin-osoite",
   "send_on_chain_scan_barcode": "Lue QR-koodi",

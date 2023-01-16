@@ -3,6 +3,7 @@ import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
@@ -248,7 +249,10 @@ class _ShareAndCopyTxID extends StatelessWidget {
                   fontFamily: "icomoon",
                 ),
               ),
-              onPressed: () => ServiceInjector().device.setClipboardText(txId),
+              onPressed: () {
+                ServiceInjector().device.setClipboardText(txId);
+                showFlushbar(context, texts.get_refund_transaction_id_copied);
+              },
             ),
             IconButton(
               alignment: Alignment.topRight,

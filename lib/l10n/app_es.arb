@@ -1026,6 +1026,7 @@
   "get_refund_transaction": "Transacción de Reembolso",
   "get_refund_failed": "falló",
   "get_refund_no_refundable_items": "No hay transacciones que puedan ser reembolsadas.",
+  "get_refund_transaction_id_copied": "El id de transacción fue copiado a su portapapeles.",
   "send_on_chain_broadcast": "EMITIR",
   "send_on_chain_btc_address": "Dirección BTC",
   "send_on_chain_scan_barcode": "Escanear código de barras",

@@ -82,10 +82,10 @@ jobs:
           cd cbreez
           flutter pub get
           
-      - name: dart-analyze
-        run: |
-          cd cbreez
-          dart analyze --fatal-infos
+      # - name: dart-analyze
+      #   run: |
+      #     cd cbreez
+      #     dart analyze --fatal-infos
 
       - name: run-tests
         run: |

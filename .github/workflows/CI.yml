@@ -22,6 +22,13 @@ jobs:
       - uses: actions/checkout@v3
         with: 
           path: 'cbreez'
+          
+      - name: copy-config
+        env:
+          CBREEZ_CONFIG: ${{secrets.CBREEZ_CONFIG}}
+        run: |
+          cd cbreez
+          echo "$CBREEZ_CONFIG" > conf/breez.conf
 
       - uses: actions/checkout@v3
         with:         

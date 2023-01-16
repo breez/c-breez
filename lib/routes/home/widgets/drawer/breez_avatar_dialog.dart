@@ -100,7 +100,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                 onPressed: isUploading
                     ? null
                     : () async {
-                  await saveAvatarChanges();
+                        await saveAvatarChanges();
                       },
                 child: Text(
                   texts.breez_avatar_dialog_action_save,
@@ -186,18 +186,18 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
   }
 
   Future<List<int>> scaleAndFormatPNG() async {
-    const int scaledWidth = 200;
-    final dart_image.Image transparentImage =
-        dart_image.Image(scaledWidth, scaledWidth);
-    List<int> imageBytes = await pickedImage!.readAsBytes();
-    dart_image.Image image = dart_image.decodeImage(imageBytes)!;
-    dart_image.Image resized = dart_image.copyResize(image,
-        width: image.width < image.height ? -1 : scaledWidth,
-        height: image.width < image.height ? scaledWidth : -1);
-    dart_image.Image centered = dart_image.copyInto(transparentImage, resized,
-        dstX: ((scaledWidth - resized.width) / 2).round(),
-        dstY: ((scaledWidth - resized.height) / 2).round());
-    return dart_image.encodePng(centered);
+    const int scaledSize = 200;
+    try {
+      final image = dart_image.decodeImage(await pickedImage!.readAsBytes());
+      final resized = dart_image.copyResize(
+        image!,
+        width: image.width < image.height ? -1 : scaledSize,
+        height: image.width < image.height ? scaledSize : -1,
+      );
+      return dart_image.encodePng(resized);
+    } catch (e) {
+      rethrow;
+    }
   }
 }
 

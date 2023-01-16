@@ -1,9 +1,11 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 import 'widgets/refund_item.dart';
 
@@ -36,8 +38,8 @@ class _GetRefundPageState extends State<GetRefundPage> {
         builder: (context, refundState) {
           final refundables = refundState.refundables;
           if (refundables == null || refundables.isEmpty) {
-            return const Center(
-              child: Text("No refundable items left."),
+            return Center(
+              child: Text(texts.get_refund_no_refundable_items),
             );
           }
 

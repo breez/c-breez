@@ -6,15 +6,14 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
-// TODO: Refactor for readability
 class SendOnchain extends StatefulWidget {
-  final int _amount;
-  final Future<String?> Function(String address, int fee) _onBroadcast;
+  final int amount;
+  final Future<String?> Function(String address, int fee) onBroadcast;
   final String? originalTransaction;
 
-  const SendOnchain(
-    this._amount,
-    this._onBroadcast, {
+  const SendOnchain({
+    required this.amount,
+    required this.onBroadcast,
     this.originalTransaction,
   });
 
@@ -43,7 +42,7 @@ class SendOnchainState extends State<SendOnchain> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SendOnchainForm(
-                amount: widget._amount,
+                amount: widget.amount,
                 formKey: _formKey,
                 addressController: _addressController,
                 feeController: _feeController,
@@ -54,9 +53,7 @@ class SendOnchainState extends State<SendOnchain> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    widget
-                        ._onBroadcast(_addressController.text, _getFee())
-                        .then((msg) {
+                    widget.onBroadcast(_addressController.text, _getFee()).then((msg) {
                       Navigator.of(context).pop();
                       if (msg != null) {
                         showFlushbar(context, message: msg);
@@ -73,6 +70,10 @@ class SendOnchainState extends State<SendOnchain> {
   }
 
   int _getFee() {
-    return _feeController.text.isNotEmpty ? int.parse(_feeController.text) : 0;
+    final raw = _feeController.text;
+    if (raw.isEmpty) {
+      return 0;
+    }
+    return int.tryParse(raw) ?? 0;
   }
 }

@@ -1,10 +1,15 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/send_onchain.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/wait_broadcast_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+final _log = FimberLog("RefundItemAction");
 
 class RefundItemAction extends StatelessWidget {
   final SwapInfo swapInfo;
@@ -48,8 +53,8 @@ class RefundItemAction extends StatelessWidget {
       context,
       FadeInRoute(
         builder: (_) => SendOnchain(
-          swapInfo.confirmedSats,
-          (destAddress, feeRate) => _showWaitToBroadcastDialog(
+          amount: swapInfo.confirmedSats,
+          onBroadcast: (destAddress, feeRate) => _showWaitToBroadcastDialog(
             context,
             destAddress,
             feeRate,
@@ -65,9 +70,10 @@ class RefundItemAction extends StatelessWidget {
     String destAddress,
     int feeRate,
   ) {
+    _log.v("showWaitToBroadcastDialog destAddress: $destAddress feeRate: $feeRate");
     final texts = context.texts();
 
-    return showDialog<bool>(
+    return showDialog<String>(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
@@ -76,10 +82,9 @@ class RefundItemAction extends StatelessWidget {
         destAddress,
         feeRate,
       ),
-    ).then((ok) {
+    ).then((txId) {
       Navigator.of(context).pop();
-      // TODO: Do not return null
-      return ok != null ? null : Future.error(texts.get_refund_failed);
+      return txId != null ? Future.value(txId) : Future.error(texts.get_refund_failed);
     });
   }
 }

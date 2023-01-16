@@ -1,5 +1,4 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/send_onchain.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/wait_broadcast_dialog.dart';
@@ -7,7 +6,6 @@ import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 final _log = FimberLog("RefundItemAction");
 
@@ -34,7 +32,7 @@ class RefundItemAction extends StatelessWidget {
             width: 145.0,
             child: SubmitButton(
               texts.get_refund_action_continue,
-              () => _refundTransaction(context),
+              swapInfo.refundTxIds.isEmpty ? () => _refundTransaction(context) : null,
             ),
           ),
         ),

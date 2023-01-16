@@ -251,7 +251,7 @@ class _ShareAndCopyTxID extends StatelessWidget {
               ),
               onPressed: () {
                 ServiceInjector().device.setClipboardText(txId);
-                showFlushbar(context, texts.get_refund_transaction_id_copied);
+                showFlushbar(context, message: texts.get_refund_transaction_id_copied);
               },
             ),
             IconButton(

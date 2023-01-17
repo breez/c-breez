@@ -22,12 +22,32 @@ jobs:
       TESTFLIGHT_USERNAME: ${{secrets.TESTFLIGHT_USERNAME}}
       TESTFLIGHT_PASSWORD: ${{secrets.TESTFLIGHT_PASSWORD}}
       IOS_VERSION_STRING: 0.1.0
+      DISTRIBUTION_CERT:  ${{secrets.DISTRIBUTION_CERT}}
+      P12_BASE64: ${{secrets.P12_BASE64}}
+      P12_PASSWORD: ${{secrets.P12_PASSWORD}}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
         with: 
           path: 'cbreez'
+
+      - name: Install keychain keys
+        run: |
+          security create-keychain -p ci ios-build.keychain
+          security default-keychain -s ios-build.keychain
+          security unlock-keychain -p ci ios-build.keychain
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/ios-build.keychain
+
+          CERT_PATH=$RUNNER_TEMP/apple_distribution.cer
+          echo -n "$DISTRIBUTION_CERT" | base64 --decode --output $CERT_PATH
+          security import $CERT_PATH -k ~/Library/Keychains/ios-build.keychain -A
+
+          P12_KEY_PATH=$RUNNER_TEMP/key.p12
+          echo -n "$P12_BASE64" | base64 --decode --output $P12_KEY_PATH
+          security import $P12_KEY_PATH -k ~/Library/Keychains/ios-build.keychain -P "$P12_PASSWORD" -A
+          
+          security set-key-partition-list -S apple-tool:,apple: -s -k ci ios-build.keychain > /dev/null
 
       - name: copy-config
         env:
@@ -93,11 +113,12 @@ jobs:
           flutter test
 
 
-      - name: Install Apple Certificate
-        uses: apple-actions/import-codesign-certs@v1
-        with:
-          p12-file-base64: ${{ secrets.P12_BASE64 }}
-          p12-password: ${{ secrets.P12_PASSWORD }}
+      # - name: Install Apple Certificate
+      #   uses: apple-actions/import-codesign-certs@v1
+      #   with:
+      #     p12-file-base64: ${{ secrets.P12_BASE64 }}
+      #     p12-password: ${{ secrets.P12_PASSWORD }}      
+
 
       - name: Install the provisioning profile
         env:
@@ -142,5 +163,5 @@ jobs:
       - name: Publish to Testflight
         run: |
           altool="$(dirname "$(xcode-select -p)")/Developer/usr/bin/altool"
-          ipa=c_breez/build-output/ios/c_breez.ipa
-          "$altool" --upload-app --type ios --file "$ipa" --username ${{ env.TESTFLIGHT_USERNAME }} --password ${{ env.TESTFLIGHT_PASSWORD }}
+          ipa="$PWD/cbreez/build-output/ios/c_breez.ipa"
+          "$altool" --upload-app --type ios --file "$ipa" --username $TESTFLIGHT_USERNAME --password $TESTFLIGHT_PASSWORD

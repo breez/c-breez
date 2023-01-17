@@ -30,7 +30,7 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
       result = await _updateConnectionStatus(
           await _connectivity.checkConnectivity());
     } on PlatformException catch (e) {
-      _log.e("Failed to check connectivity: $e");
+      _log.e("Failed to check connectivity", ex: e);
       rethrow;
     }
     final connectivityState = ConnectivityState(lastStatus: result);
@@ -63,7 +63,7 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
         return false;
       }
     } on SocketException catch (e) {
-      _log.e("Socket operation failed: ${e.message}");
+      _log.e("Socket operation failed", ex: e);
       return false;
     }
   }

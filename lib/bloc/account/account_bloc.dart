@@ -125,7 +125,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         description: description,
       );
     } catch (e) {
-      _log.e("withdrawLnurl error: $e");
+      _log.e("withdrawLnurl error", ex: e);
       rethrow;
     }
   }
@@ -144,7 +144,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         comment: comment,
       );
     } catch (e) {
-      _log.e("sendLNURLPayment error: $e");
+      _log.e("sendLNURLPayment error", ex: e);
       rethrow;
     }
   }

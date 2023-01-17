@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/external_browser.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +83,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                 navigator.pop();
               } catch (e) {
                 navigator.pop();
-                showFlushbar(context, message: e.toString());
+                showFlushbar(context, message: extractExceptionMessage(e));
               }
             },
           )

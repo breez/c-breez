@@ -6,6 +6,7 @@ import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
@@ -254,10 +255,12 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                   ));
                 }
               } catch (e) {
-                _log.w("Error withdrawing LNURL payment: $e");
+                _log.w("Error withdrawing LNURL payment", ex: e);
                 navigator.removeRoute(loaderRoute);
                 navigator.pop(LNURLWithdrawPageResult(
-                  error: texts.lnurl_withdraw_dialog_error(e.toString()),
+                  error: texts.lnurl_withdraw_dialog_error(
+                    extractExceptionMessage(e),
+                  ),
                 ));
               }
             }

@@ -181,7 +181,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 ));
               }
             } catch (e) {
-              _log.w("Error sending LNURL payment: $e");
+              _log.w("Error sending LNURL payment", ex: e);
               navigator.removeRoute(loaderRoute);
               navigator.pop(LNURLPaymentPageResult(error: e));
             }

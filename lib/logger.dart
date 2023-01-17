@@ -46,6 +46,11 @@ class BreezLogger {
           CustomFormatTree.levelToken,
           CustomFormatTree.tagToken,
           CustomFormatTree.messageToken,
+          CustomFormatTree.fileNameToken,
+          CustomFormatTree.lineNumberToken,
+          CustomFormatTree.filePathToken,
+          CustomFormatTree.exceptionMsgToken,
+          CustomFormatTree.exceptionStackToken,
         ];
         Fimber.plantTree(
           SizeRollingFileTree(

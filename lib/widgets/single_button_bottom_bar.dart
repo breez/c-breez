@@ -2,13 +2,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class SingleButtonBottomBar extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String text;
   final bool stickToBottom;
 
   const SingleButtonBottomBar({
     required this.text,
-    required this.onPressed,
+    this.onPressed,
     this.stickToBottom = false,
   });
 

@@ -60,7 +60,8 @@ class SendOnchainFormState extends State<SendOnchainForm> {
   void _updateFee() {
     final account = context.read<AccountBloc>().state;
     if (!feeUpdated && widget.feeController.text.isEmpty) {
-      widget.feeController.text = account.onChainFeeRate.toString();
+      final feeRate = account.onChainFeeRate;
+      widget.feeController.text = feeRate > 0 ? feeRate.toString() : "";
       feeUpdated = true;
     }
   }
@@ -134,7 +135,12 @@ class SendOnchainFormState extends State<SendOnchainForm> {
               ),
               style: theme.FieldTextStyle.textStyle,
               validator: (value) {
-                if (widget.feeController.text.isEmpty) {
+                final feeText = widget.feeController.text;
+                if (feeText.isEmpty) {
+                  return texts.send_on_chain_invalid_fee_rate;
+                }
+                final number = int.tryParse(feeText);
+                if (number == null || number <= 0) {
                   return texts.send_on_chain_invalid_fee_rate;
                 }
                 return null;

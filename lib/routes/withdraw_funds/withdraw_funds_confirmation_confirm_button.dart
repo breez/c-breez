@@ -1,5 +1,6 @@
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -27,7 +28,10 @@ class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
         () async {
           final navigator = Navigator.of(context);
           navigator.push(createLoaderRoute(context));
-          context.read<WithdrawFundsBloc>().sweepAllCoins(address, rateFee).then(
+          context
+              .read<WithdrawFundsBloc>()
+              .sweepAllCoins(address, rateFee)
+              .then(
                 (_) => _sweepCoinsFinished(context),
                 onError: (e) => _sweepCoinsError(context, e),
               );
@@ -49,7 +53,7 @@ class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
       context,
       null,
       Text(
-        e.toString(),
+        extractExceptionMessage(e),
         style: themeData.dialogTheme.contentTextStyle,
       ),
     );

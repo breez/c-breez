@@ -92,6 +92,7 @@ class DevelopersView extends StatelessWidget {
   void _exportKeys(BuildContext context) async {
     final accBloc = context.read<AccountBloc>();
     final credentialsFilePath = await accBloc.exportCredentialsFile();
-    Share.shareFiles([credentialsFilePath]);
+    final credentialsFile = XFile(credentialsFilePath);
+    Share.shareXFiles([credentialsFile]);
   }
 }

@@ -18,7 +18,8 @@ void shareLog() async {
   encoder.create(zipFilePath);
   encoder.addDirectory(Directory("${appDir.path}/logs/"));
   encoder.close();
-  Share.shareFiles([zipFilePath]);
+  final zipFile = XFile(zipFilePath);
+  Share.shareXFiles([zipFile]);
 }
 
 class BreezLogger {

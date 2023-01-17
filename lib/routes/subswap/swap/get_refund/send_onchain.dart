@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/widgets/send_onchain_form.dart';
-import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 

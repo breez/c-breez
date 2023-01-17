@@ -226,7 +226,8 @@ class _CommandsListState extends State<CommandsList> {
     String filePath = '${tempDir.path}/$command.json';
     File file = File(filePath);
     await file.writeAsString(text, flush: true);
-    Share.shareFiles([filePath]);
+    final xFile = XFile(filePath);
+    Share.shareXFiles([xFile]);
   }
 }
 

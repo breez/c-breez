@@ -127,7 +127,7 @@ jobs:
           buildNumber=$(($GITHUB_RUN_NUMBER + 4000)).1
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ env.IOS_VERSION_STRING }}" ios/Runner/Info.plist
-          xcodebuild -workspace ios/Runner.xcworkspace -scheme ${{ env.SHEME }} -configuration ${{ env.BUILD_CONFIGURATION }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive  clean archive PROVISIONING_PROFILE=2ff3b9c6-2648-43d9-9f4d-e2b8b9ad87dd clean archive CODE_SIGN_IDENTITY="Apple Distribution: BREEZ DEVELOPMENT LTD"
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme ${{ env.SHEME }} -configuration ${{ env.BUILD_CONFIGURATION }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive clean archive DEVELOPMENT_TEAM=F7R2LZH3W5 PROVISIONING_PROFILE=2ff3b9c6-2648-43d9-9f4d-e2b8b9ad87dd CODE_SIGN_IDENTITY="Apple Distribution: BREEZ DEVELOPMENT LTD"
       - name: Export ipa
         run: |
           cd cbreez

@@ -1,8 +1,8 @@
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/loading_animated_text.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment/processing_payment_title.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProcessingPaymentContent extends StatelessWidget {
   final GlobalKey? dialogKey;
@@ -16,7 +16,7 @@ class ProcessingPaymentContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final themeData = Theme.of(context);
     final customData = themeData.customData;
     final queryData = MediaQuery.of(context);

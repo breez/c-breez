@@ -14,7 +14,6 @@ import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PaymentRequestInfoDialog extends StatefulWidget {
   final Invoice invoice;
@@ -146,7 +145,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
 
   Widget _buildRequestPayTextWidget(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final payeeName = widget.invoice.payeeName;
 
     return Text(
@@ -161,7 +160,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   Widget _buildAmountWidget(
       BuildContext context, AccountState account, CurrencyState currencyState) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     if (widget.invoice.amountMsat == 0) {
       return Theme(
@@ -303,7 +302,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   Widget _buildActions(
       BuildContext context, CurrencyState currency, AccountState accState) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     List<Widget> actions = [
       SimpleDialogOption(

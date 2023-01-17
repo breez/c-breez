@@ -1,9 +1,9 @@
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 final _log = FimberLog("ExternalBrowser");
 
@@ -11,7 +11,7 @@ Future<void> launchLinkOnExternalBrowser(
   BuildContext context, {
   required String linkAddress,
 }) async {
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
   final navigator = Navigator.of(context);
   var loaderRoute = createLoaderRoute(context);
   navigator.push(loaderRoute);

@@ -1,16 +1,16 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 void checkVersionDialog(BuildContext context,
     UserProfileBloc userProfileBloc,
 ) {
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
 
   userProfileBloc.checkVersion().catchError((err) {
     if (err.toString().contains('bad version')) {

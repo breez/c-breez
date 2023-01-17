@@ -1,17 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
+import 'package:c_breez/widgets/amount_form_field/breez_dropdown.dart';
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../flushbar.dart';
-import 'breez_dropdown.dart';
 
 class CurrencyConverterDialog extends StatefulWidget {
   final Function(String string) _onConvert;
@@ -60,7 +59,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     });
 
     widget._currencyBloc.fetchExchangeRates().catchError((value) {
-      final texts = AppLocalizations.of(context)!;
+      final texts = context.texts();
       if (mounted) {
         setState(() {
           Navigator.pop(context);
@@ -105,7 +104,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   Widget _dialogBody(BuildContext context, CurrencyState currencyState) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     final items = currencyState.preferredCurrencies.map((value) {
       var fiatCurrencyData = currencyState.fiatCurrenciesData
@@ -254,7 +253,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   List<Widget> _buildActions(
       BuildContext context, CurrencyState currencyState) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     List<Widget> actions = [
       TextButton(
@@ -329,7 +328,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     FiatConversion fiatConversion,
   ) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     // Empty string widget is returned so that the dialogs height is not changed when the exchange rate is shown
     return _exchangeRate == null

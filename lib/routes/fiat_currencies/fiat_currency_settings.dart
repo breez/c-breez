@@ -1,6 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
@@ -28,7 +29,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     return Scaffold(
       appBar: AppBar(
@@ -107,7 +108,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     CurrencyState currencyState,
     int index,
   ) {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final themeData = Theme.of(context);
 
     final currencyData = currencyState.fiatCurrenciesData[index];

@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 WillPopCallback willPopCallback(
   BuildContext context, {
@@ -11,7 +11,7 @@ WillPopCallback willPopCallback(
   String? message,
   required Function canCancel,
 }) {
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
   return () async {
     if (canCancel()) return true;
     return promptAreYouSure(

@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:c_breez/routes/initial_walkthrough/beta_warning_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -9,9 +11,6 @@ import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import 'beta_warning_dialog.dart';
 
 class InitialWalkthroughPage extends StatefulWidget {
   @override
@@ -50,7 +49,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final themeData = Theme.of(context);
 
     return Scaffold(

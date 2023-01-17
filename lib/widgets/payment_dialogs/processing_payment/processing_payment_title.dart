@@ -1,5 +1,5 @@
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProcessingPaymentTitle extends StatelessWidget {
   const ProcessingPaymentTitle({
@@ -8,7 +8,7 @@ class ProcessingPaymentTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final themeData = Theme.of(context);
 
     return Container(

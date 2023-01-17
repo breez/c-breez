@@ -1,10 +1,10 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConnectivityHandler {
   final BuildContext context;
@@ -32,7 +32,7 @@ class ConnectivityHandler {
   }
 
   Flushbar _getNoConnectionFlushbar() {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     Flushbar? noConnectionFlushbar;
     noConnectionFlushbar = Flushbar(

@@ -2,6 +2,7 @@ import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/services/injector.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -38,7 +39,7 @@ class SwapPageState extends State<SwapPage> {
       swap = (await breezLib.receiveOnchain());
       //errorMessage = "PLACEHOLDER_ERROR_STRING" ?? swap!.errorMessage;
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = extractExceptionMessage(e);
     } finally {
       setState(() {});
     }
@@ -51,7 +52,7 @@ class SwapPageState extends State<SwapPage> {
       unconfirmedTxID = "PLACEHOLDER_TXID_STRING";
       // TODO: Differentiate between error types
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = extractExceptionMessage(e);
     } finally {
       setState(() {});
     }

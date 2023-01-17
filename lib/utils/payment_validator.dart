@@ -1,5 +1,6 @@
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/currency.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PaymentValidator {
@@ -46,7 +47,7 @@ class PaymentValidator {
       );
     } catch (e) {
       return texts.invoice_payment_validator_error_unknown(
-        e.toString(),
+        extractExceptionMessage(e),
       );
     }
 

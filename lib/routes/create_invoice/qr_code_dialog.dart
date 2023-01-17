@@ -8,6 +8,7 @@ import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
           }
         });
       }).catchError((e) {
-        showFlushbar(context, message: e.toString());
+        showFlushbar(context, message: extractExceptionMessage(e));
         onFinish(false);
       });
     }

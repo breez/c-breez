@@ -4,6 +4,7 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -141,7 +142,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
       (error) {
         setState(() {
           _registrationFailed = true;
-          _registrationErrorMessage = error.toString();
+          _registrationErrorMessage = extractExceptionMessage(error);
         });
         FocusScope.of(context).unfocus();
       },

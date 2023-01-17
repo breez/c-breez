@@ -63,7 +63,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
             return WithdrawFundsAddressNextButton(
               addressController: _addressController,
               validator: () => _formKey.currentState?.validate() ?? false,
-              amount: state.balance,
+              amount: state.walletBalance,
             );
           }),
         ],

@@ -969,6 +969,7 @@
   "account_page_activation_provider_action_select": "SELECCIONAR…",
   "account_page_activation_provider_label": "Seleccione un proveedor de Lightning Network",
   "account_page_activation_provider_hint": "Por favor seleccione uno de los siguientes proveedores para activar Breez y conectarse a Lightning Network.",
+  "account_page_activation_provider_unavailable": "Ninguno proveedor LSP disponible en este momento.\nPor favor verifique su configuración e o intente de nuevo.",
   "account_page_activation_error": "Se produjo un error al obtener proveedores de Lightning Network. Compruebe su conexión a internet e intente de nuevo.",
   "account_page_activation_action_retry": "INTENTAR DE NUEVO",
   "account_page_activation_action_select": "SELECCIONAR",
@@ -1024,6 +1025,7 @@
   "get_refund_action_continue": "CONTINUAR",
   "get_refund_transaction": "Transacción de Reembolso",
   "get_refund_failed": "falló",
+  "get_refund_no_refundable_items": "No hay transacciones que puedan ser reembolsadas.",
   "send_on_chain_broadcast": "EMITIR",
   "send_on_chain_btc_address": "Dirección BTC",
   "send_on_chain_scan_barcode": "Escanear código de barras",
@@ -1244,6 +1246,15 @@
   "order_card_full_name_error": "Por favor ingrese su nombre completo",
   "link_launcher_title": "ID de transacción:",
   "link_launcher_link_name": "",
+  "link_launcher_failed_to_launch": "No se pudo abrir el enlace {url}",
+  "@link_launcher_failed_to_launch": {
+    "placeholders": {
+      "url": {
+        "type": "String",
+        "example": "https://abc.def.ghi"
+      }
+    }
+  },
   "keyboard_done_action": "Listo",
   "flushbar_default_message": "",
   "flushbar_default_action": "OK",

@@ -1025,6 +1025,7 @@
   "get_refund_action_continue": "CONTINUE",
   "get_refund_transaction": "Refund Transaction",
   "get_refund_failed": "failed",
+  "get_refund_no_refundable_items": "No refundable items left.",
   "send_on_chain_broadcast": "BROADCAST",
   "send_on_chain_btc_address": "BTC Address",
   "send_on_chain_scan_barcode": "Scan Barcode",
@@ -1245,10 +1246,10 @@
   "order_card_full_name_error": "Please enter your full name",
   "link_launcher_title": "Transaction ID:",
   "link_launcher_link_name": "",
-  "link_launcher_failed_to_launch": "Could not launch {$url}",
+  "link_launcher_failed_to_launch": "Could not launch {url}",
   "@link_launcher_failed_to_launch": {
     "placeholders": {
-      "$url": {
+      "url": {
         "type": "String",
         "example": "https://abc.def.ghi"
       }

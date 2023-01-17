@@ -969,6 +969,7 @@
   "account_page_activation_provider_action_select": "VALITSE…",
   "account_page_activation_provider_label": "Valitse salamaverkon toimittaja",
   "account_page_activation_provider_hint": "Valitse salamaverkon toimittaja seuraavista vaihtoehdoista, jotta sovellus aktivoituu ja se yhdistetään salamaverkkoon.",
+  "account_page_activation_provider_unavailable": "There are no available LSP's.\nPlease check your configuration and restart Breez.",
   "account_page_activation_error": "Salamaverkko toimittajien haku epäonnistui. Tarkista Internet-yhteys ja yritä uudelleen..",
   "account_page_activation_action_retry": "YRITÄ UUDELLEEN",
   "account_page_activation_action_select": "VALITSE",
@@ -1024,6 +1025,7 @@
   "get_refund_action_continue": "JATKA",
   "get_refund_transaction": "Lunastuksen tapahtumatunnus",
   "get_refund_failed": "epäonnistui",
+  "get_refund_no_refundable_items": "No refundable items left.",
   "send_on_chain_broadcast": "LÄHETÄ",
   "send_on_chain_btc_address": "Bitcoin-osoite",
   "send_on_chain_scan_barcode": "Lue QR-koodi",
@@ -1244,6 +1246,15 @@
   "order_card_full_name_error": "Syötä täydellinen nimesi",
   "link_launcher_title": "Tapahtumatunnus: (Avaa selaimessa)",
   "link_launcher_link_name": "",
+  "link_launcher_failed_to_launch": "Could not launch {url}",
+  "@link_launcher_failed_to_launch": {
+    "placeholders": {
+      "url": {
+        "type": "String",
+        "example": "https://abc.def.ghi"
+      }
+    }
+  },
   "keyboard_done_action": "Valmis",
   "flushbar_default_message": "",
   "flushbar_default_action": "OK",

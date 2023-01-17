@@ -969,6 +969,7 @@
   "account_page_activation_provider_action_select": "SELECIONAR…",
   "account_page_activation_provider_label": "Selecione um provedor de Rede Relâmpago",
   "account_page_activation_provider_hint": "Selecione um dos seguintes provedores para ativar a Breez e conectar-se à Rede Relâmpago.",
+  "account_page_activation_provider_unavailable": "Nenhum provedor LSP disponível.\nPor favor, verifique suas configurações e tente novamente.",
   "account_page_activation_error": "Ocorreu um erro ao buscar provedores de Rede Relâmpago. Por favor verifique sua conexão com a internet e tente novamente.",
   "account_page_activation_action_retry": "TENTAR NOVAMENTE",
   "account_page_activation_action_select": "SELECIONAR",
@@ -1024,6 +1025,7 @@
   "get_refund_action_continue": "CONTINUAR",
   "get_refund_transaction": "Transação de reembolso",
   "get_refund_failed": "falhou",
+  "get_refund_no_refundable_items": "Não há itens para reembolso.",
   "send_on_chain_broadcast": "TRANSMITIR",
   "send_on_chain_btc_address": "Endereço BTC",
   "send_on_chain_scan_barcode": "Ler código de barras",
@@ -1244,6 +1246,15 @@
   "order_card_full_name_error": "Por favor, informe o seu nome completo",
   "link_launcher_title": "ID da transação:",
   "link_launcher_link_name": "",
+  "link_launcher_failed_to_launch": "Não foi possível lançar a url {url}",
+  "@link_launcher_failed_to_launch": {
+    "placeholders": {
+      "url": {
+        "type": "String",
+        "example": "https://abc.def.ghi"
+      }
+    }
+  },
   "keyboard_done_action": "Pronto",
   "flushbar_default_message": "",
   "flushbar_default_action": "OK",

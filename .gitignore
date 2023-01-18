@@ -49,3 +49,4 @@ conf/breez.conf
 build-output/
 google-services.json
 ios/Runner/GoogleService-Info.plist
+build-ios.sh

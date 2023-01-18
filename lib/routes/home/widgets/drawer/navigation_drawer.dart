@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_avatar_dialog.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_drawer_header.dart';

@@ -1,7 +1,8 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
@@ -9,7 +10,6 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 const double ITEM_HEIGHT = 72.0;
 
@@ -162,7 +162,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     );
   }
 
-  String _subtitle(AppLocalizations texts, FiatCurrency currencyData) {
+  String _subtitle(BreezTranslations texts, FiatCurrency currencyData) {
     final localizedName = currencyData.info.localizedName;
     if (localizedName != null) {
       for (var localizedName in localizedName) {

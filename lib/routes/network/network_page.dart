@@ -1,4 +1,4 @@
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/network/widget/mempool_settings_widget.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';

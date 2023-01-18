@@ -1,7 +1,7 @@
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 
 class PaymentValidator {
   final BitcoinCurrency _currency;
@@ -11,7 +11,7 @@ class PaymentValidator {
     int? channelMinimumFee,
   }) _validatePayment;
   final int? channelMinimumFee;
-  final AppLocalizations texts;
+  final BreezTranslations texts;
 
   PaymentValidator(
     this._validatePayment,

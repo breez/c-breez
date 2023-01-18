@@ -1,5 +1,5 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/bitcoin_address_info.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';

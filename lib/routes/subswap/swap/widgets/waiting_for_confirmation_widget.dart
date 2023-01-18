@@ -1,4 +1,4 @@
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';

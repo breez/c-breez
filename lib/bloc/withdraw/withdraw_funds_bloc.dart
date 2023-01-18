@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:c_breez/utils/locale.dart';
 import 'package:fimber/fimber.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 

@@ -1,8 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -10,7 +11,6 @@ import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/payment_item_avatar.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -228,7 +228,7 @@ Future<void> showPaymentDetailsDialog(
 Widget _amountText(
   BitcoinCurrency currency,
   Payment paymentInfo,
-  AppLocalizations texts,
+  BreezTranslations texts,
   ThemeData themeData,
 ) {
   final amountSats = currency.format(paymentInfo.amountMsat ~/ 1000);
@@ -247,14 +247,14 @@ Widget _amountText(
 
 List<Widget> _getPaymentInfoDetails(
   Payment paymentInfo,
-  AppLocalizations texts,
+  BreezTranslations texts,
 ) {
   return _getSinglePaymentInfoDetails(paymentInfo, texts);
 }
 
 List<Widget> _getSinglePaymentInfoDetails(
   Payment paymentInfo,
-  AppLocalizations texts,
+  BreezTranslations texts,
 ) {
   LnPaymentDetails? paymentDetails;
   if (paymentInfo.details is LnPaymentDetails) {

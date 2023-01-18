@@ -1,11 +1,11 @@
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SecurityPinInterval extends StatelessWidget {
   final Duration interval;
@@ -57,7 +57,7 @@ class SecurityPinInterval extends StatelessWidget {
     );
   }
 
-  String _formatSeconds(AppLocalizations texts, int seconds) {
+  String _formatSeconds(BreezTranslations texts, int seconds) {
     if (seconds == 0) {
       return texts.security_and_backup_lock_automatically_option_immediate;
     }

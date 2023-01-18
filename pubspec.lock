@@ -99,6 +99,15 @@ packages:
       relative: true
     source: path
     version: "0.0.3+5"
+  breez_translations:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "78a5c95825078e874b47cd7b83139ab3525aafaa"
+      resolved-ref: "78a5c95825078e874b47cd7b83139ab3525aafaa"
+      url: "https://github.com/breez/Breez-Translations.git"
+    source: git
+    version: "1.0.0"
   build:
     dependency: transitive
     description:

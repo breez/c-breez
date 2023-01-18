@@ -1,5 +1,5 @@
-import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -10,10 +10,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
   final String address;
   final int rateFee;
+  final bool isDisabled;
 
   const WithdrawFundsConfirmationConfirmButton(
     this.address,
-    this.rateFee, {
+    this.rateFee,
+    this.isDisabled, {
     Key? key,
   }) : super(key: key);
 
@@ -25,17 +27,19 @@ class WithdrawFundsConfirmationConfirmButton extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
       child: SubmitButton(
         texts.sweep_all_coins_action_confirm,
-        () async {
-          final navigator = Navigator.of(context);
-          navigator.push(createLoaderRoute(context));
-          context
-              .read<WithdrawFundsBloc>()
-              .sweepAllCoins(address, rateFee)
-              .then(
-                (_) => _sweepCoinsFinished(context),
-                onError: (e) => _sweepCoinsError(context, e),
-              );
-        },
+        isDisabled
+            ? null
+            : () async {
+                final navigator = Navigator.of(context);
+                navigator.push(createLoaderRoute(context));
+                context
+                    .read<WithdrawFundsBloc>()
+                    .sweepAllCoins(address, rateFee)
+                    .then(
+                      (_) => _sweepCoinsFinished(context),
+                      onError: (e) => _sweepCoinsError(context, e),
+                    );
+              },
       ),
     );
   }

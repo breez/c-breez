@@ -19,13 +19,33 @@ class LNURLMetadata extends StatelessWidget {
           metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
           style: Theme.of(context).textTheme.caption,
         ),
-        if (base64String != null) ...[
-          Image.memory(
-            base64Decode(base64String),
-            width: 128,
-          )
-        ]
+        _LNURLMetadataImage(
+          base64String: base64String,
+        ),
       ],
     );
+  }
+}
+
+class _LNURLMetadataImage extends StatelessWidget {
+  final String? base64String;
+
+  const _LNURLMetadataImage({
+    super.key,
+    this.base64String,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (base64String != null) {
+      final bytes = base64Decode(base64String!);
+      if (bytes.isNotEmpty) {
+        return Image.memory(
+          bytes,
+          width: 128,
+        );
+      }
+    }
+    return Container();
   }
 }

@@ -1,6 +1,6 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/withdraw_funds/bitcoin_address_text_form_field.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_next_button.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_available_btc.dart';
@@ -9,9 +9,17 @@ import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+class WithdrawFundsArguments {
+  final WithdrawKind withdrawKind;
+
+  const WithdrawFundsArguments(this.withdrawKind);
+}
+
 class WithdrawFundsAddressPage extends StatefulWidget {
+  final WithdrawFundsArguments arguments;
   const WithdrawFundsAddressPage({
     Key? key,
+    required this.arguments,
   }) : super(key: key);
 
   @override
@@ -31,7 +39,11 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
       appBar: AppBar(
         leading: const back_button.BackButton(),
         actions: const [],
-        title: Text(texts.unexpected_funds_title),
+        title: Text(
+          widget.arguments.withdrawKind == WithdrawKind.withdraw_funds
+              ? texts.reverse_swap_title
+              : texts.unexpected_funds_title,
+        ),
       ),
       body: Column(
         children: [
@@ -70,4 +82,9 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
       ),
     );
   }
+}
+
+enum WithdrawKind {
+  withdraw_funds,
+  unexpected_funds,
 }

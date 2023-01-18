@@ -112,14 +112,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("recovered node started");
   }
 
-  Future<sdk.LnUrlWithdrawCallbackStatus> withdrawLnurl(
+  Future<sdk.LnUrlWithdrawCallbackStatus> lnurlWithdraw(
       {required int amountSats,
       required sdk.LnUrlWithdrawRequestData reqData,
       String? description}) async {
     _log.v(
         "withdrawLnurl amount: $amountSats, description: '$description', reqData: $reqData");
     try {
-      return _breezLib.withdrawLnurl(
+      return _breezLib.lnurlWithdraw(
         amountSats: amountSats,
         reqData: reqData,
         description: description,
@@ -138,7 +138,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.v(
         "sendLNURLPayment amount: $amount, comment: '$comment', reqData: $reqData");
     try {
-      return _breezLib.payLnUrl(
+      return _breezLib.lnurlPay(
         userAmountSat: amount,
         reqData: reqData,
         comment: comment,

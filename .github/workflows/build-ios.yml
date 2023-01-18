@@ -102,23 +102,15 @@ jobs:
           cd cbreez
           flutter pub get
           
-      # - name: dart-analyze
-      #   run: |
-      #     cd cbreez
-      #     dart analyze --fatal-infos
+      - name: dart-analyze
+        run: |
+          cd cbreez
+          dart analyze --fatal-infos
 
       - name: run-tests
         run: |
           cd cbreez
           flutter test
-
-
-      # - name: Install Apple Certificate
-      #   uses: apple-actions/import-codesign-certs@v1
-      #   with:
-      #     p12-file-base64: ${{ secrets.P12_BASE64 }}
-      #     p12-password: ${{ secrets.P12_PASSWORD }}      
-
 
       - name: Install the provisioning profile
         env:

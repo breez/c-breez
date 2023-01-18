@@ -25,6 +25,7 @@ jobs:
       DISTRIBUTION_CERT:  ${{secrets.DISTRIBUTION_CERT}}
       P12_BASE64: ${{secrets.P12_BASE64}}
       P12_PASSWORD: ${{secrets.P12_PASSWORD}}
+      GOOGLE_SERVICES_IOS: ${{secrets.GOOGLE_SERVICES_IOS}}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -55,6 +56,7 @@ jobs:
         run: |
           cd cbreez
           echo "$CBREEZ_CONFIG" > conf/breez.conf
+          echo "$GOOGLE_SERVICES_IOS" > ios/Runner/GoogleService-Info.plist
 
       - uses: actions/checkout@v3
         with:         

@@ -1,6 +1,8 @@
 PODS:
   - breez_sdk (0.0.1):
     - Flutter
+  - clipboard_watcher (0.0.1):
+    - Flutter
   - connectivity_plus (0.0.1):
     - Flutter
     - ReachabilitySwift
@@ -175,6 +177,7 @@ PODS:
 
 DEPENDENCIES:
   - breez_sdk (from `.symlinks/plugins/breez_sdk/ios`)
+  - clipboard_watcher (from `.symlinks/plugins/clipboard_watcher/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_dynamic_links (from `.symlinks/plugins/firebase_dynamic_links/ios`)
@@ -227,6 +230,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   breez_sdk:
     :path: ".symlinks/plugins/breez_sdk/ios"
+  clipboard_watcher:
+    :path: ".symlinks/plugins/clipboard_watcher/ios"
   connectivity_plus:
     :path: ".symlinks/plugins/connectivity_plus/ios"
   firebase_core:
@@ -274,6 +279,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   breez_sdk: b771ec4372e4a757a05778e50c65a3da0dff101a
+  clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   Firebase: f92fc551ead69c94168d36c2b26188263860acd9
   firebase_core: bf59c32d2e53814f558efa20840c1902fa2fe461
@@ -320,6 +326,6 @@ SPEC CHECKSUMS:
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
 
-PODFILE CHECKSUM: c7b63b56f8f16a9edfb15f984ed1b8c3a379e94d
+PODFILE CHECKSUM: 0d6e533ad252fc42a21cf08a648a67284d4fc581
 
 COCOAPODS: 1.11.3

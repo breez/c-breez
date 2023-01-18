@@ -34,7 +34,7 @@ class PaymentItemAmount extends StatelessWidget {
         builder: (context, currencyState) {
           final fee = _paymentInfo.feeMsat ~/ 1000;
           final amount = currencyState.bitcoinCurrency.format(
-            _paymentInfo.amountMsat ~/ 1000,
+            (_paymentInfo.amountMsat ~/ 1000).abs(),
             includeDisplayName: false,
           );
           final feeFormatted = currencyState.bitcoinCurrency.format(

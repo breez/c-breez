@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/utils/currency_formatter.dart';
-import 'package:c_breez/utils/locale.dart';
 
 class FiatConversion {
   FiatCurrency currencyData;

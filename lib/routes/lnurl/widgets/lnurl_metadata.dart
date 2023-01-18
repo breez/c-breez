@@ -31,9 +31,9 @@ class _LNURLMetadataImage extends StatelessWidget {
   final String? base64String;
 
   const _LNURLMetadataImage({
-    super.key,
+    Key? key,
     this.base64String,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

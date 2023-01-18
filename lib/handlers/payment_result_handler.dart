@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
 import 'package:c_breez/widgets/flushbar.dart';

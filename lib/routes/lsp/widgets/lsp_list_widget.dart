@@ -1,6 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/lsp/widgets/lsp_list.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';

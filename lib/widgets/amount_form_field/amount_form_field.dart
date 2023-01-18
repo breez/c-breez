@@ -5,7 +5,7 @@ import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 
 import 'currency_converter_dialog.dart';
 import 'sat_amount_form_field_formatter.dart';
@@ -14,7 +14,7 @@ class AmountFormField extends TextFormField {
   final FiatConversion? fiatConversion;
   final BitcoinCurrency bitcoinCurrency;
   final String? Function(int amount) validatorFn;
-  final AppLocalizations texts;
+  final BreezTranslations texts;
 
   AmountFormField({
     required this.bitcoinCurrency,

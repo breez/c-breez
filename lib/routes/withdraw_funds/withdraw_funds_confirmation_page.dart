@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_confirm_button.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_confirmation_speed_chooser.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_speed_message.dart';

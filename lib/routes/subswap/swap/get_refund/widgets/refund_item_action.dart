@@ -1,5 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/send_onchain.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/wait_broadcast_dialog.dart';
 import 'package:c_breez/widgets/route.dart';

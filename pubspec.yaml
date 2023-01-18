@@ -19,6 +19,10 @@ dependencies:
   bip39: ^1.0.6
   breez_sdk:
     path: ../breez-sdk/libs/sdk-flutter
+  breez_translations:
+    git:
+      url: https://github.com/breez/Breez-Translations.git
+      ref: 78a5c95825078e874b47cd7b83139ab3525aafaa
   clipboard_watcher:
     git:
       url: https://github.com/ademar111190/clipboard_watcher

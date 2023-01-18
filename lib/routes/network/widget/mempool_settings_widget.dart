@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/bloc/network/network_settings_state.dart';
-import 'package:c_breez/l10n/build_context_localizations.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

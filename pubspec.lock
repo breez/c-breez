@@ -176,6 +176,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.2"
+  clipboard_watcher:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: f12cdc89d1aba43e36f4af21c54efb10413095bd
+      resolved-ref: f12cdc89d1aba43e36f4af21c54efb10413095bd
+      url: "https://github.com/ademar111190/clipboard_watcher"
+    source: git
+    version: "0.1.3"
   clock:
     dependency: transitive
     description:

@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PaymentConfirmationDialog extends StatelessWidget {
   final String bolt11;
@@ -45,7 +45,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
 
   Container _buildTitle(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     return Container(
       height: 64.0,
@@ -61,7 +61,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     final themeData = Theme.of(context);
     final queryData = MediaQuery.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
@@ -103,7 +103,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
 
   Widget _buildActions(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     List<Widget> children = [
       TextButton(

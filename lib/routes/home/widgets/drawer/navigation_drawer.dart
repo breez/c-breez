@@ -3,16 +3,15 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/user_profile.dart';
+import 'package:c_breez/routes/home/widgets/drawer/breez_avatar_dialog.dart';
+import 'package:c_breez/routes/home/widgets/drawer/breez_drawer_header.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:theme_provider/theme_provider.dart';
-
-import 'breez_avatar_dialog.dart';
-import 'breez_drawer_header.dart';
 
 class DrawerItemConfig {
   final GlobalKey? key;
@@ -257,7 +256,7 @@ Padding _buildUsername(
   BuildContext context,
   UserProfileSettings user,
 ) {
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
 
   return Padding(
     padding: const EdgeInsets.only(top: 8.0),

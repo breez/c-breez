@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -22,7 +22,7 @@ class CollapsibleListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final textTheme = themeData.primaryTextTheme;
 
     return ListTileTheme(

@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -22,7 +23,7 @@ Future<void> showPaymentDetailsDialog(
 ) {
   final themeData = Theme.of(context);
   var mediaQuery = MediaQuery.of(context);
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
 
   AlertDialog paymentDetailsDialog = AlertDialog(
     titlePadding: EdgeInsets.zero,
@@ -291,7 +292,7 @@ class ShareablePaymentRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final expansionTileTheme =
         themeData.copyWith(dividerColor: themeData.backgroundColor);
     return Theme(

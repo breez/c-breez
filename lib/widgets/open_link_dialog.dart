@@ -1,6 +1,6 @@
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/utils/external_browser.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OpenLinkDialog extends StatefulWidget {
   final String url;
@@ -19,7 +19,7 @@ class OpenLinkDialog extends StatefulWidget {
 class OpenLinkDialogState extends State<OpenLinkDialog> {
   @override
   Widget build(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
     final themeData = Theme.of(context);
     final dialogTheme = themeData.dialogTheme;
     final navigator = Navigator.of(context);

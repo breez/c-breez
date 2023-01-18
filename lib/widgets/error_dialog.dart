@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future<void> promptError(
   BuildContext context,
@@ -13,7 +13,7 @@ Future<void> promptError(
   Function? okFunc,
   bool disableBack = false,
 }) {
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
   final themeData = Theme.of(context);
 
   bool canPop = !disableBack;
@@ -79,7 +79,7 @@ Future<bool?> promptAreYouSure(
   String? cancelText,
   TextStyle textStyle = const TextStyle(color: Colors.white),
 }) {
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
   final themeData = Theme.of(context);
 
   Widget? titleWidget = title == null ? null : Text(title);
@@ -131,7 +131,7 @@ Future<bool?> promptMessage(
   String? closeText,
   TextStyle textStyle = const TextStyle(color: Colors.white),
 }) {
-  final texts = AppLocalizations.of(context)!;
+  final texts = context.texts();
   final themeData = Theme.of(context);
 
   Widget? titleWidget = title == null

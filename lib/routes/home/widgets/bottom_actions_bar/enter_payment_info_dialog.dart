@@ -1,11 +1,11 @@
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/l10n/build_context_localizations.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EnterPaymentInfoDialog extends StatefulWidget {
   final GlobalKey paymentItemKey;
@@ -35,7 +35,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     return AlertDialog(
       titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
@@ -48,7 +48,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
   Theme _buildPaymentInfoForm(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     return Theme(
       data: themeData.copyWith(
@@ -136,7 +136,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
 
   List<Widget> _buildActions(BuildContext context) {
     final themeData = Theme.of(context);
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     List<Widget> actions = [
       SimpleDialogOption(
@@ -169,7 +169,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
   }
 
   Future _scanBarcode(BuildContext context) async {
-    final texts = AppLocalizations.of(context)!;
+    final texts = context.texts();
 
     FocusScope.of(context).requestFocus(FocusNode());
     String? barcode = await Navigator.pushNamed<String>(context, "/qr_scan");

@@ -11,7 +11,10 @@ abstract class Notifications {
 
 class FirebaseNotifications implements Notifications {
   final _log = FimberLog("FirebaseNotifications");
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  
+  FirebaseMessaging get  _firebaseMessaging {
+    return FirebaseMessaging.instance;
+  }
 
   final StreamController<Map<dynamic, dynamic>> _notificationController =
       BehaviorSubject<Map<dynamic, dynamic>>();

@@ -78,14 +78,14 @@ class MnemonicsInstructions extends StatelessWidget {
         left: 48,
         right: 48,
       ),
-      child: SizedBox(
-        height: 96,
-        child: AutoSizeText(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minHeight: 96,
+        ),
+        child: Text(
           texts.backup_phrase_instructions,
           style: theme.mnemonicSeedInformationTextStyle,
           textAlign: TextAlign.center,
-          minFontSize: MinFontSize(context).minFontSize,
-          stepGranularity: 0.1,
         ),
       ),
     );

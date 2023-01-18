@@ -233,7 +233,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                 _log.v("LNURL withdraw of $amount sats where "
                     "min is ${widget.requestData.minWithdrawable} msats "
                     "and max is ${widget.requestData.maxWithdrawable} msats.");
-                final resp = await accountBloc.withdrawLnurl(
+                final resp = await accountBloc.lnurlWithdraw(
                   reqData: widget.requestData,
                   amountSats: amount,
                   description: widget.requestData.defaultDescription,

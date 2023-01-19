@@ -43,17 +43,22 @@ class FiatConversion {
     bool removeTrailingZeros = false,
   }) {
     final locale = getSystemLocale();
-    final localeOverride = _localeOverride(locale.toLanguageTag(), locale.languageCode);
+    final localeOverride =
+        _localeOverride(locale.toLanguageTag(), locale.languageCode);
 
     int fractionSize = currencyData.info.fractionSize;
     double minimumAmount = 1 / (pow(10, fractionSize));
 
     String formattedAmount = "";
-    String spacing = " " * (localeOverride?.spacing ?? currencyData.info.spacing ?? 0);
-    final symbol = localeOverride?.symbol ?? currencyData.info.symbol;
-    String symbolText = (symbol?.position == 1)
-        ? spacing + (symbol?.grapheme ?? "")
-        : (symbol?.grapheme ?? "") + spacing;
+    String spacing =
+        " " * (localeOverride?.spacing ?? currencyData.info.spacing ?? 0);
+    final symbolPosition =
+        localeOverride?.symbol.position ?? currencyData.info.symbol?.position;
+    final symbolGrapheme =
+        localeOverride?.symbol.grapheme ?? currencyData.info.symbol?.grapheme;
+    String symbolText = (symbolPosition == 1)
+        ? spacing + (symbolGrapheme ?? "")
+        : (symbolGrapheme ?? "") + spacing;
     // if conversion result is less than the minimum it doesn't make sense to display it
     if (fiatAmount < minimumAmount) {
       formattedAmount = minimumAmount.toStringAsFixed(fractionSize);
@@ -64,7 +69,7 @@ class FiatConversion {
       formatter.maximumFractionDigits = fractionSize;
       formattedAmount = formatter.format(fiatAmount);
     }
-    formattedAmount = (symbol?.position == 1)
+    formattedAmount = (symbolPosition == 1)
         ? formattedAmount + symbolText
         : symbolText + formattedAmount;
     if (removeTrailingZeros) {

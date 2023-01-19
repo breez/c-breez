@@ -1,14 +1,14 @@
-import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/models/clipboard.dart';
+import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
+import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
+import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'bottom_action_item_image.dart';
-import 'enter_payment_info_dialog.dart';
 
 class SendOptionsBottomSheet extends StatelessWidget {
   final bool connected;
@@ -53,7 +53,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
               indent: 72.0,
             ),
             ListTile(
-              enabled: connected,
+              enabled: false, // TODO: back to connected when we integrate with the SDK
               leading: BottomActionItemImage(
                 iconAssetPath: "src/icon/bitcoin.png",
                 enabled: connected,
@@ -62,7 +62,10 @@ class SendOptionsBottomSheet extends StatelessWidget {
                 texts.bottom_action_bar_send_btc_address,
                 style: theme.bottomSheetTextStyle,
               ),
-              onTap: () => _push(context, "/withdraw_funds"),
+              onTap: () => _push(context, "/withdraw_funds",
+                  arguments: const WithdrawFundsArguments(
+                    WithdrawKind.withdraw_funds,
+                  )),
             ),
             const SizedBox(height: 8.0)
           ],
@@ -106,9 +109,9 @@ class SendOptionsBottomSheet extends StatelessWidget {
     }
   }
 
-  void _push(BuildContext context, String route) {
+  void _push(BuildContext context, String route, {Object? arguments}) {
     final navigatorState = Navigator.of(context);
     navigatorState.pop();
-    navigatorState.pushNamed(route);
+    navigatorState.pushNamed(route, arguments: arguments);
   }
 }

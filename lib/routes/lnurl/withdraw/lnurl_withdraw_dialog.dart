@@ -226,6 +226,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
           onPressed: () async {
             if (formKey.currentState!.validate()) {
               final AccountBloc accountBloc = context.read<AccountBloc>();
+              final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
 
               // Create loader and process payment
               final navigator = Navigator.of(context);
@@ -233,7 +234,8 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               navigator.push(loaderRoute);
 
               try {
-                final amount = int.parse(_amountController.text);
+                final amount = currencyBloc.state.bitcoinCurrency
+                    .parse(_amountController.text);
                 _log.v("LNURL withdraw of $amount sats where "
                     "min is ${widget.requestData.minWithdrawable} msats "
                     "and max is ${widget.requestData.maxWithdrawable} msats.");

@@ -40,12 +40,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Stream<PaymentFilters> get paymentFiltersStream =>
       _paymentFiltersStreamController.stream;
 
-  final BreezBridge _breezLib;  
+  final BreezBridge _breezLib;
   final CredentialsManager _credentialsManager;
 
   AccountBloc(
     this._breezLib,
-    this._credentialsManager,    
+    this._credentialsManager,
   ) : super(AccountState.initial()) {
     // emit on every change
     _watchAccountChanges().listen((acc) => emit(acc));
@@ -117,7 +117,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       required sdk.LnUrlWithdrawRequestData reqData,
       String? description}) async {
     _log.v(
-        "withdrawLnurl amount: $amountSats, description: '$description', reqData: $reqData");
+        "lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
     try {
       return _breezLib.lnurlWithdraw(
         amountSats: amountSats,
@@ -125,18 +125,17 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         description: description,
       );
     } catch (e) {
-      _log.e("withdrawLnurl error", ex: e);
+      _log.e("lnurlWithdraw error", ex: e);
       rethrow;
     }
   }
 
-  Future<sdk.LnUrlPayResult> sendLNURLPayment({
+  Future<sdk.LnUrlPayResult> lnurlPay({
     required int amount,
     required sdk.LnUrlPayRequestData reqData,
     String? comment,
   }) async {
-    _log.v(
-        "sendLNURLPayment amount: $amount, comment: '$comment', reqData: $reqData");
+    _log.v("lnurlPay amount: $amount, comment: '$comment', reqData: $reqData");
     try {
       return _breezLib.lnurlPay(
         userAmountSat: amount,
@@ -144,7 +143,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         comment: comment,
       );
     } catch (e) {
-      _log.e("sendLNURLPayment error", ex: e);
+      _log.e("lnurlPay error", ex: e);
       rethrow;
     }
   }

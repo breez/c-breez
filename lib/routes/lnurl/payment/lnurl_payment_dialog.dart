@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
@@ -44,9 +44,11 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final metadataMap = {
-      for (var v in json.decode(widget.requestData.metadataStr)) v[0] as String: v[1],
+      for (var v in json.decode(widget.requestData.metadataStr))
+        v[0] as String: v[1],
     };
-    final description = metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
+    final description =
+        metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
     FiatConversion? fiatConversion;
     if (currencyState.fiatEnabled) {
       fiatConversion = FiatConversion(
@@ -88,8 +90,10 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               ),
               child: Text(
                 _showFiatCurrency && fiatConversion != null
-                    ? fiatConversion.format(widget.requestData.maxSendable ~/ 1000)
-                    : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
+                    ? fiatConversion
+                        .format(widget.requestData.maxSendable ~/ 1000)
+                    : BitcoinCurrency.fromTickerSymbol(
+                            currencyState.bitcoinTicker)
                         .format(widget.requestData.maxSendable ~/ 1000),
                 style: themeData.primaryTextTheme.headline5,
                 textAlign: TextAlign.center,
@@ -111,7 +115,9 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                       fontSize: 16,
                     ),
                     textAlign:
-                        description.length > 40 && !description.contains("\n") ? TextAlign.start : TextAlign.center,
+                        description.length > 40 && !description.contains("\n")
+                            ? TextAlign.start
+                            : TextAlign.center,
                   ),
                 ),
               ),
@@ -159,7 +165,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               _log.v("LNURL payment of $amount sats where "
                   "min is ${widget.requestData.minSendable} msats "
                   "and max is ${widget.requestData.maxSendable} mstas.");
-              final resp = await accountBloc.sendLNURLPayment(
+              final resp = await accountBloc.lnurlPay(
                 amount: amount,
                 reqData: widget.requestData,
               );
@@ -175,7 +181,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                   error: resp.data.reason,
                 ));
               } else {
-                _log.w("Unknown response from sendLNURLPayment: $resp");
+                _log.w("Unknown response from lnurlPay: $resp");
                 navigator.pop(LNURLPaymentPageResult(
                   error: texts.lnurl_payment_page_unknown_error,
                 ));

@@ -193,7 +193,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               _log.v("LNURL payment of $amount sats where "
                   "min is ${widget.requestData.minSendable} msats "
                   "and max is ${widget.requestData.maxSendable} msats.");
-              final resp = await accountBloc.sendLNURLPayment(
+              final resp = await accountBloc.lnurlPay(
                 amount: amount,
                 comment: comment,
                 reqData: widget.requestData,
@@ -210,7 +210,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   error: resp.data.reason,
                 ));
               } else {
-                _log.w("Unknown response from sendLNURLPayment: $resp");
+                _log.w("Unknown response from lnurlPay: $resp");
                 navigator.pop(LNURLPaymentPageResult(
                   error: texts.lnurl_payment_page_unknown_error,
                 ));

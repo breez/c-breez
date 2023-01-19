@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -71,123 +71,127 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
         style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
-      content: Form(
-        key: formKey,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                texts.sweep_all_coins_label_receive,
-                style: themeData.primaryTextTheme.headline3!
-                    .copyWith(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              if (fixedAmount) ...[
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onLongPressStart: (_) {
-                    setState(() {
-                      _showFiatCurrency = true;
-                    });
-                  },
-                  onLongPressEnd: (_) {
-                    setState(() {
-                      _showFiatCurrency = false;
-                    });
-                  },
-                  child: ConstrainedBox(
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Form(
+          key: formKey,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  texts.sweep_all_coins_label_receive,
+                  style: themeData.primaryTextTheme.headline3!
+                      .copyWith(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+                if (fixedAmount) ...[
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onLongPressStart: (_) {
+                      setState(() {
+                        _showFiatCurrency = true;
+                      });
+                    },
+                    onLongPressEnd: (_) {
+                      setState(() {
+                        _showFiatCurrency = false;
+                      });
+                    },
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minWidth: double.infinity,
+                      ),
+                      child: Text(
+                        _showFiatCurrency && fiatConversion != null
+                            ? fiatConversion.format(
+                                widget.requestData.maxWithdrawable ~/ 1000)
+                            : BitcoinCurrency.fromTickerSymbol(
+                                    currencyState.bitcoinTicker)
+                                .format(
+                                    widget.requestData.maxWithdrawable ~/ 1000),
+                        style: themeData.primaryTextTheme.headline5,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                ],
+                if (!fixedAmount) ...[
+                  Theme(
+                    data: themeData.copyWith(
+                      inputDecorationTheme: InputDecorationTheme(
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: theme.greyBorderSide,
+                        ),
+                      ),
+                      hintColor: themeData.dialogTheme.contentTextStyle!.color,
+                      colorScheme: ColorScheme.dark(
+                        primary: themeData.textTheme.button!.color!,
+                      ),
+                      primaryColor: themeData.textTheme.button!.color!,
+                      errorColor: themeData.isLightTheme
+                          ? Colors.red
+                          : themeData.errorColor,
+                    ),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AmountFormField(
+                            context: context,
+                            texts: texts,
+                            bitcoinCurrency: currencyState.bitcoinCurrency,
+                            controller: _amountController,
+                            validatorFn: validatePayment,
+                            onFieldSubmitted: (_) {
+                              formKey.currentState?.validate();
+                            },
+                            style: themeData.dialogTheme.contentTextStyle!
+                                .copyWith(height: 1.0),
+                            iconColor: themeData.primaryIconTheme.color,
+                          ),
+                          AutoSizeText(
+                            texts.lnurl_fetch_invoice_limit(
+                              (widget.requestData.minWithdrawable ~/ 1000)
+                                  .toString(),
+                              (widget.requestData.maxWithdrawable ~/ 1000)
+                                  .toString(),
+                            ),
+                            maxLines: 2,
+                            style: themeData.dialogTheme.contentTextStyle,
+                            minFontSize: MinFontSize(context).minFontSize,
+                          ),
+                        ]),
+                  ),
+                ],
+                Padding(
+                  padding:
+                      const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+                  child: Container(
                     constraints: const BoxConstraints(
+                      maxHeight: 200,
                       minWidth: double.infinity,
                     ),
-                    child: Text(
-                      _showFiatCurrency && fiatConversion != null
-                          ? fiatConversion.format(
-                              widget.requestData.maxWithdrawable ~/ 1000)
-                          : BitcoinCurrency.fromTickerSymbol(
-                                  currencyState.bitcoinTicker)
-                              .format(
-                                  widget.requestData.maxWithdrawable ~/ 1000),
-                      style: themeData.primaryTextTheme.headline5,
-                      textAlign: TextAlign.center,
+                    child: Scrollbar(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          widget.requestData.defaultDescription,
+                          style: themeData.primaryTextTheme.headline3!
+                              .copyWith(fontSize: 16),
+                          textAlign:
+                              widget.requestData.defaultDescription.length >
+                                          40 &&
+                                      !widget.requestData.defaultDescription
+                                          .contains("\n")
+                                  ? TextAlign.start
+                                  : TextAlign.center,
+                        ),
+                      ),
                     ),
                   ),
                 )
-              ],
-              if (!fixedAmount) ...[
-                Theme(
-                  data: themeData.copyWith(
-                    inputDecorationTheme: InputDecorationTheme(
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: theme.greyBorderSide,
-                      ),
-                    ),
-                    hintColor: themeData.dialogTheme.contentTextStyle!.color,
-                    colorScheme: ColorScheme.dark(
-                      primary: themeData.textTheme.button!.color!,
-                    ),
-                    primaryColor: themeData.textTheme.button!.color!,
-                    errorColor: themeData.isLightTheme
-                        ? Colors.red
-                        : themeData.errorColor,
-                  ),
-                  child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AmountFormField(
-                          context: context,
-                          texts: texts,
-                          bitcoinCurrency: currencyState.bitcoinCurrency,
-                          controller: _amountController,
-                          validatorFn: validatePayment,
-                          onFieldSubmitted: (_) {
-                            formKey.currentState?.validate();
-                          },
-                          style: themeData.dialogTheme.contentTextStyle!
-                              .copyWith(height: 1.0),
-                          iconColor: themeData.primaryIconTheme.color,
-                        ),
-                        AutoSizeText(
-                          texts.lnurl_fetch_invoice_limit(
-                            (widget.requestData.minWithdrawable ~/ 1000)
-                                .toString(),
-                            (widget.requestData.maxWithdrawable ~/ 1000)
-                                .toString(),
-                          ),
-                          maxLines: 2,
-                          style: themeData.dialogTheme.contentTextStyle,
-                          minFontSize: MinFontSize(context).minFontSize,
-                        ),
-                      ]),
-                ),
-              ],
-              Padding(
-                padding:
-                    const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
-                child: Container(
-                  constraints: const BoxConstraints(
-                    maxHeight: 200,
-                    minWidth: double.infinity,
-                  ),
-                  child: Scrollbar(
-                    child: SingleChildScrollView(
-                      child: Text(
-                        widget.requestData.defaultDescription,
-                        style: themeData.primaryTextTheme.headline3!
-                            .copyWith(fontSize: 16),
-                        textAlign:
-                            widget.requestData.defaultDescription.length > 40 &&
-                                    !widget.requestData.defaultDescription
-                                        .contains("\n")
-                                ? TextAlign.start
-                                : TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            ]),
+              ]),
+        ),
       ),
       contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
       actions: [

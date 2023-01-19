@@ -263,11 +263,11 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               } catch (e) {
                 _log.w("Error withdrawing LNURL payment", ex: e);
                 navigator.removeRoute(loaderRoute);
-                navigator.pop(LNURLWithdrawPageResult(
-                  error: texts.lnurl_withdraw_dialog_error(
-                    extractExceptionMessage(e),
+                navigator.pop(
+                  LNURLWithdrawPageResult(
+                    error: texts.lnurl_withdraw_dialog_error_unknown,
                   ),
-                ));
+                );
               }
             }
           },

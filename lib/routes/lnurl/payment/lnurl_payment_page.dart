@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_metadata.dart';
 import 'package:c_breez/utils/payment_validator.dart';
@@ -60,9 +60,11 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   @override
   void initState() {
     super.initState();
-    fixedAmount = widget.requestData.minSendable == widget.requestData.maxSendable;
+    fixedAmount =
+        widget.requestData.minSendable == widget.requestData.maxSendable;
     if (fixedAmount) {
-      _amountController.text = (widget.requestData.maxSendable ~/ 1000).toString();
+      _amountController.text =
+          (widget.requestData.maxSendable ~/ 1000).toString();
     }
   }
 
@@ -103,7 +105,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   )
                 ],
                 LNURLMetadata({
-                  for (var v in json.decode(widget.requestData.metadataStr)) v[0] as String: v[1],
+                  for (var v in json.decode(widget.requestData.metadataStr))
+                    v[0] as String: v[1],
                 }),
                 if (widget.requestData.commentAllowed > 0) ...[
                   TextFormField(
@@ -146,7 +149,9 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   TextFormField(
                     controller: _k1Controller,
                     keyboardType: TextInputType.text,
-                    validator: (value) => value != null ? null : texts.lnurl_payment_page_enter_k1,
+                    validator: (value) => value != null
+                        ? null
+                        : texts.lnurl_payment_page_enter_k1,
                   )
                 ],
                 if (widget.email?.mandatory == true) ...[
@@ -176,12 +181,14 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             final accountBloc = context.read<AccountBloc>();
+            final currencyBloc = context.read<CurrencyBloc>();
             final navigator = Navigator.of(context);
             var loaderRoute = createLoaderRoute(context);
             navigator.push(loaderRoute);
 
             try {
-              final amount = int.parse(_amountController.text);
+              final amount = currencyBloc.state.bitcoinCurrency
+                  .parse(_amountController.text);
               final comment = _commentController.text;
               _log.v("LNURL payment of $amount sats where "
                   "min is ${widget.requestData.minSendable} msats "

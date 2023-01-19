@@ -103,8 +103,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "78a5c95825078e874b47cd7b83139ab3525aafaa"
-      resolved-ref: "78a5c95825078e874b47cd7b83139ab3525aafaa"
+      ref: "9c8cc35d9e289a9696ab15ad91734ff12739b171"
+      resolved-ref: "9c8cc35d9e289a9696ab15ad91734ff12739b171"
       url: "https://github.com/breez/Breez-Translations"
     source: git
     version: "1.0.0"

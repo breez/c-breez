@@ -36,25 +36,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
       final utxos = await _retrieveUTXOS();
-      final List<FeeOption> feeOptions = [
-        FeeOption(
-          processingSpeed: ProcessingSpeed.economy,
-          waitingTime: const Duration(minutes: 60),
-          fee: _calculateTransactionFee(utxos, recommendedFees.hourFee),
-        ),
-        FeeOption(
-          processingSpeed: ProcessingSpeed.regular,
-          waitingTime: const Duration(minutes: 30),
-          fee: _calculateTransactionFee(utxos, recommendedFees.halfHourFee),
-        ),
-        FeeOption(
-          processingSpeed: ProcessingSpeed.priority,
-          waitingTime: const Duration(minutes: 10),
-          fee: _calculateTransactionFee(utxos, recommendedFees.fastestFee),
-        ),
-      ];
-      emit(WithdrawFundsState(feeOptions: feeOptions));
-      return feeOptions;
+      return _constructFeeOptionList(utxos, recommendedFees);
     } catch (e) {
       _log.e("fetchFeeOptions error", ex: e);
       emit(WithdrawFundsState(errorMessage: extractExceptionMessage(e)));
@@ -71,6 +53,29 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
     final utxos = nodeState.utxos.length;
     _log.v("_retrieveUTXOS utxos: $utxos");
     return utxos;
+  }
+
+  List<FeeOption> _constructFeeOptionList(
+      int utxos, RecommendedFees recommendedFees) {
+    final List<FeeOption> feeOptions = [
+      FeeOption(
+        processingSpeed: ProcessingSpeed.economy,
+        waitingTime: const Duration(minutes: 60),
+        fee: _calculateTransactionFee(utxos, recommendedFees.hourFee),
+      ),
+      FeeOption(
+        processingSpeed: ProcessingSpeed.regular,
+        waitingTime: const Duration(minutes: 30),
+        fee: _calculateTransactionFee(utxos, recommendedFees.halfHourFee),
+      ),
+      FeeOption(
+        processingSpeed: ProcessingSpeed.priority,
+        waitingTime: const Duration(minutes: 10),
+        fee: _calculateTransactionFee(utxos, recommendedFees.fastestFee),
+      ),
+    ];
+    emit(WithdrawFundsState(feeOptions: feeOptions));
+    return feeOptions;
   }
 
   int _calculateTransactionFee(int inputs, int feeRateSatsPerByte) {

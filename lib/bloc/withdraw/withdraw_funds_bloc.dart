@@ -10,66 +10,72 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 final _log = FimberLog("WithdrawFundsBloc");
 
-class WithdrawFundsBloc extends Cubit<WithdrawFudsState> {
+class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
   final BreezBridge _breezLib;
 
   WithdrawFundsBloc(
     this._breezLib,
-  ) : super(WithdrawFudsState.initial());
+  ) : super(WithdrawFundsState.initial());
 
-  Future fetchTransactionCost() async {
-    _log.v("fetchTransactionCost");
-    emit(WithdrawFudsState.initial());
-
-    RecommendedFees recommendedFees;
-    try {
-      recommendedFees = await _breezLib.recommendedFees();
-      _log.v("fetchTransactionConst recommendedFees: fastestFee: ${recommendedFees.fastestFee}, "
-          "halfHourFee: ${recommendedFees.halfHourFee}, hourFee: ${recommendedFees.hourFee}");
-    } catch (e) {
-      _log.e("fetchTransactionConst error", ex: e);
-      emit(WithdrawFudsState.error(extractExceptionMessage(e)));
-      return;
-    }
-
-    final nodeState = await _breezLib.getNodeState();
-    if (nodeState == null) {
-      _log.e("Failed to get node state");
-      emit(WithdrawFudsState.error(getSystemAppLocalizations().node_state_error));
-      return;
-    }
-    final utxos = nodeState.utxos.length;
-    _log.v("NodeState utxos: $utxos");
-
-    emit(WithdrawFudsState.info(
-      TransactionCost(
-        TransactionCostKind.economy,
-        const Duration(minutes: 60),
-        recommendedFees.hourFee,
-        utxos,
-      ),
-      TransactionCost(
-        TransactionCostKind.regular,
-        const Duration(minutes: 30),
-        recommendedFees.halfHourFee,
-        utxos,
-      ),
-      TransactionCost(
-        TransactionCostKind.priority,
-        const Duration(minutes: 10),
-        recommendedFees.fastestFee,
-        utxos,
-      ),
-    ));
-  }
-
-  Future<void> sweepAllCoins(
-    String toAddress,
-    int feeRateSatsPerByte,
-  ) async {
+  Future sweep({
+    required String toAddress,
+    required int feeRateSatsPerByte,
+  }) async {
     await _breezLib.sweep(
       toAddress: toAddress,
       feeRateSatsPerByte: feeRateSatsPerByte,
     );
+  }
+
+  Future<List<FeeOption>> fetchFeeOptions() async {
+    RecommendedFees recommendedFees;
+    try {
+      recommendedFees = await _breezLib.recommendedFees();
+      _log.v(
+        "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
+        "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
+      );
+      final utxos = await _retrieveUTXOS();
+      final List<FeeOption> feeOptions = [
+        FeeOption(
+          processingSpeed: ProcessingSpeed.economy,
+          waitingTime: const Duration(minutes: 60),
+          fee: _calculateTransactionFee(utxos, recommendedFees.hourFee),
+        ),
+        FeeOption(
+          processingSpeed: ProcessingSpeed.regular,
+          waitingTime: const Duration(minutes: 30),
+          fee: _calculateTransactionFee(utxos, recommendedFees.halfHourFee),
+        ),
+        FeeOption(
+          processingSpeed: ProcessingSpeed.priority,
+          waitingTime: const Duration(minutes: 10),
+          fee: _calculateTransactionFee(utxos, recommendedFees.fastestFee),
+        ),
+      ];
+      emit(WithdrawFundsState(feeOptions: feeOptions));
+      return feeOptions;
+    } catch (e) {
+      _log.e("fetchFeeOptions error", ex: e);
+      emit(WithdrawFundsState(errorMessage: extractExceptionMessage(e)));
+      rethrow;
+    }
+  }
+
+  Future<int> _retrieveUTXOS() async {
+    final nodeState = await _breezLib.getNodeState();
+    if (nodeState == null) {
+      _log.e("_retrieveUTXOS Failed to get node state");
+      throw Exception(getSystemAppLocalizations().node_state_error);
+    }
+    final utxos = nodeState.utxos.length;
+    _log.v("_retrieveUTXOS utxos: $utxos");
+    return utxos;
+  }
+
+  int _calculateTransactionFee(int inputs, int feeRateSatsPerByte) {
+    // based on https://bitcoin.stackexchange.com/a/3011
+    final transactionSize = (inputs * 148) + (2 * 34) + 10;
+    return transactionSize * feeRateSatsPerByte;
   }
 }

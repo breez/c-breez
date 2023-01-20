@@ -1,20 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class WithdrawFundsSummary extends StatelessWidget {
+class FeeBreakdown extends StatelessWidget {
   final int total;
   final int fee;
-  final int receive;
 
-  const WithdrawFundsSummary(
+  const FeeBreakdown(
     this.total,
-    this.fee,
-    this.receive, {
+    this.fee, {
     Key? key,
   }) : super(key: key);
 
@@ -87,6 +85,7 @@ class WithdrawFundsSummary extends StatelessWidget {
             trailing: BlocBuilder<CurrencyBloc, CurrencyState>(
               builder: (context, currency) {
                 final fiatConversion = currency.fiatConversion();
+                int receive = total - fee;
                 return AutoSizeText(
                   fiatConversion == null
                       ? texts.sweep_all_coins_amount_no_fiat(

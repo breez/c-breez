@@ -1,19 +1,11 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/routes/withdraw_funds/bitcoin_address_text_form_field.dart';
-import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_next_button.dart';
-import 'package:c_breez/routes/withdraw_funds/withdraw_funds_available_btc.dart';
+import 'package:c_breez/routes/withdraw_funds/widgets/bitcoin_address_text_form_field.dart';
+import 'package:c_breez/routes/withdraw_funds/widgets/withdraw_funds_address_next_button.dart';
+import 'package:c_breez/routes/withdraw_funds/widgets/withdraw_funds_available_btc.dart';
+import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-class WithdrawFundsArguments {
-  final WithdrawKind withdrawKind;
-
-  const WithdrawFundsArguments(this.withdrawKind);
-}
 
 class WithdrawFundsAddressPage extends StatefulWidget {
   final WithdrawFundsArguments arguments;
@@ -23,7 +15,8 @@ class WithdrawFundsAddressPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<WithdrawFundsAddressPage> createState() => _WithdrawFundsAddressPageState();
+  State<WithdrawFundsAddressPage> createState() =>
+      _WithdrawFundsAddressPageState();
 }
 
 class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
@@ -66,18 +59,12 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: WithdrawFundsAvailableBtc(),
-          ),
+          const WithdrawFundsAvailableBtc(),
           Expanded(child: Container()),
-          BlocBuilder<AccountBloc, AccountState>(builder: (context, state) {
-            return WithdrawFundsAddressNextButton(
-              addressController: _addressController,
-              validator: () => _formKey.currentState?.validate() ?? false,
-              amount: state.walletBalance,
-            );
-          }),
+          WithdrawFundsAddressNextButton(
+            addressController: _addressController,
+            validator: () => _formKey.currentState?.validate() ?? false,
+          ),
         ],
       ),
     );
@@ -87,4 +74,10 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
 enum WithdrawKind {
   withdraw_funds,
   unexpected_funds,
+}
+
+class WithdrawFundsArguments {
+  final WithdrawKind withdrawKind;
+
+  const WithdrawFundsArguments(this.withdrawKind);
 }

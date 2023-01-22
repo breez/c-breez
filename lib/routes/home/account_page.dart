@@ -131,7 +131,7 @@ class AccountPage extends StatelessWidget {
             builder: (context, shrinkedHeight, overlapContent) {
               return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
                 var isConnecting = account.status == ConnectionStatus.CONNECTING;
-                if (!isConnecting && lspState?.lspInfo == null) {
+                if (!isConnecting && lspState != null && lspState.selectedLspId == null) {
                   return const Padding(
                     padding: EdgeInsets.only(top: 120.0),
                     child: NoLSPWidget(),

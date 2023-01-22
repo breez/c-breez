@@ -3,7 +3,7 @@ import 'package:c_breez/bloc/account/payment_filters.dart';
 
 const initialInboundCapacity = 4000000;
 
-enum ConnectionStatus { CONNECTING, CONNECTED }
+enum ConnectionStatus { CONNECTING, CONNECTED, DISCONNECTED }
 
 class AccountState {
   final String? id;

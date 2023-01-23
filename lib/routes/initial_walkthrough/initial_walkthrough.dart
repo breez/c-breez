@@ -146,7 +146,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return BetaWarningDialog();
+        return AlphaWarningDialog();
       },
     );
     if (approved) _generateMnemonicSeed();

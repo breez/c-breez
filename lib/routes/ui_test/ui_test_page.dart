@@ -161,7 +161,7 @@ class UITestPage extends StatelessWidget {
                   context: context,
                   barrierDismissible: true,
                   builder: (BuildContext context) {
-                    return BetaWarningDialog();
+                    return AlphaWarningDialog();
                   },
                 );
               },

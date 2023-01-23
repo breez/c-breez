@@ -44,6 +44,11 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
               ),
               onTap: () => _push(context, "/create_invoice"),
             ),
+            Divider(
+              height: 0.0,
+              color: Colors.white.withOpacity(0.2),
+              indent: 72.0,
+            ),
             ListTile(
               enabled: connected,
               leading: BottomActionItemImage(

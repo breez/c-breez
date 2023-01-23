@@ -11,6 +11,7 @@ import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:theme_provider/theme_provider.dart';
 
 class InitialWalkthroughPage extends StatefulWidget {
   @override
@@ -173,6 +174,8 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
+
+    final themeProvider = ThemeProvider.controllerOf(context);
     try {
       await accountBloc.recoverNode(seed: mnemonicSeed);
     } catch (error) {
@@ -182,6 +185,8 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     } finally {
       navigator.removeRoute(loaderRoute);
     }
+    
+    themeProvider.setTheme('dark');
     navigator.pushReplacementNamed('/');
   }
 }

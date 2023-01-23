@@ -12,6 +12,7 @@ import 'package:c_breez/config.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
@@ -19,6 +20,7 @@ import 'package:rxdart/rxdart.dart';
 import 'account_state_assembler.dart';
 
 const maxPaymentAmount = 4294967;
+const nodeSyncInterval = 60;
 
 // AccountBloc is the business logic unit that is responsible to communicating with the lightning service
 // and reflect the node state. It is responsible for:
@@ -77,7 +79,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: credentials.seed,
       creds: credentials.glCreds,
     );    
-    await startSdkForever();
+    await _startSdkForever();
   }
 
   // startNewNode register a new node and start it
@@ -93,7 +95,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node registered successfully");
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     emit(state.copyWith(initial: false));
-    await startSdkForever();
+    await _startSdkForever();
     _log.i("new node started");
   }
 
@@ -110,12 +112,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node recovered successfully");
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     emit(state.copyWith(initial: false));
-    await startSdkForever();
+    await _startSdkForever();
     _log.i("recovered node started");    
   }
 
-  Future startSdkForever() async {            
-    await startSdkOnce();
+  Future _startSdkForever() async {            
+    await _startSdkOnce();
 
     // in case we failed to start (lack of inet connection probably)
     if (state.status == ConnectionStatus.DISCONNECTED) {
@@ -123,16 +125,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       subscription = Connectivity().onConnectivityChanged.listen((event) async {
         // we should try fetch the selected lsp information when internet is back.
         if (event != ConnectivityResult.none && state.status == ConnectionStatus.DISCONNECTED) {
-          await startSdkOnce();
+          await _startSdkOnce();
           if (state.status == ConnectionStatus.CONNECTED) {
             subscription!.cancel();
+            _onConnected();
           }
         }
       });  
+    } else {
+      _onConnected();
     }
   }
 
-  Future startSdkOnce() async {
+  Future _startSdkOnce() async {
     try {
     emit(state.copyWith(status: ConnectionStatus.CONNECTING));
     await _breezLib.startNode();
@@ -140,6 +145,17 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     } catch(e) {
       emit(state.copyWith(status: ConnectionStatus.DISCONNECTED));
     }
+  }
+
+  // Once connected sync sdk periodically on foreground events.
+  void _onConnected() {
+    var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
+    FGBGEvents.stream.listen((event) async {            
+      if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval ) {
+        await _breezLib.sync();
+        lastSync = DateTime.now();
+      }
+    });
   }
 
   Future<sdk.LnUrlWithdrawCallbackStatus> lnurlWithdraw(

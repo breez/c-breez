@@ -7,8 +7,24 @@ For more details, please check out [this medium post](https://medium.com/breez-t
 ## Build
 
 ### Build the lightning_tookit plugin
+c-Breez depends on Breez [sdk-flutter](https://github.com/breez/breez-sdk/tree/main/libs/sdk-flutter) plugin, so be sure to follow those instructions first.
 
-c-Breez depends on Breez [sdk-flutter](https://github.com/breez/breez-sdk/tree/main/libs/sdk-flutter) plugin .
+After succesfully having build the sdk-flutter make sure that [breez-sdk](https://github.com/breez/breez-sdk) and c-breez are side by side like so:
+
+```
+breez-sdk/
+├─ libs/
+│  ├─ sdk-flutter/
+├─ tools/
+├─ LICENSE
+├─ README.md
+c-breez/
+├─ android/
+├─ conf/
+├─ ios/
+
+```
+### android
 
 ```
 flutter build apk

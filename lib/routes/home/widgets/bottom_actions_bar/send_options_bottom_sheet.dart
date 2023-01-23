@@ -47,13 +47,9 @@ class SendOptionsBottomSheet extends StatelessWidget {
               color: Colors.white.withOpacity(0.2),
               indent: 72.0,
             ),
-            Divider(
-              height: 0.0,
-              color: Colors.white.withOpacity(0.2),
-              indent: 72.0,
-            ),
             ListTile(
-              enabled: false, // TODO: back to connected when we integrate with the SDK
+              enabled:
+                  false, // TODO: back to connected when we integrate with the SDK
               leading: BottomActionItemImage(
                 iconAssetPath: "src/icon/bitcoin.png",
                 enabled: connected,

@@ -12,15 +12,13 @@ class FieldTextStyle {
 
 const balanceAmountTextStyle = TextStyle(
     fontSize: 28,
-    letterSpacing: 1,
     fontWeight: FontWeight.w600,
     height: 1.56,
     fontFamily: 'IBMPlexSans');
 const balanceCurrencyTextStyle = TextStyle(
     fontSize: 22,
-    letterSpacing: 1,
     fontWeight: FontWeight.w600,
-    height: 1.32,
+    height: 1.52,
     fontFamily: 'IBMPlexSans');
 const balanceFiatConversionTextStyle = TextStyle(
     fontSize: 16,

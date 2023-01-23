@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:flutter/material.dart';
 
-class BetaWarningDialog extends StatefulWidget {
+class AlphaWarningDialog extends StatefulWidget {
   @override
-  BetaWarningDialogState createState() => BetaWarningDialogState();
+  AlphaWarningDialogState createState() => AlphaWarningDialogState();
 }
 
-class BetaWarningDialogState extends State<BetaWarningDialog> {
+class AlphaWarningDialogState extends State<AlphaWarningDialog> {
   bool _isUnderstood = false;
   bool _showReminderText = false;
 
@@ -28,7 +28,7 @@ class BetaWarningDialogState extends State<BetaWarningDialog> {
       ),
       child: AlertDialog(
         titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
-        title: Text(texts.beta_warning_title),
+        title: Text(texts.alpha_warning_title),
         contentPadding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 24.0),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -39,7 +39,7 @@ class BetaWarningDialogState extends State<BetaWarningDialog> {
           TextButton(
             onPressed: () => exit(0),
             child: Text(
-              texts.beta_warning_action_exit,
+              texts.alpha_warning_action_exit,
               style: themeData.primaryTextTheme.button,
             ),
           ),
@@ -54,7 +54,7 @@ class BetaWarningDialogState extends State<BetaWarningDialog> {
               }
             }),
             child: Text(
-              texts.beta_warning_action_continue,
+              texts.alpha_warning_action_continue,
               style: themeData.primaryTextTheme.button,
             ),
           ),
@@ -71,7 +71,7 @@ class BetaWarningDialogState extends State<BetaWarningDialog> {
       Padding(
         padding: const EdgeInsets.only(left: 15.0, right: 12.0),
         child: Text(
-          texts.beta_warning_message,
+          texts.alpha_warning_message,
           style: themeData.primaryTextTheme.headline3!.copyWith(
             fontSize: 16,
           ),
@@ -96,7 +96,7 @@ class BetaWarningDialogState extends State<BetaWarningDialog> {
               ),
             ),
             Text(
-              texts.beta_warning_understand,
+              texts.alpha_warning_understand,
               style: themeData.primaryTextTheme.headline3!.copyWith(
                 fontSize: 16,
               ),
@@ -109,7 +109,7 @@ class BetaWarningDialogState extends State<BetaWarningDialog> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
           child: Text(
-            texts.beta_warning_understand_confirmation,
+            texts.alpha_warning_understand_confirmation,
             style: themeData.primaryTextTheme.headline3!
                 .copyWith(
                   fontSize: 16,

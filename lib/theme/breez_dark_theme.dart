@@ -12,7 +12,7 @@ final ThemeData breezDarkTheme = ThemeData(
     onSecondary: Colors.white,
     error: const Color(0xFFeddc97),
   ),
-  primaryColor: const Color(0xFF7aa5eb),
+  primaryColor: const Color(0xFF0085fb),
   primaryColorDark: const Color(0xFF00081C),
   primaryColorLight: const Color(0xFF0085fb),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -87,7 +87,7 @@ final ThemeData breezDarkTheme = ThemeData(
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
     button: const TextStyle(
-        color: Color(0xFF7aa5eb), fontSize: 14.3, letterSpacing: 1.25),
+        color: Color(0xFF0085fb), fontSize: 14.3, letterSpacing: 1.25),
     subtitle2: TextStyle(
         color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
     caption: TextStyle(color: BreezColors.white[400], fontSize: 12.0),
@@ -96,7 +96,7 @@ final ThemeData breezDarkTheme = ThemeData(
     selectionColor: Color.fromRGBO(255, 255, 255, 0.5),
     selectionHandleColor: Color(0xFF0085fb),
   ),
-  primaryIconTheme: const IconThemeData(color: Color(0xFF7aa5eb)),
+  primaryIconTheme: const IconThemeData(color: Color(0xFF0085fb)),
   fontFamily: 'IBMPlexSans',
   textButtonTheme: const TextButtonThemeData(),
   outlinedButtonTheme: const OutlinedButtonThemeData(),
@@ -117,7 +117,7 @@ final ThemeData calendarDarkTheme = ThemeData.dark().copyWith(
     onSurface: Colors.white, // body text color
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: const Color(0xFF7aa5eb)),
+    style: TextButton.styleFrom(foregroundColor: const Color(0xFF0085fb)),
   ),
   dialogTheme: const DialogTheme(
     backgroundColor: Color(0xFF152a3d),

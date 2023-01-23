@@ -59,7 +59,9 @@ class UITestPage extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   FadeInRoute(
-                    builder: (_) => const SplashPage(),
+                    builder: (_) => const SplashPage(
+                      isInitial: true,
+                    ),
                   ),
                 );
               },

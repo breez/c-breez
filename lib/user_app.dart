@@ -103,7 +103,7 @@ class UserApp extends StatelessWidget {
                       );
                     case 'splash':
                       return FadeInRoute(
-                        builder: (_) => const SplashPage(),
+                        builder: (_) => SplashPage(isInitial: accState.initial),
                         settings: settings,
                       );
                     case 'lockscreen':

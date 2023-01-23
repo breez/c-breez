@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/scheduler.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage();
+  final bool isInitial;
+  const SplashPage({required this.isInitial});
 
   @override
   SplashPageState createState() {
@@ -17,13 +17,12 @@ class SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    var accBloc = context.read<AccountBloc>();
-    if (accBloc.state.initial) {
+    if (widget.isInitial) {
       Timer(const Duration(milliseconds: 3600), () {
         Navigator.of(context).pushReplacementNamed('/intro');
       });
     } else {
-      Timer(const Duration(milliseconds: 1000), () {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacementNamed('/');
       });
     }
@@ -32,15 +31,16 @@ class SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(children: <Widget>[
-      Center(
-        child: Image.asset(
-          'src/images/splash-animation.gif',
-          fit: BoxFit.contain,
-          gaplessPlayback: true,
-          width: MediaQuery.of(context).size.width / 3,
-        ),
-      ),
-    ]));
+      body: (widget.isInitial)
+          ? Center(
+              child: Image.asset(
+                'src/images/splash-animation.gif',
+                fit: BoxFit.contain,
+                gaplessPlayback: true,
+                width: MediaQuery.of(context).size.width / 3,
+              ),
+            )
+          : const SizedBox(),
+    );
   }
 }

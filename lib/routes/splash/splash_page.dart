@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SplashPage extends StatefulWidget {
@@ -23,7 +25,7 @@ class SplashPageState extends State<SplashPage> {
         Navigator.of(context).pushReplacementNamed('/intro');
       });
     } else {
-      Timer(const Duration(milliseconds: 1000), () {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacementNamed('/');
       });
     }
@@ -32,15 +34,21 @@ class SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(children: <Widget>[
-      Center(
-        child: Image.asset(
-          'src/images/splash-animation.gif',
-          fit: BoxFit.contain,
-          gaplessPlayback: true,
-          width: MediaQuery.of(context).size.width / 3,
-        ),
+      body: BlocBuilder<AccountBloc, AccountState>(
+        builder: (context, accountState) {
+          if (accountState.initial) {
+            return Center(
+              child: Image.asset(
+                'src/images/splash-animation.gif',
+                fit: BoxFit.contain,
+                gaplessPlayback: true,
+                width: MediaQuery.of(context).size.width / 3,
+              ),
+            );
+          }
+          return const SizedBox();
+        },
       ),
-    ]));
+    );
   }
 }

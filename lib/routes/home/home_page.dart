@@ -35,18 +35,21 @@ class HomeState extends State<Home> with AutoLockMixin {
   @override
   void initState() {
     super.initState();
+    SchedulerBinding.instance.addPostFrameCallback(
+      (_) => initializeListeners(),
+    );
+  }
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      InputHandler(
-        context,
-        firstPaymentItemKey,
-        scrollController,
-        _scaffoldKey,
-      );
-      checkVersionDialog(context, context.read());
-      ConnectivityHandler(context, context.read());
-      PaymentResultHandler(context, context.read(), context.read());
-    });
+  void initializeListeners() {
+    InputHandler(
+      context,
+      firstPaymentItemKey,
+      scrollController,
+      _scaffoldKey,
+    );
+    checkVersionDialog(context, context.read());
+    ConnectivityHandler(context, context.read());
+    PaymentResultHandler(context, context.read(), context.read());
   }
 
   @override
@@ -76,8 +79,10 @@ class HomeState extends State<Home> with AutoLockMixin {
             drawer: HomeDrawer(key: _drawerKey),
             bottomNavigationBar: BottomActionsBar(firstPaymentItemKey),
             floatingActionButton: QrActionButton(firstPaymentItemKey),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            body: _drawerKey.currentState?.screen() ?? AccountPage(firstPaymentItemKey, scrollController),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            body: _drawerKey.currentState?.screen() ??
+                AccountPage(firstPaymentItemKey, scrollController),
           ),
         ),
       ),

@@ -12,7 +12,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState>
   NetworkSettingsBloc(
     this._preferences,
   ) : super(NetworkSettingsState.initial()) {
-    _updateMempoolSettings().then((_) => _log.v("Inial mempool settings read"));
+    _fetchMempoolSettings().then((_) => _log.v("Inial mempool settings read"));
   }
 
   Future<bool> setMempoolUrl(String mempoolUrl) async {
@@ -32,13 +32,14 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState>
     }
     final port = uri.hasPort ? ":${uri.port}" : "";
     await _preferences.setMempoolSpaceUrl("${uri.scheme}://${uri.host}$port");
-    await _updateMempoolSettings();
+    await _fetchMempoolSettings();
     return true;
   }
 
   Future<void> resetMempoolSpaceSettings() async {
+    _log.v("Resetting mempool url to default");
     await _preferences.resetMempoolSpaceUrl();
-    await _updateMempoolSettings();
+    await _fetchMempoolSettings();
   }
 
   @override
@@ -51,14 +52,15 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState>
     return state.toJson();
   }
 
-  Future<void> _updateMempoolSettings() async {
+  Future<void> _fetchMempoolSettings() async {
+    _log.v("Fetching mempool settings");
     final mempoolUrl = await _preferences.getMempoolSpaceUrl();
+    _log.v("Mempool url fetched: $mempoolUrl");
     emit(state.copyWith(
       mempoolUrl: mempoolUrl,
     ));
   }
 
-  // ignore: unused_element
   Future<bool> _testUri(Uri uri) async {
     try {
       final response = await http.get(uri);

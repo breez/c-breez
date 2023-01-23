@@ -9,6 +9,7 @@ import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/config.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -69,15 +70,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
   }
 
-  Future _startRegisteredNode() async {
-    emit(state.copyWith(status: ConnectionStatus.CONNECTING));
+  Future _startRegisteredNode() async {    
     final credentials = await _credentialsManager.restoreCredentials();
     await _breezLib.initServices(
       config: (await Config.instance()).sdkConfig,
       seed: credentials.seed,
       creds: credentials.glCreds,
-    );
-    emit(state.copyWith(status: ConnectionStatus.CONNECTED));
+    );    
+    await startSdkForever();
   }
 
   // startNewNode register a new node and start it
@@ -93,6 +93,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node registered successfully");
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     emit(state.copyWith(initial: false));
+    await startSdkForever();
     _log.i("new node started");
   }
 
@@ -109,7 +110,36 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("node recovered successfully");
     await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
     emit(state.copyWith(initial: false));
-    _log.i("recovered node started");
+    await startSdkForever();
+    _log.i("recovered node started");    
+  }
+
+  Future startSdkForever() async {            
+    await startSdkOnce();
+
+    // in case we failed to start (lack of inet connection probably)
+    if (state.status == ConnectionStatus.DISCONNECTED) {
+      StreamSubscription<ConnectivityResult>? subscription;
+      subscription = Connectivity().onConnectivityChanged.listen((event) async {
+        // we should try fetch the selected lsp information when internet is back.
+        if (event != ConnectivityResult.none && state.status == ConnectionStatus.DISCONNECTED) {
+          await startSdkOnce();
+          if (state.status == ConnectionStatus.CONNECTED) {
+            subscription!.cancel();
+          }
+        }
+      });  
+    }
+  }
+
+  Future startSdkOnce() async {
+    try {
+    emit(state.copyWith(status: ConnectionStatus.CONNECTING));
+    await _breezLib.startNode();
+    emit(state.copyWith(status: ConnectionStatus.CONNECTED));
+    } catch(e) {
+      emit(state.copyWith(status: ConnectionStatus.DISCONNECTED));
+    }
   }
 
   Future<sdk.LnUrlWithdrawCallbackStatus> lnurlWithdraw(

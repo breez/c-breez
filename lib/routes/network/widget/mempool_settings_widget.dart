@@ -17,6 +17,7 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
   final _mempoolUrlController = TextEditingController();
   var _errorOnSave = false;
   var _saving = false;
+  var _userChanged = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
 
     return BlocBuilder<NetworkSettingsBloc, NetworkSettingsState>(
       builder: (context, state) {
-        if (_mempoolUrlController.text.isEmpty) {
+        if (_mempoolUrlController.text.isEmpty && !_userChanged) {
           _mempoolUrlController.text = state.mempoolUrl;
         }
         return Column(
@@ -66,6 +67,7 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
                             _mempoolUrlController.text = "";
                             await context.read<NetworkSettingsBloc>().resetMempoolSpaceSettings();
                             setState(() {
+                              _userChanged = false;
                               _errorOnSave = false;
                             });
                           },
@@ -79,6 +81,7 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
                           onPressed: () async {
                             setState(() {
                               _saving = true;
+                              _userChanged = true;
                             });
                             final success =
                                 await context.read<NetworkSettingsBloc>().setMempoolUrl(_mempoolUrlController.text);

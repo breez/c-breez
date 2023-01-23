@@ -1,9 +1,9 @@
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
-import 'package:flutter/foundation.dart';
-import 'package:ini/ini.dart' as ini;
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:ini/ini.dart' as ini;
 import 'package:path_provider/path_provider.dart';
 
 class Config {
@@ -32,10 +32,15 @@ class Config {
     final configuredPaymentTimeout = breezConfig.get("Application Options", "paymentTimeoutSec");
     sdk.Config config = sdk.Config(
       breezserver: breezConfig.get("Application Options", "breezserver") ?? defaultConf.breezserver,
-      mempoolspaceUrl: await ServiceInjector()
-          .preferences
-          .getMempoolSpaceUrl()
-          .then((url) => url ?? breezConfig.get("Application Options", "mempoolspaceurl") ?? defaultConf.mempoolspaceUrl),
+      mempoolspaceUrl: await ServiceInjector().preferences.getMempoolSpaceUrl().then((url) {
+        if (url != null) {
+          return url;
+        } else {
+          final fallbackUrl = breezConfig.get("Application Options", "mempoolspaceurl") ?? defaultConf.mempoolspaceUrl;
+          ServiceInjector().preferences.setMempoolSpaceUrl(fallbackUrl);
+          return fallbackUrl;
+        }
+      }),
       workingDir: (await getApplicationDocumentsDirectory()).path,
       network: sdk.Network.values
           .firstWhere((n) => n.name.toLowerCase() == (breezConfig.get("Application Options", "network")), orElse: () => defaultConf.network),

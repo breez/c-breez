@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/security/change_pin_page.dart';
 import 'package:c_breez/routes/security/widget/local_auth_switch.dart';
 import 'package:c_breez/routes/security/widget/security_pin_interval.dart';
+import 'package:c_breez/widgets/designsystem/switch/simple_switch.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
@@ -31,21 +32,10 @@ class SecurityPinManagement extends StatelessWidget {
         if (state.pinStatus == PinStatus.enabled) {
           return Column(
             children: [
-              ListTile(
-                title: Text(
-                  texts.security_and_backup_pin_option_deactivate,
-                  style: themeData.primaryTextTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                  ),
-                  maxLines: 1,
-                ),
-                trailing: Switch(
-                  value: true,
-                  activeColor: Colors.white,
-                  onChanged: (bool value) {
-                    securityBloc.clearPin();
-                  },
-                ),
+              SimpleSwitch(
+                text: texts.security_and_backup_pin_option_deactivate,
+                switchValue: true,
+                onChanged: (_) => securityBloc.clearPin(),
               ),
               const Divider(),
               SecurityPinInterval(interval: state.lockInterval),

@@ -10,6 +10,7 @@ import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:theme_provider/theme_provider.dart';
 
 import 'widgets/verify_form.dart';
 
@@ -134,6 +135,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
 
+    final themeProvider = ThemeProvider.controllerOf(context);
     // await registrationBloc.registerForNotifications();
     await accountBloc
         .startNewNode(seed: bip39.mnemonicToSeed(widget._mnemonics))
@@ -147,7 +149,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
         FocusScope.of(context).unfocus();
       },
     );
-
+    themeProvider.setTheme('dark');
     navigator.pushReplacementNamed("/");
   }
 }

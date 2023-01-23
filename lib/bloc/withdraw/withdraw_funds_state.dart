@@ -1,73 +1,54 @@
-abstract class WithdrawFudsState {
-  const WithdrawFudsState();
+import 'package:breez_translations/generated/breez_translations.dart';
 
-  factory WithdrawFudsState.initial() => const WithdrawFudsEmptyState();
+class WithdrawFundsState {
+  final List<FeeOption> feeOptions;
+  final String errorMessage;
 
-  factory WithdrawFudsState.error(
-    String error,
-  ) =>
-      WithdrawFudsErrorState(error);
+  WithdrawFundsState({
+    this.feeOptions = const [],
+    this.errorMessage = "",
+  });
 
-  factory WithdrawFudsState.info(
-    TransactionCost economy,
-    TransactionCost regular,
-    TransactionCost priority,
-  ) =>
-      WithdrawFudsInfoState(
-        economy,
-        regular,
-        priority,
-      );
-}
+  WithdrawFundsState.initial() : this();
 
-class WithdrawFudsEmptyState extends WithdrawFudsState {
-  const WithdrawFudsEmptyState();
-}
-
-class WithdrawFudsErrorState extends WithdrawFudsState {
-  final String message;
-
-  const WithdrawFudsErrorState(
-    this.message,
-  );
-}
-
-class WithdrawFudsInfoState extends WithdrawFudsState {
-  final TransactionCost economy;
-  final TransactionCost regular;
-  final TransactionCost priority;
-
-  const WithdrawFudsInfoState(
-    this.economy,
-    this.regular,
-    this.priority,
-  );
-}
-
-class TransactionCost {
-  final TransactionCostKind kind;
-  final Duration waitingTime;
-  final int fee;
-  final int inputs;
-
-  const TransactionCost(
-    this.kind,
-    this.waitingTime,
-    this.fee,
-    this.inputs,
-  );
-
-  int calculateFee() {
-    final input = inputs * 148;
-    const output = 2 * 34;
-    const extra = 10;
-    final size = input + output + extra;
-    return fee * size;
+  WithdrawFundsState copyWith({
+    List<FeeOption>? feeOptions,
+    String? errorMessage,
+  }) {
+    return WithdrawFundsState(
+      feeOptions: feeOptions ?? this.feeOptions,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
   }
 }
 
-enum TransactionCostKind {
+enum ProcessingSpeed {
   economy,
   regular,
   priority,
+}
+
+class FeeOption {
+  final ProcessingSpeed processingSpeed;
+  final Duration waitingTime;
+  final int fee;
+
+  FeeOption({
+    required this.processingSpeed,
+    required this.waitingTime,
+    required this.fee,
+  });
+
+  bool isAffordable(int walletBalance) => (walletBalance - fee) > 0;
+
+  String getDisplayName(BreezTranslations texts) {
+    switch (processingSpeed) {
+      case ProcessingSpeed.economy:
+        return texts.fee_chooser_option_economy;
+      case ProcessingSpeed.regular:
+        return texts.fee_chooser_option_regular;
+      case ProcessingSpeed.priority:
+        return texts.fee_chooser_option_priority;
+    }
+  }
 }

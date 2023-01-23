@@ -1,10 +1,10 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/spontaneous_payment/widgets/collapsible_list_item.dart';
-import 'package:c_breez/routes/withdraw_funds/bitcoin_address_text_form_field.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:fimber/fimber.dart';

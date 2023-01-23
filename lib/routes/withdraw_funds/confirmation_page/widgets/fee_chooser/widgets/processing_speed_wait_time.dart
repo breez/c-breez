@@ -1,8 +1,8 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:flutter/material.dart';
 
-class WithdrawFundsSpeedMessage extends Text {
-  WithdrawFundsSpeedMessage(
+class ProcessingSpeedWaitTime extends Text {
+  ProcessingSpeedWaitTime(
     BuildContext context,
     Duration waitingTime,
   ) : super(

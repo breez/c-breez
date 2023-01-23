@@ -1,12 +1,12 @@
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/models/bitcoin_address_info.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:synchronized/synchronized.dart';
 
 class BitcoinAddressTextFormField extends TextFormField {
   static final _log = FimberLog("BitcoinAddressTextFormField");
@@ -32,26 +32,39 @@ class BitcoinAddressTextFormField extends TextFormField {
               ),
               tooltip: context.texts().withdraw_funds_scan_barcode,
               onPressed: () async {
-                final address = BitcoinAddressInfo.fromScannedString(
-                  await Navigator.pushNamed<String>(context, "/qr_scan"),
-                ).address;
-                if (address != null) {
-                  controller.text = address;
-                } else {
-                  // ignore: use_build_context_synchronously
-                  showFlushbar(context, message: context.texts().withdraw_funds_error_qr_code_not_detected);
-                }
+                Navigator.pushNamed<String>(context, "/qr_scan").then(
+                  (barcode) {
+                    _log.v("Scanned string: '$barcode'");
+                    final address =
+                        BitcoinAddressInfo.fromScannedString(barcode).address;
+                    _log.v("BitcoinAddressInfoFromScannedString: '$address'");
+                    if (address == null) return;
+                    if (address.isEmpty) {
+                      showFlushbar(
+                        context,
+                        message: context
+                            .texts()
+                            .withdraw_funds_error_qr_code_not_detected,
+                      );
+                      return;
+                    }
+                    controller.text = address;
+                  },
+                );
               },
             ),
           ),
           style: theme.FieldTextStyle.textStyle,
           onChanged: (address) async {
             await validatorHolder.lock.synchronized(() async {
-              validatorHolder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
+              validatorHolder.valid = await context
+                  .read<AccountBloc>()
+                  .isValidBitcoinAddress(address);
             });
           },
           validator: (address) {
-            _log.v("validator called for $address, lock status: ${validatorHolder.lock.locked}");
+            _log.v(
+                "validator called for $address, lock status: ${validatorHolder.lock.locked}");
             if (validatorHolder.valid) {
               return null;
             } else {
@@ -59,9 +72,4 @@ class BitcoinAddressTextFormField extends TextFormField {
             }
           },
         );
-}
-
-class ValidatorHolder {
-  final lock = Lock();
-  var valid = false;
 }

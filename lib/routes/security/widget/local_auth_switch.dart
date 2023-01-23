@@ -1,6 +1,7 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/widgets/designsystem/switch/simple_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,8 +12,6 @@ class LocalAuthSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-    final texts = context.texts();
     final securityBloc = context.read<SecurityBloc>();
 
     return FutureBuilder<LocalAuthenticationOption>(
@@ -26,46 +25,40 @@ class LocalAuthSwitch extends StatelessWidget {
           return BlocBuilder<SecurityBloc, SecurityState>(
             builder: (context, state) {
               final localAuthEnabled = state.localAuthenticationOption != LocalAuthenticationOption.none;
-              return ListTile(
-                title: Text(
-                  _localAuthenticationOptionLabel(
-                    context,
-                    localAuthEnabled ? state.localAuthenticationOption : availableOption,
-                  ),
-                  style: themeData.primaryTextTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                  ),
-                  maxLines: 1,
+              return SimpleSwitch(
+                text: _localAuthenticationOptionLabel(
+                  context,
+                  localAuthEnabled ? state.localAuthenticationOption : availableOption,
                 ),
-                trailing: Switch(
-                  key: const Key("local_auth_switch"),
-                  activeColor: Colors.white,
-                  value: localAuthEnabled,
-                  onChanged: (switchEnabled) {
-                    if (switchEnabled) {
-                      securityBloc.localAuthentication(texts.security_and_backup_validate_biometrics_reason).then(
-                        (authenticated) {
-                          if (authenticated) {
-                            securityBloc.enableLocalAuthentication();
-                          } else {
-                            securityBloc.clearLocalAuthentication();
-                          }
-                        },
-                        onError: (error) {
-                          securityBloc.clearLocalAuthentication();
-                        },
-                      );
-                    } else {
-                      securityBloc.clearLocalAuthentication();
-                    }
-                  },
-                ),
+                switchValue: localAuthEnabled,
+                onChanged: (value) => _localAuthenticationOptionChanged(context, value),
               );
             },
           );
         }
       },
     );
+  }
+
+  void _localAuthenticationOptionChanged(BuildContext context, bool switchEnabled) {
+    final texts = context.texts();
+    final securityBloc = context.read<SecurityBloc>();
+    if (switchEnabled) {
+      securityBloc.localAuthentication(texts.security_and_backup_validate_biometrics_reason).then(
+        (authenticated) {
+          if (authenticated) {
+            securityBloc.enableLocalAuthentication();
+          } else {
+            securityBloc.clearLocalAuthentication();
+          }
+        },
+        onError: (error) {
+          securityBloc.clearLocalAuthentication();
+        },
+      );
+    } else {
+      securityBloc.clearLocalAuthentication();
+    }
   }
 
   String _localAuthenticationOptionLabel(

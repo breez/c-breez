@@ -257,7 +257,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       if (accState.reserveAmount > 0) {
         throw PaymentBelowReserveError(accState.reserveAmount);
       }
-      throw PaymentBelowReserveError(accState.reserveAmount);
+      throw const InsufficientLocalBalanceError();
     }
   }
 

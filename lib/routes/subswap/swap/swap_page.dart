@@ -4,10 +4,10 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
-import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
+import 'widgets/address_widget_placeholder.dart';
 import 'widgets/deposit_widget.dart';
 
 class SwapPage extends StatefulWidget {
@@ -53,7 +53,7 @@ class SwapPageState extends State<SwapPage> {
         title: Text(texts.invoice_btc_address_title),
       ),
       body: isLoading
-          ? const Center(child: Loader())
+          ? const AddressWidgetPlaceholder()
           : SingleChildScrollView(
               child: Column(
                 children: [

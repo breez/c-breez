@@ -367,6 +367,7 @@ class _ExpansionTile extends StatelessWidget {
                   style: theme.drawerItemTextStyle,
                 ),
         ),
+        initiallyExpanded: true,
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: (icon?.assetName ?? "") == ""

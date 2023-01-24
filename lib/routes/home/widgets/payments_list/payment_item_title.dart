@@ -22,8 +22,32 @@ class PaymentItemTitle extends StatelessWidget {
   }
 
   String _title(BuildContext context) {
-    final description = _paymentInfo.description;
-    if (description != null && description.isNotEmpty) return description;   
+    final description = _paymentInfo.description?.replaceAll("\n", " ").trim();
+    if (description != null && description.isNotEmpty) {
+      final breezPosRegex = RegExp(r'(?<=\|)(.*)(?=\|)');
+      if (breezPosRegex.hasMatch(description)) {
+        final extracted = breezPosRegex.stringMatch(description)?.trim();
+        if (extracted != null && extracted.isNotEmpty) {
+          return extracted;
+        }
+      }
+      return description;
+    }
+
+    final details = _paymentInfo.details.data;
+    if (details is PaymentDetails_ClosedChannel) {
+      final state = details.data.state;
+      switch (state) {
+        case ChannelState.PendingOpen:
+          return context.texts().payment_info_title_pending_opened_channel;
+        case ChannelState.Opened:
+          return context.texts().payment_info_title_opened_channel;
+        case ChannelState.PendingClose:
+          return context.texts().payment_info_title_pending_closed_channel;
+        case ChannelState.Closed:
+          return context.texts().payment_info_title_closed_channel;
+      }
+    }
 
     return context.texts().wallet_dashboard_payment_item_no_title;
   }

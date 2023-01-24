@@ -12,13 +12,11 @@ import 'package:flutter/material.dart';
 class PaymentItem extends StatelessWidget {
   final Payment _paymentInfo;
   final bool _firstItem;
-  final bool _hideBalance;
   final GlobalKey firstPaymentItemKey;
 
   const PaymentItem(
     this._paymentInfo,
     this._firstItem,
-    this._hideBalance,
     this.firstPaymentItemKey, {
     Key? key,
   }) : super(key: key);
@@ -70,7 +68,7 @@ class PaymentItem extends StatelessWidget {
                   offset: const Offset(-8, 0),
                   child: PaymentItemSubtitle(_paymentInfo),
                 ),
-                trailing: PaymentItemAmount(_paymentInfo, _hideBalance),
+                trailing: PaymentItemAmount(_paymentInfo),
                 onTap: () => _showDetail(context),
               ),
             ],

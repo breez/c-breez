@@ -44,8 +44,9 @@ class HomeDrawerState extends State<HomeDrawer> {
         final settings = user.profileSettings;
         return BlocBuilder<LSPBloc, LspState?>(
           builder: (context, lspState) {
-            final addOrRemove =
-                (lspState?.lspInfo != null) ? _hiddenRoutes.remove : _hiddenRoutes.add;
+            final addOrRemove = (lspState?.lspInfo != null)
+                ? _hiddenRoutes.remove
+                : _hiddenRoutes.add;
             for (var route in _kActiveAccountRoutes) {
               addOrRemove(route);
             }
@@ -69,6 +70,7 @@ class HomeDrawerState extends State<HomeDrawer> {
 
     return BreezNavigationDrawer(
       [
+        ..._drawerConfigAppModeItems(context, settings),
         if (refundables != null && refundables.isNotEmpty) ...[
           DrawerItemConfigGroup(
             [
@@ -98,6 +100,56 @@ class HomeDrawerState extends State<HomeDrawer> {
             }
           });
         }
+      },
+    );
+  }
+
+  List<DrawerItemConfigGroup> _drawerConfigAppModeItems(
+    BuildContext context,
+    UserProfileSettings user,
+  ) {
+    return [
+      DrawerItemConfigGroup([
+        _drawerItemBalance(
+          context,
+          user,
+        ),
+        // App are disabled untill we support it ref:
+        // (https://github.com/breez/c-breez/issues/388#issue-1551748496)
+        //_drawerItemLightningApps(context, user),
+      ]),
+    ];
+  }
+
+  DrawerItemConfig _drawerItemBalance(
+    BuildContext context,
+    UserProfileSettings user,
+  ) {
+    final texts = context.texts();
+    return DrawerItemConfig(
+      "",
+      texts.home_drawer_item_title_balance,
+      "src/icon/balance.png",
+      isSelected: user.appMode == AppMode.balance,
+      onItemSelected: (_) {
+        // TODO add protectAdminAction
+      },
+    );
+  }
+
+  // Not yet used, but will be addded when we support apps.
+  DrawerItemConfig _drawerItemLightningApps(
+    BuildContext context,
+    UserProfileSettings user,
+  ) {
+    final texts = context.texts();
+    return DrawerItemConfig(
+      "",
+      texts.home_drawer_item_title_apps,
+      "src/icon/apps.png",
+      isSelected: user.appMode == AppMode.apps,
+      onItemSelected: (_) {
+        // TODO add protectAdminAction
       },
     );
   }

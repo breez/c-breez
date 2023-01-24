@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.NFC"/>  <!-- Deep links -->
 
     <application
-        android:label="c_breez"
+        android:label="Breez Cloud"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

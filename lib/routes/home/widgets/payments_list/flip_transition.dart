@@ -7,12 +7,14 @@ class FlipTransition extends StatefulWidget {
   final Widget firstChild;
   final Widget secondChild;
   final double radius;
+  final Function() onComplete;
 
   const FlipTransition(
     this.firstChild,
     this.secondChild, {
     Key? key,
     required this.radius,
+    required this.onComplete,
   }) : super(key: key);
 
   @override
@@ -41,7 +43,9 @@ class FlipTransitionState extends State<FlipTransition>
         _flipAnimationController!.reverse();
       }
     });
-    _flipAnimationController!.forward();
+    _flipAnimationController!.forward().whenCompleteOrCancel(() {
+      widget.onComplete();
+    });
   }
 
   @override

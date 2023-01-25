@@ -30,7 +30,7 @@ class PaymentsFilterDropdown extends StatelessWidget {
           child: DropdownButton(
             value: filter,
             iconEnabledColor: foregroundColor,
-            style: themeData.textTheme.subtitle2?.copyWith(
+            style: themeData.textTheme.titleSmall?.copyWith(
               color: foregroundColor,
             ),
             items: [
@@ -43,7 +43,7 @@ class PaymentsFilterDropdown extends StatelessWidget {
                 child: Material(
                   child: Text(
                     value,
-                    style: themeData.textTheme.subtitle2?.copyWith(
+                    style: themeData.textTheme.titleSmall?.copyWith(
                       color: foregroundColor,
                     ),
                   ),

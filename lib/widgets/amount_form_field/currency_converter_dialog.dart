@@ -335,7 +335,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     return _exchangeRate == null
         ? Text(
             "",
-            style: themeData.primaryTextTheme.subtitle2,
+            style: themeData.primaryTextTheme.titleSmall,
           )
         : Text(
             texts.currency_converter_dialog_rate(
@@ -345,7 +345,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
               ),
               fiatConversion.currencyData.id,
             ),
-            style: themeData.primaryTextTheme.subtitle2!,
+            style: themeData.primaryTextTheme.titleSmall!,
           );
   }
 

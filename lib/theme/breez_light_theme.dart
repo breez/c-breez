@@ -48,7 +48,7 @@ final ThemeData breezLightTheme = ThemeData(
   cardTheme: CardTheme(color: BreezColors.blue[500]),
   highlightColor: BreezColors.blue[200],
   textTheme: TextTheme(
-      subtitle2: TextStyle(
+      titleSmall: TextStyle(
           color: BreezColors.grey[600], fontSize: 14.3, letterSpacing: 0.2),
       headlineSmall: TextStyle(color: BreezColors.grey[600], fontSize: 26.0),
       labelLarge: TextStyle(
@@ -89,7 +89,7 @@ final ThemeData breezLightTheme = ThemeData(
         letterSpacing: 0.15,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    subtitle2: TextStyle(
+    titleSmall: TextStyle(
         color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
     labelLarge: TextStyle(
         color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),

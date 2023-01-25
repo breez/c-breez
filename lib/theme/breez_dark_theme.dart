@@ -90,7 +90,7 @@ final ThemeData breezDarkTheme = ThemeData(
         color: Color(0xFF0085fb), fontSize: 14.3, letterSpacing: 1.25),
     subtitle2: TextStyle(
         color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
-    caption: TextStyle(color: BreezColors.white[400], fontSize: 12.0),
+    bodySmall: TextStyle(color: BreezColors.white[400], fontSize: 12.0),
   ),
   textSelectionTheme: const TextSelectionThemeData(
     selectionColor: Color.fromRGBO(255, 255, 255, 0.5),

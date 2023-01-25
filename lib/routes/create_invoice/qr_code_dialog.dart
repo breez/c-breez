@@ -218,7 +218,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       child: Text(
         texts.qr_code_dialog_warning_message,
         textAlign: TextAlign.center,
-        style: Theme.of(context).primaryTextTheme.caption,
+        style: Theme.of(context).primaryTextTheme.bodySmall,
       ),
     );
   }

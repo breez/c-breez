@@ -93,7 +93,7 @@ final ThemeData breezLightTheme = ThemeData(
         color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
     button: TextStyle(
         color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
-    caption: TextStyle(color: BreezColors.grey[500], fontSize: 12.0),
+    bodySmall: TextStyle(color: BreezColors.grey[500], fontSize: 12.0),
   ),
   textSelectionTheme: const TextSelectionThemeData(
     selectionColor: Color.fromRGBO(0, 133, 251, 0.25),

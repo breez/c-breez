@@ -12,12 +12,12 @@ Future<void> launchLinkOnExternalBrowser(
   required String linkAddress,
 }) async {
   final texts = context.texts();
+  final themeData = Theme.of(context);
   final navigator = Navigator.of(context);
   var loaderRoute = createLoaderRoute(context);
   navigator.push(loaderRoute);
   try {
     if (await canLaunchUrlString(linkAddress)) {
-      final themeData = Theme.of(context);
       await ChromeSafariBrowser().open(
         url: WebUri(linkAddress),
         settings: ChromeSafariBrowserSettings(

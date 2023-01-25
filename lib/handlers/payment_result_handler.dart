@@ -40,11 +40,12 @@ class PaymentResultHandler {
     SuccessActionData successActionData,
   ) async {
     // Artificial delay for UX purposes
-    await Future.delayed(const Duration(seconds: 1));
-    return await showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) => SuccessActionDialog(successActionData),
+    return Future.delayed(const Duration(seconds: 1)).then(
+      (_) => showDialog(
+        useRootNavigator: false,
+        context: context,
+        builder: (_) => SuccessActionDialog(successActionData),
+      ),
     );
   }
 }

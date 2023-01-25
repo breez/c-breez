@@ -10,6 +10,7 @@ final ThemeData breezLightTheme = ThemeData(
     secondary: Colors.white,
     onSecondary: const Color.fromRGBO(0, 133, 251, 1.0),
     error: const Color(0xffffe685),
+    background: Colors.white,
   ),
   primaryColor: const Color.fromRGBO(255, 255, 255, 1.0),
   primaryColorDark: BreezColors.blue[900],
@@ -19,7 +20,6 @@ final ThemeData breezLightTheme = ThemeData(
     sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
   ),
   canvasColor: BreezColors.blue[500],
-  backgroundColor: Colors.white,
   bottomAppBarTheme:
       const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
   appBarTheme: AppBarTheme(
@@ -48,52 +48,52 @@ final ThemeData breezLightTheme = ThemeData(
   cardTheme: CardTheme(color: BreezColors.blue[500]),
   highlightColor: BreezColors.blue[200],
   textTheme: TextTheme(
-      subtitle2: TextStyle(
+      titleSmall: TextStyle(
           color: BreezColors.grey[600], fontSize: 14.3, letterSpacing: 0.2),
-      headline5: TextStyle(color: BreezColors.grey[600], fontSize: 26.0),
-      button: TextStyle(
+      headlineSmall: TextStyle(color: BreezColors.grey[600], fontSize: 26.0),
+      labelLarge: TextStyle(
           color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
-      headline4: const TextStyle(
+      headlineMedium: const TextStyle(
         color: Color(0xffffe685),
         fontSize: 18.0,
       ),
-      headline6: const TextStyle(
+      titleLarge: const TextStyle(
           color: Colors.white,
           fontSize: 12.3,
           fontWeight: FontWeight.w400,
           letterSpacing: 0.25,
           height: 1.22)),
   primaryTextTheme: TextTheme(
-    headline4: TextStyle(
+    headlineMedium: TextStyle(
         color: BreezColors.grey[500],
         fontSize: 14.0,
         letterSpacing: 0.0,
         height: 1.28,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    headline3: TextStyle(
+    displaySmall: TextStyle(
         color: BreezColors.grey[500],
         fontSize: 14.0,
         letterSpacing: 0.0,
         height: 1.28),
-    headline5: TextStyle(
+    headlineSmall: TextStyle(
         color: BreezColors.grey[500],
         fontSize: 24.0,
         letterSpacing: 0.0,
         height: 1.28,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    bodyText2: TextStyle(
+    bodyMedium: TextStyle(
         color: BreezColors.blue[900],
         fontSize: 16.4,
         letterSpacing: 0.15,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    subtitle2: TextStyle(
+    titleSmall: TextStyle(
         color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
-    button: TextStyle(
+    labelLarge: TextStyle(
         color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
-    caption: TextStyle(color: BreezColors.grey[500], fontSize: 12.0),
+    bodySmall: TextStyle(color: BreezColors.grey[500], fontSize: 12.0),
   ),
   textSelectionTheme: const TextSelectionThemeData(
     selectionColor: Color.fromRGBO(0, 133, 251, 0.25),
@@ -116,7 +116,6 @@ final ThemeData breezLightTheme = ThemeData(
     ),
   ),
   chipTheme: const ChipThemeData(backgroundColor: Color(0xFF0085fb)),
-  errorColor: const Color(0xffffe685),
 );
 
 final ThemeData calendarLightTheme = ThemeData.light().copyWith(

@@ -179,7 +179,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     var bitcoinCurrency = currencyBloc.state.bitcoinCurrency;
     var amount = bitcoinCurrency.parse(_amountController.text);
     _amountFocusNode.unfocus();
-    var ok = await promptAreYouSure(
+    await promptAreYouSure(
       context,
       texts.spontaneous_payment_send_payment_title,
       Text(
@@ -190,36 +190,39 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
       ),
       okText: texts.spontaneous_payment_action_pay,
       cancelText: texts.spontaneous_payment_action_pay,
-    );
-    if (ok == true) {
-      Future sendFuture = Future.value(null);
-      showDialog(
-        useRootNavigator: false,
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => ProcessingPaymentDialog(
-          firstPaymentItemKey: widget.firstPaymentItemKey,
-          popOnCompletion: true,
-          paymentFunc: () {
-            var sendPayment = Future.delayed(
-              const Duration(seconds: 1),
-              () {
-                sendFuture = accBloc.sendSpontaneousPayment(
-                  widget.nodeID!,
-                  tipMessage,
-                  amount,
+    ).then(
+      (ok) async {
+        if (ok == true) {
+          Future sendFuture = Future.value(null);
+          showDialog(
+            useRootNavigator: false,
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => ProcessingPaymentDialog(
+              firstPaymentItemKey: widget.firstPaymentItemKey,
+              popOnCompletion: true,
+              paymentFunc: () {
+                var sendPayment = Future.delayed(
+                  const Duration(seconds: 1),
+                  () {
+                    sendFuture = accBloc.sendSpontaneousPayment(
+                      widget.nodeID!,
+                      tipMessage,
+                      amount,
+                    );
+                    return sendFuture;
+                  },
                 );
-                return sendFuture;
-              },
-            );
 
-            return sendPayment;
-          },
-        ),
-      );
-      if (!mounted) return;
-      Navigator.of(context).removeRoute(_currentRoute!);
-      await sendFuture;
-    }
+                return sendPayment;
+              },
+            ),
+          );
+          if (!mounted) return;
+          Navigator.of(context).removeRoute(_currentRoute!);
+          await sendFuture;
+        }
+      },
+    );
   }
 }

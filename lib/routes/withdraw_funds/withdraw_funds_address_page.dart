@@ -45,7 +45,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
             contentPadding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
             child: Text(
               texts.unexpected_funds_message,
-              style: themeData.textTheme.headline6,
+              style: themeData.textTheme.titleLarge,
             ),
           ),
           Padding(

@@ -60,7 +60,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
     return AlertDialog(
       title: Text(
         widget.domain,
-        style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
+        style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
       content: Column(
@@ -69,7 +69,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
         children: [
           Text(
             texts.payment_request_dialog_requesting,
-            style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+            style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
             textAlign: TextAlign.center,
           ),
           GestureDetector(
@@ -95,7 +95,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                     : BitcoinCurrency.fromTickerSymbol(
                             currencyState.bitcoinTicker)
                         .format(widget.requestData.maxSendable ~/ 1000),
-                style: themeData.primaryTextTheme.headline5,
+                style: themeData.primaryTextTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -111,7 +111,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 child: SingleChildScrollView(
                   child: Text(
                     description,
-                    style: themeData.primaryTextTheme.headline3!.copyWith(
+                    style: themeData.primaryTextTheme.displaySmall!.copyWith(
                       fontSize: 16,
                     ),
                     textAlign:
@@ -133,7 +133,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () {
@@ -141,7 +141,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           },
           child: Text(
             texts.payment_request_dialog_action_cancel,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
         TextButton(
@@ -151,7 +151,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () async {
@@ -194,7 +194,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           },
           child: Text(
             texts.spontaneous_payment_action_pay,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
       ],

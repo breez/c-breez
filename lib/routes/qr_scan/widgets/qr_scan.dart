@@ -100,6 +100,7 @@ class ImagePickerButton extends StatelessWidget {
       ),
       onPressed: () async {
         final picker = ImagePicker();
+        // ignore: body_might_complete_normally_catch_error
         final pickedFile = await picker.pickImage(source: ImageSource.gallery).catchError((err) {
           _log.w("Failed to pick image", ex: err);
         });

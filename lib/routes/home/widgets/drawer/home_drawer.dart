@@ -11,7 +11,7 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'navigation_drawer.dart';
+import 'breez_navigation_drawer.dart';
 
 const _kActiveAccountRoutes = [
   "/connect_to_pay",
@@ -67,7 +67,7 @@ class HomeDrawerState extends State<HomeDrawer> {
   ) {
     final texts = context.texts();
 
-    return NavigationDrawer(
+    return BreezNavigationDrawer(
       [
         if (refundables != null && refundables.isNotEmpty) ...[
           DrawerItemConfigGroup(

@@ -24,7 +24,7 @@ class StatusText extends StatelessWidget {
 
       return AutoSizeText(
         texts.status_text_ready,
-        style: themeData.textTheme.bodyText2?.copyWith(
+        style: themeData.textTheme.bodyMedium?.copyWith(
           color: themeData.colorScheme.onSecondary,
         ),
         textAlign: TextAlign.center,

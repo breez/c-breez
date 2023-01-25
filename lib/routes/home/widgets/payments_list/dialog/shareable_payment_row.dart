@@ -23,18 +23,18 @@ class ShareablePaymentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
-    final color = themeData.primaryTextTheme.button!.color!;
+    final color = themeData.primaryTextTheme.labelLarge!.color!;
 
     return Theme(
       data: themeData.copyWith(
-        dividerColor: themeData.backgroundColor,
+        dividerColor: themeData.colorScheme.background,
       ),
       child: ExpansionTile(
         iconColor: color,
         collapsedIconColor: color,
         title: AutoSizeText(
           title,
-          style: themeData.primaryTextTheme.headline4,
+          style: themeData.primaryTextTheme.headlineMedium,
           maxLines: 1,
           group: labelAutoSizeGroup,
         ),
@@ -51,7 +51,7 @@ class ShareablePaymentRow extends StatelessWidget {
                     textAlign: TextAlign.left,
                     overflow: TextOverflow.clip,
                     maxLines: 4,
-                    style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 10),
+                    style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 10),
                   ),
                 ),
               ),

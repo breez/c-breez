@@ -58,11 +58,12 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
           ),
         ),
         hintColor: themeData.dialogTheme.contentTextStyle!.color!,
+        primaryColor: themeData.textTheme.labelLarge!.color,
         colorScheme: ColorScheme.dark(
-          primary: themeData.textTheme.button!.color!,
+          primary: themeData.textTheme.labelLarge!.color!,
+          error:
+              themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
         ),
-        primaryColor: themeData.textTheme.button!.color,
-        errorColor: themeData.isLightTheme ? Colors.red : themeData.errorColor,
       ),
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -93,7 +94,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
                   focusNode: _paymentInfoFocusNode,
                   controller: _paymentInfoController,
                   style: TextStyle(
-                    color: themeData.primaryTextTheme.headline4!.color,
+                    color: themeData.primaryTextTheme.headlineMedium!.color,
                   ),
                   validator: (v) {
                     var value = v!;
@@ -143,7 +144,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
         onPressed: () => Navigator.pop(context),
         child: Text(
           texts.payment_info_dialog_action_cancel,
-          style: themeData.primaryTextTheme.button,
+          style: themeData.primaryTextTheme.labelLarge,
         ),
       )
     ];
@@ -160,7 +161,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
           }),
           child: Text(
             texts.payment_info_dialog_action_approve,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
       );

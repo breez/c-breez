@@ -57,7 +57,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Text(
               texts.enter_backup_phrase_error,
-              style: themeData.textTheme.headline4?.copyWith(
+              style: themeData.textTheme.headlineMedium?.copyWith(
                 fontSize: 12,
               ),
             ),

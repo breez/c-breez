@@ -17,7 +17,7 @@ class LNURLMetadata extends StatelessWidget {
       children: [
         Text(
           metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         _LNURLMetadataImage(
           base64String: base64String,

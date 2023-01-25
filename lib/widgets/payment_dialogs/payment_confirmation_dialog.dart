@@ -113,12 +113,12 @@ class PaymentConfirmationDialog extends StatelessWidget {
               return Colors.transparent;
             }
             // Defer to the widget's default.
-            return Theme.of(context).textTheme.button!.color!;
+            return Theme.of(context).textTheme.labelLarge!.color!;
           }),
         ),
         child: Text(
           texts.payment_confirmation_dialog_action_no,
-          style: themeData.primaryTextTheme.button,
+          style: themeData.primaryTextTheme.labelLarge,
         ),
         onPressed: () => _onCancel(),
       ),
@@ -129,12 +129,12 @@ class PaymentConfirmationDialog extends StatelessWidget {
               return Colors.transparent;
             }
             // Defer to the widget's default.
-            return themeData.textTheme.button!.color!;
+            return themeData.textTheme.labelLarge!.color!;
           }),
         ),
         child: Text(
           texts.payment_confirmation_dialog_action_yes,
-          style: themeData.primaryTextTheme.button,
+          style: themeData.primaryTextTheme.labelLarge,
         ),
         onPressed: () {
           _onPaymentApproved(

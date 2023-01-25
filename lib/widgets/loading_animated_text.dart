@@ -43,7 +43,7 @@ class LoadingAnimatedTextState extends State<LoadingAnimatedText> {
     return RichText(
         text: TextSpan(
             style: widget.textStyle ??
-                Theme.of(context).textTheme.bodyText2?.copyWith(
+                Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),
             text: widget._loadingMessage,

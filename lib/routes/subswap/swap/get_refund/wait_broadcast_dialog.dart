@@ -77,7 +77,7 @@ class WaitBroadcastDialog extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(txId),
               child: Text(
                 texts.waiting_broadcast_dialog_action_close,
-                style: themeData.primaryTextTheme.button,
+                style: themeData.primaryTextTheme.labelLarge,
               ),
             ),
           ];
@@ -209,7 +209,7 @@ class _TransactionDetails extends StatelessWidget {
           flex: 1,
           child: Text(
             texts.waiting_broadcast_dialog_transaction_id,
-            style: themeData.primaryTextTheme.headline4,
+            style: themeData.primaryTextTheme.headlineMedium,
           ),
         ),
         _ShareAndCopyTxID(txId: txId),
@@ -242,7 +242,7 @@ class _ShareAndCopyTxID extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0),
               tooltip: texts.waiting_broadcast_dialog_action_copy,
               iconSize: 16.0,
-              color: themeData.primaryTextTheme.button!.color!,
+              color: themeData.primaryTextTheme.labelLarge!.color!,
               icon: const Icon(
                 IconData(
                   0xe90b,
@@ -259,7 +259,7 @@ class _ShareAndCopyTxID extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0),
               tooltip: texts.waiting_broadcast_dialog_action_share,
               iconSize: 16.0,
-              color: themeData.primaryTextTheme.button!.color!,
+              color: themeData.primaryTextTheme.labelLarge!.color!,
               icon: const Icon(Icons.share),
               onPressed: () => Share.share(txId),
             ),
@@ -294,7 +294,7 @@ class _TransactionID extends StatelessWidget {
               textAlign: TextAlign.left,
               overflow: TextOverflow.clip,
               maxLines: 4,
-              style: themeData.primaryTextTheme.headline3!.copyWith(
+              style: themeData.primaryTextTheme.displaySmall!.copyWith(
                 fontSize: 10,
               ),
             ),

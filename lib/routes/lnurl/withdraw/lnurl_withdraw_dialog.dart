@@ -67,7 +67,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
     return AlertDialog(
       title: Text(
         widget.domain,
-        style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
+        style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
       content: SizedBox(
@@ -80,7 +80,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               children: [
                 Text(
                   texts.sweep_all_coins_label_receive,
-                  style: themeData.primaryTextTheme.headline3!
+                  style: themeData.primaryTextTheme.displaySmall!
                       .copyWith(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
@@ -109,7 +109,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                                     currencyState.bitcoinTicker)
                                 .format(
                                     widget.requestData.maxWithdrawable ~/ 1000),
-                        style: themeData.primaryTextTheme.headline5,
+                        style: themeData.primaryTextTheme.headlineSmall,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -124,13 +124,13 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                         ),
                       ),
                       hintColor: themeData.dialogTheme.contentTextStyle!.color,
+                      primaryColor: themeData.textTheme.labelLarge!.color!,
                       colorScheme: ColorScheme.dark(
-                        primary: themeData.textTheme.button!.color!,
+                        primary: themeData.textTheme.labelLarge!.color!,
+                        error: themeData.isLightTheme
+                            ? Colors.red
+                            : themeData.colorScheme.error,
                       ),
-                      primaryColor: themeData.textTheme.button!.color!,
-                      errorColor: themeData.isLightTheme
-                          ? Colors.red
-                          : themeData.errorColor,
                     ),
                     child: Column(
                         mainAxisSize: MainAxisSize.max,
@@ -175,7 +175,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                       child: SingleChildScrollView(
                         child: Text(
                           widget.requestData.defaultDescription,
-                          style: themeData.primaryTextTheme.headline3!
+                          style: themeData.primaryTextTheme.displaySmall!
                               .copyWith(fontSize: 16),
                           textAlign:
                               widget.requestData.defaultDescription.length >
@@ -201,7 +201,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () {
@@ -209,7 +209,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
           },
           child: Text(
             texts.lnurl_withdraw_dialog_action_close,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
         TextButton(
@@ -219,7 +219,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () async {
@@ -272,7 +272,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
           },
           child: Text(
             texts.bottom_action_bar_receive,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
       ],

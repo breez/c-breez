@@ -45,7 +45,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () {
@@ -53,7 +53,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
           },
           child: Text(
             texts.lnurl_withdraw_dialog_action_close,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
         if (widget.successActionData.url != null) ...[
@@ -65,13 +65,13 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                     return Colors.transparent;
                   }
                   // Defer to the widget's default.
-                  return themeData.textTheme.button!.color!;
+                  return themeData.textTheme.labelLarge!.color!;
                 },
               ),
             ),
             child: Text(
               "OPEN LINK",
-              style: themeData.primaryTextTheme.button,
+              style: themeData.primaryTextTheme.labelLarge,
             ),
             onPressed: () async {
               final navigator = Navigator.of(context);
@@ -113,7 +113,7 @@ class Message extends StatelessWidget {
             child: AutoSizeText(
               message,
               style:
-                  themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+                  themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
               textAlign: message.length > 40 && !message.contains("\n")
                   ? TextAlign.start
                   : TextAlign.center,

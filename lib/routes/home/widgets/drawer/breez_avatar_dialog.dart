@@ -74,12 +74,12 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
             content: SingleChildScrollView(
               child: Theme(
                 data: ThemeData(
-                  primaryColor: themeData.primaryTextTheme.bodyText2!.color,
-                  hintColor: themeData.primaryTextTheme.bodyText2!.color,
+                  primaryColor: themeData.primaryTextTheme.bodyMedium!.color,
+                  hintColor: themeData.primaryTextTheme.bodyMedium!.color,
                 ),
                 child: TextField(
                   enabled: !isUploading,
-                  style: themeData.primaryTextTheme.bodyText2,
+                  style: themeData.primaryTextTheme.bodyMedium,
                   controller: nameInputController,
                   decoration: InputDecoration(
                     hintText: texts.breez_avatar_dialog_your_name,
@@ -93,7 +93,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                 onPressed: isUploading ? null : () => navigator.pop(),
                 child: Text(
                   texts.breez_avatar_dialog_action_cancel,
-                  style: themeData.primaryTextTheme.button,
+                  style: themeData.primaryTextTheme.labelLarge,
                 ),
               ),
               TextButton(
@@ -104,7 +104,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                       },
                 child: Text(
                   texts.breez_avatar_dialog_action_save,
-                  style: themeData.primaryTextTheme.button,
+                  style: themeData.primaryTextTheme.labelLarge,
                 ),
               ),
             ],
@@ -311,9 +311,9 @@ class AvatarSpinner extends StatelessWidget {
         aspectRatio: 1,
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(
-            themeData.primaryTextTheme.button!.color!,
+            themeData.primaryTextTheme.labelLarge!.color!,
           ),
-          backgroundColor: themeData.backgroundColor,
+          backgroundColor: themeData.colorScheme.background,
         ),
       ),
     );

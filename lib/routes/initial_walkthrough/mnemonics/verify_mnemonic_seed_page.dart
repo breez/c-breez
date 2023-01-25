@@ -84,7 +84,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
                 errorText: _hasError
                     ? Text(
                         texts.backup_phrase_generation_verification_failed,
-                        style: themeData.textTheme.headline4?.copyWith(
+                        style: themeData.textTheme.headlineMedium?.copyWith(
                           fontSize: 12,
                         ),
                       )
@@ -92,7 +92,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
                 registrationFailedText: _registrationFailed
                     ? Text(
                         _registrationErrorMessage,
-                        style: themeData.textTheme.headline4?.copyWith(
+                        style: themeData.textTheme.headlineMedium?.copyWith(
                           fontSize: 12,
                         ),
                       )

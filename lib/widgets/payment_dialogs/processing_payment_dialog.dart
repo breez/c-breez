@@ -67,7 +67,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with S
     _currentRoute ??= ModalRoute.of(context);
     colorAnimation = ColorTween(
       begin: Theme.of(context).canvasColor,
-      end: Theme.of(context).backgroundColor,
+      end: Theme.of(context).colorScheme.background,
     ).animate(controller!)
       ..addListener(() {
         setState(() {});

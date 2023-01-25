@@ -78,7 +78,7 @@ class FeeMessage extends StatelessWidget {
                 children: [
                   Text(
                     formatFeeMessage(context, lspInfo),
-                    style: themeData.textTheme.headline6,
+                    style: themeData.textTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),
                 ],

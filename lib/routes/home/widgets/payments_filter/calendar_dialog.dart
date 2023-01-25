@@ -63,15 +63,16 @@ class CalendarDialogState extends State<CalendarDialog> {
           child: Text(
             texts.pos_transactions_range_dialog_clear,
             style: theme.cancelButtonStyle.copyWith(
-              color:
-                  themeData.isLightTheme ? Colors.red : themeData.errorColor,
+              color: themeData.isLightTheme
+                  ? Colors.red
+                  : themeData.colorScheme.error,
             ),
           ),
         ),
         TextButton(
           child: Text(
             texts.pos_transactions_range_dialog_apply,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
           onPressed: () => _applyFilter(context),
         ),
@@ -110,7 +111,7 @@ class CalendarDialogState extends State<CalendarDialog> {
         data: themeData.isLightTheme
             ? themeData
             : themeData.copyWith(
-                disabledColor: themeData.backgroundColor,
+                disabledColor: themeData.colorScheme.background,
               ),
         child: TextField(
           decoration: InputDecoration(

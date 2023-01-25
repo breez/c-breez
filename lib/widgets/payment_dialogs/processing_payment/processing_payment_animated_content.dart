@@ -41,7 +41,7 @@ class ProcessingPaymentAnimatedContent extends StatelessWidget {
                   color: themeData.isLightTheme
                       ? color
                       : moment >= 0.25
-                          ? themeData.backgroundColor
+                          ? themeData.colorScheme.background
                           : color,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(

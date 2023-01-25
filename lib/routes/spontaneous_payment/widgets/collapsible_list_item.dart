@@ -36,7 +36,7 @@ class CollapsibleListItem extends StatelessWidget {
           collapsedIconColor: userStyle.color,
           title: AutoSizeText(
             title,
-            style: textTheme.headline4!.merge(userStyle),
+            style: textTheme.headlineMedium!.merge(userStyle),
             maxLines: 1,
             group: labelGroup,
           ),
@@ -53,7 +53,7 @@ class CollapsibleListItem extends StatelessWidget {
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.clip,
                       maxLines: 4,
-                      style: textTheme.headline3!
+                      style: textTheme.displaySmall!
                           .copyWith(fontSize: 10)
                           .merge(userStyle),
                     ),
@@ -72,7 +72,7 @@ class CollapsibleListItem extends StatelessWidget {
                           padding: const EdgeInsets.only(right: 8.0),
                           tooltip: texts.collapsible_list_action_copy(title),
                           iconSize: 16.0,
-                          color: userStyle.color ?? textTheme.button!.color!,
+                          color: userStyle.color ?? textTheme.labelLarge!.color!,
                           icon: const Icon(
                             IconData(0xe90b, fontFamily: 'icomoon'),
                           ),
@@ -91,7 +91,7 @@ class CollapsibleListItem extends StatelessWidget {
                         IconButton(
                           padding: const EdgeInsets.only(right: 8.0),
                           iconSize: 16.0,
-                          color: userStyle.color ?? textTheme.button!.color!,
+                          color: userStyle.color ?? textTheme.labelLarge!.color!,
                           icon: const Icon(Icons.share),
                           onPressed: () {
                             if (sharedValue != null) {

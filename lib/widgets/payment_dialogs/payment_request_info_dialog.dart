@@ -137,7 +137,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
             widget.invoice.payeeName,
             style: Theme.of(context)
                 .primaryTextTheme
-                .headline4!
+                .headlineMedium!
                 .copyWith(fontSize: 16),
             textAlign: TextAlign.center,
           );
@@ -152,7 +152,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       payeeName.isEmpty
           ? texts.payment_request_dialog_requested
           : texts.payment_request_dialog_requesting,
-      style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+      style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
       textAlign: TextAlign.center,
     );
   }
@@ -172,11 +172,12 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           ),
           hintColor: themeData.dialogTheme.contentTextStyle!.color,
           colorScheme: ColorScheme.dark(
-            primary: themeData.textTheme.button!.color!,
+            primary: themeData.textTheme.labelLarge!.color!,
+            error: themeData.isLightTheme
+                ? Colors.red
+                : themeData.colorScheme.error,
           ),
-          primaryColor: themeData.textTheme.button!.color!,
-          errorColor:
-              themeData.isLightTheme ? Colors.red : themeData.errorColor,
+          primaryColor: themeData.textTheme.labelLarge!.color!,
         ),
         child: Form(
           autovalidateMode: AutovalidateMode.always,
@@ -233,7 +234,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
               ? fiatConversion.format(widget.invoice.amountMsat ~/ 1000)
               : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
                   .format(widget.invoice.amountMsat ~/ 1000),
-          style: themeData.primaryTextTheme.headline5,
+          style: themeData.primaryTextTheme.headlineSmall,
           textAlign: TextAlign.center,
         ),
       ),
@@ -257,7 +258,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
                 child: SingleChildScrollView(
                   child: AutoSizeText(
                     description,
-                    style: themeData.primaryTextTheme.headline3!
+                    style: themeData.primaryTextTheme.displaySmall!
                         .copyWith(fontSize: 16),
                     textAlign:
                         description.length > 40 && !description.contains("\n")
@@ -291,9 +292,10 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         validationError,
         maxLines: 3,
         textAlign: TextAlign.center,
-        style: themeData.primaryTextTheme.headline3!.copyWith(
+        style: themeData.primaryTextTheme.displaySmall!.copyWith(
           fontSize: 16,
-          color: themeData.isLightTheme ? Colors.red : themeData.errorColor,
+          color:
+              themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
         ),
       ),
     );
@@ -309,7 +311,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         onPressed: () => widget._onCancel(),
         child: Text(
           texts.payment_request_dialog_action_cancel,
-          style: themeData.primaryTextTheme.button,
+          style: themeData.primaryTextTheme.labelLarge,
         ),
       )
     ];
@@ -336,7 +338,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         }),
         child: Text(
           texts.payment_request_dialog_action_approve,
-          style: themeData.primaryTextTheme.button,
+          style: themeData.primaryTextTheme.labelLarge,
         ),
       ));
     }

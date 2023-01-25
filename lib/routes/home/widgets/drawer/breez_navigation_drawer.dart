@@ -49,12 +49,12 @@ class DrawerItemConfigGroup {
   });
 }
 
-class NavigationDrawer extends StatelessWidget {
+class BreezNavigationDrawer extends StatelessWidget {
   final List<DrawerItemConfigGroup> _drawerGroupedItems;
   final void Function(String screenName) _onItemSelected;
   final _scrollController = ScrollController();
 
-  NavigationDrawer(
+  BreezNavigationDrawer(
     this._drawerGroupedItems,
     this._onItemSelected, {
     Key? key,

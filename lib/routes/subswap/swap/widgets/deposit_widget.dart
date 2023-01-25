@@ -60,7 +60,7 @@ class _DepositWidgetState extends State<DepositWidget> {
                   children: [
                     Text(
                       _sendMessage(context, lspInfo),
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                   ],

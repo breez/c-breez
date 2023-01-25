@@ -34,7 +34,7 @@ class KeyboardDoneAction {
   }
 
   void _showOverlay() {
-    OverlayState os = Overlay.of(focusNodes[0].context!)!;
+    OverlayState os = Overlay.of(focusNodes[0].context!);
     _overlayEntry = OverlayEntry(builder: (context) {
       final texts = context.texts();
       final queryData = MediaQuery.of(context);

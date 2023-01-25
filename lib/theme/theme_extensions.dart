@@ -27,13 +27,13 @@ const balanceFiatConversionTextStyle = TextStyle(
     height: 1.24,
     fontFamily: 'IBMPlexSans');
 final toolbarTextStyle = const TextTheme(
-  headline6:
+  titleLarge:
       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
-).bodyText2;
+).bodyMedium;
 final titleTextStyle = const TextTheme(
-  headline6:
+  titleLarge:
       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
-).headline6;
+).titleLarge;
 const TextStyle drawerItemTextStyle =
     TextStyle(height: 1.2, letterSpacing: 0.25, fontSize: 14.3);
 const TextStyle bottomAppBarBtnStyle = TextStyle(

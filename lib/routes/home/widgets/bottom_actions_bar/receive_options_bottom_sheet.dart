@@ -73,7 +73,7 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
                           removeTrailingZeros: true,
                         ),
                       ),
-                      maxFontSize: themeData.textTheme.subtitle1!.fontSize!,
+                      maxFontSize: themeData.textTheme.titleMedium!.fontSize!,
                       style: themeData.textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),

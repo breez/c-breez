@@ -58,10 +58,11 @@ class SendOptionsBottomSheet extends StatelessWidget {
                 texts.bottom_action_bar_send_btc_address,
                 style: theme.bottomSheetTextStyle,
               ),
-              onTap: () => _push(context, "/withdraw_funds",
-                  arguments: const WithdrawFundsArguments(
-                    WithdrawKind.withdraw_funds,
-                  )),
+              onTap: () => _push(
+                context,
+                "/withdraw_funds",
+                arguments: WithdrawKind.withdraw_funds,
+              ),
             ),
             const SizedBox(height: 8.0)
           ],

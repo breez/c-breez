@@ -1,5 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/utils/extensions/payment_extensions.dart';
 import 'package:flutter/material.dart';
 
 class PaymentDetailsDialogDescription extends StatelessWidget {
@@ -12,10 +14,11 @@ class PaymentDetailsDialogDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.texts();
     final themeData = Theme.of(context);
 
-    final description = paymentInfo.description;
-    if (description == null || description == "") {
+    final description = paymentInfo.extractTitle(texts);
+    if (description.isEmpty) {
       return Container();
     }
 

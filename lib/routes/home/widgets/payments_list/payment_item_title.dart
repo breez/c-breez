@@ -1,6 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/extensions/payment_extensions.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:flutter/material.dart';
 
@@ -15,41 +16,10 @@ class PaymentItemTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      _title(context).replaceAll("\n", " "),
+      _paymentInfo.extractTitle(context.texts()),
       style: Theme.of(context).paymentItemTitleTextStyle,
       overflow: TextOverflow.ellipsis,
     );
-  }
-
-  String _title(BuildContext context) {
-    final description = _paymentInfo.description?.replaceAll("\n", " ").trim();
-    if (description != null && description.isNotEmpty) {
-      final breezPosRegex = RegExp(r'(?<=\|)(.*)(?=\|)');
-      if (breezPosRegex.hasMatch(description)) {
-        final extracted = breezPosRegex.stringMatch(description)?.trim();
-        if (extracted != null && extracted.isNotEmpty) {
-          return extracted;
-        }
-      }
-      return description;
-    }
-
-    final details = _paymentInfo.details.data;
-    if (details is PaymentDetails_ClosedChannel) {
-      final state = details.data.state;
-      switch (state) {
-        case ChannelState.PendingOpen:
-          return context.texts().payment_info_title_pending_opened_channel;
-        case ChannelState.Opened:
-          return context.texts().payment_info_title_opened_channel;
-        case ChannelState.PendingClose:
-          return context.texts().payment_info_title_pending_closed_channel;
-        case ChannelState.Closed:
-          return context.texts().payment_info_title_closed_channel;
-      }
-    }
-
-    return context.texts().wallet_dashboard_payment_item_no_title;
   }
 }
 

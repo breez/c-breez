@@ -29,7 +29,7 @@ const balanceFiatConversionTextStyle = TextStyle(
 final toolbarTextStyle = const TextTheme(
   headline6:
       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
-).bodyText2;
+).bodyMedium;
 final titleTextStyle = const TextTheme(
   headline6:
       TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),

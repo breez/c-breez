@@ -74,12 +74,12 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
             content: SingleChildScrollView(
               child: Theme(
                 data: ThemeData(
-                  primaryColor: themeData.primaryTextTheme.bodyText2!.color,
-                  hintColor: themeData.primaryTextTheme.bodyText2!.color,
+                  primaryColor: themeData.primaryTextTheme.bodyMedium!.color,
+                  hintColor: themeData.primaryTextTheme.bodyMedium!.color,
                 ),
                 child: TextField(
                   enabled: !isUploading,
-                  style: themeData.primaryTextTheme.bodyText2,
+                  style: themeData.primaryTextTheme.bodyMedium,
                   controller: nameInputController,
                   decoration: InputDecoration(
                     hintText: texts.breez_avatar_dialog_your_name,

@@ -83,7 +83,7 @@ final ThemeData breezLightTheme = ThemeData(
         height: 1.28,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    bodyText2: TextStyle(
+    bodyMedium: TextStyle(
         color: BreezColors.blue[900],
         fontSize: 16.4,
         letterSpacing: 0.15,

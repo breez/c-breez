@@ -8,10 +8,10 @@ import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 
 class WithdrawFundsAddressPage extends StatefulWidget {
-  final WithdrawFundsArguments arguments;
+  final WithdrawKind withdrawKind;
   const WithdrawFundsAddressPage({
     Key? key,
-    required this.arguments,
+    required this.withdrawKind,
   }) : super(key: key);
 
   @override
@@ -33,7 +33,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
         leading: const back_button.BackButton(),
         actions: const [],
         title: Text(
-          widget.arguments.withdrawKind == WithdrawKind.withdraw_funds
+          widget.withdrawKind == WithdrawKind.withdraw_funds
               ? texts.reverse_swap_title
               : texts.unexpected_funds_title,
         ),
@@ -74,10 +74,4 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
 enum WithdrawKind {
   withdraw_funds,
   unexpected_funds,
-}
-
-class WithdrawFundsArguments {
-  final WithdrawKind withdrawKind;
-
-  const WithdrawFundsArguments(this.withdrawKind);
 }

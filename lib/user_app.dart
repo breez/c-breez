@@ -195,8 +195,8 @@ class UserApp extends StatelessWidget {
                                 case '/withdraw_funds':
                                   return FadeInRoute(
                                     builder: (_) => WithdrawFundsAddressPage(
-                                      arguments: settings.arguments
-                                          as WithdrawFundsArguments,
+                                      withdrawKind:
+                                          settings.arguments as WithdrawKind,
                                     ),
                                     settings: settings,
                                   );

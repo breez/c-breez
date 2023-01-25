@@ -25,15 +25,17 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
           if (walletBalance > 0) {
             warnings.add(
               WarningAction(
-                () => navigatorState.pushNamed("/withdraw_funds",
-                    arguments: const WithdrawFundsArguments(
-                      WithdrawKind.unexpected_funds,
-                    )),
+                () => navigatorState.pushNamed(
+                  "/withdraw_funds",
+                  arguments: WithdrawKind.unexpected_funds,
+                ),
               ),
             );
           }
 
-          if (accState.status != ConnectionStatus.CONNECTING && lspState != null && lspState.selectedLspId == null) {
+          if (accState.status != ConnectionStatus.CONNECTING &&
+              lspState != null &&
+              lspState.selectedLspId == null) {
             warnings.add(WarningAction(() {
               navigatorState.pushNamed("/select_lsp");
             }));

@@ -101,7 +101,7 @@ class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute>
         Text(
           texts.successful_payment_received,
           textAlign: TextAlign.center,
-          style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
+          style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 40),

@@ -28,7 +28,7 @@ class BreezDrawerHeader extends DrawerHeader {
         duration: duration,
         curve: curve,
         child: DefaultTextStyle(
-          style: theme.textTheme.headline4!,
+          style: theme.textTheme.headlineMedium!,
           child: MediaQuery.removePadding(
             context: context,
             removeTop: true,

@@ -53,7 +53,7 @@ final ThemeData breezDarkTheme = ThemeData(
       headline5: TextStyle(color: Colors.white, fontSize: 26.0),
       labelLarge:
           TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 1.25),
-      headline4: TextStyle(
+      headlineMedium: TextStyle(
         color: Color(0xffffe685),
         fontSize: 18.0,
       ),
@@ -64,7 +64,7 @@ final ThemeData breezDarkTheme = ThemeData(
           letterSpacing: 0.25,
           height: 1.22)),
   primaryTextTheme: TextTheme(
-    headline4: const TextStyle(
+    headlineMedium: const TextStyle(
         color: Colors.white,
         fontSize: 14.0,
         letterSpacing: 0.0,

@@ -60,7 +60,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
     return AlertDialog(
       title: Text(
         widget.domain,
-        style: themeData.primaryTextTheme.headline4!.copyWith(fontSize: 16),
+        style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
       content: Column(

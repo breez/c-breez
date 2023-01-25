@@ -32,7 +32,7 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8.0),
             child: AutoSizeText(
               texts.payment_details_dialog_expiration,
-              style: themeData.primaryTextTheme.headline4,
+              style: themeData.primaryTextTheme.headlineMedium,
               textAlign: TextAlign.left,
               maxLines: 1,
               group: labelAutoSizeGroup,

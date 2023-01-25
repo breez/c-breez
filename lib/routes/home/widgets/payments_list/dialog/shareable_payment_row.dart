@@ -34,7 +34,7 @@ class ShareablePaymentRow extends StatelessWidget {
         collapsedIconColor: color,
         title: AutoSizeText(
           title,
-          style: themeData.primaryTextTheme.headline4,
+          style: themeData.primaryTextTheme.headlineMedium,
           maxLines: 1,
           group: labelAutoSizeGroup,
         ),

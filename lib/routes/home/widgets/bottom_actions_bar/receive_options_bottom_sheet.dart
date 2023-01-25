@@ -74,7 +74,7 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
                         ),
                       ),
                       maxFontSize: themeData.textTheme.subtitle1!.fontSize!,
-                      style: themeData.textTheme.headline6,
+                      style: themeData.textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                   ),

@@ -99,7 +99,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                               widget.requestData.maxSendable,
                             )
                           : widget.domain,
-                      style: themeData.textTheme.headline6,
+                      style: themeData.textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                   )

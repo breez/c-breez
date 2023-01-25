@@ -57,7 +57,7 @@ final ThemeData breezDarkTheme = ThemeData(
         color: Color(0xffffe685),
         fontSize: 18.0,
       ),
-      headline6: TextStyle(
+      titleLarge: TextStyle(
           color: Colors.white,
           fontSize: 12.3,
           fontWeight: FontWeight.w400,

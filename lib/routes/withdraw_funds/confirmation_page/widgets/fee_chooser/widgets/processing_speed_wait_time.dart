@@ -38,7 +38,7 @@ class ProcessingSpeedWaitTime extends Text {
 
   static _style(BuildContext context) {
     final themeData = Theme.of(context);
-    return themeData.textTheme.button!.copyWith(
+    return themeData.textTheme.labelLarge!.copyWith(
       color: themeData.colorScheme.onSurface.withOpacity(0.4),
     );
   }

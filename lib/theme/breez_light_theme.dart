@@ -51,7 +51,7 @@ final ThemeData breezLightTheme = ThemeData(
       subtitle2: TextStyle(
           color: BreezColors.grey[600], fontSize: 14.3, letterSpacing: 0.2),
       headline5: TextStyle(color: BreezColors.grey[600], fontSize: 26.0),
-      button: TextStyle(
+      labelLarge: TextStyle(
           color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
       headline4: const TextStyle(
         color: Color(0xffffe685),
@@ -91,7 +91,7 @@ final ThemeData breezLightTheme = ThemeData(
         fontFamily: 'IBMPlexSans'),
     subtitle2: TextStyle(
         color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
-    button: TextStyle(
+    labelLarge: TextStyle(
         color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
     bodySmall: TextStyle(color: BreezColors.grey[500], fontSize: 12.0),
   ),

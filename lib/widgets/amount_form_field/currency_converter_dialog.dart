@@ -260,7 +260,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
         onPressed: () => Navigator.pop(context),
         child: Text(
           texts.currency_converter_dialog_action_cancel,
-          style: themeData.primaryTextTheme.button,
+          style: themeData.primaryTextTheme.labelLarge,
         ),
       ),
     ];
@@ -284,7 +284,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
           },
           child: Text(
             texts.currency_converter_dialog_action_done,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
       );

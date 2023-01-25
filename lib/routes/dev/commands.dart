@@ -51,7 +51,7 @@ class DevelopersView extends StatelessWidget {
                   value: choice,
                   child: Text(
                     choice.title,
-                    style: themeData.textTheme.button,
+                    style: themeData.textTheme.labelLarge,
                   ),
                 );
               }).toList();

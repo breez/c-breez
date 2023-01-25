@@ -40,7 +40,7 @@ class AlphaWarningDialogState extends State<AlphaWarningDialog> {
             onPressed: () => exit(0),
             child: Text(
               texts.alpha_warning_action_exit,
-              style: themeData.primaryTextTheme.button,
+              style: themeData.primaryTextTheme.labelLarge,
             ),
           ),
           TextButton(
@@ -55,7 +55,7 @@ class AlphaWarningDialogState extends State<AlphaWarningDialog> {
             }),
             child: Text(
               texts.alpha_warning_action_continue,
-              style: themeData.primaryTextTheme.button,
+              style: themeData.primaryTextTheme.labelLarge,
             ),
           ),
         ],
@@ -83,7 +83,7 @@ class AlphaWarningDialogState extends State<AlphaWarningDialog> {
           children: [
             Theme(
               data: themeData.copyWith(
-                unselectedWidgetColor: themeData.textTheme.button!.color,
+                unselectedWidgetColor: themeData.textTheme.labelLarge!.color,
               ),
               child: Checkbox(
                 activeColor: themeData.canvasColor,

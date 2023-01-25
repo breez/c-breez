@@ -73,13 +73,13 @@ class OpenLinkDialogState extends State<OpenLinkDialog> {
                   return Colors.transparent;
                 }
                 // Defer to the widget's default.
-                return themeData.textTheme.button!.color!;
+                return themeData.textTheme.labelLarge!.color!;
               },
             ),
           ),
           child: Text(
             texts.qr_action_button_open_link_confirmation_no,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
           onPressed: () => navigator.pop(),
         ),
@@ -91,13 +91,13 @@ class OpenLinkDialogState extends State<OpenLinkDialog> {
                   return Colors.transparent;
                 }
                 // Defer to the widget's default.
-                return themeData.textTheme.button!.color!;
+                return themeData.textTheme.labelLarge!.color!;
               },
             ),
           ),
           child: Text(
             texts.qr_action_button_open_link_confirmation_yes,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
           onPressed: () async {
             await launchLinkOnExternalBrowser(

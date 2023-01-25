@@ -65,7 +65,7 @@ class SubmitButton extends StatelessWidget {
         child: AutoSizeText(
           text,
           maxLines: 1,
-          style: Theme.of(context).textTheme.button,
+          style: Theme.of(context).textTheme.labelLarge,
         ),
       ),
     );

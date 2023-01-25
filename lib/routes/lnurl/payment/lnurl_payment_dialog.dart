@@ -133,7 +133,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () {
@@ -141,7 +141,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           },
           child: Text(
             texts.payment_request_dialog_action_cancel,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
         TextButton(
@@ -151,7 +151,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () async {
@@ -194,7 +194,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           },
           child: Text(
             texts.spontaneous_payment_action_pay,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
       ],

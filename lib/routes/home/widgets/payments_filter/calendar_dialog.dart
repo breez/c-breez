@@ -71,7 +71,7 @@ class CalendarDialogState extends State<CalendarDialog> {
         TextButton(
           child: Text(
             texts.pos_transactions_range_dialog_apply,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
           onPressed: () => _applyFilter(context),
         ),

@@ -47,11 +47,11 @@ final ThemeData breezDarkTheme = ThemeData(
   cardColor: const Color(0xFF121212), // will be replaced with CardTheme.color
   cardTheme: const CardTheme(color: Color(0xFF121212)),
   highlightColor: const Color(0xFF0085fb),
-  textTheme: const TextTheme(
+  textTheme: TextTheme(
       subtitle2:
           TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 0.2),
       headline5: TextStyle(color: Colors.white, fontSize: 26.0),
-      button:
+      labelLarge:
           TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 1.25),
       headline4: TextStyle(
         color: Color(0xffffe685),
@@ -86,7 +86,7 @@ final ThemeData breezDarkTheme = ThemeData(
         letterSpacing: 0.15,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    button: const TextStyle(
+    labelLarge: const TextStyle(
         color: Color(0xFF0085fb), fontSize: 14.3, letterSpacing: 1.25),
     subtitle2: TextStyle(
         color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),

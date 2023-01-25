@@ -96,7 +96,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         highlightColor: Colors.transparent,
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
                         icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
-                        color: Theme.of(context).primaryTextTheme.button!.color!,
+                        color: Theme.of(context).primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
                           Share.share("lightning:${widget._invoice!.bolt11}");
                         },
@@ -109,7 +109,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         highlightColor: Colors.transparent,
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
                         icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
-                        color: Theme.of(context).primaryTextTheme.button!.color!,
+                        color: Theme.of(context).primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
                           ServiceInjector().device.setClipboardText(widget._invoice!.bolt11);
                           showFlushbar(
@@ -175,7 +175,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                 width: 80.0,
                 child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    themeData.primaryTextTheme.button!.color!,
+                    themeData.primaryTextTheme.labelLarge!.color!,
                   ),
                   backgroundColor: themeData.colorScheme.background,
                 ),
@@ -231,7 +231,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       }),
       child: Text(
         texts.qr_code_dialog_action_close,
-        style: Theme.of(context).primaryTextTheme.button,
+        style: Theme.of(context).primaryTextTheme.labelLarge,
       ),
     );
   }

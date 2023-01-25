@@ -27,7 +27,7 @@ class FeeOptionButton extends StatelessWidget {
           text,
           maxLines: 1,
           textAlign: TextAlign.center,
-          style: themeData.textTheme.button!.copyWith(
+          style: themeData.textTheme.labelLarge!.copyWith(
             color: !isAffordable
                 ? themeData.primaryColor.withOpacity(0.4)
                 : themeData.isLightTheme

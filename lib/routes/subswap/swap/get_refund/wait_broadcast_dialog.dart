@@ -77,7 +77,7 @@ class WaitBroadcastDialog extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(txId),
               child: Text(
                 texts.waiting_broadcast_dialog_action_close,
-                style: themeData.primaryTextTheme.button,
+                style: themeData.primaryTextTheme.labelLarge,
               ),
             ),
           ];
@@ -242,7 +242,7 @@ class _ShareAndCopyTxID extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0),
               tooltip: texts.waiting_broadcast_dialog_action_copy,
               iconSize: 16.0,
-              color: themeData.primaryTextTheme.button!.color!,
+              color: themeData.primaryTextTheme.labelLarge!.color!,
               icon: const Icon(
                 IconData(
                   0xe90b,
@@ -259,7 +259,7 @@ class _ShareAndCopyTxID extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0),
               tooltip: texts.waiting_broadcast_dialog_action_share,
               iconSize: 16.0,
-              color: themeData.primaryTextTheme.button!.color!,
+              color: themeData.primaryTextTheme.labelLarge!.color!,
               icon: const Icon(Icons.share),
               onPressed: () => Share.share(txId),
             ),

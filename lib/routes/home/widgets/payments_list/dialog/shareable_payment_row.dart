@@ -23,7 +23,7 @@ class ShareablePaymentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
-    final color = themeData.primaryTextTheme.button!.color!;
+    final color = themeData.primaryTextTheme.labelLarge!.color!;
 
     return Theme(
       data: themeData.copyWith(

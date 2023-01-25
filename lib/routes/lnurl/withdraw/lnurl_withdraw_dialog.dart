@@ -125,9 +125,9 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                       ),
                       hintColor: themeData.dialogTheme.contentTextStyle!.color,
                       colorScheme: ColorScheme.dark(
-                        primary: themeData.textTheme.button!.color!,
+                        primary: themeData.textTheme.labelLarge!.color!,
                       ),
-                      primaryColor: themeData.textTheme.button!.color!,
+                      primaryColor: themeData.textTheme.labelLarge!.color!,
                       errorColor: themeData.isLightTheme
                           ? Colors.red
                           : themeData.errorColor,
@@ -201,7 +201,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () {
@@ -209,7 +209,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
           },
           child: Text(
             texts.lnurl_withdraw_dialog_action_close,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
         TextButton(
@@ -219,7 +219,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
-              return themeData.textTheme.button!.color!;
+              return themeData.textTheme.labelLarge!.color!;
             }),
           ),
           onPressed: () async {
@@ -272,7 +272,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
           },
           child: Text(
             texts.bottom_action_bar_receive,
-            style: themeData.primaryTextTheme.button,
+            style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
       ],

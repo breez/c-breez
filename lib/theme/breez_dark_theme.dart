@@ -47,7 +47,7 @@ final ThemeData breezDarkTheme = ThemeData(
   cardColor: const Color(0xFF121212), // will be replaced with CardTheme.color
   cardTheme: const CardTheme(color: Color(0xFF121212)),
   highlightColor: const Color(0xFF0085fb),
-  textTheme: TextTheme(
+  textTheme:  const TextTheme(
       titleSmall:
           TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 0.2),
       headlineSmall: TextStyle(color: Colors.white, fontSize: 26.0),

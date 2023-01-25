@@ -9,7 +9,7 @@ import 'package:c_breez/routes/home/widgets/payments_list/success_avatar.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 
-class PaymentItem extends StatelessWidget {
+class PaymentItem extends StatefulWidget {
   final Payment _paymentInfo;
   final bool _firstItem;
   final GlobalKey firstPaymentItemKey;
@@ -20,6 +20,19 @@ class PaymentItem extends StatelessWidget {
     this.firstPaymentItemKey, {
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<PaymentItem> createState() => _PaymentItemState();
+}
+
+class _PaymentItemState extends State<PaymentItem> {
+  late bool isPaymentItemNew;
+
+  @override
+  void initState() {
+    super.initState();
+    isPaymentItemNew = _createdWithin(const Duration(seconds: 15));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +48,9 @@ class PaymentItem extends StatelessWidget {
               ListTile(
                 leading: Container(
                   height: 72.0,
-                  decoration: _createdWithin(const Duration(seconds: 10))
-                      ? BoxDecoration(
+                  decoration: isPaymentItemNew
+                      ? null
+                      : BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
                           boxShadow: [
@@ -46,29 +60,33 @@ class PaymentItem extends StatelessWidget {
                               blurRadius: 5.0,
                             ),
                           ],
-                        )
-                      : null,
-                  child: _createdWithin(const Duration(seconds: 10))
-                      ? PaymentItemAvatar(_paymentInfo, radius: 16)
-                      : FlipTransition(
+                        ),
+                  child: isPaymentItemNew
+                      ? FlipTransition(
                           PaymentItemAvatar(
-                            _paymentInfo,
+                            widget._paymentInfo,
                             radius: 16,
                           ),
                           const SuccessAvatar(radius: 16),
                           radius: 16,
-                        ),
+                          onComplete: () {
+                            setState(() {
+                              isPaymentItemNew = false;
+                            });
+                          },
+                        )
+                      : PaymentItemAvatar(widget._paymentInfo, radius: 16),
                 ),
-                key: _firstItem ? firstPaymentItemKey : null,
+                key: widget._firstItem ? widget.firstPaymentItemKey : null,
                 title: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: PaymentItemTitle(_paymentInfo),
+                  child: PaymentItemTitle(widget._paymentInfo),
                 ),
                 subtitle: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: PaymentItemSubtitle(_paymentInfo),
+                  child: PaymentItemSubtitle(widget._paymentInfo),
                 ),
-                trailing: PaymentItemAmount(_paymentInfo),
+                trailing: PaymentItemAmount(widget._paymentInfo),
                 onTap: () => _showDetail(context),
               ),
             ],
@@ -80,16 +98,16 @@ class PaymentItem extends StatelessWidget {
 
   bool _createdWithin(Duration duration) {
     final diff = DateTime.fromMillisecondsSinceEpoch(
-      _paymentInfo.paymentTime * 1000,
+      widget._paymentInfo.paymentTime * 1000,
     ).difference(
       DateTime.fromMillisecondsSinceEpoch(
         DateTime.now().millisecondsSinceEpoch,
       ),
     );
-    return diff < -duration;
+    return diff > -duration;
   }
 
   void _showDetail(BuildContext context) {
-    showPaymentDetailsDialog(context, _paymentInfo);
+    showPaymentDetailsDialog(context, widget._paymentInfo);
   }
 }

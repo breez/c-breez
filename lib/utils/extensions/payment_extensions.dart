@@ -1,18 +1,12 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
+import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
 
 extension PaymentExtensions on Payment {
   String extractTitle(BreezTranslations texts) {
     final description = this.description?.replaceAll("\n", " ").trim();
     if (description != null && description.isNotEmpty) {
-      final breezPosRegex = RegExp(r'(?<=\|)(.*)(?=\|)');
-      if (breezPosRegex.hasMatch(description)) {
-        final extracted = breezPosRegex.stringMatch(description)?.trim();
-        if (extracted != null && extracted.isNotEmpty) {
-          return extracted;
-        }
-      }
-      return description;
+      return extractPosMessage(description) ?? description;
     }
 
     final details = this.details;

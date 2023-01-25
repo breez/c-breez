@@ -198,9 +198,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.v("sendPayment: $bolt11, $amountSats");
     try {
       await _breezLib.sendPayment(bolt11: bolt11, amountSats: amountSats);
+      _paymentResultStreamController.add(PaymentResultData.success(
+        null, // TODO check for success action
+      ));
     } catch (e) {
       _log.e("sendPayment error", ex: e);
-      _paymentResultStreamController.add(PaymentResultData(error: e));
+      _paymentResultStreamController.add(PaymentResultData.error(e));
       return Future.error(e);
     }
   }
@@ -216,11 +219,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   ) async {
     _log.v("sendSpontaneousPayment: $nodeId, $description, $amountSats");
     try {
-      return await _breezLib.sendSpontaneousPayment(
-          nodeId: nodeId, amountSats: amountSats);
+      await _breezLib.sendSpontaneousPayment(nodeId: nodeId, amountSats: amountSats);
+      _paymentResultStreamController.add(PaymentResultData.success(
+        null, // TODO check for success action
+      ));
     } catch (e) {
       _log.e("sendSpontaneousPayment error", ex: e);
-      _paymentResultStreamController.add(PaymentResultData(error: e));
+      _paymentResultStreamController.add(PaymentResultData.error(e));
       return Future.error(e);
     }
   }

@@ -49,7 +49,7 @@ Flushbar showFlushbar(
             child: Text(
               buttonText ?? texts.flushbar_default_action,
               style: theme.snackBarStyle.copyWith(
-                color: themeData.errorColor,
+                color: themeData.colorScheme.error,
               ),
             ),
           ),

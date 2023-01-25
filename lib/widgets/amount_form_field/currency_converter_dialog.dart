@@ -179,7 +179,8 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
     final fiatConversion = FiatConversion(fiatCurrency, fiatExchangeRate);
     final int fractionSize = fiatCurrency.info.fractionSize;
-    final borderColor = themeData.isLightTheme ? Colors.red : themeData.errorColor;
+    final borderColor =
+        themeData.isLightTheme ? Colors.red : themeData.colorScheme.error;
 
     return Column(
       mainAxisSize: MainAxisSize.min,

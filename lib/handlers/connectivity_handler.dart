@@ -41,7 +41,7 @@ class ConnectivityHandler {
       icon: Icon(
         Icons.warning_amber_outlined,
         size: 28.0,
-        color: Theme.of(context).errorColor,
+        color: Theme.of(context).colorScheme.error,
       ),
       messageText: Text(
         texts.no_connection_flushbar_title,
@@ -59,7 +59,7 @@ class ConnectivityHandler {
                     height: 24.0,
                     width: 24.0,
                     child: CircularProgressIndicator(
-                      color: Theme.of(context).errorColor,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                   ),
                 );
@@ -82,7 +82,7 @@ class ConnectivityHandler {
                 child: Text(
                   texts.no_connection_flushbar_action_retry,
                   style: theme.snackBarStyle.copyWith(
-                    color: Theme.of(context).errorColor,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
               );

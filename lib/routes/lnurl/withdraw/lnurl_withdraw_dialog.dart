@@ -124,13 +124,13 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                         ),
                       ),
                       hintColor: themeData.dialogTheme.contentTextStyle!.color,
+                      primaryColor: themeData.textTheme.labelLarge!.color!,
                       colorScheme: ColorScheme.dark(
                         primary: themeData.textTheme.labelLarge!.color!,
+                        error: themeData.isLightTheme
+                            ? Colors.red
+                            : themeData.colorScheme.error,
                       ),
-                      primaryColor: themeData.textTheme.labelLarge!.color!,
-                      errorColor: themeData.isLightTheme
-                          ? Colors.red
-                          : themeData.errorColor,
                     ),
                     child: Column(
                         mainAxisSize: MainAxisSize.max,

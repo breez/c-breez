@@ -63,8 +63,9 @@ class CalendarDialogState extends State<CalendarDialog> {
           child: Text(
             texts.pos_transactions_range_dialog_clear,
             style: theme.cancelButtonStyle.copyWith(
-              color:
-                  themeData.isLightTheme ? Colors.red : themeData.errorColor,
+              color: themeData.isLightTheme
+                  ? Colors.red
+                  : themeData.colorScheme.error,
             ),
           ),
         ),

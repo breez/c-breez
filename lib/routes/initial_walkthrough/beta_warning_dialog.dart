@@ -72,7 +72,7 @@ class AlphaWarningDialogState extends State<AlphaWarningDialog> {
         padding: const EdgeInsets.only(left: 15.0, right: 12.0),
         child: Text(
           texts.alpha_warning_message,
-          style: themeData.primaryTextTheme.headline3!.copyWith(
+          style: themeData.primaryTextTheme.displaySmall!.copyWith(
             fontSize: 16,
           ),
         ),
@@ -97,7 +97,7 @@ class AlphaWarningDialogState extends State<AlphaWarningDialog> {
             ),
             Text(
               texts.alpha_warning_understand,
-              style: themeData.primaryTextTheme.headline3!.copyWith(
+              style: themeData.primaryTextTheme.displaySmall!.copyWith(
                 fontSize: 16,
               ),
             ),
@@ -110,7 +110,7 @@ class AlphaWarningDialogState extends State<AlphaWarningDialog> {
           padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
           child: Text(
             texts.alpha_warning_understand_confirmation,
-            style: themeData.primaryTextTheme.headline3!
+            style: themeData.primaryTextTheme.displaySmall!
                 .copyWith(
                   fontSize: 16,
                 )

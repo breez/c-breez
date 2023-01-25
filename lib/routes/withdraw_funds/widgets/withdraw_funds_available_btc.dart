@@ -14,7 +14,7 @@ class WithdrawFundsAvailableBtc extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
-    final textStyle = themeData.primaryTextTheme.headline3!.copyWith(
+    final textStyle = themeData.primaryTextTheme.displaySmall!.copyWith(
       color: BreezColors.white[500],
     );
 

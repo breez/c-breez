@@ -69,7 +69,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
         children: [
           Text(
             texts.payment_request_dialog_requesting,
-            style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+            style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
             textAlign: TextAlign.center,
           ),
           GestureDetector(
@@ -111,7 +111,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                 child: SingleChildScrollView(
                   child: Text(
                     description,
-                    style: themeData.primaryTextTheme.headline3!.copyWith(
+                    style: themeData.primaryTextTheme.displaySmall!.copyWith(
                       fontSize: 16,
                     ),
                     textAlign:

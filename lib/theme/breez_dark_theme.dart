@@ -71,7 +71,7 @@ final ThemeData breezDarkTheme = ThemeData(
         height: 1.28,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    headline3: const TextStyle(
+    displaySmall: const TextStyle(
         color: Colors.white, fontSize: 14.0, letterSpacing: 0.0, height: 1.28),
     headline5: const TextStyle(
         color: Colors.white,

@@ -113,7 +113,7 @@ class Message extends StatelessWidget {
             child: AutoSizeText(
               message,
               style:
-                  themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+                  themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
               textAlign: message.length > 40 && !message.contains("\n")
                   ? TextAlign.start
                   : TextAlign.center,

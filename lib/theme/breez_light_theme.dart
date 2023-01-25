@@ -71,7 +71,7 @@ final ThemeData breezLightTheme = ThemeData(
         height: 1.28,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    headline3: TextStyle(
+    displaySmall: TextStyle(
         color: BreezColors.grey[500],
         fontSize: 14.0,
         letterSpacing: 0.0,

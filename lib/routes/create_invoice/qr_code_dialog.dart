@@ -185,7 +185,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Text(
         displayErrorMessage,
-        style: themeData.primaryTextTheme.headline3!.copyWith(fontSize: 16),
+        style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
       ),
     );
   }

@@ -48,7 +48,7 @@ class PaymentDetailsDialogDate extends StatelessWidget {
                     paymentInfo.paymentTime * 1000,
                   ),
                 ),
-                style: themeData.primaryTextTheme.headline3,
+                style: themeData.primaryTextTheme.displaySmall,
                 textAlign: TextAlign.right,
                 maxLines: 1,
                 group: valueAutoSizeGroup,

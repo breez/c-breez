@@ -80,7 +80,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
               children: [
                 Text(
                   texts.sweep_all_coins_label_receive,
-                  style: themeData.primaryTextTheme.headline3!
+                  style: themeData.primaryTextTheme.displaySmall!
                       .copyWith(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
@@ -175,7 +175,7 @@ class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
                       child: SingleChildScrollView(
                         child: Text(
                           widget.requestData.defaultDescription,
-                          style: themeData.primaryTextTheme.headline3!
+                          style: themeData.primaryTextTheme.displaySmall!
                               .copyWith(fontSize: 16),
                           textAlign:
                               widget.requestData.defaultDescription.length >

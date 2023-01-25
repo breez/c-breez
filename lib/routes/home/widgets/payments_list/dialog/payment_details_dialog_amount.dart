@@ -52,7 +52,7 @@ class PaymentDetailsAmount extends StatelessWidget {
                   paymentInfo.paymentType == PaymentType.Received
                       ? texts.payment_details_dialog_amount_positive(amountSats)
                       : texts.payment_details_dialog_amount_negative(amountSats),
-                  style: themeData.primaryTextTheme.headline3,
+                  style: themeData.primaryTextTheme.displaySmall,
                   textAlign: TextAlign.right,
                   maxLines: 1,
                   group: valueAutoSizeGroup,

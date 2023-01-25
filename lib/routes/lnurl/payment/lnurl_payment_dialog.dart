@@ -95,7 +95,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                     : BitcoinCurrency.fromTickerSymbol(
                             currencyState.bitcoinTicker)
                         .format(widget.requestData.maxSendable ~/ 1000),
-                style: themeData.primaryTextTheme.headline5,
+                style: themeData.primaryTextTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
             ),

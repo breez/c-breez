@@ -50,7 +50,7 @@ final ThemeData breezLightTheme = ThemeData(
   textTheme: TextTheme(
       subtitle2: TextStyle(
           color: BreezColors.grey[600], fontSize: 14.3, letterSpacing: 0.2),
-      headline5: TextStyle(color: BreezColors.grey[600], fontSize: 26.0),
+      headlineSmall: TextStyle(color: BreezColors.grey[600], fontSize: 26.0),
       labelLarge: TextStyle(
           color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
       headlineMedium: const TextStyle(
@@ -76,7 +76,7 @@ final ThemeData breezLightTheme = ThemeData(
         fontSize: 14.0,
         letterSpacing: 0.0,
         height: 1.28),
-    headline5: TextStyle(
+    headlineSmall: TextStyle(
         color: BreezColors.grey[500],
         fontSize: 24.0,
         letterSpacing: 0.0,

@@ -234,7 +234,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
               ? fiatConversion.format(widget.invoice.amountMsat ~/ 1000)
               : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
                   .format(widget.invoice.amountMsat ~/ 1000),
-          style: themeData.primaryTextTheme.headline5,
+          style: themeData.primaryTextTheme.headlineSmall,
           textAlign: TextAlign.center,
         ),
       ),

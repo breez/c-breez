@@ -10,6 +10,7 @@ final ThemeData breezLightTheme = ThemeData(
     secondary: Colors.white,
     onSecondary: const Color.fromRGBO(0, 133, 251, 1.0),
     error: const Color(0xffffe685),
+    background: Colors.white,
   ),
   primaryColor: const Color.fromRGBO(255, 255, 255, 1.0),
   primaryColorDark: BreezColors.blue[900],
@@ -19,7 +20,6 @@ final ThemeData breezLightTheme = ThemeData(
     sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
   ),
   canvasColor: BreezColors.blue[500],
-  backgroundColor: Colors.white,
   bottomAppBarTheme:
       const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
   appBarTheme: AppBarTheme(

@@ -40,7 +40,7 @@ class DevelopersView extends StatelessWidget {
         actions: [
           PopupMenuButton<Choice>(
             onSelected: (c) => c.function(context),
-            color: themeData.backgroundColor,
+            color: themeData.colorScheme.background,
             icon: Icon(
               Icons.more_vert,
               color: themeData.iconTheme.color,

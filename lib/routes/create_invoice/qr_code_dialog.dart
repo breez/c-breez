@@ -177,7 +177,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                   valueColor: AlwaysStoppedAnimation<Color>(
                     themeData.primaryTextTheme.button!.color!,
                   ),
-                  backgroundColor: themeData.backgroundColor,
+                  backgroundColor: themeData.colorScheme.background,
                 ),
               )));
     }

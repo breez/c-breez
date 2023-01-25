@@ -313,7 +313,7 @@ class AvatarSpinner extends StatelessWidget {
           valueColor: AlwaysStoppedAnimation<Color>(
             themeData.primaryTextTheme.button!.color!,
           ),
-          backgroundColor: themeData.backgroundColor,
+          backgroundColor: themeData.colorScheme.background,
         ),
       ),
     );

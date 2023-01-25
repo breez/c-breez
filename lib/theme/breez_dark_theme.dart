@@ -11,6 +11,7 @@ final ThemeData breezDarkTheme = ThemeData(
     secondary: Colors.white,
     onSecondary: Colors.white,
     error: const Color(0xFFeddc97),
+    background: const Color(0xFF152a3d),
   ),
   primaryColor: const Color(0xFF0085fb),
   primaryColorDark: const Color(0xFF00081C),
@@ -20,7 +21,6 @@ final ThemeData breezDarkTheme = ThemeData(
     sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
   ),
   canvasColor: const Color(0xFF0c2031),
-  backgroundColor: const Color(0xFF152a3d),
   bottomAppBarTheme:
       const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
   appBarTheme: AppBarTheme(

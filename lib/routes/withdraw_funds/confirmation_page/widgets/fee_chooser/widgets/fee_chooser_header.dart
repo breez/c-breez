@@ -79,7 +79,7 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
                     borderRadius: const BorderRadius.all(
                       Radius.circular(10),
                     ),
-                    color: themeData.backgroundColor,
+                    color: themeData.colorScheme.background,
                   ),
                 ),
               );

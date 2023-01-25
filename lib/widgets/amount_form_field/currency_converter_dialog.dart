@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
@@ -69,6 +70,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
           );
         });
       }
+      return {} as Map<String, Rate>;
     });
   }
 

@@ -38,6 +38,29 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
               group: labelAutoSizeGroup,
             ),
           ),
+          // TODO: Add pendingExpirationTimestamp information once implemented
+          /*
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              reverse: true,
+              padding: const EdgeInsets.only(left: 8.0),
+              child: AutoSizeText(
+                BreezDateUtils.formatYearMonthDayHourMinute(
+                  DateTime.fromMillisecondsSinceEpoch(
+                    paymentInfo.pendingExpirationTimestamp
+                        .toInt() *
+                        1000,
+                  ),
+                ),
+                style: themeData.primaryTextTheme.headlineMedium,
+                textAlign: TextAlign.right,
+                maxLines: 1,
+                group: labelAutoSizeGroup,
+              ),
+            ),
+          )
+          */
         ],
       ),
     );

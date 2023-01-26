@@ -15,19 +15,14 @@ class PaymentDetailsPreimage extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
 
-    LnPaymentDetails? paymentDetails;
-    if (paymentInfo.details is LnPaymentDetails) {
-      paymentDetails = paymentInfo.details as LnPaymentDetails;
-    }
-    final preimage = paymentDetails?.paymentPreimage.trim();
-
-    if (preimage == null || preimage.isEmpty) {
+    final details = paymentInfo.details.data;
+    if (details is LnPaymentDetails && details.paymentPreimage.isNotEmpty) {
+      return ShareablePaymentRow(
+        title: texts.payment_details_dialog_single_info_pre_image,
+        sharedValue: details.paymentPreimage,
+      );
+    } else {
       return Container();
     }
-
-    return ShareablePaymentRow(
-      title: texts.payment_details_dialog_single_info_pre_image,
-      sharedValue: preimage,
-    );
   }
 }

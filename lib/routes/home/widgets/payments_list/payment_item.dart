@@ -87,7 +87,15 @@ class _PaymentItemState extends State<PaymentItem> {
                   child: PaymentItemSubtitle(widget._paymentInfo),
                 ),
                 trailing: PaymentItemAmount(widget._paymentInfo),
-                onTap: () => _showDetail(context),
+                onTap: () {
+                  showDialog<void>(
+                    useRootNavigator: false,
+                    context: context,
+                    builder: (_) => PaymentDetailsDialog(
+                      paymentInfo: widget._paymentInfo,
+                    ),
+                  );
+                },
               ),
             ],
           ),
@@ -105,9 +113,5 @@ class _PaymentItemState extends State<PaymentItem> {
       ),
     );
     return diff > -duration;
-  }
-
-  void _showDetail(BuildContext context) {
-    showPaymentDetailsDialog(context, widget._paymentInfo);
   }
 }

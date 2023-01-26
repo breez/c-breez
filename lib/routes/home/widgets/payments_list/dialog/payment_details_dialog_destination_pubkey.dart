@@ -14,20 +14,14 @@ class PaymentDetailsDestinationPubkey extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
-
-    LnPaymentDetails? paymentDetails;
-    if (paymentInfo.details is LnPaymentDetails) {
-      paymentDetails = paymentInfo.details as LnPaymentDetails;
-    }
-    final destinationPubkey = paymentDetails?.destinationPubkey.trim();
-
-    if (destinationPubkey == null || destinationPubkey.isEmpty) {
+    final details = paymentInfo.details.data;
+    if (details is LnPaymentDetails && details.destinationPubkey.isNotEmpty) {
+      return ShareablePaymentRow(
+        title: texts.payment_details_dialog_single_info_node_id,
+        sharedValue: details.destinationPubkey,
+      );
+    } else {
       return Container();
     }
-
-    return ShareablePaymentRow(
-      title: texts.payment_details_dialog_single_info_node_id,
-      sharedValue: destinationPubkey,
-    );
   }
 }

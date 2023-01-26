@@ -1,3 +1,5 @@
+import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
+
 class Invoice {
   final String bolt11;
   final String paymentHash;
@@ -22,4 +24,8 @@ class Invoice {
   String get payerImageURL => "";
 
   String get payeeImageURL => "";
+
+  String extractDescription() {
+    return extractPosMessage(description) ?? description;
+  }
 }

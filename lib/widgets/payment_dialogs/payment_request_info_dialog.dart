@@ -243,7 +243,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
 
   Widget? _buildDescriptionWidget(BuildContext context) {
     final themeData = Theme.of(context);
-    final description = widget.invoice.description;
+    final description = widget.invoice.extractDescription();
 
     return description.isEmpty
         ? null

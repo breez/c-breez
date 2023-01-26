@@ -65,34 +65,36 @@ class BreezNavigationDrawer extends StatelessWidget {
     final themeData = Theme.of(context);
 
     return BlocBuilder<UserProfileBloc, UserProfileState>(
-        builder: (context, userSettings) {
-      List<Widget> children = [
-        _breezDrawerHeader(context, userSettings.profileSettings),
-        const Padding(padding: EdgeInsets.only(top: 16)),
-      ];
-      for (var groupItems in _drawerGroupedItems) {
-        children.addAll(_createDrawerGroupWidgets(
-          groupItems,
-          context,
-          _drawerGroupedItems.indexOf(groupItems),
-          withDivider: children.isNotEmpty && groupItems.withDivider,
-        ));
-      }
+      builder: (context, userSettings) {
+        List<Widget> children = [
+          _breezDrawerHeader(context, userSettings.profileSettings),
+          const Padding(padding: EdgeInsets.only(top: 16)),
+          _breezDrawFooter(context),
+        ];
+        for (var groupItems in _drawerGroupedItems) {
+          children.addAll(_createDrawerGroupWidgets(
+            groupItems,
+            context,
+            _drawerGroupedItems.indexOf(groupItems),
+            withDivider: children.isNotEmpty && groupItems.withDivider,
+          ));
+        }
 
-      return Theme(
-        data: themeData.copyWith(
-          canvasColor: themeData.customData.navigationDrawerBgColor,
-        ),
-        child: Drawer(
-          child: ListView(
-            controller: _scrollController,
-            // Important: Remove any padding from the ListView.
-            padding: const EdgeInsets.only(bottom: 20.0),
-            children: children,
+        return Theme(
+          data: themeData.copyWith(
+            canvasColor: themeData.customData.navigationDrawerBgColor,
           ),
-        ),
-      );
-    });
+          child: Drawer(
+            child: ListView(
+              controller: _scrollController,
+              // Important: Remove any padding from the ListView.
+              padding: const EdgeInsets.only(bottom: 20.0),
+              children: children,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   List<Widget> _createDrawerGroupWidgets(
@@ -144,6 +146,28 @@ class BreezNavigationDrawer extends StatelessWidget {
       child: BreezDrawerHeader(
         padding: const EdgeInsets.only(left: 16.0),
         child: _buildDrawerHeaderContent(user, context),
+      ),
+    );
+  }
+
+  Widget _breezDrawFooter(BuildContext context) {
+    return Container(
+      color: Theme.of(context).customData.navigationDrawerBgColor,
+      child: Align(
+        alignment: FractionalOffset.bottomCenter,
+        child: Column(
+          children: <Widget>[
+            Divider(),
+            ListTile(
+              leading: Image.asset(
+                "src/images/greenlight.png",
+                height: 60,
+                width: 120,
+              ),
+              title: const Text(""),
+            )
+          ],
+        ),
       ),
     );
   }

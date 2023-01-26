@@ -1,7 +1,7 @@
+import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +15,17 @@ class PaymentResultHandler {
     accountBloc.paymentResultStream.listen(
       (paymentResult) async {
         Future.delayed(const Duration(seconds: 1), () {
-          if (paymentResult.successActionData != null) {
-            handleSuccessAction(context, paymentResult.successActionData!);
+          if (paymentResult.successAction != null) {
+            handleSuccessAction(context, paymentResult.successAction!);
           } else if (paymentResult.paymentInfo != null) {
+            final texts = context.texts();
             showFlushbar(
               context,
               messageWidget: SingleChildScrollView(
-                child: Text(context.texts().home_payment_sent),
+                child: Text(paymentResult.paymentInfo!.paymentType ==
+                        PaymentType.Received
+                    ? texts.successful_payment_received
+                    : texts.home_payment_sent),
               ),
             );
           } else if (paymentResult.error != null) {
@@ -37,14 +41,14 @@ class PaymentResultHandler {
 
   Future handleSuccessAction(
     BuildContext context,
-    SuccessActionData successActionData,
+    SuccessAction successAction,
   ) async {
     // Artificial delay for UX purposes
     return Future.delayed(const Duration(seconds: 1)).then(
       (_) => showDialog(
         useRootNavigator: false,
         context: context,
-        builder: (_) => SuccessActionDialog(successActionData),
+        builder: (_) => SuccessActionDialog(successAction),
       ),
     );
   }

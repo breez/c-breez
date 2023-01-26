@@ -15,15 +15,19 @@ final AutoSizeGroup _valueGroup = AutoSizeGroup();
 
 final _log = FimberLog("PaymentDetailsDialog");
 
-Future<void> showPaymentDetailsDialog(
-  BuildContext context,
-  Payment paymentInfo,
-) {
-  _log.v("showPaymentDetailsDialog: ${paymentInfo.id}");
-  return showDialog<void>(
-    useRootNavigator: false,
-    context: context,
-    builder: (_) => AlertDialog(
+class PaymentDetailsDialog extends StatelessWidget {
+  final Payment paymentInfo;
+
+  PaymentDetailsDialog({
+    super.key,
+    required this.paymentInfo,
+  }) {
+    _log.v("PaymentDetailsDialog for payment: ${paymentInfo.id}");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
       titlePadding: EdgeInsets.zero,
       title: PaymentDetailsDialogTitle(
         paymentInfo: paymentInfo,
@@ -69,6 +73,6 @@ Future<void> showPaymentDetailsDialog(
           top: Radius.circular(13.0),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

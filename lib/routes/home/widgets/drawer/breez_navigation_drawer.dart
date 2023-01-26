@@ -69,7 +69,6 @@ class BreezNavigationDrawer extends StatelessWidget {
         List<Widget> children = [
           _breezDrawerHeader(context, userSettings.profileSettings),
           const Padding(padding: EdgeInsets.only(top: 16)),
-          _breezDrawFooter(context),
         ];
         for (var groupItems in _drawerGroupedItems) {
           children.addAll(_createDrawerGroupWidgets(
@@ -85,11 +84,19 @@ class BreezNavigationDrawer extends StatelessWidget {
             canvasColor: themeData.customData.navigationDrawerBgColor,
           ),
           child: Drawer(
-            child: ListView(
-              controller: _scrollController,
-              // Important: Remove any padding from the ListView.
-              padding: const EdgeInsets.only(bottom: 20.0),
-              children: children,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: ListView(
+                    controller: _scrollController,
+                    // Important: Remove any padding from the ListView.
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    children: children,
+                  ),
+                ),
+                SizedBox(height: 120, child: _breezDrawerFooter(context)),
+              ],
             ),
           ),
         );
@@ -150,25 +157,10 @@ class BreezNavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget _breezDrawFooter(BuildContext context) {
+  Widget _breezDrawerFooter(BuildContext context) {
     return Container(
       color: Theme.of(context).customData.navigationDrawerBgColor,
-      child: Align(
-        alignment: FractionalOffset.bottomCenter,
-        child: Column(
-          children: <Widget>[
-            Divider(),
-            ListTile(
-              leading: Image.asset(
-                "src/images/greenlight.png",
-                height: 60,
-                width: 120,
-              ),
-              title: const Text(""),
-            )
-          ],
-        ),
-      ),
+      child: const NavigationDrawFooter(),
     );
   }
 
@@ -357,6 +349,40 @@ Widget _actionTile(
       ),
     ),
   );
+}
+
+class NavigationDrawFooter extends StatelessWidget {
+  const NavigationDrawFooter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      // Important: Remove any padding from the ListView.
+      children: [
+        Container(
+          color: Theme.of(context).customData.navigationDrawerBgColor,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ListTile(
+                title: RichText(
+                    text: const TextSpan(
+                        children: [TextSpan(text: "Powered by")])),
+                dense: true,
+                enabled: false,
+                trailing: Image.asset(
+                  "src/images/greenlight.png",
+                  height: 60,
+                  width: 120,
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class _ExpansionTile extends StatelessWidget {

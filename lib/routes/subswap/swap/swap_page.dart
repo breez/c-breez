@@ -69,7 +69,7 @@ class SwapPageState extends State<SwapPage> {
             ? SingleButtonBottomBar(
                 text: texts.invoice_btc_address_action_retry,
                 onPressed: () async {
-                  swapInBloc.getBTCAddress();
+                  swapInBloc.pollSwapAddress();
                 },
               )
             : const SizedBox(),

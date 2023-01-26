@@ -14,10 +14,10 @@ class SwapInBloc extends Cubit<SwapInState> {
 
   SwapInBloc(this._breezLib)
       : super(SwapInState(null, null, isLoading:true)) {
-    getBTCAddress();    
+    pollSwapAddress();    
   }
 
-  getBTCAddress() {
+  pollSwapAddress() {
     _log.i("swap in address polling started");
     emit(SwapInState(null, null, isLoading: true));
     timer = Timer.periodic(const Duration(seconds: 5), refreshAddresses);

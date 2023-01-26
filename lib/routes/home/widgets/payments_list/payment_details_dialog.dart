@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_amount.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_date.dart';
-import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_description.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_content_title.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_destination_pubkey.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_expiration.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_preimage.dart';
@@ -36,10 +36,10 @@ Future<void> showPaymentDetailsDialog(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              PaymentDetailsDialogDescription(
+              PaymentDetailsDialogContentTitle(
                 paymentInfo: paymentInfo,
               ),
-              PaymentDetailsAmount(
+              PaymentDetailsDialogAmount(
                 paymentInfo: paymentInfo,
                 labelAutoSizeGroup: _labelGroup,
                 valueAutoSizeGroup: _valueGroup,

@@ -178,7 +178,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       if (callbackStatus is sdk.LnUrlWithdrawCallbackStatus_Ok) {
         _paymentResultStreamController.add(
           PaymentResult(
-            paymentInfo: state.payments.last,
+            paymentInfo: state.payments.first,
           ),
         );
       }
@@ -204,7 +204,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       );
       _paymentResultStreamController.add(
         PaymentResult(
-          paymentInfo: state.payments.last,
+          paymentInfo: state.payments.first,
           successAction: (lnurlPayResult is sdk.LnUrlPayResult_EndpointSuccess)
               ? lnurlPayResult.data
               : null,
@@ -223,7 +223,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     try {
       await _breezLib.sendPayment(bolt11: bolt11, amountSats: amountSats);
       _paymentResultStreamController.add(
-        PaymentResult(paymentInfo: state.payments.last),
+        PaymentResult(paymentInfo: state.payments.first),
       );
     } catch (e) {
       _log.e("sendPayment error", ex: e);
@@ -246,7 +246,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       await _breezLib.sendSpontaneousPayment(
           nodeId: nodeId, amountSats: amountSats);
       _paymentResultStreamController.add(
-        PaymentResult(paymentInfo: state.payments.last),
+        PaymentResult(paymentInfo: state.payments.first),
       );
     } catch (e) {
       _log.e("sendSpontaneousPayment error", ex: e);

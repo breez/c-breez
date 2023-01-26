@@ -7,12 +7,12 @@ import 'package:c_breez/models/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PaymentDetailsAmount extends StatelessWidget {
+class PaymentDetailsDialogAmount extends StatelessWidget {
   final Payment paymentInfo;
   final AutoSizeGroup? labelAutoSizeGroup;
   final AutoSizeGroup? valueAutoSizeGroup;
 
-  const PaymentDetailsAmount({
+  const PaymentDetailsDialogAmount({
     super.key,
     required this.paymentInfo,
     this.labelAutoSizeGroup,

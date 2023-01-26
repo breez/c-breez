@@ -14,56 +14,59 @@ class SwapInprogress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();    
-    final List<String> swapTransactions = [];
-    swapTransactions.addAll(swap.unconfirmedTxIds);
-    swapTransactions.addAll(swap.unconfirmedTxIds);
+    final texts = context.texts();
 
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 50.0,
-            left: 30.0,
-            right: 30.0,
-          ),
-          child: Text(
-            texts.add_funds_error_withdraw,
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (swapTransactions.isNotEmpty) Padding(
-              padding: const EdgeInsets.only(
-                top: 30.0,
-                left: 30.0,
-                right: 30.0,
-              ),
-              child: _linkLauncher(context, swapTransactions[0]),
-            ),
-          ],
-        )
+        _ContentWrapper(content: Text(texts.add_funds_error_deposit, textAlign: TextAlign.center), top: 50.0,),
+        if (swap.unconfirmedTxIds.isNotEmpty) _ContentWrapper(content: _TxLink(txid: swap.unconfirmedTxIds[0])),
+        if (swap.lastRedeemError != null) _ContentWrapper(content: Text(swap.lastRedeemError!, textAlign: TextAlign.center)),
       ],
     );
   }
+}
 
-  Widget _linkLauncher(BuildContext context, String unconfirmedTxID) {
-    final texts = context.texts();
+class _TxLink extends StatelessWidget {
+  final String txid;
+
+  const _TxLink({required this.txid});
+
+  @override
+  Widget build(BuildContext context) {
+    final text = context.texts();
+
     return LinkLauncher(
-      linkName: unconfirmedTxID,
-      linkAddress: "https://blockstream.info/tx/$unconfirmedTxID",
+      linkName: txid,
+      linkAddress: "https://blockstream.info/tx/$txid",
       onCopy: () {
-        ServiceInjector().device.setClipboardText(unconfirmedTxID);
+        ServiceInjector().device.setClipboardText(txid);
         showFlushbar(
           context,
-          message: texts.add_funds_transaction_id_copied,
+          message: text.add_funds_transaction_id_copied,
           duration: const Duration(seconds: 3),
         );
       },
+    );
+  }
+}
+
+class _ContentWrapper extends StatelessWidget {
+  final Widget content;
+  final double top;
+
+  const _ContentWrapper({required this.content, this.top=30.0});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: top,
+        left: 30.0,
+        right: 30.0,
+      ),
+      child: content,
     );
   }
 }

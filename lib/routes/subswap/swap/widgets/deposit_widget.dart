@@ -81,7 +81,7 @@ class _DepositWidgetState extends State<DepositWidget> {
 
     final minFees =
         (lspInfo != null) ? lspInfo.channelMinimumFeeMsat ~/ 1000 : 0;
-    final showMinFeeMessage = minFees > 0;
+    final minFeeAboveZero = minFees > 0;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFees);
     final minSats = currencyState.bitcoinCurrency.format(
       _minAllowedDeposit(
@@ -97,8 +97,11 @@ class _DepositWidgetState extends State<DepositWidget> {
     final setUpFee = (lspInfo!.channelFeePermyriad / 100).toString();
     final liquidity =
         currencyState.bitcoinCurrency.format(accountState.maxInboundLiquidity);
+    final liquidityAboveZero = accountState.maxInboundLiquidity > 0;
 
-    if (showMinFeeMessage) {
+    if (minFeeAboveZero && liquidityAboveZero) {
+      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
+      // will be applied for sending more than {liquidity}.
       return texts.invoice_btc_address_warning_with_min_fee_account_connected(
         minSats,
         maxSats,
@@ -106,7 +109,19 @@ class _DepositWidgetState extends State<DepositWidget> {
         minFeeFormatted,
         liquidity,
       );
-    } else if (!showMinFeeMessage) {
+    } else if (minFeeAboveZero && !liquidityAboveZero) {
+      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
+      // will be applied on the received amount.
+      return texts
+          .invoice_btc_address_warning_with_min_fee_account_not_connected(
+        minSats,
+        maxSats,
+        setUpFee,
+        minFeeFormatted,
+      );
+    } else if (!minFeeAboveZero && liquidityAboveZero) {
+      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
+      // for sending more than {liquidity}.
       return texts
           .invoice_btc_address_warning_without_min_fee_account_connected(
         minSats,
@@ -114,8 +129,16 @@ class _DepositWidgetState extends State<DepositWidget> {
         setUpFee,
         liquidity,
       );
+    } else {
+      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
+      // on the received amount.
+      return texts
+          .invoice_btc_address_warning_without_min_fee_account_not_connected(
+        minSats,
+        maxSats,
+        setUpFee,
+      );
     }
-    return "";
   }
 
   int _minAllowedDeposit(

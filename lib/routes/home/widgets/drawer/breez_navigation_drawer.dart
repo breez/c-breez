@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_avatar_dialog.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_drawer_header.dart';
@@ -12,6 +12,8 @@ import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:theme_provider/theme_provider.dart';
+
+const double _kBreezBottomSheetHeight = 60.0;
 
 class DrawerItemConfig {
   final GlobalKey? key;
@@ -65,43 +67,41 @@ class BreezNavigationDrawer extends StatelessWidget {
     final themeData = Theme.of(context);
 
     return BlocBuilder<UserProfileBloc, UserProfileState>(
-      builder: (context, userSettings) {
-        List<Widget> children = [
-          _breezDrawerHeader(context, userSettings.profileSettings),
-          const Padding(padding: EdgeInsets.only(top: 16)),
-        ];
-        for (var groupItems in _drawerGroupedItems) {
-          children.addAll(_createDrawerGroupWidgets(
-            groupItems,
-            context,
-            _drawerGroupedItems.indexOf(groupItems),
-            withDivider: children.isNotEmpty && groupItems.withDivider,
-          ));
-        }
+        builder: (context, userSettings) {
+      List<Widget> children = [
+        _breezDrawerHeader(context, userSettings.profileSettings),
+        const Padding(padding: EdgeInsets.only(top: 16)),
+      ];
+      for (var groupItems in _drawerGroupedItems) {
+        children.addAll(_createDrawerGroupWidgets(
+          groupItems,
+          context,
+          _drawerGroupedItems.indexOf(groupItems),
+          withDivider: children.isNotEmpty && groupItems.withDivider,
+        ));
+      }
 
-        return Theme(
-          data: themeData.copyWith(
-            canvasColor: themeData.customData.navigationDrawerBgColor,
+      return Theme(
+        data: themeData.copyWith(
+          canvasColor: themeData.customData.navigationDrawerBgColor,
+        ),
+        child: Drawer(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ListView(
+                controller: _scrollController,
+                shrinkWrap: true,
+                // Important: Remove any padding from the ListView.
+                padding: const EdgeInsets.all(0.0),
+                children: children,
+              ),
+              const NavigationDrawerFooter(),
+            ],
           ),
-          child: Drawer(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  child: ListView(
-                    controller: _scrollController,
-                    // Important: Remove any padding from the ListView.
-                    padding: const EdgeInsets.only(bottom: 120.0),
-                    children: children,
-                  ),
-                ),
-                SizedBox(height: 150, child: _breezDrawerFooter(context)),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+        ),
+      );
+    });
   }
 
   List<Widget> _createDrawerGroupWidgets(
@@ -157,13 +157,6 @@ class BreezNavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget _breezDrawerFooter(BuildContext context) {
-    return Container(
-      color: Theme.of(context).customData.navigationDrawerBgColor,
-      child: const NavigationDrawFooter(),
-    );
-  }
-
   Widget _buildDrawerHeaderContent(
     UserProfileSettings user,
     BuildContext context,
@@ -183,6 +176,49 @@ class BreezNavigationDrawer extends StatelessWidget {
         );
       },
       child: Column(children: drawerHeaderContent),
+    );
+  }
+}
+
+class NavigationDrawerFooter extends StatelessWidget {
+  const NavigationDrawerFooter({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      // Bottom Sheet Height - System Navigation Bar Height to make the Divider be in line with Bottom Sheet
+      padding: EdgeInsets.only(
+        bottom:
+            _kBreezBottomSheetHeight - MediaQuery.of(context).padding.bottom,
+        top: 20.0,
+      ),
+      child: Column(
+        children: [
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Breez SDK",
+                style: TextStyle(
+                  fontFamily: 'din-2014',
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff8091a4),
+                ),
+              ),
+              const SizedBox(width: 5),
+              Image.asset(
+                "src/images/greenlight.png",
+                height: 60,
+                width: 120,
+                fit: BoxFit.scaleDown,
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -349,50 +385,6 @@ Widget _actionTile(
       ),
     ),
   );
-}
-
-class NavigationDrawFooter extends StatelessWidget {
-  const NavigationDrawFooter({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      physics: const NeverScrollableScrollPhysics(),
-      // Important: Remove any padding from the ListView.
-      children: [
-        Container(
-          color: Theme.of(context).customData.navigationDrawerBgColor,
-          child: Column(
-            children: [
-              const Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.only(top: 3, right: 5),
-                    child: Text(
-                      "Breez SDK",
-                      style: TextStyle(
-                        fontFamily: 'din-2014',
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xff8091a4),
-                      ),
-                    ),
-                  ),
-                  Image.asset(
-                    "src/images/greenlight.png",
-                    height: 60,
-                    width: 120,
-                    fit: BoxFit.scaleDown,
-                  )
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class _ExpansionTile extends StatelessWidget {

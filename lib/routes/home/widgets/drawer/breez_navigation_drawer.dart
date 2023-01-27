@@ -365,14 +365,16 @@ class NavigationDrawFooter extends StatelessWidget {
           child: Column(
             children: [
               const Divider(),
-              Column(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const Padding(
-                    padding: EdgeInsets.only(left: 20),
+                    padding: EdgeInsets.only(top: 3, right: 5),
                     child: Text(
                       "Breez SDK",
                       style: TextStyle(
+                        fontFamily: 'din-2014',
+                        fontWeight: FontWeight.bold,
                         color: Color(0xff8091a4),
                       ),
                     ),

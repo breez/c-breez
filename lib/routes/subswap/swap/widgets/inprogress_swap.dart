@@ -15,13 +15,14 @@ class SwapInprogress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
+    final swapTxs = swap.unconfirmedTxIds.followedBy(swap.confirmedTxIds).toList();
 
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _ContentWrapper(content: Text(texts.add_funds_error_deposit, textAlign: TextAlign.center), top: 50.0,),
-        if (swap.unconfirmedTxIds.isNotEmpty) _ContentWrapper(content: _TxLink(txid: swap.unconfirmedTxIds[0])),
+        if (swapTxs.isNotEmpty) _ContentWrapper(content: _TxLink(txid: swapTxs[0])),
         if (swap.lastRedeemError != null) _ContentWrapper(content: Text(swap.lastRedeemError!, textAlign: TextAlign.center)),
       ],
     );

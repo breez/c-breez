@@ -91,7 +91,6 @@ class BreezNavigationDrawer extends StatelessWidget {
                   child: ListView(
                     controller: _scrollController,
                     // Important: Remove any padding from the ListView.
-                    padding: const EdgeInsets.only(bottom: 20.0),
                     children: children,
                   ),
                 ),
@@ -363,20 +362,28 @@ class NavigationDrawFooter extends StatelessWidget {
         Container(
           color: Theme.of(context).customData.navigationDrawerBgColor,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              ListTile(
-                title: RichText(
-                    text: const TextSpan(
-                        children: [TextSpan(text: "Powered by")])),
-                dense: true,
-                enabled: false,
-                trailing: Image.asset(
-                  "src/images/greenlight.png",
-                  height: 60,
-                  width: 120,
-                ),
-              )
+            children: [
+              const Divider(),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Text(
+                      "Breez SDK",
+                      style: TextStyle(
+                        color: Color(0xff8091a4),
+                      ),
+                    ),
+                  ),
+                  Image.asset(
+                    "src/images/greenlight.png",
+                    height: 60,
+                    width: 150,
+                    fit: BoxFit.scaleDown,
+                  )
+                ],
+              ),
             ],
           ),
         ),

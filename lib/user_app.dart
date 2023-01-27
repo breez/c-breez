@@ -5,6 +5,7 @@ import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
+import 'package:c_breez/bloc/swap_in/swap_in_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/create_invoice/create_invoice_page.dart';
@@ -24,6 +25,7 @@ import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/get_refund_page.dart';
 import 'package:c_breez/routes/subswap/swap/swap_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
+import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -36,8 +38,7 @@ const String THEME_ID_PREFERENCE_KEY = "themeID";
 
 class UserApp extends StatelessWidget {
   final GlobalKey _appKey = GlobalKey();
-  final GlobalKey<NavigatorState> _homeNavigatorKey =
-      GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +73,8 @@ class UserApp extends StatelessWidget {
             SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
             ));
-            return BlocBuilder2<AccountBloc, AccountState, SecurityBloc,
-                SecurityState>(builder: (context, accState, securityState) {
+            return BlocBuilder2<AccountBloc, AccountState, SecurityBloc, SecurityState>(
+                builder: (context, accState, securityState) {
               return MaterialApp(
                 key: _appKey,
                 title: getSystemAppLocalizations().app_name,
@@ -84,16 +85,12 @@ class UserApp extends StatelessWidget {
                   final MediaQueryData data = MediaQuery.of(context);
                   return MediaQuery(
                     data: data.copyWith(
-                      textScaleFactor: (data.textScaleFactor >= 1.3)
-                          ? 1.3
-                          : data.textScaleFactor,
+                      textScaleFactor: (data.textScaleFactor >= 1.3) ? 1.3 : data.textScaleFactor,
                     ),
                     child: child!,
                   );
                 },
-                initialRoute: securityState.pinStatus == PinStatus.enabled
-                    ? "lockscreen"
-                    : "splash",
+                initialRoute: securityState.pinStatus == PinStatus.enabled ? "lockscreen" : "splash",
                 onGenerateRoute: (RouteSettings settings) {
                   switch (settings.name) {
                     case '/intro':
@@ -127,8 +124,7 @@ class UserApp extends StatelessWidget {
                       return FadeInRoute(
                         builder: (_) => WillPopScope(
                           onWillPop: () async {
-                            return !await _homeNavigatorKey.currentState!
-                                .maybePop();
+                            return !await _homeNavigatorKey.currentState!.maybePop();
                           },
                           child: Navigator(
                             initialRoute: "/",
@@ -160,13 +156,15 @@ class UserApp extends StatelessWidget {
                                   );
                                 case '/swap_page':
                                   return FadeInRoute(
-                                    builder: (_) => const SwapPage(),
+                                    builder: (_) => BlocProvider(
+                                      create: (BuildContext context) => SwapInBloc(ServiceInjector().breezLib),
+                                      child: const SwapPage(),
+                                    ),
                                     settings: settings,
                                   );
                                 case '/fiat_currency':
                                   return FadeInRoute(
-                                    builder: (_) =>
-                                        const FiatCurrencySettings(),
+                                    builder: (_) => const FiatCurrencySettings(),
                                     settings: settings,
                                   );
                                 case '/security':
@@ -195,8 +193,7 @@ class UserApp extends StatelessWidget {
                                 case '/withdraw_funds':
                                   return FadeInRoute(
                                     builder: (_) => WithdrawFundsAddressPage(
-                                      withdrawKind:
-                                          settings.arguments as WithdrawKind,
+                                      withdrawKind: settings.arguments as WithdrawKind,
                                     ),
                                     settings: settings,
                                   );

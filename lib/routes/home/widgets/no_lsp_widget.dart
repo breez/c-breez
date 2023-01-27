@@ -10,19 +10,22 @@ class NoLSPWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
+    final foregroundColor = themeData.textTheme.labelLarge!.color!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Text(
-              texts.no_lsp_widget_message,
-            )
-          ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+          child: Text(
+            texts.no_lsp_widget_message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: foregroundColor,
+            ),
+          ),
         ),
         const SizedBox(height: 24),
         Row(
@@ -37,7 +40,7 @@ class NoLSPWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6.0),
                   ),
                   side: BorderSide(
-                    color: themeData.textTheme.labelLarge!.color!,
+                    color: foregroundColor,
                     style: BorderStyle.solid,
                   ),
                 ),
@@ -45,7 +48,7 @@ class NoLSPWidget extends StatelessWidget {
                   texts.no_lsp_widget_action_select,
                   style: TextStyle(
                     fontSize: 12.3,
-                    color: themeData.textTheme.labelLarge!.color!,
+                    color: foregroundColor,
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pushNamed("/select_lsp"),

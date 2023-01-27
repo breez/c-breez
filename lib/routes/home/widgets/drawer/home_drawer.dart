@@ -137,8 +137,8 @@ class HomeDrawerState extends State<HomeDrawer> {
     );
   }
 
-  // Not yet used, but will be addded when we support apps.
-  DrawerItemConfig _drawerItemLightningApps(
+  // TODO not yet used, but will be addded when we support apps.
+  /*DrawerItemConfig _drawerItemLightningApps(
     BuildContext context,
     UserProfileSettings user,
   ) {
@@ -149,10 +149,10 @@ class HomeDrawerState extends State<HomeDrawer> {
       "src/icon/apps.png",
       isSelected: user.appMode == AppMode.apps,
       onItemSelected: (_) {
-        // TODO add protectAdminAction
+        //  add protectAdminAction
       },
     );
-  }
+  }*/
 
   List<DrawerItemConfig> _drawerConfigToFilter(
     BuildContext context,

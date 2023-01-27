@@ -187,20 +187,17 @@ class NavigationDrawerFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      // Bottom Sheet Height - System Navigation Bar Height to make the Divider be in line with Bottom Sheet
-      padding: EdgeInsets.only(
-        bottom:
-            _kBreezBottomSheetHeight - MediaQuery.of(context).padding.bottom,
-        top: 20.0,
-      ),
+    return SizedBox(
+      // Aligns footer with bottom actions bar
+      height: 68 + MediaQuery.of(context).viewPadding.bottom,
       child: Column(
         children: [
           const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Text(
                 "Breez SDK",
                 style: TextStyle(
                   fontFamily: 'din-2014',

@@ -91,10 +91,11 @@ class BreezNavigationDrawer extends StatelessWidget {
                   child: ListView(
                     controller: _scrollController,
                     // Important: Remove any padding from the ListView.
+                    padding: const EdgeInsets.only(bottom: 120.0),
                     children: children,
                   ),
                 ),
-                SizedBox(height: 120, child: _breezDrawerFooter(context)),
+                SizedBox(height: 150, child: _breezDrawerFooter(context)),
               ],
             ),
           ),
@@ -379,7 +380,7 @@ class NavigationDrawFooter extends StatelessWidget {
                   Image.asset(
                     "src/images/greenlight.png",
                     height: 60,
-                    width: 150,
+                    width: 120,
                     fit: BoxFit.scaleDown,
                   )
                 ],

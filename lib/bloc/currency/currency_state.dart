@@ -12,7 +12,7 @@ class CurrencyState {
   CurrencyState(
       {this.fiatCurrenciesData = const [],
       this.exchangeRates = const {},
-      this.preferredCurrencies = const ["USD"],
+      this.preferredCurrencies = const ["USD", "EUR", "GBP", "JPY"],
       this.fiatId = "USD",
       this.bitcoinTicker = "SAT"});
 

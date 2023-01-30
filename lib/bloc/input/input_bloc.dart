@@ -60,8 +60,6 @@ class InputBloc extends Cubit<InputState> {
                 protocol: command.protocol,
                 inputData: command.decoded as LNURLParseResult);
           case breez_sdk.InputProtocol.nodeID:
-          case breez_sdk.InputProtocol.appLink:
-          case breez_sdk.InputProtocol.webView:
             return InputState(
                 protocol: command.protocol, inputData: command.decoded);
           default:
@@ -91,7 +89,8 @@ class InputBloc extends Cubit<InputState> {
     return InputState(protocol: command.protocol, inputData: invoice);
   }
 
-  Stream<DecodedClipboardData> get decodedClipboardStream => _device.clipboardStream.distinct().skip(1).map((clipboardData) {
+  Stream<DecodedClipboardData> get decodedClipboardStream =>
+      _device.clipboardStream.distinct().skip(1).map((clipboardData) {
         if (clipboardData.isEmpty) {
           return DecodedClipboardData.unrecognized();
         }

@@ -104,10 +104,6 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     ),
                   )
                 ],
-                LNURLMetadata({
-                  for (var v in json.decode(widget.requestData.metadataStr))
-                    v[0] as String: v[1],
-                }),
                 if (widget.requestData.commentAllowed > 0) ...[
                   TextFormField(
                     controller: _commentController,
@@ -170,6 +166,10 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     controller: _identifierController,
                   )
                 ],
+                LNURLMetadata({
+                  for (var v in json.decode(widget.requestData.metadataStr))
+                    v[0] as String: v[1],
+                }),
               ],
             ),
           ),

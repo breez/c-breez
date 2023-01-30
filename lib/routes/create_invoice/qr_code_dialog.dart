@@ -6,11 +6,11 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/routes/create_invoice/widgets/expiry_and_fee_message.dart';
+import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:c_breez/routes/create_invoice/widgets/compact_qr_image.dart';
@@ -72,11 +72,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
 
   @override
   Widget build(BuildContext context) {
-    return _buildQrCodeDialog();
-  }
-
-  Widget _buildQrCodeDialog() {
     final texts = context.texts();
+    final themeData = Theme.of(context);
 
     return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
       return BlocBuilder<InputBloc, InputState>(builder: (context, inputState) {
@@ -128,7 +125,10 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             contentPadding: const EdgeInsets.only(left: 0.0, right: 0.0, bottom: 20.0),
             children: <Widget>[
               AnimatedCrossFade(
-                firstChild: buildLoadingOrError(),
+                firstChild: LoadingOrError(
+                  error: widget.error,
+                  displayErrorMessage: displayErrorMessage,
+                ),
                 secondChild: widget._invoice == null
                     ? const SizedBox()
                     : Column(
@@ -147,47 +147,30 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                             ),
                           ),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
-                          SizedBox(width: MediaQuery.of(context).size.width, child: _buildExpiryAndFeeMessage(currencyState)),
+                          SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: const ExpiryAndFeeMessage(),
+                          ),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
                         ],
                       ),
                 duration: const Duration(seconds: 1),
                 crossFadeState: widget._invoice == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               ),
-              _buildCloseButton()
+              TextButton(
+                onPressed: (() {
+                  onFinish(false);
+                }),
+                child: Text(
+                  texts.qr_code_dialog_action_close,
+                  style: themeData.primaryTextTheme.labelLarge,
+                ),
+              ),
             ],
           ),
         );
       });
     });
-  }
-
-  Widget buildLoadingOrError() {
-    final themeData = Theme.of(context);
-    if (widget.error == null) {
-      return SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: 310.0,
-          child: Align(
-              alignment: const Alignment(0, -0.33),
-              child: SizedBox(
-                height: 80.0,
-                width: 80.0,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    themeData.primaryTextTheme.labelLarge!.color!,
-                  ),
-                  backgroundColor: themeData.colorScheme.background,
-                ),
-              )));
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Text(
-        displayErrorMessage,
-        style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
-      ),
-    );
   }
 
   String get displayErrorMessage {
@@ -206,37 +189,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     return displayMessage ??= texts.qr_code_dialog_warning_message_error;
   }
 
-  Widget _buildExpiryAndFeeMessage(CurrencyState currencyState) {
-    final themeData = Theme.of(context);
-    final texts = context.texts();
-
-    return WarningBox(
-      boxPadding: const EdgeInsets.symmetric(horizontal: 20),
-      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      backgroundColor: themeData.isLightTheme ? const Color(0xFFf3f8fc) : null,
-      borderColor: themeData.isLightTheme ? const Color(0xFF0085fb) : null,
-      child: Text(
-        texts.qr_code_dialog_warning_message,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).primaryTextTheme.bodySmall,
-      ),
-    );
-  }
-
-  Widget _buildCloseButton() {
-    final texts = context.texts();
-    return TextButton(
-      onPressed: (() {
-        onFinish(false);
-      }),
-      child: Text(
-        texts.qr_code_dialog_action_close,
-        style: Theme.of(context).primaryTextTheme.labelLarge,
-      ),
-    );
-  }
-
-  onFinish(dynamic result) {
+  void onFinish(dynamic result) {
     if (mounted && _currentRoute != null && _currentRoute!.isCurrent) {
       Navigator.removeRoute(context, _currentRoute!);
     }

@@ -1,9 +1,13 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/currency/currency_bloc.dart';
+import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
+import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
@@ -17,8 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'widgets/successful_payment.dart';
-
 class CreateInvoicePage extends StatefulWidget {
   const CreateInvoicePage({
     Key? key,
@@ -31,18 +33,12 @@ class CreateInvoicePage extends StatefulWidget {
 }
 
 class CreateInvoicePageState extends State<CreateInvoicePage> {
-  late final texts = context.texts();
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _descriptionController = TextEditingController();
   final _amountController = TextEditingController();
   final _amountFocusNode = FocusNode();
-  KeyboardDoneAction _doneAction = KeyboardDoneAction();
-
-  late final AccountBloc accountBloc = context.read<AccountBloc>();
-  late final accountState = accountBloc.state;
-  late final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
-  late final currencyState = currencyBloc.state;
+  var _doneAction = KeyboardDoneAction();
 
   @override
   void initState() {
@@ -58,6 +54,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.texts();
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -87,22 +85,29 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     ),
                     style: theme.FieldTextStyle.textStyle,
                   ),
-                  AmountFormField(
-                    context: context,
-                    texts: texts,
-                    bitcoinCurrency: currencyState.bitcoinCurrency,
-                    focusNode: _amountFocusNode,
-                    controller: _amountController,
-                    validatorFn: validatePayment,
-                    style: theme.FieldTextStyle.textStyle,
+                  BlocBuilder<CurrencyBloc, CurrencyState>(
+                    builder: (context, currencyState) {
+                      return AmountFormField(
+                        context: context,
+                        texts: texts,
+                        bitcoinCurrency: currencyState.bitcoinCurrency,
+                        focusNode: _amountFocusNode,
+                        controller: _amountController,
+                        validatorFn: (v) => validatePayment(context, v),
+                        style: theme.FieldTextStyle.textStyle,
+                      );
+                    },
                   ),
-                  ReceivableBTCBox(
-                    onTap: () {
-                      _amountController.text =
-                          currencyState.bitcoinCurrency.format(
-                        accountState.maxAllowedToReceive,
-                        includeDisplayName: false,
-                        userInput: true,
+                  BlocBuilder2<AccountBloc, AccountState, CurrencyBloc, CurrencyState>(
+                    builder: (context, accountState, currencyState) {
+                      return ReceivableBTCBox(
+                        onTap: () {
+                          _amountController.text = currencyState.bitcoinCurrency.format(
+                            accountState.maxAllowedToReceive,
+                            includeDisplayName: false,
+                            userInput: true,
+                          );
+                        },
                       );
                     },
                   ),
@@ -117,16 +122,19 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
         text: texts.invoice_action_create,
         onPressed: () {
           if (_formKey.currentState?.validate() ?? false) {
-            _createInvoice();
+            _createInvoice(context);
           }
         },
       ),
     );
   }
 
-  Future _createInvoice() async {
+  Future _createInvoice(BuildContext context) async {
     final navigator = Navigator.of(context);
-    var currentRoute = ModalRoute.of(navigator.context)!;
+    final currentRoute = ModalRoute.of(navigator.context)!;
+    final accountBloc = context.read<AccountBloc>();
+    final currencyBloc = context.read<CurrencyBloc>();
+
     Future<LNInvoice> invoice = accountBloc.addInvoice(
       description: _descriptionController.text,
       amountSats:
@@ -172,13 +180,13 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     }
   }
 
-  String? validatePayment(int amount) {
+  String? validatePayment(BuildContext context, int amount) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
     int? channelMinimumFee = lspInfo!.channelMinimumFeeMsat ~/ 1000;
 
     return PaymentValidator(
-      accountBloc.validatePayment,
-      currencyState.bitcoinCurrency,
+      context.read<AccountBloc>().validatePayment,
+      context.read<CurrencyBloc>().state.bitcoinCurrency,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);

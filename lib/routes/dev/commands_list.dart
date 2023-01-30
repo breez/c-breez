@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:c_breez/routes/dev/widget/render_body.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -129,46 +129,21 @@ class _CommandsListState extends State<CommandsList> {
                             )
                           ],
                         ),
-                  Expanded(child: _renderBody())
+                  Expanded(
+                    child: RenderBody(
+                      loading: isLoading,
+                      defaults: _showDefaultCommands,
+                      fallback: _richCliText,
+                      fallbackTextStyle: _cliTextStyle,
+                      inputController: _cliInputController,
+                      focusNode: _cliEntryFocusNode,
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _renderBody() {
-    if (isLoading) {
-      return const Center(child: Loader());
-    }
-    if (_showDefaultCommands) {
-      return Theme(
-        data: Theme.of(context).copyWith(
-          dividerColor: Colors.transparent,
-        ),
-        child: ListView(
-          children: defaultCliCommandsText(
-            (command) {
-              _cliInputController.text = command;
-              FocusScope.of(widget.scaffoldKey.currentState!.context)
-                  .requestFocus(
-                _cliEntryFocusNode,
-              );
-            },
-          ),
-        ),
-      );
-    }
-    return ListView(
-      children: [
-        RichText(
-          text: TextSpan(
-            style: _cliTextStyle,
-            children: _richCliText,
-          ),
-        )
       ],
     );
   }
@@ -230,51 +205,3 @@ class _CommandsListState extends State<CommandsList> {
     Share.shareXFiles([xFile]);
   }
 }
-
-class Command extends StatelessWidget {
-  final String command;
-  final Function(String command) onTap;
-
-  const Command(this.command, this.onTap, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        onTap(command);
-      },
-      child: Container(
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
-        child: Text(
-          command,
-          textAlign: TextAlign.left,
-        ),
-      ),
-    );
-  }
-}
-
-class Category extends StatelessWidget {
-  final String name;
-
-  const Category(this.name, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(name, style: Theme.of(context).textTheme.titleLarge);
-  }
-}
-
-List<Widget> defaultCliCommandsText(Function(String command) onCommand) => [
-      ExpansionTile(
-        title: const Text("General"),
-        children: <Widget>[
-          Command("listPeers", onCommand),
-          Command("listFunds", onCommand),
-          Command("listPayments", onCommand),
-          Command("listInvoices", onCommand),
-          Command("closeAllChannels", onCommand),
-        ],
-      ),
-    ];

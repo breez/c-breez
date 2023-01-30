@@ -1,13 +1,12 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/logger.dart';
+import 'package:c_breez/routes/dev/commands_list.dart';
 import 'package:c_breez/routes/ui_test/ui_test_page.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
-
-import 'commands_list.dart';
 
 bool allowRebroadcastRefunds = false;
 
@@ -45,48 +44,42 @@ class DevelopersView extends StatelessWidget {
               Icons.more_vert,
               color: themeData.iconTheme.color,
             ),
-            itemBuilder: (context) {
-              return _getChoices(context).map((Choice choice) {
-                return PopupMenuItem<Choice>(
-                  value: choice,
-                  child: Text(
-                    choice.title,
-                    style: themeData.textTheme.labelLarge,
+            itemBuilder: (context) => [
+              Choice(
+                title: "Export Keys",
+                icon: Icons.phone_android,
+                function: _exportKeys,
+              ),
+              Choice(
+                title: "Test UI Widgets",
+                icon: Icons.phone_android,
+                function: (_) => Navigator.push(
+                  context,
+                  FadeInRoute(
+                    builder: (_) => const UITestPage(),
                   ),
-                );
-              }).toList();
-            },
+                ),
+              ),
+              Choice(
+                title: "Share Logs",
+                icon: Icons.share,
+                function: (_) => shareLog(),
+              ),
+            ]
+                .map((choice) => PopupMenuItem<Choice>(
+                      value: choice,
+                      child: Text(
+                        choice.title,
+                        style: themeData.textTheme.labelLarge,
+                      ),
+                    ))
+                .toList(),
           ),
         ],
         title: const Text("Developers"),
       ),
       body: CommandsList(scaffoldKey: scaffoldKey),
     );
-  }
-
-  List<Choice> _getChoices(BuildContext context) {
-    return [
-      Choice(
-        title: 'Export Keys',
-        icon: Icons.phone_android,
-        function: _exportKeys,
-      ),
-      Choice(
-        title: 'Test UI Widgets',
-        icon: Icons.phone_android,
-        function: (_) => Navigator.push(
-          context,
-          FadeInRoute(
-            builder: (_) => const UITestPage(),
-          ),
-        ),
-      ),
-      Choice(
-        title: 'Share Logs',
-        icon: Icons.share,
-        function: (_) => shareLog(),
-      )
-    ];
   }
 
   void _exportKeys(BuildContext context) async {

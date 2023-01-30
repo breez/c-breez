@@ -79,7 +79,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       appBar: AppBar(
         leading: const back_button.BackButton(),
         actions: const [],
-        title: Text(texts.lnurl_payment_page_title),
+        title: Text(texts.lnurl_fetch_invoice_pay_to_payee(widget.domain)),
       ),
       body: SingleChildScrollView(
         child: Form(

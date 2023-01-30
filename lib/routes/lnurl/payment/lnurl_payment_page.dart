@@ -177,7 +177,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       ),
       bottomNavigationBar: SingleButtonBottomBar(
         stickToBottom: true,
-        text: texts.lnurl_payment_page_action_pay,
+        text: texts.lnurl_fetch_invoice_action_continue,
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             final accountBloc = context.read<AccountBloc>();

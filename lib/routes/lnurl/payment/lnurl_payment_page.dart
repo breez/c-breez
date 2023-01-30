@@ -88,22 +88,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 40.0),
             child: Column(
               mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (widget.domain.isNotEmpty) ...[
-                  Center(
-                    child: Text(
-                      fixedAmount
-                          ? texts.lnurl_payment_page_domain_pay(
-                              widget.domain,
-                              widget.requestData.maxSendable,
-                            )
-                          : widget.domain,
-                      style: themeData.textTheme.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                  )
-                ],
                 if (widget.requestData.commentAllowed > 0) ...[
                   TextFormField(
                     controller: _commentController,
@@ -125,10 +111,14 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     controller: _amountController,
                     validatorFn: validatePayment,
                   ),
-                  ReceivableBTCBox(
-                    receiveLabel: texts.lnurl_fetch_invoice_limit(
-                      (widget.requestData.minSendable ~/ 1000).toString(),
-                      (widget.requestData.maxSendable ~/ 1000).toString(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      texts.lnurl_fetch_invoice_limit(
+                        (widget.requestData.minSendable ~/ 1000).toString(),
+                        (widget.requestData.maxSendable ~/ 1000).toString(),
+                      ),
+                      textAlign: TextAlign.left,
                     ),
                   ),
                 ],

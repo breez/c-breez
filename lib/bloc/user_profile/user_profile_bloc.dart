@@ -1,33 +1,80 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/notifications.dart';
+import 'package:fimber/fimber.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
 const PROFILE_DATA_FOLDER_PATH = "profile";
 
+final _log = FimberLog("UserProfileBloc");
+
 class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
   final BreezServer _breezServer;
   final Notifications _notifications;
 
-  UserProfileBloc(this._breezServer, this._notifications)
-      : super(UserProfileState.initial());
+  UserProfileBloc(
+    this._breezServer,
+    this._notifications,
+  ) : super(UserProfileState.initial()) {
+    var profile = state;
+    _log.v("State: ${profile.profileSettings.toJson()}");
+    final settings = profile.profileSettings;
+    if (settings.color == null || settings.animal == null) {
+      _log.v("Profile has not color or name, generating new random ones…");
+      final defaultProfile = generateDefaultProfile();
+      profile = profile.copyWith(
+        profileSettings: settings.copyWith(
+          color: settings.color ?? defaultProfile.color,
+          animal: settings.animal ?? defaultProfile.animal,
+        ),
+      );
+    }
+    if (settings.name == null) {
+      _log.v("Profile has no name, generating new one…");
+      profile = profile.copyWith(
+        profileSettings: settings.copyWith(
+          name: DefaultProfile(
+            settings.color!,
+            settings.animal!,
+          ).buildName(getSystemLocale()),
+        ),
+      );
+    }
+    emit(profile);
+    registerForNotifications();
+  }
 
   Future registerForNotifications() async {
+    _log.v("registerForNotifications");
     String? token = await _notifications.getToken();
     if (token != null) {
-      var userID = await _breezServer.registerDevice(token, token);
-      emit(state.copyWith(
+      if (token != state.profileSettings.token) {
+        _log.v("Got a new token, registering…");
+        var userID = await _breezServer.registerDevice(token, token);
+        emit(state.copyWith(
           profileSettings: state.profileSettings.copyWith(
-              token: token, userID: userID, registrationRequested: true)));
+            token: token,
+            userID: userID,
+            registrationRequested: true,
+          ),
+        ));
+      } else {
+        _log.v("Token is the same as before");
+      }
+    } else {
+      _log.w("Failed to get token");
     }
   }
 
   Future<String> uploadImage(List<int> bytes) async {
+    _log.v("uploadImage ${bytes.length}");
     try {
       // TODO upload image to server
       // return await _breezServer.uploadLogo(bytes);
@@ -45,6 +92,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     bool? registrationRequested,
     bool? hideBalance,
   }) {
+    _log.v("updateProfile $name $color $animal $image $registrationRequested $hideBalance");
     var profile = state.profileSettings;
     profile = profile.copyWith(
         name: name ?? profile.name,

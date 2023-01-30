@@ -47,12 +47,15 @@ class FirebaseNotifications implements Notifications {
 
   @override
   Future<String?> getToken() async {
+    _log.v("getToken");
     NotificationSettings firebaseNotificationSettings = await _firebaseMessaging
         .requestPermission(sound: true, badge: true, alert: true);
     if (firebaseNotificationSettings.authorizationStatus ==
         AuthorizationStatus.authorized) {
+      _log.v("Authorized to get token");
       return _firebaseMessaging.getToken();
     } else {
+      _log.w("Unauthorized to get token");
       return null;
     }
   }

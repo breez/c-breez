@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_avatar_dialog.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_drawer_header.dart';
@@ -12,6 +12,8 @@ import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:theme_provider/theme_provider.dart';
+
+const double _kBreezBottomSheetHeight = 60.0;
 
 class DrawerItemConfig {
   final GlobalKey? key;
@@ -84,11 +86,18 @@ class BreezNavigationDrawer extends StatelessWidget {
           canvasColor: themeData.customData.navigationDrawerBgColor,
         ),
         child: Drawer(
-          child: ListView(
-            controller: _scrollController,
-            // Important: Remove any padding from the ListView.
-            padding: const EdgeInsets.only(bottom: 20.0),
-            children: children,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ListView(
+                controller: _scrollController,
+                shrinkWrap: true,
+                // Important: Remove any padding from the ListView.
+                padding: const EdgeInsets.all(0.0),
+                children: children,
+              ),
+              const NavigationDrawerFooter(),
+            ],
           ),
         ),
       );
@@ -167,6 +176,39 @@ class BreezNavigationDrawer extends StatelessWidget {
         );
       },
       child: Column(children: drawerHeaderContent),
+    );
+  }
+}
+
+class NavigationDrawerFooter extends StatelessWidget {
+  const NavigationDrawerFooter({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      // Aligns footer with bottom actions bar
+      height: _kBreezBottomSheetHeight +
+          8.0 +
+          MediaQuery.of(context).viewPadding.bottom,
+      child: Column(
+        children: [
+          const Divider(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                "src/images/drawer_footer.png",
+                height: 39,
+                width: 183,
+                fit: BoxFit.fitHeight,
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -367,6 +409,7 @@ class _ExpansionTile extends StatelessWidget {
                   style: theme.drawerItemTextStyle,
                 ),
         ),
+        initiallyExpanded: true,
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: (icon?.assetName ?? "") == ""

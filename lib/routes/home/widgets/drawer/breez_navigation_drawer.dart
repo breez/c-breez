@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:theme_provider/theme_provider.dart';
 
-const double _kBreezBottomSheetHeight = 60.0;
+const double _kBreezBottomSheetHeight = 69.0;
 
 class DrawerItemConfig {
   final GlobalKey? key;
@@ -189,7 +189,8 @@ class NavigationDrawerFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       // Aligns footer with bottom actions bar
-      height: 69 + MediaQuery.of(context).viewPadding.bottom,
+      height:
+          _kBreezBottomSheetHeight + MediaQuery.of(context).viewPadding.bottom,
       child: Column(
         children: [
           const Divider(),

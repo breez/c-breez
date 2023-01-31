@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:theme_provider/theme_provider.dart';
 
-const double _kBreezBottomSheetHeight = 69.0;
+const double _kBreezBottomSheetHeight = 68.0;
 
 class DrawerItemConfig {
   final GlobalKey? key;
@@ -200,9 +200,9 @@ class NavigationDrawerFooter extends StatelessWidget {
             children: [
               Image.asset(
                 "src/images/breez-sdk_greelight_footer.png",
-                height: 53,
-                width: 280,
-                fit: BoxFit.scaleDown,
+                height: 39,
+                width: 183,
+                fit: BoxFit.fitHeight,
               )
             ],
           ),

@@ -28,6 +28,7 @@ void main() {
 
     tearDown(() async {
       await platform.tearDown();
+      await tearDownHydratedBloc();
     });
 
     test('recover node', () async {

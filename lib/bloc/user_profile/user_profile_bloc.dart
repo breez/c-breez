@@ -29,7 +29,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     if (settings.color == null ||
         settings.animal == null ||
         settings.name == null) {
-      _log.v("Profile has not color or name, generating new random ones…");
+      _log.v("Profile is missing fields, generating new random ones…");
       final defaultProfile = generateDefaultProfile();
       final color = settings.color ?? defaultProfile.color;
       final animal = settings.animal ?? defaultProfile.animal;

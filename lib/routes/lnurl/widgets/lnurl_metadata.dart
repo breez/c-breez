@@ -19,8 +19,12 @@ class LNURLMetadata extends StatelessWidget {
           metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        _LNURLMetadataImage(
-          base64String: base64String,
+        Container(
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 150),
+          child: _LNURLMetadataImage(
+            base64String: base64String,
+          ),
         ),
       ],
     );

@@ -26,23 +26,18 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     var profile = state;
     _log.v("State: ${profile.profileSettings.toJson()}");
     final settings = profile.profileSettings;
-    if (settings.color == null || settings.animal == null) {
+    if (settings.color == null && settings.animal == null) {
       _log.v("Profile has not color or name, generating new random ones…");
       final defaultProfile = generateDefaultProfile();
+      final color = settings.color ?? defaultProfile.color;
+      final animal = settings.animal ?? defaultProfile.animal;
       profile = profile.copyWith(
         profileSettings: settings.copyWith(
-          color: settings.color ?? defaultProfile.color,
-          animal: settings.animal ?? defaultProfile.animal,
-        ),
-      );
-    }
-    if (settings.name == null) {
-      _log.v("Profile has no name, generating new one…");
-      profile = profile.copyWith(
-        profileSettings: settings.copyWith(
+          color: color,
+          animal: animal,
           name: DefaultProfile(
-            settings.color!,
-            settings.animal!,
+            color,
+            animal,
           ).buildName(getSystemLocale()),
         ),
       );

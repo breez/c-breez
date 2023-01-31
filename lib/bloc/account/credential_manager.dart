@@ -68,7 +68,11 @@ class CredentialsManager {
     return Uint8List.fromList(HEX.decode(seedStr!));
   }
 
-  // TODO: Subject to change to be compatible with CLI
+  /* TODO: Subject to change to be compatible with CLI
+      Instead of JSON, create two individual seed
+      and a credentials file compatible with CLI
+      then return the file list List<File>
+  */
   Future<String> exportCredentials() async {
     try {
       final Directory tempDir = await getTemporaryDirectory();

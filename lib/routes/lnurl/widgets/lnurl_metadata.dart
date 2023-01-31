@@ -13,11 +13,11 @@ class LNURLMetadata extends StatelessWidget {
         metadataMap['image/png;base64'] ?? metadataMap['image/jpeg;base64'];
     return Column(
       mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
-          style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         _LNURLMetadataImage(
           base64String: base64String,

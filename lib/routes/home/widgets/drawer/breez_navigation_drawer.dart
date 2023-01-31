@@ -199,7 +199,7 @@ class NavigationDrawerFooter extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
-                "src/images/breez-sdk_greelight_footer.png",
+                "src/images/drawer_footer.png",
                 height: 39,
                 width: 183,
                 fit: BoxFit.fitHeight,

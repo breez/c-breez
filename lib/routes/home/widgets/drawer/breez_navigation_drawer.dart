@@ -190,7 +190,7 @@ class NavigationDrawerFooter extends StatelessWidget {
     return SizedBox(
       // Aligns footer with bottom actions bar
       height:
-          _kBreezBottomSheetHeight + MediaQuery.of(context).viewPadding.bottom,
+          _kBreezBottomSheetHeight + 8.0 + MediaQuery.of(context).viewPadding.bottom,
       child: Column(
         children: [
           const Divider(),

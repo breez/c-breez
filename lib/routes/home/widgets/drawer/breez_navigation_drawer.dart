@@ -189,27 +189,18 @@ class NavigationDrawerFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       // Aligns footer with bottom actions bar
-      height: 68 + MediaQuery.of(context).viewPadding.bottom,
+      height: 69 + MediaQuery.of(context).viewPadding.bottom,
       child: Column(
         children: [
           const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
-              Text(
-                "Breez SDK",
-                style: TextStyle(
-                  fontFamily: 'din-2014',
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff8091a4),
-                ),
-              ),
-              const SizedBox(width: 5),
+            children: [
               Image.asset(
-                "src/images/greenlight.png",
-                height: 60,
-                width: 120,
+                "src/images/breez-sdk_greelight_footer.png",
+                height: 53,
+                width: 280,
                 fit: BoxFit.scaleDown,
               )
             ],

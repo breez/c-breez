@@ -25,6 +25,7 @@ class LNURLMetadata extends StatelessWidget {
         ),
         Container(
           alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 24),
           child: _LNURLMetadataImage(
             base64String: base64String,
           ),

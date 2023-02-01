@@ -1,44 +1,33 @@
 import 'dart:convert';
 
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/utils/min_font_size.dart';
 import 'package:flutter/material.dart';
 
-class LNURLMetadata extends StatelessWidget {
-  final Map<String, dynamic> metadataMap;
+class LNURLMetadataText extends StatelessWidget {
+  const LNURLMetadataText({
+    super.key,
+    required this.metadataMap,
+  });
 
-  const LNURLMetadata(this.metadataMap);
+  final Map<String, dynamic> metadataMap;
 
   @override
   Widget build(BuildContext context) {
-    String? base64String =
-        metadataMap['image/png;base64'] ?? metadataMap['image/jpeg;base64'];
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Text(
-            metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ),
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          child: _LNURLMetadataImage(
-            base64String: base64String,
-          ),
-        ),
-      ],
+    return AutoSizeText(
+      metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
+      style: theme.FieldTextStyle.textStyle,
+      maxLines: 1,
+      minFontSize: MinFontSize(context).minFontSize,
     );
   }
 }
 
-class _LNURLMetadataImage extends StatelessWidget {
+class LNURLMetadataImage extends StatelessWidget {
   final String? base64String;
 
-  const _LNURLMetadataImage({
+  const LNURLMetadataImage({
     Key? key,
     this.base64String,
   }) : super(key: key);
@@ -48,9 +37,17 @@ class _LNURLMetadataImage extends StatelessWidget {
     if (base64String != null) {
       final bytes = base64Decode(base64String!);
       if (bytes.isNotEmpty) {
-        return Image.memory(
-          bytes,
-          width: 128,
+        const imageSize = 128.0;
+        return ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: imageSize,
+            maxHeight: imageSize,
+          ),
+          child: Image.memory(
+            bytes,
+            width: imageSize,
+            fit: BoxFit.fitWidth,
+          ),
         );
       }
     }

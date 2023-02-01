@@ -71,6 +71,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   Widget build(BuildContext context) {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
+    final themeData = Theme.of(context);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -86,7 +87,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 40.0),
             child: Column(
               mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.requestData.commentAllowed > 0) ...[
                   TextFormField(
@@ -94,7 +95,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     keyboardType: TextInputType.multiline,
                     textInputAction: TextInputAction.done,
                     maxLines: null,
-                    maxLength: widget.requestData.commentAllowed,
+                    maxLength: widget.requestData.commentAllowed.toInt(),
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
                       labelText: texts.lnurl_payment_page_comment,
@@ -113,10 +114,13 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       texts.lnurl_fetch_invoice_limit(
-                        (widget.requestData.minSendable ~/ 1000).toString(),
-                        (widget.requestData.maxSendable ~/ 1000).toString(),
+                        currencyState.bitcoinCurrency
+                            .format((widget.requestData.minSendable ~/ 1000)),
+                        currencyState.bitcoinCurrency
+                            .format((widget.requestData.maxSendable ~/ 1000)),
                       ),
                       textAlign: TextAlign.left,
+                      style: themeData.dialogTheme.contentTextStyle,
                     ),
                   ),
                 ],
@@ -154,10 +158,13 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                     controller: _identifierController,
                   )
                 ],
-                LNURLMetadata({
-                  for (var v in json.decode(widget.requestData.metadataStr))
-                    v[0] as String: v[1],
-                }),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 0, 22),
+                  child: LNURLMetadata({
+                    for (var v in json.decode(widget.requestData.metadataStr))
+                      v[0] as String: v[1],
+                  }),
+                ),
               ],
             ),
           ),

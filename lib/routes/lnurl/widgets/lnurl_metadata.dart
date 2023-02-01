@@ -15,13 +15,16 @@ class LNURLMetadata extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
-          style: Theme.of(context).textTheme.bodyLarge,
+        Container(
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.only(top: 16.0),
+          child: Text(
+            metadataMap['text/long-desc'] ?? metadataMap['text/plain'],
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         ),
         Container(
           alignment: Alignment.center,
-          padding: const EdgeInsets.symmetric(vertical: 150),
           child: _LNURLMetadataImage(
             base64String: base64String,
           ),

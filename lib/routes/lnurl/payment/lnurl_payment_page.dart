@@ -11,7 +11,6 @@ import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
-import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:email_validator/email_validator.dart';
@@ -71,7 +70,6 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
-    final themeData = Theme.of(context);
     final currencyState = context.read<CurrencyBloc>().state;
 
     return Scaffold(

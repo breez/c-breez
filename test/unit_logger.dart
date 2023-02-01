@@ -1,4 +1,5 @@
 import 'package:fimber/fimber.dart';
+import 'package:flutter/foundation.dart';
 
 void setUpLogger() => Fimber.plantTree(UnitLogTree());
 
@@ -14,8 +15,10 @@ class UnitLogTree extends LogTree {
     Object? ex,
     StackTrace? stacktrace,
   }) {
-    print("$tag [$level] $message");
-    if (ex != null) print(ex);
-    if (stacktrace != null) print(stacktrace);
+    if (kDebugMode) {
+      print("$tag [$level] $message");
+      if (ex != null) print(ex);
+      if (stacktrace != null) print(stacktrace);
+    }
   }
 }

@@ -73,14 +73,18 @@ class CredentialsManager {
       and a credentials file compatible with CLI
       then return the file list List<File>
   */
-  Future<String> exportCredentials() async {
+  Future<List<File>> exportCredentials() async {
     try {
       final Directory tempDir = await getTemporaryDirectory();
       var keysDir = tempDir.createTempSync("keys");
-      final File file = File('${keysDir.path}/c-breez_credentials.json');
+      final File credentialsFile =
+          File('${keysDir.path}/c-breez-credentials.json');
       Credentials credentials = await restoreCredentials();
-      file.writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
-      return file.path;
+      credentialsFile
+          .writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
+      final File seedFile = File('${keysDir.path}/c-breez-seed.json');
+      seedFile.writeAsString(jsonEncode(credentials.toSeedJson()));
+      return [credentialsFile, seedFile];
     } catch (e) {
       throw e.toString();
     }
@@ -94,18 +98,22 @@ class Credentials {
   Credentials({required this.glCreds, required this.seed});
 
   GreenlightCredentials fromGreenlightCredentialsJson(
-      Map<String, dynamic> json,
-      ) {
+    Map<String, dynamic> json,
+  ) {
     return GreenlightCredentials(
       deviceKey: Uint8List.fromList(json['deviceKey']),
-      deviceCert:  Uint8List.fromList(json['deviceCert']),
+      deviceCert: Uint8List.fromList(json['deviceCert']),
     );
   }
 
   Map<String, dynamic> toGreenlightCredentialsJson() => {
-    'deviceKey': glCreds.deviceKey,
-    'deviceCert': glCreds.deviceCert,
-  };
+        'deviceKey': glCreds.deviceKey,
+        'deviceCert': glCreds.deviceCert,
+      };
+
+  Map<String, dynamic> toSeedJson() => {
+        'seed': seed,
+      };
 
   Credentials.fromJson(
     Map<String, dynamic> json,

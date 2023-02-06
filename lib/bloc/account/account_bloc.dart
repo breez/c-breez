@@ -16,6 +16,7 @@ import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'account_state_assembler.dart';
 
@@ -295,7 +296,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return state.toJson();
   }
 
-  Future<String> exportCredentialsFile() async {
+  Future<List<File>> exportCredentialFiles() async {
     return _credentialsManager.exportCredentials();
   }
 

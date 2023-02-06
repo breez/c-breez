@@ -9,3 +9,8 @@ Future<void> setUpHydratedBloc() async {
     storageDirectory: Directory("${Directory.current.path}/.dart_tool/hydrated_bloc_test_storage"),
   );
 }
+
+Future<void> tearDownHydratedBloc() async {
+  await HydratedBloc.storage.clear();
+}
+

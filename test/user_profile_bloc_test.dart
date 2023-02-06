@@ -1,23 +1,57 @@
-// ignore_for_file: avoid_print, unused_local_variable
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 import 'mock/injector_mock.dart';
+import 'unit_logger.dart';
+import 'utils/fake_path_provider_platform.dart';
+import 'utils/hydrated_bloc_storage.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  final platform = FakePathProviderPlatform();
+  InjectorMock injector = InjectorMock();
+
   group('breez_user_model_tests', () {
-    InjectorMock injector = InjectorMock();
-    UserProfileBloc userProfileBloc;
+    late UserProfileBloc userProfileBloc;
 
     setUp(() async {
+      setUpLogger();
       ServiceInjector.configure(injector);
-      userProfileBloc =
-          UserProfileBloc(injector.breezServer, injector.notifications);
+      await platform.setUp();
+      PathProviderPlatform.instance = platform;
+      await setUpHydratedBloc();
+      userProfileBloc = UserProfileBloc(
+        injector.breezServer,
+        injector.notifications,
+      );
     });
 
-    test("should return empty user when not registered", () async {});
+    tearDown(() async {
+      await platform.tearDown();
+      await tearDownHydratedBloc();
+    });
 
-    test("should return registered user", () async {});
+    test("should return empty user when not registered", () async {
+      final user = userProfileBloc.state;
+      expect(user.profileSettings.userID, null);
+    });
+
+    test("should return registered user", () async {
+      userProfileBloc.updateProfile(
+        name: "A name",
+      );
+      // wait for the hydration to complete
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      userProfileBloc = UserProfileBloc(
+        injector.breezServer,
+        injector.notifications,
+      );
+
+      final user = userProfileBloc.state;
+      expect(user.profileSettings.name, "A name");
+    });
   });
 }

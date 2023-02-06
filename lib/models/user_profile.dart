@@ -1,3 +1,5 @@
+enum AppMode { balance, apps }
+
 class UserProfileSettings {
   final String? userID;
   final String? name;
@@ -7,6 +9,7 @@ class UserProfileSettings {
   final String token;
   final bool registrationRequested;
   final bool hideBalance;
+  final AppMode appMode;
 
   const UserProfileSettings._({
     this.userID,
@@ -17,6 +20,7 @@ class UserProfileSettings {
     this.token = '',
     this.registrationRequested = false,
     this.hideBalance = false,
+    this.appMode = AppMode.balance,
   });
 
   UserProfileSettings.initial() : this._();
@@ -63,7 +67,8 @@ class UserProfileSettings {
         image = json['image'],
         registrationRequested =
             json['registrationRequested'] ?? json['token'] != null,
-        hideBalance = json['hideBalance'] ?? false;
+        hideBalance = json['hideBalance'] ?? false,
+        appMode = AppMode.values[json["appMode"] ?? 0];
 
   Map<String, dynamic> toJson() => {
         'userID': userID,
@@ -74,5 +79,6 @@ class UserProfileSettings {
         'image': image,
         'registrationRequested': registrationRequested,
         'hideBalance': hideBalance,
+        'appMode': appMode.index,
       };
 }

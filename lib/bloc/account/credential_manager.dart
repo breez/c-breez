@@ -79,7 +79,7 @@ class CredentialsManager {
       var keysDir = tempDir.createTempSync("keys");
       final File file = File('${keysDir.path}/c-breez_credentials.json');
       Credentials credentials = await restoreCredentials();
-      file.writeAsString(jsonEncode(credentials.toJson()));
+      file.writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
       return file.path;
     } catch (e) {
       throw e.toString();
@@ -92,6 +92,20 @@ class Credentials {
   final Uint8List seed;
 
   Credentials({required this.glCreds, required this.seed});
+
+  GreenlightCredentials fromGreenlightCredentialsJson(
+      Map<String, dynamic> json,
+      ) {
+    return GreenlightCredentials(
+      deviceKey: Uint8List.fromList(json['deviceKey']),
+      deviceCert:  Uint8List.fromList(json['deviceCert']),
+    );
+  }
+
+  Map<String, dynamic> toGreenlightCredentialsJson() => {
+    'deviceKey': glCreds.deviceKey,
+    'deviceCert': glCreds.deviceCert,
+  };
 
   Credentials.fromJson(
     Map<String, dynamic> json,

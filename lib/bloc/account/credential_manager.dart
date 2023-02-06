@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:fimber/fimber.dart';
@@ -83,7 +84,7 @@ class CredentialsManager {
       credentialsFile
           .writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
       final File seedFile = File('${keysDir.path}/c-breez-seed.json');
-      seedFile.writeAsString(jsonEncode(credentials.toSeedJson()));
+      seedFile.writeAsString(jsonEncode(credentials.toMnemonicJson()));
       return [credentialsFile, seedFile];
     } catch (e) {
       throw e.toString();
@@ -111,8 +112,8 @@ class Credentials {
         'deviceCert': glCreds.deviceCert,
       };
 
-  Map<String, dynamic> toSeedJson() => {
-        'seed': seed,
+  Map<String, dynamic> toMnemonicJson() => {
+        'seed': bip39.entropyToMnemonic(HEX.encode(seed)),
       };
 
   Credentials.fromJson(

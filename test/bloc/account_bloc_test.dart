@@ -1,18 +1,15 @@
-import 'dart:typed_data';
-
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hex/hex.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 import '../mock/injector_mock.dart';
 import '../utils/fake_path_provider_platform.dart';
 import '../utils/hydrated_bloc_storage.dart';
 
-var testSeed =
-    '0c56b71ef51d393ecd55cbd22779ada82705d15bb583e7c6a4a20482a986e35031544c88f408b32fd0dd7604c0e8ced8c1595143a2da58dc0704effd58b80680';
+var testMnemonic =
+    'update elbow source spin squeeze horror world become oak assist bomb nuclear';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -36,14 +33,14 @@ void main() {
       var breezLib = injector.breezLib;
       injector.keychain.write(CredentialsManager.accountCredsKey, "a3e1");
       injector.keychain.write(CredentialsManager.accountCredsCert, "a3e61");
-      injector.keychain.write(CredentialsManager.accountSeedKey, "a3eed");
+      injector.keychain.write(CredentialsManager.accountMnemonic, "a3eed");
       AccountBloc accBloc = AccountBloc(
         breezLib,
         CredentialsManager(keyChain: injector.keychain)        
       );
 
       await accBloc.recoverNode(
-        seed: Uint8List.fromList(HEX.decode(testSeed)),
+        mnemonic: testMnemonic
       );
       var accountState = accBloc.state;
       expect(accountState.blockheight, greaterThan(1));

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:fimber/fimber.dart';
@@ -13,7 +12,7 @@ class CredentialsManager {
   final _log = FimberLog("CredentialsManager");
   static const String accountCredsKey = "account_creds_key";
   static const String accountCredsCert = "account_creds_cert";
-  static const String accountSeedKey = "account_seed_key";
+  static const String accountMnemonic = "account_mnemonic";
 
   final KeyChain keyChain;
 
@@ -21,11 +20,11 @@ class CredentialsManager {
 
   Future storeCredentials({
     required GreenlightCredentials glCreds,
-    required Uint8List seed,
+    required String mnemonic,
   }) async {
     try {
       await _storeGreenlightCredentials(glCreds);
-      await _storeSeed(seed);
+      await _storeMnemonic(mnemonic);
       _log.i("Stored credentials successfully");
     } catch (err) {
       throw Exception(err.toString());
@@ -35,9 +34,9 @@ class CredentialsManager {
   Future<Credentials> restoreCredentials() async {
     try {
       GreenlightCredentials glCreds = await _restoreGreenlightCredentials();
-      Uint8List seed = await _restoreSeed();
+      String mnemonic = await _restoreMnemonic();
       _log.i("Restored credentials successfully");
-      return Credentials(glCreds: glCreds, seed: seed);
+      return Credentials(glCreds: glCreds, mnemonic: mnemonic);
     } catch (err) {
       throw Exception(err.toString());
     }
@@ -51,8 +50,8 @@ class CredentialsManager {
     await keyChain.write(accountCredsKey, HEX.encode(glCreds.deviceKey));
   }
 
-  Future<void> _storeSeed(Uint8List seed) async {
-    await keyChain.write(accountSeedKey, HEX.encode(seed));
+  Future<void> _storeMnemonic(String mnemonic) async {
+    await keyChain.write(accountMnemonic, mnemonic);
   }
 
   Future<GreenlightCredentials> _restoreGreenlightCredentials() async {
@@ -64,9 +63,9 @@ class CredentialsManager {
     );
   }
 
-  Future<Uint8List> _restoreSeed() async {
-    String? seedStr = await keyChain.read(accountSeedKey);
-    return Uint8List.fromList(HEX.decode(seedStr!));
+  Future<String> _restoreMnemonic() async {
+    String? mnemonicStr = await keyChain.read(accountMnemonic);
+    return mnemonicStr!;
   }
 
   /* TODO: Subject to change to be compatible with CLI
@@ -83,9 +82,9 @@ class CredentialsManager {
       Credentials credentials = await restoreCredentials();
       credentialsFile
           .writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
-      final File seedFile = File('${keysDir.path}/c-breez-seed.json');
-      seedFile.writeAsString(jsonEncode(credentials.toMnemonicJson()));
-      return [credentialsFile, seedFile];
+      final File mnemonicFile = File('${keysDir.path}/c-breez-mnemonic.json');
+      mnemonicFile.writeAsString(credentials.mnemonic);
+      return [credentialsFile, mnemonicFile];
     } catch (e) {
       throw e.toString();
     }
@@ -94,9 +93,9 @@ class CredentialsManager {
 
 class Credentials {
   final GreenlightCredentials glCreds;
-  final Uint8List seed;
+  final String mnemonic;
 
-  Credentials({required this.glCreds, required this.seed});
+  Credentials({required this.glCreds, required this.mnemonic});
 
   GreenlightCredentials fromGreenlightCredentialsJson(
     Map<String, dynamic> json,
@@ -112,10 +111,6 @@ class Credentials {
         'deviceCert': glCreds.deviceCert,
       };
 
-  Map<String, dynamic> toMnemonicJson() => {
-        'seed': bip39.entropyToMnemonic(HEX.encode(seed)),
-      };
-
   Credentials.fromJson(
     Map<String, dynamic> json,
   )   : glCreds = GreenlightCredentials(
@@ -124,13 +119,13 @@ class Credentials {
           deviceCert:
               Uint8List.fromList(HEX.decode(json['glCreds']['deviceCert'])),
         ),
-        seed = Uint8List.fromList(HEX.decode(json['seed']));
+        mnemonic = json['mnemonic'];
 
   Map<String, dynamic> toJson() => {
         'glCreds': {
           'deviceKey': HEX.encode(glCreds.deviceKey),
           'deviceCert': HEX.encode(glCreds.deviceCert),
         },
-        'seed': HEX.encode(seed),
+        'mnemonic': mnemonic,
       };
 }

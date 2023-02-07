@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
@@ -158,18 +156,18 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _restoreNodeFromMnemonicSeed() async {
-    Uint8List? mnemonicSeed = await _getMnemonicSeed();
-    if (mnemonicSeed != null) {
-      restoreNode(mnemonicSeed);
+    String? mnemonic = await _getMnemonic();
+    if (mnemonic != null) {
+      restoreNode(mnemonic);
     }
   }
 
-  Future<Uint8List?> _getMnemonicSeed() async {
+  Future<String?> _getMnemonic() async {
     return await Navigator.of(context)
-        .pushNamed<Uint8List>("/enter_mnemonic_seed");
+        .pushNamed<String>("/enter_mnemonic_seed");
   }
 
-  void restoreNode(Uint8List mnemonicSeed) async {
+  void restoreNode(String mnemonic) async {
     var accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
@@ -177,7 +175,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
 
     final themeProvider = ThemeProvider.controllerOf(context);
     try {
-      await accountBloc.recoverNode(seed: mnemonicSeed);
+      await accountBloc.recoverNode(mnemonic: mnemonic);
     } catch (error) {
       _log.i("Failed to restore node", ex: error);
       showFlushbar(context, message: extractExceptionMessage(error));

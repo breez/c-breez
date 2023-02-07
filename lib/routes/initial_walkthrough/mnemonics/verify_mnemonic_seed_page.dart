@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:bip39/bip39.dart' as bip39;
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -138,7 +137,7 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
     final themeProvider = ThemeProvider.controllerOf(context);
     // await registrationBloc.registerForNotifications();
     await accountBloc
-        .startNewNode(seed: bip39.mnemonicToSeed(widget._mnemonics))
+        .startNewNode(mnemonic: widget._mnemonics)
         .whenComplete(() => navigator.removeRoute(loaderRoute))
         .catchError(
       (error) {

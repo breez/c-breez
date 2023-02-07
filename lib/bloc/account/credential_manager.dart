@@ -12,7 +12,7 @@ class CredentialsManager {
   final _log = FimberLog("CredentialsManager");
   static const String accountCredsKey = "account_creds_key";
   static const String accountCredsCert = "account_creds_cert";
-  static const String accountSeedKey = "account_seed_key";
+  static const String accountMnemonic = "account_mnemonic";
 
   final KeyChain keyChain;
 
@@ -20,11 +20,11 @@ class CredentialsManager {
 
   Future storeCredentials({
     required GreenlightCredentials glCreds,
-    required Uint8List seed,
+    required String mnemonic,
   }) async {
     try {
       await _storeGreenlightCredentials(glCreds);
-      await _storeSeed(seed);
+      await _storeMnemonic(mnemonic);
       _log.i("Stored credentials successfully");
     } catch (err) {
       throw Exception(err.toString());
@@ -34,9 +34,9 @@ class CredentialsManager {
   Future<Credentials> restoreCredentials() async {
     try {
       GreenlightCredentials glCreds = await _restoreGreenlightCredentials();
-      Uint8List seed = await _restoreSeed();
+      String mnemonic = await _restoreMnemonic();
       _log.i("Restored credentials successfully");
-      return Credentials(glCreds: glCreds, seed: seed);
+      return Credentials(glCreds: glCreds, mnemonic: mnemonic);
     } catch (err) {
       throw Exception(err.toString());
     }
@@ -50,8 +50,8 @@ class CredentialsManager {
     await keyChain.write(accountCredsKey, HEX.encode(glCreds.deviceKey));
   }
 
-  Future<void> _storeSeed(Uint8List seed) async {
-    await keyChain.write(accountSeedKey, HEX.encode(seed));
+  Future<void> _storeMnemonic(String mnemonic) async {
+    await keyChain.write(accountMnemonic, mnemonic);
   }
 
   Future<GreenlightCredentials> _restoreGreenlightCredentials() async {
@@ -63,20 +63,23 @@ class CredentialsManager {
     );
   }
 
-  Future<Uint8List> _restoreSeed() async {
-    String? seedStr = await keyChain.read(accountSeedKey);
-    return Uint8List.fromList(HEX.decode(seedStr!));
+  Future<String> _restoreMnemonic() async {
+    String? mnemonicStr = await keyChain.read(accountMnemonic);
+    return mnemonicStr!;
   }
 
-  // TODO: Subject to change to be compatible with CLI
-  Future<String> exportCredentials() async {
+  Future<List<File>> exportCredentials() async {
     try {
       final Directory tempDir = await getTemporaryDirectory();
       var keysDir = tempDir.createTempSync("keys");
-      final File file = File('${keysDir.path}/c-breez_credentials.json');
+      final File credentialsFile =
+          File('${keysDir.path}/c-breez-credentials.json');
       Credentials credentials = await restoreCredentials();
-      file.writeAsString(jsonEncode(credentials.toJson()));
-      return file.path;
+      credentialsFile
+          .writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
+      final File mnemonicFile = File('${keysDir.path}/c-breez-mnemonic.json');
+      mnemonicFile.writeAsString(credentials.mnemonic);
+      return [credentialsFile, mnemonicFile];
     } catch (e) {
       throw e.toString();
     }
@@ -85,9 +88,23 @@ class CredentialsManager {
 
 class Credentials {
   final GreenlightCredentials glCreds;
-  final Uint8List seed;
+  final String mnemonic;
 
-  Credentials({required this.glCreds, required this.seed});
+  Credentials({required this.glCreds, required this.mnemonic});
+
+  GreenlightCredentials fromGreenlightCredentialsJson(
+    Map<String, dynamic> json,
+  ) {
+    return GreenlightCredentials(
+      deviceKey: Uint8List.fromList(json['deviceKey']),
+      deviceCert: Uint8List.fromList(json['deviceCert']),
+    );
+  }
+
+  Map<String, dynamic> toGreenlightCredentialsJson() => {
+        'deviceKey': glCreds.deviceKey,
+        'deviceCert': glCreds.deviceCert,
+      };
 
   Credentials.fromJson(
     Map<String, dynamic> json,
@@ -97,13 +114,13 @@ class Credentials {
           deviceCert:
               Uint8List.fromList(HEX.decode(json['glCreds']['deviceCert'])),
         ),
-        seed = Uint8List.fromList(HEX.decode(json['seed']));
+        mnemonic = json['mnemonic'];
 
   Map<String, dynamic> toJson() => {
         'glCreds': {
           'deviceKey': HEX.encode(glCreds.deviceKey),
           'deviceCert': HEX.encode(glCreds.deviceCert),
         },
-        'seed': HEX.encode(seed),
+        'mnemonic': mnemonic,
       };
 }

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:archive/archive_io.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/routes/dev/commands_list.dart';
@@ -6,6 +9,8 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 bool allowRebroadcastRefunds = false;
@@ -84,8 +89,22 @@ class DevelopersView extends StatelessWidget {
 
   void _exportKeys(BuildContext context) async {
     final accBloc = context.read<AccountBloc>();
-    final credentialsFilePath = await accBloc.exportCredentialsFile();
-    final credentialsFile = XFile(credentialsFilePath);
-    Share.shareXFiles([credentialsFile]);
+    final appDir = await getApplicationDocumentsDirectory();
+    final encoder = ZipFileEncoder();
+    final zipFilePath = "${appDir.path}/c-breez-keys.zip";
+    encoder.create(zipFilePath);
+    final List<File> credentialFiles = await accBloc.exportCredentialFiles();
+    for (var credentialFile in credentialFiles) {
+      final bytes = await credentialFile.readAsBytes();
+      encoder.addArchiveFile(
+        ArchiveFile(basename(credentialFile.path), bytes.length, bytes),
+      );
+    }
+    final storageFilePath = "${appDir.path}/storage.sql";
+    final storageFile = File(storageFilePath);
+    encoder.addFile(storageFile);
+    encoder.close();
+    final zipFile = XFile(zipFilePath);
+    Share.shareXFiles([zipFile]);
   }
 }

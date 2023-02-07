@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:breez_sdk/native_toolkit.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/restore_form.dart';
 import 'package:c_breez/utils/exceptions.dart';
@@ -23,7 +22,6 @@ class RestoreFormPage extends StatefulWidget {
 
 class RestoreFormPageState extends State<RestoreFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _lnToolkit = getNativeToolkit();
 
   List<TextEditingController> textEditingControllers =
       List<TextEditingController>.generate(12, (_) => TextEditingController());
@@ -93,7 +91,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
         .toList()
         .join(" ");
     try {
-      Navigator.pop(context, await _lnToolkit.mnemonicToSeed(phrase: mnemonic));
+      Navigator.pop(context, mnemonic);
     } catch (e) {
       setState(() {
         _hasError = true;

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
@@ -11,7 +12,6 @@ import 'package:c_breez/bloc/account/payment_result_data.dart';
 import 'package:c_breez/config.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
@@ -74,9 +74,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _startRegisteredNode() async {    
     final credentials = await _credentialsManager.restoreCredentials();
+    final seed = bip39.mnemonicToSeed(credentials.mnemonic);
     await _breezLib.initServices(
       config: (await Config.instance()).sdkConfig,
-      seed: credentials.seed,
+      seed: seed,
       creds: credentials.glCreds,
     );    
     await _startSdkForever();
@@ -85,15 +86,16 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   // startNewNode register a new node and start it
   Future startNewNode({
     sdk.Network network = sdk.Network.Bitcoin,
-    required Uint8List seed,
+    required String mnemonic,
   }) async {
+    final seed = bip39.mnemonicToSeed(mnemonic);
     final sdk.GreenlightCredentials creds = await _breezLib.registerNode(
       config: (await Config.instance()).sdkConfig,
       network: network,
       seed: seed,
     );
     _log.i("node registered successfully");
-    await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
+    await _credentialsManager.storeCredentials(glCreds: creds, mnemonic: mnemonic);
     emit(state.copyWith(initial: false));
     await _startSdkForever();
     _log.i("new node started");
@@ -102,15 +104,16 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   // recoverNode recovers a node from seed
   Future recoverNode({
     sdk.Network network = sdk.Network.Bitcoin,
-    required Uint8List seed,
+    required String mnemonic,
   }) async {
+    final seed = bip39.mnemonicToSeed(mnemonic);
     final sdk.GreenlightCredentials creds = await _breezLib.recoverNode(
       config: (await Config.instance()).sdkConfig,
       network: network,
       seed: seed,
     );
     _log.i("node recovered successfully");
-    await _credentialsManager.storeCredentials(glCreds: creds, seed: seed);
+    await _credentialsManager.storeCredentials(glCreds: creds, mnemonic: mnemonic);
     emit(state.copyWith(initial: false));
     await _startSdkForever();
     _log.i("recovered node started");    
@@ -295,7 +298,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return state.toJson();
   }
 
-  Future<String> exportCredentialsFile() async {
+  Future<List<File>> exportCredentialFiles() async {
     return _credentialsManager.exportCredentials();
   }
 

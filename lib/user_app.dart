@@ -116,7 +116,7 @@ class UserApp extends StatelessWidget {
                         settings: settings,
                       );
                     case '/enter_mnemonic_seed':
-                      return FadeInRoute<Uint8List>(
+                      return FadeInRoute<String>(
                         builder: (_) => EnterMnemonicSeedPage(),
                         settings: settings,
                       );

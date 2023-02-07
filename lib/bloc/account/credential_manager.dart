@@ -68,11 +68,6 @@ class CredentialsManager {
     return mnemonicStr!;
   }
 
-  /* TODO: Subject to change to be compatible with CLI
-      Instead of JSON, create two individual seed
-      and a credentials file compatible with CLI
-      then return the file list List<File>
-  */
   Future<List<File>> exportCredentials() async {
     try {
       final Directory tempDir = await getTemporaryDirectory();

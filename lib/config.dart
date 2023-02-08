@@ -30,7 +30,12 @@ class Config {
 
   static Future<sdk.Config> _getSDKConfig(sdk.Config defaultConf, ini.Config breezConfig) async {    
     final configuredPaymentTimeout = breezConfig.get("Application Options", "paymentTimeoutSec");
+    final configuredMaxFeeSat = breezConfig.get("Application Options", "maxfeesat");
+    final configuredMaxFeePercent = breezConfig.get("Application Options", "maxfeepercent");
+
     sdk.Config config = sdk.Config(
+      maxfeeSat: configuredMaxFeeSat != null ? int.parse(configuredMaxFeeSat) : defaultConf.maxfeeSat,
+      maxfeepercent: configuredMaxFeePercent != null ? double.parse(configuredMaxFeePercent) : defaultConf.maxfeepercent,
       breezserver: breezConfig.get("Application Options", "breezserver") ?? defaultConf.breezserver,
       mempoolspaceUrl: await ServiceInjector().preferences.getMempoolSpaceUrl().then((url) {
         if (url != null) {
@@ -46,7 +51,7 @@ class Config {
           .firstWhere((n) => n.name.toLowerCase() == (breezConfig.get("Application Options", "network")), orElse: () => defaultConf.network),
       paymentTimeoutSec: configuredPaymentTimeout != null ? int.parse(configuredPaymentTimeout) : defaultConf.paymentTimeoutSec,
       defaultLspId: breezConfig.get("Application Options", "defaultLspId") ?? defaultConf.defaultLspId,
-      apiKey: breezConfig.get("Application Options", "apiKey") ?? defaultConf.apiKey,
+      apiKey: breezConfig.get("Application Options", "apiKey") ?? defaultConf.apiKey,      
     );
     return config;
   }

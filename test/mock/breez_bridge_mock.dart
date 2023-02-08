@@ -21,7 +21,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
 
   @override
   Future<Config> defaultConfig(EnvironmentType envType) async {
-    return Config(breezserver: '', mempoolspaceUrl: '', network: Network.Bitcoin, paymentTimeoutSec: 10, workingDir: '.');
+    return Config(breezserver: '', mempoolspaceUrl: '', network: Network.Bitcoin, paymentTimeoutSec: 10, workingDir: '.', maxfeepercent: 0.5);
   }
 
   @override

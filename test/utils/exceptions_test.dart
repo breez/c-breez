@@ -37,4 +37,21 @@ void main() {
       'all routehints were unusable.',
     );
   });
+
+  test("caused by", () {
+    final message = extractExceptionMessage(const FfiException(
+      "RESULT_ERROR",
+      "error sending request for url (https://legend.lnbits.com/withdraw/api/v1/lnurl/cb/ngRuVZspEzjNFNzMFoqBjf?"
+          "id_unique_hash=RN8TLkyoxj8GaKgcTTcq4P&k1=FcjuJjwmfXJWhZXYVRpwCL&"
+          "pr=lnbc100n1p37zsutsp5pen5py8k4tmh2yntwk63h0w8mzgze3rvnq8mffmh9e37jmw0l5vqpp5t2ax0ahjesquymq4q6kegexcww"
+          "8mx6pkxpg3wyd4rjcghwl0dcfqdqdwehh2cmgv4e8xxqyjw5qcqpxrzjqwk7573qcyfskzw33jnvs0shq9tzy28sd86naqlgkdga9p8"
+          "z74fs9mmdhw49gpqe6cqqqqlgqqqqqzsqyg9qyysgq5qunm49m4zec3d237xa505djea5pl8v68y2p79lm4437tw0s0mexprzh3qak8"
+          "yrprsfz3tww4l2d5lng2877cd92jg5mdnh42ehl70cqmjf7ex): connection closed before message completed Caused "
+          "by: connection closed before message completed",
+    ));
+    expect(
+      message,
+      'connection closed before message completed',
+    );
+  });
 }

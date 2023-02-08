@@ -1,309 +1,182 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/fiat_conversion.dart';
-import 'package:c_breez/utils/min_font_size.dart';
-import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
-import 'package:c_breez/widgets/loader.dart';
+import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/widgets/loading_animated_text.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../bloc/lsp/lsp_bloc.dart';
-import '../../../utils/payment_validator.dart';
+final _log = FimberLog("LnulrWithdrawDialog");
 
-final _log = FimberLog("LNURLWithdrawDialog");
-
-class LNURLWithdrawDialog extends StatefulWidget {
+class LnulrWithdrawDialog extends StatefulWidget {
+  final Function(LNURLWithdrawPageResult? result) onFinish;
   final sdk.LnUrlWithdrawRequestData requestData;
+  final int amountSats;
   final String domain;
 
-  const LNURLWithdrawDialog({
-    Key? key,
+  const LnulrWithdrawDialog({
+    super.key,
     required this.requestData,
+    required this.amountSats,
     required this.domain,
-  }) : super(key: key);
+    required this.onFinish,
+  });
 
   @override
-  State<StatefulWidget> createState() {
-    return LNURLWithdrawDialogState();
-  }
+  State<LnulrWithdrawDialog> createState() => _LnulrWithdrawDialogState();
 }
 
-class LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> {
-  final formKey = GlobalKey<FormState>();
-  final _amountController = TextEditingController();
-  bool _showFiatCurrency = false;
-  late final bool fixedAmount;
+class _LnulrWithdrawDialogState extends State<LnulrWithdrawDialog> with SingleTickerProviderStateMixin {
+  late Animation<double> _opacityAnimation;
+  Future<LNURLWithdrawPageResult>? _future;
+  var finishCalled = false;
 
   @override
   void initState() {
-    fixedAmount = widget.requestData.minWithdrawable ==
-        widget.requestData.maxWithdrawable;
-    if (fixedAmount) {
-      _amountController.text =
-          (widget.requestData.minWithdrawable ~/ 1000).toString();
-    }
     super.initState();
+    final controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.ease,
+    ));
+    controller.value = 1.0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _future = _withdraw(context).then((result) {
+          if (result.error == null && mounted) {
+            controller.addStatusListener((status) {
+              _log.v("Animation status $status");
+              if (status == AnimationStatus.dismissed && mounted) {
+                widget.onFinish(result);
+              }
+            });
+            controller.reverse();
+          }
+          return result;
+        });
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    if (!finishCalled) {
+      _onFinish(null);
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
     final texts = context.texts();
-    final currencyState = context.read<CurrencyBloc>().state;
+    final themeData = Theme.of(context);
 
-    FiatConversion? fiatConversion;
-    if (currencyState.fiatEnabled) {
-      fiatConversion = FiatConversion(
-          currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
-    }
+    return FadeTransition(
+      opacity: _opacityAnimation,
+      child: AlertDialog(
+        title: Text(
+          texts.lnurl_withdraw_dialog_title,
+          style: themeData.dialogTheme.titleTextStyle,
+          textAlign: TextAlign.center,
+        ),
+        content: FutureBuilder(
+          future: _future,
+          builder: (context, snapshot) {
+            final data = snapshot.data;
+            final error = snapshot.error ?? data?.error;
+            _log.v("Building with data $data, error $error");
 
-    return AlertDialog(
-      title: Text(
-        widget.domain,
-        style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
-        textAlign: TextAlign.center,
-      ),
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Form(
-          key: formKey,
-          child: Column(
+            return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  texts.sweep_all_coins_label_receive,
-                  style: themeData.primaryTextTheme.displaySmall!
-                      .copyWith(fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-                if (fixedAmount) ...[
-                  GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onLongPressStart: (_) {
-                      setState(() {
-                        _showFiatCurrency = true;
-                      });
-                    },
-                    onLongPressEnd: (_) {
-                      setState(() {
-                        _showFiatCurrency = false;
-                      });
-                    },
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        minWidth: double.infinity,
-                      ),
-                      child: Text(
-                        _showFiatCurrency && fiatConversion != null
-                            ? fiatConversion.format(
-                                widget.requestData.maxWithdrawable ~/ 1000)
-                            : BitcoinCurrency.fromTickerSymbol(
-                                    currencyState.bitcoinTicker)
-                                .format(
-                                    widget.requestData.maxWithdrawable ~/ 1000),
-                        style: themeData.primaryTextTheme.headlineSmall,
+                error != null
+                    ? Text(
+                        texts.lnurl_withdraw_dialog_error(
+                          extractExceptionMessage(error),
+                        ),
+                        style: themeData.dialogTheme.contentTextStyle,
+                        textAlign: TextAlign.center,
+                      )
+                    : LoadingAnimatedText(
+                        texts.lnurl_withdraw_dialog_wait,
+                        textStyle: themeData.dialogTheme.contentTextStyle,
                         textAlign: TextAlign.center,
                       ),
-                    ),
-                  )
-                ],
-                if (!fixedAmount) ...[
-                  Theme(
-                    data: themeData.copyWith(
-                      inputDecorationTheme: InputDecorationTheme(
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: theme.greyBorderSide,
+                error != null
+                    ? const SizedBox(height: 16.0)
+                    : Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                        child: Image.asset(
+                          themeData.customData.loaderAssetPath,
+                          gaplessPlayback: true,
                         ),
                       ),
-                      hintColor: themeData.dialogTheme.contentTextStyle!.color,
-                      primaryColor: themeData.textTheme.labelLarge!.color!,
-                      colorScheme: ColorScheme.dark(
-                        primary: themeData.textTheme.labelLarge!.color!,
-                        error: themeData.isLightTheme
-                            ? Colors.red
-                            : themeData.colorScheme.error,
-                      ),
-                    ),
-                    child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AmountFormField(
-                            context: context,
-                            texts: texts,
-                            bitcoinCurrency: currencyState.bitcoinCurrency,
-                            controller: _amountController,
-                            validatorFn: validatePayment,
-                            onFieldSubmitted: (_) {
-                              formKey.currentState?.validate();
-                            },
-                            style: themeData.dialogTheme.contentTextStyle!
-                                .copyWith(height: 1.0),
-                            iconColor: themeData.primaryIconTheme.color,
-                          ),
-                          AutoSizeText(
-                            texts.lnurl_fetch_invoice_limit(
-                              (widget.requestData.minWithdrawable ~/ 1000)
-                                  .toString(),
-                              (widget.requestData.maxWithdrawable ~/ 1000)
-                                  .toString(),
-                            ),
-                            maxLines: 2,
-                            style: themeData.dialogTheme.contentTextStyle,
-                            minFontSize: MinFontSize(context).minFontSize,
-                          ),
-                        ]),
-                  ),
-                ],
-                Padding(
-                  padding:
-                      const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      maxHeight: 200,
-                      minWidth: double.infinity,
-                    ),
-                    child: Scrollbar(
-                      child: SingleChildScrollView(
-                        child: Text(
-                          widget.requestData.defaultDescription,
-                          style: themeData.primaryTextTheme.displaySmall!
-                              .copyWith(fontSize: 16),
-                          textAlign:
-                              widget.requestData.defaultDescription.length >
-                                          40 &&
-                                      !widget.requestData.defaultDescription
-                                          .contains("\n")
-                                  ? TextAlign.start
-                                  : TextAlign.center,
-                        ),
-                      ),
-                    ),
+                TextButton(
+                  onPressed: () => _onFinish(null),
+                  child: Text(
+                    texts.lnurl_withdraw_dialog_action_close,
+                    style: themeData.primaryTextTheme.labelLarge,
                   ),
                 )
-              ]),
+              ],
+            );
+          },
         ),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
-      actions: [
-        TextButton(
-          style: ButtonStyle(
-            overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.pressed)) {
-                return Colors.transparent;
-              }
-              // Defer to the widget's default.
-              return themeData.textTheme.labelLarge!.color!;
-            }),
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text(
-            texts.lnurl_withdraw_dialog_action_close,
-            style: themeData.primaryTextTheme.labelLarge,
-          ),
-        ),
-        TextButton(
-          style: ButtonStyle(
-            overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.pressed)) {
-                return Colors.transparent;
-              }
-              // Defer to the widget's default.
-              return themeData.textTheme.labelLarge!.color!;
-            }),
-          ),
-          onPressed: () async {
-            if (formKey.currentState!.validate()) {
-              final AccountBloc accountBloc = context.read<AccountBloc>();
-              final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
-
-              // Create loader and process payment
-              final navigator = Navigator.of(context);
-              var loaderRoute = createLoaderRoute(context);
-              navigator.push(loaderRoute);
-
-              try {
-                final amount = currencyBloc.state.bitcoinCurrency
-                    .parse(_amountController.text);
-                _log.v("LNURL withdraw of $amount sats where "
-                    "min is ${widget.requestData.minWithdrawable} msats "
-                    "and max is ${widget.requestData.maxWithdrawable} msats.");
-                final resp = await accountBloc.lnurlWithdraw(
-                  reqData: widget.requestData,
-                  amountSats: amount,
-                  description: widget.requestData.defaultDescription,
-                );
-                navigator.removeRoute(loaderRoute);
-                if (resp is sdk.LnUrlWithdrawCallbackStatus_Ok) {
-                  _log.v("LNURL withdraw success");
-                  navigator.pop(LNURLWithdrawPageResult());
-                } else if (resp
-                    is sdk.LnUrlWithdrawCallbackStatus_ErrorStatus) {
-                  _log.v("LNURL withdraw failed: ${resp.data.reason}");
-                  navigator.pop(LNURLWithdrawPageResult(
-                    error: resp.data.reason,
-                  ));
-                } else {
-                  _log.w("Unknown response from lnurlWithdraw: $resp");
-                  navigator.pop(LNURLWithdrawPageResult(
-                    error: texts.lnurl_payment_page_unknown_error,
-                  ));
-                }
-              } catch (e) {
-                _log.w("Error withdrawing LNURL payment", ex: e);
-                navigator.removeRoute(loaderRoute);
-                navigator.pop(
-                  LNURLWithdrawPageResult(
-                    error: texts.lnurl_withdraw_dialog_error_unknown,
-                  ),
-                );
-              }
-            }
-          },
-          child: Text(
-            texts.bottom_action_bar_receive,
-            style: themeData.primaryTextTheme.labelLarge,
-          ),
-        ),
-      ],
     );
   }
 
-  String? validatePayment(int amount) {
+  Future<LNURLWithdrawPageResult> _withdraw(BuildContext context) async {
+    _log.v("Withdraw ${widget.amountSats} sats");
     final texts = context.texts();
-    final accBloc = context.read<AccountBloc>();
-    final lspInfo = context.read<LSPBloc>().state?.lspInfo;
-    final currencyState = context.read<CurrencyBloc>().state;
+    final accountBloc = context.read<AccountBloc>();
+    final description = widget.requestData.defaultDescription;
 
-    final maxSats = widget.requestData.maxWithdrawable ~/ 1000;
-    if (amount > maxSats) {
-      return texts.lnurl_withdraw_dialog_error_amount_exceeds(maxSats);
+    try {
+      _log.v("LNURL withdraw of ${widget.amountSats} sats where "
+          "min is ${widget.requestData.minWithdrawable} msats "
+          "and max is ${widget.requestData.maxWithdrawable} msats.");
+      final resp = await accountBloc.lnurlWithdraw(
+        reqData: widget.requestData,
+        amountSats: widget.amountSats,
+        description: description,
+      );
+      if (resp is sdk.LnUrlWithdrawCallbackStatus_Ok) {
+        _log.v("LNURL withdraw success");
+        return LNURLWithdrawPageResult();
+      } else if (resp is sdk.LnUrlWithdrawCallbackStatus_ErrorStatus) {
+        _log.v("LNURL withdraw failed: ${resp.data.reason}");
+        return LNURLWithdrawPageResult(
+          error: resp.data.reason,
+        );
+      } else {
+        _log.w("Unknown response from lnurlWithdraw: $resp");
+        return LNURLWithdrawPageResult(
+          error: texts.lnurl_payment_page_unknown_error,
+        );
+      }
+    } catch (e) {
+      _log.w("Error withdrawing LNURL payment", ex: e);
+      return LNURLWithdrawPageResult(error: e);
     }
-    final minSats = widget.requestData.minWithdrawable ~/ 1000;
-    if (amount < minSats) {
-      return texts.lnurl_withdraw_dialog_error_amount_below(minSats);
-    }
+  }
 
-    int? channelMinimumFee;
-    if (lspInfo != null) {
-      channelMinimumFee = lspInfo.channelMinimumFeeMsat ~/ 1000;
+  void _onFinish(LNURLWithdrawPageResult? result) {
+    if (finishCalled) {
+      return;
     }
-
-    return PaymentValidator(
-      accBloc.validatePayment,
-      currencyState.bitcoinCurrency,
-      channelMinimumFee: channelMinimumFee,
-      texts: context.texts(),
-    ).validateIncoming(amount);
+    finishCalled = true;
+    _log.v("Finishing with result $result");
+    widget.onFinish(result);
   }
 }

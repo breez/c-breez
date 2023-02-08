@@ -2,9 +2,14 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
+import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
+
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
+
+import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
+
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -12,6 +17,7 @@ import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/open_link_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
+import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,35 +40,15 @@ class InputHandler {
     this.scaffoldController,
   ) {
     final InputBloc inputBloc = _context.read<InputBloc>();
-    inputBloc.stream.listen((inputState) {
-      if (_handlingRequest) {
-        return;
-      }
-      _setLoading(inputState.isLoading);
-      _handlingRequest = true;
-      handleInput(inputState)
-          .then((result) {
-            if (result is LNURLPaymentPageResult) {
-              if (result.successAction != null) {
-                handleSuccessAction(result.successAction!);
-              }
-            }
-          })
-          .whenComplete(() => _handlingRequest = false)
-          .onError((error, _) {
-            _handlingRequest = false;
-            _setLoading(false);
-            if (error != null) {
-              showFlushbar(_context, message: extractExceptionMessage(error));
-            }
-          });
-    }).onError((error) {
+
+    inputBloc.stream.listen(_handleInputState).onError((error) {
       _handlingRequest = false;
       _setLoading(false);
     });
   }
 
   Future handleInput(InputState inputState) async {
+    _log.v("handle input ${inputState.protocol}");
     switch (inputState.protocol) {
       case InputProtocol.paymentRequest:
         return handleInvoice(inputState.inputData);
@@ -111,7 +97,43 @@ class InputHandler {
     );
   }
 
-  Future handleSuccessAction(SuccessActionProcessed successAction) {
+  void _handleInputState(InputState inputState) {
+    _log.v("Input state changed: $inputState");
+    if (_handlingRequest) {
+      _log.v("Already handling request, skipping state change");
+      return;
+    }
+    _setLoading(inputState.isLoading);
+    _handlingRequest = true;
+    handleInput(inputState)
+        .then((result) {
+          _log.v("Input state handled: $result");
+          if (result is LNURLPaymentPageResult) {
+            _handleLNURLPaymentPageResult(result);
+          } else if (result is LNURLWithdrawPageResult) {
+            _handleLNURLWithdrawPageResult(result);
+          }
+        })
+        .whenComplete(() => _handlingRequest = false)
+        .onError((error, _) {
+          _log.e("Input state error", ex: error);
+          _handlingRequest = false;
+          _setLoading(false);
+          if (error != null) {
+            showFlushbar(_context, message: extractExceptionMessage(error));
+          }
+        });
+  }
+
+  void _handleLNURLPaymentPageResult(LNURLPaymentPageResult result) {
+    if (result.successAction != null) {
+      _handleSuccessAction(result.successAction!);
+    } else {
+      _log.v("Handle LNURL withdraw page result with error '${result.error}'");
+    }
+  }
+
+  Future _handleSuccessAction(SuccessActionProcessed successAction) {
     String message = '';
     String? url;
     if (successAction is SuccessActionProcessed_Message) {
@@ -138,6 +160,17 @@ class InputHandler {
         ),
       ),
     );
+  }
+
+  void _handleLNURLWithdrawPageResult(LNURLWithdrawPageResult result) {
+    if (result.error == null) {
+      _log.v("Handle LNURL withdraw page result with success");
+      Navigator.of(_context).push(
+        TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
+      );
+    } else {
+      _log.v("Handle LNURL withdraw page result with error '${result.error}'");
+    }
   }
 
   _setLoading(bool visible) {

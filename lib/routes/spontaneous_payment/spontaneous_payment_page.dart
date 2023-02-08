@@ -114,8 +114,8 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                         focusNode: _amountFocusNode,
                         controller: _amountController,
                         validatorFn: PaymentValidator(
-                          accBloc.validatePayment,
-                          currencyState.bitcoinCurrency,
+                          validatePayment: accBloc.validatePayment,
+                          currency: currencyState.bitcoinCurrency,
                           texts: context.texts(),
                         ).validateOutgoing,
                         style: theme.FieldTextStyle.textStyle),

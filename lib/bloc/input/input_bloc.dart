@@ -51,7 +51,7 @@ class InputBloc extends Cubit<InputState> {
       emit(InputState(isLoading: true));
       try {
         final command = await breez_sdk.InputParser().parse(s);
-        _log.v("Parsed command: '$command'");
+        _log.v("Parsed command: '${command.protocol}'");
         switch (command.protocol) {
           case breez_sdk.InputProtocol.paymentRequest:
             return handlePaymentRequest(s, command);

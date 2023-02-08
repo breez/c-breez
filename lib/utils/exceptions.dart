@@ -7,8 +7,8 @@ String extractExceptionMessage(Object exception) {
   _log.v("extractExceptionMessage: $exception");
   if (exception is FfiException) {
     if (exception.message.isNotEmpty) {
-      final message = exception.message;
-      final innerErrorMessage = _extractInnerErrorMessage(message);
+      final message = exception.message.replaceAll("\n", " ").trim();
+      final innerErrorMessage = _extractInnerErrorMessage(message)?.trim();
       return innerErrorMessage ?? message;
     }
   }
@@ -20,6 +20,8 @@ String? _extractInnerErrorMessage(String content) {
   _log.v("extractInnerErrorMessage: $content");
   final innerMessageRegex = RegExp(r'((?<=message: \\")(.*)(?=.*\\"))');
   final messageRegex = RegExp(r'((?<=message: ")(.*)(?=.*"))');
+  final causedByRegex = RegExp(r'((?<=Caused by: )(.*)(?=.*))');
   return innerMessageRegex.stringMatch(content) ??
-      messageRegex.stringMatch(content);
+      messageRegex.stringMatch(content) ??
+      causedByRegex.stringMatch(content);
 }

@@ -12,12 +12,14 @@ String extractExceptionMessage(Object exception) {
       return innerErrorMessage ?? message;
     }
   }
-  return exception.toString();
+  return _extractInnerErrorMessage(exception.toString()) ??
+      exception.toString();
 }
 
 String? _extractInnerErrorMessage(String content) {
   _log.v("extractInnerErrorMessage: $content");
   final innerMessageRegex = RegExp(r'((?<=message: \\")(.*)(?=.*\\"))');
   final messageRegex = RegExp(r'((?<=message: ")(.*)(?=.*"))');
-  return innerMessageRegex.stringMatch(content) ?? messageRegex.stringMatch(content);
+  return innerMessageRegex.stringMatch(content) ??
+      messageRegex.stringMatch(content);
 }

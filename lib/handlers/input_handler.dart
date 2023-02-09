@@ -56,7 +56,6 @@ class InputHandler {
     }).onError((error) {
       _handlingRequest = false;
       _setLoading(false);
-      showFlushbar(_context, message: extractExceptionMessage(error));
     });
   }
 
@@ -117,7 +116,8 @@ class InputHandler {
     } else if (action is SuccessAction_Url) {
       final description = action.field0.description;
       final url = action.field0.url;
-      _log.v("Handle LNURL payment page result with url action '$description', '$url'");
+      _log.v(
+          "Handle LNURL payment page result with url action '$description', '$url'");
     } else {
       _log.v("Handle LNURL payment page result with unknown action '$action'");
     }

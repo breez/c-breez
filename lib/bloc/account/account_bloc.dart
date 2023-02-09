@@ -56,6 +56,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _paymentFiltersStreamController.add(state.paymentFilters);
 
     if (!state.initial) _startRegisteredNode();
+
+    _listenPaymentResultEvents();
   }
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
@@ -228,12 +230,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.v("sendPayment: $bolt11, $amountSats");
     try {
       await _breezLib.sendPayment(bolt11: bolt11, amountSats: amountSats);
-      _paymentResultStreamController.add(
-        PaymentResult(paymentInfo: state.payments.first),
-      );
     } catch (e) {
       _log.e("sendPayment error", ex: e);
-      _paymentResultStreamController.add(PaymentResult(error: e));
       return Future.error(e);
     }
   }
@@ -251,14 +249,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.i("description field is not being used by the SDK yet");
     try {
       await _breezLib.sendSpontaneousPayment(
-      _paymentResultStreamController.add(
-        PaymentResult(paymentInfo: state.payments.first),
         nodeId: nodeId,
         amountSats: amountSats,
       );
     } catch (e) {
       _log.e("sendSpontaneousPayment error", ex: e);
-      _paymentResultStreamController.add(PaymentResult(error: e));
       return Future.error(e);
     }
   }
@@ -353,6 +348,16 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       } else {
         recursiveFolderCopySync(element.path, newPath);
       }
+    });
+  }
+
+  void _listenPaymentResultEvents() {
+    _breezLib.paymentResultStream.listen((paymentInfo) {
+      _paymentResultStreamController.add(
+        PaymentResult(paymentInfo: paymentInfo),
+      );
+    }, onError: (error) {
+      _paymentResultStreamController.add(PaymentResult(error: error));
     });
   }
 }

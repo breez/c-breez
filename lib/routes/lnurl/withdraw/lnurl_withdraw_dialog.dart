@@ -9,15 +9,15 @@ import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("LnulrWithdrawDialog");
+final _log = FimberLog("LNURLWithdrawDialog");
 
-class LnulrWithdrawDialog extends StatefulWidget {
+class LNURLWithdrawDialog extends StatefulWidget {
   final Function(LNURLWithdrawPageResult? result) onFinish;
   final sdk.LnUrlWithdrawRequestData requestData;
   final int amountSats;
   final String domain;
 
-  const LnulrWithdrawDialog({
+  const LNURLWithdrawDialog({
     super.key,
     required this.requestData,
     required this.amountSats,
@@ -26,10 +26,10 @@ class LnulrWithdrawDialog extends StatefulWidget {
   });
 
   @override
-  State<LnulrWithdrawDialog> createState() => _LnulrWithdrawDialogState();
+  State<LNURLWithdrawDialog> createState() => _LNURLWithdrawDialogState();
 }
 
-class _LnulrWithdrawDialogState extends State<LnulrWithdrawDialog> with SingleTickerProviderStateMixin {
+class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTickerProviderStateMixin {
   late Animation<double> _opacityAnimation;
   Future<LNURLWithdrawPageResult>? _future;
   var finishCalled = false;

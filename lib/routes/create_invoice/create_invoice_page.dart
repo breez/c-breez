@@ -167,7 +167,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => LnulrWithdrawDialog(
+      builder: (_) => LNURLWithdrawDialog(
         requestData: data,
         amountSats: currencyBloc.state.bitcoinCurrency.parse(
           _amountController.text,

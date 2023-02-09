@@ -21,7 +21,14 @@ class BreezBridgeMock extends Mock implements BreezBridge {
 
   @override
   Future<Config> defaultConfig(EnvironmentType envType) async {
-    return Config(breezserver: '', mempoolspaceUrl: '', network: Network.Bitcoin, paymentTimeoutSec: 10, workingDir: '.', maxfeepercent: 0.5);
+    return Config(
+      breezserver: '',
+      mempoolspaceUrl: '',
+      network: Network.Bitcoin,
+      paymentTimeoutSec: 10,
+      workingDir: '.',
+      maxfeepercent: 0.5,
+    );
   }
 
   @override
@@ -98,4 +105,9 @@ class BreezBridgeMock extends Mock implements BreezBridge {
 
   @override
   Stream<List<Payment>> get paymentsStream => paymentsController.stream;
+
+  final paymentResultController = StreamController<Payment>.broadcast();
+
+  @override
+  Stream<Payment> get paymentResultStream => paymentResultController.stream;
 }

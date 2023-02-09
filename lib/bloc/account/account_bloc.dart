@@ -193,7 +193,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       return callbackStatus;
     } catch (e) {
       _log.e("lnurlWithdraw error", ex: e);
-      _paymentResultStreamController.add(PaymentResult(error: e));
       rethrow;
     }
   }
@@ -221,7 +220,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       return lnurlPayResult;
     } catch (e) {
       _log.e("lnurlPay error", ex: e);
-      _paymentResultStreamController.add(PaymentResult(error: e));
       rethrow;
     }
   }

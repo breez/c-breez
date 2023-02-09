@@ -17,7 +17,7 @@ class PaymentDetailsDialogDescription extends StatelessWidget {
     final texts = context.texts();
     final themeData = Theme.of(context);
 
-    final description = paymentInfo.extractTitle(texts);
+    final description = paymentInfo.extractDescription(texts);
     if (description.isEmpty) {
       return Container();
     }

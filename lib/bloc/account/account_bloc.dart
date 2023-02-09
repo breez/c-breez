@@ -178,19 +178,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.v(
         "lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
     try {
-      final callbackStatus = await _breezLib.lnurlWithdraw(
+      return await _breezLib.lnurlWithdraw(
         amountSats: amountSats,
         reqData: reqData,
         description: description,
       );
-      if (callbackStatus is sdk.LnUrlWithdrawCallbackStatus_Ok) {
-        _paymentResultStreamController.add(
-          PaymentResult(
-            paymentInfo: state.payments.first,
-          ),
-        );
-      }
-      return callbackStatus;
     } catch (e) {
       _log.e("lnurlWithdraw error", ex: e);
       rethrow;
@@ -204,20 +196,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }) async {
     _log.v("lnurlPay amount: $amount, comment: '$comment', reqData: $reqData");
     try {
-      final lnurlPayResult = await _breezLib.lnurlPay(
+      return await _breezLib.lnurlPay(
         userAmountSat: amount,
         reqData: reqData,
         comment: comment,
       );
-      _paymentResultStreamController.add(
-        PaymentResult(
-          paymentInfo: state.payments.first,
-          successAction: (lnurlPayResult is sdk.LnUrlPayResult_EndpointSuccess)
-              ? lnurlPayResult.data
-              : null,
-        ),
-      );
-      return lnurlPayResult;
     } catch (e) {
       _log.e("lnurlPay error", ex: e);
       rethrow;

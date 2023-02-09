@@ -6,12 +6,10 @@ import 'package:c_breez/utils/exceptions.dart';
 class PaymentResult {
   final Payment? paymentInfo;
   final Object? error;
-  final SuccessAction? successAction;
 
   const PaymentResult({
     this.paymentInfo,
     this.error,
-    this.successAction,
   });
 
   String errorMessage(CurrencyState currencyState) {

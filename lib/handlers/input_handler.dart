@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
+import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -42,7 +43,9 @@ class InputHandler {
       handleInput(inputState)
           .then((result) {
             if (result is LNURLPaymentPageResult) {
-              _handleLNURLPaymentPageResult(result);
+              if (result.successAction != null) {
+                handleSuccessAction(result.successAction!);
+              }
             }
           })
           .whenComplete(() => _handlingRequest = false)
@@ -108,19 +111,33 @@ class InputHandler {
     );
   }
 
-  void _handleLNURLPaymentPageResult(LNURLPaymentPageResult result) {
-    final action = result.successAction;
-    if (action is SuccessAction_Message) {
-      final message = action.field0.message;
+  Future handleSuccessAction(SuccessActionProcessed successAction) {
+    String message = '';
+    String? url;
+    if (successAction is SuccessActionProcessed_Message) {
+      message = successAction.data.message;
       _log.v("Handle LNURL payment page result with message action '$message'");
-    } else if (action is SuccessAction_Url) {
-      final description = action.field0.description;
-      final url = action.field0.url;
+    } else if (successAction is SuccessActionProcessed_Url) {
+      message = successAction.data.description;
+      url = successAction.data.url;
       _log.v(
-          "Handle LNURL payment page result with url action '$description', '$url'");
-    } else {
-      _log.v("Handle LNURL payment page result with unknown action '$action'");
+          "Handle LNURL payment page result with url action '$message', '$url'");
+    } else if (successAction is SuccessActionProcessed_Aes) {
+      message =
+          "${successAction.data.description} ${successAction.data.plaintext}";
+      _log.v("Handle LNURL payment page result with aes action '$message'");
     }
+    // Artificial delay for UX purposes
+    return Future.delayed(const Duration(seconds: 1)).then(
+      (_) => showDialog(
+        useRootNavigator: false,
+        context: _context,
+        builder: (_) => SuccessActionDialog(
+          message: message,
+          url: url,
+        ),
+      ),
+    );
   }
 
   _setLoading(bool visible) {

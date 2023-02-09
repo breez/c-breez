@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/external_browser.dart';
@@ -7,9 +6,10 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class SuccessActionDialog extends StatefulWidget {
-  final SuccessAction successAction;
+  final String message;
+  final String? url;
 
-  const SuccessActionDialog(this.successAction);
+  const SuccessActionDialog({required this.message, this.url});
 
   @override
   State<StatefulWidget> createState() {
@@ -22,7 +22,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
     final texts = context.texts();
-    final successAction = widget.successAction;
+
     return AlertDialog(
       content: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -30,13 +30,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (successAction is SuccessAction_Message) ...[
-              Message(successAction.field0.message)
-            ],
-            if (successAction is SuccessAction_Url) ...[
-              Message(successAction.field0.description),
-              URLText(successAction.field0.url)
-            ],
+            Message(widget.message),
+            if (widget.url != null) ...[URLText(widget.url!)]
           ],
         ),
       ),
@@ -59,7 +54,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
-        if (successAction is SuccessAction_Url) ...[
+        if (widget.url != null) ...[
           TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>(
@@ -77,11 +72,12 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
               style: themeData.primaryTextTheme.labelLarge,
             ),
             onPressed: () async {
+              final String url = widget.url!;
               final navigator = Navigator.of(context);
               try {
                 await launchLinkOnExternalBrowser(
                   context,
-                  linkAddress: successAction.field0.url,
+                  linkAddress: url,
                 );
                 navigator.pop();
               } catch (e) {

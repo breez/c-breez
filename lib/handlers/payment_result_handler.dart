@@ -29,9 +29,10 @@ class PaymentResultHandler {
             context,
             messageWidget: SingleChildScrollView(
               child: Text(
-                  paymentResult.paymentInfo!.paymentType == PaymentType.Received
-                      ? texts.successful_payment_received
-                      : texts.home_payment_sent),
+                paymentResult.paymentInfo!.paymentType == PaymentType.Received
+                    ? texts.successful_payment_received
+                    : texts.home_payment_sent,
+              ),
             ),
           );
         } else if (paymentResult.error != null) {

@@ -95,7 +95,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: seed,
     );
     _log.i("node registered successfully");
-    await _credentialsManager.storeCredentials(glCreds: creds, mnemonic: mnemonic);
+    await _credentialsManager.storeCredentials(
+      glCreds: creds,
+      mnemonic: mnemonic,
+    );
     emit(state.copyWith(initial: false));
     await _startSdkForever();
     _log.i("new node started");
@@ -113,7 +116,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: seed,
     );
     _log.i("node recovered successfully");
-    await _credentialsManager.storeCredentials(glCreds: creds, mnemonic: mnemonic);
+    await _credentialsManager.storeCredentials(
+      glCreds: creds,
+      mnemonic: mnemonic,
+    );
     emit(state.copyWith(initial: false));
     await _startSdkForever();
     _log.i("recovered node started");
@@ -242,11 +248,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     int amountSats,
   ) async {
     _log.v("sendSpontaneousPayment: $nodeId, $description, $amountSats");
+    _log.i("description field is not being used by the SDK yet");
     try {
       await _breezLib.sendSpontaneousPayment(
-          nodeId: nodeId, amountSats: amountSats);
       _paymentResultStreamController.add(
         PaymentResult(paymentInfo: state.payments.first),
+        nodeId: nodeId,
+        amountSats: amountSats,
       );
     } catch (e) {
       _log.e("sendSpontaneousPayment error", ex: e);

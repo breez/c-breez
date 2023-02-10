@@ -1,8 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_closed_channel_dialog.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_amount.dart';
-import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_date.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_content_title.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_date.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_description.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_destination_pubkey.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_expiration.dart';
@@ -28,6 +29,12 @@ class PaymentDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (paymentInfo.paymentType == PaymentType.ClosedChannel) {
+      return PaymentDetailsDialogClosedChannelDialog(
+        paymentInfo: paymentInfo,
+      );
+    }
+
     return AlertDialog(
       titlePadding: EdgeInsets.zero,
       title: PaymentDetailsDialogTitle(

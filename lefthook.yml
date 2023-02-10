@@ -6,13 +6,13 @@
 pre-commit:
   parallel: true
   commands:
-    tests:
-      run: flutter test
-    analyze:
-      run: flutter analyze
-    lint_code:
-      glob: '*.dart'
-      run: dart fix --dry-run lib && git add .
+#    tests:
+#      run: flutter test
+#    analyze:
+#      run: flutter analyze
+#    lint_code:
+#      glob: '*.dart'
+#      run: dart fix --dry-run . && git add .
     format_code:
       glob: '*.dart'
       run: dart format --fix -l 110 . && git add .

@@ -8,7 +8,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
-import 'package:c_breez/bloc/account/payment_result_data.dart';
+import 'package:c_breez/bloc/account/payment_result.dart';
 import 'package:c_breez/config.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';
@@ -31,10 +31,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String paymentFilterSettingsKey = "payment_filter_settings";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
-  final StreamController<PaymentResultData> _paymentResultStreamController =
-      StreamController<PaymentResultData>();
+  final StreamController<PaymentResult> _paymentResultStreamController =
+      StreamController<PaymentResult>();
 
-  Stream<PaymentResultData> get paymentResultStream =>
+  Stream<PaymentResult> get paymentResultStream =>
       _paymentResultStreamController.stream;
 
   final StreamController<PaymentFilters> _paymentFiltersStreamController =
@@ -56,6 +56,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _paymentFiltersStreamController.add(state.paymentFilters);
 
     if (!state.initial) _startRegisteredNode();
+
+    _listenPaymentResultEvents();
   }
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
@@ -72,14 +74,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
   }
 
-  Future _startRegisteredNode() async {    
+  Future _startRegisteredNode() async {
     final credentials = await _credentialsManager.restoreCredentials();
     final seed = bip39.mnemonicToSeed(credentials.mnemonic);
     await _breezLib.initServices(
       config: (await Config.instance()).sdkConfig,
       seed: seed,
       creds: credentials.glCreds,
-    );    
+    );
     await _startSdkForever();
   }
 
@@ -95,7 +97,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: seed,
     );
     _log.i("node registered successfully");
-    await _credentialsManager.storeCredentials(glCreds: creds, mnemonic: mnemonic);
+    await _credentialsManager.storeCredentials(
+      glCreds: creds,
+      mnemonic: mnemonic,
+    );
     emit(state.copyWith(initial: false));
     await _startSdkForever();
     _log.i("new node started");
@@ -113,13 +118,16 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       seed: seed,
     );
     _log.i("node recovered successfully");
-    await _credentialsManager.storeCredentials(glCreds: creds, mnemonic: mnemonic);
+    await _credentialsManager.storeCredentials(
+      glCreds: creds,
+      mnemonic: mnemonic,
+    );
     emit(state.copyWith(initial: false));
     await _startSdkForever();
-    _log.i("recovered node started");    
+    _log.i("recovered node started");
   }
 
-  Future _startSdkForever() async {            
+  Future _startSdkForever() async {
     await _startSdkOnce();
 
     // in case we failed to start (lack of inet connection probably)
@@ -127,14 +135,15 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       StreamSubscription<ConnectivityResult>? subscription;
       subscription = Connectivity().onConnectivityChanged.listen((event) async {
         // we should try fetch the selected lsp information when internet is back.
-        if (event != ConnectivityResult.none && state.status == ConnectionStatus.DISCONNECTED) {
+        if (event != ConnectivityResult.none &&
+            state.status == ConnectionStatus.DISCONNECTED) {
           await _startSdkOnce();
           if (state.status == ConnectionStatus.CONNECTED) {
             subscription!.cancel();
             _onConnected();
           }
         }
-      });  
+      });
     } else {
       _onConnected();
     }
@@ -142,10 +151,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _startSdkOnce() async {
     try {
-    emit(state.copyWith(status: ConnectionStatus.CONNECTING));
-    await _breezLib.startNode();
-    emit(state.copyWith(status: ConnectionStatus.CONNECTED));
-    } catch(e) {
+      emit(state.copyWith(status: ConnectionStatus.CONNECTING));
+      await _breezLib.startNode();
+      emit(state.copyWith(status: ConnectionStatus.CONNECTED));
+    } catch (e) {
       emit(state.copyWith(status: ConnectionStatus.DISCONNECTED));
     }
   }
@@ -153,8 +162,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   // Once connected sync sdk periodically on foreground events.
   void _onConnected() {
     var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
-    FGBGEvents.stream.listen((event) async {            
-      if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval ) {
+    FGBGEvents.stream.listen((event) async {
+      if (event == FGBGType.foreground &&
+          DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
         await _breezLib.syncNode();
         lastSync = DateTime.now();
       }
@@ -168,7 +178,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.v(
         "lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
     try {
-      return _breezLib.lnurlWithdraw(
+      return await _breezLib.lnurlWithdraw(
         amountSats: amountSats,
         reqData: reqData,
         description: description,
@@ -186,7 +196,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }) async {
     _log.v("lnurlPay amount: $amount, comment: '$comment', reqData: $reqData");
     try {
-      return _breezLib.lnurlPay(
+      return await _breezLib.lnurlPay(
         userAmountSat: amount,
         reqData: reqData,
         comment: comment,
@@ -203,7 +213,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       await _breezLib.sendPayment(bolt11: bolt11, amountSats: amountSats);
     } catch (e) {
       _log.e("sendPayment error", ex: e);
-      _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
     }
   }
@@ -218,12 +227,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     int amountSats,
   ) async {
     _log.v("sendSpontaneousPayment: $nodeId, $description, $amountSats");
+    _log.i("description field is not being used by the SDK yet");
     try {
-      return await _breezLib.sendSpontaneousPayment(
-          nodeId: nodeId, amountSats: amountSats);
+      await _breezLib.sendSpontaneousPayment(
+        nodeId: nodeId,
+        amountSats: amountSats,
+      );
     } catch (e) {
       _log.e("sendSpontaneousPayment error", ex: e);
-      _paymentResultStreamController.add(PaymentResultData(error: e));
       return Future.error(e);
     }
   }
@@ -318,6 +329,16 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       } else {
         recursiveFolderCopySync(element.path, newPath);
       }
+    });
+  }
+
+  void _listenPaymentResultEvents() {
+    _breezLib.paymentResultStream.listen((paymentInfo) {
+      _paymentResultStreamController.add(
+        PaymentResult(paymentInfo: paymentInfo),
+      );
+    }, onError: (error) {
+      _paymentResultStreamController.add(PaymentResult(error: error));
     });
   }
 }

@@ -2,12 +2,15 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
+import 'package:c_breez/routes/lnurl/withdraw/lnurl_withdraw_dialog.dart';
+import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
@@ -22,9 +25,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateInvoicePage extends StatefulWidget {
+  final Function(LNURLWithdrawPageResult? result)? onFinish;
+  final LnUrlWithdrawRequestData? requestData;
+  final String? domain;
+
   const CreateInvoicePage({
     Key? key,
-  }) : super(key: key);
+    this.requestData,
+    this.domain,
+    this.onFinish,
+  })  : assert(
+          requestData == null || (domain != null && onFinish != null),
+          "If you are using LNURL withdraw, you must provide a domain and an onFinish callback.",
+        ),
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -43,6 +57,12 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   @override
   void initState() {
     _doneAction = KeyboardDoneAction(focusNodes: [_amountFocusNode]);
+
+    final data = widget.requestData;
+    if (data != null) {
+      _amountController.text = (data.maxWithdrawable ~/ 1000).toString();
+      _descriptionController.text = data.defaultDescription;
+    }
     super.initState();
   }
 
@@ -119,12 +139,41 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       ),
       bottomNavigationBar: SingleButtonBottomBar(
         stickToBottom: true,
-        text: texts.invoice_action_create,
+        text: widget.requestData != null ? texts.invoice_action_redeem : texts.invoice_action_create,
         onPressed: () {
           if (_formKey.currentState?.validate() ?? false) {
-            _createInvoice(context);
+            final data = widget.requestData;
+            if (data != null) {
+              _withdraw(context, data);
+            } else {
+              _createInvoice(context);
+            }
           }
         },
+      ),
+    );
+  }
+
+  Future<void> _withdraw(
+    BuildContext context,
+    LnUrlWithdrawRequestData data,
+  ) async {
+    final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
+
+    final navigator = Navigator.of(context);
+    navigator.pop();
+
+    showDialog(
+      useRootNavigator: false,
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => LNURLWithdrawDialog(
+        requestData: data,
+        amountSats: currencyBloc.state.bitcoinCurrency.parse(
+          _amountController.text,
+        ),
+        domain: widget.domain!,
+        onFinish: widget.onFinish!,
       ),
     );
   }
@@ -185,10 +234,31 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     int? channelMinimumFee = lspInfo!.channelMinimumFeeMsat ~/ 1000;
 
     return PaymentValidator(
-      context.read<AccountBloc>().validatePayment,
-      context.read<CurrencyBloc>().state.bitcoinCurrency,
+      validatePayment: _validatePayment,
+      currency: context.read<CurrencyBloc>().state.bitcoinCurrency,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);
+  }
+
+  void _validatePayment(
+    int amount,
+    bool outgoing, {
+    int? channelMinimumFee,
+  }) {
+    final data = widget.requestData;
+    if (data != null) {
+      if (amount > data.maxWithdrawable ~/ 1000) {
+        throw PaymentExceededLimitError(data.maxWithdrawable ~/ 1000);
+      }
+      if (amount < data.minWithdrawable ~/ 1000) {
+        throw PaymentBelowLimitError(data.minWithdrawable ~/ 1000);
+      }
+    }
+    return context.read<AccountBloc>().validatePayment(
+          amount,
+          outgoing,
+          channelMinimumFee: channelMinimumFee,
+        );
   }
 }

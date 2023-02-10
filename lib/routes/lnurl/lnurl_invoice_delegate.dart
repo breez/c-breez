@@ -1,26 +1,36 @@
+import 'dart:async';
+
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/routes/create_invoice/create_invoice_page.dart';
+import 'package:c_breez/routes/lnurl/payment/lnurl_payment_dialog.dart';
+import 'package:c_breez/routes/lnurl/payment/lnurl_payment_page.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 
-import 'payment/lnurl_payment_dialog.dart';
-import 'payment/lnurl_payment_page.dart';
-import 'withdraw/lnurl_withdraw_dialog.dart';
+final _log = FimberLog("handleLNURL");
 
 Future handleLNURL(
   BuildContext context,
   LNURLParseResult lnurlParseResult,
 ) {
-  if (lnurlParseResult.payParams != null) {
-    return handlePayRequest(context, lnurlParseResult.payParams!);
-  }
-  if (lnurlParseResult.withdrawalParams != null) {
-    return handleWithdrawRequest(context, lnurlParseResult.withdrawalParams!);
+  final payParams = lnurlParseResult.payParams;
+  if (payParams != null) {
+    _log.v("Handling payParams: $payParams");
+    return handlePayRequest(context, payParams);
   }
 
+  final withdrawalParams = lnurlParseResult.withdrawalParams;
+  if (withdrawalParams != null) {
+    _log.v("Handling withdrawalParams: $withdrawalParams");
+    return handleWithdrawRequest(context, withdrawalParams);
+  }
+
+  _log.w("Unsupported lnurl $lnurlParseResult");
   throw context.texts().lnurl_error_unsupported;
 }
 
@@ -72,7 +82,7 @@ Future<LNURLPaymentPageResult?> handlePayRequest(
   return pageResult;
 }
 
-Future handleWithdrawRequest(
+Future<LNURLWithdrawPageResult?> handleWithdrawRequest(
   BuildContext context,
   LNURLWithdrawParams withdrawParams,
 ) async {
@@ -84,18 +94,17 @@ Future handleWithdrawRequest(
     defaultDescription: withdrawParams.defaultDescription,
   );
 
-  LNURLWithdrawPageResult? pageResult;
-  pageResult = await showDialog<LNURLWithdrawPageResult>(
-    useRootNavigator: false,
-    context: context,
-    barrierDismissible: false,
-    builder: (_) => LNURLWithdrawDialog(
-        requestData: requestData, domain: withdrawParams.domain),
-  );
-  if (pageResult == null) {
-    return Future.value();
-  }
-  if (pageResult.error != null) {
-    throw pageResult.error.toString();
-  }
+  Completer<LNURLWithdrawPageResult?> completer = Completer();
+  Navigator.of(context).push(MaterialPageRoute(
+    builder: (_) => CreateInvoicePage(
+      requestData: requestData,
+      domain: withdrawParams.domain,
+      onFinish: (LNURLWithdrawPageResult? response) {
+        completer.complete(response);
+        Navigator.of(context).popUntil((route) => route.settings.name == "/");
+      },
+    ),
+  ));
+
+  return completer.future;
 }

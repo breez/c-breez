@@ -2,7 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/utils/exceptions.dart';
 
 class LNURLPaymentPageResult {
-  final SuccessAction? successAction;
+  final SuccessActionProcessed? successAction;
   final Object? error;
 
   const LNURLPaymentPageResult({

@@ -6,6 +6,14 @@ class PaymentExceededLimitError implements Exception {
   );
 }
 
+class PaymentBelowLimitError implements Exception {
+  final int limitSat;
+
+  const PaymentBelowLimitError(
+    this.limitSat,
+  );
+}
+
 class PaymentBelowReserveError implements Exception {
   final int reserveAmount;
 

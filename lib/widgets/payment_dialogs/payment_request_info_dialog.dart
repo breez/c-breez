@@ -195,8 +195,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
                 focusNode: _amountFocusNode,
                 controller: _invoiceAmountController,
                 validatorFn: PaymentValidator(
-                  context.read<AccountBloc>().validatePayment,
-                  currencyState.bitcoinCurrency,
+                  validatePayment: context.read<AccountBloc>().validatePayment,
+                  currency: currencyState.bitcoinCurrency,
                   texts: context.texts(),
                 ).validateOutgoing,
                 style: themeData.dialogTheme.contentTextStyle!
@@ -274,8 +274,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   Widget? _buildErrorMessage(
       BuildContext context, CurrencyState currencyState) {
     final validationError = PaymentValidator(
-      context.read<AccountBloc>().validatePayment,
-      currencyState.bitcoinCurrency,
+      validatePayment: context.read<AccountBloc>().validatePayment,
+      currency: currencyState.bitcoinCurrency,
       texts: context.texts(),
     ).validateOutgoing(
       amountToPay(currencyState),

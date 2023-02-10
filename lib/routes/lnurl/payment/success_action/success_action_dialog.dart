@@ -1,15 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/routes/lnurl/payment/success_action/success_action_data.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/external_browser.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 
 class SuccessActionDialog extends StatefulWidget {
-  final SuccessActionData successActionData;
+  final String message;
+  final String? url;
 
-  const SuccessActionDialog(this.successActionData);
+  const SuccessActionDialog({required this.message, this.url});
 
   @override
   State<StatefulWidget> createState() {
@@ -30,10 +30,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Message(widget.successActionData.message),
-            if (widget.successActionData.url != null) ...[
-              URLText(widget.successActionData.url!)
-            ]
+            Message(widget.message),
+            if (widget.url != null) ...[URLText(widget.url!)]
           ],
         ),
       ),
@@ -56,7 +54,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
-        if (widget.successActionData.url != null) ...[
+        if (widget.url != null) ...[
           TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>(
@@ -74,11 +72,12 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
               style: themeData.primaryTextTheme.labelLarge,
             ),
             onPressed: () async {
+              final String url = widget.url!;
               final navigator = Navigator.of(context);
               try {
                 await launchLinkOnExternalBrowser(
                   context,
-                  linkAddress: widget.successActionData.url!,
+                  linkAddress: url,
                 );
                 navigator.pop();
               } catch (e) {
@@ -112,8 +111,8 @@ class Message extends StatelessWidget {
           child: SingleChildScrollView(
             child: AutoSizeText(
               message,
-              style:
-                  themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
+              style: themeData.primaryTextTheme.displaySmall!
+                  .copyWith(fontSize: 16),
               textAlign: message.length > 40 && !message.contains("\n")
                   ? TextAlign.start
                   : TextAlign.center,

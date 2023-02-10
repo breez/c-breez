@@ -22,7 +22,7 @@ dependencies:
   breez_translations:
     git:
       url: https://github.com/breez/Breez-Translations
-      ref: 39e45c8d5ba54d486f812b9a952962bc216fab14
+      ref: 9712a53bd3a079e95e5405fd1fafd5ccb7e8e855
   clipboard_watcher:
     git:
       url: https://github.com/ademar111190/clipboard_watcher

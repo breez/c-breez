@@ -1,15 +1,21 @@
 # c-Breez (Breez powered by Greenlight)
 
-c-Breez is a migration of [Breez mobile app](https://github.com/breez/breezmobile) to the [Greenlight](https://blockstream.com/lightning/greenlight/) infrastructure.
+c-Breez is a migration of [Breez mobile app](https://github.com/breez/breezmobile) to
+the [Greenlight](https://blockstream.com/lightning/greenlight/) infrastructure.
 
-For more details, please check out [this medium post](https://medium.com/breez-technology/get-ready-for-a-fresh-breez-multiple-apps-one-node-optimal-ux-519c4daf2536).
+For more details, please check
+out [this medium post](https://medium.com/breez-technology/get-ready-for-a-fresh-breez-multiple-apps-one-node-optimal-ux-519c4daf2536)
+.
 
 ## Build
 
 ### Build the lightning_tookit plugin
-c-Breez depends on Breez [sdk-flutter](https://github.com/breez/breez-sdk/tree/main/libs/sdk-flutter) plugin, so be sure to follow those instructions first.
 
-After succesfully having build the sdk-flutter make sure that [breez-sdk](https://github.com/breez/breez-sdk) and c-breez are side by side like so:
+c-Breez depends on Breez [sdk-flutter](https://github.com/breez/breez-sdk/tree/main/libs/sdk-flutter) plugin,
+so be sure to follow those instructions first.
+
+After succesfully having build the sdk-flutter make sure that [breez-sdk](https://github.com/breez/breez-sdk)
+and c-breez are side by side like so:
 
 ```
 breez-sdk/
@@ -24,7 +30,8 @@ c-breez/
 ├─ ios/
 
 ```
-### android
+
+### Android
 
 ```
 flutter build apk
@@ -41,5 +48,37 @@ flutter build ios
 ```
 flutter run
 ```
+
 ## Test
+
 A testing framework for this project is being developed [here](https://github.com/breez/lntest).
+
+## Contributors
+
+### Pre-commit `dart format` with Lefthook
+
+[Lefthook](https://github.com/evilmartians/lefthook) is a Git hooks manager that allows custom logic to be
+executed prior to Git commit or push. c-Breez comes with Lefthook configuration (`lefthook.yml`), but it must
+be installed first.
+
+### Installation
+
+- Install Lefthook.
+  See [installation guide](https://github.com/evilmartians/lefthook/blob/master/docs/install.md).
+- Run the following command from project root folder to install hooks:
+
+```sh
+$ lefthook install
+```
+
+Before you commit your changes, Lefthook will automatically run `dart format`.
+
+### Skipping hooks
+
+Use the standard Git option `--no-verify` to skip `pre-commit` hook:
+
+```sh
+$ git commit -m "..." --no-verify
+```
+
+Alternatively, comment out steps you'd like to skip and exclude `lefthook.yml` from commit.

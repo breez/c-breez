@@ -1,7 +1,7 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:fimber/fimber.dart';
@@ -31,9 +31,7 @@ class QrActionButton extends StatelessWidget {
             onPressed: (connected) ? () => _scanBarcode(context) : null,
             child: SvgPicture.asset(
               "src/icon/qr_scan.svg",
-              color: connected
-                  ? theme.BreezColors.white[500]
-                  : Theme.of(context).disabledColor,
+              color: connected ? theme.BreezColors.white[500] : Theme.of(context).disabledColor,
               fit: BoxFit.contain,
               width: 24.0,
               height: 24.0,

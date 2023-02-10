@@ -63,9 +63,7 @@ class CalendarDialogState extends State<CalendarDialog> {
           child: Text(
             texts.pos_transactions_range_dialog_clear,
             style: theme.cancelButtonStyle.copyWith(
-              color: themeData.isLightTheme
-                  ? Colors.red
-                  : themeData.colorScheme.error,
+              color: themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
             ),
           ),
         ),
@@ -141,14 +139,12 @@ class CalendarDialogState extends State<CalendarDialog> {
         );
       },
     );
-    Duration difference = isStartBtn
-        ? selectedDate!.difference(_endDate)
-        : selectedDate!.difference(_startDate);
+    Duration difference =
+        isStartBtn ? selectedDate!.difference(_endDate) : selectedDate!.difference(_startDate);
     if (difference.inDays < 0) {
       setState(() {
         isStartBtn ? _startDate = selectedDate : _endDate = selectedDate;
-        _startDateController.text =
-            BreezDateUtils.formatYearMonthDay(_startDate);
+        _startDateController.text = BreezDateUtils.formatYearMonthDay(_startDate);
         _endDateController.text = BreezDateUtils.formatYearMonthDay(_endDate);
       });
     } else {
@@ -158,8 +154,7 @@ class CalendarDialogState extends State<CalendarDialog> {
         } else {
           _endDate = selectedDate;
         }
-        _startDateController.text =
-            BreezDateUtils.formatYearMonthDay(_startDate);
+        _startDateController.text = BreezDateUtils.formatYearMonthDay(_startDate);
         _endDateController.text = BreezDateUtils.formatYearMonthDay(_endDate);
       });
     }

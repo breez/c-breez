@@ -11,16 +11,15 @@ abstract class Notifications {
 
 class FirebaseNotifications implements Notifications {
   final _log = FimberLog("FirebaseNotifications");
-  
-  FirebaseMessaging get  _firebaseMessaging {
+
+  FirebaseMessaging get _firebaseMessaging {
     return FirebaseMessaging.instance;
   }
 
   final StreamController<Map<dynamic, dynamic>> _notificationController =
       BehaviorSubject<Map<dynamic, dynamic>>();
   @override
-  Stream<Map<dynamic, dynamic>> get notifications =>
-      _notificationController.stream;
+  Stream<Map<dynamic, dynamic>> get notifications => _notificationController.stream;
 
   FirebaseNotifications() {
     FirebaseMessaging.onMessage.listen(_onMessage);
@@ -48,10 +47,9 @@ class FirebaseNotifications implements Notifications {
   @override
   Future<String?> getToken() async {
     _log.v("getToken");
-    NotificationSettings firebaseNotificationSettings = await _firebaseMessaging
-        .requestPermission(sound: true, badge: true, alert: true);
-    if (firebaseNotificationSettings.authorizationStatus ==
-        AuthorizationStatus.authorized) {
+    NotificationSettings firebaseNotificationSettings =
+        await _firebaseMessaging.requestPermission(sound: true, badge: true, alert: true);
+    if (firebaseNotificationSettings.authorizationStatus == AuthorizationStatus.authorized) {
       _log.v("Authorized to get token");
       return _firebaseMessaging.getToken();
     } else {

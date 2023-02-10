@@ -36,9 +36,10 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     BreezLogger();
     SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+    );
     //initializeDateFormatting(Platform.localeName, null);
-    BreezDateUtils.setupLocales();    
+    BreezDateUtils.setupLocales();
     await Firebase.initializeApp(
       options: (await Config.instance()).firebaseOptions,
     );
@@ -47,7 +48,8 @@ void main() async {
     var appDir = await getApplicationDocumentsDirectory();
 
     HydratedBloc.storage = await HydratedStorage.build(
-        storageDirectory: Directory(p.join(appDir.path, "bloc_storage")));
+      storageDirectory: Directory(p.join(appDir.path, "bloc_storage")),
+    );
     runApp(
       MultiBlocProvider(
         providers: [
@@ -57,19 +59,14 @@ void main() async {
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(
               breezLib,
-              CredentialsManager(keyChain: injector.keychain),              
+              CredentialsManager(keyChain: injector.keychain),
             ),
           ),
           BlocProvider<InputBloc>(
-            create: (BuildContext context) => InputBloc(
-              breezLib,
-              injector.lightningLinks,
-              injector.device,
-            ),
+            create: (BuildContext context) => InputBloc(breezLib, injector.lightningLinks, injector.device),
           ),
           BlocProvider<UserProfileBloc>(
-            create: (BuildContext context) =>
-                UserProfileBloc(injector.breezServer, injector.notifications),
+            create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
           ),
           BlocProvider<CurrencyBloc>(
             create: (BuildContext context) => CurrencyBloc(breezLib),

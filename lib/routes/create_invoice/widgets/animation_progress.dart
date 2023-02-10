@@ -10,10 +10,7 @@ class AnimationProgress {
   });
 
   double progress(Duration time) => max(
-    0.0,
-    min(
-      (time - startTime).inMilliseconds / duration.inMilliseconds,
-      1.0,
-    ),
-  );
+        0.0,
+        min((time - startTime).inMilliseconds / duration.inMilliseconds, 1.0),
+      );
 }

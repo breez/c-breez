@@ -1,6 +1,6 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/security/widget/pin_code_widget.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';

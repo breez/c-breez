@@ -26,15 +26,12 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     var profile = state;
     _log.v("State: ${profile.profileSettings.toJson()}");
     final settings = profile.profileSettings;
-    if (settings.color == null ||
-        settings.animal == null ||
-        settings.name == null) {
+    if (settings.color == null || settings.animal == null || settings.name == null) {
       _log.v("Profile is missing fields, generating new random ones…");
       final defaultProfile = generateDefaultProfile();
       final color = settings.color ?? defaultProfile.color;
       final animal = settings.animal ?? defaultProfile.animal;
-      final name = settings.name ??
-          DefaultProfile(color, animal).buildName(getSystemLocale());
+      final name = settings.name ?? DefaultProfile(color, animal).buildName(getSystemLocale());
       profile = profile.copyWith(
         profileSettings: settings.copyWith(
           color: color,
@@ -88,16 +85,14 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     bool? registrationRequested,
     bool? hideBalance,
   }) {
-    _log.v(
-        "updateProfile $name $color $animal $image $registrationRequested $hideBalance");
+    _log.v("updateProfile $name $color $animal $image $registrationRequested $hideBalance");
     var profile = state.profileSettings;
     profile = profile.copyWith(
         name: name ?? profile.name,
         color: color ?? profile.color,
         animal: animal ?? profile.animal,
         image: image ?? profile.image,
-        registrationRequested:
-            registrationRequested ?? profile.registrationRequested,
+        registrationRequested: registrationRequested ?? profile.registrationRequested,
         hideBalance: hideBalance ?? profile.hideBalance);
     emit(state.copyWith(profileSettings: profile));
   }
@@ -112,8 +107,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
 
   @override
   UserProfileState fromJson(Map<String, dynamic> json) {
-    return UserProfileState(
-        profileSettings: UserProfileSettings.fromJson(json));
+    return UserProfileState(profileSettings: UserProfileSettings.fromJson(json));
   }
 
   @override
@@ -123,14 +117,14 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
 
   Future<String> _saveImage(List<int> logoBytes) {
     return getApplicationDocumentsDirectory()
-        .then((docDir) =>
-            Directory([docDir.path, PROFILE_DATA_FOLDER_PATH].join("/"))
-                .create(recursive: true))
-        .then((profileDir) => File([
-              profileDir.path,
-              'profile-${DateTime.now().millisecondsSinceEpoch}-.png'
-            ].join("/"))
-                .writeAsBytes(logoBytes, flush: true))
+        .then(
+          (docDir) => Directory([docDir.path, PROFILE_DATA_FOLDER_PATH].join("/")).create(recursive: true),
+        )
+        .then(
+          (profileDir) => File(
+            [profileDir.path, 'profile-${DateTime.now().millisecondsSinceEpoch}-.png'].join("/"),
+          ).writeAsBytes(logoBytes, flush: true),
+        )
         .then((file) => file.path);
   }
 }

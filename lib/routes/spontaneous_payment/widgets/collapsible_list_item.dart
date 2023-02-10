@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:flutter/material.dart';
 import 'package:c_breez/widgets/flushbar.dart';
+import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 class CollapsibleListItem extends StatelessWidget {
@@ -53,9 +53,7 @@ class CollapsibleListItem extends StatelessWidget {
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.clip,
                       maxLines: 4,
-                      style: textTheme.displaySmall!
-                          .copyWith(fontSize: 10)
-                          .merge(userStyle),
+                      style: textTheme.displaySmall!.copyWith(fontSize: 10).merge(userStyle),
                     ),
                   ),
                 ),
@@ -77,9 +75,7 @@ class CollapsibleListItem extends StatelessWidget {
                             IconData(0xe90b, fontFamily: 'icomoon'),
                           ),
                           onPressed: () {
-                            ServiceInjector()
-                                .device
-                                .setClipboardText(sharedValue!);
+                            ServiceInjector().device.setClipboardText(sharedValue!);
                             Navigator.pop(context);
                             showFlushbar(
                               context,

@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/profile_animal.dart';
 import 'package:c_breez/bloc/user_profile/profile_color.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +22,7 @@ class BreezAvatar extends StatelessWidget {
     if ((avatarURL ?? "").isNotEmpty) {
       if (avatarURL!.startsWith("breez://profile_image?")) {
         var queryParams = Uri.parse(avatarURL!).queryParameters;
-        return _GeneratedAvatar(
-            radius, queryParams["animal"], queryParams["color"], avatarBgColor);
+        return _GeneratedAvatar(radius, queryParams["animal"], queryParams["color"], avatarBgColor);
       }
 
       if (Uri.tryParse(avatarURL!)?.scheme.startsWith("http") ?? false) {
@@ -50,15 +49,15 @@ class _UnknownAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-        backgroundColor: backgroundColor,
-        radius: radius,
-        child: SvgPicture.asset("src/icon/alien.svg",
-            color: const Color.fromARGB(255, 0, 166, 68),
-            width: 0.70 * radius * 2,
-            height: 0.70 *
-                radius *
-                2) // Used to be: Icon(Icons.person, color: theme.BreezColors.blue[500], size: 0.7 * radius * 2,)
-        );
+      backgroundColor: backgroundColor,
+      radius: radius,
+      child: SvgPicture.asset(
+        "src/icon/alien.svg",
+        color: const Color.fromARGB(255, 0, 166, 68),
+        width: 0.70 * radius * 2,
+        height: 0.70 * radius * 2,
+      ),
+    );
   }
 }
 
@@ -68,8 +67,7 @@ class _GeneratedAvatar extends StatelessWidget {
   final String? color;
   final Color backgroundColor;
 
-  const _GeneratedAvatar(
-      this.radius, this.animal, this.color, this.backgroundColor);
+  const _GeneratedAvatar(this.radius, this.animal, this.color, this.backgroundColor);
 
   @override
   Widget build(BuildContext context) {

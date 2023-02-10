@@ -28,9 +28,8 @@ class PaymentFilters implements Exception {
 
   factory PaymentFilters.fromJson(Map<String, dynamic> json) {
     return PaymentFilters(
-      filter: PaymentTypeFilter.values.firstWhere(
-          (n) => n.name == json["filter"],
-          orElse: () => PaymentTypeFilter.All),
+      filter: PaymentTypeFilter.values
+          .firstWhere((n) => n.name == json["filter"], orElse: () => PaymentTypeFilter.All),
       fromTimestamp: json["fromTimestamp"],
       toTimestamp: json["toTimestamp"],
     );

@@ -44,11 +44,9 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final metadataMap = {
-      for (var v in json.decode(widget.requestData.metadataStr))
-        v[0] as String: v[1],
+      for (var v in json.decode(widget.requestData.metadataStr)) v[0] as String: v[1],
     };
-    final description =
-        metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
+    final description = metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
     FiatConversion? fiatConversion;
     if (currencyState.fiatEnabled) {
       fiatConversion = FiatConversion(
@@ -90,10 +88,8 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               ),
               child: Text(
                 _showFiatCurrency && fiatConversion != null
-                    ? fiatConversion
-                        .format(widget.requestData.maxSendable ~/ 1000)
-                    : BitcoinCurrency.fromTickerSymbol(
-                            currencyState.bitcoinTicker)
+                    ? fiatConversion.format(widget.requestData.maxSendable ~/ 1000)
+                    : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
                         .format(widget.requestData.maxSendable ~/ 1000),
                 style: themeData.primaryTextTheme.headlineSmall,
                 textAlign: TextAlign.center,
@@ -114,10 +110,9 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
                     style: themeData.primaryTextTheme.displaySmall!.copyWith(
                       fontSize: 16,
                     ),
-                    textAlign:
-                        description.length > 40 && !description.contains("\n")
-                            ? TextAlign.start
-                            : TextAlign.center,
+                    textAlign: description.length > 40 && !description.contains("\n")
+                        ? TextAlign.start
+                        : TextAlign.center,
                   ),
                 ),
               ),

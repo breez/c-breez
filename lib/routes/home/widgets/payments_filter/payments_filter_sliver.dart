@@ -52,9 +52,7 @@ class _PaymentsFilterSliverState extends State<PaymentsFilterSliver> {
               ),
         builder: (context, height, overlapContent) {
           return Container(
-            color: themeData.isLightTheme
-                ? themeData.colorScheme.background
-                : themeData.canvasColor,
+            color: themeData.isLightTheme ? themeData.colorScheme.background : themeData.canvasColor,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
               child: ClipRRect(

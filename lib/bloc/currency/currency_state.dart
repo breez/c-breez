@@ -32,8 +32,7 @@ class CurrencyState {
         bitcoinTicker: bitcoinTicker ?? this.bitcoinTicker);
   }
 
-  BitcoinCurrency get bitcoinCurrency =>
-      BitcoinCurrency.fromTickerSymbol(bitcoinTicker);
+  BitcoinCurrency get bitcoinCurrency => BitcoinCurrency.fromTickerSymbol(bitcoinTicker);
 
   FiatCurrency? get fiatCurrency => fiatById(fiatId);
 
@@ -61,16 +60,12 @@ class CurrencyState {
   }
 
   CurrencyState.fromJson(Map<String, dynamic> json)
-      : preferredCurrencies =
-            (json['preferredCurrencies'] as List<dynamic>).cast<String>(),
+      : preferredCurrencies = (json['preferredCurrencies'] as List<dynamic>).cast<String>(),
         exchangeRates = {},
         fiatCurrenciesData = [],
         fiatId = json['fiatId'],
         bitcoinTicker = json['bitcoinTicker'];
 
-  Map<String, dynamic> toJson() => {
-        'preferredCurrencies': preferredCurrencies,
-        'fiatId': fiatId,
-        'bitcoinTicker': bitcoinTicker
-      };
+  Map<String, dynamic> toJson() =>
+      {'preferredCurrencies': preferredCurrencies, 'fiatId': fiatId, 'bitcoinTicker': bitcoinTicker};
 }

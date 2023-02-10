@@ -157,7 +157,9 @@ class UserApp extends StatelessWidget {
                                 case '/swap_page':
                                   return FadeInRoute(
                                     builder: (_) => BlocProvider(
-                                      create: (BuildContext context) => SwapInBloc(ServiceInjector().breezLib),
+                                      create: (BuildContext context) => SwapInBloc(
+                                        ServiceInjector().breezLib,
+                                      ),
                                       child: const SwapPage(),
                                     ),
                                     settings: settings,

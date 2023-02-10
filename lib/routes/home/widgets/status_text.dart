@@ -26,9 +26,7 @@ class StatusText extends StatelessWidget {
       return AutoSizeText(
         texts.status_text_ready,
         style: themeData.textTheme.bodyMedium?.copyWith(
-          color: themeData.isLightTheme
-              ? BreezColors.grey[600]
-              : themeData.colorScheme.onSecondary,
+          color: themeData.isLightTheme ? BreezColors.grey[600] : themeData.colorScheme.onSecondary,
         ),
         textAlign: TextAlign.center,
         minFontSize: MinFontSize(context).minFontSize,

@@ -15,8 +15,7 @@ class SuccessfulPaymentRoute extends StatefulWidget {
   }
 }
 
-class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute>
-    with WidgetsBindingObserver {
+class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute> with WidgetsBindingObserver {
   Future? _showFuture;
 
   @override

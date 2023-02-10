@@ -5,11 +5,8 @@ import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
-
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
-
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
-
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -142,11 +139,9 @@ class InputHandler {
     } else if (successAction is SuccessActionProcessed_Url) {
       message = successAction.data.description;
       url = successAction.data.url;
-      _log.v(
-          "Handle LNURL payment page result with url action '$message', '$url'");
+      _log.v("Handle LNURL payment page result with url action '$message', '$url'");
     } else if (successAction is SuccessActionProcessed_Aes) {
-      message =
-          "${successAction.data.description} ${successAction.data.plaintext}";
+      message = "${successAction.data.description} ${successAction.data.plaintext}";
       _log.v("Handle LNURL payment page result with aes action '$message'");
     }
     // Artificial delay for UX purposes

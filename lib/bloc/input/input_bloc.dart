@@ -23,8 +23,7 @@ class InputBloc extends Cubit<InputState> {
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InputBloc(this._breezLib, this._lightningLinks, this._device)
-      : super(InputState()) {
+  InputBloc(this._breezLib, this._lightningLinks, this._device) : super(InputState()) {
     _initializeInputBloc();
   }
 
@@ -64,12 +63,9 @@ class InputBloc extends Cubit<InputState> {
           case breez_sdk.InputProtocol.paymentRequest:
             return handlePaymentRequest(s, command);
           case breez_sdk.InputProtocol.lnurl:
-            return InputState(
-                protocol: command.protocol,
-                inputData: command.decoded as LNURLParseResult);
+            return InputState(protocol: command.protocol, inputData: command.decoded as LNURLParseResult);
           case breez_sdk.InputProtocol.nodeID:
-            return InputState(
-                protocol: command.protocol, inputData: command.decoded);
+            return InputState(protocol: command.protocol, inputData: command.decoded);
           default:
             return InputState(isLoading: false);
         }
@@ -80,8 +76,7 @@ class InputBloc extends Cubit<InputState> {
     }).where((inputState) => inputState != null);
   }
 
-  Future<InputState?> handlePaymentRequest(
-      String raw, breez_sdk.ParsedInput command) async {
+  Future<InputState?> handlePaymentRequest(String raw, breez_sdk.ParsedInput command) async {
     final lnInvoice = command.decoded as breez_sdk.LNInvoice;
     NodeState? nodeState = await _breezLib.getNodeState();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
@@ -104,8 +99,7 @@ class InputBloc extends Cubit<InputState> {
         }
         var nodeID = parseNodeId(clipboardData);
         if (nodeID != null) {
-          return DecodedClipboardData(
-              data: nodeID, type: ClipboardDataType.nodeID);
+          return DecodedClipboardData(data: nodeID, type: ClipboardDataType.nodeID);
         }
         String normalized = clipboardData.toLowerCase();
         if (normalized.startsWith("lightning:")) {
@@ -113,18 +107,15 @@ class InputBloc extends Cubit<InputState> {
         }
 
         if (normalized.startsWith("lnurl")) {
-          return DecodedClipboardData(
-              data: clipboardData, type: ClipboardDataType.lnurl);
+          return DecodedClipboardData(data: clipboardData, type: ClipboardDataType.lnurl);
         }
 
         if (isLightningAddress(normalized)) {
-          return DecodedClipboardData(
-              data: normalized, type: ClipboardDataType.lightningAddress);
+          return DecodedClipboardData(data: normalized, type: ClipboardDataType.lightningAddress);
         }
 
         if (normalized.startsWith("ln")) {
-          return DecodedClipboardData(
-              data: normalized, type: ClipboardDataType.paymentRequest);
+          return DecodedClipboardData(data: normalized, type: ClipboardDataType.paymentRequest);
         }
         return DecodedClipboardData.unrecognized();
       });

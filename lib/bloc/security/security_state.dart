@@ -74,7 +74,8 @@ enum LocalAuthenticationOption {
 extension LocalAuthenticationOptionExtension on LocalAuthenticationOption {
   bool get isFacial => this == LocalAuthenticationOption.face || this == LocalAuthenticationOption.faceId;
 
-  bool get isFingerprint => this == LocalAuthenticationOption.fingerprint || this == LocalAuthenticationOption.touchId;
+  bool get isFingerprint =>
+      this == LocalAuthenticationOption.fingerprint || this == LocalAuthenticationOption.touchId;
 
   bool get isOtherBiometric => this == LocalAuthenticationOption.other;
 }

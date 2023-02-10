@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +15,12 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
   final bool connected;
   final GlobalKey firstPaymentItemKey;
 
-  const ReceiveOptionsBottomSheet(
-      {super.key,
-      required this.connected,
-      required this.firstPaymentItemKey,
-      required this.account});
+  const ReceiveOptionsBottomSheet({
+    super.key,
+    required this.connected,
+    required this.firstPaymentItemKey,
+    required this.account,
+  });
 
   @override
   Widget build(BuildContext context) {

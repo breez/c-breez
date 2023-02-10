@@ -1,8 +1,8 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/backup_script.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
@@ -79,8 +79,7 @@ class _DepositWidgetState extends State<DepositWidget> {
 
     final texts = context.texts();
 
-    final minFees =
-        (lspInfo != null) ? lspInfo.channelMinimumFeeMsat ~/ 1000 : 0;
+    final minFees = (lspInfo != null) ? lspInfo.channelMinimumFeeMsat ~/ 1000 : 0;
     final minFeeAboveZero = minFees > 0;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFees);
     final minSats = currencyState.bitcoinCurrency.format(
@@ -95,8 +94,7 @@ class _DepositWidgetState extends State<DepositWidget> {
       includeDisplayName: true,
     );
     final setUpFee = (lspInfo!.channelFeePermyriad / 100).toString();
-    final liquidity =
-        currencyState.bitcoinCurrency.format(accountState.maxInboundLiquidity);
+    final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquidity);
     final liquidityAboveZero = accountState.maxInboundLiquidity > 0;
 
     if (minFeeAboveZero && liquidityAboveZero) {
@@ -112,8 +110,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     } else if (minFeeAboveZero && !liquidityAboveZero) {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
       // will be applied on the received amount.
-      return texts
-          .invoice_btc_address_warning_with_min_fee_account_not_connected(
+      return texts.invoice_btc_address_warning_with_min_fee_account_not_connected(
         minSats,
         maxSats,
         setUpFee,
@@ -122,8 +119,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     } else if (!minFeeAboveZero && liquidityAboveZero) {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
       // for sending more than {liquidity}.
-      return texts
-          .invoice_btc_address_warning_without_min_fee_account_connected(
+      return texts.invoice_btc_address_warning_without_min_fee_account_connected(
         minSats,
         maxSats,
         setUpFee,
@@ -132,8 +128,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     } else {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
       // on the received amount.
-      return texts
-          .invoice_btc_address_warning_without_min_fee_account_not_connected(
+      return texts.invoice_btc_address_warning_without_min_fee_account_not_connected(
         minSats,
         maxSats,
         setUpFee,
@@ -145,8 +140,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     LspInformation? lspInfo,
     int? minAllowedDeposit,
   ) {
-    final minFees =
-        (lspInfo != null) ? lspInfo.channelMinimumFeeMsat ~/ 1000 : 0;
+    final minFees = (lspInfo != null) ? lspInfo.channelMinimumFeeMsat ~/ 1000 : 0;
     if (minAllowedDeposit == null) return minFees;
     if (minFees > minAllowedDeposit) return minFees;
     return minAllowedDeposit;

@@ -111,11 +111,8 @@ class Message extends StatelessWidget {
           child: SingleChildScrollView(
             child: AutoSizeText(
               message,
-              style: themeData.primaryTextTheme.displaySmall!
-                  .copyWith(fontSize: 16),
-              textAlign: message.length > 40 && !message.contains("\n")
-                  ? TextAlign.start
-                  : TextAlign.center,
+              style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
+              textAlign: message.length > 40 && !message.contains("\n") ? TextAlign.start : TextAlign.center,
             ),
           ),
         ),

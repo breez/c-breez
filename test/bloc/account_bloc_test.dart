@@ -8,13 +8,12 @@ import '../mock/injector_mock.dart';
 import '../utils/fake_path_provider_platform.dart';
 import '../utils/hydrated_bloc_storage.dart';
 
-var testMnemonic =
-    'update elbow source spin squeeze horror world become oak assist bomb nuclear';
+var testMnemonic = 'update elbow source spin squeeze horror world become oak assist bomb nuclear';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final platform = FakePathProviderPlatform();
-  InjectorMock injector = InjectorMock();  
+  InjectorMock injector = InjectorMock();
   group('account', () {
     setUp(() async {
       ServiceInjector.configure(injector);
@@ -34,14 +33,9 @@ void main() {
       injector.keychain.write(CredentialsManager.accountCredsKey, "a3e1");
       injector.keychain.write(CredentialsManager.accountCredsCert, "a3e61");
       injector.keychain.write(CredentialsManager.accountMnemonic, "a3eed");
-      AccountBloc accBloc = AccountBloc(
-        breezLib,
-        CredentialsManager(keyChain: injector.keychain)        
-      );
+      AccountBloc accBloc = AccountBloc(breezLib, CredentialsManager(keyChain: injector.keychain));
 
-      await accBloc.recoverNode(
-        mnemonic: testMnemonic
-      );
+      await accBloc.recoverNode(mnemonic: testMnemonic);
       var accountState = accBloc.state;
       expect(accountState.blockheight, greaterThan(1));
       expect(accountState.id?.length, equals(66));

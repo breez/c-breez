@@ -29,7 +29,8 @@ class ProcessingPaymentDialog extends StatefulWidget {
   }
 }
 
-class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with SingleTickerProviderStateMixin {
+class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
+    with SingleTickerProviderStateMixin {
   AnimationController? controller;
   bool _animating = false;
   double? startHeight;
@@ -72,10 +73,12 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog> with S
       ..addListener(() {
         setState(() {});
       });
-    borderAnimation =
-        Tween<double>(begin: 0.0, end: 12.0).animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
-    opacityAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: controller!, curve: Curves.ease));
+    borderAnimation = Tween<double>(begin: 0.0, end: 12.0).animate(
+      CurvedAnimation(parent: controller!, curve: Curves.ease),
+    );
+    opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: controller!, curve: Curves.ease),
+    );
   }
 
   _payAndClose() {

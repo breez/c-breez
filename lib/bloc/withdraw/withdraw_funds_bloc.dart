@@ -55,8 +55,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
     return utxos;
   }
 
-  List<FeeOption> _constructFeeOptionList(
-      int utxos, RecommendedFees recommendedFees) {
+  List<FeeOption> _constructFeeOptionList(int utxos, RecommendedFees recommendedFees) {
     final List<FeeOption> feeOptions = [
       FeeOption(
         processingSpeed: ProcessingSpeed.economy,

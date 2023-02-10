@@ -9,13 +9,15 @@ class VendorTheme {
 }
 
 final VendorTheme bitrefill = VendorTheme(
-    iconFgColor: const Color.fromRGBO(68, 155, 247, 1.0),
-    iconBgColor: const Color(0xFFffffff),
-    textColor: const Color.fromRGBO(47, 47, 47, 1.0));
+  iconFgColor: const Color.fromRGBO(68, 155, 247, 1.0),
+  iconBgColor: const Color(0xFFffffff),
+  textColor: const Color.fromRGBO(47, 47, 47, 1.0),
+);
 final VendorTheme lnpizza = VendorTheme(
-    iconBgColor: const Color(0xFF000000), iconFgColor: const Color(0xFFf8e71c));
-final VendorTheme fixedfloat =
-    VendorTheme(iconBgColor: const Color(0xFF0B4E7B));
+  iconBgColor: const Color(0xFF000000),
+  iconFgColor: const Color(0xFFf8e71c),
+);
+final VendorTheme fixedfloat = VendorTheme(iconBgColor: const Color(0xFF0B4E7B));
 final VendorTheme lnmarkets = VendorTheme(
   iconBgColor: const Color(0xFF0a157a),
   textColor: const Color(0xFFe2ded5),
@@ -29,9 +31,10 @@ final VendorTheme kollider = VendorTheme(
   textColor: const Color.fromRGBO(217, 227, 234, 1),
 );
 final VendorTheme fastbitcoins = VendorTheme(
-    iconBgColor: const Color(0xFFff7c10),
-    iconFgColor: const Color(0xFF1f2a44),
-    textColor: const Color(0xFF1f2a44));
+  iconBgColor: const Color(0xFFff7c10),
+  iconFgColor: const Color(0xFF1f2a44),
+  textColor: const Color(0xFF1f2a44),
+);
 final VendorTheme xsats = VendorTheme(iconBgColor: const Color(0xFF000000));
 
 final Map<String, VendorTheme> vendorTheme = {

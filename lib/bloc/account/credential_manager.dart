@@ -72,11 +72,9 @@ class CredentialsManager {
     try {
       final Directory tempDir = await getTemporaryDirectory();
       var keysDir = tempDir.createTempSync("keys");
-      final File credentialsFile =
-          File('${keysDir.path}/c-breez-credentials.json');
+      final File credentialsFile = File('${keysDir.path}/c-breez-credentials.json');
       Credentials credentials = await restoreCredentials();
-      credentialsFile
-          .writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
+      credentialsFile.writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
       final File mnemonicFile = File('${keysDir.path}/c-breez-mnemonic.json');
       mnemonicFile.writeAsString(credentials.mnemonic);
       return [credentialsFile, mnemonicFile];
@@ -109,10 +107,8 @@ class Credentials {
   Credentials.fromJson(
     Map<String, dynamic> json,
   )   : glCreds = GreenlightCredentials(
-          deviceKey:
-              Uint8List.fromList(HEX.decode(json['glCreds']['deviceKey'])),
-          deviceCert:
-              Uint8List.fromList(HEX.decode(json['glCreds']['deviceCert'])),
+          deviceKey: Uint8List.fromList(HEX.decode(json['glCreds']['deviceKey'])),
+          deviceCert: Uint8List.fromList(HEX.decode(json['glCreds']['deviceCert'])),
         ),
         mnemonic = json['mnemonic'];
 

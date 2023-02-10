@@ -35,16 +35,13 @@ class BitcoinAddressTextFormField extends TextFormField {
                 Navigator.pushNamed<String>(context, "/qr_scan").then(
                   (barcode) {
                     _log.v("Scanned string: '$barcode'");
-                    final address =
-                        BitcoinAddressInfo.fromScannedString(barcode).address;
+                    final address = BitcoinAddressInfo.fromScannedString(barcode).address;
                     _log.v("BitcoinAddressInfoFromScannedString: '$address'");
                     if (address == null) return;
                     if (address.isEmpty) {
                       showFlushbar(
                         context,
-                        message: context
-                            .texts()
-                            .withdraw_funds_error_qr_code_not_detected,
+                        message: context.texts().withdraw_funds_error_qr_code_not_detected,
                       );
                       return;
                     }
@@ -57,14 +54,11 @@ class BitcoinAddressTextFormField extends TextFormField {
           style: theme.FieldTextStyle.textStyle,
           onChanged: (address) async {
             await validatorHolder.lock.synchronized(() async {
-              validatorHolder.valid = await context
-                  .read<AccountBloc>()
-                  .isValidBitcoinAddress(address);
+              validatorHolder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
             });
           },
           validator: (address) {
-            _log.v(
-                "validator called for $address, lock status: ${validatorHolder.lock.locked}");
+            _log.v("validator called for $address, lock status: ${validatorHolder.lock.locked}");
             if (validatorHolder.valid) {
               return null;
             } else {

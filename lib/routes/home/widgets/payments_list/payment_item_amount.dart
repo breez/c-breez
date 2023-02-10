@@ -30,8 +30,7 @@ class PaymentItemAmount extends StatelessWidget {
 
     return SizedBox(
       height: 44,
-      child: BlocBuilder<UserProfileBloc, UserProfileState>(
-          builder: (context, userModel) {
+      child: BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userModel) {
         final bool hideBalance = userModel.profileSettings.hideBalance;
         return BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
@@ -46,22 +45,17 @@ class PaymentItemAmount extends StatelessWidget {
             );
 
             return Column(
-              mainAxisAlignment:
-                  _paymentInfo.feeMsat == 0 || _paymentInfo.pending
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.spaceAround,
+              mainAxisAlignment: _paymentInfo.feeMsat == 0 || _paymentInfo.pending
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   hideBalance
                       ? texts.wallet_dashboard_payment_item_balance_hide
                       : _paymentInfo.paymentType == PaymentType.Received
-                          ? texts
-                              .wallet_dashboard_payment_item_balance_positive(
-                                  amount)
-                          : texts
-                              .wallet_dashboard_payment_item_balance_negative(
-                                  amount),
+                          ? texts.wallet_dashboard_payment_item_balance_positive(amount)
+                          : texts.wallet_dashboard_payment_item_balance_negative(amount),
                   style: themeData.paymentItemAmountTextStyle,
                 ),
                 (fee == 0 || _paymentInfo.pending)
@@ -69,8 +63,7 @@ class PaymentItemAmount extends StatelessWidget {
                     : Text(
                         hideBalance
                             ? texts.wallet_dashboard_payment_item_balance_hide
-                            : texts.wallet_dashboard_payment_item_balance_fee(
-                                feeFormatted),
+                            : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
                         style: themeData.paymentItemFeeTextStyle,
                       ),
               ],
@@ -93,8 +86,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) =>
-              CurrencyBloc(ServiceInjector().breezLib),
+          create: (BuildContext context) => CurrencyBloc(ServiceInjector().breezLib),
         ),
       ],
       child: MaterialApp(
@@ -111,8 +103,7 @@ void main() async {
                 description: "",
                 details: PaymentDetails.ln(
                     data: LnPaymentDetails(
-                        paymentHash:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                         label: "",
                         destinationPubkey:
                             "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
@@ -125,8 +116,7 @@ void main() async {
           PaymentItemAmount(
             Payment(
                 paymentType: PaymentType.Received,
-                id:
-                    "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                 feeMsat: 1234,
                 paymentTime: 1661791810,
                 amountMsat: 4321000,
@@ -134,8 +124,7 @@ void main() async {
                 description: "",
                 details: PaymentDetails.ln(
                     data: LnPaymentDetails(
-                        paymentHash:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                         label: "",
                         destinationPubkey:
                             "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
@@ -148,8 +137,7 @@ void main() async {
           PaymentItemAmount(
             Payment(
                 paymentType: PaymentType.Received,
-                id:
-                    "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                 feeMsat: 1234,
                 paymentTime: 1661791810,
                 amountMsat: 4321000,
@@ -157,8 +145,7 @@ void main() async {
                 description: "",
                 details: PaymentDetails.ln(
                     data: LnPaymentDetails(
-                        paymentHash:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                         label: "",
                         destinationPubkey:
                             "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
@@ -171,8 +158,7 @@ void main() async {
           PaymentItemAmount(
             Payment(
                 paymentType: PaymentType.Received,
-                id:
-                    "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                 feeMsat: 1234,
                 paymentTime: 1661791810,
                 amountMsat: 4321000,
@@ -180,8 +166,7 @@ void main() async {
                 description: "",
                 details: PaymentDetails.ln(
                     data: LnPaymentDetails(
-                        paymentHash:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                         label: "",
                         destinationPubkey:
                             "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",

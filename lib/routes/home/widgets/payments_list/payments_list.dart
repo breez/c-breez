@@ -63,8 +63,7 @@ void main() async {
           create: (BuildContext context) => CurrencyBloc(injector.breezLib),
         ),
         BlocProvider<UserProfileBloc>(
-          create: (BuildContext context) =>
-              UserProfileBloc(injector.breezServer, injector.notifications),
+          create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
         ),
       ],
       child: MaterialApp(
@@ -78,8 +77,7 @@ void main() async {
                   [
                     sdk.Payment(
                         paymentType: sdk.PaymentType.Received,
-                        id:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                         feeMsat: 0,
                         paymentTime: 1661791810,
                         amountMsat: 4321000,
@@ -97,8 +95,7 @@ void main() async {
                                 bolt11: ""))),
                     sdk.Payment(
                         paymentType: sdk.PaymentType.Received,
-                        id:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                         feeMsat: 12,
                         paymentTime: 1661791810,
                         amountMsat: 4321000,
@@ -116,11 +113,9 @@ void main() async {
                                 bolt11: ""))),
                     sdk.Payment(
                         paymentType: sdk.PaymentType.Received,
-                        id:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                         feeMsat: 3456,
-                        paymentTime:
-                            DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                        paymentTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
                         amountMsat: 4321000,
                         pending: false,
                         description: "A title",

@@ -14,13 +14,13 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
 
   void _initializeCurrencyBloc() {
     late final StreamSubscription streamSubscription;
-    streamSubscription = _breezLib.nodeStateStream
-        .where((nodeState) => nodeState != null)
-        .listen((nodeState) {
-      listFiatCurrencies();
-      fetchExchangeRates();
-      streamSubscription.cancel();
-    });
+    streamSubscription = _breezLib.nodeStateStream.where((nodeState) => nodeState != null).listen(
+      (nodeState) {
+        listFiatCurrencies();
+        fetchExchangeRates();
+        streamSubscription.cancel();
+      },
+    );
   }
 
   void listFiatCurrencies() {
@@ -65,11 +65,13 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   }
 
   void setPreferredCurrencies(List<String> preferredCurrencies) {
-    emit(state.copyWith(
-        fiatCurrenciesData: _sortedFiatCurrenciesList(
-            state.fiatCurrenciesData, preferredCurrencies),
+    emit(
+      state.copyWith(
+        fiatCurrenciesData: _sortedFiatCurrenciesList(state.fiatCurrenciesData, preferredCurrencies),
         preferredCurrencies: preferredCurrencies,
-        fiatId: preferredCurrencies[0]));
+        fiatId: preferredCurrencies[0],
+      ),
+    );
   }
 
   void setBitcoinTicker(String bitcoinTicker) {

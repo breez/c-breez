@@ -11,12 +11,10 @@ import 'verify_mnemonic_seed_page.dart';
 class GenerateMnemonicSeedPage extends StatefulWidget {
   final String mnemonics;
 
-  const GenerateMnemonicSeedPage({Key? key, required this.mnemonics})
-      : super(key: key);
+  const GenerateMnemonicSeedPage({Key? key, required this.mnemonics}) : super(key: key);
 
   @override
-  GenerateMnemonicSeedPageState createState() =>
-      GenerateMnemonicSeedPageState();
+  GenerateMnemonicSeedPageState createState() => GenerateMnemonicSeedPageState();
 }
 
 class GenerateMnemonicSeedPageState extends State<GenerateMnemonicSeedPage> {

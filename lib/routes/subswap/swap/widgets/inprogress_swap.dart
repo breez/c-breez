@@ -21,9 +21,20 @@ class SwapInprogress extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _ContentWrapper(content: Text(texts.add_funds_error_deposit, textAlign: TextAlign.center), top: 50.0,),
-        if (swapTxs.isNotEmpty) _ContentWrapper(content: _TxLink(txid: swapTxs[0])),
-        if (swap.lastRedeemError != null) _ContentWrapper(content: Text(swap.lastRedeemError!, textAlign: TextAlign.center)),
+        _ContentWrapper(
+          content: Text(texts.add_funds_error_deposit, textAlign: TextAlign.center),
+          top: 50.0,
+        ),
+        if (swapTxs.isNotEmpty) ...[
+          _ContentWrapper(
+            content: _TxLink(txid: swapTxs[0]),
+          ),
+        ],
+        if (swap.lastRedeemError != null) ...[
+          _ContentWrapper(
+            content: Text(swap.lastRedeemError!, textAlign: TextAlign.center),
+          ),
+        ],
       ],
     );
   }
@@ -57,7 +68,7 @@ class _ContentWrapper extends StatelessWidget {
   final Widget content;
   final double top;
 
-  const _ContentWrapper({required this.content, this.top=30.0});
+  const _ContentWrapper({required this.content, this.top = 30.0});
 
   @override
   Widget build(BuildContext context) {

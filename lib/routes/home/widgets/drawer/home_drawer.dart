@@ -1,11 +1,11 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -44,9 +44,7 @@ class HomeDrawerState extends State<HomeDrawer> {
         final settings = user.profileSettings;
         return BlocBuilder<LSPBloc, LspState?>(
           builder: (context, lspState) {
-            final addOrRemove = (lspState?.lspInfo != null)
-                ? _hiddenRoutes.remove
-                : _hiddenRoutes.add;
+            final addOrRemove = (lspState?.lspInfo != null) ? _hiddenRoutes.remove : _hiddenRoutes.add;
             for (var route in _kActiveAccountRoutes) {
               addOrRemove(route);
             }

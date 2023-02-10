@@ -4,8 +4,7 @@ import 'package:fimber/fimber.dart';
 import 'package:http/http.dart' as http;
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-class NetworkSettingsBloc extends Cubit<NetworkSettingsState>
-    with HydratedMixin {
+class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin {
   final Preferences _preferences;
   final _log = FimberLog("NetworkSettingsBloc");
 

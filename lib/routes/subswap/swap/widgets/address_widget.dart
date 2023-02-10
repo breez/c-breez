@@ -1,9 +1,9 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/address_qr_widget.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:c_breez/routes/subswap/swap/widgets/address_qr_widget.dart';
 import 'package:share_plus/share_plus.dart';
 
 class AddressWidget extends StatelessWidget {

@@ -6,5 +6,5 @@ class SwapInState {
   final bool isLoading;
   final String? error;
 
-  SwapInState(this.inProgress, this.unused, {this.isLoading=false, this.error});
+  SwapInState(this.inProgress, this.unused, {this.isLoading = false, this.error});
 }

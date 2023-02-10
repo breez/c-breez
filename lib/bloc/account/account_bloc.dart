@@ -31,17 +31,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   static const String paymentFilterSettingsKey = "payment_filter_settings";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
-  final StreamController<PaymentResult> _paymentResultStreamController =
-      StreamController<PaymentResult>();
+  final StreamController<PaymentResult> _paymentResultStreamController = StreamController<PaymentResult>();
 
-  Stream<PaymentResult> get paymentResultStream =>
-      _paymentResultStreamController.stream;
+  Stream<PaymentResult> get paymentResultStream => _paymentResultStreamController.stream;
 
-  final StreamController<PaymentFilters> _paymentFiltersStreamController =
-      BehaviorSubject<PaymentFilters>();
+  final StreamController<PaymentFilters> _paymentFiltersStreamController = BehaviorSubject<PaymentFilters>();
 
-  Stream<PaymentFilters> get paymentFiltersStream =>
-      _paymentFiltersStreamController.stream;
+  Stream<PaymentFilters> get paymentFiltersStream => _paymentFiltersStreamController.stream;
 
   final BreezBridge _breezLib;
   final CredentialsManager _credentialsManager;
@@ -62,14 +58,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
   _watchAccountChanges() {
-    return Rx.combineLatest3<List<sdk.Payment>, PaymentFilters, sdk.NodeState?,
-        AccountState>(
+    return Rx.combineLatest3<List<sdk.Payment>, PaymentFilters, sdk.NodeState?, AccountState>(
       _breezLib.paymentsStream,
       paymentFiltersStream,
       _breezLib.nodeStateStream,
       (payments, paymentFilters, nodeState) {
-        return assembleAccountState(payments, paymentFilters, nodeState) ??
-            state;
+        return assembleAccountState(payments, paymentFilters, nodeState) ?? state;
       },
     );
   }
@@ -135,8 +129,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       StreamSubscription<ConnectivityResult>? subscription;
       subscription = Connectivity().onConnectivityChanged.listen((event) async {
         // we should try fetch the selected lsp information when internet is back.
-        if (event != ConnectivityResult.none &&
-            state.status == ConnectionStatus.DISCONNECTED) {
+        if (event != ConnectivityResult.none && state.status == ConnectionStatus.DISCONNECTED) {
           await _startSdkOnce();
           if (state.status == ConnectionStatus.CONNECTED) {
             subscription!.cancel();
@@ -163,20 +156,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   void _onConnected() {
     var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
     FGBGEvents.stream.listen((event) async {
-      if (event == FGBGType.foreground &&
-          DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
+      if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
         await _breezLib.syncNode();
         lastSync = DateTime.now();
       }
     });
   }
 
-  Future<sdk.LnUrlWithdrawCallbackStatus> lnurlWithdraw(
-      {required int amountSats,
-      required sdk.LnUrlWithdrawRequestData reqData,
-      String? description}) async {
-    _log.v(
-        "lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
+  Future<sdk.LnUrlWithdrawCallbackStatus> lnurlWithdraw({
+    required int amountSats,
+    required sdk.LnUrlWithdrawRequestData reqData,
+    String? description,
+  }) async {
+    _log.v("lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
     try {
       return await _breezLib.lnurlWithdraw(
         amountSats: amountSats,
@@ -258,8 +250,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
     if (!outgoing) {
       if (channelMinimumFee != null &&
-          (amount > accState.maxInboundLiquidity &&
-              amount <= channelMinimumFee)) {
+          (amount > accState.maxInboundLiquidity && amount <= channelMinimumFee)) {
         throw PaymentBelowSetupFeesError(channelMinimumFee);
       }
       if (amount > accState.maxAllowedToReceive) {

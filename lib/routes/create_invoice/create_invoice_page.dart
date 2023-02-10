@@ -186,8 +186,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
     Future<LNInvoice> invoice = accountBloc.addInvoice(
       description: _descriptionController.text,
-      amountSats:
-          currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
+      amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
     );
     navigator.pop();
     Widget dialog = FutureBuilder(

@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
@@ -51,8 +51,10 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
   @override
   void initState() {
     _doneAction = KeyboardDoneAction(focusNodes: <FocusNode>[_amountFocusNode]);
-    Future.delayed(const Duration(milliseconds: 200),
-        () => FocusScope.of(context).requestFocus(_amountFocusNode));
+    Future.delayed(
+      const Duration(milliseconds: 200),
+      () => FocusScope.of(context).requestFocus(_amountFocusNode),
+    );
     super.initState();
   }
 
@@ -79,8 +81,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
         leading: const back_button.BackButton(),
         title: Text(texts.spontaneous_payment_title),
       ),
-      body: BlocBuilder<CurrencyBloc, CurrencyState>(
-          builder: (context, currencyState) {
+      body: BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, acc) {
             AccountBloc accBloc = context.read<AccountBloc>();
@@ -108,8 +109,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                         bitcoinCurrency: currencyState.bitcoinCurrency,
                         texts: texts,
                         fiatConversion: currencyState.fiatEnabled
-                            ? FiatConversion(currencyState.fiatCurrency!,
-                                currencyState.fiatExchangeRate!)
+                            ? FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!)
                             : null,
                         focusNode: _amountFocusNode,
                         controller: _amountController,
@@ -152,14 +152,17 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     return GestureDetector(
       child: AutoSizeText(
         texts.spontaneous_payment_max_amount(
-            currencyState.bitcoinCurrency.format(acc.maxAllowedToPay)),
+          currencyState.bitcoinCurrency.format(acc.maxAllowedToPay),
+        ),
         style: theme.textStyle,
         maxLines: 1,
         minFontSize: MinFontSize(context).minFontSize,
       ),
-      onTap: () => _amountController.text = currencyState.bitcoinCurrency
-          .format(acc.maxAllowedToPay,
-              includeDisplayName: false, userInput: true),
+      onTap: () => _amountController.text = currencyState.bitcoinCurrency.format(
+        acc.maxAllowedToPay,
+        includeDisplayName: false,
+        userInput: true,
+      ),
     );
   }
 

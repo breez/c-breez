@@ -109,15 +109,12 @@ class SendOnchainFormState extends State<SendOnchainForm> {
               onChanged: (address) async {
                 await validatorHolder.lock.synchronized(
                   () async {
-                    validatorHolder.valid = await context
-                        .read<AccountBloc>()
-                        .isValidBitcoinAddress(address);
+                    validatorHolder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
                   },
                 );
               },
               validator: (address) {
-                _log.v(
-                    'validator called for $address, lock status: ${validatorHolder.lock.locked}');
+                _log.v('validator called for $address, lock status: ${validatorHolder.lock.locked}');
                 if (validatorHolder.valid) {
                   return null;
                 } else {

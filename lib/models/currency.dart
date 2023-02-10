@@ -11,8 +11,7 @@ class BitcoinCurrency extends Object {
   const BitcoinCurrency._internal(this.tickerSymbol);
 
   factory BitcoinCurrency.fromTickerSymbol(String tickerSymbol) {
-    return currencies.firstWhere(
-        (c) => c.tickerSymbol.toUpperCase() == tickerSymbol.toUpperCase());
+    return currencies.firstWhere((c) => c.tickerSymbol.toUpperCase() == tickerSymbol.toUpperCase(),);
   }
 
   String format(
@@ -28,8 +27,7 @@ class BitcoinCurrency extends Object {
           removeTrailingZeros: removeTrailingZeros,
           userInput: userInput);
 
-  int parse(String amountStr) =>
-      BitcoinCurrencyFormatter().parse(amountStr, this);
+  int parse(String amountStr) => BitcoinCurrencyFormatter().parse(amountStr, this);
 
   int parseToInt(
     String amountStr, {
@@ -44,11 +42,9 @@ class BitcoinCurrency extends Object {
     return value;
   }
 
-  int toSats(double amount) =>
-      BitcoinCurrencyFormatter().toSats(amount, this);
+  int toSats(double amount) => BitcoinCurrencyFormatter().toSats(amount, this);
 
-  String get displayName =>
-      tickerSymbol.toLowerCase() == "sat" ? "sats" : tickerSymbol;
+  String get displayName => tickerSymbol.toLowerCase() == "sat" ? "sats" : tickerSymbol;
 
   String get symbol {
     switch (tickerSymbol) {

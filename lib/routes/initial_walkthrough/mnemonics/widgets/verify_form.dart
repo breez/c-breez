@@ -50,15 +50,13 @@ class VerifyFormPageState extends State<VerifyForm> {
                     validator: (text) {
                       if (text!.isEmpty ||
                           text.toLowerCase().trim() !=
-                              widget.mnemonicsList[
-                                  widget.randomlySelectedIndexes[index]]) {
+                              widget.mnemonicsList[widget.randomlySelectedIndexes[index]]) {
                         widget.onError();
                       }
                       return null;
                     },
-                    onEditingComplete: () => (index == 2)
-                        ? FocusScope.of(context).unfocus()
-                        : FocusScope.of(context).nextFocus(),
+                    onEditingComplete: () =>
+                        (index == 2) ? FocusScope.of(context).unfocus() : FocusScope.of(context).nextFocus(),
                   ),
                 );
               },

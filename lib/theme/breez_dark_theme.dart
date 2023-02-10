@@ -21,8 +21,7 @@ final ThemeData breezDarkTheme = ThemeData(
     sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
   ),
   canvasColor: const Color(0xFF0c2031),
-  bottomAppBarTheme:
-      const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
+  bottomAppBarTheme: const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
   appBarTheme: AppBarTheme(
     backgroundColor: const Color(0xFF0c2031),
     iconTheme: const IconThemeData(
@@ -35,24 +34,20 @@ final ThemeData breezDarkTheme = ThemeData(
     systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   dialogTheme: const DialogTheme(
-      titleTextStyle:
-          TextStyle(color: Colors.white, fontSize: 20.5, letterSpacing: 0.25),
-      contentTextStyle:
-          TextStyle(color: Colors.white70, fontSize: 16.0, height: 1.5),
-      backgroundColor: Color(0xFF152a3d),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12.0)))),
+    titleTextStyle: TextStyle(color: Colors.white, fontSize: 20.5, letterSpacing: 0.25),
+    contentTextStyle: TextStyle(color: Colors.white70, fontSize: 16.0, height: 1.5),
+    backgroundColor: Color(0xFF152a3d),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+  ),
   dialogBackgroundColor: Colors.transparent,
   dividerColor: const Color(0x337aa5eb),
   cardColor: const Color(0xFF121212), // will be replaced with CardTheme.color
   cardTheme: const CardTheme(color: Color(0xFF121212)),
   highlightColor: const Color(0xFF0085fb),
-  textTheme:  const TextTheme(
-      titleSmall:
-          TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 0.2),
+  textTheme: const TextTheme(
+      titleSmall: TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 0.2),
       headlineSmall: TextStyle(color: Colors.white, fontSize: 26.0),
-      labelLarge:
-          TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 1.25),
+      labelLarge: TextStyle(color: Colors.white, fontSize: 14.3, letterSpacing: 1.25),
       headlineMedium: TextStyle(
         color: Color(0xffffe685),
         fontSize: 18.0,
@@ -71,8 +66,7 @@ final ThemeData breezDarkTheme = ThemeData(
         height: 1.28,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    displaySmall: const TextStyle(
-        color: Colors.white, fontSize: 14.0, letterSpacing: 0.0, height: 1.28),
+    displaySmall: const TextStyle(color: Colors.white, fontSize: 14.0, letterSpacing: 0.0, height: 1.28),
     headlineSmall: const TextStyle(
         color: Colors.white,
         fontSize: 24.0,
@@ -86,10 +80,8 @@ final ThemeData breezDarkTheme = ThemeData(
         letterSpacing: 0.15,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    labelLarge: const TextStyle(
-        color: Color(0xFF0085fb), fontSize: 14.3, letterSpacing: 1.25),
-    titleSmall: TextStyle(
-        color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
+    labelLarge: const TextStyle(color: Color(0xFF0085fb), fontSize: 14.3, letterSpacing: 1.25),
+    titleSmall: TextStyle(color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
     bodySmall: TextStyle(color: BreezColors.white[400], fontSize: 12.0),
   ),
   textSelectionTheme: const TextSelectionThemeData(

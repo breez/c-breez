@@ -34,9 +34,7 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
       widget.feeOptions.length,
       (index) => FeeOptionButton(
         text: widget.feeOptions.elementAt(index).getDisplayName(texts),
-        isAffordable: widget.feeOptions
-            .elementAt(index)
-            .isAffordable(widget.walletBalance),
+        isAffordable: widget.feeOptions.elementAt(index).isAffordable(widget.walletBalance),
         isSelected: widget.selectedFeeIndex == index,
         onSelect: () => widget.onSelect(index),
       ),

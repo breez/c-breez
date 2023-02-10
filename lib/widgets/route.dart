@@ -5,8 +5,12 @@ class FadeInRoute<T> extends CupertinoPageRoute<T> {
       : super(builder: builder, settings: settings);
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     // Fades between routes. (If you don't want any animation,
     // just return child.)
     return FadeTransition(opacity: animation, child: child);
@@ -18,8 +22,12 @@ class NoTransitionRoute<T> extends CupertinoPageRoute<T> {
       : super(builder: builder, settings: settings);
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return child;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/initial_walkthrough/beta_warning_dialog.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/exceptions.dart';
@@ -45,7 +45,6 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
@@ -68,8 +67,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
                   child: AnimatedBuilder(
                     animation: _animation!,
                     builder: (BuildContext context, Widget? child) {
-                      String frame =
-                          _animation!.value.toString().padLeft(2, '0');
+                      String frame = _animation!.value.toString().padLeft(2, '0');
                       return Image.asset(
                         'src/animations/welcome/frame_${frame}_delay-0.04s.png',
                         gaplessPlayback: true,
@@ -163,8 +161,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   Future<String?> _getMnemonic() async {
-    return await Navigator.of(context)
-        .pushNamed<String>("/enter_mnemonic_seed");
+    return await Navigator.of(context).pushNamed<String>("/enter_mnemonic_seed");
   }
 
   void restoreNode(String mnemonic) async {
@@ -183,7 +180,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     } finally {
       navigator.removeRoute(loaderRoute);
     }
-    
+
     themeProvider.setTheme('dark');
     navigator.pushReplacementNamed('/');
   }

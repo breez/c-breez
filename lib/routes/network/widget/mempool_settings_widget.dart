@@ -1,6 +1,6 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/bloc/network/network_settings_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -83,8 +83,9 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
                               _saving = true;
                               _userChanged = true;
                             });
-                            final success =
-                                await context.read<NetworkSettingsBloc>().setMempoolUrl(_mempoolUrlController.text);
+                            final success = await context
+                                .read<NetworkSettingsBloc>()
+                                .setMempoolUrl(_mempoolUrlController.text);
                             setState(() {
                               _errorOnSave = !success;
                               _saving = false;

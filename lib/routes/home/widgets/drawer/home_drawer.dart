@@ -107,15 +107,17 @@ class HomeDrawerState extends State<HomeDrawer> {
     UserProfileSettings user,
   ) {
     return [
-      DrawerItemConfigGroup([
-        _drawerItemBalance(
-          context,
-          user,
-        ),
-        // App are disabled untill we support it ref:
-        // (https://github.com/breez/c-breez/issues/388#issue-1551748496)
-        //_drawerItemLightningApps(context, user),
-      ]),
+      DrawerItemConfigGroup(
+        [
+          _drawerItemBalance(
+            context,
+            user,
+          ),
+          // App are disabled untill we support it ref:
+          // (https://github.com/breez/c-breez/issues/388#issue-1551748496)
+          //_drawerItemLightningApps(context, user),
+        ],
+      ),
     ];
   }
 

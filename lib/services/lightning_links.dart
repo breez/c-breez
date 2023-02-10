@@ -11,7 +11,10 @@ class LightningLinksService {
   Stream<String> get linksNotifications => _linksNotificationsController.stream;
 
   LightningLinksService() {
-    Rx.merge([getInitialLink().asStream(), linkStream]).where(_canHandle).listen((l) {
+    Rx.merge([
+      getInitialLink().asStream(),
+      linkStream,
+    ]).where(_canHandle).listen((l) {
       _log.i("Got lightning link: $l");
       if (l!.startsWith("breez:")) {
         l = l.substring(6);

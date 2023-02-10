@@ -69,7 +69,11 @@ class SecurityPinInterval extends StatelessWidget {
 }
 
 void main() {
-  runApp(const Preview([
-    SecurityPinInterval(interval: Duration(seconds: 120)),
-  ]));
+  runApp(
+    const Preview(
+      [
+        SecurityPinInterval(interval: Duration(seconds: 120)),
+      ],
+    ),
+  );
 }

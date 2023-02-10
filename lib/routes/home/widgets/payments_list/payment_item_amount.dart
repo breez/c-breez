@@ -91,9 +91,10 @@ void main() async {
       ],
       child: MaterialApp(
         theme: breezLightTheme,
-        home: Column(children: [
-          PaymentItemAmount(
-            Payment(
+        home: Column(
+          children: [
+            PaymentItemAmount(
+              Payment(
                 paymentType: PaymentType.Received,
                 id: "",
                 feeMsat: 0,
@@ -102,19 +103,21 @@ void main() async {
                 pending: false,
                 description: "",
                 details: PaymentDetails.ln(
-                    data: LnPaymentDetails(
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        label: "",
-                        destinationPubkey:
-                            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        paymentPreimage: "",
-                        keysend: false,
-                        bolt11: ""))),
-          ),
+                  data: LnPaymentDetails(
+                    paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                    label: "",
+                    destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                    paymentPreimage: "",
+                    keysend: false,
+                    bolt11: "",
+                  ),
+                ),
+              ),
+            ),
 
-          // Pending
-          PaymentItemAmount(
-            Payment(
+            // Pending
+            PaymentItemAmount(
+              Payment(
                 paymentType: PaymentType.Received,
                 id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                 feeMsat: 1234,
@@ -123,19 +126,21 @@ void main() async {
                 pending: true,
                 description: "",
                 details: PaymentDetails.ln(
-                    data: LnPaymentDetails(
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        label: "",
-                        destinationPubkey:
-                            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        paymentPreimage: "",
-                        keysend: false,
-                        bolt11: ""))),
-          ),
+                  data: LnPaymentDetails(
+                    paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                    label: "",
+                    destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                    paymentPreimage: "",
+                    keysend: false,
+                    bolt11: "",
+                  ),
+                ),
+              ),
+            ),
 
-          // Show all
-          PaymentItemAmount(
-            Payment(
+            // Show all
+            PaymentItemAmount(
+              Payment(
                 paymentType: PaymentType.Received,
                 id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                 feeMsat: 1234,
@@ -144,19 +149,21 @@ void main() async {
                 pending: false,
                 description: "",
                 details: PaymentDetails.ln(
-                    data: LnPaymentDetails(
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        label: "",
-                        destinationPubkey:
-                            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        paymentPreimage: "",
-                        keysend: false,
-                        bolt11: ""))),
-          ),
+                  data: LnPaymentDetails(
+                    paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                    label: "",
+                    destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                    paymentPreimage: "",
+                    keysend: false,
+                    bolt11: "",
+                  ),
+                ),
+              ),
+            ),
 
-          // Hide all
-          PaymentItemAmount(
-            Payment(
+            // Hide all
+            PaymentItemAmount(
+              Payment(
                 paymentType: PaymentType.Received,
                 id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                 feeMsat: 1234,
@@ -165,16 +172,19 @@ void main() async {
                 pending: false,
                 description: "",
                 details: PaymentDetails.ln(
-                    data: LnPaymentDetails(
-                        paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        label: "",
-                        destinationPubkey:
-                            "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                        paymentPreimage: "",
-                        keysend: false,
-                        bolt11: ""))),
-          ),
-        ]),
+                  data: LnPaymentDetails(
+                    paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                    label: "",
+                    destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                    paymentPreimage: "",
+                    keysend: false,
+                    bolt11: "",
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );

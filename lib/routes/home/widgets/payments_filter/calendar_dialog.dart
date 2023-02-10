@@ -82,10 +82,12 @@ class CalendarDialogState extends State<CalendarDialog> {
     // Check if filter is unchanged
     final navigator = Navigator.of(context);
     if (_startDate != widget.firstDate || _endDate.day != DateTime.now().day) {
-      navigator.pop([
-        DateTime(_startDate.year, _startDate.month, _startDate.day, 0, 0, 0),
-        DateTime(_endDate.year, _endDate.month, _endDate.day, 23, 59, 59, 999),
-      ]);
+      navigator.pop(
+        [
+          DateTime(_startDate.year, _startDate.month, _startDate.day, 0, 0, 0),
+          DateTime(_endDate.year, _endDate.month, _endDate.day, 23, 59, 59, 999),
+        ],
+      );
     } else {
       navigator.pop();
     }

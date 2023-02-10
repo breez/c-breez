@@ -12,16 +12,19 @@ class Loader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: FractionalOffset.center, children: <Widget>[
-      CircularProgressIndicator(
-        value: value,
-        semanticsLabel: label,
-        strokeWidth: strokeWidth,
-        valueColor: AlwaysStoppedAnimation<Color>(
-          color ?? theme.circularLoaderColor,
+    return Stack(
+      alignment: FractionalOffset.center,
+      children: <Widget>[
+        CircularProgressIndicator(
+          value: value,
+          semanticsLabel: label,
+          strokeWidth: strokeWidth,
+          valueColor: AlwaysStoppedAnimation<Color>(
+            color ?? theme.circularLoaderColor,
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -62,20 +65,21 @@ class FullScreenLoader extends StatelessWidget {
             left: 0.0,
             right: 0.0,
             child: Container(
-                color: bgColor.withOpacity(opacity),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Loader(value: value, label: message, color: progressColor),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: message != null ? Text(message!, textAlign: TextAlign.center) : const SizedBox(),
-                    )
-                  ],
-                )),
+              color: bgColor.withOpacity(opacity),
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Loader(value: value, label: message, color: progressColor),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: message != null ? Text(message!, textAlign: TextAlign.center) : const SizedBox(),
+                  )
+                ],
+              ),
+            ),
           ),
           onClose != null
               ? Padding(
@@ -83,9 +87,10 @@ class FullScreenLoader extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.topRight,
                     child: IconButton(
-                        color: Colors.white,
-                        onPressed: () => onClose!(),
-                        icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color)),
+                      color: Colors.white,
+                      onPressed: () => onClose!(),
+                      icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
+                    ),
                   ),
                 )
               : const SizedBox(),

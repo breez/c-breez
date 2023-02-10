@@ -37,7 +37,9 @@ final ThemeData breezDarkTheme = ThemeData(
     titleTextStyle: TextStyle(color: Colors.white, fontSize: 20.5, letterSpacing: 0.25),
     contentTextStyle: TextStyle(color: Colors.white70, fontSize: 16.0, height: 1.5),
     backgroundColor: Color(0xFF152a3d),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+    ),
   ),
   dialogBackgroundColor: Colors.transparent,
   dividerColor: const Color(0x337aa5eb),

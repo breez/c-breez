@@ -168,57 +168,61 @@ class TestPinResult {
 }
 
 void main() {
-  runApp(Preview([
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Small space, wrong pin code, face id:"),
-    ),
-    SizedBox(
-      height: 280, // anything smaller than this will overflow some pixels
-      child: PinCodeWidget(
-        label: "First example",
-        localAuthenticationOption: LocalAuthenticationOption.faceId,
-        testPinCodeFunction: (pin) => SynchronousFuture(
-          const TestPinResult(false, errorMessage: "Wrong pin code"),
+  runApp(
+    Preview(
+      [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("Small space, wrong pin code, face id:"),
         ),
-        testBiometricsFunction: () => SynchronousFuture(
-          const TestPinResult(false, errorMessage: "Wrong pin code"),
+        SizedBox(
+          height: 280, // anything smaller than this will overflow some pixels
+          child: PinCodeWidget(
+            label: "First example",
+            localAuthenticationOption: LocalAuthenticationOption.faceId,
+            testPinCodeFunction: (pin) => SynchronousFuture(
+              const TestPinResult(false, errorMessage: "Wrong pin code"),
+            ),
+            testBiometricsFunction: () => SynchronousFuture(
+              const TestPinResult(false, errorMessage: "Wrong pin code"),
+            ),
+          ),
         ),
-      ),
-    ),
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Medium space, correct pin code, fingerprint:"),
-    ),
-    SizedBox(
-      height: 400,
-      child: PinCodeWidget(
-        label: "Second example",
-        localAuthenticationOption: LocalAuthenticationOption.fingerprint,
-        testPinCodeFunction: (pin) => SynchronousFuture(
-          const TestPinResult(true),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("Medium space, correct pin code, fingerprint:"),
         ),
-        testBiometricsFunction: () => SynchronousFuture(
-          const TestPinResult(true),
+        SizedBox(
+          height: 400,
+          child: PinCodeWidget(
+            label: "Second example",
+            localAuthenticationOption: LocalAuthenticationOption.fingerprint,
+            testPinCodeFunction: (pin) => SynchronousFuture(
+              const TestPinResult(true),
+            ),
+            testBiometricsFunction: () => SynchronousFuture(
+              const TestPinResult(true),
+            ),
+          ),
         ),
-      ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("Large space, correct/incorrect randomly, no local auth:"),
+        ),
+        SizedBox(
+          height: 600,
+          child: PinCodeWidget(
+            label: "Third example",
+            localAuthenticationOption: LocalAuthenticationOption.none,
+            testPinCodeFunction: (pin) async {
+              return TestPinResult(Random().nextBool(), errorMessage: "A random error");
+            },
+            testBiometricsFunction: () async {
+              return TestPinResult(Random().nextBool(), errorMessage: "A random error");
+            },
+          ),
+        ),
+      ],
     ),
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Large space, correct/incorrect randomly, no local auth:"),
-    ),
-    SizedBox(
-      height: 600,
-      child: PinCodeWidget(
-        label: "Third example",
-        localAuthenticationOption: LocalAuthenticationOption.none,
-        testPinCodeFunction: (pin) async {
-          return TestPinResult(Random().nextBool(), errorMessage: "A random error");
-        },
-        testBiometricsFunction: () async {
-          return TestPinResult(Random().nextBool(), errorMessage: "A random error");
-        },
-      ),
-    ),
-  ]));
+  );
 }

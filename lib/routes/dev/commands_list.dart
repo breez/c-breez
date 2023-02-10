@@ -41,16 +41,17 @@ class _CommandsListState extends State<CommandsList> {
           child: Row(
             children: <Widget>[
               Flexible(
-                  child: TextField(
-                focusNode: _cliEntryFocusNode,
-                controller: _cliInputController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter a command or use the links below',
+                child: TextField(
+                  focusNode: _cliEntryFocusNode,
+                  controller: _cliInputController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter a command or use the links below',
+                  ),
+                  onSubmitted: (command) {
+                    _sendCommand(command);
+                  },
                 ),
-                onSubmitted: (command) {
-                  _sendCommand(command);
-                },
-              )),
+              ),
               IconButton(
                 icon: const Icon(Icons.play_arrow),
                 tooltip: 'Run',

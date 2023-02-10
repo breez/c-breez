@@ -48,10 +48,15 @@ class LoadingAnimatedTextState extends State<LoadingAnimatedText> {
                   ),
           text: widget._loadingMessage,
           children: textElements
-            ..addAll(<TextSpan>[
-              TextSpan(text: loadingDots),
-              TextSpan(text: paddingDots, style: const TextStyle(color: Colors.transparent))
-            ]),
+            ..addAll(
+              <TextSpan>[
+                TextSpan(text: loadingDots),
+                TextSpan(
+                  text: paddingDots,
+                  style: const TextStyle(color: Colors.transparent),
+                )
+              ],
+            ),
         ),
         textAlign: widget.textAlign ?? TextAlign.center);
   }

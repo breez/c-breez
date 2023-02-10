@@ -92,41 +92,45 @@ void main() {
   digitFun(digit) => debugPrint("Digit pressed: $digit");
   actionKeyFun(actionKey) => debugPrint("Action key pressed: $actionKey");
 
-  runApp(Preview([
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Small space, default action key (backspace):"),
+  runApp(
+    Preview(
+      [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("Small space, default action key (backspace):"),
+        ),
+        SizedBox(
+          height: 200,
+          child: NumPadWidget(
+            onDigitPressed: digitFun,
+            onActionKeyPressed: actionKeyFun,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("Medium space, FaceId action key:"),
+        ),
+        SizedBox(
+          height: 400,
+          child: NumPadWidget(
+            rhsActionKey: ActionKey.FaceId,
+            onDigitPressed: digitFun,
+            onActionKeyPressed: actionKeyFun,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text("Large space, Fingerprint action key:"),
+        ),
+        SizedBox(
+          height: 600,
+          child: NumPadWidget(
+            rhsActionKey: ActionKey.Fingerprint,
+            onDigitPressed: digitFun,
+            onActionKeyPressed: actionKeyFun,
+          ),
+        ),
+      ],
     ),
-    SizedBox(
-      height: 200,
-      child: NumPadWidget(
-        onDigitPressed: digitFun,
-        onActionKeyPressed: actionKeyFun,
-      ),
-    ),
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Medium space, FaceId action key:"),
-    ),
-    SizedBox(
-      height: 400,
-      child: NumPadWidget(
-        rhsActionKey: ActionKey.FaceId,
-        onDigitPressed: digitFun,
-        onActionKeyPressed: actionKeyFun,
-      ),
-    ),
-    const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Text("Large space, Fingerprint action key:"),
-    ),
-    SizedBox(
-      height: 600,
-      child: NumPadWidget(
-        rhsActionKey: ActionKey.Fingerprint,
-        onDigitPressed: digitFun,
-        onActionKeyPressed: actionKeyFun,
-      ),
-    ),
-  ]));
+  );
 }

@@ -114,10 +114,11 @@ class ConfirmationCheckbox extends StatelessWidget {
               unselectedWidgetColor: Colors.white,
             ),
             child: Checkbox(
-                activeColor: Colors.white,
-                checkColor: themeData.canvasColor,
-                value: isUnderstood,
-                onChanged: (value) => onPressed(value!)),
+              activeColor: Colors.white,
+              checkColor: themeData.canvasColor,
+              value: isUnderstood,
+              onChanged: (value) => onPressed(value!),
+            ),
           ),
           Text(
             texts.backup_phrase_action_confirm,

@@ -29,14 +29,18 @@ final ThemeData breezLightTheme = ThemeData(
     toolbarTextStyle: toolbarTextStyle,
     titleTextStyle: titleTextStyle,
     elevation: 0.0,
-    actionsIconTheme: const IconThemeData(color: Color.fromRGBO(0, 120, 253, 1.0)),
+    actionsIconTheme: const IconThemeData(
+      color: Color.fromRGBO(0, 120, 253, 1.0),
+    ),
     systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   dialogTheme: DialogTheme(
     titleTextStyle: TextStyle(color: BreezColors.grey[600], fontSize: 20.5, letterSpacing: 0.25),
     contentTextStyle: TextStyle(color: BreezColors.grey[500], fontSize: 16.0, height: 1.5),
     backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12.0))),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+    ),
   ),
   dialogBackgroundColor: Colors.transparent,
   dividerColor: const Color(0x33ffffff),
@@ -111,7 +115,9 @@ final ThemeData calendarLightTheme = ThemeData.light().copyWith(
     primary: Color.fromRGBO(5, 93, 235, 1.0),
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: BreezColors.blue[500]),
+    style: TextButton.styleFrom(
+      foregroundColor: BreezColors.blue[500],
+    ),
   ),
   dialogTheme: const DialogTheme(
     shape: RoundedRectangleBorder(

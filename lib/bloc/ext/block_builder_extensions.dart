@@ -1,10 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-typedef BlocWidgetBuilder2<State1, State2> = Widget Function(BuildContext context, State1 state1, State2 state2);
+typedef BlocWidgetBuilder2<State1, State2> = Widget Function(
+    BuildContext context, State1 state1, State2 state2);
 
-class BlocBuilder2<Bloc1 extends StateStreamable<State1>, State1, Bloc2 extends StateStreamable<State2>, State2>
-    extends StatelessWidget {
+class BlocBuilder2<Bloc1 extends StateStreamable<State1>, State1, Bloc2 extends StateStreamable<State2>,
+    State2> extends StatelessWidget {
   final BlocWidgetBuilder2<State1, State2> builder;
 
   const BlocBuilder2({

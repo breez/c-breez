@@ -8,8 +8,7 @@ class DeepLinksService {
   static const SESSION_SECRET = "sessionSecret";
   final _log = FimberLog("DeepLinksService");
 
-  final StreamController<String> _linksNotificationsController =
-      BehaviorSubject<String>();
+  final StreamController<String> _linksNotificationsController = BehaviorSubject<String>();
   Stream<String> get linksNotifications => _linksNotificationsController.stream;
 
   FirebaseDynamicLinks? _dynamicLinks;
@@ -44,13 +43,12 @@ class DeepLinksService {
 
   Future<String> generateSessionInviteLink(SessionLinkModel link) async {
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: "https://breez.page.link",
-        link: Uri.parse('https://breez.technology?${link.toLinkQuery()}'),
-        androidParameters:
-            const AndroidParameters(packageName: "com.cBreez.client"),
-        iosParameters: const IOSParameters(bundleId: "com.cBreez.client"));
-    final ShortDynamicLink shortLink =
-        await _dynamicLinks!.buildShortLink(parameters);
+      uriPrefix: "https://breez.page.link",
+      link: Uri.parse('https://breez.technology?${link.toLinkQuery()}'),
+      androidParameters: const AndroidParameters(packageName: "com.cBreez.client"),
+      iosParameters: const IOSParameters(bundleId: "com.cBreez.client"),
+    );
+    final ShortDynamicLink shortLink = await _dynamicLinks!.buildShortLink(parameters);
 
     return shortLink.shortUrl.toString();
   }
@@ -77,8 +75,7 @@ class SessionLinkModel {
 
   static SessionLinkModel fromLinkQuery(String queryStr) {
     Map<String, String> query = Uri.splitQueryString(queryStr);
-    return SessionLinkModel(
-        query["sessionID"]!, query["sessionSecret"]!, query["pubKey"]!);
+    return SessionLinkModel(query["sessionID"]!, query["sessionSecret"]!, query["pubKey"]!);
   }
 }
 
@@ -89,16 +86,14 @@ class PodcastShareLinkModel {
   PodcastShareLinkModel(this.feedURL, {this.episodeID});
 
   String toLinkQuery() {
-    return 'feedURL=${Uri.encodeQueryComponent(feedURL)}${episodeID != null
-            ? '&episodeID=${Uri.encodeQueryComponent(episodeID!)}'
-            : ''}';
+    return 'feedURL=${Uri.encodeQueryComponent(feedURL)}${episodeID != null ? '&episodeID=${Uri.encodeQueryComponent(episodeID!)}' : ''}';
   }
 
   static PodcastShareLinkModel fromLinkQuery(String queryStr) {
     Map<String, String> query = Uri.splitQueryString(queryStr);
-    return PodcastShareLinkModel(Uri.decodeComponent(query["feedURL"]!),
-        episodeID: query["episodeID"] == null
-            ? null
-            : Uri.decodeComponent(query["episodeID"]!));
+    return PodcastShareLinkModel(
+      Uri.decodeComponent(query["feedURL"]!),
+      episodeID: query["episodeID"] == null ? null : Uri.decodeComponent(query["episodeID"]!),
+    );
   }
 }

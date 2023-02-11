@@ -14,8 +14,7 @@ class PaymentResult {
 
   String errorMessage(CurrencyState currencyState) {
     final texts = getSystemAppLocalizations();
-    String? displayMessage =
-        error != null ? extractExceptionMessage(error!) : null;
+    String? displayMessage = error != null ? extractExceptionMessage(error!) : null;
     return displayMessage != null
         ? texts.payment_error_to_send(displayMessage)
         : texts.payment_error_to_send_unknown_reason;

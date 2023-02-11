@@ -1,6 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/lsp/widgets/lsp_list.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
@@ -36,9 +36,7 @@ class _LspListWidgetState extends State<LspListWidget> {
       future: lspBloc.lspList,
       builder: (context, lspListSnapshot) {
         if (!lspListSnapshot.hasData) {
-          return const Center(child: Loader(
-            color: Colors.white,
-          ));
+          return const Center(child: Loader(color: Colors.white));
         }
 
         return FutureBuilder(

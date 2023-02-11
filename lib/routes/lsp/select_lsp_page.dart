@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/lsp/widgets/lsp_list_widget.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';

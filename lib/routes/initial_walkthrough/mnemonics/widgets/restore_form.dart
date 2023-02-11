@@ -97,7 +97,7 @@ class RestoreFormPageState extends State<RestoreForm> {
               },
               onSuggestionSelected: <String>(suggestion) {
                 widget.textEditingControllers[itemIndex].text = suggestion;
-                if(itemIndex + 1 < focusNodes.length) {
+                if (itemIndex + 1 < focusNodes.length) {
                   focusNodes[itemIndex + 1].requestFocus();
                 }
               },
@@ -120,8 +120,7 @@ class RestoreFormPageState extends State<RestoreForm> {
   }
 
   FutureOr<List<String>> _getSuggestions(pattern) {
-    var suggestionList =
-        WORDLIST.where((item) => item.startsWith(pattern)).toList();
+    var suggestionList = WORDLIST.where((item) => item.startsWith(pattern)).toList();
     return suggestionList.isNotEmpty ? suggestionList : List.empty();
   }
 }

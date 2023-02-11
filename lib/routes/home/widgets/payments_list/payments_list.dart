@@ -63,8 +63,7 @@ void main() async {
           create: (BuildContext context) => CurrencyBloc(injector.breezLib),
         ),
         BlocProvider<UserProfileBloc>(
-          create: (BuildContext context) =>
-              UserProfileBloc(injector.breezServer, injector.notifications),
+          create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
         ),
       ],
       child: MaterialApp(
@@ -77,63 +76,65 @@ void main() async {
                 PaymentsList(
                   [
                     sdk.Payment(
-                        paymentType: sdk.PaymentType.Received,
-                        id:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        feeMsat: 0,
-                        paymentTime: 1661791810,
-                        amountMsat: 4321000,
-                        pending: false,
-                        description: "A title",
-                        details: sdk.PaymentDetails.ln(
-                            data: sdk.LnPaymentDetails(
-                                paymentHash:
-                                    "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                                label: "",
-                                destinationPubkey:
-                                    "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                                paymentPreimage: "",
-                                keysend: false,
-                                bolt11: ""))),
+                      paymentType: sdk.PaymentType.Received,
+                      id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feeMsat: 0,
+                      paymentTime: 1661791810,
+                      amountMsat: 4321000,
+                      pending: false,
+                      description: "A title",
+                      details: sdk.PaymentDetails.ln(
+                        data: sdk.LnPaymentDetails(
+                          paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                          label: "",
+                          destinationPubkey:
+                              "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                          paymentPreimage: "",
+                          keysend: false,
+                          bolt11: "",
+                        ),
+                      ),
+                    ),
                     sdk.Payment(
-                        paymentType: sdk.PaymentType.Received,
-                        id:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        feeMsat: 12,
-                        paymentTime: 1661791810,
-                        amountMsat: 4321000,
-                        pending: false,
-                        description: "A title",
-                        details: sdk.PaymentDetails.ln(
-                            data: sdk.LnPaymentDetails(
-                                paymentHash:
-                                    "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                                label: "",
-                                destinationPubkey:
-                                    "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                                paymentPreimage: "",
-                                keysend: false,
-                                bolt11: ""))),
+                      paymentType: sdk.PaymentType.Received,
+                      id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feeMsat: 12,
+                      paymentTime: 1661791810,
+                      amountMsat: 4321000,
+                      pending: false,
+                      description: "A title",
+                      details: sdk.PaymentDetails.ln(
+                        data: sdk.LnPaymentDetails(
+                          paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                          label: "",
+                          destinationPubkey:
+                              "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                          paymentPreimage: "",
+                          keysend: false,
+                          bolt11: "",
+                        ),
+                      ),
+                    ),
                     sdk.Payment(
-                        paymentType: sdk.PaymentType.Received,
-                        id:
-                            "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                        feeMsat: 3456,
-                        paymentTime:
-                            DateTime.now().millisecondsSinceEpoch ~/ 1000,
-                        amountMsat: 4321000,
-                        pending: false,
-                        description: "A title",
-                        details: sdk.PaymentDetails.ln(
-                            data: sdk.LnPaymentDetails(
-                                paymentHash:
-                                    "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                                label: "",
-                                destinationPubkey:
-                                    "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-                                paymentPreimage: "",
-                                keysend: false,
-                                bolt11: ""))),
+                      paymentType: sdk.PaymentType.Received,
+                      id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                      feeMsat: 3456,
+                      paymentTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                      amountMsat: 4321000,
+                      pending: false,
+                      description: "A title",
+                      details: sdk.PaymentDetails.ln(
+                        data: sdk.LnPaymentDetails(
+                          paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+                          label: "",
+                          destinationPubkey:
+                              "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+                          paymentPreimage: "",
+                          keysend: false,
+                          bolt11: "",
+                        ),
+                      ),
+                    ),
                   ],
                   72,
                   firstPaymentItemKey,

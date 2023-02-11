@@ -66,8 +66,7 @@ class BreezNavigationDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
-    return BlocBuilder<UserProfileBloc, UserProfileState>(
-        builder: (context, userSettings) {
+    return BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userSettings) {
       List<Widget> children = [
         _breezDrawerHeader(context, userSettings.profileSettings),
         const Padding(padding: EdgeInsets.only(top: 16)),
@@ -130,9 +129,7 @@ class BreezNavigationDrawer extends StatelessWidget {
         _ExpansionTile(
           items: groupItems,
           title: group.groupTitle ?? "",
-          icon: group.groupAssetImage == null
-              ? null
-              : AssetImage(group.groupAssetImage!),
+          icon: group.groupAssetImage == null ? null : AssetImage(group.groupAssetImage!),
           controller: _scrollController,
         )
       ];
@@ -189,9 +186,7 @@ class NavigationDrawerFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       // Aligns footer with bottom actions bar
-      height: _kBreezBottomSheetHeight +
-          8.0 +
-          MediaQuery.of(context).viewPadding.bottom,
+      height: _kBreezBottomSheetHeight + 8.0 + MediaQuery.of(context).viewPadding.bottom,
       child: Column(
         children: [
           const Divider(),
@@ -332,9 +327,7 @@ Widget _actionTile(
       decoration: subTile != null
           ? null
           : BoxDecoration(
-              color: action.isSelected
-                  ? themeData.primaryColorLight
-                  : Colors.transparent,
+              color: action.isSelected ? themeData.primaryColorLight : Colors.transparent,
               borderRadius: const BorderRadius.horizontal(
                 right: Radius.circular(32),
               ),

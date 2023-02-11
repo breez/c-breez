@@ -1,6 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/widgets/refund_item_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

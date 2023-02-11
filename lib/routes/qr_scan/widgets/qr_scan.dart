@@ -68,7 +68,8 @@ class QRScanState extends State<QRScan> {
             bottom: 30.0,
             right: 0,
             left: 0,
-            child: defaultTargetPlatform == TargetPlatform.iOS ? const QRScanCancelButton() : const SizedBox(),
+            child:
+                defaultTargetPlatform == TargetPlatform.iOS ? const QRScanCancelButton() : const SizedBox(),
           ),
           const ScanOverlay(),
         ],

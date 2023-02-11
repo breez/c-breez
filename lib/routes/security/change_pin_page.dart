@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/routes/security/widget/pin_code_widget.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;

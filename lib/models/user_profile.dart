@@ -42,8 +42,7 @@ class UserProfileSettings {
       animal: animal ?? this.animal,
       image: image ?? this.image,
       token: token ?? this.token,
-      registrationRequested:
-          registrationRequested ?? this.registrationRequested,
+      registrationRequested: registrationRequested ?? this.registrationRequested,
       hideBalance: hideBalance ?? this.hideBalance,
     );
   }
@@ -53,10 +52,7 @@ class UserProfileSettings {
   }
 
   String? get avatarURL =>
-      image ??
-      (animal != null && color != null
-          ? 'breez://profile_image?animal=$animal&color=$color'
-          : null);
+      image ?? (animal != null && color != null ? 'breez://profile_image?animal=$animal&color=$color' : null);
 
   UserProfileSettings.fromJson(Map<String, dynamic> json)
       : userID = json['userID'],
@@ -65,8 +61,7 @@ class UserProfileSettings {
         color = json['color'],
         animal = json['animal'],
         image = json['image'],
-        registrationRequested =
-            json['registrationRequested'] ?? json['token'] != null,
+        registrationRequested = json['registrationRequested'] ?? json['token'] != null,
         hideBalance = json['hideBalance'] ?? false,
         appMode = AppMode.values[json["appMode"] ?? 0];
 

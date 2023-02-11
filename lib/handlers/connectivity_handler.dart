@@ -1,7 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -71,8 +71,7 @@ class ConnectivityHandler {
                     const Duration(seconds: 1),
                     () => connectivityBloc
                         .checkConnectivity()
-                        .whenComplete(
-                            () => connectivityBloc.setIsConnecting(false))
+                        .whenComplete(() => connectivityBloc.setIsConnecting(false))
                         .onError((error, stackTrace) {
                       connectivityBloc.setIsConnecting(false);
                       throw error.toString();

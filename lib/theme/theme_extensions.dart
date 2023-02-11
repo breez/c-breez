@@ -4,38 +4,23 @@ import 'package:flutter/material.dart';
 class FieldTextStyle {
   FieldTextStyle._();
 
-  static TextStyle textStyle = TextStyle(
-      color: BreezColors.white[500], fontSize: 16.4, letterSpacing: 0.15);
-  static TextStyle labelStyle =
-      TextStyle(color: BreezColors.white[200], letterSpacing: 0.4);
+  static TextStyle textStyle = TextStyle(color: BreezColors.white[500], fontSize: 16.4, letterSpacing: 0.15);
+  static TextStyle labelStyle = TextStyle(color: BreezColors.white[200], letterSpacing: 0.4);
 }
 
-const balanceAmountTextStyle = TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.w600,
-    height: 1.56,
-    fontFamily: 'IBMPlexSans');
-const balanceCurrencyTextStyle = TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
-    height: 1.52,
-    fontFamily: 'IBMPlexSans');
+const balanceAmountTextStyle =
+    TextStyle(fontSize: 28, fontWeight: FontWeight.w600, height: 1.56, fontFamily: 'IBMPlexSans');
+const balanceCurrencyTextStyle =
+    TextStyle(fontSize: 22, fontWeight: FontWeight.w600, height: 1.52, fontFamily: 'IBMPlexSans');
 const balanceFiatConversionTextStyle = TextStyle(
-    fontSize: 16,
-    letterSpacing: 0.2,
-    fontWeight: FontWeight.w500,
-    height: 1.24,
-    fontFamily: 'IBMPlexSans');
+    fontSize: 16, letterSpacing: 0.2, fontWeight: FontWeight.w500, height: 1.24, fontFamily: 'IBMPlexSans');
 final toolbarTextStyle = const TextTheme(
-  titleLarge:
-      TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
+  titleLarge: TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
 ).bodyMedium;
 final titleTextStyle = const TextTheme(
-  titleLarge:
-      TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
+  titleLarge: TextStyle(color: Colors.white, fontSize: 18.0, letterSpacing: 0.22),
 ).titleLarge;
-const TextStyle drawerItemTextStyle =
-    TextStyle(height: 1.2, letterSpacing: 0.25, fontSize: 14.3);
+const TextStyle drawerItemTextStyle = TextStyle(height: 1.2, letterSpacing: 0.25, fontSize: 14.3);
 const TextStyle bottomAppBarBtnStyle = TextStyle(
     color: Colors.white,
     fontSize: 13.5,
@@ -44,29 +29,18 @@ const TextStyle bottomAppBarBtnStyle = TextStyle(
     height: 1.24,
     fontFamily: 'IBMPlexSans');
 const TextStyle bottomSheetTextStyle = TextStyle(
-    fontFamily: 'IBMPlexSans',
-    fontSize: 15,
-    letterSpacing: 1.2,
-    fontWeight: FontWeight.w400,
-    height: 1.30);
-final TextStyle bottomSheetMenuItemStyle = TextStyle(
-    color: BreezColors.white[400], fontSize: 14.3, letterSpacing: 0.55);
-final TextStyle blueLinkStyle =
-    TextStyle(color: BreezColors.blue[500], fontSize: 16.0, height: 1.5);
-final TextStyle textStyle =
-    TextStyle(color: BreezColors.white[400], fontSize: 16.0);
-const TextStyle navigationDrawerHandleStyle = TextStyle(
-    fontSize: 16.0,
-    letterSpacing: 0.2,
-    color: Color.fromRGBO(255, 255, 255, 0.6));
-const TextStyle validatorStyle =
-    TextStyle(color: Color(0xFFe3b42f), fontSize: 12.0, height: 1.25);
-final TextStyle welcomeTextStyle =
-    TextStyle(color: BreezColors.white[500], fontSize: 16.0, height: 1.1);
-final TextStyle buttonStyle = TextStyle(
-    color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25);
-final TextStyle whiteButtonStyle = TextStyle(
-    color: BreezColors.white[500], fontSize: 14.3, letterSpacing: 1.25);
+    fontFamily: 'IBMPlexSans', fontSize: 15, letterSpacing: 1.2, fontWeight: FontWeight.w400, height: 1.30);
+final TextStyle bottomSheetMenuItemStyle =
+    TextStyle(color: BreezColors.white[400], fontSize: 14.3, letterSpacing: 0.55);
+final TextStyle blueLinkStyle = TextStyle(color: BreezColors.blue[500], fontSize: 16.0, height: 1.5);
+final TextStyle textStyle = TextStyle(color: BreezColors.white[400], fontSize: 16.0);
+const TextStyle navigationDrawerHandleStyle =
+    TextStyle(fontSize: 16.0, letterSpacing: 0.2, color: Color.fromRGBO(255, 255, 255, 0.6));
+const TextStyle validatorStyle = TextStyle(color: Color(0xFFe3b42f), fontSize: 12.0, height: 1.25);
+final TextStyle welcomeTextStyle = TextStyle(color: BreezColors.white[500], fontSize: 16.0, height: 1.1);
+final TextStyle buttonStyle = TextStyle(color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25);
+final TextStyle whiteButtonStyle =
+    TextStyle(color: BreezColors.white[500], fontSize: 14.3, letterSpacing: 1.25);
 final TextStyle cancelButtonStyle = TextStyle(
     color: BreezColors.red[600],
     letterSpacing: 1.25,
@@ -80,18 +54,11 @@ final TextStyle restoreLinkStyle = TextStyle(
     letterSpacing: 0.4,
     height: 1.2,
     decoration: TextDecoration.underline);
-final TextStyle snackBarStyle = TextStyle(
-    color: BreezColors.white[500],
-    fontSize: 14.0,
-    letterSpacing: 0.25,
-    height: 1.2);
-final TextStyle fiatConversionTitleStyle = TextStyle(
-    color: BreezColors.white[500],
-    fontSize: 16.3,
-    letterSpacing: 0.25,
-    height: 1.2);
-final TextStyle fiatConversionDescriptionStyle =
-    TextStyle(color: BreezColors.white[200], fontSize: 14.3);
+final TextStyle snackBarStyle =
+    TextStyle(color: BreezColors.white[500], fontSize: 14.0, letterSpacing: 0.25, height: 1.2);
+final TextStyle fiatConversionTitleStyle =
+    TextStyle(color: BreezColors.white[500], fontSize: 16.3, letterSpacing: 0.25, height: 1.2);
+final TextStyle fiatConversionDescriptionStyle = TextStyle(color: BreezColors.white[200], fontSize: 14.3);
 final Color snackBarBackgroundColor = BreezColors.blue[300]!;
 final Color sessionAvatarBackgroundColor = BreezColors.white[500]!;
 const Color themeSwitchBgColor = Color.fromRGBO(229, 238, 251, 0.09);
@@ -136,25 +103,19 @@ const TextStyle warningStyle = TextStyle(
 extension ThemeExtensions on ThemeData {
   bool get isLightTheme => primaryColor == breezLightTheme.primaryColor;
 
-  ThemeData get calendarTheme =>
-      isLightTheme ? calendarLightTheme : calendarDarkTheme;
+  ThemeData get calendarTheme => isLightTheme ? calendarLightTheme : calendarDarkTheme;
 
-  CustomData get customData =>
-      isLightTheme ? blueThemeCustomData : darkThemeCustomData;
+  CustomData get customData => isLightTheme ? blueThemeCustomData : darkThemeCustomData;
 
-  Color get warningBoxBorderColor => isLightTheme
-      ? const Color.fromRGBO(250, 239, 188, 0.6)
-      : const Color.fromRGBO(227, 180, 47, 0.6);
+  Color get warningBoxBorderColor =>
+      isLightTheme ? const Color.fromRGBO(250, 239, 188, 0.6) : const Color.fromRGBO(227, 180, 47, 0.6);
 
-  Color get bubblePaintColor => isLightTheme
-      ? const Color(0xFF0085fb).withOpacity(0.1)
-      : const Color(0xff4D88EC).withOpacity(0.1);
+  Color get bubblePaintColor =>
+      isLightTheme ? const Color(0xFF0085fb).withOpacity(0.1) : const Color(0xff4D88EC).withOpacity(0.1);
 
-  Color get lightThemeSwitchIconColor =>
-      isLightTheme ? Colors.white : Colors.white30;
+  Color get lightThemeSwitchIconColor => isLightTheme ? Colors.white : Colors.white30;
 
-  Color get darkThemeSwitchIconColor =>
-      isLightTheme ? Colors.white30 : Colors.white;
+  Color get darkThemeSwitchIconColor => isLightTheme ? Colors.white30 : Colors.white;
 
   TextStyle get paymentItemTitleTextStyle => isLightTheme
       ? const TextStyle(

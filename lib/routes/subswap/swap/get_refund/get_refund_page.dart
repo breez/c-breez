@@ -1,6 +1,6 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/widgets/refund_item.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';

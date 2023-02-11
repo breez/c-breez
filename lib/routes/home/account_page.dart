@@ -166,7 +166,8 @@ class AccountPage extends StatelessWidget {
     List<Payment> payments,
   ) {
     if (payments.isEmpty) return 0.0;
-    double listHeightSpace = MediaQuery.of(context).size.height - kMinExtent - kToolbarHeight - _kFilterMaxSize - 25.0;
+    double listHeightSpace =
+        MediaQuery.of(context).size.height - kMinExtent - kToolbarHeight - _kFilterMaxSize - 25.0;
     const endDate = null;
     double dateFilterSpace = endDate != null ? 0.65 : 0.0;
     double bottomPlaceholderSpace =

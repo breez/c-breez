@@ -10,11 +10,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SwapInBloc extends Cubit<SwapInState> {
   final _log = FimberLog("SwapInBloc");
   final BreezBridge _breezLib;
-  late Timer timer;   
+  late Timer timer;
 
-  SwapInBloc(this._breezLib)
-      : super(SwapInState(null, null, isLoading:true)) {
-    pollSwapAddress();    
+  SwapInBloc(this._breezLib) : super(SwapInState(null, null, isLoading: true)) {
+    pollSwapAddress();
   }
 
   pollSwapAddress() {
@@ -33,12 +32,12 @@ class SwapInBloc extends Cubit<SwapInState> {
 
   void refreshAddresses(Timer timer) async {
     final currentState = state;
-    try {      
+    try {
       final swapInProgress = (await _breezLib.inProgressSwap());
       SwapInfo? swapUnused = currentState.unused;
       if (swapInProgress != null) {
         swapUnused = null;
-      }else {
+      } else {
         swapUnused = (await _breezLib.receiveOnchain());
       }
       emit(SwapInState(swapInProgress, swapUnused));

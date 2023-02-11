@@ -31,8 +31,7 @@ class UITestPage extends StatelessWidget {
         title: const Text("UI Test Page"),
         leading: const back_button.BackButton(),
         actions: [
-          BlocBuilder<UserProfileBloc, UserProfileState>(
-              builder: (context, userState) {
+          BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userState) {
             return _buildThemeSwitch(context, userState.profileSettings);
           })
         ],
@@ -132,7 +131,9 @@ class UITestPage extends StatelessWidget {
                 Navigator.of(context).push(
                   FadeInRoute(
                     builder: (_) => SpontaneousPaymentPage(
-                        "123", GlobalKey(debugLabel: "123")),
+                      "123",
+                      GlobalKey(debugLabel: "123"),
+                    ),
                   ),
                 );
               },
@@ -189,8 +190,7 @@ class UITestPage extends StatelessWidget {
                 );
                 Widget dialog = FutureBuilder(
                   future: invoice,
-                  builder:
-                      (BuildContext context, AsyncSnapshot<LNInvoice> invoice) {
+                  builder: (BuildContext context, AsyncSnapshot<LNInvoice> invoice) {
                     return QrCodeDialog(invoice.data, null, (result) {});
                   },
                 );

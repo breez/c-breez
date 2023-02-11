@@ -12,8 +12,7 @@ String extractExceptionMessage(Object exception) {
       return innerErrorMessage ?? message;
     }
   }
-  return _extractInnerErrorMessage(exception.toString()) ??
-      exception.toString();
+  return _extractInnerErrorMessage(exception.toString()) ?? exception.toString();
 }
 
 String? _extractInnerErrorMessage(String content) {

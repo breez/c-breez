@@ -53,7 +53,11 @@ class SecurityPinManagement extends StatelessWidget {
                   color: Colors.white,
                   size: 30.0,
                 ),
-                onTap: () => navigator.push(FadeInRoute(builder: (_) => const ChangePinPage())),
+                onTap: () => navigator.push(
+                  FadeInRoute(
+                    builder: (_) => const ChangePinPage(),
+                  ),
+                ),
               ),
               const LocalAuthSwitch(),
             ],
@@ -72,7 +76,11 @@ class SecurityPinManagement extends StatelessWidget {
               color: Colors.white,
               size: 30.0,
             ),
-            onTap: () => navigator.push(FadeInRoute(builder: (_) => const ChangePinPage())),
+            onTap: () => navigator.push(
+              FadeInRoute(
+                builder: (_) => const ChangePinPage(),
+              ),
+            ),
           );
         }
       },
@@ -94,9 +102,11 @@ void main() async {
           create: (BuildContext context) => SecurityBloc(),
         ),
       ],
-      child: const Preview([
-        SecurityPinManagement(),
-      ]),
+      child: const Preview(
+        [
+          SecurityPinManagement(),
+        ],
+      ),
     ),
   );
 }

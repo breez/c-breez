@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/routes/create_invoice/widgets/compact_qr_image.dart';
 import 'package:c_breez/routes/create_invoice/widgets/expiry_and_fee_message.dart';
 import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
 import 'package:c_breez/services/injector.dart';
@@ -13,7 +14,6 @@ import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:c_breez/routes/create_invoice/widgets/compact_qr_image.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QrCodeDialog extends StatefulWidget {
@@ -37,7 +37,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   @override
   void initState() {
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _controller!, curve: Curves.ease));
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller!, curve: Curves.ease));
     _controller!.value = 1.0;
     _controller!.addStatusListener((status) async {
       if (status == AnimationStatus.dismissed && mounted) {
@@ -148,14 +149,15 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                           ),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
                           SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: const ExpiryAndFeeMessage(),
+                            width: MediaQuery.of(context).size.width,
+                            child: const ExpiryAndFeeMessage(),
                           ),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
                         ],
                       ),
                 duration: const Duration(seconds: 1),
-                crossFadeState: widget._invoice == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                crossFadeState:
+                    widget._invoice == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               ),
               TextButton(
                 onPressed: (() {
@@ -182,9 +184,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
 
     String? displayMessage = widget.error?.toString();
     if (displayMessage != null) {
-      displayMessage = grouped.hasMatch(displayMessage)
-          ? grouped.allMatches(displayMessage).last[0]
-          : null;
+      displayMessage = grouped.hasMatch(displayMessage) ? grouped.allMatches(displayMessage).last[0] : null;
     }
     return displayMessage ??= texts.qr_code_dialog_warning_message_error;
   }

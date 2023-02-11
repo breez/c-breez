@@ -44,8 +44,6 @@ class HomeAppBar extends AppBar {
             color: Color.fromARGB(255, 0, 133, 251),
           ),
           backgroundColor: themeData.customData.dashboardBgColor,
-          systemOverlayStyle: themeData.isLightTheme
-              ? SystemUiOverlayStyle.dark
-              : SystemUiOverlayStyle.light,
+          systemOverlayStyle: themeData.isLightTheme ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light,
         );
 }

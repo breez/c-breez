@@ -60,11 +60,9 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   @override
   void initState() {
     super.initState();
-    fixedAmount =
-        widget.requestData.minSendable == widget.requestData.maxSendable;
+    fixedAmount = widget.requestData.minSendable == widget.requestData.maxSendable;
     if (fixedAmount) {
-      _amountController.text =
-          (widget.requestData.maxSendable ~/ 1000).toString();
+      _amountController.text = (widget.requestData.maxSendable ~/ 1000).toString();
     }
   }
 
@@ -73,11 +71,9 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final metadataMap = {
-      for (var v in json.decode(widget.requestData.metadataStr))
-        v[0] as String: v[1],
+      for (var v in json.decode(widget.requestData.metadataStr)) v[0] as String: v[1],
     };
-    String? base64String =
-        metadataMap['image/png;base64'] ?? metadataMap['image/jpeg;base64'];
+    String? base64String = metadataMap['image/png;base64'] ?? metadataMap['image/jpeg;base64'];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -121,10 +117,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   ),
                   child: Text(
                     texts.lnurl_fetch_invoice_limit(
-                      currencyState.bitcoinCurrency
-                          .format((widget.requestData.minSendable ~/ 1000)),
-                      currencyState.bitcoinCurrency
-                          .format((widget.requestData.maxSendable ~/ 1000)),
+                      currencyState.bitcoinCurrency.format((widget.requestData.minSendable ~/ 1000)),
+                      currencyState.bitcoinCurrency.format((widget.requestData.maxSendable ~/ 1000)),
                     ),
                     textAlign: TextAlign.left,
                     style: theme.FieldTextStyle.labelStyle,
@@ -135,17 +129,14 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                 TextFormField(
                   controller: _nameController,
                   keyboardType: TextInputType.name,
-                  validator: (value) => value != null
-                      ? null
-                      : texts.breez_avatar_dialog_your_name,
+                  validator: (value) => value != null ? null : texts.breez_avatar_dialog_your_name,
                 )
               ],
               if (widget.auth?.mandatory == true) ...[
                 TextFormField(
                   controller: _k1Controller,
                   keyboardType: TextInputType.text,
-                  validator: (value) =>
-                      value != null ? null : texts.lnurl_payment_page_enter_k1,
+                  validator: (value) => value != null ? null : texts.lnurl_payment_page_enter_k1,
                 )
               ],
               if (widget.email?.mandatory == true) ...[
@@ -196,8 +187,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             navigator.push(loaderRoute);
 
             try {
-              final amount = currencyBloc.state.bitcoinCurrency
-                  .parse(_amountController.text);
+              final amount = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
               final comment = _commentController.text;
               _log.v("LNURL payment of $amount sats where "
                   "min is ${widget.requestData.minSendable} msats "

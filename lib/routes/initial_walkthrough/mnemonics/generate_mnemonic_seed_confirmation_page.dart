@@ -11,12 +11,10 @@ import 'generate_mnemonic_seed_page.dart';
 
 class GenerateMnemonicSeedConfirmationPage extends StatefulWidget {
   @override
-  GenerateMnemonicSeedConfirmationPageState createState() =>
-      GenerateMnemonicSeedConfirmationPageState();
+  GenerateMnemonicSeedConfirmationPageState createState() => GenerateMnemonicSeedConfirmationPageState();
 }
 
-class GenerateMnemonicSeedConfirmationPageState
-    extends State<GenerateMnemonicSeedConfirmationPage> {
+class GenerateMnemonicSeedConfirmationPageState extends State<GenerateMnemonicSeedConfirmationPage> {
   bool _isUnderstood = false;
 
   @override
@@ -116,10 +114,11 @@ class ConfirmationCheckbox extends StatelessWidget {
               unselectedWidgetColor: Colors.white,
             ),
             child: Checkbox(
-                activeColor: Colors.white,
-                checkColor: themeData.canvasColor,
-                value: isUnderstood,
-                onChanged: (value) => onPressed(value!)),
+              activeColor: Colors.white,
+              checkColor: themeData.canvasColor,
+              value: isUnderstood,
+              onChanged: (value) => onPressed(value!),
+            ),
           ),
           Text(
             texts.backup_phrase_action_confirm,

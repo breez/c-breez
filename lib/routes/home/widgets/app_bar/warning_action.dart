@@ -18,8 +18,7 @@ class WarningAction extends StatefulWidget {
   }
 }
 
-class WarningActionState extends State<WarningAction>
-    with SingleTickerProviderStateMixin {
+class WarningActionState extends State<WarningAction> with SingleTickerProviderStateMixin {
   Animation<double>? _animation;
   AnimationController? _animationController;
 

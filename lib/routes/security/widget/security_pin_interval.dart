@@ -1,6 +1,6 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
@@ -69,7 +69,11 @@ class SecurityPinInterval extends StatelessWidget {
 }
 
 void main() {
-  runApp(const Preview([
-    SecurityPinInterval(interval: Duration(seconds: 120)),
-  ]));
+  runApp(
+    const Preview(
+      [
+        SecurityPinInterval(interval: Duration(seconds: 120)),
+      ],
+    ),
+  );
 }

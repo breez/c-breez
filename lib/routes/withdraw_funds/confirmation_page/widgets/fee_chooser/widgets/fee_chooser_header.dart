@@ -34,9 +34,7 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
       widget.feeOptions.length,
       (index) => FeeOptionButton(
         text: widget.feeOptions.elementAt(index).getDisplayName(texts),
-        isAffordable: widget.feeOptions
-            .elementAt(index)
-            .isAffordable(widget.walletBalance),
+        isAffordable: widget.feeOptions.elementAt(index).isAffordable(widget.walletBalance),
         isSelected: widget.selectedFeeIndex == index,
         onSelect: () => widget.onSelect(index),
       ),
@@ -44,53 +42,55 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
 
     return SizedBox(
       height: 60,
-      child: Stack(children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            color: themeData.highlightColor,
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              color: themeData.highlightColor,
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final third = constraints.maxWidth / 3;
-              final offset = third * widget.selectedFeeIndex;
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final third = constraints.maxWidth / 3;
+                final offset = third * widget.selectedFeeIndex;
 
-              return TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: _offset ?? offset, end: offset),
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                builder: (context, offset, child) {
-                  _offset = offset;
-                  return Row(
-                    children: [
-                      Container(
-                        width: offset,
+                return TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: _offset ?? offset, end: offset),
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  builder: (context, offset, child) {
+                    _offset = offset;
+                    return Row(
+                      children: [
+                        Container(
+                          width: offset,
+                        ),
+                        child!,
+                      ],
+                    );
+                  },
+                  child: Container(
+                    width: third,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(10),
                       ),
-                      child!,
-                    ],
-                  );
-                },
-                child: Container(
-                  width: third,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
+                      color: themeData.colorScheme.background,
                     ),
-                    color: themeData.colorScheme.background,
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Row(children: feeOptionButtons),
-        ),
-      ]),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(children: feeOptionButtons),
+          ),
+        ],
+      ),
     );
   }
 }

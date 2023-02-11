@@ -1,8 +1,8 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
@@ -47,7 +47,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
             );
           } else {
             return FutureBuilder(
-              future: artificalWait(),
+              future: artificialWait(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return const Center(
@@ -66,7 +66,12 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
                   lastItemTargetHeight: 8,
                   scrollController: _scrollController,
                   onListReorder: (oldListIndex, newListIndex) => {},
-                  onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(context, currencyState, from, to),
+                  onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(
+                    context,
+                    currencyState,
+                    from,
+                    to,
+                  ),
                   itemDragHandle: DragHandle(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -125,8 +130,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
           if (checked == true) {
             prefCurrencies.add(currencyData.id);
             // center item in viewport
-            if (_scrollController.offset >=
-                (ITEM_HEIGHT * (prefCurrencies.length - 1))) {
+            if (_scrollController.offset >= (ITEM_HEIGHT * (prefCurrencies.length - 1))) {
               _scrollController.animateTo(
                 ((2 * prefCurrencies.length - 1) * ITEM_HEIGHT -
                         _scrollController.position.viewportDimension) /
@@ -196,9 +200,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     CurrencyState currencyState,
     List<String> preferredFiatCurrencies,
   ) {
-    context
-        .read<CurrencyBloc>()
-        .setPreferredCurrencies(preferredFiatCurrencies);
+    context.read<CurrencyBloc>().setPreferredCurrencies(preferredFiatCurrencies);
   }
 
   /// DragAndDropLists has a performance issue with displaying a big list
@@ -207,7 +209,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   /// Before the underlying performance issues are fixed on the library.
   /// We've added an artificial wait to display the page route animation and spinnig
   /// loader before UI thread is blocked to convey a better UX as a workaround.
-  Future artificalWait() async {
+  Future artificialWait() async {
     return await Future.delayed(const Duration(milliseconds: 800));
   }
 }

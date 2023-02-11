@@ -11,10 +11,7 @@ class RestoreFormPage extends StatefulWidget {
   final int lastPage;
   final VoidCallback changePage;
 
-  const RestoreFormPage(
-      {required this.currentPage,
-      required this.lastPage,
-      required this.changePage});
+  const RestoreFormPage({required this.currentPage, required this.lastPage, required this.changePage});
 
   @override
   RestoreFormPageState createState() => RestoreFormPageState();
@@ -86,10 +83,8 @@ class RestoreFormPageState extends State<RestoreFormPage> {
   }
 
   Future _validateMnemonics() async {
-    final mnemonic = textEditingControllers
-        .map((controller) => controller.text.toLowerCase().trim())
-        .toList()
-        .join(" ");
+    final mnemonic =
+        textEditingControllers.map((controller) => controller.text.toLowerCase().trim()).toList().join(" ");
     try {
       Navigator.pop(context, mnemonic);
     } catch (e) {

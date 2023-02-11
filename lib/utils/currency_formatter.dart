@@ -47,8 +47,8 @@ class BitcoinCurrencyFormatter {
           if (amountInBTC.truncateToDouble() == amountInBTC) {
             formattedAmount = amountInBTC.toInt().toString();
           } else {
-            formattedAmount = formattedAmount.replaceAllMapped(
-                RegExp(r'^(\d+\.\d*?[1-9])0+$'), (match) => match.group(1)!);
+            formattedAmount =
+                formattedAmount.replaceAllMapped(RegExp(r'^(\d+\.\d*?[1-9])0+$'), (match) => match.group(1)!);
           }
         }
         break;

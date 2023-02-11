@@ -15,8 +15,7 @@ class WithdrawFundsAddressPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<WithdrawFundsAddressPage> createState() =>
-      _WithdrawFundsAddressPageState();
+  State<WithdrawFundsAddressPage> createState() => _WithdrawFundsAddressPageState();
 }
 
 class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {

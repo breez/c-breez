@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
@@ -85,8 +85,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   Widget build(BuildContext context) {
     return BlocBuilder<CurrencyBloc, CurrencyState>(
       builder: (context, currencyState) {
-        if (currencyState.preferredCurrencies.isEmpty ||
-            !currencyState.fiatEnabled) {
+        if (currencyState.preferredCurrencies.isEmpty || !currencyState.fiatEnabled) {
           return const Loader();
         }
 
@@ -109,8 +108,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     final texts = context.texts();
 
     final items = currencyState.preferredCurrencies.map((value) {
-      var fiatCurrencyData = currencyState.fiatCurrenciesData
-          .firstWhere((c) => c.id == value);
+      var fiatCurrencyData = currencyState.fiatCurrenciesData.firstWhere((c) => c.id == value);
       return DropdownMenuItem<String>(
         value: fiatCurrencyData.id,
         child: Material(
@@ -158,8 +156,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
                 child: BreezDropdownButton(
                   onChanged: (value) => _selectFiatCurrency(value.toString()),
                   value: currencyState.fiatId,
-                  iconEnabledColor:
-                      themeData.dialogTheme.titleTextStyle!.color!,
+                  iconEnabledColor: themeData.dialogTheme.titleTextStyle!.color!,
                   style: themeData.dialogTheme.titleTextStyle!,
                   items: items.toList(),
                 ),
@@ -181,8 +178,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
     final fiatConversion = FiatConversion(fiatCurrency, fiatExchangeRate);
     final int fractionSize = fiatCurrency.info.fractionSize;
-    final borderColor =
-        themeData.isLightTheme ? Colors.red : themeData.colorScheme.error;
+    final borderColor = themeData.isLightTheme ? Colors.red : themeData.colorScheme.error;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -219,9 +215,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             // Do not allow '.' when fractionSize is 0 and only allow fiat currencies fractionSize number of digits after decimal point
             inputFormatters: [
               FilteringTextInputFormatter.allow(
-                fractionSize == 0
-                    ? RegExp(r'\d+')
-                    : RegExp("^\\d+\\.?\\d{0,$fractionSize}"),
+                fractionSize == 0 ? RegExp(r'\d+') : RegExp("^\\d+\\.?\\d{0,$fractionSize}"),
               ),
             ],
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -253,8 +247,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     );
   }
 
-  List<Widget> _buildActions(
-      BuildContext context, CurrencyState currencyState) {
+  List<Widget> _buildActions(BuildContext context, CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
@@ -269,8 +262,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     ];
 
     // Show done button only when the converted amount is bigger than 0
-    if (_fiatAmountController.text.isNotEmpty &&
-        _convertedSatoshies(currencyState) > 0) {
+    if (_fiatAmountController.text.isNotEmpty && _convertedSatoshies(currencyState) > 0) {
       actions.add(
         TextButton(
           onPressed: () {
@@ -317,8 +309,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   }
 
   int _convertedSatoshies(CurrencyState currencyState) {
-    var fiatConversion = FiatConversion(
-        currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+    var fiatConversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     return _fiatAmountController.text.isNotEmpty
         ? fiatConversion.fiatToSat(
             double.parse(_fiatAmountController.text),

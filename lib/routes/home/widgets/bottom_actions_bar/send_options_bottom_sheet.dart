@@ -14,8 +14,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
   final bool connected;
   final GlobalKey firstPaymentItemKey;
 
-  const SendOptionsBottomSheet(
-      {super.key, required this.connected, required this.firstPaymentItemKey});
+  const SendOptionsBottomSheet({super.key, required this.connected, required this.firstPaymentItemKey});
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +38,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
                 texts.bottom_action_bar_paste_invoice,
                 style: theme.bottomSheetTextStyle,
               ),
-              onTap: () => _pasteTapped(
-                  context, inputBloc, snapshot.data, firstPaymentItemKey),
+              onTap: () => _pasteTapped(context, inputBloc, snapshot.data, firstPaymentItemKey),
             ),
             Divider(
               height: 0.0,
@@ -48,8 +46,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
               indent: 72.0,
             ),
             ListTile(
-              enabled:
-                  false, // TODO: back to connected when we integrate with the SDK
+              enabled: false, // TODO: back to connected when we integrate with the SDK
               leading: BottomActionItemImage(
                 iconAssetPath: "src/icon/bitcoin.png",
                 enabled: connected,
@@ -97,11 +94,11 @@ class SendOptionsBottomSheet extends StatelessWidget {
       case ClipboardDataType.unrecognized:
       default:
         await showDialog(
-            useRootNavigator: false,
-            context: context,
-            barrierDismissible: false,
-            builder: (_) =>
-                EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey));
+          useRootNavigator: false,
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey),
+        );
         return;
     }
   }

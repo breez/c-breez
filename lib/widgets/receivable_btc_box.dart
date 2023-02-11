@@ -122,8 +122,7 @@ class FeeMessage extends StatelessWidget {
       );
     } else {
       // A setup fee of {setUpFee}% will be applied on the received amount.
-      return texts
-          .invoice_ln_address_warning_without_min_fee_account_not_connected(
+      return texts.invoice_ln_address_warning_without_min_fee_account_not_connected(
         setUpFee,
       );
     }

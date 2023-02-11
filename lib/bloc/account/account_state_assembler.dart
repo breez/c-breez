@@ -24,9 +24,7 @@ AccountState? assembleAccountState(
     maxAllowedToPay: nodeState.maxPayableMsat ~/ 1000,
     maxAllowedToReceive: nodeState.maxReceivableMsat ~/ 1000,
     maxPaymentAmount: maxPaymentAmount,
-    maxChanReserve: (nodeState.channelsBalanceMsat.toInt() -
-            nodeState.maxPayableMsat.toInt()) ~/
-        1000,
+    maxChanReserve: (nodeState.channelsBalanceMsat.toInt() - nodeState.maxPayableMsat.toInt()) ~/ 1000,
     connectedPeers: nodeState.connectedPeers,
     onChainFeeRate: 0,
     maxInboundLiquidity: nodeState.inboundLiquidityMsats ~/ 1000,

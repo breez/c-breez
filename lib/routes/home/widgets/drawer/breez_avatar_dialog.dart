@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
@@ -152,8 +152,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
     final DefaultProfile randomUser = generateDefaultProfile();
     setState(() {
       nameInputController.text = "${randomUser.color} ${randomUser.animal}";
-      randomAvatarPath =
-          'breez://profile_image?animal=${randomUser.animal}&color=${randomUser.color}';
+      randomAvatarPath = 'breez://profile_image?animal=${randomUser.animal}&color=${randomUser.color}';
       pickedImage = null;
     });
     // Close keyboard
@@ -162,8 +161,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
 
   pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
     final File file = File(pickedFile!.path);
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: file.path,
@@ -217,9 +215,7 @@ class TitleBackground extends StatelessWidget {
             top: Radius.circular(12.0),
           ),
         ),
-        color: themeData.isLightTheme
-            ? themeData.primaryColorDark
-            : themeData.canvasColor,
+        color: themeData.isLightTheme ? themeData.primaryColorDark : themeData.canvasColor,
       ),
     );
   }
@@ -229,8 +225,7 @@ class RandomButton extends StatelessWidget {
   final Function() onPressed;
   final AutoSizeGroup? autoSizeGroup;
 
-  const RandomButton({Key? key, required this.onPressed, this.autoSizeGroup})
-      : super(key: key);
+  const RandomButton({Key? key, required this.onPressed, this.autoSizeGroup}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -283,9 +278,7 @@ class AvatarPreview extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio: 1,
                 child: BreezAvatar(
-                  pickedImage?.path ??
-                      randomAvatarPath ??
-                      userModel.profileSettings.avatarURL,
+                  pickedImage?.path ?? randomAvatarPath ?? userModel.profileSettings.avatarURL,
                   radius: 36.0,
                 ),
               ),
@@ -324,8 +317,7 @@ class GalleryButton extends StatelessWidget {
   final Function() onPressed;
   final AutoSizeGroup? autoSizeGroup;
 
-  const GalleryButton({Key? key, required this.onPressed, this.autoSizeGroup})
-      : super(key: key);
+  const GalleryButton({Key? key, required this.onPressed, this.autoSizeGroup}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

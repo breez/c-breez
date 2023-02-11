@@ -87,12 +87,10 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   @override
   Future connectLSP(String lspId) async {}
 
-  final invoicePaidController =
-      StreamController<InvoicePaidDetails>.broadcast();
+  final invoicePaidController = StreamController<InvoicePaidDetails>.broadcast();
 
   @override
-  Stream<InvoicePaidDetails> get invoicePaidStream =>
-      invoicePaidController.stream;
+  Stream<InvoicePaidDetails> get invoicePaidStream => invoicePaidController.stream;
 
   @override
   final nodeStateController = StreamController<NodeState?>.broadcast();

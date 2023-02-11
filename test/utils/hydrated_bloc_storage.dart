@@ -13,4 +13,3 @@ Future<void> setUpHydratedBloc() async {
 Future<void> tearDownHydratedBloc() async {
   await HydratedBloc.storage.clear();
 }
-

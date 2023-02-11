@@ -26,8 +26,7 @@ class ServiceInjector {
   LightningLinksService? _lightningLinksService;
 
   Device? _device;
-  Future<SharedPreferences>? _sharedPreferences =
-      SharedPreferences.getInstance();
+  Future<SharedPreferences>? _sharedPreferences = SharedPreferences.getInstance();
   BackgroundTaskService? _backgroundTaskService;
   KeyChain? _keychain;
   Client? _client;
@@ -59,11 +58,9 @@ class ServiceInjector {
 
   DeepLinksService get deepLinks => _deepLinksService ??= DeepLinksService();
 
-  LightningLinksService get lightningLinks =>
-      _lightningLinksService ??= LightningLinksService();
+  LightningLinksService get lightningLinks => _lightningLinksService ??= LightningLinksService();
 
-  Future<SharedPreferences> get sharedPreferences =>
-      _sharedPreferences ??= SharedPreferences.getInstance();
+  Future<SharedPreferences> get sharedPreferences => _sharedPreferences ??= SharedPreferences.getInstance();
 
   BackgroundTaskService get backgroundTaskService {
     return _backgroundTaskService ??= BackgroundTaskService();

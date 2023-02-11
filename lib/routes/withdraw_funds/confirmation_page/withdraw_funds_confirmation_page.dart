@@ -19,12 +19,10 @@ class WithdrawFundsConfirmationPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<WithdrawFundsConfirmationPage> createState() =>
-      _WithdrawFundsConfirmationPageState();
+  State<WithdrawFundsConfirmationPage> createState() => _WithdrawFundsConfirmationPageState();
 }
 
-class _WithdrawFundsConfirmationPageState
-    extends State<WithdrawFundsConfirmationPage> {
+class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmationPage> {
   List<FeeOption> affordableFees = [];
   late int selectedFeeIndex;
 
@@ -33,13 +31,10 @@ class _WithdrawFundsConfirmationPageState
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture =
-        context.read<WithdrawFundsBloc>().fetchFeeOptions();
+    _fetchFeeOptionsFuture = context.read<WithdrawFundsBloc>().fetchFeeOptions();
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
-        affordableFees = feeOptions
-            .where((f) => f.isAffordable(widget.walletBalance))
-            .toList();
+        affordableFees = feeOptions.where((f) => f.isAffordable(widget.walletBalance)).toList();
         // Default to Regular processing speed if possible
         selectedFeeIndex = (affordableFees.length / 2).floor();
         /* INFO: We do not add variance when calculating fee, so there's no need for the following logic:

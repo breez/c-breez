@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -96,19 +96,16 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
   }
 
   Widget _buildPaymentRequestContent() {
-    return BlocBuilder<CurrencyBloc, CurrencyState>(
-        builder: (c, currencyState) {
+    return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (c, currencyState) {
       return BlocBuilder<AccountBloc, AccountState>(
         builder: (context, account) {
           List<Widget> children = [];
           _addIfNotNull(children, _buildPayeeNameWidget(context));
           _addIfNotNull(children, _buildRequestPayTextWidget(context));
-          _addIfNotNull(
-              children, _buildAmountWidget(context, account, currencyState));
+          _addIfNotNull(children, _buildAmountWidget(context, account, currencyState));
           _addIfNotNull(children, _buildDescriptionWidget(context));
           _addIfNotNull(children, _buildErrorMessage(context, currencyState));
-          _addIfNotNull(
-              children, _buildActions(context, currencyState, account));
+          _addIfNotNull(children, _buildActions(context, currencyState, account));
 
           return Container(
             padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 16.0),
@@ -135,10 +132,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         ? null
         : Text(
             widget.invoice.payeeName,
-            style: Theme.of(context)
-                .primaryTextTheme
-                .headlineMedium!
-                .copyWith(fontSize: 16),
+            style: Theme.of(context).primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
             textAlign: TextAlign.center,
           );
   }
@@ -149,16 +143,13 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     final payeeName = widget.invoice.payeeName;
 
     return Text(
-      payeeName.isEmpty
-          ? texts.payment_request_dialog_requested
-          : texts.payment_request_dialog_requesting,
+      payeeName.isEmpty ? texts.payment_request_dialog_requested : texts.payment_request_dialog_requesting,
       style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
       textAlign: TextAlign.center,
     );
   }
 
-  Widget _buildAmountWidget(
-      BuildContext context, AccountState account, CurrencyState currencyState) {
+  Widget _buildAmountWidget(BuildContext context, AccountState account, CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
@@ -173,9 +164,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           hintColor: themeData.dialogTheme.contentTextStyle!.color,
           colorScheme: ColorScheme.dark(
             primary: themeData.textTheme.labelLarge!.color!,
-            error: themeData.isLightTheme
-                ? Colors.red
-                : themeData.colorScheme.error,
+            error: themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
           ),
           primaryColor: themeData.textTheme.labelLarge!.color!,
         ),
@@ -189,8 +178,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
               child: AmountFormField(
                 context: context,
                 texts: texts,
-                bitcoinCurrency: BitcoinCurrency.fromTickerSymbol(
-                    currencyState.bitcoinTicker),
+                bitcoinCurrency: BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker),
                 iconColor: themeData.primaryIconTheme.color,
                 focusNode: _amountFocusNode,
                 controller: _invoiceAmountController,
@@ -199,8 +187,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
                   currency: currencyState.bitcoinCurrency,
                   texts: context.texts(),
                 ).validateOutgoing,
-                style: themeData.dialogTheme.contentTextStyle!
-                    .copyWith(height: 1.0),
+                style: themeData.dialogTheme.contentTextStyle!.copyWith(height: 1.0),
               ),
             ),
           ),
@@ -210,8 +197,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
 
     FiatConversion? fiatConversion;
     if (currencyState.fiatEnabled) {
-      fiatConversion = FiatConversion(
-          currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
+      fiatConversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     }
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -258,12 +244,10 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
                 child: SingleChildScrollView(
                   child: AutoSizeText(
                     description,
-                    style: themeData.primaryTextTheme.displaySmall!
-                        .copyWith(fontSize: 16),
-                    textAlign:
-                        description.length > 40 && !description.contains("\n")
-                            ? TextAlign.start
-                            : TextAlign.center,
+                    style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
+                    textAlign: description.length > 40 && !description.contains("\n")
+                        ? TextAlign.start
+                        : TextAlign.center,
                   ),
                 ),
               ),
@@ -271,8 +255,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           );
   }
 
-  Widget? _buildErrorMessage(
-      BuildContext context, CurrencyState currencyState) {
+  Widget? _buildErrorMessage(BuildContext context, CurrencyState currencyState) {
     final validationError = PaymentValidator(
       validatePayment: context.read<AccountBloc>().validatePayment,
       currency: currencyState.bitcoinCurrency,
@@ -294,15 +277,13 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         textAlign: TextAlign.center,
         style: themeData.primaryTextTheme.displaySmall!.copyWith(
           fontSize: 16,
-          color:
-              themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
+          color: themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
         ),
       ),
     );
   }
 
-  Widget _buildActions(
-      BuildContext context, CurrencyState currency, AccountState accState) {
+  Widget _buildActions(BuildContext context, CurrencyState currency, AccountState accState) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
@@ -324,8 +305,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
             if (widget.invoice.amountMsat == 0) {
               _amountToPayMap["_amountToPay"] = toPay;
               _amountToPayMap["_amountToPayStr"] =
-                  BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker)
-                      .format(amountToPay(currency));
+                  BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker).format(amountToPay(currency));
               widget._setAmountToPay(_amountToPayMap);
               widget._onWaitingConfirmation();
             } else {
@@ -362,8 +342,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     int amount = widget.invoice.amountMsat ~/ 1000;
     if (amount == 0) {
       try {
-        amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker)
-            .parse(_invoiceAmountController.text);
+        amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker).parse(_invoiceAmountController.text);
       } catch (_) {}
     }
     return amount;

@@ -19,9 +19,7 @@ class PaymentItemAvatar extends StatelessWidget {
         radius: radius,
         backgroundColor: Colors.white,
         child: Icon(
-          paymentItem.paymentType == PaymentType.Received
-              ? Icons.add_rounded
-              : Icons.remove_rounded,
+          paymentItem.paymentType == PaymentType.Received ? Icons.add_rounded : Icons.remove_rounded,
           color: const Color(0xb3303234),
         ),
       );
@@ -32,12 +30,10 @@ class PaymentItemAvatar extends StatelessWidget {
   }
 
   bool get _shouldShowLeadingIcon {
-    final hasDescription = (paymentItem.description != null &&
-        paymentItem.description!.isNotEmpty);
+    final hasDescription = (paymentItem.description != null && paymentItem.description!.isNotEmpty);
     final details = paymentItem.details.data;
     final isKeySend = (details is LnPaymentDetails) ? details.keysend : false;
-    final isClosedChannelPayment =
-        paymentItem.paymentType == PaymentType.ClosedChannel;
+    final isClosedChannelPayment = paymentItem.paymentType == PaymentType.ClosedChannel;
 
     return hasDescription || isKeySend || isClosedChannelPayment;
   }

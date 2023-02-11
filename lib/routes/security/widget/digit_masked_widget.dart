@@ -76,56 +76,58 @@ class _DigitMaskedWidgetPreviewState extends State<DigitMaskedWidgetPreview> {
 
   @override
   Widget build(BuildContext context) {
-    return Preview([
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(
-          6,
-          (index) => Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DigitMaskedWidget(
-              filled: count > index,
+    return Preview(
+      [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            6,
+            (index) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DigitMaskedWidget(
+                filled: count > index,
+              ),
             ),
           ),
         ),
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(
-          6,
-          (index) => Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DigitMaskedWidget(
-              filled: count > index,
-              filledColor: Colors.red,
-              unfilledColor: Colors.blue,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            6,
+            (index) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: DigitMaskedWidget(
+                filled: count > index,
+                filledColor: Colors.red,
+                unfilledColor: Colors.blue,
+              ),
             ),
           ),
         ),
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                count = min(count + 1, 6);
-              });
-            },
-            child: const Text("Fill"),
-          ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                count = max(0, count - 1);
-              });
-            },
-            child: const Text("Clear"),
-          ),
-        ],
-      ),
-    ]);
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  count = min(count + 1, 6);
+                });
+              },
+              child: const Text("Fill"),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  count = max(0, count - 1);
+                });
+              },
+              child: const Text("Clear"),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 

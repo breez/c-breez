@@ -42,9 +42,7 @@ class HeaderFilterChip extends SliverPadding {
                                   endDate,
                                 ),
                               ),
-                              onDeleted: () => context
-                                  .read<AccountBloc>()
-                                  .changePaymentFilter(
+                              onDeleted: () => context.read<AccountBloc>().changePaymentFilter(
                                     toTimestamp: null,
                                     fromTimestamp: null,
                                   ),

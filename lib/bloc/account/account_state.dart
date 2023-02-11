@@ -133,9 +133,7 @@ class AccountState {
       onChainFeeRate: (json["onChainFeeRate"]),
       payments: [],
       paymentFilters: PaymentFilters.fromJson(json["paymentFilters"]),
-      status: json["status"] != null
-          ? ConnectionStatus.values[json["status"]]
-          : ConnectionStatus.CONNECTING,
+      status: json["status"] != null ? ConnectionStatus.values[json["status"]] : ConnectionStatus.CONNECTING,
     );
   }
 }

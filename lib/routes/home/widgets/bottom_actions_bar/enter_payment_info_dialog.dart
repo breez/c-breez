@@ -1,5 +1,5 @@
-import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
@@ -61,8 +61,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
         primaryColor: themeData.textTheme.labelLarge!.color,
         colorScheme: ColorScheme.dark(
           primary: themeData.textTheme.labelLarge!.color!,
-          error:
-              themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
+          error: themeData.isLightTheme ? Colors.red : themeData.colorScheme.error,
         ),
       ),
       child: SizedBox(
@@ -121,9 +120,8 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
                     texts.payment_info_dialog_hint_expanded,
                     style: theme.FieldTextStyle.labelStyle.copyWith(
                       fontSize: 13.0,
-                      color: themeData.isLightTheme
-                          ? theme.BreezColors.grey[500]
-                          : theme.BreezColors.white[200],
+                      color:
+                          themeData.isLightTheme ? theme.BreezColors.grey[500] : theme.BreezColors.white[200],
                     ),
                   ),
                 ),

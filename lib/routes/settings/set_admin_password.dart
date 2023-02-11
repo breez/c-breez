@@ -1,5 +1,5 @@
-import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -122,10 +122,8 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
         text: widget.submitAction,
         onPressed: () async {
           if (_formKey.currentState?.validate() == true) {
-            await context
-                .read<UserProfileBloc>()
-                .setAdminPassword(_passwordController.text);
-            if(!mounted) return;
+            await context.read<UserProfileBloc>().setAdminPassword(_passwordController.text);
+            if (!mounted) return;
             Navigator.of(context).pop();
           }
         },

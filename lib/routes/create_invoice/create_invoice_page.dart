@@ -94,16 +94,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextFormField(
-                    controller: _descriptionController,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.done,
-                    maxLines: null,
-                    maxLength: 90,
-                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    decoration: InputDecoration(
-                      labelText: texts.invoice_description_label,
-                    ),
-                    style: theme.FieldTextStyle.textStyle,
+                    controller: _descriptionController, keyboardType: TextInputType.multiline, textInputAction: TextInputAction.done, maxLines: null, maxLength: 90, maxLengthEnforcement: MaxLengthEnforcement.enforced, decoration: InputDecoration(labelText: texts.invoice_description_label,), style: theme.FieldTextStyle.textStyle,
                   ),
                   BlocBuilder<CurrencyBloc, CurrencyState>(
                     builder: (context, currencyState) {
@@ -186,8 +177,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
     Future<LNInvoice> invoice = accountBloc.addInvoice(
       description: _descriptionController.text,
-      amountSats:
-          currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
+      amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
     );
     navigator.pop();
     Widget dialog = FutureBuilder(

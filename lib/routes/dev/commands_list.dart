@@ -41,16 +41,17 @@ class _CommandsListState extends State<CommandsList> {
           child: Row(
             children: <Widget>[
               Flexible(
-                  child: TextField(
-                focusNode: _cliEntryFocusNode,
-                controller: _cliInputController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter a command or use the links below',
+                child: TextField(
+                  focusNode: _cliEntryFocusNode,
+                  controller: _cliInputController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter a command or use the links below',
+                  ),
+                  onSubmitted: (command) {
+                    _sendCommand(command);
+                  },
                 ),
-                onSubmitted: (command) {
-                  _sendCommand(command);
-                },
-              )),
+              ),
               IconButton(
                 icon: const Icon(Icons.play_arrow),
                 tooltip: 'Run',
@@ -78,13 +79,14 @@ class _CommandsListState extends State<CommandsList> {
           child: Container(
             padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
             child: Container(
-              padding: _showDefaultCommands
-                  ? const EdgeInsets.all(0.0)
-                  : const EdgeInsets.all(2.0),
+              padding: _showDefaultCommands ? const EdgeInsets.all(0.0) : const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
                 border: _showDefaultCommands
                     ? null
-                    : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
+                    : Border.all(
+                        width: 1.0,
+                        color: const Color(0x80FFFFFF),
+                      ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -100,17 +102,14 @@ class _CommandsListState extends State<CommandsList> {
                               tooltip: 'Copy to Clipboard',
                               iconSize: 19.0,
                               onPressed: () {
-                                ServiceInjector()
-                                    .device
-                                    .setClipboardText(_cliText);
+                                ServiceInjector().device.setClipboardText(_cliText);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
                                       'Copied to clipboard.',
                                       style: theme.snackBarStyle,
                                     ),
-                                    backgroundColor:
-                                        theme.snackBarBackgroundColor,
+                                    backgroundColor: theme.snackBarBackgroundColor,
                                     duration: const Duration(seconds: 2),
                                   ),
                                 );
@@ -169,8 +168,7 @@ class _CommandsListState extends State<CommandsList> {
           case 'listPayments':
           case 'listInvoices':
           case 'closeAllChannels':
-            reply = encoder.convert(await _breezLib.executeCommand(
-                command: commandArgs[0].toLowerCase()));
+            reply = encoder.convert(await _breezLib.executeCommand(command: commandArgs[0].toLowerCase()));
             break;
           default:
             throw "This command is not supported yet.";

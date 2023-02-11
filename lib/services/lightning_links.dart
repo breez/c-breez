@@ -6,15 +6,15 @@ import 'package:uni_links/uni_links.dart';
 
 class LightningLinksService {
   final _log = FimberLog("LightningLinksService");
-  final StreamController<String> _linksNotificationsController =
-      BehaviorSubject<String>();
+  final StreamController<String> _linksNotificationsController = BehaviorSubject<String>();
 
   Stream<String> get linksNotifications => _linksNotificationsController.stream;
 
   LightningLinksService() {
-    Rx.merge([getInitialLink().asStream(), linkStream])
-        .where(_canHandle)
-        .listen((l) {
+    Rx.merge([
+      getInitialLink().asStream(),
+      linkStream,
+    ]).where(_canHandle).listen((l) {
       _log.i("Got lightning link: $l");
       if (l!.startsWith("breez:")) {
         l = l.substring(6);

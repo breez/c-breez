@@ -23,8 +23,7 @@ class FlipTransition extends StatefulWidget {
   }
 }
 
-class FlipTransitionState extends State<FlipTransition>
-    with TickerProviderStateMixin {
+class FlipTransitionState extends State<FlipTransition> with TickerProviderStateMixin {
   AnimationController? _flipAnimationController;
   Animation? _flipAnimation;
   static const flipDuration = Duration(seconds: 2);
@@ -32,11 +31,13 @@ class FlipTransitionState extends State<FlipTransition>
   @override
   void initState() {
     super.initState();
-    _flipAnimationController =
-        AnimationController(vsync: this, duration: flipDuration);
-    _flipAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+    _flipAnimationController = AnimationController(vsync: this, duration: flipDuration);
+    _flipAnimation = Tween(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
         parent: _flipAnimationController!,
-        curve: const Interval(0.0, 1.0, curve: Curves.fastOutSlowIn)));
+        curve: const Interval(0.0, 1.0, curve: Curves.fastOutSlowIn),
+      ),
+    );
 
     _flipAnimationController!.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -65,12 +66,9 @@ class FlipTransitionState extends State<FlipTransition>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(widget.radius),
             child: Transform(
-              transform: Matrix4.identity()
-                ..rotateY(pi * _flipAnimation!.value),
+              transform: Matrix4.identity()..rotateY(pi * _flipAnimation!.value),
               alignment: Alignment.center,
-              child: _flipAnimationController!.value >= 0.4
-                  ? widget.secondChild
-                  : widget.firstChild,
+              child: _flipAnimationController!.value >= 0.4 ? widget.secondChild : widget.firstChild,
             ),
           ),
         );

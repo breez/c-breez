@@ -20,8 +20,7 @@ final ThemeData breezLightTheme = ThemeData(
     sizeConstraints: BoxConstraints(minHeight: 64, minWidth: 64),
   ),
   canvasColor: BreezColors.blue[500],
-  bottomAppBarTheme:
-      const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
+  bottomAppBarTheme: const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
   appBarTheme: AppBarTheme(
     backgroundColor: BreezColors.blue[500],
     iconTheme: const IconThemeData(
@@ -30,29 +29,28 @@ final ThemeData breezLightTheme = ThemeData(
     toolbarTextStyle: toolbarTextStyle,
     titleTextStyle: titleTextStyle,
     elevation: 0.0,
-    actionsIconTheme:
-        const IconThemeData(color: Color.fromRGBO(0, 120, 253, 1.0)),
+    actionsIconTheme: const IconThemeData(
+      color: Color.fromRGBO(0, 120, 253, 1.0),
+    ),
     systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   dialogTheme: DialogTheme(
-      titleTextStyle: TextStyle(
-          color: BreezColors.grey[600], fontSize: 20.5, letterSpacing: 0.25),
-      contentTextStyle:
-          TextStyle(color: BreezColors.grey[500], fontSize: 16.0, height: 1.5),
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12.0)))),
+    titleTextStyle: TextStyle(color: BreezColors.grey[600], fontSize: 20.5, letterSpacing: 0.25),
+    contentTextStyle: TextStyle(color: BreezColors.grey[500], fontSize: 16.0, height: 1.5),
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+    ),
+  ),
   dialogBackgroundColor: Colors.transparent,
   dividerColor: const Color(0x33ffffff),
   cardColor: BreezColors.blue[500], // will be replaced with CardTheme.color
   cardTheme: CardTheme(color: BreezColors.blue[500]),
   highlightColor: BreezColors.blue[200],
   textTheme: TextTheme(
-      titleSmall: TextStyle(
-          color: BreezColors.grey[600], fontSize: 14.3, letterSpacing: 0.2),
+      titleSmall: TextStyle(color: BreezColors.grey[600], fontSize: 14.3, letterSpacing: 0.2),
       headlineSmall: TextStyle(color: BreezColors.grey[600], fontSize: 26.0),
-      labelLarge: TextStyle(
-          color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
+      labelLarge: TextStyle(color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
       headlineMedium: const TextStyle(
         color: Color(0xffffe685),
         fontSize: 18.0,
@@ -71,11 +69,7 @@ final ThemeData breezLightTheme = ThemeData(
         height: 1.28,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    displaySmall: TextStyle(
-        color: BreezColors.grey[500],
-        fontSize: 14.0,
-        letterSpacing: 0.0,
-        height: 1.28),
+    displaySmall: TextStyle(color: BreezColors.grey[500], fontSize: 14.0, letterSpacing: 0.0, height: 1.28),
     headlineSmall: TextStyle(
         color: BreezColors.grey[500],
         fontSize: 24.0,
@@ -89,10 +83,8 @@ final ThemeData breezLightTheme = ThemeData(
         letterSpacing: 0.15,
         fontWeight: FontWeight.w500,
         fontFamily: 'IBMPlexSans'),
-    titleSmall: TextStyle(
-        color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
-    labelLarge: TextStyle(
-        color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
+    titleSmall: TextStyle(color: BreezColors.white[500], fontSize: 10.0, letterSpacing: 0.09),
+    labelLarge: TextStyle(color: BreezColors.blue[500], fontSize: 14.3, letterSpacing: 1.25),
     bodySmall: TextStyle(color: BreezColors.grey[500], fontSize: 12.0),
   ),
   textSelectionTheme: const TextSelectionThemeData(
@@ -123,7 +115,9 @@ final ThemeData calendarLightTheme = ThemeData.light().copyWith(
     primary: Color.fromRGBO(5, 93, 235, 1.0),
   ),
   textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: BreezColors.blue[500]),
+    style: TextButton.styleFrom(
+      foregroundColor: BreezColors.blue[500],
+    ),
   ),
   dialogTheme: const DialogTheme(
     shape: RoundedRectangleBorder(

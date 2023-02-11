@@ -10,11 +10,7 @@ class LspList extends StatefulWidget {
   final LspInformation? selectedLsp;
   final ValueChanged<LspInformation> onSelected;
 
-  const LspList(
-      {Key? key,
-      required this.lspList,
-      required this.selectedLsp,
-      required this.onSelected})
+  const LspList({Key? key, required this.lspList, required this.selectedLsp, required this.onSelected})
       : super(key: key);
 
   @override
@@ -61,15 +57,12 @@ class _LspListState extends State<LspList> {
                       itemCount: widget.lspList.length,
                       itemBuilder: (BuildContext context, int index) {
                         return ListTile(
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 0.0),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
                           title: Text(widget.lspList[index].name),
-                          selected: widget.selectedLsp?.id ==
-                              widget.lspList[index].id,
-                          trailing:
-                              widget.selectedLsp?.id == widget.lspList[index].id
-                                  ? const Icon(Icons.check)
-                                  : null,
+                          selected: widget.selectedLsp?.id == widget.lspList[index].id,
+                          trailing: widget.selectedLsp?.id == widget.lspList[index].id
+                              ? const Icon(Icons.check)
+                              : null,
                           onTap: () => widget.onSelected(widget.lspList[index]),
                         );
                       },

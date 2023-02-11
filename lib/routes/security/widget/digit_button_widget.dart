@@ -47,11 +47,15 @@ class DigitButtonWidget extends StatelessWidget {
 }
 
 void main() {
-  runApp(Preview(List.generate(
-    10,
-    (index) => DigitButtonWidget(
-      digit: "$index",
-      onPressed: (digit) => debugPrint("Digit: $digit"),
+  runApp(
+    Preview(
+      List.generate(
+        10,
+        (index) => DigitButtonWidget(
+          digit: "$index",
+          onPressed: (digit) => debugPrint("Digit: $digit"),
+        ),
+      ),
     ),
-  )));
+  );
 }

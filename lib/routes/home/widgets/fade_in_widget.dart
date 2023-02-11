@@ -11,15 +11,16 @@ class FadeInWidget extends StatefulWidget {
   }
 }
 
-class FadeInWidgetState extends State<FadeInWidget>
-    with SingleTickerProviderStateMixin {
+class FadeInWidgetState extends State<FadeInWidget> with SingleTickerProviderStateMixin {
   CurvedAnimation? _fadeIn;
 
   @override
   void initState() {
     super.initState();
     AnimationController controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
     _fadeIn = CurvedAnimation(parent: controller, curve: Curves.easeIn);
     controller.forward();
   }

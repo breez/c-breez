@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/security/widget/pin_code_widget.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -55,9 +55,9 @@ class LockScreen extends StatelessWidget {
                 }
               },
               testBiometricsFunction: () async {
-                bool pinMatches = await context
-                    .read<SecurityBloc>()
-                    .localAuthentication(texts.security_and_backup_validate_biometrics_reason);
+                bool pinMatches = await context.read<SecurityBloc>().localAuthentication(
+                      texts.security_and_backup_validate_biometrics_reason,
+                    );
                 if (pinMatches) {
                   _authorized(navigator);
                   return const TestPinResult(true);

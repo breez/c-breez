@@ -1,11 +1,21 @@
+![Build Android workflow](https://github.com/breez/c-breez/actions/workflows/build-android.yml/badge.svg)
+![Build iOS workflow](https://github.com/breez/c-breez/actions/workflows/build-ios.yml/badge.svg)
+![CI workflow](https://github.com/breez/c-breez/actions/workflows/CI.yml/badge.svg)
+
 # c-Breez (Breez powered by Greenlight)
+
+<img align="right" width="112" height="42" title="Breez logo"
+     src="./src/images/logo-color.svg">
 
 c-Breez is a migration of [Breez mobile app](https://github.com/breez/breezmobile) to
 the [Greenlight](https://blockstream.com/lightning/greenlight/) infrastructure.
 
-For more details, please check
-out [this medium post](https://medium.com/breez-technology/get-ready-for-a-fresh-breez-multiple-apps-one-node-optimal-ux-519c4daf2536)
-.
+📖 [Read the introduction post](https://medium.com/breez-technology/get-ready-for-a-fresh-breez-multiple-apps-one-node-optimal-ux-519c4daf2536)
+
+<p align="center">
+  <a href="https://blockstream.com/lightning/greenlight/">
+  <img src="./src/images/drawer_footer.png" alt="Powered by Breez SDK & Greenlight" width="396" height="60"></a>
+</p>
 
 ## Build
 
@@ -53,6 +63,8 @@ flutter run
 
 A testing framework for this project is being developed [here](https://github.com/breez/lntest).
 
+___
+
 ## Contributors
 
 ### Pre-commit `dart format` with Lefthook
@@ -85,4 +97,10 @@ There currently is no Github Desktop support to skip git-hooks. However, you can
 ```sh
 $ lefthook uninstall
 ```
-to clear hooks related to `lefthook.yml` configuration before committing your changes. Do no forget to run `lefthook install` to re-activate `pre-commit` hook.
+to clear hooks related to `lefthook.yml` configuration before committing your changes.
+
+Do no forget to run `lefthook install` to re-activate `pre-commit` hook.
+
+```sh
+$ lefthook install
+```

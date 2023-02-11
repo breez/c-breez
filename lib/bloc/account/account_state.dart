@@ -22,7 +22,7 @@ class AccountState {
   final int onChainFeeRate;
   final List<Payment> payments;
   final PaymentFilters paymentFilters;
-  final ConnectionStatus? status;
+  final ConnectionStatus? connectionStatus;
   final VerificationStatus? verificationStatus;
 
   const AccountState({
@@ -40,7 +40,7 @@ class AccountState {
     required this.onChainFeeRate,
     required this.payments,
     required this.paymentFilters,
-    required this.status,
+    required this.connectionStatus,
     this.verificationStatus = VerificationStatus.UNVERIFIED,
   });
 
@@ -60,7 +60,7 @@ class AccountState {
           walletBalance: 0,
           payments: [],
           paymentFilters: PaymentFilters.initial(),
-          status: null,
+          connectionStatus: null,
           verificationStatus: VerificationStatus.UNVERIFIED,
         );
 
@@ -79,7 +79,7 @@ class AccountState {
     int? onChainFeeRate,
     List<Payment>? payments,
     PaymentFilters? paymentFilters,
-    ConnectionStatus? status,
+    ConnectionStatus? connectionStatus,
     VerificationStatus? verificationStatus,
   }) {
     return AccountState(
@@ -97,7 +97,7 @@ class AccountState {
       onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
       payments: payments ?? this.payments,
       paymentFilters: paymentFilters ?? this.paymentFilters,
-      status: status ?? this.status,
+      connectionStatus: connectionStatus ?? this.connectionStatus,
       verificationStatus: verificationStatus ?? this.verificationStatus,
     );
   }
@@ -119,7 +119,7 @@ class AccountState {
       "maxInboundLiquidity": maxInboundLiquidity,
       "onChainFeeRate": onChainFeeRate,
       "paymentFilters": paymentFilters.toJson(),
-      "status": status?.index,
+      "connectionStatus": connectionStatus?.index,
       "verificationStatus": verificationStatus?.index,
     };
   }
@@ -141,7 +141,9 @@ class AccountState {
       onChainFeeRate: (json["onChainFeeRate"]),
       payments: [],
       paymentFilters: PaymentFilters.fromJson(json["paymentFilters"]),
-      status: json["status"] != null ? ConnectionStatus.values[json["status"]] : ConnectionStatus.CONNECTING,
+      connectionStatus: json["connectionStatus"] != null
+          ? ConnectionStatus.values[json["connectionStatus"]]
+          : ConnectionStatus.CONNECTING,
       verificationStatus: json["verificationStatus"] != null
           ? VerificationStatus.values[json["verificationStatus"]]
           : VerificationStatus.UNVERIFIED,

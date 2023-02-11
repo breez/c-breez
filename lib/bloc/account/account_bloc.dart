@@ -125,13 +125,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     await _startSdkOnce();
 
     // in case we failed to start (lack of inet connection probably)
-    if (state.status == ConnectionStatus.DISCONNECTED) {
+    if (state.connectionStatus == ConnectionStatus.DISCONNECTED) {
       StreamSubscription<ConnectivityResult>? subscription;
       subscription = Connectivity().onConnectivityChanged.listen((event) async {
         // we should try fetch the selected lsp information when internet is back.
-        if (event != ConnectivityResult.none && state.status == ConnectionStatus.DISCONNECTED) {
+        if (event != ConnectivityResult.none && state.connectionStatus == ConnectionStatus.DISCONNECTED) {
           await _startSdkOnce();
-          if (state.status == ConnectionStatus.CONNECTED) {
+          if (state.connectionStatus == ConnectionStatus.CONNECTED) {
             subscription!.cancel();
             _onConnected();
           }
@@ -144,11 +144,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _startSdkOnce() async {
     try {
-      emit(state.copyWith(status: ConnectionStatus.CONNECTING));
+      emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
       await _breezLib.startNode();
-      emit(state.copyWith(status: ConnectionStatus.CONNECTED));
+      emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
     } catch (e) {
-      emit(state.copyWith(status: ConnectionStatus.DISCONNECTED));
+      emit(state.copyWith(connectionStatus: ConnectionStatus.DISCONNECTED));
     }
   }
 

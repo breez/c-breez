@@ -33,12 +33,13 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
             );
           }
 
-          if (accState.status != ConnectionStatus.CONNECTING &&
+          if (accState.connectionStatus != ConnectionStatus.CONNECTING &&
               lspState != null &&
               lspState.selectedLspId == null) {
-            warnings.add(WarningAction(() {
-              navigatorState.pushNamed("/select_lsp");
-            }));
+            warnings.add(
+              WarningAction(() => navigatorState.pushNamed("/select_lsp")),
+            );
+          }
           }
 
           if (warnings.isEmpty) {

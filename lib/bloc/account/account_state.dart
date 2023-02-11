@@ -5,6 +5,8 @@ const initialInboundCapacity = 4000000;
 
 enum ConnectionStatus { CONNECTING, CONNECTED, DISCONNECTED }
 
+enum VerificationStatus { UNVERIFIED, VERIFIED }
+
 class AccountState {
   final String? id;
   final bool initial;
@@ -21,6 +23,7 @@ class AccountState {
   final List<Payment> payments;
   final PaymentFilters paymentFilters;
   final ConnectionStatus? status;
+  final VerificationStatus? verificationStatus;
 
   const AccountState({
     required this.id,
@@ -38,6 +41,7 @@ class AccountState {
     required this.payments,
     required this.paymentFilters,
     required this.status,
+    this.verificationStatus = VerificationStatus.UNVERIFIED,
   });
 
   AccountState.initial()
@@ -57,6 +61,7 @@ class AccountState {
           payments: [],
           paymentFilters: PaymentFilters.initial(),
           status: null,
+          verificationStatus: VerificationStatus.UNVERIFIED,
         );
 
   AccountState copyWith({
@@ -75,6 +80,7 @@ class AccountState {
     List<Payment>? payments,
     PaymentFilters? paymentFilters,
     ConnectionStatus? status,
+    VerificationStatus? verificationStatus,
   }) {
     return AccountState(
       id: id ?? this.id,
@@ -92,6 +98,7 @@ class AccountState {
       payments: payments ?? this.payments,
       paymentFilters: paymentFilters ?? this.paymentFilters,
       status: status ?? this.status,
+      verificationStatus: verificationStatus ?? this.verificationStatus,
     );
   }
 
@@ -113,6 +120,7 @@ class AccountState {
       "onChainFeeRate": onChainFeeRate,
       "paymentFilters": paymentFilters.toJson(),
       "status": status?.index,
+      "verificationStatus": verificationStatus?.index,
     };
   }
 
@@ -134,6 +142,9 @@ class AccountState {
       payments: [],
       paymentFilters: PaymentFilters.fromJson(json["paymentFilters"]),
       status: json["status"] != null ? ConnectionStatus.values[json["status"]] : ConnectionStatus.CONNECTING,
+      verificationStatus: json["verificationStatus"] != null
+          ? VerificationStatus.values[json["verificationStatus"]]
+          : VerificationStatus.UNVERIFIED,
     );
   }
 }

@@ -12,7 +12,7 @@ pre-commit:
 #      run: flutter analyze
 #    lint_code:
 #      glob: '*.dart'
-#      run: dart fix --dry-run . && git add .
+#      run: dart fix --dry-run .
     format_code:
       glob: '*.dart'
-      run: dart format --fix -l 110 . && git add .
+      run: dart format --fix -l 110 .

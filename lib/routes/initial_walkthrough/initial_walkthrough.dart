@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/initial_walkthrough/beta_warning_dialog.dart';
@@ -146,11 +147,29 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
         return AlphaWarningDialog();
       },
     );
-    if (approved) _generateMnemonicSeed();
+    if (approved) _startNewNode();
   }
 
-  void _generateMnemonicSeed() {
-    Navigator.of(context).pushNamed("/mnemonics");
+  void _startNewNode() async {
+    final accountBloc = context.read<AccountBloc>();
+    final navigator = Navigator.of(context);
+    var loaderRoute = createLoaderRoute(context);
+    navigator.push(loaderRoute);
+
+    final themeProvider = ThemeProvider.controllerOf(context);
+    try {
+      String mnemonic = bip39.generateMnemonic(strength: 128);
+      await accountBloc.startNewNode(mnemonic: mnemonic);
+    } catch (error) {
+      _log.i("Failed to register node", ex: error);
+      showFlushbar(context, message: extractExceptionMessage(error));
+      return;
+    } finally {
+      navigator.removeRoute(loaderRoute);
+    }
+
+    themeProvider.setTheme('dark');
+    navigator.pushReplacementNamed('/');
   }
 
   void _restoreNodeFromMnemonicSeed() async {
@@ -165,7 +184,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void restoreNode(String mnemonic) async {
-    var accountBloc = context.read<AccountBloc>();
+    final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);

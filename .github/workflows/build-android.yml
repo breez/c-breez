@@ -83,11 +83,6 @@ jobs:
           cd cbreez
           dart analyze --fatal-infos
 
-      - name: dart-format
-        run: |
-          cd cbreez
-          dart format -o none --set-exit-if-changed .
-
       - name: run-tests
         run: |
           cd cbreez

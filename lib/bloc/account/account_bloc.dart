@@ -332,4 +332,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       _paymentResultStreamController.add(PaymentResult(error: error));
     });
   }
+
+  void verifyMnemonics() {
+    emit(state.copyWith(verificationStatus: VerificationStatus.VERIFIED));
+  }
 }

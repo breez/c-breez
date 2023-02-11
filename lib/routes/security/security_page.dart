@@ -1,5 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/routes/security/widget/mnemonics/security_backup_management.dart';
+import 'package:c_breez/routes/security/widget/mnemonics/security_mnemonics_management.dart';
 import 'package:c_breez/routes/security/widget/security_pin_management.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;

@@ -75,10 +75,14 @@ Before you commit your changes, Lefthook will automatically run `dart format`.
 
 ### Skipping hooks
 
-Use the standard Git option `--no-verify` to skip `pre-commit` hook:
+Should the need arise to skip `pre-commit` hook, CLI users can use the standard Git option `--no-verify` to skip `pre-commit` hook:
 
 ```sh
 $ git commit -m "..." --no-verify
 ```
 
-Alternatively, comment out steps you'd like to skip and exclude `lefthook.yml` from commit.
+There currently is no Github Desktop support to skip git-hooks. However, you can run:
+```sh
+$ lefthook uninstall
+```
+to clear hooks related to `lefthook.yml` configuration before committing your changes. Do no forget to run `lefthook install` to re-activate `pre-commit` hook.

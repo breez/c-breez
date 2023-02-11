@@ -8,4 +8,4 @@ jobs:
       - run: |
           echo PR #${{ github.event.number }} has been merged
           cd cbreez
-          dart format --fix -l 110 .
+          dart format --fix -l 110 . && git add . && git commit -m "Reformat code with 'dart format'"

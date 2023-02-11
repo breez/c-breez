@@ -33,25 +33,29 @@ jobs:
           channel: 'stable'
 
       - name: Check for formatting errors
+        id: check_errors
         continue-on-error: true
         run: dart format -o none --set-exit-if-changed -l 110 .
 
       - name: Dart Format
-        if: ${{ failure() }}
+        id: dart_format
+        if: ${{ steps.check_errors.outcome != 'success' }}
         run: dart format --fix -l 110 . && git add .
 
       - name: Commit Files
-        if: ${{ failure() }}
+        id: commit
+        if: ${{ steps.dart_format.outcome == 'success' }}
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
           commit_message: Reformat code with 'dart format'
 
       - name: Specify the Git global safe directory
-        if: ${{ failure() }}
+        id: safedir
+        if: ${{ steps.commit.outcome == 'success' }}
         run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
       - name: Push Changes
-        if: ${{ failure() }}
+        if: ${{ steps.safedir.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -180,7 +180,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   Future<String?> _getMnemonic() async {
-    return await Navigator.of(context).pushNamed<String>("/enter_mnemonic_seed");
+    return await Navigator.of(context).pushNamed<String>("/enter_mnemonics");
   }
 
   void restoreNode(String mnemonic) async {

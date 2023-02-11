@@ -13,8 +13,8 @@ import 'package:c_breez/routes/dev/commands.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
 import 'package:c_breez/routes/home/home_page.dart';
 import 'package:c_breez/routes/initial_walkthrough/initial_walkthrough.dart';
-import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonic_seed_page.dart';
-import 'package:c_breez/routes/initial_walkthrough/mnemonics/generate_mnemonic_seed_confirmation_page.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonics_page.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/mnemonics_confirmation_page.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/network/network_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
@@ -110,14 +110,9 @@ class UserApp extends StatelessWidget {
                         ),
                         settings: settings,
                       );
-                    case '/mnemonics':
-                      return FadeInRoute(
-                        builder: (_) => GenerateMnemonicSeedConfirmationPage(),
-                        settings: settings,
-                      );
-                    case '/enter_mnemonic_seed':
+                    case '/enter_mnemonics':
                       return FadeInRoute<String>(
-                        builder: (_) => EnterMnemonicSeedPage(),
+                        builder: (_) => EnterMnemonicsPage(),
                         settings: settings,
                       );
                     case '/':
@@ -173,6 +168,13 @@ class UserApp extends StatelessWidget {
                                   return FadeInRoute(
                                     builder: (_) => const SecuredPage(
                                       securedWidget: SecurityPage(),
+                                    ),
+                                    settings: settings,
+                                  );
+                                case '/mnemonics':
+                                  return FadeInRoute(
+                                    builder: (_) => MnemonicsConfirmationPage(
+                                      mnemonics: settings.arguments as String,
                                     ),
                                     settings: settings,
                                   );

@@ -5,12 +5,12 @@ import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/restore_for
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';
 
-class EnterMnemonicSeedPage extends StatefulWidget {
+class EnterMnemonicsPage extends StatefulWidget {
   @override
-  EnterMnemonicSeedPageState createState() => EnterMnemonicSeedPageState();
+  EnterMnemonicsPageState createState() => EnterMnemonicsPageState();
 }
 
-class EnterMnemonicSeedPageState extends State<EnterMnemonicSeedPage> {
+class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
   late int _currentPage = 1;
   final int _lastPage = 2;
 

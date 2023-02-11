@@ -1,20 +1,25 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/mnemonics_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
-import 'generate_mnemonic_seed_page.dart';
+class MnemonicsConfirmationPage extends StatefulWidget {
+  final String mnemonics;
 
-class GenerateMnemonicSeedConfirmationPage extends StatefulWidget {
+  const MnemonicsConfirmationPage({
+    super.key,
+    required this.mnemonics,
+  });
+
   @override
-  GenerateMnemonicSeedConfirmationPageState createState() => GenerateMnemonicSeedConfirmationPageState();
+  MnemonicsConfirmationPageState createState() => MnemonicsConfirmationPageState();
 }
 
-class GenerateMnemonicSeedConfirmationPageState extends State<GenerateMnemonicSeedConfirmationPage> {
+class MnemonicsConfirmationPageState extends State<MnemonicsConfirmationPage> {
   bool _isUnderstood = false;
 
   @override
@@ -31,7 +36,7 @@ class GenerateMnemonicSeedConfirmationPageState extends State<GenerateMnemonicSe
       ),
       body: Column(
         children: [
-          const BackupPhraseImage(),
+          const MnemonicsImage(),
           MnemonicsInstructions(),
           ConfirmationCheckbox(
             isUnderstood: _isUnderstood,
@@ -43,13 +48,13 @@ class GenerateMnemonicSeedConfirmationPageState extends State<GenerateMnemonicSe
           ),
         ],
       ),
-      bottomNavigationBar: ConfirmButton(isUnderstood: _isUnderstood),
+      bottomNavigationBar: ConfirmButton(isUnderstood: _isUnderstood, mnemonics: widget.mnemonics),
     );
   }
 }
 
-class BackupPhraseImage extends StatelessWidget {
-  const BackupPhraseImage({
+class MnemonicsImage extends StatelessWidget {
+  const MnemonicsImage({
     Key? key,
   }) : super(key: key);
 
@@ -114,11 +119,10 @@ class ConfirmationCheckbox extends StatelessWidget {
               unselectedWidgetColor: Colors.white,
             ),
             child: Checkbox(
-              activeColor: Colors.white,
-              checkColor: themeData.canvasColor,
-              value: isUnderstood,
-              onChanged: (value) => onPressed(value!),
-            ),
+                activeColor: Colors.white,
+                checkColor: themeData.canvasColor,
+                value: isUnderstood,
+                onChanged: (value) => onPressed(value!)),
           ),
           Text(
             texts.backup_phrase_action_confirm,
@@ -131,13 +135,14 @@ class ConfirmationCheckbox extends StatelessWidget {
 }
 
 class ConfirmButton extends StatelessWidget {
+  final bool isUnderstood;
+  final String mnemonics;
+
   const ConfirmButton({
     Key? key,
-    required bool isUnderstood,
-  })  : _isUnderstood = isUnderstood,
-        super(key: key);
-
-  final bool _isUnderstood;
+    required this.isUnderstood,
+    required this.mnemonics,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -146,17 +151,14 @@ class ConfirmButton extends StatelessWidget {
       padding: const EdgeInsets.only(top: 24),
       child: SizedBox(
         height: 88,
-        child: _isUnderstood
+        child: isUnderstood
             ? SingleButtonBottomBar(
                 text: texts.backup_phrase_action_next,
                 onPressed: () {
-                  String mnemonics = bip39.generateMnemonic(
-                    strength: 128,
-                  );
                   Navigator.pushReplacement(
                     context,
                     FadeInRoute(
-                      builder: (context) => GenerateMnemonicSeedPage(mnemonics: mnemonics),
+                      builder: (context) => MnemonicsPage(mnemonics: mnemonics),
                     ),
                   );
                 },

@@ -3,34 +3,29 @@ import 'dart:math';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
-import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:theme_provider/theme_provider.dart';
 
 import 'widgets/verify_form.dart';
 
-class VerifyMnemonicSeedPage extends StatefulWidget {
+class VerifyMnemonicsPage extends StatefulWidget {
   final String _mnemonics;
 
-  const VerifyMnemonicSeedPage(
+  const VerifyMnemonicsPage(
     this._mnemonics,
   );
 
   @override
-  VerifyMnemonicSeedPageState createState() => VerifyMnemonicSeedPageState();
+  VerifyMnemonicsPageState createState() => VerifyMnemonicsPageState();
 }
 
-class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
+class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
   final _formKey = GlobalKey<FormState>();
   final List _randomlySelectedIndexes = [];
   late List<String> _mnemonicsList;
   late bool _hasError;
-  bool _registrationFailed = false;
-  String _registrationErrorMessage = "";
 
   @override
   void initState() {
@@ -88,14 +83,6 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
                         ),
                       )
                     : const SizedBox(),
-                registrationFailedText: _registrationFailed
-                    ? Text(
-                        _registrationErrorMessage,
-                        style: themeData.textTheme.headlineMedium?.copyWith(
-                          fontSize: 12,
-                        ),
-                      )
-                    : const SizedBox(),
               ),
               Text(
                 texts.backup_phrase_generation_type_words(
@@ -115,7 +102,9 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
                     _hasError = false;
                   });
                   if (_formKey.currentState!.validate() && !_hasError) {
-                    _proceedToRegister();
+                    final AccountBloc accountBloc = context.read();
+                    accountBloc.verifyMnemonics();
+                    Navigator.popUntil(context, ModalRoute.withName("/security"));
                   }
                 },
               ),
@@ -124,31 +113,5 @@ class VerifyMnemonicSeedPageState extends State<VerifyMnemonicSeedPage> {
         ),
       ),
     );
-  }
-
-  void _proceedToRegister() async {
-    // final registrationBloc = context.read<UserProfileBloc>();
-    final accountBloc = context.read<AccountBloc>();
-
-    final navigator = Navigator.of(context);
-    var loaderRoute = createLoaderRoute(context);
-    navigator.push(loaderRoute);
-
-    final themeProvider = ThemeProvider.controllerOf(context);
-    // await registrationBloc.registerForNotifications();
-    await accountBloc
-        .startNewNode(mnemonic: widget._mnemonics)
-        .whenComplete(() => navigator.removeRoute(loaderRoute))
-        .catchError(
-      (error) {
-        setState(() {
-          _registrationFailed = true;
-          _registrationErrorMessage = extractExceptionMessage(error);
-        });
-        FocusScope.of(context).unfocus();
-      },
-    );
-    themeProvider.setTheme('dark');
-    navigator.pushReplacementNamed("/");
   }
 }

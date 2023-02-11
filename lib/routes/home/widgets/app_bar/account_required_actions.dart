@@ -3,6 +3,7 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/verify_mnemonics_dialog.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,6 +41,20 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
               WarningAction(() => navigatorState.pushNamed("/select_lsp")),
             );
           }
+
+          if (accState.verificationStatus == VerificationStatus.UNVERIFIED) {
+            warnings.add(
+              WarningAction(
+                () async {
+                  showDialog(
+                    useRootNavigator: false,
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (_) => const VerifyMnemonicsDialog(),
+                  );
+                },
+              ),
+            );
           }
 
           if (warnings.isEmpty) {

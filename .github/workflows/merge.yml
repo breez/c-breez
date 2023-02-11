@@ -1,0 +1,11 @@
+name: Merge Pull Request
+
+jobs:
+  dart-format:
+    if: github.event.pull_request.merged == true
+    runs-on: macOS-latest
+    steps:
+      - run: |
+          echo PR #${{ github.event.number }} has been merged
+          cd cbreez
+          dart format --fix -l 110 .

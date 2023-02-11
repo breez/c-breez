@@ -93,18 +93,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextFormField(
-                    controller: _descriptionController,
-                    keyboardType: TextInputType.multiline,
-                    textInputAction: TextInputAction.done,
-                    maxLines: null,
-                    maxLength: 90,
-                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    decoration: InputDecoration(
-                      labelText: texts.invoice_description_label,
-                    ),
-                    style: theme.FieldTextStyle.textStyle,
-                  ),
+                  TextFormField(controller: _descriptionController, keyboardType: TextInputType.multiline, textInputAction: TextInputAction.done, maxLines: null, maxLength: 90, maxLengthEnforcement: MaxLengthEnforcement.enforced, decoration: InputDecoration(labelText: texts.invoice_description_label,), style: theme.FieldTextStyle.textStyle,),
                   BlocBuilder<CurrencyBloc, CurrencyState>(
                     builder: (context, currencyState) {
                       return AmountFormField(

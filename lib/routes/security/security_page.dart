@@ -27,6 +27,7 @@ class SecurityPage extends StatelessWidget {
       body: ListView(
         children: const [
           SecurityPinManagement(),
+          Divider(),
           SecurityMnemonicsManagement(),
         ],
       ),

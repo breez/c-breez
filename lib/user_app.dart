@@ -171,7 +171,7 @@ class UserApp extends StatelessWidget {
                                     ),
                                     settings: settings,
                                   );
-                                case '/mnemonics':
+                                case '/confirm_mnemonics':
                                   return FadeInRoute(
                                     builder: (_) => MnemonicsConfirmationPage(
                                       mnemonics: settings.arguments as String,

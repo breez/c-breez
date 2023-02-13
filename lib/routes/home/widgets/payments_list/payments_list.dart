@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
-import 'package:c_breez/config.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/payment_item.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
@@ -46,9 +45,7 @@ class PaymentsList extends StatelessWidget {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: (await Config.instance()).firebaseOptions,
-  );
+  await Firebase.initializeApp();
   final firstPaymentItemKey = GlobalKey();
   final injector = ServiceInjector();
   HydratedBloc.storage = await HydratedStorage.build(

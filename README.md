@@ -41,6 +41,17 @@ c-breez/
 
 ```
 
+### Add firebase config files
+c-breez depends on google services and requires a configured firebase app.
+
+To create your firebase app follow the following link
+[create-firebase-project](https://firebase.google.com/docs/android/setup#create-firebase-project).
+
+After creating the app follow the instructions to create the specific 
+configuration file for your platform:
+* For android - place the google-services.json in the andrpod/app folder
+* For iOS - place the GoogleService-info.plist under ios/Runner folder
+
 ### Android
 
 ```

@@ -27,12 +27,9 @@ class InputBloc extends Cubit<InputState> {
     _initializeInputBloc();
   }
 
-  void _initializeInputBloc() {
-    _breezLib.nodeStateStream.where((nodeState) => nodeState != null).listen(
-      (nodeState) async {
-        _watchIncomingInvoices().listen((inputState) => emit(inputState!));
-      },
-    );
+  void _initializeInputBloc() async {
+    await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
+    _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
   void addIncomingInput(String bolt11) {

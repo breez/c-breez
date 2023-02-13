@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 class Config {
   static Config? _instance;
 
-  final sdk.Config sdkConfig;  
+  final sdk.Config sdkConfig;
 
   Config._(this.sdkConfig);
 
@@ -18,7 +18,7 @@ class Config {
       String configString = await rootBundle.loadString('conf/breez.conf');
       ini.Config breezConfig = ini.Config.fromString(configString);
       final defaultConf = await breezLib.defaultConfig(sdk.EnvironmentType.Production);
-      final sdkConfig = await _getSDKConfig(defaultConf, breezConfig);      
+      final sdkConfig = await _getSDKConfig(defaultConf, breezConfig);
       _instance = Config._(sdkConfig);
     }
     return _instance!;

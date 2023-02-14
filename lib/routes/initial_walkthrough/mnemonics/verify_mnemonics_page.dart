@@ -106,6 +106,9 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                     accountBloc.verifyMnemonics();
                     Navigator.of(context).popUntil((route) {
                       bool shouldPop = false;
+                      // Pop to where the verification flow has started from,
+                      // which is either from "Verify Backup Phrase" option on Security page
+                      // or through WarningAction on Home page.
                       if (route.settings.name == "/security" || route.settings.name == "/") {
                         shouldPop = true;
                       }

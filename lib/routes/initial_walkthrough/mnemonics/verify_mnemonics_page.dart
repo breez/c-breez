@@ -96,7 +96,7 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                 textAlign: TextAlign.center,
               ),
               SingleButtonBottomBar(
-                text: texts.backup_phrase_warning_action_backup,
+                text: texts.mnemonics_confirmation_action_verify,
                 onPressed: () {
                   setState(() {
                     _hasError = false;

@@ -10,8 +10,9 @@ import 'verify_mnemonics_page.dart';
 
 class MnemonicsPage extends StatefulWidget {
   final String mnemonics;
+  final bool viewMode;
 
-  const MnemonicsPage({Key? key, required this.mnemonics}) : super(key: key);
+  const MnemonicsPage({Key? key, required this.mnemonics, this.viewMode = false}) : super(key: key);
 
   @override
   MnemonicsPageState createState() => MnemonicsPageState();
@@ -33,19 +34,24 @@ class MnemonicsPageState extends State<MnemonicsPage> {
       appBar: AppBar(
         leading: const back_button.BackButton(),
         title: AutoSizeText(
-          texts.backup_phrase_generation_write_words,
+          (widget.viewMode) ? texts.mnemonics_confirmation_title : texts.backup_phrase_generation_write_words,
         ),
       ),
       body: MnemonicSeedList(mnemonicsList: _mnemonicsList),
       bottomNavigationBar: SingleButtonBottomBar(
-        text: texts.backup_phrase_warning_action_next,
+        text:
+            (widget.viewMode) ? texts.admin_login_dialog_action_ok : texts.backup_phrase_warning_action_next,
         onPressed: () {
-          Navigator.push(
-            context,
-            FadeInRoute(
-              builder: (_) => VerifyMnemonicsPage(widget.mnemonics),
-            ),
-          );
+          if (widget.viewMode) {
+            Navigator.pop(context);
+          } else {
+            Navigator.push(
+              context,
+              FadeInRoute(
+                builder: (_) => VerifyMnemonicsPage(widget.mnemonics),
+              ),
+            );
+          }
         },
       ),
     );

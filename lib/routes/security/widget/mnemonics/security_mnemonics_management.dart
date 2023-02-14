@@ -1,8 +1,10 @@
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/mnemonics_page.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/widgets/designsystem/switch/simple_switch.dart';
+import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,31 +15,46 @@ class SecurityMnemonicsManagement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AccountBloc accountBloc = context.read();
+    final texts = context.texts();
+    final themeData = Theme.of(context);
 
-    return StreamBuilder<AccountState>(
-      stream: accountBloc.stream,
-      builder: (context, accountStateSnapshot) {
-        if (!accountStateSnapshot.hasData) {
-          return Container();
-        }
-        final accountState = accountStateSnapshot.data!;
-
-        return SimpleSwitch(
-          text: "Verify Mnemonics",
-          switchValue: accountState.verificationStatus == VerificationStatus.VERIFIED,
-          onChanged: (bool value) async {
-            if (value) {
-              await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then(
-                    (accountMnemonic) => Navigator.pushNamed(
-                      context,
-                      "/mnemonics",
-                      arguments: accountMnemonic,
+    return BlocBuilder<AccountBloc, AccountState>(
+      builder: (context, account) {
+        return ListTile(
+          title: Text(
+            texts.mnemonics_confirmation_title,
+            style: themeData.primaryTextTheme.titleMedium?.copyWith(
+              color: Colors.white,
+            ),
+            maxLines: 1,
+          ),
+          trailing: const Icon(
+            Icons.keyboard_arrow_right,
+            color: Colors.white,
+            size: 30.0,
+          ),
+          onTap: () async {
+            await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then(
+              (accountMnemonic) {
+                if (account.verificationStatus == VerificationStatus.UNVERIFIED) {
+                  Navigator.pushNamed(
+                    context,
+                    '/mnemonics',
+                    arguments: accountMnemonic,
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    FadeInRoute(
+                      builder: (context) => MnemonicsPage(
+                        mnemonics: accountMnemonic!,
+                        viewMode: true,
+                      ),
                     ),
                   );
-            } else {
-              return;
-            }
+                }
+              },
+            );
           },
         );
       },

@@ -2,7 +2,6 @@ import 'package:c_breez/handlers/check_version_handler.dart';
 import 'package:c_breez/handlers/connectivity_handler.dart';
 import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/handlers/payment_result_handler.dart';
-import 'package:c_breez/handlers/verify_mnemonics_handler.dart';
 import 'package:c_breez/routes/home/account_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/home_app_bar.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_actions_bar.dart';
@@ -51,7 +50,6 @@ class HomeState extends State<Home> with AutoLockMixin {
     checkVersionDialog(context, context.read());
     ConnectivityHandler(context, context.read());
     PaymentResultHandler(context, context.read(), context.read());
-    MnemonicsVerificationHandler(context, context.read());
   }
 
   @override

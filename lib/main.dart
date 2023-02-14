@@ -26,7 +26,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'bloc/network/network_settings_bloc.dart';
-import 'config.dart';
 
 final _log = FimberLog("Main");
 
@@ -40,9 +39,7 @@ void main() async {
     );
     //initializeDateFormatting(Platform.localeName, null);
     BreezDateUtils.setupLocales();
-    await Firebase.initializeApp(
-      options: (await Config.instance()).firebaseOptions,
-    );
+    await Firebase.initializeApp();
     var injector = ServiceInjector();
     final breezLib = injector.breezLib;
     var appDir = await getApplicationDocumentsDirectory();

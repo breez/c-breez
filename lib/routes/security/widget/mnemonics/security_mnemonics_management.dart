@@ -20,9 +20,13 @@ class SecurityMnemonicsManagement extends StatelessWidget {
 
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, account) {
+        final isVerified = (account.verificationStatus == VerificationStatus.VERIFIED);
+
         return ListTile(
           title: Text(
-            texts.mnemonics_confirmation_title,
+            isVerified
+                ? texts.mnemonics_confirmation_view_backup_phrase
+                : texts.mnemonics_confirmation_verify_backup_phrase,
             style: themeData.primaryTextTheme.titleMedium?.copyWith(
               color: Colors.white,
             ),

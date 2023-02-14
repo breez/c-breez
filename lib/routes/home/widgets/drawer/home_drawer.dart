@@ -171,7 +171,7 @@ class HomeDrawerState extends State<HomeDrawer> {
       ),
       DrawerItemConfig(
         "/security",
-        texts.home_drawer_item_title_security,
+        texts.home_drawer_item_title_security_and_backup,
         "src/icon/security.png",
       ),
       ..._drawerConfigAdvancedFlavorItems(context),

@@ -116,8 +116,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "3331cdc548922d658e85d22c622993fdc63668da"
-      resolved-ref: "3331cdc548922d658e85d22c622993fdc63668da"
+      ref: bb02c0f843162a8fead43d7d1e84c762c82d8233
+      resolved-ref: bb02c0f843162a8fead43d7d1e84c762c82d8233
       url: "https://github.com/breez/Breez-Translations"
     source: git
     version: "1.0.0"
@@ -1679,5 +1679,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.19.0 <4.0.0"
+  dart: ">=2.19.0 <3.0.0"
   flutter: ">=3.3.10"

@@ -63,7 +63,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       paymentFiltersStream,
       _breezLib.nodeStateStream,
       (payments, paymentFilters, nodeState) {
-        return assembleAccountState(payments, paymentFilters, nodeState) ?? state;
+        return assembleAccountState(payments, paymentFilters, nodeState, state) ?? state;
       },
     );
   }

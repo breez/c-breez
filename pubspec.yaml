@@ -108,7 +108,6 @@ dependency_overrides:
   intl: ^0.18.0
   path: ^1.8.3
   test_api: ^0.4.18
-  vector_math: ^2.1.4
 
 flutter:
   uses-material-design: true

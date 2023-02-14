@@ -30,7 +30,7 @@ class MnemonicsConfirmationPageState extends State<MnemonicsConfirmationPage> {
         automaticallyImplyLeading: false,
         leading: const back_button.BackButton(),
         title: AutoSizeText(
-          texts.backup_phrase_generate,
+          texts.mnemonics_confirmation_title,
           maxLines: 1,
         ),
       ),
@@ -85,7 +85,7 @@ class MnemonicsInstructions extends StatelessWidget {
           minHeight: 96,
         ),
         child: Text(
-          texts.backup_phrase_instructions,
+          texts.mnemonics_confirmation_instructions,
           style: theme.mnemonicSeedInformationTextStyle,
           textAlign: TextAlign.center,
         ),

@@ -59,6 +59,7 @@ class SecurityPinManagement extends StatelessWidget {
                   ),
                 ),
               ),
+              const Divider(),
               const LocalAuthSwitch(),
             ],
           );

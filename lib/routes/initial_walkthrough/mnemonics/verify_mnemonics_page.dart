@@ -96,7 +96,7 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                 textAlign: TextAlign.center,
               ),
               SingleButtonBottomBar(
-                text: texts.backup_phrase_warning_action_backup,
+                text: texts.mnemonics_confirmation_action_verify,
                 onPressed: () {
                   setState(() {
                     _hasError = false;
@@ -104,7 +104,16 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                   if (_formKey.currentState!.validate() && !_hasError) {
                     final AccountBloc accountBloc = context.read();
                     accountBloc.verifyMnemonics();
-                    Navigator.popUntil(context, ModalRoute.withName("/security"));
+                    Navigator.of(context).popUntil((route) {
+                      bool shouldPop = false;
+                      // Pop to where the verification flow has started from,
+                      // which is either from "Verify Backup Phrase" option on Security page
+                      // or through WarningAction on Home page.
+                      if (route.settings.name == "/security" || route.settings.name == "/") {
+                        shouldPop = true;
+                      }
+                      return shouldPop;
+                    });
                   }
                 },
               ),

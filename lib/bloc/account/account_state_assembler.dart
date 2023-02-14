@@ -9,13 +9,14 @@ AccountState? assembleAccountState(
   List<Payment> payments,
   PaymentFilters paymentFilters,
   NodeState? nodeState,
+  AccountState state,
 ) {
   if (nodeState == null) {
     return null;
   }
 
   // return the new account state
-  return AccountState(
+  return state.copyWith(
     id: nodeState.id,
     initial: false,
     blockheight: nodeState.blockHeight,
@@ -31,5 +32,6 @@ AccountState? assembleAccountState(
     payments: payments,
     paymentFilters: paymentFilters,
     connectionStatus: ConnectionStatus.CONNECTED,
+    verificationStatus: state.verificationStatus,
   );
 }

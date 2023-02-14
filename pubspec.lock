@@ -45,10 +45,10 @@ packages:
     dependency: transitive
     description:
       name: args
-      sha256: "139d809800a412ebb26a3892da228b2d0ba36f0ef5d9a82166e5e52ec8d61611"
+      sha256: "4cab82a83ffef80b262ddedf47a0a8e56ee6fbf7fe21e6e768b02792034dd440"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.2"
+    version: "2.4.0"
   asn1lib:
     dependency: transitive
     description:
@@ -116,8 +116,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "9712a53bd3a079e95e5405fd1fafd5ccb7e8e855"
-      resolved-ref: "9712a53bd3a079e95e5405fd1fafd5ccb7e8e855"
+      ref: bb02c0f843162a8fead43d7d1e84c762c82d8233
+      resolved-ref: bb02c0f843162a8fead43d7d1e84c762c82d8233
       url: "https://github.com/breez/Breez-Translations"
     source: git
     version: "1.0.0"
@@ -359,10 +359,10 @@ packages:
     dependency: "direct main"
     description:
       name: extended_image
-      sha256: "5854d0d05ee0c687d1852af9db05f15cfe058520fa56f417075705c5bce965d4"
+      sha256: a6b738d9b8d5513be72c545cc3e9c5c451fbee77c8db3cbec7c32ae85b82fb93
       url: "https://pub.dev"
     source: hosted
-    version: "6.4.0"
+    version: "6.4.1"
   extended_image_library:
     dependency: transitive
     description:
@@ -781,10 +781,10 @@ packages:
     dependency: "direct main"
     description:
       name: image
-      sha256: "3686865febd85c57a632d87a0fb1f0a8a9ef602fdb68d909c3e9aa29ec70fd24"
+      sha256: "483a389d6ccb292b570c31b3a193779b1b0178e7eb571986d9a49904b6861227"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.13"
+    version: "4.0.15"
   image_cropper:
     dependency: "direct main"
     description:
@@ -1093,10 +1093,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_linux
-      sha256: ab0987bf95bc591da42dffb38c77398fc43309f0b9b894dcc5d6f40c4b26c379
+      sha256: "2e32f1640f07caef0d3cb993680f181c79e54a3827b997d5ee221490d131fbd9"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.7"
+    version: "2.1.8"
   path_provider_platform_interface:
     dependency: "direct main"
     description:
@@ -1658,10 +1658,10 @@ packages:
     dependency: transitive
     description:
       name: xdg_directories
-      sha256: bd512f03919aac5f1313eb8249f223bacf4927031bf60b02601f81f687689e86
+      sha256: ee1505df1426458f7f60aac270645098d318a8b4766d85fde75f76f2e21807d1
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0+3"
+    version: "1.0.0"
   xml:
     dependency: transitive
     description:
@@ -1679,5 +1679,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.19.0 <4.0.0"
+  dart: ">=2.19.0 <3.0.0"
   flutter: ">=3.3.10"

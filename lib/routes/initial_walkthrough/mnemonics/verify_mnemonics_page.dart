@@ -104,7 +104,13 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                   if (_formKey.currentState!.validate() && !_hasError) {
                     final AccountBloc accountBloc = context.read();
                     accountBloc.verifyMnemonics();
-                    Navigator.popUntil(context, ModalRoute.withName("/security"));
+                    Navigator.of(context).popUntil((route) {
+                      bool shouldPop = false;
+                      if (route.settings.name == "/security" || route.settings.name == "/") {
+                        shouldPop = true;
+                      }
+                      return shouldPop;
+                    });
                   }
                 },
               ),

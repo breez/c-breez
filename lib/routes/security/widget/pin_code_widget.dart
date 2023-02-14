@@ -55,7 +55,10 @@ class _PinCodeWidgetState extends State<PinCodeWidget> with SingleTickerProvider
               child: SvgPicture.asset(
                 "src/images/logo-color.svg",
                 width: size.width / 3,
-                color: Colors.white,
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcATop,
+                ),
               ),
             ),
           ),

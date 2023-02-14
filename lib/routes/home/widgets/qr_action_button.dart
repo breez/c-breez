@@ -31,7 +31,10 @@ class QrActionButton extends StatelessWidget {
             onPressed: (connected) ? () => _scanBarcode(context) : null,
             child: SvgPicture.asset(
               "src/icon/qr_scan.svg",
-              color: connected ? theme.BreezColors.white[500] : Theme.of(context).disabledColor,
+              colorFilter: ColorFilter.mode(
+                connected ? theme.BreezColors.white[500]! : Theme.of(context).disabledColor,
+                BlendMode.srcATop,
+              ),
               fit: BoxFit.contain,
               width: 24.0,
               height: 24.0,

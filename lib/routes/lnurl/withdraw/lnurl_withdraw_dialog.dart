@@ -56,6 +56,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
             controller.addStatusListener((status) {
               _log.v("Animation status $status");
               if (status == AnimationStatus.dismissed && mounted) {
+                finishCalled = true;
                 widget.onFinish(result);
               }
             });

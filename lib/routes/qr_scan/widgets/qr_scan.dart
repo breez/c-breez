@@ -20,6 +20,7 @@ class QRScanState extends State<QRScan> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   var popped = false;
   MobileScannerController cameraController = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
     facing: CameraFacing.back,
     torchEnabled: false,
   );
@@ -40,18 +41,20 @@ class QRScanState extends State<QRScan> {
                   flex: 5,
                   child: MobileScanner(
                     key: qrKey,
-                    allowDuplicates: false,
                     controller: cameraController,
-                    onDetect: (barcode, args) {
-                      _log.i("Barcode detected: $barcode");
-                      if (popped || !mounted) return;
-                      final code = barcode.rawValue;
-                      if (code == null) {
-                        _log.w("Failed to scan QR code.");
-                      } else {
-                        popped = true;
-                        _log.i("Popping read QR code $code");
-                        Navigator.of(context).pop(code);
+                    onDetect: (capture) {
+                      final List<Barcode> barcodes = capture.barcodes;
+                      for (final barcode in barcodes) {
+                        _log.i("Barcode detected: $barcode");
+                        if (popped || !mounted) return;
+                        if (barcode.rawValue == null) {
+                          _log.w("Failed to scan QR code.");
+                        } else {
+                          popped = true;
+                          final String? code = barcode.rawValue;
+                          _log.i("Popping read QR code $code");
+                          Navigator.of(context).pop(code);
+                        }
                       }
                     },
                   ),
@@ -95,7 +98,10 @@ class ImagePickerButton extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 32, 24, 0),
       icon: SvgPicture.asset(
         "src/icon/image.svg",
-        color: Colors.white,
+        colorFilter: const ColorFilter.mode(
+          Colors.white,
+          BlendMode.srcATop,
+        ),
         width: 32,
         height: 32,
       ),

@@ -53,7 +53,10 @@ class _UnknownAvatar extends StatelessWidget {
       radius: radius,
       child: SvgPicture.asset(
         "src/icon/alien.svg",
-        color: const Color.fromARGB(255, 0, 166, 68),
+        colorFilter: const ColorFilter.mode(
+          Color.fromARGB(255, 0, 166, 68),
+          BlendMode.srcATop,
+        ),
         width: 0.70 * radius * 2,
         height: 0.70 * radius * 2,
       ),

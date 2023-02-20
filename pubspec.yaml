@@ -22,7 +22,7 @@ dependencies:
   breez_translations:
     git:
       url: https://github.com/breez/Breez-Translations
-      ref: bb02c0f843162a8fead43d7d1e84c762c82d8233
+      ref: b8d93a18c9511fcceed42de5d1cef70cf66bbfc0
   clipboard_watcher:
     git:
       url: https://github.com/ademar111190/clipboard_watcher
@@ -41,11 +41,11 @@ dependencies:
   # Doesn't support: Linux Mac Windows
   flutter_fimber: ^0.6.5
   # Doesn't support: Linux Windows
-  firebase_core: ^2.5.0
+  firebase_core: ^2.6.1
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.0.12
+  firebase_dynamic_links: ^5.0.14
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.2.2
+  firebase_messaging: ^14.2.4
   flutter_bloc: ^8.1.2
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
@@ -67,7 +67,7 @@ dependencies:
   # Doesn't support: Linux Mac Windows
   image_cropper: ^3.0.1
   # Doesn't support: Linux Mac Windows
-  image_picker: ^0.8.6+1
+  image_picker: ^0.8.6+2
   ini: ^2.1.0
   intl: ^0.18.0
   # Doesn't support: Linux Mac

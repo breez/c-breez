@@ -1,5 +1,4 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class SuccessfulPaymentMessage extends StatelessWidget {

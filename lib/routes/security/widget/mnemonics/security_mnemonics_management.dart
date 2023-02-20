@@ -25,7 +25,7 @@ class SecurityMnemonicsManagement extends StatelessWidget {
         return ListTile(
           title: Text(
             isVerified
-                ? texts.mnemonics_confirmation_view_backup_phrase
+                ? texts.mnemonics_confirmation_display_backup_phrase
                 : texts.mnemonics_confirmation_verify_backup_phrase,
             style: themeData.primaryTextTheme.titleMedium?.copyWith(
               color: Colors.white,

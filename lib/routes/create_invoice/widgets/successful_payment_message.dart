@@ -27,14 +27,14 @@ class SuccessfulPaymentMessage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 40),
           child: Container(
-            decoration: BoxDecoration(
-              color: themeData.dialogTheme.backgroundColor,
+            decoration: const BoxDecoration(
+              color: Colors.white, // Tick Color
               shape: BoxShape.circle,
             ),
             child: Image(
               image: const AssetImage("src/icon/ic_done.png"),
               height: 48.0,
-              color: themeData.isLightTheme ? const Color.fromRGBO(0, 133, 251, 1.0) : Colors.white,
+              color: themeData.primaryColorLight, // Circle Color
             ),
           ),
         ),

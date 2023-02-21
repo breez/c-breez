@@ -84,16 +84,22 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     String? image,
     bool? registrationRequested,
     bool? hideBalance,
+    AppMode? appMode,
+    bool? expandPreferences,
   }) {
-    _log.v("updateProfile $name $color $animal $image $registrationRequested $hideBalance");
+    _log.v(
+        "updateProfile $name $color $animal $image $registrationRequested $hideBalance $appMode $expandPreferences");
     var profile = state.profileSettings;
     profile = profile.copyWith(
-        name: name ?? profile.name,
-        color: color ?? profile.color,
-        animal: animal ?? profile.animal,
-        image: image ?? profile.image,
-        registrationRequested: registrationRequested ?? profile.registrationRequested,
-        hideBalance: hideBalance ?? profile.hideBalance);
+      name: name ?? profile.name,
+      color: color ?? profile.color,
+      animal: animal ?? profile.animal,
+      image: image ?? profile.image,
+      registrationRequested: registrationRequested ?? profile.registrationRequested,
+      hideBalance: hideBalance ?? profile.hideBalance,
+      appMode: appMode ?? profile.appMode,
+      expandPreferences: expandPreferences ?? profile.expandPreferences,
+    );
     emit(state.copyWith(profileSettings: profile));
   }
 

@@ -10,6 +10,7 @@ class UserProfileSettings {
   final bool registrationRequested;
   final bool hideBalance;
   final AppMode appMode;
+  final bool expandPreferences;
 
   const UserProfileSettings._({
     this.userID,
@@ -21,6 +22,7 @@ class UserProfileSettings {
     this.registrationRequested = false,
     this.hideBalance = false,
     this.appMode = AppMode.balance,
+    this.expandPreferences = true,
   });
 
   UserProfileSettings.initial() : this._();
@@ -34,6 +36,8 @@ class UserProfileSettings {
     String? userID,
     bool? registrationRequested,
     bool? hideBalance,
+    AppMode? appMode,
+    bool? expandPreferences,
   }) {
     return UserProfileSettings._(
       userID: userID ?? this.userID,
@@ -44,6 +48,8 @@ class UserProfileSettings {
       token: token ?? this.token,
       registrationRequested: registrationRequested ?? this.registrationRequested,
       hideBalance: hideBalance ?? this.hideBalance,
+      appMode: appMode ?? this.appMode,
+      expandPreferences: expandPreferences ?? this.expandPreferences,
     );
   }
 
@@ -63,7 +69,8 @@ class UserProfileSettings {
         image = json['image'],
         registrationRequested = json['registrationRequested'] ?? json['token'] != null,
         hideBalance = json['hideBalance'] ?? false,
-        appMode = AppMode.values[json["appMode"] ?? 0];
+        appMode = AppMode.values[json["appMode"] ?? 0],
+        expandPreferences = json['expandPreferences'] ?? true;
 
   Map<String, dynamic> toJson() => {
         'userID': userID,
@@ -75,5 +82,6 @@ class UserProfileSettings {
         'registrationRequested': registrationRequested,
         'hideBalance': hideBalance,
         'appMode': appMode.index,
+        'expandPreferences': expandPreferences,
       };
 }

@@ -31,7 +31,7 @@ class HomeDrawer extends StatefulWidget {
 class HomeDrawerState extends State<HomeDrawer> {
   final Set<String> _hiddenRoutes = {};
   final List<DrawerItemConfig> _screens = [
-    const DrawerItemConfig("breezHome", "Breez", ""),
+    const DrawerItemConfig("breezHome", "Breez Cloud", ""),
   ];
   final Map<String, Widget> _screenBuilders = {};
 

@@ -42,12 +42,14 @@ class DrawerItemConfigGroup {
   final String? groupTitle;
   final String? groupAssetImage;
   final bool withDivider;
+  final bool isExpanded;
 
   const DrawerItemConfigGroup(
     this.items, {
     this.groupTitle,
     this.groupAssetImage,
     this.withDivider = true,
+    this.isExpanded = true,
   });
 }
 
@@ -131,6 +133,7 @@ class BreezNavigationDrawer extends StatelessWidget {
           title: group.groupTitle ?? "",
           icon: group.groupAssetImage == null ? null : AssetImage(group.groupAssetImage!),
           controller: _scrollController,
+          isExpanded: group.isExpanded,
         )
       ];
     }
@@ -375,6 +378,7 @@ class _ExpansionTile extends StatelessWidget {
   final String title;
   final AssetImage? icon;
   final ScrollController controller;
+  final bool isExpanded;
 
   const _ExpansionTile({
     Key? key,
@@ -382,6 +386,7 @@ class _ExpansionTile extends StatelessWidget {
     required this.title,
     required this.icon,
     required this.controller,
+    this.isExpanded = true,
   }) : super(key: key);
 
   @override
@@ -402,7 +407,7 @@ class _ExpansionTile extends StatelessWidget {
                   style: theme.drawerItemTextStyle,
                 ),
         ),
-        initiallyExpanded: true,
+        initiallyExpanded: isExpanded,
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: (icon?.assetName ?? "") == ""
@@ -425,6 +430,7 @@ class _ExpansionTile extends StatelessWidget {
                 ))
             .toList(),
         onExpansionChanged: (isExpanded) {
+          context.read<UserProfileBloc>().updateProfile(expandPreferences: isExpanded);
           if (isExpanded) {
             Timer(
               const Duration(milliseconds: 200),

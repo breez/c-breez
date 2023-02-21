@@ -84,6 +84,7 @@ class HomeDrawerState extends State<HomeDrawer> {
           _filterItems(_drawerConfigToFilter(context)),
           groupTitle: texts.home_drawer_item_title_preferences,
           groupAssetImage: "",
+          isExpanded: settings.expandPreferences,
         ),
       ],
       (screenName) {

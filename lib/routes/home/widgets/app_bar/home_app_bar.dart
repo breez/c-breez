@@ -34,15 +34,13 @@ class HomeAppBar extends AppBar {
           title: IconButton(
             padding: EdgeInsets.zero,
             icon: SvgPicture.asset(
-              "src/images/logo-color.svg",
-              height: 23.5,
-              width: 62.7,
+              "src/images/cloud-logo-color.svg",
               colorFilter: ColorFilter.mode(
                 themeData.appBarTheme.actionsIconTheme!.color!,
                 BlendMode.srcATop,
               ),
             ),
-            iconSize: 64,
+            iconSize: 128,
             onPressed: () => scaffoldKey.currentState?.openDrawer(),
           ),
           iconTheme: const IconThemeData(

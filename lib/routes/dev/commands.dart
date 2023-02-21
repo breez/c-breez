@@ -7,6 +7,7 @@ import 'package:c_breez/routes/dev/commands_list.dart';
 import 'package:c_breez/routes/ui_test/ui_test_page.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';
@@ -50,11 +51,12 @@ class DevelopersView extends StatelessWidget {
               color: themeData.iconTheme.color,
             ),
             itemBuilder: (context) => [
-              Choice(
-                title: "Export Keys",
-                icon: Icons.phone_android,
-                function: _exportKeys,
-              ),
+              if (kDebugMode)
+                Choice(
+                  title: "Export Keys",
+                  icon: Icons.phone_android,
+                  function: _exportKeys,
+                ),
               Choice(
                 title: "Test UI Widgets",
                 icon: Icons.phone_android,

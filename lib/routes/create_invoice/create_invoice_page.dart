@@ -20,9 +20,12 @@ import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+final _log = FimberLog("CreateInvoicePage");
 
 class CreateInvoicePage extends StatefulWidget {
   final Function(LNURLWithdrawPageResult? result)? onFinish;
@@ -158,6 +161,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     BuildContext context,
     LnUrlWithdrawRequestData data,
   ) async {
+    _log.v("Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
+        "min=${data.minWithdrawable}, max=${data.maxWithdrawable}");
     final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
 
     final navigator = Navigator.of(context);
@@ -179,6 +184,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   }
 
   Future _createInvoice(BuildContext context) async {
+    _log.v("Create invoice: description=${_descriptionController.text}, amount=${_amountController.text}");
     final navigator = Navigator.of(context);
     final currentRoute = ModalRoute.of(navigator.context)!;
     final accountBloc = context.read<AccountBloc>();
@@ -192,6 +198,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     Widget dialog = FutureBuilder(
       future: invoice,
       builder: (BuildContext context, AsyncSnapshot<LNInvoice> invoice) {
+        _log.v("Building QrCodeDialog with invoice: ${invoice.data}, error: ${invoice.error}");
         return QrCodeDialog(
           invoice.data,
           invoice.error,
@@ -215,6 +222,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     ModalRoute currentRoute,
     NavigatorState navigator,
   ) {
+    _log.v("Payment finished: $result");
     if (result == true) {
       if (currentRoute.isCurrent) {
         navigator.push(

@@ -72,10 +72,10 @@ class CredentialsManager {
     try {
       final Directory tempDir = await getTemporaryDirectory();
       var keysDir = tempDir.createTempSync("keys");
-      final File credentialsFile = File('${keysDir.path}/creds');
+      final File credentialsFile = await File('${keysDir.path}/creds').create(recursive: true);
       Credentials credentials = await restoreCredentials();
       credentialsFile.writeAsString(jsonEncode(credentials.toGreenlightCredentialsJson()));
-      final File mnemonicFile = File('${keysDir.path}/phrase');
+      final File mnemonicFile = await File('${keysDir.path}/phrase').create(recursive: true);
       mnemonicFile.writeAsString(credentials.mnemonic);
       return [credentialsFile, mnemonicFile];
     } catch (e) {

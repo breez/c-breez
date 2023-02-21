@@ -12,9 +12,12 @@ import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
+
+final _log = FimberLog("QrCodeDialog");
 
 class QrCodeDialog extends StatefulWidget {
   final LNInvoice? _invoice;
@@ -65,6 +68,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
           }
         });
       }).catchError((e) {
+        _log.w("Failed to track payment", ex: e);
         showFlushbar(context, message: extractExceptionMessage(e));
         onFinish(false);
       });
@@ -128,7 +132,10 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
               AnimatedCrossFade(
                 firstChild: LoadingOrError(
                   error: widget.error,
-                  displayErrorMessage: displayErrorMessage,
+                  displayErrorMessage: extractExceptionMessage(
+                    widget.error ?? texts.qr_code_dialog_warning_message_error,
+                    texts: texts,
+                  ),
                 ),
                 secondChild: widget._invoice == null
                     ? const SizedBox()
@@ -175,21 +182,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     });
   }
 
-  String get displayErrorMessage {
-    final texts = context.texts();
-    const osErrorRegex = r'((?<=\(OS Error\: )(.*?)(?=\,))';
-    const rpcErrorRegex = r'((?<=message\: \")(.*?)(?=\"))';
-    const defaultErrorRegex = r'((?<=message\: )(.*?)(?=\:))';
-    final grouped = RegExp('($osErrorRegex|$rpcErrorRegex|$defaultErrorRegex)');
-
-    String? displayMessage = widget.error?.toString();
-    if (displayMessage != null) {
-      displayMessage = grouped.hasMatch(displayMessage) ? grouped.allMatches(displayMessage).last[0] : null;
-    }
-    return displayMessage ??= texts.qr_code_dialog_warning_message_error;
-  }
-
   void onFinish(dynamic result) {
+    _log.v("onFinish $result, mounted: $mounted, _currentRoute: ${_currentRoute?.isCurrent}");
     if (mounted && _currentRoute != null && _currentRoute!.isCurrent) {
       Navigator.removeRoute(context, _currentRoute!);
     }

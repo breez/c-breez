@@ -1,15 +1,23 @@
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:flutter_fimber/flutter_fimber.dart';
 import "package:flutter_rust_bridge/flutter_rust_bridge.dart";
 
 final _log = FimberLog("exceptions");
 
-String extractExceptionMessage(Object exception) {
+String extractExceptionMessage(
+  Object exception, {
+  // pass BreezTranslations if you want to replace the error message with a localized one
+  BreezTranslations? texts,
+}) {
   _log.v("extractExceptionMessage: $exception");
   if (exception is FfiException) {
     if (exception.message.isNotEmpty) {
-      final message = exception.message.replaceAll("\n", " ").trim();
-      final innerErrorMessage = _extractInnerErrorMessage(message)?.trim();
-      return innerErrorMessage ?? message;
+      var message = exception.message.replaceAll("\n", " ").trim();
+      message = _extractInnerErrorMessage(message)?.trim() ?? message;
+      if (texts != null) {
+        message = _localizedExceptionMessage(texts, message);
+      }
+      return message;
     }
   }
   return _extractInnerErrorMessage(exception.toString()) ?? exception.toString();
@@ -23,4 +31,17 @@ String? _extractInnerErrorMessage(String content) {
   return innerMessageRegex.stringMatch(content) ??
       messageRegex.stringMatch(content) ??
       causedByRegex.stringMatch(content);
+}
+
+String _localizedExceptionMessage(
+  BreezTranslations texts,
+  String originalMessage,
+) {
+  _log.v("localizedExceptionMessage: $originalMessage");
+  switch (originalMessage.toLowerCase()) {
+    case "transport error":
+      return texts.generic_network_error;
+    default:
+      return originalMessage;
+  }
 }

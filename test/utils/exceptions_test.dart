@@ -1,3 +1,4 @@
+import 'package:breez_translations/generated/breez_translations_en.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -52,6 +53,20 @@ void main() {
     expect(
       message,
       'connection closed before message completed',
+    );
+  });
+
+  test("network error", () {
+    final message = extractExceptionMessage(
+      const FfiException(
+        "RESULT_ERROR",
+        "transport error",
+      ),
+      texts: BreezTranslationsEn(),
+    );
+    expect(
+      message,
+      BreezTranslationsEn().generic_network_error,
     );
   });
 }

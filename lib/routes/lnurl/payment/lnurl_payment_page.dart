@@ -102,14 +102,16 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   ),
                 )
               ],
+              AmountFormField(
+                context: context,
+                texts: texts,
+                bitcoinCurrency: currencyState.bitcoinCurrency,
+                controller: _amountController,
+                validatorFn: validatePayment,
+                enabled: !fixedAmount,
+                readOnly: fixedAmount,
+              ),
               if (!fixedAmount) ...[
-                AmountFormField(
-                  context: context,
-                  texts: texts,
-                  bitcoinCurrency: currencyState.bitcoinCurrency,
-                  controller: _amountController,
-                  validatorFn: validatePayment,
-                ),
                 Padding(
                   padding: const EdgeInsets.only(
                     top: 8,

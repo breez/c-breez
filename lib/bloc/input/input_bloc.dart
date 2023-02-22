@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -20,19 +20,27 @@ class InputBloc extends Cubit<InputState> {
   final BreezBridge _breezLib;
   final LightningLinksService _lightningLinks;
   final Device _device;
+  final InputParser _inputParser;
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InputBloc(this._breezLib, this._lightningLinks, this._device) : super(InputState()) {
+  InputBloc(
+    this._breezLib,
+    this._lightningLinks,
+    this._device,
+    this._inputParser,
+  ) : super(InputState()) {
     _initializeInputBloc();
   }
 
   void _initializeInputBloc() async {
+    _log.d("initializeInputBloc");
     await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
     _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
   void addIncomingInput(String bolt11) {
+    _log.v("addIncomingInput: $bolt11");
     _decodeInvoiceController.add(bolt11);
   }
 
@@ -45,23 +53,27 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Stream<InputState?> _watchIncomingInvoices() {
+    _log.d("watchIncomingInvoices");
     return Rx.merge([
-      _decodeInvoiceController.stream,
-      _lightningLinks.linksNotifications,
-      _device.clipboardStream.distinct().skip(1),
+      _decodeInvoiceController.stream
+          .doOnData((event) => _log.v("decodeInvoiceController: $event")),
+      _lightningLinks.linksNotifications
+          .doOnData((event) => _log.v("lightningLinks: $event")),
+      _device.clipboardStream.distinct().skip(1)
+          .doOnData((event) => _log.v("clipboardStream: $event")),
     ]).asyncMap((s) async {
       _log.v("Incoming input: '$s'");
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
       try {
-        final command = await breez_sdk.InputParser().parse(s);
+        final command = await _inputParser.parse(s);
         _log.v("Parsed command: '${command.protocol}'");
         switch (command.protocol) {
-          case breez_sdk.InputProtocol.paymentRequest:
+          case InputProtocol.paymentRequest:
             return handlePaymentRequest(s, command);
-          case breez_sdk.InputProtocol.lnurl:
+          case InputProtocol.lnurl:
             return InputState(protocol: command.protocol, inputData: command.decoded as LNURLParseResult);
-          case breez_sdk.InputProtocol.nodeID:
+          case InputProtocol.nodeID:
             return InputState(protocol: command.protocol, inputData: command.decoded);
           default:
             return InputState(isLoading: false);
@@ -73,8 +85,8 @@ class InputBloc extends Cubit<InputState> {
     }).where((inputState) => inputState != null);
   }
 
-  Future<InputState?> handlePaymentRequest(String raw, breez_sdk.ParsedInput command) async {
-    final lnInvoice = command.decoded as breez_sdk.LNInvoice;
+  Future<InputState?> handlePaymentRequest(String raw, ParsedInput command) async {
+    final lnInvoice = command.decoded as LNInvoice;
     NodeState? nodeState = await _breezLib.getNodeState();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
       return null;

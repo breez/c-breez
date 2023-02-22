@@ -1,8 +1,10 @@
 import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/keychain.dart';
+import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/services/notifications.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,28 +17,34 @@ import 'breez_bridge_mock.dart';
 import 'breez_server_mock.dart';
 import 'device_mock.dart';
 import 'firebase_notifications_mock.dart';
+import 'input_parser_mock.dart';
 import 'key_chain_mock.dart';
+import 'lightning_links_service_mock.dart';
 import 'preferences_mock.dart';
 import 'shared_preferences_mock.dart';
 
 class InjectorMock extends Mock implements ServiceInjector {
+  final sharedPreferencesMock = SharedPreferencesMock();
+
+  @override
+  Future<SharedPreferences> get sharedPreferences async => sharedPreferencesMock;
+
+  final deviceMock = DeviceMock();
+
+  @override
+  Device get device => deviceMock;
+
+  final firebaseNotificationsMock = FirebaseNotificationsMock();
+
+  @override
+  Notifications get notifications => firebaseNotificationsMock;
+
+  final keyChainMock = KeyChainMock();
+
+  @override
+  KeyChain get keychain => keyChainMock;
+
   MockClientHandler? mockHandler;
-
-  @override
-  Future<SharedPreferences> get sharedPreferences async {
-    return SharedPreferencesMock();
-  }
-
-  @override
-  Device get device => DeviceMock();
-
-  @override
-  Notifications get notifications => FirebaseNotificationsMock();
-
-  KeyChain mockKeyChain = KeyChainMock();
-
-  @override
-  KeyChain get keychain => mockKeyChain;
 
   @override
   Client get client {
@@ -44,12 +52,28 @@ class InjectorMock extends Mock implements ServiceInjector {
     return MockClient(handler);
   }
 
-  @override
-  BreezServer get breezServer => BreezServerMock();
+  final breezServerMock = BreezServerMock();
 
   @override
-  BreezBridge get breezLib => BreezBridgeMock();
+  BreezServer get breezServer => breezServerMock;
+
+  final breezLibMock = BreezBridgeMock();
 
   @override
-  Preferences get preferences => PreferencesMock();
+  BreezBridge get breezLib => breezLibMock;
+
+  final preferencesMock = PreferencesMock();
+
+  @override
+  Preferences get preferences => preferencesMock;
+
+  final lightningLinksMock = LightningLinksServiceMock();
+
+  @override
+  LightningLinksService get lightningLinks => lightningLinksMock;
+
+  final inputParserMock = InputParserMock();
+
+  @override
+  InputParser get inputParser => inputParserMock;
 }

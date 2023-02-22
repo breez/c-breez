@@ -2,12 +2,10 @@ import 'dart:convert';
 
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
-import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -149,43 +147,12 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               return themeData.textTheme.labelLarge!.color!;
             }),
           ),
-          onPressed: () async {
-            final AccountBloc accountBloc = context.read<AccountBloc>();
-            final navigator = Navigator.of(context);
-            var loaderRoute = createLoaderRoute(context);
-            navigator.push(loaderRoute);
-
-            try {
-              final amount = widget.requestData.maxSendable ~/ 1000;
-              _log.v("LNURL payment of $amount sats where "
-                  "min is ${widget.requestData.minSendable} msats "
-                  "and max is ${widget.requestData.maxSendable} mstas.");
-              final resp = await accountBloc.lnurlPay(
-                amount: amount,
-                reqData: widget.requestData,
-              );
-              navigator.removeRoute(loaderRoute);
-              if (resp is sdk.LnUrlPayResult_EndpointSuccess) {
-                _log.v("LNURL payment success, action: ${resp.data}");
-                navigator.pop(LNURLPaymentPageResult(
-                  successAction: resp.data,
-                ));
-              } else if (resp is sdk.LnUrlPayResult_EndpointError) {
-                _log.v("LNURL payment failed: ${resp.data.reason}");
-                navigator.pop(LNURLPaymentPageResult(
-                  error: resp.data.reason,
-                ));
-              } else {
-                _log.w("Unknown response from lnurlPay: $resp");
-                navigator.pop(LNURLPaymentPageResult(
-                  error: texts.lnurl_payment_page_unknown_error,
-                ));
-              }
-            } catch (e) {
-              _log.w("Error sending LNURL payment", ex: e);
-              navigator.removeRoute(loaderRoute);
-              navigator.pop(LNURLPaymentPageResult(error: e));
-            }
+          onPressed: () {
+            final amount = widget.requestData.maxSendable ~/ 1000;
+            _log.v("LNURL payment of $amount sats where "
+                "min is ${widget.requestData.minSendable} msats "
+                "and max is ${widget.requestData.maxSendable} msats.");
+            Navigator.pop(context, LNURLPaymentInfo(amount: amount));
           },
           child: Text(
             texts.spontaneous_payment_action_pay,

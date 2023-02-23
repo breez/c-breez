@@ -108,4 +108,11 @@ class BreezBridgeMock extends Mock implements BreezBridge {
 
   @override
   Stream<Payment> get paymentResultStream => paymentResultController.stream;
+
+  Map<String, InputType> parseInputAnswer = {};
+
+  @override
+  Future<InputType> parseInput({required String input}) async {
+    return parseInputAnswer[input]!;
+  }
 }

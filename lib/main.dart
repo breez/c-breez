@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -61,12 +60,7 @@ void main() async {
             ),
           ),
           BlocProvider<InputBloc>(
-            create: (BuildContext context) => InputBloc(
-              breezLib,
-              injector.lightningLinks,
-              injector.device,
-              injector.inputParser,
-            ),
+            create: (BuildContext context) => InputBloc(breezLib, injector.lightningLinks, injector.device),
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),

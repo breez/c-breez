@@ -1,5 +1,4 @@
 import 'package:breez_sdk/breez_bridge.dart';
-import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';
@@ -17,7 +16,6 @@ import 'breez_bridge_mock.dart';
 import 'breez_server_mock.dart';
 import 'device_mock.dart';
 import 'firebase_notifications_mock.dart';
-import 'input_parser_mock.dart';
 import 'key_chain_mock.dart';
 import 'lightning_links_service_mock.dart';
 import 'preferences_mock.dart';
@@ -71,9 +69,4 @@ class InjectorMock extends Mock implements ServiceInjector {
 
   @override
   LightningLinksService get lightningLinks => lightningLinksMock;
-
-  final inputParserMock = InputParserMock();
-
-  @override
-  InputParser get inputParser => inputParserMock;
 }

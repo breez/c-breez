@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
-import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
@@ -25,7 +24,6 @@ class ServiceInjector {
   // breez sdk
   BreezBridge? _breezBridge;
   LightningLinksService? _lightningLinksService;
-  InputParser? _inputParser;
 
   Device? _device;
   Future<SharedPreferences>? _sharedPreferences = SharedPreferences.getInstance();
@@ -79,6 +77,4 @@ class ServiceInjector {
   Preferences get preferences {
     return _preferences ??= Preferences();
   }
-
-  InputParser get inputParser => _inputParser ??= InputParser();
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -10,7 +9,6 @@ import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
@@ -20,7 +18,6 @@ class InputBloc extends Cubit<InputState> {
   final BreezBridge _breezLib;
   final LightningLinksService _lightningLinks;
   final Device _device;
-  final InputParser _inputParser;
 
   final _decodeInvoiceController = StreamController<String>();
 
@@ -28,7 +25,6 @@ class InputBloc extends Cubit<InputState> {
     this._breezLib,
     this._lightningLinks,
     this._device,
-    this._inputParser,
   ) : super(InputState()) {
     _initializeInputBloc();
   }
@@ -66,18 +62,20 @@ class InputBloc extends Cubit<InputState> {
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
       try {
-        final command = await _inputParser.parse(s);
-        _log.v("Parsed command: '${command.protocol}'");
-        switch (command.protocol) {
-          case InputProtocol.paymentRequest:
-            return handlePaymentRequest(s, command);
-          case InputProtocol.lnurl:
-            return InputState(protocol: command.protocol, inputData: command.decoded as LNURLParseResult);
-          case InputProtocol.nodeID:
-            return InputState(protocol: command.protocol, inputData: command.decoded);
-          default:
-            return InputState(isLoading: false);
+        final inputType = await _breezLib.parseInput(input: s);
+        _log.v("Parsed inputType: '$inputType'");
+        if (inputType is InputType_LnUrlPay) {
+          return InputState(inputType: inputType, inputData: inputType.data);
+        } else if(inputType is InputType_NodeId){
+          return InputState(inputType: inputType, inputData: inputType.nodeId);
+        } else {
+          return InputState(isLoading: false);
         }
+        // TODO handle payment request, previous code:
+        // if (command) {
+        //   case InputProtocol.paymentRequest:
+        //     return handlePaymentRequest(s, command);
+        // }
       } catch (e) {
         _log.e("Failed to parse input", ex: e);
         return InputState(isLoading: false);
@@ -85,8 +83,7 @@ class InputBloc extends Cubit<InputState> {
     }).where((inputState) => inputState != null);
   }
 
-  Future<InputState?> handlePaymentRequest(String raw, ParsedInput command) async {
-    final lnInvoice = command.decoded as LNInvoice;
+  Future<InputState?> handlePaymentRequest(String raw, InputType inputType, LNInvoice lnInvoice) async {
     NodeState? nodeState = await _breezLib.getNodeState();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
       return null;
@@ -98,7 +95,7 @@ class InputBloc extends Cubit<InputState> {
         amountMsat: lnInvoice.amountMsat ?? 0,
         expiry: lnInvoice.expiry);
 
-    return InputState(protocol: command.protocol, inputData: invoice);
+    return InputState(inputType: inputType, inputData: invoice);
   }
 
   Stream<DecodedClipboardData> get decodedClipboardStream =>

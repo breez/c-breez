@@ -21,16 +21,22 @@ class InputBloc extends Cubit<InputState> {
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InputBloc(this._breezLib, this._lightningLinks, this._device) : super(InputState()) {
+  InputBloc(
+    this._breezLib,
+    this._lightningLinks,
+    this._device,
+  ) : super(InputState()) {
     _initializeInputBloc();
   }
 
   void _initializeInputBloc() async {
+    _log.d("initializeInputBloc");
     await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
     _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
   void addIncomingInput(String bolt11) {
+    _log.v("addIncomingInput: $bolt11");
     _decodeInvoiceController.add(bolt11);
   }
 
@@ -44,15 +50,18 @@ class InputBloc extends Cubit<InputState> {
 
   Stream<InputState?> _watchIncomingInvoices() {
     return Rx.merge([
-      _decodeInvoiceController.stream,
-      _lightningLinks.linksNotifications,
-      _device.clipboardStream.distinct().skip(1),
+      _decodeInvoiceController.stream.doOnData((event) => _log.v("decodeInvoiceController: $event")),
+      _lightningLinks.linksNotifications.doOnData((event) => _log.v("lightningLinks: $event")),
+      _device.clipboardStream.distinct().skip(1).doOnData((event) => _log.v("clipboardStream: $event")),
     ]).asyncMap((input) async {
       _log.v("Incoming input: '$input'");
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
       try {
-        return await _handleParsedInput(await _breezLib.parseInput(input: input));
+        final parsedInput = await _breezLib.parseInput(input: input);
+        // Todo: Merge these functions w/o sacrificing readability
+        _logParsedInput(parsedInput);
+        return await _handleParsedInput(parsedInput);
       } catch (e) {
         _log.e("Failed to parse input", ex: e);
         return InputState(isLoading: false);
@@ -73,11 +82,12 @@ class InputBloc extends Cubit<InputState> {
       return InputState(isLoading: false);
     }
     var invoice = Invoice(
-        bolt11: lnInvoice.bolt11,
-        paymentHash: lnInvoice.paymentHash,
-        description: lnInvoice.description ?? "",
-        amountMsat: lnInvoice.amountMsat ?? 0,
-        expiry: lnInvoice.expiry);
+      bolt11: lnInvoice.bolt11,
+      paymentHash: lnInvoice.paymentHash,
+      description: lnInvoice.description ?? "",
+      amountMsat: lnInvoice.amountMsat ?? 0,
+      expiry: lnInvoice.expiry,
+    );
 
     return InputState(inputType: InputType_Bolt11, inputData: invoice);
   }
@@ -93,6 +103,64 @@ class InputBloc extends Cubit<InputState> {
       return InputState(inputType: parsedInput.runtimeType, inputData: parsedInput);
     } else {
       return InputState(isLoading: false);
+    }
+  }
+
+  void _logParsedInput(InputType parsedInput) {
+    // Todo: Find a better way to serialize parsed input
+    _log.v("Parsed input type: '${parsedInput.runtimeType.toString()}");
+    if (parsedInput is InputType_BitcoinAddress) {
+      final btcAddressData = parsedInput.address;
+      _log.i(
+        "address: ${btcAddressData.address}\n"
+        "network: ${btcAddressData.network}\n"
+        "amountSat: ${btcAddressData.amountSat}\n"
+        "label: ${btcAddressData.label}\n"
+        "message: ${btcAddressData.message}",
+      );
+    } else if (parsedInput is InputType_Bolt11) {
+      final lnInvoice = parsedInput.invoice;
+      _log.i(
+        "bolt11: ${lnInvoice.bolt11}\n"
+        "payeePubkey: ${lnInvoice.payeePubkey}\n"
+        "paymentHash: ${lnInvoice.paymentHash}\n"
+        "description: ${lnInvoice.description}\n"
+        "descriptionHash: ${lnInvoice.descriptionHash}\n"
+        "amountMsat: ${lnInvoice.amountMsat}\n"
+        "timestamp: ${lnInvoice.timestamp}\n"
+        "expiry: ${lnInvoice.expiry}\n"
+        "routingHints: ${lnInvoice.routingHints}\n"
+        "paymentSecret: ${lnInvoice.paymentSecret}",
+      );
+    } else if (parsedInput is InputType_LnUrlPay) {
+      final lnUrlPayReqData = parsedInput.data;
+      _log.i(
+        "${lnUrlPayReqData.toString()}\n"
+        "callback: ${lnUrlPayReqData.callback}\n"
+        "minSendable: ${lnUrlPayReqData.minSendable}\n"
+        "maxSendable: ${lnUrlPayReqData.maxSendable}\n"
+        "metadataStr: ${lnUrlPayReqData.metadataStr}\n"
+        "commentAllowed: ${lnUrlPayReqData.commentAllowed}",
+      );
+    } else if (parsedInput is InputType_LnUrlWithdraw) {
+      final lnUrlWithdrawReqData = parsedInput.data;
+      _log.i(
+        "callback: ${lnUrlWithdrawReqData.callback}\n"
+        "k1: ${lnUrlWithdrawReqData.k1}\n"
+        "defaultDescription: ${lnUrlWithdrawReqData.defaultDescription}\n"
+        "minWithdrawable: ${lnUrlWithdrawReqData.minWithdrawable}\n"
+        "maxWithdrawable: ${lnUrlWithdrawReqData.maxWithdrawable}",
+      );
+    } else if (parsedInput is InputType_LnUrlAuth) {
+      final lnUrlAuthReqData = parsedInput.data;
+      _log.i("k1: ${lnUrlAuthReqData.k1}");
+    } else if (parsedInput is InputType_LnUrlError) {
+      final lnUrlErrorData = parsedInput.data;
+      _log.i("reason: ${lnUrlErrorData.reason}");
+    } else if (parsedInput is InputType_NodeId) {
+      _log.i("nodeId: ${parsedInput.nodeId}");
+    } else if (parsedInput is InputType_Url) {
+      _log.i("url: ${parsedInput.url}");
     }
   }
 

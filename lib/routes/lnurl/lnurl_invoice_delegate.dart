@@ -99,15 +99,17 @@ Future<LNURLWithdrawPageResult?> handleWithdrawRequest(
   LnUrlWithdrawRequestData requestData,
 ) async {
   Completer<LNURLWithdrawPageResult?> completer = Completer();
-  Navigator.of(context).push(MaterialPageRoute(
-    builder: (_) => CreateInvoicePage(
-      requestData: requestData,
-      onFinish: (LNURLWithdrawPageResult? response) {
-        completer.complete(response);
-        Navigator.of(context).popUntil((route) => route.settings.name == "/");
-      },
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => CreateInvoicePage(
+        requestData: requestData,
+        onFinish: (LNURLWithdrawPageResult? response) {
+          completer.complete(response);
+          Navigator.of(context).popUntil((route) => route.settings.name == "/");
+        },
+      ),
     ),
-  ));
+  );
 
   return completer.future;
 }

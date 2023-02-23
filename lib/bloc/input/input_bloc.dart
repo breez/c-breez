@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:breez_sdk/sdk.dart' as breez_sdk;
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -10,7 +9,6 @@ import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
 import 'package:c_breez/utils/lnurl.dart';
 import 'package:c_breez/utils/node_id.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
@@ -49,44 +47,53 @@ class InputBloc extends Cubit<InputState> {
       _decodeInvoiceController.stream,
       _lightningLinks.linksNotifications,
       _device.clipboardStream.distinct().skip(1),
-    ]).asyncMap((s) async {
-      _log.v("Incoming input: '$s'");
+    ]).asyncMap((input) async {
+      _log.v("Incoming input: '$input'");
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
       try {
-        final command = await breez_sdk.InputParser().parse(s);
-        _log.v("Parsed command: '${command.protocol}'");
-        switch (command.protocol) {
-          case breez_sdk.InputProtocol.paymentRequest:
-            return handlePaymentRequest(s, command);
-          case breez_sdk.InputProtocol.lnurl:
-            return InputState(protocol: command.protocol, inputData: command.decoded as LNURLParseResult);
-          case breez_sdk.InputProtocol.nodeID:
-            return InputState(protocol: command.protocol, inputData: command.decoded);
-          default:
-            return InputState(isLoading: false);
-        }
+        return await _handleParsedInput(await _breezLib.parseInput(input: input));
       } catch (e) {
         _log.e("Failed to parse input", ex: e);
         return InputState(isLoading: false);
       }
-    }).where((inputState) => inputState != null);
+    });
   }
 
-  Future<InputState?> handlePaymentRequest(String raw, breez_sdk.ParsedInput command) async {
-    final lnInvoice = command.decoded as breez_sdk.LNInvoice;
+  Future<InputState> handlePaymentRequest({required dynamic inputData}) async {
+    late LNInvoice lnInvoice;
+    if (inputData is InputType_Bolt11) {
+      lnInvoice = inputData.invoice;
+    } else if (inputData is InputType_BitcoinAddress) {
+      lnInvoice = await _breezLib.parseInvoice(inputData.address.address);
+    }
+
     NodeState? nodeState = await _breezLib.getNodeState();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
-      return null;
+      return InputState(isLoading: false);
     }
     var invoice = Invoice(
-        bolt11: raw,
+        bolt11: lnInvoice.bolt11,
         paymentHash: lnInvoice.paymentHash,
         description: lnInvoice.description ?? "",
         amountMsat: lnInvoice.amountMsat ?? 0,
         expiry: lnInvoice.expiry);
 
-    return InputState(protocol: command.protocol, inputData: invoice);
+    return InputState(inputType: InputType_Bolt11, inputData: invoice);
+  }
+
+  Future<InputState> _handleParsedInput(InputType parsedInput) async {
+    if (parsedInput is InputType_Bolt11 || parsedInput is InputType_BitcoinAddress) {
+      return await handlePaymentRequest(inputData: parsedInput);
+    } else if (parsedInput is InputType_LnUrlPay ||
+        parsedInput is InputType_LnUrlWithdraw ||
+        parsedInput is InputType_LnUrlAuth ||
+        parsedInput is InputType_LnUrlError ||
+        parsedInput is InputType_NodeId) {
+      return InputState(inputType: parsedInput.runtimeType, inputData: parsedInput);
+    } else {
+      return InputState(isLoading: false);
+    }
   }
 
   Stream<DecodedClipboardData> get decodedClipboardStream =>

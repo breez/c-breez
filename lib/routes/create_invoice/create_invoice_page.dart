@@ -30,16 +30,14 @@ final _log = FimberLog("CreateInvoicePage");
 class CreateInvoicePage extends StatefulWidget {
   final Function(LNURLWithdrawPageResult? result)? onFinish;
   final LnUrlWithdrawRequestData? requestData;
-  final String? domain;
 
   const CreateInvoicePage({
     Key? key,
     this.requestData,
-    this.domain,
     this.onFinish,
   })  : assert(
-          requestData == null || (domain != null && onFinish != null),
-          "If you are using LNURL withdraw, you must provide a domain and an onFinish callback.",
+          requestData == null || (onFinish != null),
+          "If you are using LNURL withdraw, you must provide an onFinish callback.",
         ),
         super(key: key);
 
@@ -169,17 +167,17 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     navigator.pop();
 
     showDialog(
-        useRootNavigator: false,
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => LNURLWithdrawDialog(
-              requestData: data,
-              amountSats: currencyBloc.state.bitcoinCurrency.parse(
-                _amountController.text,
-              ),
-              domain: widget.domain!,
-              onFinish: widget.onFinish!,
-            ));
+      useRootNavigator: false,
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => LNURLWithdrawDialog(
+        requestData: data,
+        amountSats: currencyBloc.state.bitcoinCurrency.parse(
+          _amountController.text,
+        ),
+        onFinish: widget.onFinish!,
+      ),
+    );
   }
 
   Future _createInvoice(BuildContext context) async {

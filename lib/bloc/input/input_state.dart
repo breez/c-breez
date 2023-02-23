@@ -1,9 +1,7 @@
-import 'package:breez_sdk/sdk.dart';
-
 class InputState {
-  final InputProtocol? protocol;
+  final dynamic inputType;
   final dynamic inputData;
   final bool isLoading;
 
-  InputState({this.protocol, this.inputData, this.isLoading = false});
+  InputState({this.inputType, this.inputData, this.isLoading = false});
 }

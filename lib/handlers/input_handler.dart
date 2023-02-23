@@ -1,5 +1,4 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
@@ -12,7 +11,6 @@ import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:c_breez/widgets/open_link_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
@@ -46,19 +44,17 @@ class InputHandler {
   }
 
   Future handleInput(InputState inputState) async {
-    _log.v("handle input ${inputState.protocol}");
-    switch (inputState.protocol) {
-      case InputProtocol.paymentRequest:
-        return handleInvoice(inputState.inputData);
-      case InputProtocol.lnurl:
-        return handleLNURL(_context, inputState.inputData, firstPaymentItemKey);
-      case InputProtocol.nodeID:
-        return handleNodeID(inputState.inputData);
-      case InputProtocol.appLink:
-      case InputProtocol.webView:
-        return handleWebAddress(inputState.inputData);
-      default:
-        break;
+    _log.v("handle input ${inputState.inputType}");
+    final inputType = inputState.inputType;
+    if (inputType is InputType_BitcoinAddress || inputType is InputType_Bolt11) {
+      return handleInvoice(inputState.inputData);
+    } else if (inputType is InputType_LnUrlPay ||
+        inputType is InputType_LnUrlWithdraw ||
+        inputType is InputType_LnUrlAuth ||
+        inputType is InputType_LnUrlError) {
+      return handleLNURL(_context, firstPaymentItemKey, inputState.inputData);
+    } else if (inputType is InputType_NodeId) {
+      return handleNodeID(inputState.inputData);
     }
   }
 
@@ -83,15 +79,6 @@ class InputHandler {
           firstPaymentItemKey,
         ),
       ),
-    );
-  }
-
-  Future handleWebAddress(String url) async {
-    return await showDialog(
-      useRootNavigator: false,
-      context: _context,
-      barrierDismissible: false,
-      builder: (_) => OpenLinkDialog(url),
     );
   }
 

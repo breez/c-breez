@@ -11,7 +11,6 @@ import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,64 +19,39 @@ final _log = FimberLog("handleLNURL");
 
 Future handleLNURL(
   BuildContext context,
-  LNURLParseResult lnurlParseResult,
   GlobalKey firstPaymentItemKey,
+  dynamic requestData,
 ) {
-  final payParams = lnurlParseResult.payParams;
-  if (payParams != null) {
-    _log.v("Handling payParams: $payParams");
-    return handlePayRequest(context, payParams, context.read<AccountBloc>(), firstPaymentItemKey);
+  if (requestData is LnUrlPayRequestData) {
+    _log.v("Handling payParams: $requestData");
+    return handlePayRequest(context, firstPaymentItemKey, requestData);
+  } else if (requestData is LnUrlWithdrawRequestData) {
+    _log.v("Handling withdrawalParams: $requestData");
+    return handleWithdrawRequest(context, requestData);
   }
-
-  final withdrawalParams = lnurlParseResult.withdrawalParams;
-  if (withdrawalParams != null) {
-    _log.v("Handling withdrawalParams: $withdrawalParams");
-    return handleWithdrawRequest(context, withdrawalParams);
-  }
-
-  _log.w("Unsupported lnurl $lnurlParseResult");
+  _log.w("Unsupported lnurl $requestData");
   throw context.texts().lnurl_error_unsupported;
 }
 
 Future<LNURLPaymentPageResult?> handlePayRequest(
   BuildContext context,
-  LNURLPayParams payParams,
-  AccountBloc accountBloc,
   GlobalKey firstPaymentItemKey,
+  LnUrlPayRequestData requestData,
 ) async {
-  final texts = context.texts();
-  bool fixedAmount = payParams.minSendable == payParams.maxSendable;
   LNURLPaymentInfo? paymentInfo;
-  final reqData = LnUrlPayRequestData(
-    callback: payParams.callback,
-    minSendable: payParams.minSendable,
-    maxSendable: payParams.maxSendable,
-    metadataStr: payParams.metadata,
-    commentAllowed: payParams.commentAllowed,
-    domain: payParams.domain,
-  );
-  if (fixedAmount && !(payParams.commentAllowed > 0)) {
+  bool fixedAmount = requestData.minSendable == requestData.maxSendable;
+  if (fixedAmount && !(requestData.commentAllowed > 0)) {
     // Show dialog if payment is of fixed amount with no payer comment allowed
     paymentInfo = await showDialog<LNURLPaymentInfo>(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => LNURLPaymentDialog(
-        requestData: reqData,
-        domain: payParams.domain,
-      ),
+      builder: (_) => LNURLPaymentDialog(requestData: requestData),
     );
   } else {
     paymentInfo = await Navigator.of(context).push<LNURLPaymentInfo>(
       FadeInRoute(
-        builder: (_) => LNURLPaymentPage(
-          requestData: reqData,
-          domain: payParams.domain,
-          name: payParams.payerData?.name,
-          auth: payParams.payerData?.auth,
-          email: payParams.payerData?.email,
-          identifier: payParams.payerData?.identifier,
-        ),
+        builder: (_) => LNURLPaymentPage(requestData: requestData),
       ),
     );
   }
@@ -95,11 +69,11 @@ Future<LNURLPaymentPageResult?> handlePayRequest(
     builder: (_) => ProcessingPaymentDialog(
       isLnurlPayment: true,
       firstPaymentItemKey: firstPaymentItemKey,
-      paymentFunc: () => accountBloc.lnurlPay(
-        amount: paymentInfo!.amount,
-        comment: paymentInfo.comment,
-        reqData: reqData,
-      ),
+      paymentFunc: () => context.read<AccountBloc>().lnurlPay(
+            amount: paymentInfo!.amount,
+            comment: paymentInfo.comment,
+            reqData: requestData,
+          ),
     ),
   ).then((result) {
     if (result is LnUrlPayResult) {
@@ -122,21 +96,12 @@ Future<LNURLPaymentPageResult?> handlePayRequest(
 
 Future<LNURLWithdrawPageResult?> handleWithdrawRequest(
   BuildContext context,
-  LNURLWithdrawParams withdrawParams,
+  LnUrlWithdrawRequestData requestData,
 ) async {
-  final requestData = LnUrlWithdrawRequestData(
-    callback: withdrawParams.callback,
-    minWithdrawable: withdrawParams.minWithdrawable,
-    maxWithdrawable: withdrawParams.maxWithdrawable,
-    k1: withdrawParams.k1,
-    defaultDescription: withdrawParams.defaultDescription,
-  );
-
   Completer<LNURLWithdrawPageResult?> completer = Completer();
   Navigator.of(context).push(MaterialPageRoute(
     builder: (_) => CreateInvoicePage(
       requestData: requestData,
-      domain: withdrawParams.domain,
       onFinish: (LNURLWithdrawPageResult? response) {
         completer.complete(response);
         Navigator.of(context).popUntil((route) => route.settings.name == "/");

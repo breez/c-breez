@@ -74,6 +74,12 @@ flutter run
 
 A testing framework for this project is being developed [here](https://github.com/breez/lntest).
 
+## Integration tests
+
+```
+flutter test integration_test -d <<device id>>
+```
+
 ___
 
 ## Contributors

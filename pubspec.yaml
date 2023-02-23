@@ -100,11 +100,16 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Meanwhile breez sdk is not available for desktop, some tests need to run on
+  # a mobile device, to do so, we need to use the integrations tests.
+  integration_test:
+    sdk: flutter
   build_runner: ^2.3.3
   flutter_lints: ^2.0.1
   test: ^1.23.1
 
 dependency_overrides:
+  archive: ^3.3.6
   intl: ^0.18.0
   path: ^1.8.3
   test_api: ^0.4.18

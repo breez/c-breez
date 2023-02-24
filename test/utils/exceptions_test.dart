@@ -4,7 +4,11 @@ import 'package:c_breez/utils/exceptions.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../unit_logger.dart';
+
 void main() {
+  setUpLogger();
+
   test('extractExceptionMessage should convert generic error to string', () {
     final message = extractExceptionMessage(Exception("Generic error"), _texts());
     expect(message, "Exception: Generic error");
@@ -68,6 +72,20 @@ void main() {
     expect(
       message,
       _texts().generic_network_error,
+    );
+  });
+
+  test("ln pay error no route", () {
+    final message = extractExceptionMessage(
+      const FfiException(
+        "RESULT_ERROR",
+        "LNPay.co error 400: Unable to pay LN Invoice: FAILURE_REASON_NO_ROUTE",
+      ),
+      _texts(),
+    );
+    expect(
+      message,
+      _texts().payment_error_no_route,
     );
   });
 }

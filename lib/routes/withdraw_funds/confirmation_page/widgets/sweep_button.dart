@@ -28,6 +28,7 @@ class SweepButton extends StatelessWidget {
   }
 
   Future _sweep(BuildContext context) async {
+    final texts = context.texts();
     final withdrawFundsBloc = context.read<WithdrawFundsBloc>();
 
     final navigator = Navigator.of(context);
@@ -46,7 +47,7 @@ class SweepButton extends StatelessWidget {
         context,
         null,
         Text(
-          extractExceptionMessage(e),
+          extractExceptionMessage(e, texts),
           style: themeData.dialogTheme.contentTextStyle,
         ),
       );

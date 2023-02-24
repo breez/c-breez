@@ -1,3 +1,4 @@
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:breez_translations/generated/breez_translations_en.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
@@ -5,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('extractExceptionMessage should convert generic error to string', () {
-    final message = extractExceptionMessage(Exception("Generic error"));
+    final message = extractExceptionMessage(Exception("Generic error"), _texts());
     expect(message, "Exception: Generic error");
   });
 
@@ -13,7 +14,7 @@ void main() {
     final message = extractExceptionMessage(const FfiException(
       "RESULT_ERROR",
       "A message",
-    ));
+    ), _texts());
     expect(message, "A message");
   });
 
@@ -21,7 +22,7 @@ void main() {
     final message = extractExceptionMessage(const FfiException(
       "RESULT_ERROR",
       'status: Internal, message: "A message"',
-    ));
+    ), _texts());
     expect(message, "A message");
   });
 
@@ -31,7 +32,7 @@ void main() {
       "status: Internal, message: \"error calling RPC: RPC error response: RpcError { code: 210, message: \\\""
           "Destination 036af19a240070280278d0a613e7b717bd33dd0f848dc326dfaea2881565bb9d0b is not reachable directly "
           "and all routehints were unusable.\\\", data: None }\"",
-    ));
+    ), _texts());
     expect(
       message,
       'Destination 036af19a240070280278d0a613e7b717bd33dd0f848dc326dfaea2881565bb9d0b is not reachable directly and '
@@ -49,7 +50,7 @@ void main() {
           "z74fs9mmdhw49gpqe6cqqqqlgqqqqqzsqyg9qyysgq5qunm49m4zec3d237xa505djea5pl8v68y2p79lm4437tw0s0mexprzh3qak8"
           "yrprsfz3tww4l2d5lng2877cd92jg5mdnh42ehl70cqmjf7ex): connection closed before message completed Caused "
           "by: connection closed before message completed",
-    ));
+    ), _texts());
     expect(
       message,
       'connection closed before message completed',
@@ -62,11 +63,13 @@ void main() {
         "RESULT_ERROR",
         "transport error",
       ),
-      texts: BreezTranslationsEn(),
+      _texts(),
     );
     expect(
       message,
-      BreezTranslationsEn().generic_network_error,
+      _texts().generic_network_error,
     );
   });
 }
+
+BreezTranslations _texts() => BreezTranslationsEn();

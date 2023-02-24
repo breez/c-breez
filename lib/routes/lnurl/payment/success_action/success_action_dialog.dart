@@ -82,7 +82,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
                 navigator.pop();
               } catch (e) {
                 navigator.pop();
-                showFlushbar(context, message: extractExceptionMessage(e));
+                showFlushbar(context, message: extractExceptionMessage(e, texts));
               }
             },
           )

@@ -151,6 +151,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _startNewNode() async {
+    final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
@@ -162,7 +163,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
       await accountBloc.startNewNode(mnemonic: mnemonic);
     } catch (error) {
       _log.i("Failed to register node", ex: error);
-      showFlushbar(context, message: extractExceptionMessage(error));
+      showFlushbar(context, message: extractExceptionMessage(error, texts));
       return;
     } finally {
       navigator.removeRoute(loaderRoute);
@@ -184,6 +185,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void restoreNode(String mnemonic) async {
+    final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
@@ -194,7 +196,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
       await accountBloc.recoverNode(mnemonic: mnemonic);
     } catch (error) {
       _log.i("Failed to restore node", ex: error);
-      showFlushbar(context, message: extractExceptionMessage(error));
+      showFlushbar(context, message: extractExceptionMessage(error, texts));
       return;
     } finally {
       navigator.removeRoute(loaderRoute);

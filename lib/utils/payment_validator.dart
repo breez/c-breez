@@ -51,7 +51,7 @@ class PaymentValidator {
       );
     } catch (e) {
       return texts.invoice_payment_validator_error_unknown(
-        extractExceptionMessage(e),
+        extractExceptionMessage(e, texts),
       );
     }
 

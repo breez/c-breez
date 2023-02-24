@@ -5,18 +5,15 @@ import "package:flutter_rust_bridge/flutter_rust_bridge.dart";
 final _log = FimberLog("exceptions");
 
 String extractExceptionMessage(
-  Object exception, {
-  // pass BreezTranslations if you want to replace the error message with a localized one
-  BreezTranslations? texts,
-}) {
+  Object exception,
+  BreezTranslations texts,
+) {
   _log.v("extractExceptionMessage: $exception");
   if (exception is FfiException) {
     if (exception.message.isNotEmpty) {
       var message = exception.message.replaceAll("\n", " ").trim();
       message = _extractInnerErrorMessage(message)?.trim() ?? message;
-      if (texts != null) {
-        message = _localizedExceptionMessage(texts, message);
-      }
+      message = _localizedExceptionMessage(texts, message);
       return message;
     }
   }

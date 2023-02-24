@@ -1,4 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/utils/exceptions.dart';
 
 class LNURLPaymentPageResult {
@@ -12,5 +13,5 @@ class LNURLPaymentPageResult {
 
   bool get hasError => error != null;
 
-  String get errorMessage => extractExceptionMessage(error ?? "");
+  String get errorMessage => extractExceptionMessage(error ?? "", getSystemAppLocalizations());
 }

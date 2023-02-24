@@ -105,7 +105,7 @@ class WaitBroadcastDialog extends StatelessWidget {
     if (error != null) {
       return Text(
         texts.waiting_broadcast_dialog_content_error(
-          extractExceptionMessage(error),
+          extractExceptionMessage(error, texts),
         ),
         style: themeData.dialogTheme.contentTextStyle,
         textAlign: TextAlign.center,

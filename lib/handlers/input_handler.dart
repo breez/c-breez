@@ -1,5 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_sdk/sdk.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
@@ -117,7 +118,7 @@ class InputHandler {
           _handlingRequest = false;
           _setLoading(false);
           if (error != null) {
-            showFlushbar(_context, message: extractExceptionMessage(error));
+            showFlushbar(_context, message: extractExceptionMessage(error, _context.texts()));
           }
         });
   }

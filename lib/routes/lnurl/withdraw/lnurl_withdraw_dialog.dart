@@ -102,9 +102,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
               children: [
                 error != null
                     ? Text(
-                        texts.lnurl_withdraw_dialog_error(
-                          extractExceptionMessage(error),
-                        ),
+                        texts.lnurl_withdraw_dialog_error(extractExceptionMessage(error, texts)),
                         style: themeData.dialogTheme.contentTextStyle,
                         textAlign: TextAlign.center,
                       )

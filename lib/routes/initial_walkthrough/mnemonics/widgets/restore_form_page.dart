@@ -83,6 +83,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
   }
 
   Future _validateMnemonics() async {
+    final texts = context.texts();
     final mnemonic =
         textEditingControllers.map((controller) => controller.text.toLowerCase().trim()).toList().join(" ");
     try {
@@ -91,7 +92,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
       setState(() {
         _hasError = true;
       });
-      throw Exception(extractExceptionMessage(e));
+      throw Exception(extractExceptionMessage(e, texts));
     }
   }
 }

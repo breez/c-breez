@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/swap_in/swap_in_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:fimber/fimber.dart';
@@ -32,6 +33,7 @@ class SwapInBloc extends Cubit<SwapInState> {
 
   void refreshAddresses(Timer timer) async {
     final currentState = state;
+    final texts = getSystemAppLocalizations();
     try {
       final swapInProgress = (await _breezLib.inProgressSwap());
       SwapInfo? swapUnused = currentState.unused;
@@ -42,7 +44,7 @@ class SwapInBloc extends Cubit<SwapInState> {
       }
       emit(SwapInState(swapInProgress, swapUnused));
     } catch (e) {
-      final errorMessage = extractExceptionMessage(e);
+      final errorMessage = extractExceptionMessage(e, texts);
       emit(SwapInState(null, null, error: errorMessage));
       timer.cancel();
       _log.i("swap in address polling finished due to error");

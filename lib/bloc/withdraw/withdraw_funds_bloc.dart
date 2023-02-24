@@ -39,7 +39,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
       return _constructFeeOptionList(utxos, recommendedFees);
     } catch (e) {
       _log.e("fetchFeeOptions error", ex: e);
-      emit(WithdrawFundsState(errorMessage: extractExceptionMessage(e)));
+      emit(WithdrawFundsState(errorMessage: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }

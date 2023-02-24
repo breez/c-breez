@@ -46,6 +46,7 @@ Future<LNURLPaymentPageResult?> handlePayRequest(
     maxSendable: payParams.maxSendable,
     metadataStr: payParams.metadata,
     commentAllowed: payParams.commentAllowed,
+    domain: payParams.domain,
   );
   if (fixedAmount && !(payParams.commentAllowed > 0)) {
     // Show dialog if payment is of fixed amount with no payer comment allowed

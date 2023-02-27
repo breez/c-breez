@@ -1,4 +1,5 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -48,6 +49,7 @@ void main() {
       expect(accountState.maxInboundLiquidity, 0);
       expect(accountState.onChainFeeRate, 0);
       expect(accountState.payments.length, 0);
+      expect(accountState.verificationStatus, VerificationStatus.VERIFIED);
     });
   });
 }

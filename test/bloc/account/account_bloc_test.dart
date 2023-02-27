@@ -4,9 +4,9 @@ import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
-import '../mock/injector_mock.dart';
-import '../utils/fake_path_provider_platform.dart';
-import '../utils/hydrated_bloc_storage.dart';
+import '../../mock/injector_mock.dart';
+import '../../utils/fake_path_provider_platform.dart';
+import '../../utils/hydrated_bloc_storage.dart';
 
 var testMnemonic = 'update elbow source spin squeeze horror world become oak assist bomb nuclear';
 

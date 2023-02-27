@@ -116,7 +116,9 @@ class UserApp extends StatelessWidget {
                       );
                     case '/enter_mnemonics':
                       return FadeInRoute<String>(
-                        builder: (_) => EnterMnemonicsPage(),
+                        builder: (_) => EnterMnemonicsPage(
+                          initialWords: settings.arguments as List<String>? ?? [],
+                        ),
                         settings: settings,
                       );
                     case '/':

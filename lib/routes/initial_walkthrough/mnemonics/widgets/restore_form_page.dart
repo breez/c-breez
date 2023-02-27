@@ -10,8 +10,15 @@ class RestoreFormPage extends StatefulWidget {
   final int currentPage;
   final int lastPage;
   final VoidCallback changePage;
+  final List<String> initialWords;
 
-  const RestoreFormPage({required this.currentPage, required this.lastPage, required this.changePage});
+  const RestoreFormPage({
+    super.key,
+    required this.currentPage,
+    required this.lastPage,
+    required this.changePage,
+    this.initialWords = const [],
+  });
 
   @override
   RestoreFormPageState createState() => RestoreFormPageState();
@@ -31,6 +38,9 @@ class RestoreFormPageState extends State<RestoreFormPage> {
     super.initState();
     _autoValidateMode = AutovalidateMode.disabled;
     _hasError = false;
+    for (var i = 0; i < textEditingControllers.length && i < widget.initialWords.length; i++) {
+      textEditingControllers[i].text = widget.initialWords[i];
+    }
   }
 
   @override

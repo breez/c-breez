@@ -6,6 +6,13 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';
 
 class EnterMnemonicsPage extends StatefulWidget {
+  final List<String> initialWords;
+
+  const EnterMnemonicsPage({
+    super.key,
+    required this.initialWords,
+  });
+
   @override
   EnterMnemonicsPageState createState() => EnterMnemonicsPageState();
 }
@@ -49,6 +56,7 @@ class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
             child: RestoreFormPage(
               currentPage: _currentPage,
               lastPage: _lastPage,
+              initialWords: widget.initialWords,
               changePage: () {
                 setState(() {
                   _currentPage++;

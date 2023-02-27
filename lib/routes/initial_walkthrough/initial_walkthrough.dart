@@ -175,15 +175,24 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     navigator.pushReplacementNamed('/');
   }
 
-  void _restoreNodeFromMnemonicSeed() async {
-    String? mnemonic = await _getMnemonic();
+  void _restoreNodeFromMnemonicSeed({
+    List<String>? initialWords,
+  }) async {
+    _log.v("Restore node from mnemonic seed");
+    String? mnemonic = await _getMnemonic(initialWords: initialWords);
     if (mnemonic != null) {
       restoreNode(mnemonic);
     }
   }
 
-  Future<String?> _getMnemonic() async {
-    return await Navigator.of(context).pushNamed<String>("/enter_mnemonics");
+  Future<String?> _getMnemonic({
+    List<String>? initialWords,
+  }) async {
+    _log.v("Get mnemonic, initialWords: ${initialWords?.length}");
+    return await Navigator.of(context).pushNamed<String>(
+      "/enter_mnemonics",
+      arguments: initialWords,
+    );
   }
 
   void restoreNode(String mnemonic) async {
@@ -198,7 +207,8 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     try {
       await accountBloc.recoverNode(mnemonic: mnemonic);
     } catch (error) {
-      _log.i("Failed to restore node", ex: error);
+      _log.w("Failed to restore node", ex: error);
+      _restoreNodeFromMnemonicSeed(initialWords: mnemonic.split(" "));
       showFlushbar(context, message: extractExceptionMessage(error, texts));
       return;
     } finally {

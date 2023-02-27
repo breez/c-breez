@@ -1,5 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
@@ -11,10 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendOptionsBottomSheet extends StatelessWidget {
-  final bool connected;
+  final bool selectedLsp;
   final GlobalKey firstPaymentItemKey;
 
-  const SendOptionsBottomSheet({super.key, required this.connected, required this.firstPaymentItemKey});
+  const SendOptionsBottomSheet({super.key, required this.selectedLsp, required this.firstPaymentItemKey});
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +30,22 @@ class SendOptionsBottomSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 8.0),
-            ListTile(
-              enabled: connected,
-              leading: BottomActionItemImage(
-                iconAssetPath: "src/icon/paste.png",
-                enabled: connected,
-              ),
-              title: Text(
-                texts.bottom_action_bar_paste_invoice,
-                style: theme.bottomSheetTextStyle,
-              ),
-              onTap: () => _pasteTapped(context, inputBloc, snapshot.data, firstPaymentItemKey),
+            BlocBuilder<LSPBloc, LspState?>(
+              buildWhen: (previous, current) => previous?.lspInfo != null || current?.lspInfo != null,
+              builder: (context, lspState) {
+                return ListTile(
+                  enabled: selectedLsp,
+                  leading: BottomActionItemImage(
+                    iconAssetPath: "src/icon/paste.png",
+                    enabled: selectedLsp,
+                  ),
+                  title: Text(
+                    texts.bottom_action_bar_paste_invoice,
+                    style: theme.bottomSheetTextStyle,
+                  ),
+                  onTap: () => _pasteTapped(context, inputBloc, snapshot.data, firstPaymentItemKey),
+                );
+              },
             ),
             Divider(
               height: 0.0,
@@ -49,7 +56,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
               enabled: false, // TODO: back to connected when we integrate with the SDK
               leading: BottomActionItemImage(
                 iconAssetPath: "src/icon/bitcoin.png",
-                enabled: connected,
+                enabled: selectedLsp,
               ),
               title: Text(
                 texts.bottom_action_bar_send_btc_address,

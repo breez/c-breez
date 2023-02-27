@@ -7,6 +7,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/withdraw/lnurl_withdraw_dialog.dart';
@@ -172,13 +173,18 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => LNURLWithdrawDialog(
-        requestData: data,
-        amountSats: currencyBloc.state.bitcoinCurrency.parse(
-          _amountController.text,
-        ),
-        domain: widget.domain!,
-        onFinish: widget.onFinish!,
+      builder: (_) => BlocBuilder<LSPBloc, LspState?>(
+        buildWhen: (previous, current) => previous?.lspInfo != null || current?.lspInfo != null,
+        builder: (context, state) {
+          return LNURLWithdrawDialog(
+            requestData: data,
+            amountSats: currencyBloc.state.bitcoinCurrency.parse(
+              _amountController.text,
+            ),
+            domain: widget.domain!,
+            onFinish: widget.onFinish!,
+          );
+        },
       ),
     );
   }
@@ -213,7 +219,12 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => dialog,
+      builder: (_) => BlocBuilder<LSPBloc, LspState?>(
+        buildWhen: (previous, current) => previous?.lspInfo != null || current?.lspInfo != null,
+        builder: (context, state) {
+          return dialog;
+        },
+      ),
     );
   }
 

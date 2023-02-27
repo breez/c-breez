@@ -119,7 +119,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       glCreds: creds,
       mnemonic: mnemonic,
     );
-    emit(state.copyWith(initial: false));
+    emit(state.copyWith(
+      initial: false,
+      verificationStatus: VerificationStatus.VERIFIED,
+    ));
     await _startSdkForever();
     _log.i("recovered node started");
   }

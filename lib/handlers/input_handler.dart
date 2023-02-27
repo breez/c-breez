@@ -128,6 +128,7 @@ class InputHandler {
       _handleSuccessAction(result.successAction!);
     } else {
       _log.v("Handle LNURL withdraw page result with error '${result.error}'");
+      throw result.error!;
     }
   }
 
@@ -166,6 +167,7 @@ class InputHandler {
       );
     } else {
       _log.v("Handle LNURL withdraw page result with error '${result.error}'");
+      throw result.error!;
     }
   }
 

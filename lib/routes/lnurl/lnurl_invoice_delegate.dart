@@ -15,7 +15,6 @@ import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 final _log = FimberLog("handleLNURL");
 
@@ -115,14 +114,9 @@ Future<LNURLPaymentPageResult?> handlePayRequest(
           error: result.data.reason,
         );
       }
-    } else if (result is FfiException) {
-      _log.w("Error sending LNURL payment", ex: result);
-      throw LNURLPaymentPageResult(error: result).errorMessage;
     }
-    _log.w("Unknown response from lnurlPay: $result");
-    return LNURLPaymentPageResult(
-      error: texts.lnurl_payment_page_unknown_error,
-    );
+    _log.w("Error sending LNURL payment", ex: result);
+    throw LNURLPaymentPageResult(error: result).errorMessage;
   });
 }
 

@@ -6,8 +6,9 @@ final _log = FimberLog("exceptions");
 
 String extractExceptionMessage(
   Object exception,
-  BreezTranslations texts,
-) {
+  BreezTranslations texts, {
+  String? defaultErrorMsg,
+}) {
   _log.v("extractExceptionMessage: $exception");
   if (exception is FfiException) {
     if (exception.message.isNotEmpty) {
@@ -17,7 +18,7 @@ String extractExceptionMessage(
       return message;
     }
   }
-  return _extractInnerErrorMessage(exception.toString()) ?? exception.toString();
+  return _extractInnerErrorMessage(exception.toString()) ?? defaultErrorMsg ?? exception.toString();
 }
 
 String? _extractInnerErrorMessage(String content) {

@@ -128,7 +128,13 @@ class InputHandler {
       _handleSuccessAction(result.successAction!);
     } else {
       _log.v("Handle LNURL withdraw page result with error '${result.error}'");
-      throw result.error!;
+      throw Exception(
+        extractExceptionMessage(
+          result.error!,
+          _context.texts(),
+          defaultErrorMsg: _context.texts().lnurl_payment_page_unknown_error,
+        ),
+      );
     }
   }
 

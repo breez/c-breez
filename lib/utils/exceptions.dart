@@ -53,6 +53,9 @@ String _localizedExceptionMessage(
     case "none":
       return texts.payment_error_none;
     default:
+      if (originalMessage.contains("dns error")) {
+        return texts.generic_network_error;
+      }
       return originalMessage;
   }
 }

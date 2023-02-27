@@ -69,6 +69,27 @@ void main() {
     );
   });
 
+  test("dns error", () {
+    final message = extractExceptionMessage(
+      const FfiException(
+        "RESULT_ERROR",
+        """transport error
+
+Caused by:
+   0: error trying to connect: dns error: failed to lookup address information: No address associated with hostname
+   1: dns error: failed to lookup address information: No address associated with hostname
+   2: failed to lookup address information: No address associated with hostname, null) 
+<asynchronous suspension>
+      """,
+      ),
+      _texts(),
+    );
+    expect(
+      message,
+      _texts().generic_network_error,
+    );
+  });
+
   test("network error", () {
     final message = extractExceptionMessage(
       const FfiException(

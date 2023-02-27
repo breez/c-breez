@@ -8,8 +8,8 @@ import 'package:c_breez/routes/create_invoice/create_invoice_page.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_dialog.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_page.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
-import 'package:c_breez/routes/lnurl/payment/processing_lnurlp_dialog.dart';
 import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
+import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:fimber/fimber.dart';
@@ -93,7 +93,8 @@ Future<LNURLPaymentPageResult?> handlePayRequest(
     useRootNavigator: false,
     context: context,
     barrierDismissible: false,
-    builder: (_) => ProcessingLNURLPaymentDialog(
+    builder: (_) => ProcessingPaymentDialog(
+      isLnurlPayment: true,
       firstPaymentItemKey: firstPaymentItemKey,
       paymentFunc: () => accountBloc.lnurlPay(
         amount: paymentInfo!.amount,

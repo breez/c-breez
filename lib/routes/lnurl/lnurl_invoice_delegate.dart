@@ -22,6 +22,7 @@ Future handleLNURL(
   GlobalKey firstPaymentItemKey,
   dynamic requestData,
 ) {
+  _log.v("Handling lnurl requestData: $requestData");
   if (requestData is LnUrlPayRequestData) {
     _log.v("Handling payParams: $requestData");
     return handlePayRequest(context, firstPaymentItemKey, requestData);

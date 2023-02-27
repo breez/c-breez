@@ -69,13 +69,8 @@ class InputBloc extends Cubit<InputState> {
     });
   }
 
-  Future<InputState> handlePaymentRequest({required dynamic inputData}) async {
-    late LNInvoice lnInvoice;
-    if (inputData is InputType_Bolt11) {
-      lnInvoice = inputData.invoice;
-    } else if (inputData is InputType_BitcoinAddress) {
-      lnInvoice = await _breezLib.parseInvoice(inputData.address.address);
-    }
+  Future<InputState> handlePaymentRequest({required InputType_Bolt11 inputData}) async {
+    final LNInvoice lnInvoice = inputData.invoice;
 
     NodeState? nodeState = await _breezLib.getNodeState();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
@@ -89,18 +84,18 @@ class InputBloc extends Cubit<InputState> {
       expiry: lnInvoice.expiry,
     );
 
-    return InputState(inputType: InputType_Bolt11, inputData: invoice);
+    return InputState(inputData: invoice);
   }
 
   Future<InputState> _handleParsedInput(InputType parsedInput) async {
-    if (parsedInput is InputType_Bolt11 || parsedInput is InputType_BitcoinAddress) {
+    if (parsedInput is InputType_Bolt11) {
       return await handlePaymentRequest(inputData: parsedInput);
     } else if (parsedInput is InputType_LnUrlPay ||
         parsedInput is InputType_LnUrlWithdraw ||
         parsedInput is InputType_LnUrlAuth ||
         parsedInput is InputType_LnUrlError ||
         parsedInput is InputType_NodeId) {
-      return InputState(inputType: parsedInput.runtimeType, inputData: parsedInput);
+      return InputState(inputData: parsedInput);
     } else {
       return InputState(isLoading: false);
     }
@@ -109,16 +104,7 @@ class InputBloc extends Cubit<InputState> {
   void _logParsedInput(InputType parsedInput) {
     // Todo: Find a better way to serialize parsed input
     _log.v("Parsed input type: '${parsedInput.runtimeType.toString()}");
-    if (parsedInput is InputType_BitcoinAddress) {
-      final btcAddressData = parsedInput.address;
-      _log.i(
-        "address: ${btcAddressData.address}\n"
-        "network: ${btcAddressData.network}\n"
-        "amountSat: ${btcAddressData.amountSat}\n"
-        "label: ${btcAddressData.label}\n"
-        "message: ${btcAddressData.message}",
-      );
-    } else if (parsedInput is InputType_Bolt11) {
+    if (parsedInput is InputType_Bolt11) {
       final lnInvoice = parsedInput.invoice;
       _log.i(
         "bolt11: ${lnInvoice.bolt11}\n"

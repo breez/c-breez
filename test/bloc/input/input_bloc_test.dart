@@ -44,7 +44,7 @@ void main() {
         bloc.stream,
         emitsInOrder([
           InputState(isLoading: true),
-          InputState(inputType: parsedInput.runtimeType, inputData: parsedInput),
+          InputState(inputData: parsedInput),
         ]),
       );
 

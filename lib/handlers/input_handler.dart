@@ -2,6 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
+import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
@@ -43,22 +44,22 @@ class InputHandler {
     });
   }
 
-  Future handleInput(InputState inputState) async {
-    _log.v("handle input ${inputState.inputType}");
-    final inputType = inputState.inputType;
-    if (inputType is InputType_BitcoinAddress || inputType is InputType_Bolt11) {
-      return handleInvoice(inputState.inputData);
-    } else if (inputType is InputType_LnUrlPay ||
-        inputType is InputType_LnUrlWithdraw ||
-        inputType is InputType_LnUrlAuth ||
-        inputType is InputType_LnUrlError) {
-      return handleLNURL(_context, firstPaymentItemKey, inputState.inputData);
-    } else if (inputType is InputType_NodeId) {
-      return handleNodeID(inputState.inputData);
+  Future handleInputData(dynamic parsedInput) async {
+    _log.v("handle input $parsedInput");
+    if (parsedInput is Invoice) {
+      return handleInvoice(parsedInput);
+    } else if (parsedInput is InputType_LnUrlPay ||
+        parsedInput is InputType_LnUrlWithdraw ||
+        parsedInput is InputType_LnUrlAuth ||
+        parsedInput is InputType_LnUrlError) {
+      return handleLNURL(_context, firstPaymentItemKey, parsedInput.data);
+    } else if (parsedInput is InputType_NodeId) {
+      return handleNodeID(parsedInput.nodeId);
     }
   }
 
-  Future handleInvoice(dynamic invoice) async {
+  Future handleInvoice(Invoice invoice) async {
+    _log.v("handle invoice $invoice");
     return await showDialog(
       useRootNavigator: false,
       context: _context,
@@ -72,6 +73,7 @@ class InputHandler {
   }
 
   Future handleNodeID(String nodeID) async {
+    _log.v("handle node id $nodeID");
     return await Navigator.of(_context).push(
       FadeInRoute(
         builder: (_) => SpontaneousPaymentPage(
@@ -90,7 +92,7 @@ class InputHandler {
     }
     _setLoading(inputState.isLoading);
     _handlingRequest = true;
-    handleInput(inputState)
+    handleInputData(inputState.inputData)
         .then((result) {
           _log.v("Input state handled: $result");
           if (result is LNURLPaymentPageResult) {

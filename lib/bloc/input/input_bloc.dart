@@ -140,7 +140,8 @@ class InputBloc extends Cubit<InputState> {
         "minSendable: ${lnUrlPayReqData.minSendable}\n"
         "maxSendable: ${lnUrlPayReqData.maxSendable}\n"
         "metadataStr: ${lnUrlPayReqData.metadataStr}\n"
-        "commentAllowed: ${lnUrlPayReqData.commentAllowed}",
+        "commentAllowed: ${lnUrlPayReqData.commentAllowed}\n"
+        "domain: ${lnUrlPayReqData.domain}",
       );
     } else if (parsedInput is InputType_LnUrlWithdraw) {
       final lnUrlWithdrawReqData = parsedInput.data;

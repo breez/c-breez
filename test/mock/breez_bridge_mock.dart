@@ -94,6 +94,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
       maxSendable: 0,
       metadataStr: "",
       commentAllowed: 0,
+      domain: "",
     ),
   );
 

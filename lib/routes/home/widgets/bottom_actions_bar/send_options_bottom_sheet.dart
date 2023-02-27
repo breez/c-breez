@@ -13,10 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendOptionsBottomSheet extends StatelessWidget {
-  final bool selectedLsp;
+  final bool isLspSelected;
   final GlobalKey firstPaymentItemKey;
 
-  const SendOptionsBottomSheet({super.key, required this.selectedLsp, required this.firstPaymentItemKey});
+  const SendOptionsBottomSheet({super.key, required this.isLspSelected, required this.firstPaymentItemKey});
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +34,10 @@ class SendOptionsBottomSheet extends StatelessWidget {
               buildWhen: (previous, current) => previous?.lspInfo != null || current?.lspInfo != null,
               builder: (context, lspState) {
                 return ListTile(
-                  enabled: selectedLsp,
+                  enabled: isLspSelected,
                   leading: BottomActionItemImage(
                     iconAssetPath: "src/icon/paste.png",
-                    enabled: selectedLsp,
+                    enabled: isLspSelected,
                   ),
                   title: Text(
                     texts.bottom_action_bar_paste_invoice,
@@ -56,7 +56,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
               enabled: false, // TODO: back to connected when we integrate with the SDK
               leading: BottomActionItemImage(
                 iconAssetPath: "src/icon/bitcoin.png",
-                enabled: selectedLsp,
+                enabled: isLspSelected,
               ),
               title: Text(
                 texts.bottom_action_bar_send_btc_address,

@@ -23,16 +23,16 @@ class QrActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LSPBloc, LspState?>(
       builder: (context, lspState) {
-        final selectedLsp = (lspState?.selectedLspId != null);
+        final isLspSelected = (lspState?.selectedLspId != null);
 
         return Padding(
           padding: const EdgeInsets.only(top: 32.0),
           child: FloatingActionButton(
-            onPressed: (selectedLsp) ? () => _scanBarcode(context) : null,
+            onPressed: (isLspSelected) ? () => _scanBarcode(context) : null,
             child: SvgPicture.asset(
               "src/icon/qr_scan.svg",
               colorFilter: ColorFilter.mode(
-                selectedLsp ? theme.BreezColors.white[500]! : Theme.of(context).disabledColor,
+                isLspSelected ? theme.BreezColors.white[500]! : Theme.of(context).disabledColor,
                 BlendMode.srcATop,
               ),
               fit: BoxFit.contain,

@@ -26,7 +26,7 @@ class BottomActionsBar extends StatelessWidget {
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, account) {
         return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
-          final selectedLsp = (lspState?.selectedLspId != null);
+          final isLspSelected = (lspState?.selectedLspId != null);
 
           return BottomAppBar(
             child: SizedBox(
@@ -36,14 +36,14 @@ class BottomActionsBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SendOptions(
-                    selectedLsp: selectedLsp,
+                    isLspSelected: isLspSelected,
                     firstPaymentItemKey: firstPaymentItemKey,
                     actionsGroup: actionsGroup,
                   ),
                   Container(width: 64),
                   ReceiveOptions(
                     account: account,
-                    selectedLsp: selectedLsp,
+                    isLspSelected: isLspSelected,
                     firstPaymentItemKey: firstPaymentItemKey,
                     actionsGroup: actionsGroup,
                   )
@@ -58,13 +58,13 @@ class BottomActionsBar extends StatelessWidget {
 }
 
 class SendOptions extends StatelessWidget {
-  final bool selectedLsp;
+  final bool isLspSelected;
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
   final AutoSizeGroup actionsGroup;
 
   const SendOptions({
     Key? key,
-    required this.selectedLsp,
+    required this.isLspSelected,
     required this.firstPaymentItemKey,
     required this.actionsGroup,
   }) : super(key: key);
@@ -78,7 +78,7 @@ class SendOptions extends StatelessWidget {
         context: context,
         builder: (context) {
           return SendOptionsBottomSheet(
-            selectedLsp: selectedLsp,
+            isLspSelected: isLspSelected,
             firstPaymentItemKey: firstPaymentItemKey,
           );
         },
@@ -92,14 +92,14 @@ class SendOptions extends StatelessWidget {
 
 class ReceiveOptions extends StatelessWidget {
   final AccountState account;
-  final bool selectedLsp;
+  final bool isLspSelected;
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
   final AutoSizeGroup actionsGroup;
 
   const ReceiveOptions({
     Key? key,
     required this.account,
-    required this.selectedLsp,
+    required this.isLspSelected,
     required this.firstPaymentItemKey,
     required this.actionsGroup,
   }) : super(key: key);
@@ -113,7 +113,7 @@ class ReceiveOptions extends StatelessWidget {
         builder: (context) {
           return ReceiveOptionsBottomSheet(
             account: account,
-            selectedLsp: selectedLsp,
+            isLspSelected: isLspSelected,
             firstPaymentItemKey: firstPaymentItemKey,
           );
         },

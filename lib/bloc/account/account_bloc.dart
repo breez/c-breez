@@ -69,6 +69,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future _startRegisteredNode() async {
+    _log.v("starting registered node");
     final credentials = await _credentialsManager.restoreCredentials();
     final seed = bip39.mnemonicToSeed(credentials.mnemonic);
     await _breezLib.initServices(
@@ -84,6 +85,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     sdk.Network network = sdk.Network.Bitcoin,
     required String mnemonic,
   }) async {
+    _log.v("starting new node");
     final seed = bip39.mnemonicToSeed(mnemonic);
     final sdk.GreenlightCredentials creds = await _breezLib.registerNode(
       config: (await Config.instance()).sdkConfig,
@@ -105,6 +107,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     sdk.Network network = sdk.Network.Bitcoin,
     required String mnemonic,
   }) async {
+    _log.v("recovering node");
     final seed = bip39.mnemonicToSeed(mnemonic);
     final sdk.GreenlightCredentials creds = await _breezLib.recoverNode(
       config: (await Config.instance()).sdkConfig,
@@ -122,6 +125,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future _startSdkForever() async {
+    _log.v("starting sdk forever");
     await _startSdkOnce();
 
     // in case we failed to start (lack of inet connection probably)
@@ -143,6 +147,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future _startSdkOnce() async {
+    _log.v("starting sdk once");
     try {
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
       await _breezLib.startNode();
@@ -154,6 +159,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // Once connected sync sdk periodically on foreground events.
   void _onConnected() {
+    _log.v("on connected");
     var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
     FGBGEvents.stream.listen((event) async {
       if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
@@ -210,6 +216,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future cancelPayment(String bolt11) async {
+    _log.v("cancelPayment: $bolt11");
     throw Exception("not implemented");
   }
 
@@ -232,6 +239,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<bool> isValidBitcoinAddress(String? address) async {
+    _log.v("isValidBitcoinAddress: $address");
     if (address == null) return false;
     return _breezLib.isValidBitcoinAddress(address);
   }
@@ -243,6 +251,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     bool outgoing, {
     int? channelMinimumFee,
   }) {
+    _log.v("validatePayment: $amount, $outgoing, $channelMinimumFee");
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
       throw PaymentExceededLimitError(accState.maxPaymentAmount);
@@ -271,6 +280,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
+    _log.v("changePaymentFilter: $filter, $fromTimestamp, $toTimestamp");
     _paymentFiltersStreamController.add(
       state.paymentFilters.copyWith(
         filter: filter,
@@ -284,6 +294,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     String description = "",
     required int amountSats,
   }) async {
+    _log.v("addInvoice: $description, $amountSats");
     return await _breezLib.receivePayment(
       amountSats: amountSats,
       description: description,
@@ -301,10 +312,12 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<List<File>> exportCredentialFiles() async {
+    _log.v("exportCredentialFiles");
     return _credentialsManager.exportCredentials();
   }
 
   void recursiveFolderCopySync(String path1, String path2) {
+    _log.v("recursiveFolderCopySync: $path1, $path2");
     Directory dir1 = Directory(path1);
     Directory dir2 = Directory(path2);
     if (!dir2.existsSync()) {
@@ -324,6 +337,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void _listenPaymentResultEvents() {
+    _log.v("_listenPaymentResultEvents");
     _breezLib.paymentResultStream.listen((paymentInfo) {
       _paymentResultStreamController.add(
         PaymentResult(paymentInfo: paymentInfo),
@@ -333,7 +347,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     });
   }
 
-  void verifyMnemonics() {
+  void mnemonicsValidated() {
+    _log.v("mnemonicsValidated");
     emit(state.copyWith(verificationStatus: VerificationStatus.VERIFIED));
   }
 }

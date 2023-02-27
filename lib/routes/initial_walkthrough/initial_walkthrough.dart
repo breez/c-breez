@@ -139,6 +139,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _letsBreez(BuildContext context) async {
+    _log.v("Lets breez");
     bool approved = await showDialog(
       useRootNavigator: false,
       context: context,
@@ -151,6 +152,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _startNewNode() async {
+    _log.v("Starting new node");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
@@ -185,6 +187,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void restoreNode(String mnemonic) async {
+    _log.v("Restore node");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);

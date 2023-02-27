@@ -1,7 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
@@ -30,22 +28,17 @@ class SendOptionsBottomSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 8.0),
-            BlocBuilder<LSPBloc, LspState?>(
-              buildWhen: (previous, current) => previous?.lspInfo != null || current?.lspInfo != null,
-              builder: (context, lspState) {
-                return ListTile(
-                  enabled: isLspSelected,
-                  leading: BottomActionItemImage(
-                    iconAssetPath: "src/icon/paste.png",
-                    enabled: isLspSelected,
-                  ),
-                  title: Text(
-                    texts.bottom_action_bar_paste_invoice,
-                    style: theme.bottomSheetTextStyle,
-                  ),
-                  onTap: () => _pasteTapped(context, inputBloc, snapshot.data, firstPaymentItemKey),
-                );
-              },
+            ListTile(
+              enabled: isLspSelected,
+              leading: BottomActionItemImage(
+                iconAssetPath: "src/icon/paste.png",
+                enabled: isLspSelected,
+              ),
+              title: Text(
+                texts.bottom_action_bar_paste_invoice,
+                style: theme.bottomSheetTextStyle,
+              ),
+              onTap: () => _pasteTapped(context, inputBloc, snapshot.data, firstPaymentItemKey),
             ),
             Divider(
               height: 0.0,

@@ -103,7 +103,7 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                   });
                   if (_formKey.currentState!.validate() && !_hasError) {
                     final AccountBloc accountBloc = context.read();
-                    accountBloc.verifyMnemonics();
+                    accountBloc.mnemonicsValidated();
                     Navigator.of(context).popUntil((route) {
                       bool shouldPop = false;
                       // Pop to where the verification flow has started from,

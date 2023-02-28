@@ -68,7 +68,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
               ),
             ),
             child: Text(
-              "OPEN LINK",
+              texts.qr_action_button_open_link.toUpperCase(),
               style: themeData.primaryTextTheme.labelLarge,
             ),
             onPressed: () async {

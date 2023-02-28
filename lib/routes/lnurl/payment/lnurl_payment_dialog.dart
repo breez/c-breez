@@ -14,11 +14,9 @@ final _log = FimberLog("LNURLPaymentDialog");
 
 class LNURLPaymentDialog extends StatefulWidget {
   final sdk.LnUrlPayRequestData requestData;
-  final String domain;
 
   const LNURLPaymentDialog({
     required this.requestData,
-    required this.domain,
     Key? key,
   }) : super(key: key);
 
@@ -55,7 +53,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
 
     return AlertDialog(
       title: Text(
-        widget.domain,
+        Uri.parse(widget.requestData.callback).host,
         style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),

@@ -15,13 +15,11 @@ class LNURLWithdrawDialog extends StatefulWidget {
   final Function(LNURLWithdrawPageResult? result) onFinish;
   final sdk.LnUrlWithdrawRequestData requestData;
   final int amountSats;
-  final String domain;
 
   const LNURLWithdrawDialog({
     super.key,
     required this.requestData,
     required this.amountSats,
-    required this.domain,
     required this.onFinish,
   });
 

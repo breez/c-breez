@@ -87,6 +87,22 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   @override
   Future connectLSP(String lspId) async {}
 
+  InputType parsedInput = InputType_LnUrlPay(
+    data: LnUrlPayRequestData(
+      callback: "",
+      minSendable: 0,
+      maxSendable: 0,
+      metadataStr: "",
+      commentAllowed: 0,
+      domain: "",
+    ),
+  );
+
+  @override
+  Future<InputType> parseInput({required String input}) async {
+    return parsedInput;
+  }
+
   final invoicePaidController = StreamController<InvoicePaidDetails>.broadcast();
 
   @override

@@ -12,8 +12,8 @@ import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
-import 'package:dart_lnurl/dart_lnurl.dart';
-import 'package:email_validator/email_validator.dart';
+
+// import 'package:email_validator/email_validator.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,19 +23,25 @@ final _log = FimberLog("LNURLPaymentPage");
 
 class LNURLPaymentPage extends StatefulWidget {
   final sdk.LnUrlPayRequestData requestData;
+  /*TODO: Add domain information to parse results #118(https://github.com/breez/breez-sdk/issues/118)
   final String domain;
+  TODO: Add support for LUD-18: Payer identity in payRequest protocol(https://github.com/breez/breez-sdk/issues/117)
   final PayerDataRecordField? name;
   final AuthRecord? auth;
   final PayerDataRecordField? email;
   final PayerDataRecordField? identifier;
+ */
 
   const LNURLPaymentPage({
     required this.requestData,
+    /*
     required this.domain,
     this.name,
     this.auth,
     this.email,
     this.identifier,
+     */
+
     Key? key,
   }) : super(key: key);
 
@@ -50,10 +56,12 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _amountController = TextEditingController();
   final _commentController = TextEditingController();
+  /*
   final _nameController = TextEditingController();
   final _k1Controller = TextEditingController();
   final _emailController = TextEditingController();
   final _identifierController = TextEditingController();
+   */
   late final bool fixedAmount;
 
   @override
@@ -79,7 +87,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       appBar: AppBar(
         leading: const back_button.BackButton(),
         actions: const [],
-        title: Text(texts.lnurl_fetch_invoice_pay_to_payee(widget.domain)),
+        // Todo: Use domain from request data
+        title: Text(texts.lnurl_fetch_invoice_pay_to_payee(Uri.parse(widget.requestData.callback).host)),
       ),
       body: Form(
         key: _formKey,
@@ -126,6 +135,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   ),
                 ),
               ],
+              /*
               if (widget.name?.mandatory == true) ...[
                 TextFormField(
                   controller: _nameController,
@@ -156,6 +166,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   controller: _identifierController,
                 )
               ],
+               */
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 48,

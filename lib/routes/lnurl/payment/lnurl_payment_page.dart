@@ -11,7 +11,6 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
-import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:dart_lnurl/dart_lnurl.dart';
 import 'package:email_validator/email_validator.dart';
@@ -103,14 +102,16 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   ),
                 )
               ],
+              AmountFormField(
+                context: context,
+                texts: texts,
+                bitcoinCurrency: currencyState.bitcoinCurrency,
+                controller: _amountController,
+                validatorFn: validatePayment,
+                enabled: !fixedAmount,
+                readOnly: fixedAmount,
+              ),
               if (!fixedAmount) ...[
-                AmountFormField(
-                  context: context,
-                  texts: texts,
-                  bitcoinCurrency: currencyState.bitcoinCurrency,
-                  controller: _amountController,
-                  validatorFn: validatePayment,
-                ),
                 Padding(
                   padding: const EdgeInsets.only(
                     top: 8,
@@ -180,45 +181,14 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
         text: texts.lnurl_fetch_invoice_action_continue,
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            final accountBloc = context.read<AccountBloc>();
             final currencyBloc = context.read<CurrencyBloc>();
-            final navigator = Navigator.of(context);
-            var loaderRoute = createLoaderRoute(context);
-            navigator.push(loaderRoute);
-
-            try {
-              final amount = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
-              final comment = _commentController.text;
-              _log.v("LNURL payment of $amount sats where "
-                  "min is ${widget.requestData.minSendable} msats "
-                  "and max is ${widget.requestData.maxSendable} msats.");
-              final resp = await accountBloc.lnurlPay(
-                amount: amount,
-                comment: comment,
-                reqData: widget.requestData,
-              );
-              navigator.removeRoute(loaderRoute);
-              if (resp is sdk.LnUrlPayResult_EndpointSuccess) {
-                _log.v("LNURL payment success, action: ${resp.data}");
-                navigator.pop(LNURLPaymentPageResult(
-                  successAction: resp.data,
-                ));
-              } else if (resp is sdk.LnUrlPayResult_EndpointError) {
-                _log.v("LNURL payment failed: ${resp.data.reason}");
-                navigator.pop(LNURLPaymentPageResult(
-                  error: resp.data.reason,
-                ));
-              } else {
-                _log.w("Unknown response from lnurlPay: $resp");
-                navigator.pop(LNURLPaymentPageResult(
-                  error: texts.lnurl_payment_page_unknown_error,
-                ));
-              }
-            } catch (e) {
-              _log.w("Error sending LNURL payment", ex: e);
-              navigator.removeRoute(loaderRoute);
-              navigator.pop(LNURLPaymentPageResult(error: e));
-            }
+            final amount = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
+            final comment = _commentController.text;
+            _log.v("LNURL payment of $amount sats where "
+                "min is ${widget.requestData.minSendable} msats "
+                "and max is ${widget.requestData.maxSendable} msats."
+                "with comment $comment");
+            Navigator.pop(context, LNURLPaymentInfo(amount: amount, comment: comment));
           }
         },
       ),

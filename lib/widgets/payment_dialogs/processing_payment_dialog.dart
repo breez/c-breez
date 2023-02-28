@@ -11,6 +11,7 @@ class ProcessingPaymentDialog extends StatefulWidget {
   final GlobalKey? firstPaymentItemKey;
   final double minHeight;
   final bool popOnCompletion;
+  final bool isLnurlPayment;
   final Future Function() paymentFunc;
   final Function(PaymentRequestState state)? onStateChange;
 
@@ -18,6 +19,7 @@ class ProcessingPaymentDialog extends StatefulWidget {
     this.firstPaymentItemKey,
     this.minHeight = 220,
     this.popOnCompletion = false,
+    this.isLnurlPayment = false,
     required this.paymentFunc,
     this.onStateChange,
     Key? key,
@@ -82,16 +84,25 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   }
 
   _payAndClose() {
-    widget.paymentFunc().then((value) => _animateClose()).catchError((err) {
+    final navigator = Navigator.of(context);
+    widget.paymentFunc().then((payResult) async {
+      await _animateClose();
+      if (widget.isLnurlPayment) {
+        navigator.pop(payResult);
+      }
+    }).catchError((err) {
       if (widget.popOnCompletion) {
-        Navigator.of(context).removeRoute(_currentRoute!);
+        navigator.removeRoute(_currentRoute!);
       }
       widget.onStateChange?.call(PaymentRequestState.PAYMENT_COMPLETED);
+      if (widget.isLnurlPayment) {
+        navigator.pop(err);
+      }
     });
   }
 
-  void _animateClose() {
-    Future.delayed(const Duration(milliseconds: 50)).then((_) {
+  Future _animateClose() {
+    return Future.delayed(const Duration(milliseconds: 50)).then((_) {
       _initializeTransitionAnimation();
       setState(() {
         _animating = true;

@@ -2,8 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/receive_options_bottom_sheet.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/send_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -23,48 +21,38 @@ class BottomActionsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final actionsGroup = AutoSizeGroup();
 
-    return BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, account) {
-        return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
-          final isLspSelected = (lspState?.selectedLspId != null);
-
-          return BottomAppBar(
-            child: SizedBox(
-              height: 60,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SendOptions(
-                    isLspSelected: isLspSelected,
-                    firstPaymentItemKey: firstPaymentItemKey,
-                    actionsGroup: actionsGroup,
-                  ),
-                  Container(width: 64),
-                  ReceiveOptions(
-                    account: account,
-                    isLspSelected: isLspSelected,
-                    firstPaymentItemKey: firstPaymentItemKey,
-                    actionsGroup: actionsGroup,
-                  )
-                ],
+    return BlocBuilder<AccountBloc, AccountState>(builder: (context, account) {
+      return BottomAppBar(
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SendOptions(
+                firstPaymentItemKey: firstPaymentItemKey,
+                actionsGroup: actionsGroup,
               ),
-            ),
-          );
-        });
-      },
-    );
+              Container(width: 64),
+              ReceiveOptions(
+                account: account,
+                firstPaymentItemKey: firstPaymentItemKey,
+                actionsGroup: actionsGroup,
+              )
+            ],
+          ),
+        ),
+      );
+    });
   }
 }
 
 class SendOptions extends StatelessWidget {
-  final bool isLspSelected;
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
   final AutoSizeGroup actionsGroup;
 
   const SendOptions({
     Key? key,
-    required this.isLspSelected,
     required this.firstPaymentItemKey,
     required this.actionsGroup,
   }) : super(key: key);
@@ -78,7 +66,6 @@ class SendOptions extends StatelessWidget {
         context: context,
         builder: (context) {
           return SendOptionsBottomSheet(
-            isLspSelected: isLspSelected,
             firstPaymentItemKey: firstPaymentItemKey,
           );
         },
@@ -92,14 +79,12 @@ class SendOptions extends StatelessWidget {
 
 class ReceiveOptions extends StatelessWidget {
   final AccountState account;
-  final bool isLspSelected;
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
   final AutoSizeGroup actionsGroup;
 
   const ReceiveOptions({
     Key? key,
     required this.account,
-    required this.isLspSelected,
     required this.firstPaymentItemKey,
     required this.actionsGroup,
   }) : super(key: key);
@@ -113,7 +98,6 @@ class ReceiveOptions extends StatelessWidget {
         builder: (context) {
           return ReceiveOptionsBottomSheet(
             account: account,
-            isLspSelected: isLspSelected,
             firstPaymentItemKey: firstPaymentItemKey,
           );
         },

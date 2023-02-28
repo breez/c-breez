@@ -12,12 +12,10 @@ import 'bottom_action_item_image.dart';
 
 class ReceiveOptionsBottomSheet extends StatelessWidget {
   final AccountState account;
-  final bool connected;
   final GlobalKey firstPaymentItemKey;
 
   const ReceiveOptionsBottomSheet({
     super.key,
-    required this.connected,
     required this.firstPaymentItemKey,
     required this.account,
   });
@@ -34,10 +32,8 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
           children: [
             const SizedBox(height: 8.0),
             ListTile(
-              enabled: connected,
-              leading: BottomActionItemImage(
+              leading: const BottomActionItemImage(
                 iconAssetPath: "src/icon/paste.png",
-                enabled: connected,
               ),
               title: Text(
                 texts.bottom_action_bar_receive_invoice,
@@ -51,10 +47,8 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
               indent: 72.0,
             ),
             ListTile(
-              enabled: connected,
-              leading: BottomActionItemImage(
+              leading: const BottomActionItemImage(
                 iconAssetPath: "src/icon/bitcoin.png",
-                enabled: connected,
               ),
               title: Text(
                 texts.bottom_action_bar_receive_btc_address,

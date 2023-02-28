@@ -169,18 +169,17 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     navigator.pop();
 
     showDialog(
-      useRootNavigator: false,
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => LNURLWithdrawDialog(
-        requestData: data,
-        amountSats: currencyBloc.state.bitcoinCurrency.parse(
-          _amountController.text,
-        ),
-        domain: widget.domain!,
-        onFinish: widget.onFinish!,
-      ),
-    );
+        useRootNavigator: false,
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => LNURLWithdrawDialog(
+              requestData: data,
+              amountSats: currencyBloc.state.bitcoinCurrency.parse(
+                _amountController.text,
+              ),
+              domain: widget.domain!,
+              onFinish: widget.onFinish!,
+            ));
   }
 
   Future _createInvoice(BuildContext context) async {
@@ -210,11 +209,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     );
 
     return showDialog(
-      useRootNavigator: false,
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => dialog,
-    );
+        useRootNavigator: false, context: context, barrierDismissible: false, builder: (_) => dialog);
   }
 
   void onPaymentFinished(

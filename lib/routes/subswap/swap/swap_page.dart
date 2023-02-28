@@ -34,7 +34,6 @@ class SwapPageState extends State<SwapPage> {
     return BlocBuilder<SwapInBloc, SwapInState>(builder: (context, swapState) {
       final SwapInBloc swapInBloc = context.read();
       final texts = context.texts();
-
       return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -53,13 +52,13 @@ class SwapPageState extends State<SwapPage> {
                         SwapInprogress(swap: swapState.inProgress!)
                     ],
                     if (swapState.error != null) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(
+                      const Padding(
+                        padding: EdgeInsets.only(
                           top: 50.0,
                           left: 30.0,
                           right: 30.0,
                         ),
-                        child: Text(swapState.error!, textAlign: TextAlign.center),
+                        child: Text("Error swapping", textAlign: TextAlign.center),
                       ),
                     ]
                   ],

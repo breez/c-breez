@@ -134,7 +134,7 @@ class Config {
     return sdk.Network.values.firstWhere(
       (network) => network.name.toLowerCase() == configuredNetwork,
       orElse: () {
-        _log.w("Failed to parse network from breez.conf: $configuredNetwork, using default: ${defaultConf.network}");
+        _log.w("Failed to parse from breez.conf: $configuredNetwork, using default: ${defaultConf.network}");
         return defaultConf.network;
       },
     );
@@ -143,7 +143,7 @@ class Config {
   static int _paymentTimeoutSec(ini.Config breezConfig, sdk.Config defaultConf) {
     final configuredPaymentTimeout = breezConfig.get(_configName, "paymentTimeoutSec");
     if (configuredPaymentTimeout == null) {
-      _log.v("No paymentTimeoutSec configured in breez.conf, using default: ${defaultConf.paymentTimeoutSec}");
+      _log.v("No paymentTimeoutSec configured in breez.conf using default: ${defaultConf.paymentTimeoutSec}");
       return defaultConf.paymentTimeoutSec;
     }
     try {

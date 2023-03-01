@@ -28,7 +28,7 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
 
     return BlocBuilder<NetworkSettingsBloc, NetworkSettingsState>(
       builder: (context, state) {
-        _log.v("Building with: $state, userChanged: $_userChanged, saving: $_saving, errorOnSave: $_errorOnSave");
+        _log.v("Building: $state, userChanged: $_userChanged, saving: $_saving, errorOnSave: $_errorOnSave");
         if (_mempoolUrlController.text.isEmpty && !_userChanged) {
           _mempoolUrlController.text = state.mempoolUrl;
         }

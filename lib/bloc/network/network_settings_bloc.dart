@@ -6,11 +6,14 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin {
   final Preferences _preferences;
+  final http.Client _httpClient;
   final _log = FimberLog("NetworkSettingsBloc");
 
   NetworkSettingsBloc(
-    this._preferences,
-  ) : super(NetworkSettingsState.initial()) {
+    this._preferences, {
+    http.Client? httpClient,
+  })  : _httpClient = httpClient ?? http.Client(),
+        super(NetworkSettingsState.initial()) {
     _fetchMempoolSettings().then((_) => _log.v("Inial mempool settings read"));
   }
 
@@ -54,15 +57,16 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   Future<void> _fetchMempoolSettings() async {
     _log.v("Fetching mempool settings");
     final mempoolUrl = await _preferences.getMempoolSpaceUrl();
-    _log.v("Mempool url fetched: $mempoolUrl");
+    final mempoolFallbackUrl = await _preferences.getMempoolSpaceFallbackUrl();
+    _log.v("Mempool url fetched: $mempoolUrl, fallback: $mempoolFallbackUrl");
     emit(state.copyWith(
-      mempoolUrl: mempoolUrl,
+      mempoolUrl: mempoolUrl ?? mempoolFallbackUrl,
     ));
   }
 
   Future<bool> _testUri(Uri uri) async {
     try {
-      final response = await http.get(uri);
+      final response = await _httpClient.get(uri);
       return response.statusCode < 400;
     } catch (e) {
       _log.w("Failed to test mempool url: $uri", ex: e);

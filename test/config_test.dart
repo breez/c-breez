@@ -122,7 +122,7 @@ void main() {
       expect(config.mempoolspaceUrl, mempoolSpaceUrl);
     });
 
-    test('mempool space url not set in preferences with a fallback on breez config should use the fallback', () async {
+    test('mempool space url not set in preferences with a fallback should use the fallback', () async {
       final defaultConf = _defaultConf();
       injector.preferencesMock.mempoolSpaceUrl = null;
       const fallbackMempoolSpaceUrl = "a fallback mempool space url";
@@ -133,7 +133,7 @@ void main() {
       expect(injector.preferencesMock.setMempoolSpaceFallbackUrlUrl, fallbackMempoolSpaceUrl);
     });
 
-    test('mempool space url not set in preferences with no fallback on breez config should use the default', () async {
+    test('mempool space url not set in preferences with no fallback should use the default', () async {
       final defaultConf = _defaultConf();
       injector.preferencesMock.mempoolSpaceUrl = null;
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);

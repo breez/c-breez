@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 import '../../mock/injector_mock.dart';
+import '../../unit_logger.dart';
 import '../../utils/fake_path_provider_platform.dart';
 import '../../utils/hydrated_bloc_storage.dart';
 
@@ -14,18 +15,22 @@ var testMnemonic = 'update elbow source spin squeeze horror world become oak ass
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final platform = FakePathProviderPlatform();
-  InjectorMock injector = InjectorMock();
+  final hydratedBlocStorage = HydratedBlocStorage();
+  late InjectorMock injector;
+  setUpLogger();
+
   group('account', () {
     setUp(() async {
+      injector = InjectorMock();
       ServiceInjector.configure(injector);
       await platform.setUp();
       PathProviderPlatform.instance = platform;
-      await setUpHydratedBloc();
+      await hydratedBlocStorage.setUpHydratedBloc();
     });
 
     tearDown(() async {
       await platform.tearDown();
-      await tearDownHydratedBloc();
+      await hydratedBlocStorage.tearDownHydratedBloc();
     });
 
     test('recover node', () async {

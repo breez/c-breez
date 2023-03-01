@@ -11,17 +11,19 @@ import 'utils/hydrated_bloc_storage.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final platform = FakePathProviderPlatform();
-  InjectorMock injector = InjectorMock();
+  final hydratedBlocStorage = HydratedBlocStorage();
+  late InjectorMock injector;
+  setUpLogger();
 
   group('breez_user_model_tests', () {
     late UserProfileBloc userProfileBloc;
 
     setUp(() async {
-      setUpLogger();
+      injector = InjectorMock();
       ServiceInjector.configure(injector);
       await platform.setUp();
       PathProviderPlatform.instance = platform;
-      await setUpHydratedBloc();
+      await hydratedBlocStorage.setUpHydratedBloc();
       userProfileBloc = UserProfileBloc(
         injector.breezServer,
         injector.notifications,
@@ -30,7 +32,7 @@ void main() {
 
     tearDown(() async {
       await platform.tearDown();
-      await tearDownHydratedBloc();
+      await hydratedBlocStorage.tearDownHydratedBloc();
     });
 
     test("should return empty user when not registered", () async {

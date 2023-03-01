@@ -12,24 +12,25 @@ import '../../utils/hydrated_bloc_storage.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final platform = FakePathProviderPlatform();
-  InjectorMock injector = InjectorMock();
+  final hydratedBlocStorage = HydratedBlocStorage();
+  late InjectorMock injector;
+  setUpLogger();
 
   group('input parser', () {
     setUp(() async {
-      setUpLogger();
+      injector = InjectorMock();
       ServiceInjector.configure(injector);
       await platform.setUp();
       PathProviderPlatform.instance = platform;
-      await setUpHydratedBloc();
+      await hydratedBlocStorage.setUpHydratedBloc();
     });
 
     tearDown(() async {
       await platform.tearDown();
-      await tearDownHydratedBloc();
+      await hydratedBlocStorage.tearDownHydratedBloc();
     });
 
     test('lnurl', () async {
-      final injector = InjectorMock();
       var breezLib = injector.breezLib;
 
       const input = "LNURL1DP68GURN8GHJ7MRFVA58GUMPW3EJUCM0D5HKZURF9ASH2ARG9AKXUATJDSHKGMEDD3HKW6TW"

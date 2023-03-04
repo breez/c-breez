@@ -64,13 +64,13 @@ dependencies:
   # Doesn't support: Linux Mac Windows
   image_cropper: ^3.0.1
   # Doesn't support: Linux Mac Windows
-  image_picker: ^0.8.6+3
+  image_picker: ^0.8.6+4
   ini: ^2.1.0
   intl: ^0.18.0
   # Doesn't support: Linux Mac
-  local_auth: ^2.1.5
-  local_auth_android: ^1.0.19
-  local_auth_ios: ^1.0.13
+  local_auth: ^2.1.6
+  local_auth_android: ^1.0.20
+  local_auth_ios: ^1.1.0
   mockito: ^5.3.2
   # Doesn't support: Linux Windows
   mobile_scanner: ^3.0.0

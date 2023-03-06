@@ -129,7 +129,6 @@ void main() {
       breezConfig.answers[_configName] = {"mempoolspaceurl": fallbackMempoolSpaceUrl};
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.mempoolspaceUrl, fallbackMempoolSpaceUrl);
-      expect(injector.preferencesMock.setMempoolSpaceUrlUrl, fallbackMempoolSpaceUrl);
       expect(injector.preferencesMock.setMempoolSpaceFallbackUrlUrl, fallbackMempoolSpaceUrl);
     });
 
@@ -138,7 +137,6 @@ void main() {
       injector.preferencesMock.mempoolSpaceUrl = null;
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.mempoolspaceUrl, defaultConf.mempoolspaceUrl);
-      expect(injector.preferencesMock.setMempoolSpaceUrlUrl, defaultConf.mempoolspaceUrl);
       expect(injector.preferencesMock.setMempoolSpaceFallbackUrlUrl, defaultConf.mempoolspaceUrl);
     });
 

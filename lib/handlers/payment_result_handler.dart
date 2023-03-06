@@ -1,7 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +11,8 @@ class PaymentResultHandler {
 
   final BuildContext context;
   final AccountBloc accountBloc;
-  final CurrencyBloc currencyBloc;
 
-  PaymentResultHandler(this.context, this.accountBloc, this.currencyBloc) {
+  PaymentResultHandler(this.context, this.accountBloc) {
     _log.v("PaymentResultHandler created");
     accountBloc.paymentResultStream.delay(const Duration(seconds: 1)).listen(
       (paymentResult) async {
@@ -35,7 +33,7 @@ class PaymentResultHandler {
           _log.v("paymentResult error: ${paymentResult.error}");
           showFlushbar(
             context,
-            message: paymentResult.errorMessage(currencyBloc.state),
+            message: paymentResult.errorMessage(),
           );
         }
       },

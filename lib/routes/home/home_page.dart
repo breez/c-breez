@@ -49,7 +49,7 @@ class HomeState extends State<Home> with AutoLockMixin {
     );
     checkVersionDialog(context, context.read());
     ConnectivityHandler(context, context.read());
-    PaymentResultHandler(context, context.read(), context.read());
+    PaymentResultHandler(context, context.read());
   }
 
   @override

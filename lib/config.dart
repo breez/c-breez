@@ -98,23 +98,24 @@ class Config {
     sdk.Config defaultConf,
   ) async {
     final preferences = serviceInjector.preferences;
-    final url = await preferences.getMempoolSpaceUrl();
-    if (url != null) {
-      _log.v("Using mempoolspaceurl from preferences: $url");
-      return url;
-    }
 
     var fallbackUrl = breezConfig.get(_configName, "mempoolspaceurl");
     if (fallbackUrl != null) {
-      _log.v("Using mempoolspaceurl from breez.conf: $fallbackUrl");
+      _log.v("Using fallback mempoolspace url from breez conf: $fallbackUrl");
     } else {
       fallbackUrl = defaultConf.mempoolspaceUrl;
-      _log.v("No mempoolspaceurl configured in breez.conf, using default: $fallbackUrl");
+      _log.v("Using fallback mempoolspace url from default conf: $fallbackUrl");
     }
-
-    await preferences.setMempoolSpaceUrl(fallbackUrl);
     await preferences.setMempoolSpaceFallbackUrl(fallbackUrl);
-    return fallbackUrl;
+
+    final url = await preferences.getMempoolSpaceUrl();
+    if (url != null) {
+      _log.v("Using mempoolspace url from preferences: $url");
+      return url;
+    } else {
+      _log.v("No mempoolspace url in preferences, using fallback: $fallbackUrl");
+      return fallbackUrl;
+    }
   }
 
   static Future<String> _workingDir() async {

@@ -14,14 +14,14 @@ PODS:
   - Firebase/Messaging (10.3.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 10.3.0)
-  - firebase_core (2.7.0):
+  - firebase_core (2.7.1):
     - Firebase/CoreOnly (= 10.3.0)
     - Flutter
-  - firebase_dynamic_links (5.0.15):
+  - firebase_dynamic_links (5.0.16):
     - Firebase/DynamicLinks (= 10.3.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (14.2.5):
+  - firebase_messaging (14.2.6):
     - Firebase/Messaging (= 10.3.0)
     - firebase_core
     - Flutter
@@ -283,9 +283,9 @@ SPEC CHECKSUMS:
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   Firebase: f92fc551ead69c94168d36c2b26188263860acd9
-  firebase_core: 128d8c43c3a453a4a67463314fc3761bedff860b
-  firebase_dynamic_links: bb28b0958fd7f9c026611fcc11a61d9a40a0820c
-  firebase_messaging: 8ac28baba96e69a58ad26b4bb5f9ee67c3e5efe2
+  firebase_core: 1ae9f9aa76e6e1edc14fb181637ad466fd6c6fa4
+  firebase_dynamic_links: 42ab4dd387b07d5c7af2e9aa63a7b5fa3518dd8b
+  firebase_messaging: f8c01f8b540feb4196e8dbe45ae17534747d779d
   FirebaseCore: 988754646ab3bd4bdcb740f1bfe26b9f6c0d5f2a
   FirebaseCoreInternal: c7cd505e2136811096b225ac388d6254a2622362
   FirebaseDynamicLinks: 51c81d07bd63155bb56d76b0abdda79c8a3d8d02

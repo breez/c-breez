@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
@@ -21,6 +23,16 @@ extension PaymentExtensions on Payment {
           return texts.payment_info_title_pending_closed_channel;
         case ChannelState.Closed:
           return texts.payment_info_title_closed_channel;
+      }
+    }
+    final detailsData = details.data;
+    if (detailsData is LnPaymentDetails && detailsData.lnurlMetadata != null) {
+      final metadataMap = {
+        for (var v in json.decode(detailsData.lnurlMetadata!)) v[0] as String: v[1],
+      };
+      String? title = metadataMap['text/identifier'] ?? metadataMap['text/plain'];
+      if (title != null) {
+        return title;
       }
     }
 
@@ -50,6 +62,16 @@ extension PaymentExtensions on Payment {
           return texts.payment_info_title_pending_closed_channel;
         case ChannelState.Closed:
           return texts.payment_info_title_closed_channel;
+      }
+    }
+    final detailsData = details.data;
+    if (detailsData is LnPaymentDetails && detailsData.lnurlMetadata != null) {
+      final metadataMap = {
+        for (var v in json.decode(detailsData.lnurlMetadata!)) v[0] as String: v[1],
+      };
+      String? description = metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
+      if (description != null) {
+        return description;
       }
     }
 

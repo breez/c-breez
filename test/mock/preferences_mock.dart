@@ -22,17 +22,4 @@ class PreferencesMock extends Mock implements Preferences {
     resetMempoolSpaceUrlCalled++;
     return Future<void>.value();
   }
-
-  String? mempoolSpaceFallbackUrl = "https://mempool.space/";
-
-  @override
-  Future<String?> getMempoolSpaceFallbackUrl() => Future<String?>.value(mempoolSpaceFallbackUrl);
-
-  String? setMempoolSpaceFallbackUrlUrl;
-
-  @override
-  Future<void> setMempoolSpaceFallbackUrl(String url) {
-    setMempoolSpaceFallbackUrlUrl = url;
-    return Future<void>.value();
-  }
 }

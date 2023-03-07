@@ -15,19 +15,4 @@ void main() {
     await preferences.setMempoolSpaceUrl(url);
     expect(await preferences.getMempoolSpaceUrl(), url);
   });
-
-  test('mempool space url reset', () async {
-    final preferences = Preferences();
-    const url = "a mempool space fallback url";
-    await preferences.setMempoolSpaceFallbackUrl(url);
-    await preferences.resetMempoolSpaceUrl();
-    expect(await preferences.getMempoolSpaceUrl(), isNull);
-  });
-
-  test('mempool space fallback url', () async {
-    final preferences = Preferences();
-    const url = "a mempool space fallback url";
-    await preferences.setMempoolSpaceFallbackUrl(url);
-    expect(await preferences.getMempoolSpaceFallbackUrl(), url);
-  });
 }

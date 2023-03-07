@@ -83,6 +83,7 @@ void main() async {
           BlocProvider<NetworkSettingsBloc>(
             create: (BuildContext context) => NetworkSettingsBloc(
               injector.preferences,
+              breezLib,
             ),
           ),
         ],

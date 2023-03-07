@@ -116,7 +116,7 @@ class InputHandler {
     if (result.successAction != null) {
       _handleSuccessAction(result.successAction!);
     } else {
-      _log.v("Handle LNURL withdraw page result with error '${result.error}'");
+      _log.v("Handle LNURL payment page result with error '${result.error}'");
       throw Exception(
         extractExceptionMessage(
           result.error!,

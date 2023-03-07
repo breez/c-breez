@@ -29,6 +29,9 @@ Future handleLNURL(
   } else if (requestData is LnUrlWithdrawRequestData) {
     _log.v("Handling withdrawalParams: $requestData");
     return handleWithdrawRequest(context, requestData);
+  } else if (requestData is LnUrlErrorData) {
+    _log.v("Handling lnurl error: $requestData");
+    throw requestData.reason;
   }
   _log.w("Unsupported lnurl $requestData");
   throw context.texts().lnurl_error_unsupported;

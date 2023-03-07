@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/services/injector.dart';
+import 'package:c_breez/utils/external_browser.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -8,6 +9,13 @@ import 'package:share_plus/share_plus.dart';
 class ShareablePaymentRow extends StatelessWidget {
   final String title;
   final String sharedValue;
+  final bool isURL;
+  final bool isExpanded;
+  final TextStyle? titleTextStyle;
+  final TextStyle? childrenTextStyle;
+  final EdgeInsets? iconPadding;
+  final EdgeInsets? tilePadding;
+  final EdgeInsets? childrenPadding;
   final AutoSizeGroup? labelAutoSizeGroup;
   final AutoSizeGroup? valueAutoSizeGroup;
 
@@ -15,6 +23,13 @@ class ShareablePaymentRow extends StatelessWidget {
     Key? key,
     required this.title,
     required this.sharedValue,
+    this.isURL = false,
+    this.isExpanded = false,
+    this.titleTextStyle,
+    this.childrenTextStyle,
+    this.iconPadding,
+    this.tilePadding,
+    this.childrenPadding,
     this.labelAutoSizeGroup,
     this.valueAutoSizeGroup,
   }) : super(key: key);
@@ -30,11 +45,13 @@ class ShareablePaymentRow extends StatelessWidget {
         dividerColor: themeData.colorScheme.background,
       ),
       child: ExpansionTile(
-        iconColor: color,
+        iconColor: isExpanded ? Colors.transparent : color,
         collapsedIconColor: color,
+        initiallyExpanded: isExpanded,
+        tilePadding: tilePadding,
         title: AutoSizeText(
           title,
-          style: themeData.primaryTextTheme.headlineMedium,
+          style: titleTextStyle ?? themeData.primaryTextTheme.headlineMedium,
           maxLines: 1,
           group: labelAutoSizeGroup,
         ),
@@ -45,13 +62,18 @@ class ShareablePaymentRow extends StatelessWidget {
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 16.0, right: 0.0),
-                  child: Text(
-                    sharedValue,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.clip,
-                    maxLines: 4,
-                    style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 10),
+                  padding: childrenPadding ?? const EdgeInsets.only(left: 16.0, right: 0.0),
+                  child: GestureDetector(
+                    onTap:
+                        isURL ? () => launchLinkOnExternalBrowser(context, linkAddress: sharedValue) : null,
+                    child: Text(
+                      sharedValue,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.clip,
+                      maxLines: 4,
+                      style: childrenTextStyle ??
+                          themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 10),
+                    ),
                   ),
                 ),
               ),
@@ -65,7 +87,7 @@ class ShareablePaymentRow extends StatelessWidget {
                     children: [
                       IconButton(
                         alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 8.0),
+                        padding: iconPadding ?? const EdgeInsets.only(right: 8.0),
                         tooltip: texts.payment_details_dialog_copy_action(title),
                         iconSize: 16.0,
                         color: color,
@@ -83,7 +105,7 @@ class ShareablePaymentRow extends StatelessWidget {
                         },
                       ),
                       IconButton(
-                        padding: const EdgeInsets.only(right: 8.0),
+                        padding: iconPadding ?? const EdgeInsets.only(right: 8.0),
                         tooltip: texts.payment_details_dialog_share_transaction,
                         iconSize: 16.0,
                         color: color,

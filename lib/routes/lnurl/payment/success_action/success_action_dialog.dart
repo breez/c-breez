@@ -1,8 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/utils/exceptions.dart';
-import 'package:c_breez/utils/external_browser.dart';
-import 'package:c_breez/widgets/flushbar.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/dialog/shareable_payment_row.dart';
 import 'package:flutter/material.dart';
 
 class SuccessActionDialog extends StatefulWidget {
@@ -24,17 +22,35 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
     final texts = context.texts();
 
     return AlertDialog(
+      title: Text(texts.ln_url_success_action_title),
       content: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Message(widget.message),
-            if (widget.url != null) ...[URLText(widget.url!)]
+            if (widget.url == null) Message(widget.message),
+            if (widget.url != null) ...[
+              ShareablePaymentRow(
+                title: widget.message,
+                sharedValue: widget.url!,
+                isURL: true,
+                isExpanded: true,
+                titleTextStyle: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
+                childrenTextStyle: themeData.primaryTextTheme.displaySmall!.copyWith(
+                  fontSize: 12,
+                  height: 1.5,
+                  color: Colors.blue,
+                ),
+                iconPadding: EdgeInsets.zero,
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: EdgeInsets.zero,
+              ),
+            ],
           ],
         ),
       ),
+      contentPadding: const EdgeInsets.only(top: 16.0, left: 32.0, right: 32.0),
       actions: [
         TextButton(
           style: ButtonStyle(
@@ -54,39 +70,6 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
             style: themeData.primaryTextTheme.labelLarge,
           ),
         ),
-        if (widget.url != null) ...[
-          TextButton(
-            style: ButtonStyle(
-              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.pressed)) {
-                    return Colors.transparent;
-                  }
-                  // Defer to the widget's default.
-                  return themeData.textTheme.labelLarge!.color!;
-                },
-              ),
-            ),
-            child: Text(
-              texts.qr_action_button_open_link.toUpperCase(),
-              style: themeData.primaryTextTheme.labelLarge,
-            ),
-            onPressed: () async {
-              final String url = widget.url!;
-              final navigator = Navigator.of(context);
-              try {
-                await launchLinkOnExternalBrowser(
-                  context,
-                  linkAddress: url,
-                );
-                navigator.pop();
-              } catch (e) {
-                navigator.pop();
-                showFlushbar(context, message: extractExceptionMessage(e, texts));
-              }
-            },
-          )
-        ]
       ],
     );
   }
@@ -101,7 +84,7 @@ class Message extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
+      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: Container(
         constraints: const BoxConstraints(
           maxHeight: 200,
@@ -112,48 +95,10 @@ class Message extends StatelessWidget {
             child: AutoSizeText(
               message,
               style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
-              textAlign: message.length > 40 && !message.contains("\n") ? TextAlign.start : TextAlign.center,
+              textAlign: message.length > 40 && !message.contains("\n") ? TextAlign.start : TextAlign.left,
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class URLText extends StatelessWidget {
-  final String url;
-
-  const URLText(this.url, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    var dialogTheme = Theme.of(context).dialogTheme;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            url,
-            style: dialogTheme.contentTextStyle!.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(
-            width: 0.0,
-            height: 16.0,
-          ),
-          Text(
-            "Are you sure you want to open this link?",
-            style: dialogTheme.contentTextStyle,
-            textAlign: TextAlign.center,
-          ),
-        ],
       ),
     );
   }

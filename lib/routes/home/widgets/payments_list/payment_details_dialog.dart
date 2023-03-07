@@ -8,6 +8,7 @@ import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_destination_pubkey.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_expiration.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_preimage.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_success_action.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_title.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +64,9 @@ class PaymentDetailsDialog extends StatelessWidget {
                 paymentInfo: paymentInfo,
                 labelAutoSizeGroup: _labelGroup,
                 valueAutoSizeGroup: _valueGroup,
+              ),
+              PaymentDetailsDialogSuccessAction(
+                paymentInfo: paymentInfo,
               ),
               PaymentDetailsDialogExpiration(
                 paymentInfo: paymentInfo,

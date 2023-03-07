@@ -7,6 +7,7 @@ import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_description.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_destination_pubkey.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_expiration.dart';
+import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_ln_address.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_preimage.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_success_action.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_title.dart';
@@ -61,6 +62,11 @@ class PaymentDetailsDialog extends StatelessWidget {
                 valueAutoSizeGroup: _valueGroup,
               ),
               PaymentDetailsDialogDate(
+                paymentInfo: paymentInfo,
+                labelAutoSizeGroup: _labelGroup,
+                valueAutoSizeGroup: _valueGroup,
+              ),
+              PaymentDetailsDialogLnAddress(
                 paymentInfo: paymentInfo,
                 labelAutoSizeGroup: _labelGroup,
                 valueAutoSizeGroup: _valueGroup,

@@ -36,6 +36,7 @@ void main() {
 
     NetworkSettingsBloc make() => NetworkSettingsBloc(
           injector.preferences,
+          injector.breezLib,
           httpClient: httpClient,
         );
 
@@ -52,9 +53,8 @@ void main() {
     });
 
     test('initial setup should emit fallback url if no url in preferences', () async {
-      const url = "a fallback mempool url";
+      const url = "https://mempool.space";
       injector.preferencesMock.mempoolSpaceUrl = null;
-      injector.preferencesMock.mempoolSpaceFallbackUrl = url;
       final bloc = make();
       expectLater(
         bloc.stream,

@@ -1,3 +1,4 @@
+import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:fimber/fimber.dart';
@@ -24,13 +25,26 @@ class Config {
       _log.v("Creating Config instance");
       final injector = serviceInjector ?? ServiceInjector();
       final breezLib = injector.breezLib;
-      String configString = await rootBundle.loadString('conf/breez.conf');
-      ini.Config breezConfig = ini.Config.fromString(configString);
-      final defaultConf = await breezLib.defaultConfig(sdk.EnvironmentType.Production);
+      final breezConfig = await _getBundledConfig();
+      final defaultConf = await _getDefaultConf(breezLib);
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
       _instance = Config._(sdkConfig);
     }
     return _instance!;
+  }
+
+  static Future<ini.Config> _getBundledConfig() async {
+    _log.v("Getting bundled config");
+    String configString = await rootBundle.loadString('conf/breez.conf');
+    return ini.Config.fromString(configString);
+  }
+
+  static Future<sdk.Config> _getDefaultConf(
+    BreezBridge breezLib, {
+    sdk.EnvironmentType environmentType = sdk.EnvironmentType.Production,
+  }) async {
+    _log.v("Getting default SDK config for environment: $environmentType");
+    return await breezLib.defaultConfig(environmentType);
   }
 
   static Future<sdk.Config> getSDKConfig(
@@ -92,6 +106,26 @@ class Config {
     return configuredBreezServer;
   }
 
+  static Future<String> getMempoolSpaceDefaultUrl(BreezBridge breezLib) async {
+    final breezConfig = await _getBundledConfig();
+    final defaultConf = await _getDefaultConf(breezLib);
+    return _mempoolSpaceDefaultUrl(breezConfig, defaultConf);
+  }
+
+  static String _mempoolSpaceDefaultUrl(
+    ini.Config breezConfig,
+    sdk.Config defaultConf,
+  ) {
+    final defaultUrl = breezConfig.get(_configName, "mempoolspaceurl");
+    if (defaultUrl != null) {
+      _log.v("Using default mempoolspace url from breez conf: $defaultUrl");
+      return defaultUrl;
+    } else {
+      _log.v("Using default mempoolspace url from default conf: ${defaultConf.mempoolspaceUrl}");
+      return defaultConf.mempoolspaceUrl;
+    }
+  }
+
   static Future<String> _mempoolSpaceUrl(
     ServiceInjector serviceInjector,
     ini.Config breezConfig,
@@ -99,22 +133,14 @@ class Config {
   ) async {
     final preferences = serviceInjector.preferences;
 
-    var fallbackUrl = breezConfig.get(_configName, "mempoolspaceurl");
-    if (fallbackUrl != null) {
-      _log.v("Using fallback mempoolspace url from breez conf: $fallbackUrl");
-    } else {
-      fallbackUrl = defaultConf.mempoolspaceUrl;
-      _log.v("Using fallback mempoolspace url from default conf: $fallbackUrl");
-    }
-    await preferences.setMempoolSpaceFallbackUrl(fallbackUrl);
-
     final url = await preferences.getMempoolSpaceUrl();
     if (url != null) {
       _log.v("Using mempoolspace url from preferences: $url");
       return url;
     } else {
-      _log.v("No mempoolspace url in preferences, using fallback: $fallbackUrl");
-      return fallbackUrl;
+      final defaultUrl = _mempoolSpaceDefaultUrl(breezConfig, defaultConf);
+      _log.v("No mempoolspace url in preferences, using default: $defaultUrl");
+      return defaultUrl;
     }
   }
 

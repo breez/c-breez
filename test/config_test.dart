@@ -122,22 +122,20 @@ void main() {
       expect(config.mempoolspaceUrl, mempoolSpaceUrl);
     });
 
-    test('mempool space url not set in preferences with a fallback should use the fallback', () async {
+    test('mempool space url not set in preferences with a default should use the default', () async {
       final defaultConf = _defaultConf();
       injector.preferencesMock.mempoolSpaceUrl = null;
-      const fallbackMempoolSpaceUrl = "a fallback mempool space url";
-      breezConfig.answers[_configName] = {"mempoolspaceurl": fallbackMempoolSpaceUrl};
+      const defaultMempoolSpaceUrl = "a default mempool space url";
+      breezConfig.answers[_configName] = {"mempoolspaceurl": defaultMempoolSpaceUrl};
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
-      expect(config.mempoolspaceUrl, fallbackMempoolSpaceUrl);
-      expect(injector.preferencesMock.setMempoolSpaceFallbackUrlUrl, fallbackMempoolSpaceUrl);
+      expect(config.mempoolspaceUrl, defaultMempoolSpaceUrl);
     });
 
-    test('mempool space url not set in preferences with no fallback should use the default', () async {
+    test('mempool space url not set in preferences with no default should use the sdk default', () async {
       final defaultConf = _defaultConf();
       injector.preferencesMock.mempoolSpaceUrl = null;
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.mempoolspaceUrl, defaultConf.mempoolspaceUrl);
-      expect(injector.preferencesMock.setMempoolSpaceFallbackUrlUrl, defaultConf.mempoolspaceUrl);
     });
 
     test('working dir should use application documents directory', () async {

@@ -1,4 +1,6 @@
+import 'package:breez_sdk/breez_bridge.dart';
 import 'package:c_breez/bloc/network/network_settings_state.dart';
+import 'package:c_breez/config.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:fimber/fimber.dart';
 import 'package:http/http.dart' as http;
@@ -7,10 +9,12 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin {
   final Preferences _preferences;
   final http.Client _httpClient;
+  final BreezBridge _breezLib;
   final _log = FimberLog("NetworkSettingsBloc");
 
   NetworkSettingsBloc(
-    this._preferences, {
+    this._preferences,
+    this._breezLib, {
     http.Client? httpClient,
   })  : _httpClient = httpClient ?? http.Client(),
         super(NetworkSettingsState.initial()) {
@@ -57,7 +61,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   Future<void> _fetchMempoolSettings() async {
     _log.v("Fetching mempool settings");
     final mempoolUrl = await _preferences.getMempoolSpaceUrl();
-    final mempoolFallbackUrl = await _preferences.getMempoolSpaceFallbackUrl();
+    final mempoolFallbackUrl = await Config.getMempoolSpaceDefaultUrl(_breezLib);
     _log.v("Mempool url fetched: $mempoolUrl, fallback: $mempoolFallbackUrl");
     emit(state.copyWith(
       mempoolUrl: mempoolUrl ?? mempoolFallbackUrl,

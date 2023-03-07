@@ -38,11 +38,11 @@ dependencies:
   # Doesn't support: Linux Mac Windows
   flutter_fimber: ^0.6.5
   # Doesn't support: Linux Windows
-  firebase_core: ^2.7.0
+  firebase_core: ^2.7.1
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.0.15
+  firebase_dynamic_links: ^5.0.16
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.2.5
+  firebase_messaging: ^14.2.6
   flutter_bloc: ^8.1.2
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:

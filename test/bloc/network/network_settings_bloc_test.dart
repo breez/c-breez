@@ -95,5 +95,32 @@ void main() {
       expect(result, false);
       expect(injector.preferencesMock.setMempoolSpaceUrlUrl, null);
     });
+
+    test('set mempool space url with an ip should should set on the preferences', () async {
+      const url = "https://192.168.15.2";
+      httpClient.getAnswer[url] = http.Response("{}", 200);
+      final bloc = make();
+      final result = await bloc.setMempoolUrl(url);
+      expect(result, true);
+      expect(injector.preferencesMock.setMempoolSpaceUrlUrl, url);
+    });
+
+    test('set mempool space url with an ip and port should should set on the preferences', () async {
+      const url = "https://192.168.15.2:3006";
+      httpClient.getAnswer[url] = http.Response("{}", 200);
+      final bloc = make();
+      final result = await bloc.setMempoolUrl(url);
+      expect(result, true);
+      expect(injector.preferencesMock.setMempoolSpaceUrlUrl, url);
+    });
+
+    test('set mempool space url with an ip missing scheme should should set on the preferences', () async {
+      const url = "192.168.15.2";
+      httpClient.getAnswer["https://$url"] = http.Response("{}", 200);
+      final bloc = make();
+      final result = await bloc.setMempoolUrl(url);
+      expect(result, true);
+      expect(injector.preferencesMock.setMempoolSpaceUrlUrl, "https://$url");
+    });
   });
 }

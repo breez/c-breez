@@ -4,7 +4,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/utils/extensions/payment_extensions.dart';
 import 'package:flutter/material.dart';
 
-class PaymentDetailsDialogContentTitle extends StatelessWidget {
+class PaymentDetailsDialogContentTitle extends StatefulWidget {
   final Payment paymentInfo;
 
   const PaymentDetailsDialogContentTitle({
@@ -13,11 +13,19 @@ class PaymentDetailsDialogContentTitle extends StatelessWidget {
   });
 
   @override
+  State<PaymentDetailsDialogContentTitle> createState() => _PaymentDetailsDialogContentTitleState();
+}
+
+class _PaymentDetailsDialogContentTitleState extends State<PaymentDetailsDialogContentTitle> {
+  PaymentExtensions? paymentExtensions;
+
+  @override
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
+    final paymentExtensions = this.paymentExtensions ??= PaymentExtensions(widget.paymentInfo, texts);
 
-    final title = paymentInfo.extractTitle(texts);
+    final title = paymentExtensions.title();
     if (title.isEmpty) {
       return Container();
     }

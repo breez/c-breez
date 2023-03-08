@@ -5,7 +5,7 @@ import 'package:c_breez/utils/extensions/payment_extensions.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:flutter/material.dart';
 
-class PaymentItemTitle extends StatelessWidget {
+class PaymentItemTitle extends StatefulWidget {
   final Payment _paymentInfo;
 
   const PaymentItemTitle(
@@ -14,9 +14,18 @@ class PaymentItemTitle extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<PaymentItemTitle> createState() => _PaymentItemTitleState();
+}
+
+class _PaymentItemTitleState extends State<PaymentItemTitle> {
+  PaymentExtensions? paymentExtensions;
+
+  @override
   Widget build(BuildContext context) {
+    final texts = context.texts();
+    final paymentExtensions = this.paymentExtensions ??= PaymentExtensions(widget._paymentInfo, texts);
     return Text(
-      _paymentInfo.extractTitle(context.texts()),
+      paymentExtensions.title(),
       style: Theme.of(context).paymentItemTitleTextStyle,
       overflow: TextOverflow.ellipsis,
     );

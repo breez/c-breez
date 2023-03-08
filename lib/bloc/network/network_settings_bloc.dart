@@ -23,10 +23,26 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
 
   Future<bool> setMempoolUrl(String mempoolUrl) async {
     _log.v("Changing mempool url to: $mempoolUrl");
-    var uri = Uri.parse(mempoolUrl);
+    Uri? uri;
+    try {
+      if (mempoolUrl.startsWith(RegExp(r'\d'))) {
+        _log.v("Mempool url starts with a digit, adding https://");
+        uri = Uri.parse("https://$mempoolUrl");
+      } else {
+        uri = Uri.parse(mempoolUrl);
+      }
+    } catch (e) {
+      _log.w("Invalid mempool url: $mempoolUrl");
+      return false;
+    }
     if (!uri.hasScheme) {
       _log.v("Mempool url scheme is missing, adding https://");
-      uri = Uri.parse("https://$mempoolUrl");
+      try {
+        uri = Uri.parse("https://$mempoolUrl");
+      } catch (e) {
+        _log.w("Invalid mempool url: $mempoolUrl");
+        return false;
+      }
     }
     if (!uri.hasScheme || !uri.hasAuthority) {
       _log.w("Invalid mempool url: $mempoolUrl");

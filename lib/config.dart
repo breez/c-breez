@@ -14,8 +14,9 @@ class Config {
   static Config? _instance;
 
   final sdk.Config sdkConfig;
+  final String defaultMempoolUrl;
 
-  Config._(this.sdkConfig);
+  Config._(this.sdkConfig, this.defaultMempoolUrl);
 
   static Future<Config> instance({
     ServiceInjector? serviceInjector,
@@ -27,8 +28,9 @@ class Config {
       final breezLib = injector.breezLib;
       final breezConfig = await _getBundledConfig();
       final defaultConf = await _getDefaultConf(breezLib);
+      final defaultMempoolUrl = _mempoolSpaceDefaultUrl(breezConfig, defaultConf);
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
-      _instance = Config._(sdkConfig);
+      _instance = Config._(sdkConfig, defaultMempoolUrl);
     }
     return _instance!;
   }
@@ -104,12 +106,6 @@ class Config {
     }
     _log.v("Using breezserver from breez.conf: $configuredBreezServer");
     return configuredBreezServer;
-  }
-
-  static Future<String> getMempoolSpaceDefaultUrl(BreezBridge breezLib) async {
-    final breezConfig = await _getBundledConfig();
-    final defaultConf = await _getDefaultConf(breezLib);
-    return _mempoolSpaceDefaultUrl(breezConfig, defaultConf);
   }
 
   static String _mempoolSpaceDefaultUrl(

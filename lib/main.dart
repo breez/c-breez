@@ -11,6 +11,7 @@ import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
+import 'package:c_breez/config.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
@@ -40,9 +41,10 @@ void main() async {
     //initializeDateFormatting(Platform.localeName, null);
     BreezDateUtils.setupLocales();
     await Firebase.initializeApp();
-    var injector = ServiceInjector();
+    final injector = ServiceInjector();
     final breezLib = injector.breezLib;
-    var appDir = await getApplicationDocumentsDirectory();
+    final appDir = await getApplicationDocumentsDirectory();
+    final config = await Config.instance();
 
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: Directory(p.join(appDir.path, "bloc_storage")),
@@ -83,7 +85,7 @@ void main() async {
           BlocProvider<NetworkSettingsBloc>(
             create: (BuildContext context) => NetworkSettingsBloc(
               injector.preferences,
-              breezLib,
+              config,
             ),
           ),
         ],

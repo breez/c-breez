@@ -7,6 +7,7 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 
 import '../../mock/http_client_mock.dart';
 import '../../mock/injector_mock.dart';
+import '../../mock/lib_config_mock.dart';
 import '../../unit_logger.dart';
 import '../../utils/fake_path_provider_platform.dart';
 import '../../utils/hydrated_bloc_storage.dart';
@@ -17,6 +18,7 @@ void main() {
   final hydratedBlocStorage = HydratedBlocStorage();
   late InjectorMock injector;
   late HttpClientMock httpClient;
+  late LibConfigMock libConfig;
   setUpLogger();
 
   group('mempool space', () {
@@ -27,6 +29,7 @@ void main() {
       PathProviderPlatform.instance = platform;
       await hydratedBlocStorage.setUpHydratedBloc();
       httpClient = HttpClientMock();
+      libConfig = LibConfigMock();
     });
 
     tearDown(() async {
@@ -36,7 +39,7 @@ void main() {
 
     NetworkSettingsBloc make() => NetworkSettingsBloc(
           injector.preferences,
-          injector.breezLib,
+          libConfig,
           httpClient: httpClient,
         );
 

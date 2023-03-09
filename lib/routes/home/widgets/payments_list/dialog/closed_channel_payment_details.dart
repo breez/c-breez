@@ -1,14 +1,14 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/tx_widget.dart';
 import 'package:flutter/material.dart';
 
 class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
-  final Payment paymentInfo;
+  final PaymentMinutiae paymentMinutiae;
 
   const ClosedChannelPaymentDetailsWidget({
     Key? key,
-    required this.paymentInfo,
+    required this.paymentMinutiae,
   }) : super(key: key);
 
   @override
@@ -16,7 +16,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
-    if (!paymentInfo.pending) {
+    if (!paymentMinutiae.isPending) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [

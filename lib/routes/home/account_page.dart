@@ -5,6 +5,7 @@ import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/bubble_painter.dart';
 import 'package:c_breez/routes/home/widgets/dashboard/wallet_dashboard_header_delegate.dart';
 import 'package:c_breez/routes/home/widgets/no_lsp_widget.dart';
@@ -61,13 +62,15 @@ class AccountPage extends StatelessWidget {
   ) {
     final nonFilteredPayments = account.payments;
     final paymentFilters = account.paymentFilters;
-    final filteredPayments = nonFilteredPayments.where((tx) {
-      if (paymentFilters.fromTimestamp != null && paymentFilters.toTimestamp != null) {
-        return paymentFilters.fromTimestamp! < tx.paymentTime * 1000 &&
-            tx.paymentTime * 1000 < paymentFilters.toTimestamp!;
+    final filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
+      final fromTimestamp = paymentFilters.fromTimestamp;
+      final toTimestamp = paymentFilters.toTimestamp;
+      final milliseconds = paymentMinutiae.paymentTime.millisecondsSinceEpoch;
+      if (fromTimestamp != null && toTimestamp != null) {
+        return fromTimestamp < milliseconds && milliseconds < toTimestamp;
       }
       if (paymentFilters.filter != PaymentTypeFilter.All) {
-        return tx.paymentType.name == paymentFilters.filter.name;
+        return paymentMinutiae.paymentType.name == paymentFilters.filter.name;
       }
       return true;
     }).toList();
@@ -163,7 +166,7 @@ class AccountPage extends StatelessWidget {
 
   double _bottomPlaceholderSpace(
     BuildContext context,
-    List<Payment> payments,
+    List<PaymentMinutiae> payments,
   ) {
     if (payments.isEmpty) return 0.0;
     double listHeightSpace =

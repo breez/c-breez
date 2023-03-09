@@ -1,14 +1,14 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/payment_item_avatar.dart';
 import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class PaymentDetailsDialogTitle extends StatelessWidget {
-  final Payment paymentInfo;
+  final PaymentMinutiae paymentMinutiae;
 
   const PaymentDetailsDialogTitle({
     super.key,
-    required this.paymentInfo,
+    required this.paymentMinutiae,
   });
 
   @override
@@ -34,7 +34,7 @@ class PaymentDetailsDialogTitle extends StatelessWidget {
           padding: const EdgeInsets.only(top: 32.0),
           child: Center(
             child: PaymentItemAvatar(
-              paymentInfo,
+              paymentMinutiae,
               radius: 32.0,
             ),
           ),

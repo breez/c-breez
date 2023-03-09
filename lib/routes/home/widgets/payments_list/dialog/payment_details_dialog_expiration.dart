@@ -1,15 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:flutter/material.dart';
 
 class PaymentDetailsDialogExpiration extends StatelessWidget {
-  final Payment paymentInfo;
+  final PaymentMinutiae paymentMinutiae;
   final AutoSizeGroup? labelAutoSizeGroup;
 
   const PaymentDetailsDialogExpiration({
     super.key,
-    required this.paymentInfo,
+    required this.paymentMinutiae,
     this.labelAutoSizeGroup,
   });
 
@@ -18,7 +18,7 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
     final texts = context.texts();
     final themeData = Theme.of(context);
 
-    if (!paymentInfo.pending) {
+    if (!paymentMinutiae.isPending) {
       return Container();
     }
 
@@ -39,28 +39,6 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
             ),
           ),
           // TODO: Add pendingExpirationTimestamp information once implemented
-          /*
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              reverse: true,
-              padding: const EdgeInsets.only(left: 8.0),
-              child: AutoSizeText(
-                BreezDateUtils.formatYearMonthDayHourMinute(
-                  DateTime.fromMillisecondsSinceEpoch(
-                    paymentInfo.pendingExpirationTimestamp
-                        .toInt() *
-                        1000,
-                  ),
-                ),
-                style: themeData.primaryTextTheme.headlineMedium,
-                textAlign: TextAlign.right,
-                maxLines: 1,
-                group: labelAutoSizeGroup,
-              ),
-            ),
-          )
-          */
         ],
       ),
     );

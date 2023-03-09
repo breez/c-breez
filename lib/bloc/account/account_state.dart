@@ -1,5 +1,5 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 
 const initialInboundCapacity = 4000000;
 
@@ -20,7 +20,7 @@ class AccountState {
   final List<String> connectedPeers;
   final int maxInboundLiquidity;
   final int onChainFeeRate;
-  final List<Payment> payments;
+  final List<PaymentMinutiae> payments;
   final PaymentFilters paymentFilters;
   final ConnectionStatus? connectionStatus;
   final VerificationStatus? verificationStatus;
@@ -77,7 +77,7 @@ class AccountState {
     List<String>? connectedPeers,
     int? maxInboundLiquidity,
     int? onChainFeeRate,
-    List<Payment>? payments,
+    List<PaymentMinutiae>? payments,
     PaymentFilters? paymentFilters,
     ConnectionStatus? connectionStatus,
     VerificationStatus? verificationStatus,

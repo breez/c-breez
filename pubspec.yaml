@@ -23,10 +23,7 @@ dependencies:
     git:
       url: https://github.com/breez/Breez-Translations
       ref: a52f6dc57c7eca00b230fe5a5dc7e0a1437a098a
-  clipboard_watcher:
-    git:
-      url: https://github.com/ademar111190/clipboard_watcher
-      ref: f12cdc89d1aba43e36f4af21c54efb10413095bd
+  clipboard_watcher: ^0.2.0
   connectivity_plus: ^3.0.3
   drag_and_drop_lists: ^0.3.3
   duration: ^3.0.12

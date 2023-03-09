@@ -25,9 +25,7 @@ class PaymentsFilterCalendar extends StatelessWidget {
       builder: (context, account) {
         DateTime? firstDate;
         if (account.payments.isNotEmpty) {
-          firstDate = DateTime.fromMillisecondsSinceEpoch(
-            account.payments.first.paymentTime * 1000,
-          );
+          firstDate = account.payments.first.paymentTime;
         }
 
         return Padding(

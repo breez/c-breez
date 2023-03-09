@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/flip_transition.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/payment_details_dialog.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/payment_item_amount.dart';
@@ -10,12 +10,12 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:flutter/material.dart';
 
 class PaymentItem extends StatefulWidget {
-  final Payment _paymentInfo;
+  final PaymentMinutiae _paymentMinutiae;
   final bool _firstItem;
   final GlobalKey firstPaymentItemKey;
 
   const PaymentItem(
-    this._paymentInfo,
+    this._paymentMinutiae,
     this._firstItem,
     this.firstPaymentItemKey, {
     Key? key,
@@ -64,7 +64,7 @@ class _PaymentItemState extends State<PaymentItem> {
                   child: isPaymentItemNew
                       ? FlipTransition(
                           PaymentItemAvatar(
-                            widget._paymentInfo,
+                            widget._paymentMinutiae,
                             radius: 16,
                           ),
                           const SuccessAvatar(radius: 16),
@@ -75,24 +75,24 @@ class _PaymentItemState extends State<PaymentItem> {
                             });
                           },
                         )
-                      : PaymentItemAvatar(widget._paymentInfo, radius: 16),
+                      : PaymentItemAvatar(widget._paymentMinutiae, radius: 16),
                 ),
                 key: widget._firstItem ? widget.firstPaymentItemKey : null,
                 title: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: PaymentItemTitle(widget._paymentInfo),
+                  child: PaymentItemTitle(widget._paymentMinutiae),
                 ),
                 subtitle: Transform.translate(
                   offset: const Offset(-8, 0),
-                  child: PaymentItemSubtitle(widget._paymentInfo),
+                  child: PaymentItemSubtitle(widget._paymentMinutiae),
                 ),
-                trailing: PaymentItemAmount(widget._paymentInfo),
+                trailing: PaymentItemAmount(widget._paymentMinutiae),
                 onTap: () {
                   showDialog<void>(
                     useRootNavigator: false,
                     context: context,
                     builder: (_) => PaymentDetailsDialog(
-                      paymentInfo: widget._paymentInfo,
+                      paymentMinutiae: widget._paymentMinutiae,
                     ),
                   );
                 },
@@ -105,9 +105,7 @@ class _PaymentItemState extends State<PaymentItem> {
   }
 
   bool _createdWithin(Duration duration) {
-    final diff = DateTime.fromMillisecondsSinceEpoch(
-      widget._paymentInfo.paymentTime * 1000,
-    ).difference(
+    final diff = widget._paymentMinutiae.paymentTime.difference(
       DateTime.fromMillisecondsSinceEpoch(
         DateTime.now().millisecondsSinceEpoch,
       ),

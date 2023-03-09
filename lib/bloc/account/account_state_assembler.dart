@@ -1,5 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 
 import 'account_bloc.dart';
 import 'account_state.dart';
@@ -15,6 +17,7 @@ AccountState? assembleAccountState(
     return null;
   }
 
+  final texts = getSystemAppLocalizations();
   // return the new account state
   return state.copyWith(
     id: nodeState.id,
@@ -29,7 +32,7 @@ AccountState? assembleAccountState(
     connectedPeers: nodeState.connectedPeers,
     onChainFeeRate: 0,
     maxInboundLiquidity: nodeState.inboundLiquidityMsats ~/ 1000,
-    payments: payments,
+    payments: payments.map((e) => PaymentMinutiae.fromPayment(e, texts)).toList(),
     paymentFilters: paymentFilters,
     connectionStatus: ConnectionStatus.CONNECTED,
     verificationStatus: state.verificationStatus,

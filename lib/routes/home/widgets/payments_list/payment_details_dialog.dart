@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_closed_channel_dialog.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_amount.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_content_title.dart';
@@ -20,27 +21,27 @@ final AutoSizeGroup _valueGroup = AutoSizeGroup();
 final _log = FimberLog("PaymentDetailsDialog");
 
 class PaymentDetailsDialog extends StatelessWidget {
-  final Payment paymentInfo;
+  final PaymentMinutiae paymentMinutiae;
 
   PaymentDetailsDialog({
     super.key,
-    required this.paymentInfo,
+    required this.paymentMinutiae,
   }) {
-    _log.v("PaymentDetailsDialog for payment: ${paymentInfo.id}");
+    _log.v("PaymentDetailsDialog for payment: ${paymentMinutiae.id}");
   }
 
   @override
   Widget build(BuildContext context) {
-    if (paymentInfo.paymentType == PaymentType.ClosedChannel) {
+    if (paymentMinutiae.paymentType == PaymentType.ClosedChannel) {
       return PaymentDetailsDialogClosedChannelDialog(
-        paymentInfo: paymentInfo,
+        paymentMinutiae: paymentMinutiae,
       );
     }
 
     return AlertDialog(
       titlePadding: EdgeInsets.zero,
       title: PaymentDetailsDialogTitle(
-        paymentInfo: paymentInfo,
+        paymentMinutiae: paymentMinutiae,
       ),
       contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
       content: SingleChildScrollView(
@@ -51,38 +52,38 @@ class PaymentDetailsDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               PaymentDetailsDialogContentTitle(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
               ),
               PaymentDetailsDialogDescription(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
               ),
               PaymentDetailsDialogAmount(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
                 labelAutoSizeGroup: _labelGroup,
                 valueAutoSizeGroup: _valueGroup,
               ),
               PaymentDetailsDialogDate(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
                 labelAutoSizeGroup: _labelGroup,
                 valueAutoSizeGroup: _valueGroup,
               ),
               PaymentDetailsDialogLnAddress(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
                 labelAutoSizeGroup: _labelGroup,
                 valueAutoSizeGroup: _valueGroup,
               ),
               PaymentDetailsDialogSuccessAction(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
               ),
               PaymentDetailsDialogExpiration(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
                 labelAutoSizeGroup: _labelGroup,
               ),
               PaymentDetailsPreimage(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
               ),
               PaymentDetailsDestinationPubkey(
-                paymentInfo: paymentInfo,
+                paymentMinutiae: paymentMinutiae,
               ),
             ],
           ),

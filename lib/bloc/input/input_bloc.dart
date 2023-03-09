@@ -3,12 +3,9 @@ import 'dart:async';
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/models/clipboard.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
-import 'package:c_breez/utils/lnurl.dart';
-import 'package:c_breez/utils/node_id.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
@@ -150,32 +147,4 @@ class InputBloc extends Cubit<InputState> {
       _log.i("url: ${parsedInput.url}");
     }
   }
-
-  Stream<DecodedClipboardData> get decodedClipboardStream =>
-      _device.clipboardStream.distinct().skip(1).map((clipboardData) {
-        if (clipboardData.isEmpty) {
-          return DecodedClipboardData.unrecognized();
-        }
-        var nodeID = parseNodeId(clipboardData);
-        if (nodeID != null) {
-          return DecodedClipboardData(data: nodeID, type: ClipboardDataType.nodeID);
-        }
-        String normalized = clipboardData.toLowerCase();
-        if (normalized.startsWith("lightning:")) {
-          normalized = normalized.substring(10);
-        }
-
-        if (normalized.startsWith("lnurl")) {
-          return DecodedClipboardData(data: clipboardData, type: ClipboardDataType.lnurl);
-        }
-
-        if (isLightningAddress(normalized)) {
-          return DecodedClipboardData(data: normalized, type: ClipboardDataType.lightningAddress);
-        }
-
-        if (normalized.startsWith("ln")) {
-          return DecodedClipboardData(data: normalized, type: ClipboardDataType.paymentRequest);
-        }
-        return DecodedClipboardData.unrecognized();
-      });
 }

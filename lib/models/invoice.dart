@@ -28,4 +28,31 @@ class Invoice {
   String extractDescription() {
     return extractPosMessage(description) ?? description;
   }
+
+  @override
+  String toString() {
+    return 'Invoice{bolt11: $bolt11, paymentHash: $paymentHash, description: $description, '
+        'amountMsat: $amountMsat, expiry: $expiry, lspFee: $lspFee}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Invoice &&
+          runtimeType == other.runtimeType &&
+          bolt11 == other.bolt11 &&
+          paymentHash == other.paymentHash &&
+          description == other.description &&
+          amountMsat == other.amountMsat &&
+          expiry == other.expiry &&
+          lspFee == other.lspFee;
+
+  @override
+  int get hashCode =>
+      bolt11.hashCode ^
+      paymentHash.hashCode ^
+      description.hashCode ^
+      amountMsat.hashCode ^
+      expiry.hashCode ^
+      lspFee.hashCode;
 }

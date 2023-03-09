@@ -1,14 +1,18 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
-import 'package:c_breez/models/clipboard.dart';
+import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/route.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+final _log = FimberLog("SendOptionsBottomSheet");
 
 class SendOptionsBottomSheet extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
@@ -17,12 +21,11 @@ class SendOptionsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inputBloc = context.read<InputBloc>();
     final texts = context.texts();
 
-    return StreamBuilder<DecodedClipboardData>(
-      stream: inputBloc.decodedClipboardStream,
+    return BlocBuilder<InputBloc, InputState>(
       builder: (context, snapshot) {
+        _log.v("Building with snapshot: $snapshot");
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -35,7 +38,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
                 texts.bottom_action_bar_paste_invoice,
                 style: theme.bottomSheetTextStyle,
               ),
-              onTap: () => _pasteTapped(context, inputBloc, snapshot.data, firstPaymentItemKey),
+              onTap: () => _pasteTapped(context, snapshot.inputData, firstPaymentItemKey),
             ),
             Divider(
               height: 0.0,
@@ -67,36 +70,28 @@ class SendOptionsBottomSheet extends StatelessWidget {
 
   void _pasteTapped(
     BuildContext context,
-    InputBloc inputBloc,
-    DecodedClipboardData? clipboardData,
+    dynamic inputData,
     GlobalKey firstPaymentItemKey,
   ) async {
     Navigator.of(context).pop();
-    switch (clipboardData?.type) {
-      case ClipboardDataType.lnurl:
-      case ClipboardDataType.lightningAddress:
-      case ClipboardDataType.paymentRequest:
-        inputBloc.addIncomingInput(clipboardData!.data ?? "");
-        return;
-      case ClipboardDataType.nodeID:
-        Navigator.of(context).push(
-          FadeInRoute(
-            builder: (_) => SpontaneousPaymentPage(
-              clipboardData!.data,
-              firstPaymentItemKey,
-            ),
+    if (inputData is InputType_NodeId) {
+      _log.v("Input data is of type InputType_NodeId, pushing SpontaneousPaymentPage");
+      Navigator.of(context).push(
+        FadeInRoute(
+          builder: (_) => SpontaneousPaymentPage(
+            inputData.nodeId,
+            firstPaymentItemKey,
           ),
-        );
-        return;
-      case ClipboardDataType.unrecognized:
-      default:
-        await showDialog(
-          useRootNavigator: false,
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey),
-        );
-        return;
+        ),
+      );
+    } else {
+      _log.v("Input data is $inputData, showing EnterPaymentInfoDialog");
+      await showDialog(
+        useRootNavigator: false,
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey),
+      );
     }
   }
 

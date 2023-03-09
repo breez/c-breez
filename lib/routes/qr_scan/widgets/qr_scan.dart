@@ -46,12 +46,19 @@ class QRScanState extends State<QRScan> {
                       final List<Barcode> barcodes = capture.barcodes;
                       for (final barcode in barcodes) {
                         _log.i("Barcode detected: $barcode");
-                        if (popped || !mounted) return;
-                        if (barcode.rawValue == null) {
+                        if (popped) {
+                          _log.v("Skipping, already popped");
+                          return;
+                        }
+                        if (!mounted) {
+                          _log.v("Skipping, not mounted");
+                          return;
+                        }
+                        final code = barcode.rawValue;
+                        if (code == null) {
                           _log.w("Failed to scan QR code.");
                         } else {
                           popped = true;
-                          final String? code = barcode.rawValue;
                           _log.i("Popping read QR code $code");
                           Navigator.of(context).pop(code);
                         }

@@ -30,7 +30,7 @@ void main() {
         // No title
         PaymentItemTitle(
           PaymentMinutiae.fromPayment(
-            Payment(
+            const Payment(
               paymentType: PaymentType.Received,
               id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
               feeMsat: 0,
@@ -56,7 +56,7 @@ void main() {
         // Long title
         PaymentItemTitle(
           PaymentMinutiae.fromPayment(
-            Payment(
+            const Payment(
               paymentType: PaymentType.Received,
               id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
               feeMsat: 0,
@@ -82,7 +82,7 @@ void main() {
         // Short title
         PaymentItemTitle(
           PaymentMinutiae.fromPayment(
-            Payment(
+            const Payment(
               paymentType: PaymentType.Received,
               id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
               feeMsat: 0,

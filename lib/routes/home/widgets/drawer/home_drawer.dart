@@ -138,23 +138,6 @@ class HomeDrawerState extends State<HomeDrawer> {
     );
   }
 
-  // TODO not yet used, but will be addded when we support apps.
-  /*DrawerItemConfig _drawerItemLightningApps(
-    BuildContext context,
-    UserProfileSettings user,
-  ) {
-    final texts = context.texts();
-    return DrawerItemConfig(
-      "",
-      texts.home_drawer_item_title_apps,
-      "src/icon/apps.png",
-      isSelected: user.appMode == AppMode.apps,
-      onItemSelected: (_) {
-        //  add protectAdminAction
-      },
-    );
-  }*/
-
   List<DrawerItemConfig> _drawerConfigToFilter(
     BuildContext context,
   ) {
@@ -174,6 +157,11 @@ class HomeDrawerState extends State<HomeDrawer> {
         "/security",
         texts.home_drawer_item_title_security_and_backup,
         "src/icon/security.png",
+      ),
+      DrawerItemConfig(
+        "/payment_options",
+        texts.home_drawer_item_title_payment_options,
+        "src/icon/payment_options.png",
       ),
       ..._drawerConfigAdvancedFlavorItems(context),
     ];

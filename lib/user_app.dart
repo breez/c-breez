@@ -17,6 +17,7 @@ import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonics_pag
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/mnemonics_confirmation_page.dart';
 import 'package:c_breez/routes/lsp/select_lsp_page.dart';
 import 'package:c_breez/routes/network/network_page.dart';
+import 'package:c_breez/routes/payment_options/payment_options_page.dart';
 import 'package:c_breez/routes/qr_scan/widgets/qr_scan.dart';
 import 'package:c_breez/routes/security/lock_screen.dart';
 import 'package:c_breez/routes/security/secured_page.dart';
@@ -206,6 +207,11 @@ class UserApp extends StatelessWidget {
                                     builder: (_) => WithdrawFundsAddressPage(
                                       withdrawKind: settings.arguments as WithdrawKind,
                                     ),
+                                    settings: settings,
+                                  );
+                                case '/payment_options':
+                                  return FadeInRoute(
+                                    builder: (_) => const PaymentOptionsPage(),
                                     settings: settings,
                                   );
                               }

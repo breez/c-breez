@@ -1,7 +1,10 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
+import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 final _log = FimberLog("ProportionalFeeWidget");
 
@@ -18,13 +21,6 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
   final _proportionalFeeController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    // TODO: real implementation
-    _proportionalFeeController.text = '';
-  }
-
-  @override
   Widget build(BuildContext context) {
     final texts = context.texts();
 
@@ -34,40 +30,57 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0),
             child: Form(
-              child: TextFormField(
-                // TODO: real implementation
-                enabled: true,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                ],
-                controller: _proportionalFeeController,
-                decoration: InputDecoration(
-                  labelText: texts.payment_options_proportional_fee_label,
-                  border: const UnderlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null) {
-                    return texts.payment_options_proportional_fee_label;
-                  }
-                  if (value.isEmpty) {
-                    return texts.payment_options_proportional_fee_label;
-                  }
-                  try {
-                    final newProportionalFee = double.parse(value);
-                    if (newProportionalFee < 0.0) {
-                      return texts.payment_options_proportional_fee_label;
+              child: BlocBuilder<PaymentOptionsBloc, PaymentOptionsState>(
+                builder: (context, state) {
+                  if (!state.saveEnabled) {
+                    final proportionalFee = state.proportionalFee.toStringAsFixed(2);
+                    if (_proportionalFeeController.text != proportionalFee) {
+                      _proportionalFeeController.text = proportionalFee;
                     }
-                  } catch (e) {
-                    return texts.payment_options_proportional_fee_label;
                   }
-                  return null;
-                },
-                onChanged: (value) {
-                  // TODO real implementation
-                  _log.v("onChanged: $value");
+
+                  return TextFormField(
+                    enabled: state.overrideFeeEnabled,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
+                    controller: _proportionalFeeController,
+                    decoration: InputDecoration(
+                      labelText: texts.payment_options_proportional_fee_label,
+                      border: const UnderlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return texts.payment_options_proportional_fee_label;
+                      }
+                      if (value.isEmpty) {
+                        return texts.payment_options_proportional_fee_label;
+                      }
+                      try {
+                        final newProportionalFee = double.parse(value);
+                        if (newProportionalFee < 0.0) {
+                          return texts.payment_options_proportional_fee_label;
+                        }
+                      } catch (e) {
+                        return texts.payment_options_proportional_fee_label;
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      _log.v("onChanged: $value");
+                      double proportionalFee;
+                      try {
+                        proportionalFee = double.parse(value);
+                      } catch (e) {
+                        _log.w("Failed to parse $value as double", ex: e);
+                        return;
+                      }
+                      context.read<PaymentOptionsBloc>().setProportionalFee(proportionalFee);
+                    },
+                  );
                 },
               ),
             ),

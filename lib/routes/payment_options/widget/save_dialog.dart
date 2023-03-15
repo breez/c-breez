@@ -1,10 +1,16 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 final _log = FimberLog("SaveDialog");
 
 class SaveDialog extends StatelessWidget {
+  const SaveDialog({
+    Key? key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
@@ -33,9 +39,10 @@ class SaveDialog extends StatelessWidget {
             style: themeData.primaryTextTheme.labelLarge,
           ),
           onPressed: () {
-            // TODO real implementation
             _log.v("onPressed: save");
+            context.read<PaymentOptionsBloc>().saveFees();
             Navigator.pop(context);
+            FocusManager.instance.primaryFocus?.unfocus();
           },
         ),
       ],

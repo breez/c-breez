@@ -40,7 +40,7 @@ class HomeAppBar extends AppBar {
                 BlendMode.srcATop,
               ),
             ),
-            iconSize: 128,
+            iconSize: 64,
             onPressed: () => scaffoldKey.currentState?.openDrawer(),
           ),
           iconTheme: const IconThemeData(

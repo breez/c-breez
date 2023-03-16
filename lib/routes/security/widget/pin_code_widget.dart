@@ -54,7 +54,7 @@ class _PinCodeWidgetState extends State<PinCodeWidget> with SingleTickerProvider
             child: Center(
               child: SvgPicture.asset(
                 "src/images/cloud-logo-color.svg",
-                width: size.width / 2,
+                width: size.width / 3,
                 colorFilter: const ColorFilter.mode(
                   Colors.white,
                   BlendMode.srcATop,

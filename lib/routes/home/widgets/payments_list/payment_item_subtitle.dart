@@ -49,7 +49,7 @@ void main() {
         // Not pending
         PaymentItemSubtitle(
           PaymentMinutiae.fromPayment(
-            Payment(
+            const Payment(
               paymentType: PaymentType.Received,
               id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
               feeMsat: 1234,
@@ -75,7 +75,7 @@ void main() {
         // Pending
         PaymentItemSubtitle(
           PaymentMinutiae.fromPayment(
-            Payment(
+            const Payment(
               paymentType: PaymentType.Received,
               id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
               feeMsat: 1234,

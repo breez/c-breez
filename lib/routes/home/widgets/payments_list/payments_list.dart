@@ -60,7 +60,7 @@ void main() async {
 
   final minutiae = [
     PaymentMinutiae.fromPayment(
-      Payment(
+      const Payment(
         paymentType: PaymentType.Received,
         id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
         feeMsat: 0,
@@ -82,7 +82,7 @@ void main() async {
       getSystemAppLocalizations(),
     ),
     PaymentMinutiae.fromPayment(
-      Payment(
+      const Payment(
         paymentType: PaymentType.Received,
         id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
         feeMsat: 12,
@@ -112,7 +112,7 @@ void main() async {
         amountMsat: 4321000,
         pending: false,
         description: "A title",
-        details: PaymentDetails.ln(
+        details: const PaymentDetails.ln(
           data: LnPaymentDetails(
             paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
             label: "",

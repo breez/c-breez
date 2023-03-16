@@ -19,7 +19,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
     required GreenlightCredentials creds,
   }) async {}
 
-  Config config = Config(
+  Config config = const Config(
     breezserver: '',
     mempoolspaceUrl: '',
     network: Network.Bitcoin,
@@ -43,7 +43,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
     return credentials;
   }
 
-  NodeState? nodeState = NodeState(
+  NodeState? nodeState = const NodeState(
     id: '123456789012345678901234567890123456789012345678901234567890123456',
     blockHeight: 2,
     channelsBalanceMsat: 0,
@@ -89,7 +89,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   @override
   Future connectLSP(String lspId) async {}
 
-  InputType parsedInput = InputType_LnUrlPay(
+  InputType parsedInput = const InputType_LnUrlPay(
     data: LnUrlPayRequestData(
       callback: "",
       minSendable: 0,

@@ -100,7 +100,7 @@ void main() {
     test("message when payment is a ln payment and action is a message should return message", () {
       const successActionMessage = "successActionMessage";
       final extracted = makeLnPayment(
-        successActionProcessed: SuccessActionProcessed.message(
+        successActionProcessed: const SuccessActionProcessed.message(
           data: MessageSuccessActionData(
             message: successActionMessage,
           ),
@@ -111,7 +111,7 @@ void main() {
 
     test("url when payment is a ln payment and action is a message should return null", () {
       final successActionUrl = makeLnPayment(
-        successActionProcessed: SuccessActionProcessed.message(
+        successActionProcessed: const SuccessActionProcessed.message(
           data: MessageSuccessActionData(
             message: "message",
           ),
@@ -123,7 +123,7 @@ void main() {
     test("message when payment is a ln payment and action is an url should return description", () {
       const successActionDescription = "successActionDescription";
       final extracted = makeLnPayment(
-        successActionProcessed: SuccessActionProcessed.url(
+        successActionProcessed: const SuccessActionProcessed.url(
           data: UrlSuccessActionData(
             description: successActionDescription,
             url: "",
@@ -136,7 +136,7 @@ void main() {
     test("url when payment is a ln payment and action is an url should return url", () {
       const successActionUrl = "successActionUrl";
       final extracted = makeLnPayment(
-        successActionProcessed: SuccessActionProcessed.url(
+        successActionProcessed: const SuccessActionProcessed.url(
           data: UrlSuccessActionData(
             description: "",
             url: successActionUrl,
@@ -150,7 +150,7 @@ void main() {
       const successActionDescription = "successActionDescription";
       const successActionPlainText = "successActionPlainText";
       final extracted = makeLnPayment(
-        successActionProcessed: SuccessActionProcessed.aes(
+        successActionProcessed: const SuccessActionProcessed.aes(
           data: AesSuccessActionDataDecrypted(
             description: successActionDescription,
             plaintext: successActionPlainText,
@@ -162,7 +162,7 @@ void main() {
 
     test("url when payment is a ln payment and action is an aes should return null", () {
       final successActionUrl = makeLnPayment(
-        successActionProcessed: SuccessActionProcessed.aes(
+        successActionProcessed: const SuccessActionProcessed.aes(
           data: AesSuccessActionDataDecrypted(
             description: "",
             plaintext: "",
@@ -282,7 +282,7 @@ PaymentMinutiae make({
         feeMsat: feeMilliSat,
         pending: false,
         description: description,
-        details: PaymentDetails.closedChannel(
+        details: const PaymentDetails.closedChannel(
           data: ClosedChannelPaymentDetails(
             shortChannelId: "shortChannelId",
             state: ChannelState.Opened,

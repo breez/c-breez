@@ -96,7 +96,7 @@ void main() async {
           children: [
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "",
                   feeMsat: 0,
@@ -122,7 +122,7 @@ void main() async {
             // Pending
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                   feeMsat: 1234,
@@ -148,7 +148,7 @@ void main() async {
             // Show all
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                   feeMsat: 1234,
@@ -174,7 +174,7 @@ void main() async {
             // Hide all
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                   feeMsat: 1234,

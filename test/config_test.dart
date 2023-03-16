@@ -217,7 +217,7 @@ void main() {
 
 const String _configName = "Application Options";
 
-sdk.Config _defaultConf() => sdk.Config(
+sdk.Config _defaultConf() => const sdk.Config(
       maxfeeSat: 456,
       maxfeepercent: 7.8,
       breezserver: "a breez server",

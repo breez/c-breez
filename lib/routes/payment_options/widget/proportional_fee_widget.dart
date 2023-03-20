@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/payment_options/form_validator.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 
 final _log = FimberLog("ProportionalFeeWidget");
 
@@ -20,6 +25,20 @@ class ProportionalFeeWidget extends StatefulWidget {
 class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
   final _proportionalFeeController = TextEditingController();
 
+  StreamSubscription<PaymentOptionsState>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) => _initializeListeners());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _subscription?.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
@@ -32,13 +51,6 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
             child: Form(
               child: BlocBuilder<PaymentOptionsBloc, PaymentOptionsState>(
                 builder: (context, state) {
-                  if (!state.saveEnabled) {
-                    final proportionalFee = state.proportionalFee.toStringAsFixed(2);
-                    if (_proportionalFeeController.text != proportionalFee) {
-                      _proportionalFeeController.text = proportionalFee;
-                    }
-                  }
-
                   return TextFormField(
                     enabled: state.overrideFeeEnabled,
                     keyboardType: const TextInputType.numberWithOptions(
@@ -52,30 +64,14 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
                       labelText: texts.payment_options_proportional_fee_label,
                       border: const UnderlineInputBorder(),
                     ),
-                    validator: (value) {
-                      if (value == null) {
-                        return texts.payment_options_proportional_fee_label;
-                      }
-                      if (value.isEmpty) {
-                        return texts.payment_options_proportional_fee_label;
-                      }
-                      try {
-                        final newProportionalFee = double.parse(value);
-                        if (newProportionalFee < 0.0) {
-                          return texts.payment_options_proportional_fee_label;
-                        }
-                      } catch (e) {
-                        return texts.payment_options_proportional_fee_label;
-                      }
-                      return null;
-                    },
+                    validator: proportionalFeeValidator,
                     onChanged: (value) {
                       _log.v("onChanged: $value");
                       double proportionalFee;
                       try {
                         proportionalFee = double.parse(value);
-                      } catch (e) {
-                        _log.w("Failed to parse $value as double", ex: e);
+                      } catch (_) {
+                        _log.v("Failed to parse $value as double");
                         return;
                       }
                       context.read<PaymentOptionsBloc>().setProportionalFee(proportionalFee);
@@ -88,5 +84,20 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
         ),
       ],
     );
+  }
+
+  void _initializeListeners() {
+    final bloc = context.read<PaymentOptionsBloc>();
+    _subscription = bloc.stream.startWith(bloc.state).distinct().listen((state) {
+      if (!state.saveEnabled) {
+        final proportionalFee = state.proportionalFee.toStringAsFixed(2);
+        if (_proportionalFeeController.text != proportionalFee) {
+          _log.v("Setting proportionalFee to $proportionalFee");
+          setState(() {
+            _proportionalFeeController.text = proportionalFee;
+          });
+        }
+      }
+    });
   }
 }

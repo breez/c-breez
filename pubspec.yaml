@@ -35,11 +35,11 @@ dependencies:
   # Doesn't support: Linux Mac Windows
   flutter_fimber: ^0.6.5
   # Doesn't support: Linux Windows
-  firebase_core: ^2.7.1
+  firebase_core: ^2.8.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.0.16
+  firebase_dynamic_links: ^5.0.17
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.2.6
+  firebase_messaging: ^14.3.0
   flutter_bloc: ^8.1.2
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
@@ -70,10 +70,10 @@ dependencies:
   local_auth_ios: ^1.1.1
   mockito: ^5.3.2
   # Doesn't support: Linux Windows
-  mobile_scanner: ^3.0.0
+  mobile_scanner: ^3.1.0
   package_info_plus: ^3.0.3
   path: ^1.8.3
-  path_provider: ^2.0.13
+  path_provider: ^2.0.14
   path_provider_platform_interface: ^2.0.6
   plugin_platform_interface: ^2.1.4
   qr_flutter: ^4.0.0

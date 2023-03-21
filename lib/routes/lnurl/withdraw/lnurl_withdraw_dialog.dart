@@ -148,10 +148,10 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
         amountSats: widget.amountSats,
         description: description,
       );
-      if (resp is sdk.LnUrlWithdrawCallbackStatus_Ok) {
+      if (resp is sdk.LnUrlCallbackStatus_Ok) {
         _log.v("LNURL withdraw success");
         return LNURLWithdrawPageResult();
-      } else if (resp is sdk.LnUrlWithdrawCallbackStatus_ErrorStatus) {
+      } else if (resp is sdk.LnUrlCallbackStatus_ErrorStatus) {
         _log.v("LNURL withdraw failed: ${resp.data.reason}");
         return LNURLWithdrawPageResult(
           error: resp.data.reason,

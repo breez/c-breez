@@ -208,6 +208,18 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
+  Future<sdk.LnUrlCallbackStatus> lnurlAuth({
+    required sdk.LnUrlAuthRequestData reqData,
+  }) async {
+    _log.v("lnurlAuth amount: reqData: $reqData");
+    try {
+      return await _breezLib.lnurlAuth(reqData: reqData);
+    } catch (e) {
+      _log.e("lnurlAuth error", ex: e);
+      rethrow;
+    }
+  }
+
   Future sendPayment(String bolt11, int? amountSats) async {
     _log.v("sendPayment: $bolt11, $amountSats");
     try {

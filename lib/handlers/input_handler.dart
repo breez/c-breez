@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
+import 'package:c_breez/routes/lnurl/auth/auth_response.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
@@ -99,6 +100,8 @@ class InputHandler {
             _handleLNURLPaymentPageResult(result);
           } else if (result is LNURLWithdrawPageResult) {
             _handleLNURLWithdrawPageResult(result);
+          } else if (result is LNURLAuthPageResult) {
+            _handleLNURLAuthPageResult(result);
           }
         })
         .whenComplete(() => _handlingRequest = false)
@@ -162,6 +165,13 @@ class InputHandler {
       );
     } else {
       _log.v("Handle LNURL withdraw page result with error '${result.error}'");
+      throw result.error!;
+    }
+  }
+
+  void _handleLNURLAuthPageResult(LNURLAuthPageResult result) {
+    if (result.error != null) {
+      _log.v("Handle LNURL auth page result with error '${result.error}'");
       throw result.error!;
     }
   }

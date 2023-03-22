@@ -1,12 +1,10 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_dialog.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_page.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
-import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:fimber/fimber.dart';
@@ -81,16 +79,9 @@ Future<LNURLPageResult?> handlePayRequest(
 void handleLNURLPaymentPageResult(BuildContext context, LNURLPageResult result) {
   if (result.successAction != null) {
     _handleSuccessAction(context, result.successAction!);
-  } else {
+  } else if (result.hasError) {
     _log.v("Handle LNURL payment page result with error '${result.error}'");
-    final texts = context.texts();
-    throw Exception(
-      extractExceptionMessage(
-        result.error!,
-        texts,
-        defaultErrorMsg: texts.lnurl_payment_page_unknown_error,
-      ),
-    );
+    throw Exception(result.errorMessage);
   }
 }
 

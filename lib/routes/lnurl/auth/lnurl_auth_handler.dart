@@ -56,10 +56,16 @@ Future<LNURLPageResult?> handleAuthRequest(
   );
 }
 
-void handleLNURLAuthPageResult(LNURLPageResult result) {
+void handleLNURLAuthPageResult(BuildContext context, LNURLPageResult result) {
   final log = FimberLog("handleLNURLAuthPageResult");
-  if (result.error != null) {
+  if (result.hasError) {
     log.v("Handle LNURL auth page result with error '${result.error}'");
+    promptError(
+      context,
+      context.texts().lnurl_webview_error_title,
+      Text(result.errorMessage),
+      okFunc: () => Navigator.of(context).pop(),
+    );
     throw result.error!;
   }
 }

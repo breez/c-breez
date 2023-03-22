@@ -43,7 +43,7 @@ void handleLNURLPageResult(BuildContext context, LNURLPageResult result) {
       handleLNURLWithdrawPageResult(context, result);
       break;
     case LnUrlProtocol.Auth:
-      handleLNURLAuthPageResult(result);
+      handleLNURLAuthPageResult(context, result);
       break;
     default:
       break;

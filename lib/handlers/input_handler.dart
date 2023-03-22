@@ -4,11 +4,10 @@ import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
-import 'package:c_breez/routes/lnurl/auth/auth_response.dart';
+
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
-import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
 import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialog.dart';
-import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
+import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
@@ -96,12 +95,8 @@ class InputHandler {
     handleInputData(inputState.inputData)
         .then((result) {
           _log.v("Input state handled: $result");
-          if (result is LNURLPaymentPageResult) {
-            _handleLNURLPaymentPageResult(result);
-          } else if (result is LNURLWithdrawPageResult) {
-            _handleLNURLWithdrawPageResult(result);
-          } else if (result is LNURLAuthPageResult) {
-            _handleLNURLAuthPageResult(result);
+          if (result is LNURLPageResult && result.protocol != null) {
+            _handleLNURLPageResult(result);
           }
         })
         .whenComplete(() => _handlingRequest = false)
@@ -115,7 +110,23 @@ class InputHandler {
         });
   }
 
-  void _handleLNURLPaymentPageResult(LNURLPaymentPageResult result) {
+  void _handleLNURLPageResult(LNURLPageResult result) {
+    switch (result.protocol) {
+      case LnUrlProtocol.Pay:
+        _handleLNURLPaymentPageResult(result);
+        break;
+      case LnUrlProtocol.Withdraw:
+        _handleLNURLWithdrawPageResult(result);
+        break;
+      case LnUrlProtocol.Auth:
+        _handleLNURLAuthPageResult(result);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _handleLNURLPaymentPageResult(LNURLPageResult result) {
     if (result.successAction != null) {
       _handleSuccessAction(result.successAction!);
     } else {
@@ -157,7 +168,7 @@ class InputHandler {
     );
   }
 
-  void _handleLNURLWithdrawPageResult(LNURLWithdrawPageResult result) {
+  void _handleLNURLWithdrawPageResult(LNURLPageResult result) {
     if (result.error == null) {
       _log.v("Handle LNURL withdraw page result with success");
       Navigator.of(_context).push(
@@ -169,7 +180,7 @@ class InputHandler {
     }
   }
 
-  void _handleLNURLAuthPageResult(LNURLAuthPageResult result) {
+  void _handleLNURLAuthPageResult(LNURLPageResult result) {
     if (result.error != null) {
       _log.v("Handle LNURL auth page result with error '${result.error}'");
       throw result.error!;

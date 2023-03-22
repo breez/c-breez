@@ -1,8 +1,9 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_dialog.dart';
+import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_page.dart';
-import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
+import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:fimber/fimber.dart';
@@ -11,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 final _log = FimberLog("handleLNURLPayRequest");
 
-Future<LNURLPaymentPageResult?> handlePayRequest(
+Future<LNURLPageResult?> handlePayRequest(
   BuildContext context,
   GlobalKey firstPaymentItemKey,
   LnUrlPayRequestData requestData,
@@ -57,17 +58,19 @@ Future<LNURLPaymentPageResult?> handlePayRequest(
     if (result is LnUrlPayResult) {
       if (result is LnUrlPayResult_EndpointSuccess) {
         _log.v("LNURL payment success, action: ${result.data}");
-        return LNURLPaymentPageResult(
+        return LNURLPageResult(
+          protocol: LnUrlProtocol.Pay,
           successAction: result.data,
         );
       } else if (result is LnUrlPayResult_EndpointError) {
         _log.v("LNURL payment failed: ${result.data.reason}");
-        return LNURLPaymentPageResult(
+        return LNURLPageResult(
+          protocol: LnUrlProtocol.Pay,
           error: result.data.reason,
         );
       }
     }
     _log.w("Error sending LNURL payment", ex: result);
-    throw LNURLPaymentPageResult(error: result).errorMessage;
+    throw LNURLPageResult(error: result).errorMessage;
   });
 }

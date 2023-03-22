@@ -2,11 +2,13 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/utils/exceptions.dart';
 
-class LNURLPaymentPageResult {
+class LNURLPageResult {
+  final LnUrlProtocol? protocol;
   final SuccessActionProcessed? successAction;
   final Object? error;
 
-  const LNURLPaymentPageResult({
+  const LNURLPageResult({
+    this.protocol,
     this.successAction,
     this.error,
   });
@@ -16,12 +18,5 @@ class LNURLPaymentPageResult {
   String get errorMessage => extractExceptionMessage(error ?? "", getSystemAppLocalizations());
 }
 
-class LNURLPaymentInfo {
-  final int amount;
-  final String? comment;
-
-  const LNURLPaymentInfo({
-    required this.amount,
-    this.comment,
-  });
-}
+// Supported LNURL specs
+enum LnUrlProtocol { Auth, Pay, Withdraw }

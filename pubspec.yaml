@@ -70,7 +70,7 @@ dependencies:
   local_auth_ios: ^1.1.1
   mockito: ^5.3.2
   # Doesn't support: Linux Windows
-  mobile_scanner: ^3.1.0
+  mobile_scanner: ^3.1.1
   package_info_plus: ^3.0.3
   path: ^1.8.3
   path_provider: ^2.0.14
@@ -79,7 +79,7 @@ dependencies:
   qr_flutter: ^4.0.0
   rxdart: ^0.27.7
   share_plus: ^6.3.1
-  shared_preferences: ^2.0.18
+  shared_preferences: ^2.0.20
   simple_animations: ^5.0.0+3
   sqflite_common_ffi: ^2.2.2
   sqlite3_flutter_libs: ^0.5.13

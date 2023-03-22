@@ -9,12 +9,11 @@ import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("handleLNURLAuthRequest");
-
 Future<LNURLPageResult?> handleAuthRequest(
   BuildContext context,
   LnUrlAuthRequestData requestData,
 ) async {
+  final log = FimberLog("handleLNURLAuthRequest");
   return promptAreYouSure(context, null, LoginText(domain: requestData.domain)).then(
     (permitted) async {
       if (permitted == true) {
@@ -28,20 +27,20 @@ Future<LNURLPageResult?> handleAuthRequest(
             navigator.removeRoute(loaderRoute);
           }
           if (resp is LnUrlCallbackStatus_Ok) {
-            _log.v("LNURL auth success");
+            log.v("LNURL auth success");
             return const LNURLPageResult(protocol: LnUrlProtocol.Auth);
           } else if (resp is LnUrlCallbackStatus_ErrorStatus) {
-            _log.v("LNURL auth failed: ${resp.data.reason}");
+            log.v("LNURL auth failed: ${resp.data.reason}");
             return LNURLPageResult(protocol: LnUrlProtocol.Auth, error: resp.data.reason);
           } else {
-            _log.w("Unknown response from lnurlAuth: $resp");
+            log.w("Unknown response from lnurlAuth: $resp");
             return LNURLPageResult(
               protocol: LnUrlProtocol.Auth,
               error: texts.lnurl_payment_page_unknown_error,
             );
           }
         } catch (e) {
-          _log.w("Error authenticating LNURL auth", ex: e);
+          log.w("Error authenticating LNURL auth", ex: e);
           if (loaderRoute.isActive) {
             navigator.removeRoute(loaderRoute);
           }
@@ -55,4 +54,12 @@ Future<LNURLPageResult?> handleAuthRequest(
       return Future.value();
     },
   );
+}
+
+void handleLNURLAuthPageResult(LNURLPageResult result) {
+  final log = FimberLog("handleLNURLAuthPageResult");
+  if (result.error != null) {
+    log.v("Handle LNURL auth page result with error '${result.error}'");
+    throw result.error!;
+  }
 }

@@ -8,6 +8,8 @@ import 'package:c_breez/routes/lnurl/withdraw/lnurl_withdraw_handler.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 
+import 'widgets/lnurl_page_result.dart';
+
 Future handleLNURL(
   BuildContext context,
   GlobalKey firstPaymentItemKey,
@@ -30,4 +32,20 @@ Future handleLNURL(
   }
   log.w("Unsupported lnurl $requestData");
   throw context.texts().lnurl_error_unsupported;
+}
+
+void handleLNURLPageResult(BuildContext context, LNURLPageResult result) {
+  switch (result.protocol) {
+    case LnUrlProtocol.Pay:
+      handleLNURLPaymentPageResult(context, result);
+      break;
+    case LnUrlProtocol.Withdraw:
+      handleLNURLWithdrawPageResult(context, result);
+      break;
+    case LnUrlProtocol.Auth:
+      handleLNURLAuthPageResult(result);
+      break;
+    default:
+      break;
+  }
 }

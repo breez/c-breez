@@ -45,7 +45,7 @@ jobs:
 
       - name: install dependencies
         run: |          
-          cargo install cargo-ndk          
+          cargo install cargo-ndk@2.12.2
           brew install protobuf
           cd breez-sdk/libs/sdk-flutter
           make init

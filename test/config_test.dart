@@ -58,6 +58,7 @@ void main() {
       await platform.tearDown();
     });
 
+
     test('no max fee percent configured in breez.conf should use the default', () async {
       final defaultConf = _defaultConf();
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
@@ -70,6 +71,15 @@ void main() {
       breezConfig.answers[_configName] = {"maxfeepercent": "$maxFeePercent"};
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.maxfeePercent, maxFeePercent);
+    });
+
+    test('max fee percent override on preferences should use the configured value', () async {
+      final defaultConf = _defaultConf();
+      const maxFee = 3.4;
+      injector.preferencesMock.paymentOptionsOverrideFeeEnabled = true;
+      injector.preferencesMock.paymentOptionsProportionalFee = maxFee;
+      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      expect(config.maxfeepercent, maxFee);
     });
 
     test('max fee percent override on preferences should use the configured value', () async {

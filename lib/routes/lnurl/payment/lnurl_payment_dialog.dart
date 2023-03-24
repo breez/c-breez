@@ -4,7 +4,7 @@ import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
+import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';

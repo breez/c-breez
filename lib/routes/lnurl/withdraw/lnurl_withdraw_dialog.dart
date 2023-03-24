@@ -1,7 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
+import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/loading_animated_text.dart';
@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = FimberLog("LNURLWithdrawDialog");
 
 class LNURLWithdrawDialog extends StatefulWidget {
-  final Function(LNURLWithdrawPageResult? result) onFinish;
+  final Function(LNURLPageResult? result) onFinish;
   final sdk.LnUrlWithdrawRequestData requestData;
   final int amountSats;
 
@@ -29,7 +29,7 @@ class LNURLWithdrawDialog extends StatefulWidget {
 
 class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTickerProviderStateMixin {
   late Animation<double> _opacityAnimation;
-  Future<LNURLWithdrawPageResult>? _future;
+  Future<LNURLPageResult>? _future;
   var finishCalled = false;
 
   @override
@@ -133,7 +133,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
     );
   }
 
-  Future<LNURLWithdrawPageResult> _withdraw(BuildContext context) async {
+  Future<LNURLPageResult> _withdraw(BuildContext context) async {
     _log.v("Withdraw ${widget.amountSats} sats");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
@@ -150,25 +150,27 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       );
       if (resp is sdk.LnUrlCallbackStatus_Ok) {
         _log.v("LNURL withdraw success");
-        return LNURLWithdrawPageResult();
+        return const LNURLPageResult(protocol: LnUrlProtocol.Withdraw);
       } else if (resp is sdk.LnUrlCallbackStatus_ErrorStatus) {
         _log.v("LNURL withdraw failed: ${resp.data.reason}");
-        return LNURLWithdrawPageResult(
+        return LNURLPageResult(
+          protocol: LnUrlProtocol.Withdraw,
           error: resp.data.reason,
         );
       } else {
         _log.w("Unknown response from lnurlWithdraw: $resp");
-        return LNURLWithdrawPageResult(
+        return LNURLPageResult(
+          protocol: LnUrlProtocol.Withdraw,
           error: texts.lnurl_payment_page_unknown_error,
         );
       }
     } catch (e) {
       _log.w("Error withdrawing LNURL payment", ex: e);
-      return LNURLWithdrawPageResult(error: e);
+      return LNURLPageResult(protocol: LnUrlProtocol.Withdraw, error: e);
     }
   }
 
-  void _onFinish(LNURLWithdrawPageResult? result) {
+  void _onFinish(LNURLPageResult? result) {
     if (finishCalled) {
       return;
     }

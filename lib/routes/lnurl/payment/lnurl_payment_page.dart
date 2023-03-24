@@ -5,14 +5,13 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/routes/lnurl/payment/pay_response.dart';
+import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_metadata.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
-
 // import 'package:email_validator/email_validator.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';

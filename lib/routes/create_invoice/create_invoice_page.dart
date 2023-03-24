@@ -9,8 +9,8 @@ import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
+import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/routes/lnurl/withdraw/lnurl_withdraw_dialog.dart';
-import 'package:c_breez/routes/lnurl/withdraw/withdraw_response.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
@@ -28,7 +28,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = FimberLog("CreateInvoicePage");
 
 class CreateInvoicePage extends StatefulWidget {
-  final Function(LNURLWithdrawPageResult? result)? onFinish;
+  final Function(LNURLPageResult? result)? onFinish;
   final LnUrlWithdrawRequestData? requestData;
 
   const CreateInvoicePage({

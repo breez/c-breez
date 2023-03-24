@@ -38,8 +38,6 @@ Future<LNURLPageResult?> handlePayRequest(
   if (paymentInfo == null) {
     return Future.value();
   }
-  // Artificial wait for UX purposes
-  await Future.delayed(const Duration(milliseconds: 800));
   // Show Processing Payment Dialog
   // ignore: use_build_context_synchronously
   return await showDialog(
@@ -99,15 +97,12 @@ Future _handleSuccessAction(BuildContext context, SuccessActionProcessed success
     message = "${successAction.data.description} ${successAction.data.plaintext}";
     _log.v("Handle LNURL payment page result with aes action '$message'");
   }
-  // Artificial delay for UX purposes
-  return Future.delayed(const Duration(seconds: 1)).then(
-    (_) => showDialog(
-      useRootNavigator: false,
-      context: context,
-      builder: (_) => SuccessActionDialog(
-        message: message,
-        url: url,
-      ),
+  return showDialog(
+    useRootNavigator: false,
+    context: context,
+    builder: (_) => SuccessActionDialog(
+      message: message,
+      url: url,
     ),
   );
 }

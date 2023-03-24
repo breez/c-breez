@@ -23,9 +23,6 @@ Future<LNURLPageResult?> handleAuthRequest(
         navigator.push(loaderRoute);
         try {
           final resp = await context.read<AccountBloc>().lnurlAuth(reqData: requestData);
-          if (loaderRoute.isActive) {
-            navigator.removeRoute(loaderRoute);
-          }
           if (resp is LnUrlCallbackStatus_Ok) {
             log.v("LNURL auth success");
             return const LNURLPageResult(protocol: LnUrlProtocol.Auth);

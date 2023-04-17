@@ -4,8 +4,8 @@ publish_to: 'none'
 version: 1.0.0+4
 
 environment:
-  sdk: ">=2.19.4 <3.0.0"
-  flutter: ">=3.7.7"
+  sdk: ">=2.19.6 <3.0.0"
+  flutter: ">=3.7.11"
 
 dependencies:
   flutter:
@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   another_flushbar: ^1.12.29
-  archive: ^3.3.6
+  archive: ^3.3.7
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
   breez_sdk:
@@ -24,7 +24,7 @@ dependencies:
       url: https://github.com/breez/Breez-Translations
       ref: a52f6dc57c7eca00b230fe5a5dc7e0a1437a098a
   clipboard_watcher: ^0.2.0
-  connectivity_plus: ^3.0.3
+  connectivity_plus: ^3.0.4
   drag_and_drop_lists: ^0.3.3
   duration: ^3.0.12
   email_validator: ^2.1.17
@@ -35,11 +35,11 @@ dependencies:
   # Doesn't support: Linux Mac Windows
   flutter_fimber: ^0.6.5
   # Doesn't support: Linux Windows
-  firebase_core: ^2.8.0
+  firebase_core: ^2.9.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.0.17
+  firebase_dynamic_links: ^5.1.0
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.3.0
+  firebase_messaging: ^14.4.0
   flutter_bloc: ^8.1.2
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
@@ -49,7 +49,7 @@ dependencies:
   flutter_inappwebview: ^6.0.0-beta.22
   flutter_rust_bridge: 1.70.0
   flutter_secure_storage: ^8.0.0
-  flutter_svg: ^2.0.4
+  flutter_svg: ^2.0.5
   flutter_typeahead:
     git:
       url: https://github.com/breez/flutter_typeahead.git
@@ -59,29 +59,29 @@ dependencies:
   hydrated_bloc: ^9.1.0
   image: ^4.0.15
   # Doesn't support: Linux Mac Windows
-  image_cropper: ^3.0.1
+  image_cropper: ^3.0.2
   # Doesn't support: Linux Mac Windows
-  image_picker: ^0.8.7
+  image_picker: ^0.8.7+3
   ini: ^2.1.0
   intl: ^0.18.0
   # Doesn't support: Linux Mac
   local_auth: ^2.1.6
   local_auth_android: ^1.0.21
   local_auth_ios: ^1.1.1
-  mockito: ^5.3.2
+  mockito: ^5.4.0
   # Doesn't support: Linux Windows
-  mobile_scanner: ^3.1.1
-  package_info_plus: ^3.0.3
+  mobile_scanner: ^3.2.0
+  package_info_plus: ^3.1.0
   path: ^1.8.3
   path_provider: ^2.0.14
   path_provider_platform_interface: ^2.0.6
   plugin_platform_interface: ^2.1.4
   qr_flutter: ^4.0.0
   rxdart: ^0.27.7
-  share_plus: ^6.3.1
-  shared_preferences: ^2.0.20
+  share_plus: ^6.3.2
+  shared_preferences: ^2.1.0
   simple_animations: ^5.0.0+3
-  sqflite_common_ffi: ^2.2.2
+  sqflite_common_ffi: ^2.2.3
   sqlite3_flutter_libs: ^0.5.13
   synchronized: ^3.0.1
   theme_provider: ^0.5.0
@@ -98,13 +98,13 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.3.3
   flutter_lints: ^2.0.1
-  test: ^1.23.1
+  test: <1.24.0
 
 dependency_overrides:
-  archive: ^3.3.6
+  archive: ^3.3.7
   intl: ^0.18.0
   path: ^1.8.3
-  test_api: ^0.4.18
+  test_api: <0.5.0
 
 flutter:
   uses-material-design: true

@@ -74,10 +74,10 @@ class Config {
       return defaultConf.maxfeePercent;
     }
     try {
-      _log.v("Using maxfeepercent from breez.conf: $configuredMaxFeePercent");
+      _log.v("Using maxfeePercent from breez.conf: $configuredMaxFeePercent");
       return double.parse(configuredMaxFeePercent);
     } catch (e) {
-      _log.w("Failed to parse maxfeepercent from breez.conf: $configuredMaxFeePercent", ex: e);
+      _log.w("Failed to parse maxfeePercent from breez.conf: $configuredMaxFeePercent", ex: e);
       return defaultConf.maxfeePercent;
     }
   }

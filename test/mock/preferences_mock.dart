@@ -36,19 +36,6 @@ class PreferencesMock extends Mock implements Preferences {
     return Future<void>.value();
   }
 
-  int paymentOptionsBaseFee = kDefaultBaseFee;
-
-  @override
-  Future<int> getPaymentOptionsBaseFee() => Future<int>.value(paymentOptionsBaseFee);
-
-  int setPaymentOptionsBaseFeeCalled = 0;
-
-  @override
-  Future<void> setPaymentOptionsBaseFee(int fee) {
-    setPaymentOptionsBaseFeeCalled++;
-    return Future<void>.value();
-  }
-
   double paymentOptionsProportionalFee = kDefaultProportionalFee;
 
   @override

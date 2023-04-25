@@ -21,13 +21,6 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
     ));
   }
 
-  Future<void> setBaseFee(int baseFee) async {
-    emit(state.copyWith(
-      baseFee: baseFee,
-      saveEnabled: true,
-    ));
-  }
-
   Future<void> setProportionalFee(double proportionalFee) async {
     emit(state.copyWith(
       proportionalFee: proportionalFee,
@@ -37,19 +30,17 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
 
   Future<void> resetFees() async {
     _log.v("Resetting payments override settings to default: enabled: $kDefaultOverrideFee, "
-        "base: $kDefaultBaseFee, proportional: $kDefaultProportionalFee");
+        "proportional: $kDefaultProportionalFee");
     await _preferences.setPaymentOptionsOverrideFeeEnabled(kDefaultOverrideFee);
-    await _preferences.setPaymentOptionsBaseFee(kDefaultBaseFee);
     await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
     emit(const PaymentOptionsState.initial());
   }
 
   Future<void> saveFees() async {
     final state = this.state;
-    _log.v("Saving payments override settings: enabled: ${state.overrideFeeEnabled}, base: ${state.baseFee}, "
+    _log.v("Saving payments override settings: enabled: ${state.overrideFeeEnabled}, "
         "proportional: ${state.proportionalFee}");
     await _preferences.setPaymentOptionsOverrideFeeEnabled(state.overrideFeeEnabled);
-    await _preferences.setPaymentOptionsBaseFee(state.baseFee);
     await _preferences.setPaymentOptionsProportionalFee(state.proportionalFee);
     emit(state.copyWith(saveEnabled: false));
   }
@@ -64,12 +55,10 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   Future<void> _fetchPaymentsOverrideSettings() async {
     _log.v("Fetching payments override settings");
     final enabled = await _preferences.getPaymentOptionsOverrideFeeEnabled();
-    final base = await _preferences.getPaymentOptionsBaseFee();
     final proportional = await _preferences.getPaymentOptionsProportionalFee();
-    _log.v("Payments override fetched: enabled: $enabled, base: $base, proportional: $proportional");
+    _log.v("Payments override fetched: enabled: $enabled, proportional: $proportional");
     emit(PaymentOptionsState(
       overrideFeeEnabled: enabled,
-      baseFee: base,
       proportionalFee: proportional,
       saveEnabled: false,
     ));

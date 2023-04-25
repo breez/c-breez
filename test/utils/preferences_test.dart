@@ -47,19 +47,6 @@ void main() {
     });
   });
 
-  group('payment options base fee', () {
-    test('default', () async {
-      final preferences = Preferences();
-      expect(await preferences.getPaymentOptionsBaseFee(), kDefaultBaseFee);
-    });
-
-    test('set', () async {
-      final preferences = Preferences();
-      await preferences.setPaymentOptionsBaseFee(30);
-      expect(await preferences.getPaymentOptionsBaseFee(), 30);
-    });
-  });
-
   group('payment options proportional fee', () {
     test('default', () async {
       final preferences = Preferences();

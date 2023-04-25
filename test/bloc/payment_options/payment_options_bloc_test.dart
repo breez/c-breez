@@ -60,23 +60,6 @@ void main() {
     expect(injector.preferencesMock.setPaymentOptionsOverrideFeeEnabledCalled, 1);
   });
 
-  test('should emit new state when base fee changed', () async {
-    final bloc = make();
-    expectLater(
-      bloc.stream,
-      emitsInOrder([
-        const PaymentOptionsState.initial(),
-        const PaymentOptionsState(baseFee: 100, saveEnabled: true),
-        const PaymentOptionsState(baseFee: 100),
-      ]),
-    );
-    // Delay to allow the bloc to initialize
-    await Future.delayed(const Duration(milliseconds: 1));
-    await bloc.setBaseFee(100);
-    await bloc.saveFees();
-    expect(injector.preferencesMock.setPaymentOptionsBaseFeeCalled, 1);
-  });
-
   test('should emit new state when proportional fee changed', () async {
     final bloc = make();
     expectLater(
@@ -106,18 +89,11 @@ void main() {
         ),
         const PaymentOptionsState.initial().copyWith(
           overrideFeeEnabled: true,
-          baseFee: 100,
-          saveEnabled: true,
-        ),
-        const PaymentOptionsState.initial().copyWith(
-          overrideFeeEnabled: true,
-          baseFee: 100,
           proportionalFee: 0.01,
           saveEnabled: true,
         ),
         const PaymentOptionsState.initial().copyWith(
           overrideFeeEnabled: true,
-          baseFee: 100,
           proportionalFee: 0.01,
         ),
         const PaymentOptionsState.initial(),
@@ -126,12 +102,10 @@ void main() {
     // Delay to allow the bloc to initialize
     await Future.delayed(const Duration(milliseconds: 1));
     await bloc.setOverrideFeeEnabled(true);
-    await bloc.setBaseFee(100);
     await bloc.setProportionalFee(0.01);
     await bloc.saveFees();
     await bloc.resetFees();
     expect(injector.preferencesMock.setPaymentOptionsOverrideFeeEnabledCalled, 2);
-    expect(injector.preferencesMock.setPaymentOptionsBaseFeeCalled, 2);
     expect(injector.preferencesMock.setPaymentOptionsProportionalFeeCalled, 2);
   });
 
@@ -147,12 +121,6 @@ void main() {
         ),
         const PaymentOptionsState.initial().copyWith(
           overrideFeeEnabled: true,
-          baseFee: 100,
-          saveEnabled: true,
-        ),
-        const PaymentOptionsState.initial().copyWith(
-          overrideFeeEnabled: true,
-          baseFee: 100,
           proportionalFee: 0.01,
           saveEnabled: true,
         ),
@@ -162,13 +130,11 @@ void main() {
     // Delay to allow the bloc to initialize
     await Future.delayed(const Duration(milliseconds: 1));
     await bloc.setOverrideFeeEnabled(true);
-    await bloc.setBaseFee(100);
     await bloc.setProportionalFee(0.01);
     await bloc.cancelEditing();
     // Delay to allow the fetch to complete
     await Future.delayed(const Duration(milliseconds: 1));
     expect(injector.preferencesMock.setPaymentOptionsOverrideFeeEnabledCalled, 0);
-    expect(injector.preferencesMock.setPaymentOptionsBaseFeeCalled, 0);
     expect(injector.preferencesMock.setPaymentOptionsProportionalFeeCalled, 0);
   });
 }

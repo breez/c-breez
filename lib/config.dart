@@ -55,7 +55,7 @@ class Config {
     ini.Config breezConfig,
   ) async {
     _log.v("Getting SDK config");
-    return sdk.Config(      
+    return sdk.Config(
       maxfeePercent: _configuredMaxFeePercent(defaultConf, breezConfig),
       breezserver: _breezServer(breezConfig, defaultConf),
       mempoolspaceUrl: await _mempoolSpaceUrl(serviceInjector, breezConfig, defaultConf),
@@ -66,7 +66,7 @@ class Config {
       apiKey: _apiKey(breezConfig, defaultConf),
     );
   }
-  
+
   static double _configuredMaxFeePercent(sdk.Config defaultConf, ini.Config breezConfig) {
     final configuredMaxFeePercent = breezConfig.get(_configName, "maxfeepercent");
     if (configuredMaxFeePercent == null) {

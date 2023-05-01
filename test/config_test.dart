@@ -56,7 +56,7 @@ void main() {
 
     tearDown(() async {
       await platform.tearDown();
-    });        
+    });
 
     test('no max fee percent configured in breez.conf should use the default', () async {
       final defaultConf = _defaultConf();
@@ -196,7 +196,7 @@ void main() {
 
 const String _configName = "Application Options";
 
-sdk.Config _defaultConf() => const sdk.Config(      
+sdk.Config _defaultConf() => const sdk.Config(
       maxfeePercent: 7.8,
       breezserver: "a breez server",
       mempoolspaceUrl: "a mempool space url",

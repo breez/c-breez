@@ -57,7 +57,7 @@ class Config {
     _log.v("Getting SDK config");
     return sdk.Config(
       maxfeeSat: _maxFeeSat(defaultConf, breezConfig),
-      maxfeepercent: _configuredMaxFeePercent(defaultConf, breezConfig),
+      maxfeePercent: _configuredMaxFeePercent(defaultConf, breezConfig),
       breezserver: _breezServer(breezConfig, defaultConf),
       mempoolspaceUrl: await _mempoolSpaceUrl(serviceInjector, breezConfig, defaultConf),
       workingDir: await _workingDir(),
@@ -86,15 +86,15 @@ class Config {
   static double _configuredMaxFeePercent(sdk.Config defaultConf, ini.Config breezConfig) {
     final configuredMaxFeePercent = breezConfig.get(_configName, "maxfeepercent");
     if (configuredMaxFeePercent == null) {
-      _log.v("No maxfeepercent configured in breez.conf, using default: ${defaultConf.maxfeepercent}");
-      return defaultConf.maxfeepercent;
+      _log.v("No maxfeepercent configured in breez.conf, using default: ${defaultConf.maxfeePercent}");
+      return defaultConf.maxfeePercent;
     }
     try {
       _log.v("Using maxfeepercent from breez.conf: $configuredMaxFeePercent");
       return double.parse(configuredMaxFeePercent);
     } catch (e) {
       _log.w("Failed to parse maxfeepercent from breez.conf: $configuredMaxFeePercent", ex: e);
-      return defaultConf.maxfeepercent;
+      return defaultConf.maxfeePercent;
     }
   }
 

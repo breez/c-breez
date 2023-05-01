@@ -25,7 +25,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
     network: Network.Bitcoin,
     paymentTimeoutSec: 10,
     workingDir: '.',
-    maxfeepercent: 0.5,
+    maxfeePercent: 0.5,
   );
 
   @override

@@ -56,28 +56,7 @@ void main() {
 
     tearDown(() async {
       await platform.tearDown();
-    });
-
-    test('no max fee sat configured in breez.conf should use the default', () async {
-      final defaultConf = _defaultConf();
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
-      expect(config.maxfeeSat, defaultConf.maxfeeSat);
-    });
-
-    test('valid max fee sat configured in breez.conf should use the configured value', () async {
-      final defaultConf = _defaultConf();
-      const maxFee = 910;
-      breezConfig.answers[_configName] = {"maxfeesat": "$maxFee"};
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
-      expect(config.maxfeeSat, maxFee);
-    });
-
-    test('invalid max fee sat configured in breez.conf should use the default', () async {
-      final defaultConf = _defaultConf();
-      breezConfig.answers[_configName] = {"maxfeesat": "invalid"};
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
-      expect(config.maxfeeSat, defaultConf.maxfeeSat);
-    });
+    });        
 
     test('no max fee percent configured in breez.conf should use the default', () async {
       final defaultConf = _defaultConf();
@@ -217,8 +196,7 @@ void main() {
 
 const String _configName = "Application Options";
 
-sdk.Config _defaultConf() => const sdk.Config(
-      maxfeeSat: 456,
+sdk.Config _defaultConf() => const sdk.Config(      
       maxfeePercent: 7.8,
       breezserver: "a breez server",
       mempoolspaceUrl: "a mempool space url",

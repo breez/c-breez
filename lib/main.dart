@@ -1,6 +1,10 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bip39/bip39.dart' as bip39;
+import 'package:breez_sdk/breez_bridge.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -19,6 +23,7 @@ import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,6 +50,7 @@ void main() async {
     final injector = ServiceInjector();
     final breezLib = injector.breezLib;
     breezLib.initialize();
+    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     final appDir = await getApplicationDocumentsDirectory();
     final config = await Config.instance();
 
@@ -104,4 +110,36 @@ void main() async {
       _log.e("FlutterError: $error", ex: error, stacktrace: stackTrace);
     }
   });
+}
+
+Future<void> _onBackgroundMessage(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
+  await initializeBreezServices();
+  /* TODO: Start Flutter Workmanager
+       -> Register periodic task that polls for received payment until it completes
+       -> Return it's value and dismiss background isolate
+   */
+  return Future<void>.value();
+}
+
+Future<BreezBridge> initializeBreezServices() async {
+  final injector = ServiceInjector();
+  final breezLib = injector.breezLib;
+  final bool isBreezInitialized = await breezLib.isInitialized();
+  print("Is Breez Services initialized: $isBreezInitialized");
+  if (!isBreezInitialized) {
+    final credentialsManager = CredentialsManager(keyChain: injector.keychain);
+    final credentials = await credentialsManager.restoreCredentials();
+    final seed = bip39.mnemonicToSeed(credentials.mnemonic);
+    print("Retrieved credentials");
+    await breezLib.initServices(
+      config: (await Config.instance()).sdkConfig,
+      seed: seed,
+      creds: credentials.glCreds,
+    );
+    print("Initialized Services");
+    await breezLib.startNode();
+    print("Node has started");
+  }
+  return breezLib;
 }

@@ -43,6 +43,7 @@ void main() async {
     await Firebase.initializeApp();
     final injector = ServiceInjector();
     final breezLib = injector.breezLib;
+    breezLib.initialize();
     final appDir = await getApplicationDocumentsDirectory();
     final config = await Config.instance();
 

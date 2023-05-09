@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:fimber/fimber.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,6 +31,7 @@ class FirebaseNotifications implements Notifications {
     _log.i("_onMessage = ${message.data}");
     var data = message.data["data"] ?? message.data["aps"] ?? message.data;
     if (data != null) {
+      if (data is String) data = json.decode(data);
       _notificationController.add(data);
     }
     return Future.value(null);
@@ -39,6 +41,7 @@ class FirebaseNotifications implements Notifications {
     _log.i("_onResume = ${message.data}");
     var data = message.data["data"] ?? message.data;
     if (data != null) {
+      if (data is String) data = json.decode(data);
       _notificationController.add(data);
     }
     return Future.value(null);

@@ -58,7 +58,6 @@ void main() {
       await platform.tearDown();
     });
 
-
     test('no max fee percent configured in breez.conf should use the default', () async {
       final defaultConf = _defaultConf();
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);

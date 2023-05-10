@@ -56,7 +56,7 @@ class Config {
   ) async {
     _log.v("Getting SDK config");
     return sdk.Config(
-      maxfeePercent: _configuredMaxFeePercent(defaultConf, breezConfig),
+      maxfeePercent: await _configuredMaxFeePercent(serviceInjector, defaultConf, breezConfig),
       breezserver: _breezServer(breezConfig, defaultConf),
       mempoolspaceUrl: await _mempoolSpaceUrl(serviceInjector, breezConfig, defaultConf),
       workingDir: await _workingDir(),
@@ -67,10 +67,21 @@ class Config {
     );
   }
 
-  static double _configuredMaxFeePercent(sdk.Config defaultConf, ini.Config breezConfig) {
-    final configuredMaxFeePercent = breezConfig.get(_configName, "maxfeepercent");
+  static Future<double> _configuredMaxFeePercent(
+    ServiceInjector serviceInjector,
+    sdk.Config defaultConf,
+    ini.Config breezConfig,
+  ) async {
+    final preferences = serviceInjector.preferences;
+    final configuredMaxFeeEnabled = await preferences.getPaymentOptionsOverrideFeeEnabled();
+    if (configuredMaxFeeEnabled) {
+      final configuredMaxFeePercent = await preferences.getPaymentOptionsProportionalFee();
+      _log.v("Using maxfeePercent from preferences: $configuredMaxFeePercent");
+      return configuredMaxFeePercent;
+    }
+    final configuredMaxFeePercent = breezConfig.get(_configName, "maxfeePercent");
     if (configuredMaxFeePercent == null) {
-      _log.v("No maxfeepercent configured in breez.conf, using default: ${defaultConf.maxfeePercent}");
+      _log.v("No maxfeePercent configured in breez.conf, using default: ${defaultConf.maxfeePercent}");
       return defaultConf.maxfeePercent;
     }
     try {

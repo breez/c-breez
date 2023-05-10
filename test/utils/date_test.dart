@@ -38,7 +38,6 @@ void main() {
     });
   });
 
-  // Known issues: NumberFormat Non-breaking space breaking unit tests https://github.com/dart-lang/i18n/issues/146
   group('formatYearMonthDayHourMinute', () {
     test('31 of december of 2021', () {
       expect(

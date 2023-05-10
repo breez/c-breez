@@ -13,7 +13,11 @@ class BreezDateUtils {
 
   static String formatMonthDate(DateTime d) => _monthDateFormat.format(d);
   static String formatYearMonthDay(DateTime d) => _yearMonthDayFormat.format(d);
-  static String formatYearMonthDayHourMinute(DateTime d) => _yearMonthDayHourMinuteFormat.format(d);
+  static String formatYearMonthDayHourMinute(DateTime d) => _yearMonthDayHourMinuteFormat
+      .format(d)
+      // Known issues: NumberFormat Non-breaking space breaking unit tests
+      // TODO: remove it when a fix is published  https://github.com/dart-lang/i18n/issues/146
+      .replaceAll(' ', ' ');
   static String formatYearMonthDayHourMinuteSecond(DateTime d) =>
       _yearMonthDayHourMinuteSecondFormat.format(d);
 

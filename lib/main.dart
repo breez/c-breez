@@ -1,10 +1,9 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:bip39/bip39.dart' as bip39;
-import 'package:breez_sdk/breez_bridge.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -16,11 +15,13 @@ import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
-import 'package:c_breez/config.dart';
+import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
+import 'package:c_breez/utils/breez_service_initializer.dart';
 import 'package:c_breez/utils/date.dart';
+import 'package:c_breez/utils/payment_hash_poller.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -31,6 +32,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'bloc/network/network_settings_bloc.dart';
 
@@ -52,7 +54,7 @@ void main() async {
     breezLib.initialize();
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     final appDir = await getApplicationDocumentsDirectory();
-    final config = await Config.instance();
+    final config = await cfg.Config.instance();
 
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: Directory(p.join(appDir.path, "bloc_storage")),
@@ -115,31 +117,54 @@ void main() async {
 Future<void> _onBackgroundMessage(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
   await initializeBreezServices();
-  /* TODO: Start Flutter Workmanager
-       -> Register periodic task that polls for received payment until it completes
-       -> Return it's value and dismiss background isolate
-   */
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  var data = message.data["data"] ?? message.data;
+  if (data != null) {
+    // This is required to retrieve payment_hash from notification payload
+    // TODO: Payload's format should be changed on server-side so this information is accessible from RemoteMessage without deserialization
+    if (data is String) data = json.decode(data);
+  }
+
+  switch (message.data["notification_type"]) {
+    case "payment_received":
+      await Workmanager().registerOneOffTask(
+        data["payment_hash"],
+        message.data["notification_type"], // Ignored on iOS
+        constraints: Constraints(networkType: NetworkType.connected),
+        inputData: message.data, // We need to parse taskName from inputData as taskName is ignored on iOS
+      );
+      break;
+  }
+
   return Future<void>.value();
 }
 
-Future<BreezBridge> initializeBreezServices() async {
-  final injector = ServiceInjector();
-  final breezLib = injector.breezLib;
-  final bool isBreezInitialized = await breezLib.isInitialized();
-  print("Is Breez Services initialized: $isBreezInitialized");
-  if (!isBreezInitialized) {
-    final credentialsManager = CredentialsManager(keyChain: injector.keychain);
-    final credentials = await credentialsManager.restoreCredentials();
-    final seed = bip39.mnemonicToSeed(credentials.mnemonic);
-    print("Retrieved credentials");
-    await breezLib.initServices(
-      config: (await Config.instance()).sdkConfig,
-      seed: seed,
-      creds: credentials.glCreds,
+@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+void callbackDispatcher() {
+  const timeoutDuration = Duration(seconds: 60);
+
+  Workmanager().executeTask((task, inputData) async {
+    final taskCompleter = Completer<bool>();
+
+    if (inputData != null) {
+      var data = inputData["data"] ?? inputData;
+      if (data != null) {
+        if (data is String) data = json.decode(data);
+      }
+
+      switch (inputData["notification_type"]) {
+        case "payment_received":
+          pollForReceivedPayment(data, taskCompleter);
+          break;
+      }
+    }
+
+    return taskCompleter.future.timeout(
+      timeoutDuration,
+      onTimeout: () => throw TimeoutException(
+        "Couldn't complete task in ${timeoutDuration.inSeconds} seconds",
+        timeoutDuration,
+      ),
     );
-    print("Initialized Services");
-    await breezLib.startNode();
-    print("Node has started");
-  }
-  return breezLib;
+  });
 }

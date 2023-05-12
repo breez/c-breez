@@ -39,6 +39,5 @@ class PaymentOptionsState {
           saveEnabled == other.saveEnabled;
 
   @override
-  int get hashCode =>
-      overrideFeeEnabled.hashCode ^ proportionalFee.hashCode ^ saveEnabled.hashCode;
+  int get hashCode => overrideFeeEnabled.hashCode ^ proportionalFee.hashCode ^ saveEnabled.hashCode;
 }

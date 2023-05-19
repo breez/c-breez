@@ -5,7 +5,7 @@ version: 1.0.0+4
 
 environment:
   sdk: ">=2.19.6 <3.0.0"
-  flutter: ">=3.7.11"
+  flutter: ">=3.7.12"
 
 dependencies:
   flutter:
@@ -13,7 +13,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  another_flushbar: ^1.12.29
+  another_flushbar: ^1.12.30
   archive: ^3.3.7
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
@@ -24,32 +24,32 @@ dependencies:
       url: https://github.com/breez/Breez-Translations
       ref: b610d54ad7c105258afb6dd8da0075ccba765cd6
   clipboard_watcher: ^0.2.0
-  connectivity_plus: ^4.0.0
+  connectivity_plus: ^4.0.1
   drag_and_drop_lists: ^0.3.3
   duration: ^3.0.12
   email_validator: ^2.1.17
-  extended_image: ^7.0.2
+  extended_image: <8.0.0 # Requires Flutter 3.10
   ffi: ^2.0.2
   fimber: ^0.6.6
   fimber_io: ^0.6.6
   # Doesn't support: Linux Mac Windows
   flutter_fimber: ^0.6.5
   # Doesn't support: Linux Windows
-  firebase_core: ^2.11.0
+  firebase_core: ^2.13.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.2.0
+  firebase_dynamic_links: ^5.3.1
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.5.0
+  firebase_messaging: ^14.6.1
   flutter_bloc: ^8.1.2
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
-  flutter_inappwebview: ^6.0.0-beta.22
+  flutter_inappwebview: ^6.0.0-beta.23
   flutter_rust_bridge: 1.75.2
   flutter_secure_storage: ^8.0.0
-  flutter_svg: ^2.0.5
+  flutter_svg: <2.0.6 # Requires Flutter 3.10
   flutter_typeahead:
     git:
       url: https://github.com/breez/flutter_typeahead.git
@@ -59,32 +59,32 @@ dependencies:
   hydrated_bloc: ^9.1.0
   image: ^4.0.17
   # Doesn't support: Linux Mac Windows
-  image_cropper: ^3.0.3
+  image_cropper: ^4.0.1
   # Doesn't support: Linux Mac Windows
-  image_picker: ^0.8.7+4
+  image_picker: ^0.8.7+5
   ini: ^2.1.0
   intl: ^0.18.1
   # Doesn't support: Linux Mac
   local_auth: ^2.1.6
   local_auth_android: ^1.0.28
-  local_auth_ios: ^1.1.1
+  local_auth_ios: ^1.1.2
   mockito: ^5.4.0
   # Doesn't support: Linux Windows
   mobile_scanner: ^3.2.0
-  package_info_plus: ^4.0.0
+  package_info_plus: ^4.0.1
   path: ^1.8.3
   path_provider: ^2.0.15
   path_provider_platform_interface: ^2.0.6
   plugin_platform_interface: ^2.1.4
-  qr_flutter: ^4.0.0
+  qr_flutter: ^4.1.0
   rxdart: ^0.27.7
-  share_plus: ^7.0.0
+  share_plus: ^7.0.1
   shared_preferences: ^2.1.1
   simple_animations: ^5.0.0+3
   sqflite_common_ffi: ^2.2.5
-  sqlite3_flutter_libs: ^0.5.13
+  sqlite3_flutter_libs: ^0.5.15
   synchronized: ^3.1.0
-  theme_provider: ^0.5.0
+  theme_provider: ^0.6.0
   timeago: ^3.4.0
   # Doesn't support: Linux Mac Windows
   uni_links: ^0.5.1
@@ -96,15 +96,15 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  build_runner: ^2.3.3
+  build_runner: <2.4.0 # Requires Flutter 3.10
   flutter_lints: ^2.0.1
-  test: <1.24.0
+  test: <1.24.0 # Requires Flutter 3.10
 
 dependency_overrides:
   archive: ^3.3.7
   intl: ^0.18.1
   path: ^1.8.3
-  test_api: <0.5.0
+  test_api: <0.5.0 # Requires Flutter 3.10
 
 flutter:
   uses-material-design: true

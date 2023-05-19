@@ -24,5 +24,7 @@ Future<BreezBridge> initializeBreezServices() async {
     await breezLib.startNode();
     print("Node has started");
   }
+  await breezLib.syncNode();
+  print("Node has synchronized");
   return breezLib;
 }

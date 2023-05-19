@@ -21,9 +21,12 @@ class PaymentHashPoller {
     Timer? paymentReceivedTimer;
 
     paymentReceivedTimer = Timer.periodic(
-      const Duration(seconds: 10),
+      const Duration(seconds: 5),
       (timer) async {
-        final List<Payment> paymentList = await breezLib.listPayments();
+        final List<Payment> paymentList = await breezLib.listPayments(
+          filter: PaymentTypeFilter.Received,
+          fromTimestamp: DateTime.now().subtract(const Duration(minutes: 30)).millisecondsSinceEpoch,
+        );
         for (var payment in paymentList) {
           final detailsData = payment.details.data;
           if (detailsData is LnPaymentDetails && detailsData.paymentHash == paymentHash) {

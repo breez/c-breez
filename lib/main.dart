@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
@@ -118,17 +117,11 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
   await initializeBreezServices();
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-  var data = message.data["data"] ?? message.data;
-  if (data != null) {
-    // This is required to retrieve payment_hash from notification payload
-    // TODO: Payload's format should be changed on server-side so this information is accessible from RemoteMessage without deserialization
-    if (data is String) data = json.decode(data);
-  }
 
   switch (message.data["notification_type"]) {
     case "payment_received":
       await Workmanager().registerOneOffTask(
-        data["payment_hash"],
+        message.data["payment_hash"],
         message.data["notification_type"], // Ignored on iOS
         constraints: Constraints(networkType: NetworkType.connected),
         inputData: message.data, // We need to parse taskName from inputData as taskName is ignored on iOS
@@ -143,18 +136,13 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
 void callbackDispatcher() {
   const timeoutDuration = Duration(seconds: 60);
 
-  Workmanager().executeTask((task, inputData) async {
+  Workmanager().executeTask((String taskName, Map<String, dynamic>? inputData) async {
     final taskCompleter = Completer<bool>();
 
     if (inputData != null) {
-      var data = inputData["data"] ?? inputData;
-      if (data != null) {
-        if (data is String) data = json.decode(data);
-      }
-
       switch (inputData["notification_type"]) {
         case "payment_received":
-          pollForReceivedPayment(data, taskCompleter);
+          pollForReceivedPayment(inputData["payment_hash"], taskCompleter);
           break;
       }
     }

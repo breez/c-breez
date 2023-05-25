@@ -42,8 +42,7 @@ class PaymentHashPoller {
 }
 
 /* WorkManager task of PaymentHashPoller*/
-void pollForReceivedPayment(data, Completer<bool> taskCompleter) {
-  final paymentHash = data["payment_hash"];
+void pollForReceivedPayment(String paymentHash, Completer<bool> taskCompleter) {
   print("Executing payment_received task for $paymentHash");
   final paymentHashPoller = PaymentHashPoller(
     paymentHash: paymentHash,

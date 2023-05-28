@@ -21,14 +21,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
         with: 
-          path: 'cbreez'
-          
-      - name: copy-config
-        env:
-          CBREEZ_CONFIG: ${{secrets.CBREEZ_CONFIG}}
-        run: |
-          cd cbreez
-          echo "$CBREEZ_CONFIG" > conf/breez.conf
+          path: 'cbreez'              
 
       - uses: actions/checkout@v3
         with:         

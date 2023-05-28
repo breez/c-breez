@@ -1,5 +1,10 @@
+
+const String apiKeyPlaceholder = "<api-key>";
+const String glCertificatePlaceholder = "<gl-cert>";
+const String glKeyPlaceholder = "<gl-key>";
+
 class AppConfig {
-  final String apiKey = "<api-key>";
-  final String glCertificate = "<gl-cert>";
-  final String glKey = "<gl-key>";
+  final String apiKey = apiKeyPlaceholder;
+  final String glCertificate = glCertificatePlaceholder;
+  final String glKey = glKeyPlaceholder;
 }

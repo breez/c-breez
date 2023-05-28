@@ -16,8 +16,8 @@ class Config {
 
   final sdk.Config sdkConfig;
   final String defaultMempoolUrl;
-  final Uint8List glCert;
-  final Uint8List glKey;
+  final Uint8List? glCert;
+  final Uint8List? glKey;
 
   Config._(this.sdkConfig, this.defaultMempoolUrl, this.glCert, this.glKey);
 
@@ -36,8 +36,8 @@ class Config {
       _instance = Config._(
         sdkConfig,
         defaultMempoolUrl,
-        base64.decode(breezConfig.glCertificate),
-        base64.decode(breezConfig.glKey),
+        breezConfig.glCertificate == glCertificatePlaceholder ? null : base64.decode(breezConfig.glCertificate),
+        breezConfig.glKey == glKeyPlaceholder ? null : base64.decode(breezConfig.glKey),
       );
     }    
     return _instance!;

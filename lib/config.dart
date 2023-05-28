@@ -36,10 +36,12 @@ class Config {
       _instance = Config._(
         sdkConfig,
         defaultMempoolUrl,
-        breezConfig.glCertificate == glCertificatePlaceholder ? null : base64.decode(breezConfig.glCertificate),
+        breezConfig.glCertificate == glCertificatePlaceholder
+            ? null
+            : base64.decode(breezConfig.glCertificate),
         breezConfig.glKey == glKeyPlaceholder ? null : base64.decode(breezConfig.glKey),
       );
-    }    
+    }
     return _instance!;
   }
 

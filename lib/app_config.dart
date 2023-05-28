@@ -1,4 +1,3 @@
-
 const String apiKeyPlaceholder = "<api-key>";
 const String glCertificatePlaceholder = "<gl-cert>";
 const String glKeyPlaceholder = "<gl-key>";

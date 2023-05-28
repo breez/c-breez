@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:breez_sdk/breez_bridge.dart';
@@ -35,10 +36,10 @@ class Config {
       _instance = Config._(
         sdkConfig,
         defaultMempoolUrl,
-        Uint8List.fromList(breezConfig.glCertificate.codeUnits),
-        Uint8List.fromList(breezConfig.glKey.codeUnits),
+        base64.decode(breezConfig.glCertificate),
+        base64.decode(breezConfig.glKey),
       );
-    }
+    }    
     return _instance!;
   }
 

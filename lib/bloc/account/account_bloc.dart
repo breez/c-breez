@@ -86,11 +86,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required String mnemonic,
   }) async {
     _log.v("starting new node");
+    final appConf = await Config.instance();
     final seed = bip39.mnemonicToSeed(mnemonic);
     final sdk.GreenlightCredentials creds = await _breezLib.registerNode(
       config: (await Config.instance()).sdkConfig,
       network: network,
       seed: seed,
+      registerCredentials: sdk.GreenlightCredentials(deviceKey: appConf.glKey, deviceCert: appConf.glCert)
     );
     _log.i("node registered successfully");
     await _credentialsManager.storeCredentials(

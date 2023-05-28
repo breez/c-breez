@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
@@ -13,8 +15,10 @@ class Config {
 
   final sdk.Config sdkConfig;
   final String defaultMempoolUrl;
+  final Uint8List glCert;
+  final Uint8List glKey;
 
-  Config._(this.sdkConfig, this.defaultMempoolUrl);
+  Config._(this.sdkConfig, this.defaultMempoolUrl, this.glCert, this.glKey);
 
   static Future<Config> instance({
     ServiceInjector? serviceInjector,
@@ -28,7 +32,11 @@ class Config {
       final defaultConf = await _getDefaultConf(breezLib);
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
-      _instance = Config._(sdkConfig, defaultMempoolUrl);
+      _instance = Config._(
+        sdkConfig, defaultMempoolUrl, 
+        Uint8List.fromList(breezConfig.glCertificate.codeUnits), 
+        Uint8List.fromList(breezConfig.glKey.codeUnits),
+      );
     }
     return _instance!;
   }

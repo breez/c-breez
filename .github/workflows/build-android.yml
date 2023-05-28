@@ -100,9 +100,10 @@ jobs:
           GL_KEY: ${{secrets.GL_KEY}}
         run: |
           cd cbreez/lib
-          sed -i 's!<api-key>!'"$API_KEY"'!g' app_config.dart
-          sed -i 's!<gl-cert>!'"$BL_CERT"'!g' app_config.dart
-          sed -i 's!<gl-key>!'"$GL_KEY"'!g' app_config.dart
+          sed -i.sedback 's!<api-key>!'"$API_KEY"'!g' app_config.dart
+          sed -i.sedback 's!<gl-cert>!'"$BL_CERT"'!g' app_config.dart
+          sed -i.sedback 's!<gl-key>!'"$GL_KEY"'!g' app_config.dart
+          rm *.sedback
 
       - name: build-apk
         run: |

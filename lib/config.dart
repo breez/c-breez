@@ -33,8 +33,9 @@ class Config {
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
       _instance = Config._(
-        sdkConfig, defaultMempoolUrl, 
-        Uint8List.fromList(breezConfig.glCertificate.codeUnits), 
+        sdkConfig,
+        defaultMempoolUrl,
+        Uint8List.fromList(breezConfig.glCertificate.codeUnits),
         Uint8List.fromList(breezConfig.glKey.codeUnits),
       );
     }

@@ -36,7 +36,6 @@ breez-sdk/
 ├─ README.md
 c-breez/
 ├─ android/
-├─ conf/
 ├─ ios/
 
 ```

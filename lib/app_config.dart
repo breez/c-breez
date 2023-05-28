@@ -1,5 +1,5 @@
 class AppConfig {
-  final String? apiKey = "<API Key>";
+  final String? apiKey = "<api-key>";
   final String? glCertificate = "<gl-cert>";
   final String? glKey = "<gl-key>";
 }

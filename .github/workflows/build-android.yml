@@ -30,12 +30,10 @@ jobs:
           path: 'cbreez'
 
       - name: copy-config
-        env:
-          CBREEZ_CONFIG: ${{secrets.CBREEZ_CONFIG}}
+        env:          
           GOOGLE_SERVICES: ${{secrets.GOOGLE_SERVICES}}
         run: |
-          cd cbreez
-          echo "$CBREEZ_CONFIG" > conf/breez.conf
+          cd cbreez          
           echo "$GOOGLE_SERVICES" > android/app/google-services.json
 
       - uses: actions/checkout@v3
@@ -94,6 +92,17 @@ jobs:
         run: |
           cd cbreez
           flutter test
+
+      - name: override-config
+        env:          
+          API_KEY: ${{secrets.API_KEY}}
+          GL_CERT: ${{secrets.GL_CERT}}
+          GL_KEY: ${{secrets.GL_KEY}}
+        run: |
+          cd cbreez/lib
+          sed -i 's!<api-key>!'"$API_KEY"'!g' app_config.dart
+          sed -i 's!<gl-cert>!'"$BL_CERT"'!g' app_config.dart
+          sed -i 's!<gl-key>!'"$GL_KEY"'!g' app_config.dart
 
       - name: build-apk
         run: |

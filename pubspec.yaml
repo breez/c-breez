@@ -115,8 +115,7 @@ flutter:
     - src/icon/
     - src/icon/animals/
     - src/icon/vendors/
-    - src/animations/welcome/
-    - conf/breez.conf
+    - src/animations/welcome/    
     - assets/images/
     - assets/icons/
   fonts:

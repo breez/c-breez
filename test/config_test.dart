@@ -88,26 +88,26 @@ void main() {
       expect(config.workingDir, await platform.getApplicationDocumentsPath());
     });
 
-    test('no network configured in breez.conf should use the default', () async {
+    test('no network configured in app config should use the default', () async {
       final defaultConf = _defaultConf();
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.network, defaultConf.network);
     });
 
-    test('no payment timeout configured in breez.conf should use the default', () async {
+    test('no payment timeout configured in app config should use the default', () async {
       final defaultConf = _defaultConf();
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.paymentTimeoutSec, defaultConf.paymentTimeoutSec);
     });
 
-    test('no default lsp id configured in breez.conf should use the default', () async {
+    test('no default lsp id configured in app config should use the default', () async {
       final defaultConf = _defaultConf();
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.defaultLspId, defaultConf.defaultLspId);
     });
-    test('valid api key configured in breez.conf should use the configured value', () async {
+    test('valid api key configured in app config should use the configured value', () async {
       final defaultConf = _defaultConf();
-      const apiKey = "<API Key>";
+      const apiKey = "<api-key>";
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.apiKey, apiKey);
     });

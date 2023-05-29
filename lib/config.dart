@@ -33,13 +33,18 @@ class Config {
       final defaultConf = await _getDefaultConf(breezLib);
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
+      sdk.GreenlightCredentials? registerCredentials;
+      try {
+        registerCredentials = sdk.GreenlightCredentials(deviceCert: base64.decode(breezConfig.glCertificate), deviceKey: base64.decode(breezConfig.glKey));
+      } catch(e){
+        _log.w("Failed to parse register credentials: $e");
+      }
+
       _instance = Config._(
         sdkConfig,
         defaultMempoolUrl,
-        breezConfig.glCertificate == glCertificatePlaceholder
-            ? null
-            : base64.decode(breezConfig.glCertificate),
-        breezConfig.glKey == glKeyPlaceholder ? null : base64.decode(breezConfig.glKey),
+        registerCredentials?.deviceCert,
+        registerCredentials?.deviceKey,
       );
     }
     return _instance!;

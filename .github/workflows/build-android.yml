@@ -42,6 +42,18 @@ jobs:
           ssh-key: ${{secrets.REPO_SSH_KEY}}          
           path: 'breez-sdk'
 
+      - name: override-config-test
+        env:          
+          API_KEY: ${{secrets.API_KEY}}
+          GL_CERT: ${{secrets.GL_CERT}}
+          GL_KEY: ${{secrets.GL_KEY}}
+        run: |
+          cd cbreez/lib
+          sed -i.sedback 's!<api-key>!'"$API_KEY"'!g' app_config.dart
+          sed -i.sedback 's!<gl-cert>!'"$GL_CERT"'!g' app_config.dart
+          sed -i.sedback 's!<gl-key>!'"$GL_KEY"'!g' app_config.dart
+          rm *.sedback
+          cat app_config.dart          
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2
         with:

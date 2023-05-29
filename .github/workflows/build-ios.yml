@@ -134,7 +134,8 @@ jobs:
           sed -i.sedback 's!<api-key>!'"$API_KEY"'!g' app_config.dart
           sed -i.sedback 's!<gl-cert>!'"$GL_CERT"'!g' app_config.dart
           sed -i.sedback 's!<gl-key>!'"$GL_KEY"'!g' app_config.dart
-          rm *.sedback
+          rm *.sedback 
+          
       - name: Build Flutter
         run: |
           cd cbreez

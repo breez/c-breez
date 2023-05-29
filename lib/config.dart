@@ -35,8 +35,10 @@ class Config {
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
       sdk.GreenlightCredentials? registerCredentials;
       try {
-        registerCredentials = sdk.GreenlightCredentials(deviceCert: base64.decode(breezConfig.glCertificate), deviceKey: base64.decode(breezConfig.glKey));
-      } catch(e){
+        registerCredentials = sdk.GreenlightCredentials(
+            deviceCert: base64.decode(breezConfig.glCertificate),
+            deviceKey: base64.decode(breezConfig.glKey));
+      } catch (e) {
         _log.w("Failed to parse register credentials: $e");
       }
 

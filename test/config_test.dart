@@ -107,9 +107,8 @@ void main() {
     });
     test('valid api key configured in app config should use the configured value', () async {
       final defaultConf = _defaultConf();
-      const apiKey = "<api-key>";
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
-      expect(config.apiKey, apiKey);
+      expect(config.apiKey, apiKeyPlaceholder);
     });
   });
 }

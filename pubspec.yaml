@@ -46,7 +46,7 @@ dependencies:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
-  flutter_inappwebview: ^6.0.0-beta.23
+  flutter_inappwebview: 6.0.0-beta.22
   flutter_rust_bridge: 1.75.2
   flutter_secure_storage: ^8.0.0
   flutter_svg: <2.0.6 # Requires Flutter 3.10

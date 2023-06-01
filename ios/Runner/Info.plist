@@ -107,5 +107,9 @@
 		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.cBreez.paymentreceived</string>
+	</array>
 </dict>
 </plist>

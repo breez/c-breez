@@ -14,14 +14,15 @@ class PaymentHashPoller {
   });
 
   void start() {
-    print("Start polling for payment hash: $paymentHash every 10 seconds");
+    const int interval = 5;
+    print("Start polling for payment hash: $paymentHash every $interval seconds");
     final injector = ServiceInjector();
     final breezLib = injector.breezLib;
 
     Timer? paymentReceivedTimer;
 
     paymentReceivedTimer = Timer.periodic(
-      const Duration(seconds: 5),
+      const Duration(seconds: interval),
       (timer) async {
         final List<Payment> paymentList = await breezLib.listPayments(
           filter: PaymentTypeFilter.Received,

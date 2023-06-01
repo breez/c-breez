@@ -1,9 +1,6 @@
-const String apiKeyPlaceholder = "<api-key>";
-const String glCertificatePlaceholder = "<gl-cert>";
-const String glKeyPlaceholder = "<gl-key>";
 
 class AppConfig {
-  final String apiKey = apiKeyPlaceholder;
-  final String glCertificate = glCertificatePlaceholder;
-  final String glKey = glKeyPlaceholder;
+  final String apiKey = const String.fromEnvironment("API_KEY");
+  final String glCertificate =  const String.fromEnvironment("GL_CERT");
+  final String glKey =  const String.fromEnvironment("GL_KEY");
 }

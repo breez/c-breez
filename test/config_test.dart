@@ -1,3 +1,4 @@
+
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/app_config.dart';
 import 'package:c_breez/config.dart';
@@ -105,10 +106,10 @@ void main() {
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.defaultLspId, defaultConf.defaultLspId);
     });
-    test('valid api key configured in app config should use the configured value', () async {
+    test('valid api key configured in app config should use the configured value', () async {      
       final defaultConf = _defaultConf();
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
-      expect(config.apiKey, apiKeyPlaceholder);
+      expect(config.apiKey, "");
     });
   });
 }

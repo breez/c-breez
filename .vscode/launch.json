@@ -8,7 +8,11 @@
    "name": "c_breez",
    "request": "launch",
    "type": "dart",
-   "flutterMode": "debug"
+   "flutterMode": "debug",
+   "args": [
+    "--dart-define-from-file",
+    "config.json"
+   ]
   },
   {
    "name": "c_breez (profile mode)",

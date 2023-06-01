@@ -121,10 +121,17 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
   switch (message.data["notification_type"]) {
     case "payment_received":
       await Workmanager().registerOneOffTask(
-        message.data["payment_hash"],
-        message.data["notification_type"], // Ignored on iOS
-        constraints: Constraints(networkType: NetworkType.connected),
-        inputData: message.data, // We need to parse taskName from inputData as taskName is ignored on iOS
+        "com.cBreez.paymentreceived",
+        "com.cBreez.paymentreceived",
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresCharging: false,
+        ),
+        initialDelay: Duration.zero,
+        inputData: {
+          'notification_type': message.data["notification_type"] as String,
+          'payment_hash': message.data["payment_hash"] as String,
+        }, // We need to parse taskName from inputData as taskName is ignored on iOS
       );
       break;
   }
@@ -139,6 +146,7 @@ void callbackDispatcher() {
   Workmanager().executeTask((String taskName, Map<String, dynamic>? inputData) async {
     final taskCompleter = Completer<bool>();
 
+    print("Executing task: $taskName\nInput data: ${inputData.toString()}");
     if (inputData != null) {
       switch (inputData["notification_type"]) {
         case "payment_received":

@@ -30,7 +30,7 @@ class PaymentHashPoller {
         );
         for (var payment in paymentList) {
           final detailsData = payment.details.data;
-          if (detailsData is LnPaymentDetails && detailsData.paymentHash == paymentHash) {
+          if (!payment.pending && detailsData is LnPaymentDetails && detailsData.paymentHash == paymentHash) {
             onDone(true);
             print("Payment received! Stop polling.");
             paymentReceivedTimer!.cancel();

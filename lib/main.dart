@@ -3,6 +3,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:c_breez/background/breez_service_initializer.dart';
+import 'package:c_breez/background/payment_hash_poller.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -18,9 +20,7 @@ import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
-import 'package:c_breez/utils/breez_service_initializer.dart';
 import 'package:c_breez/utils/date.dart';
-import 'package:c_breez/utils/payment_hash_poller.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -114,7 +114,7 @@ void main() async {
 }
 
 Future<void> _onBackgroundMessage(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
+  _bgLog.i("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
   await initializeBreezServices();
   await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
 
@@ -141,26 +141,19 @@ Future<void> _onBackgroundMessage(RemoteMessage message) async {
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() {
-  const timeoutDuration = Duration(seconds: 60);
+  final timeoutDuration = Duration(seconds: (Platform.isIOS) ? 30 : 60);
 
   Workmanager().executeTask((String taskName, Map<String, dynamic>? inputData) async {
-    final taskCompleter = Completer<bool>();
-
-    print("Executing task: $taskName\nInput data: ${inputData.toString()}");
+    _bgLog.i("Executing task: $taskName\nInput data: ${inputData.toString()}");
     if (inputData != null) {
       switch (inputData["notification_type"]) {
         case "payment_received":
-          pollForReceivedPayment(inputData["payment_hash"], taskCompleter);
-          break;
+          return PaymentHashPoller(
+            paymentHash: inputData["payment_hash"],
+            timeoutDuration: timeoutDuration,
+          ).startPolling();
       }
     }
-
-    return taskCompleter.future.timeout(
-      timeoutDuration,
-      onTimeout: () => throw TimeoutException(
-        "Couldn't complete task in ${timeoutDuration.inSeconds} seconds",
-        timeoutDuration,
-      ),
-    );
+    return Future.value(false);
   });
 }

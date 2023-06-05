@@ -39,6 +39,8 @@ class PaymentHashPoller {
         print("Payment isn't received yet. Keep polling.");
       },
     );
+    // Cancel payment received timer if it's still running after a minute
+    Future.delayed(const Duration(seconds: 60), () => paymentReceivedTimer?.cancel());
   }
 }
 

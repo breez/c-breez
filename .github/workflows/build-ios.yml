@@ -50,12 +50,9 @@ jobs:
           
           security set-key-partition-list -S apple-tool:,apple: -s -k ci ios-build.keychain > /dev/null
 
-      - name: copy-config
-        env:
-          CBREEZ_CONFIG: ${{secrets.CBREEZ_CONFIG}}
+      - name: copy-config        
         run: |
-          cd cbreez
-          echo "$CBREEZ_CONFIG" > conf/breez.conf
+          cd cbreez          
           echo "$GOOGLE_SERVICES_IOS" > ios/Runner/GoogleService-Info.plist
 
       - uses: actions/checkout@v3
@@ -127,10 +124,16 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles      
 
+      - name: override-config
+        env:          
+          CONFIG_FILE: ${{secrets.CONFIG_FILE}}          
+        run: |          
+          echo "$CONFIG_FILE" > ./cbreez/config.json
+
       - name: Build Flutter
         run: |
           cd cbreez
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --dart-define-from-file=config.json
 
       - name: Build resolve Swift dependencies
         run: |

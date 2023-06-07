@@ -1,6 +1,10 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'dart:io';
 
+import 'package:c_breez/background/background_task_handler.dart';
+import 'package:c_breez/background/breez_message_handler.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -12,13 +16,14 @@ import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
-import 'package:c_breez/config.dart';
+import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,8 +50,9 @@ void main() async {
     final injector = ServiceInjector();
     final breezLib = injector.breezLib;
     breezLib.initialize();
+    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     final appDir = await getApplicationDocumentsDirectory();
-    final config = await Config.instance();
+    final config = await cfg.Config.instance();
 
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: Directory(p.join(appDir.path, "bloc_storage")),
@@ -104,4 +110,14 @@ void main() async {
       _log.e("FlutterError: $error", ex: error, stacktrace: stackTrace);
     }
   });
+}
+
+@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+Future<void> _onBackgroundMessage(RemoteMessage message) {
+  return BreezMessageHandler(message).handleBackgroundMessage();
+}
+
+@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+void callbackDispatcher() {
+  BackgroundTaskManager().handleBackgroundTask();
 }

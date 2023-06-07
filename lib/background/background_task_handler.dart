@@ -6,6 +6,8 @@ import 'package:workmanager/workmanager.dart';
 
 final log = FimberLog("BackgroundTaskManager");
 
+
+@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 class BackgroundTaskManager {
   final timeoutDuration = Duration(seconds: (Platform.isIOS) ? 30 : 60);
 

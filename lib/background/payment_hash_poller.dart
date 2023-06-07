@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/services/injector.dart';
 
+@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 class PaymentHashPoller {
   final Completer<bool> taskCompleter = Completer<bool>();
   final String paymentHash;

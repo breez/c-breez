@@ -8,6 +8,7 @@ import 'package:workmanager/workmanager.dart';
 
 final log = FimberLog("BreezMessageHandler");
 
+@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 class BreezMessageHandler {
   final RemoteMessage message;
 

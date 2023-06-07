@@ -898,10 +898,10 @@ packages:
     dependency: "direct main"
     description:
       name: local_auth_android
-      sha256: "91824b34c013b9a03dfb754ac2b15329e1c553b8fd18f6d1baffebb72ceff226"
+      sha256: "523dd636ce061ddb296cbc3db410cb8f21efb7d8798f7b9532c8038ce2f8bad5"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.30"
+    version: "1.0.31"
   local_auth_ios:
     dependency: "direct main"
     description:

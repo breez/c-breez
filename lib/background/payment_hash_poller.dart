@@ -15,7 +15,7 @@ class PaymentHashPoller {
     required this.timeoutDuration,
   });
 
-  Future<bool> startPolling() { 
+  Future<bool> startPolling() {
     const Duration interval = Duration(seconds: 5);
     print("Start polling for payment hash: $paymentHash every $interval seconds");
     final paymentReceivedTimer = Timer.periodic(interval, isPaymentReceived);

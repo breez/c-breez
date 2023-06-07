@@ -3,8 +3,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:c_breez/background/breez_message_handler.dart';
 import 'package:c_breez/background/background_task_handler.dart';
+import 'package:c_breez/background/breez_message_handler.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -20,9 +20,7 @@ import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
-import 'package:c_breez/background/breez_service_initializer.dart';
 import 'package:c_breez/utils/date.dart';
-import 'package:c_breez/background/payment_hash_poller.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

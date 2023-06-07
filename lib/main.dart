@@ -3,6 +3,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:c_breez/background/breez_message_handler.dart';
+import 'package:c_breez/background/background_task_handler.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -18,9 +20,9 @@ import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
-import 'package:c_breez/utils/breez_service_initializer.dart';
+import 'package:c_breez/background/breez_service_initializer.dart';
 import 'package:c_breez/utils/date.dart';
-import 'package:c_breez/utils/payment_hash_poller.dart';
+import 'package:c_breez/background/payment_hash_poller.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -31,7 +33,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'bloc/network/network_settings_bloc.dart';
 
@@ -113,46 +114,12 @@ void main() async {
   });
 }
 
-Future<void> _onBackgroundMessage(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
-  await initializeBreezServices();
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
-
-  switch (message.data["notification_type"]) {
-    case "payment_received":
-      await Workmanager().registerOneOffTask(
-        message.data["payment_hash"],
-        message.data["notification_type"], // Ignored on iOS
-        constraints: Constraints(networkType: NetworkType.connected),
-        inputData: message.data, // We need to parse taskName from inputData as taskName is ignored on iOS
-      );
-      break;
-  }
-
-  return Future<void>.value();
+@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+Future<void> _onBackgroundMessage(RemoteMessage message) {
+  return BreezMessageHandler(message).handleBackgroundMessage();
 }
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() {
-  const timeoutDuration = Duration(seconds: 60);
-
-  Workmanager().executeTask((String taskName, Map<String, dynamic>? inputData) async {
-    final taskCompleter = Completer<bool>();
-
-    if (inputData != null) {
-      switch (inputData["notification_type"]) {
-        case "payment_received":
-          pollForReceivedPayment(inputData["payment_hash"], taskCompleter);
-          break;
-      }
-    }
-
-    return taskCompleter.future.timeout(
-      timeoutDuration,
-      onTimeout: () => throw TimeoutException(
-        "Couldn't complete task in ${timeoutDuration.inSeconds} seconds",
-        timeoutDuration,
-      ),
-    );
-  });
+  BackgroundTaskManager().handleBackgroundTask();
 }

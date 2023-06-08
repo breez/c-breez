@@ -89,7 +89,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
       bottomNavigationBar: (affordableFees.isNotEmpty)
           ? SweepButton(
               toAddress: widget.toAddress,
-              feeRateSatsPerByte: 1,
+              feeRateSatsPerVbyte: 1,
             )
           : null,
     );

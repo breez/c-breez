@@ -19,11 +19,11 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
 
   Future sweep({
     required String toAddress,
-    required int feeRateSatsPerByte,
+    required int feeRateSatsPerVbyte,
   }) async {
     await _breezLib.sweep(
       toAddress: toAddress,
-      feeRateSatsPerByte: feeRateSatsPerByte,
+      feeRateSatsPerVbyte: feeRateSatsPerVbyte,
     );
   }
 
@@ -77,9 +77,9 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
     return feeOptions;
   }
 
-  int _calculateTransactionFee(int inputs, int feeRateSatsPerByte) {
+  int _calculateTransactionFee(int inputs, int feeRateSatsPerVbyte) {
     // based on https://bitcoin.stackexchange.com/a/3011
     final transactionSize = (inputs * 148) + (2 * 34) + 10;
-    return transactionSize * feeRateSatsPerByte;
+    return transactionSize * feeRateSatsPerVbyte;
   }
 }

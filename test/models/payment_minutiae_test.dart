@@ -1,9 +1,9 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
-import 'package:breez_translations/generated/breez_translations_en.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../mock/translations_mock.dart';
 import '../unit_logger.dart';
 
 void main() {
@@ -24,6 +24,11 @@ void main() {
     test("No title should use texts fallback", () {
       final extracted = make().title;
       expect(extracted, texts().payment_info_title_opened_channel);
+    });
+
+    test("Bitcoin Transfer should be localized", () {
+      final extracted = make(description: "Bitcoin Transfer").title;
+      expect(extracted, texts().payment_info_title_bitcoin_transfer);
     });
   });
 
@@ -265,7 +270,7 @@ void main() {
   });
 }
 
-BreezTranslations texts() => BreezTranslationsEn();
+BreezTranslations texts() => TranslationsMock();
 
 PaymentMinutiae make({
   String? description,

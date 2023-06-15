@@ -1,7 +1,6 @@
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
 import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_loading.dart';
-import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_swap_in_progress.dart';
 import 'package:c_breez/utils/external_browser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -45,41 +44,19 @@ class _MoonPayPageState extends State<MoonPayPage> {
             ),
           ],
         ),
-        body: BlocBuilder<MoonPayBloc, MoonPayState>(
-          builder: (context, state) {
+        body: BlocListener<MoonPayBloc, MoonPayState>(
+          listener: (context, state) {
             if (state is MoonPayStateError) {
-              // I'm removing MoonpayError as discussed here:
-              // https://breez-tech.slack.com/archives/C0585MDPTRD/p1685453667050779
-              // return MoonpayError(
-              //   error: state.error,
-              // );
               _closeOnError(context);
-              return Container();
-            } else if (state is MoonPayStateSwapInProgress) {
-              return MoonpaySwapInProgress(
-                state: state,
-              );
             } else if (state is MoonPayStateUrlReady) {
               if (state.webViewStatus == WebViewStatus.error) {
-                // I'm removing MoonpayError as discussed here:
-                // https://breez-tech.slack.com/archives/C0585MDPTRD/p1685453667050779
-                // return MoonpayError(
-                //   error: texts.moonpay_network_error,
-                // );
                 _closeOnError(context);
-                return Container();
+              } else {
+                _launchMoonPayUrl(context, state.url);
               }
-              _launchMoonPayUrl(context, state.url);
-              // I'm opening a chrome tab instead on loading a in-app web view
-              // https://breez-tech.slack.com/archives/C0585MDPTRD/p1685453667050779
-              // return MoonpayWebView(
-              //   url: state.url,
-              // );
-              return Container();
-            } else {
-              return const MoonpayLoading();
             }
           },
+          child: const MoonpayLoading(),
         ),
       ),
     );

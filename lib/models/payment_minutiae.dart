@@ -99,6 +99,9 @@ class _PaymentMinutiaeFactory {
   String _title() {
     final description = _payment.description?.replaceAll("\n", " ").trim();
     if (description != null && description.isNotEmpty) {
+      if (description == "Bitcoin Transfer") {
+        return _texts.payment_info_title_bitcoin_transfer;
+      }
       return extractPosMessage(description) ?? description;
     }
 

@@ -35,20 +35,21 @@ jobs:
 
       - name: Install keychain keys
         run: |
-          security create-keychain -p ci ios-build.keychain
-          security default-keychain -s ios-build.keychain
-          security unlock-keychain -p ci ios-build.keychain
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/ios-build.keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/ios-build.keychain
+          security create-keychain -p ci $KEYCHAIN_PATH
+          security default-keychain -s $KEYCHAIN_PATH
+          security unlock-keychain -p ci $KEYCHAIN_PATH
+          security set-keychain-settings -t 3600 -l $KEYCHAIN_PATH
 
           CERT_PATH=$RUNNER_TEMP/apple_distribution.cer
           echo -n "$DISTRIBUTION_CERT" | base64 --decode --output $CERT_PATH
-          security import $CERT_PATH -k ~/Library/Keychains/ios-build.keychain -A
+          security import $CERT_PATH -k $KEYCHAIN_PATH -A
 
           P12_KEY_PATH=$RUNNER_TEMP/key.p12
           echo -n "$P12_BASE64" | base64 --decode --output $P12_KEY_PATH
-          security import $P12_KEY_PATH -k ~/Library/Keychains/ios-build.keychain -P "$P12_PASSWORD" -A
+          security import $P12_KEY_PATH -k $KEYCHAIN_PATH -P "$P12_PASSWORD" -A
           
-          security set-key-partition-list -S apple-tool:,apple: -s -k ci ios-build.keychain > /dev/null
+          security set-key-partition-list -S apple-tool:,apple: -s -k ci $KEYCHAIN_PATH > /dev/null
 
       - name: copy-config        
         run: |

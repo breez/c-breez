@@ -85,13 +85,34 @@ class _PaymentMinutiaeFactory {
   _PaymentMinutiaeFactory(this._payment, this._texts) {
     final detailsData = _payment.details.data;
     if (detailsData is LnPaymentDetails) {
-      final metadata = detailsData.lnurlMetadata;
-      if (metadata != null && metadata.isNotEmpty) {
-        try {
-          _metadataMap.addAll(json.decode(metadata));
-        } catch (e) {
-          _log.w("Failed to parse metadata: $metadata", ex: e);
+      _parseMetadata(detailsData);
+    }
+  }
+
+  void _parseMetadata(LnPaymentDetails detailsData) {
+    final metadata = detailsData.lnurlMetadata;
+    if (metadata != null && metadata.isNotEmpty) {
+      try {
+        final parsed = json.decode(metadata);
+        if (parsed is List) {
+          for (var item in parsed) {
+            if (item is List && item.length == 2) {
+              final key = item[0];
+              final value = item[1];
+              if (key is String) {
+                _metadataMap[key] = value;
+              } else {
+                _log.w("Unknown runtime type of key $key");
+              }
+            } else {
+              _log.w("Unknown runtime type of item $item");
+            }
+          }
+        } else {
+          _log.w("Unknown runtime type of $parsed for $metadata");
         }
+      } catch (e) {
+        _log.w("Failed to parse metadata: $metadata", ex: e);
       }
     }
   }

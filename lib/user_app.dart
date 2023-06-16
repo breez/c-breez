@@ -8,6 +8,7 @@ import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/bloc/swap_in/swap_in_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
+import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_page.dart';
 import 'package:c_breez/routes/create_invoice/create_invoice_page.dart';
 import 'package:c_breez/routes/dev/commands.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
@@ -30,6 +31,7 @@ import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/route.dart';
+import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -213,6 +215,10 @@ class UserApp extends StatelessWidget {
                                   return FadeInRoute(
                                     builder: (_) => const PaymentOptionsPage(),
                                     settings: settings,
+                                  );
+                                case '/buy_bitcoin':
+                                  return TransparentPageRoute(
+                                    (_) => const MoonPayPage(),
                                   );
                               }
                               assert(false);

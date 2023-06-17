@@ -33,7 +33,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
     }
 
     try {
-      final url = await _breezLib.buyBitcoin(BuyBitcoinProvider.MoonPay);
+      final url = await _breezLib.buyBitcoin(BuyBitcoinProvider.Moonpay);
       _log.v("fetchMoonpayUrl url: $url");
       emit(MoonPayState.urlReady(url));
     } catch (e) {

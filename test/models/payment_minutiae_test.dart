@@ -180,22 +180,22 @@ void main() {
 
   group("image", () {
     test("metadata img png should be extracted", () {
-      final image = makeLnPayment(metadata: '{"image/png;base64":"$imageBase64"}').image;
+      final image = makeLnPayment(metadata: '[["image/png;base64", "$imageBase64"]]').image;
       expect(image, isNotNull);
     });
 
     test("metadata img png when it is empty should return null", () {
-      final image = makeLnPayment(metadata: '{"image/png;base64":""}').image;
+      final image = makeLnPayment(metadata: '[["image/png;base64", ""]]').image;
       expect(image, isNull);
     });
 
     test("metadata img jpeg should be extracted", () {
-      final image = makeLnPayment(metadata: '{"image/jpeg;base64":"$imageBase64"}').image;
+      final image = makeLnPayment(metadata: '[["image/jpeg;base64", "$imageBase64"]]').image;
       expect(image, isNotNull);
     });
 
     test("metadata img jpeg when it is empty should return null", () {
-      final image = makeLnPayment(metadata: '{"image/jpeg;base64":""}').image;
+      final image = makeLnPayment(metadata: '[["image/jpeg;base64", ""]]').image;
       expect(image, isNull);
     });
   });
@@ -234,7 +234,7 @@ void main() {
     });
 
     test("hasMetadata should return true when metadata is not null and not empty", () {
-      final hasMetadata = makeLnPayment(metadata: '{"key": "value"}').hasMetadata;
+      final hasMetadata = makeLnPayment(metadata: '[["key", "value"]]').hasMetadata;
       expect(hasMetadata, isTrue);
     });
 
@@ -244,7 +244,7 @@ void main() {
     });
 
     test("hasMetadata should return false when metadata is empty", () {
-      final hasMetadata = makeLnPayment(metadata: "{}").hasMetadata;
+      final hasMetadata = makeLnPayment(metadata: "[]").hasMetadata;
       expect(hasMetadata, isFalse);
     });
 

@@ -91,29 +91,34 @@ class _PaymentMinutiaeFactory {
 
   void _parseMetadata(LnPaymentDetails detailsData) {
     final metadata = detailsData.lnurlMetadata;
-    if (metadata != null && metadata.isNotEmpty) {
-      try {
-        final parsed = json.decode(metadata);
-        if (parsed is List) {
-          for (var item in parsed) {
-            if (item is List && item.length == 2) {
-              final key = item[0];
-              final value = item[1];
-              if (key is String) {
-                _metadataMap[key] = value;
-              } else {
-                _log.w("Unknown runtime type of key $key");
-              }
-            } else {
-              _log.w("Unknown runtime type of item $item");
-            }
-          }
-        } else {
-          _log.w("Unknown runtime type of $parsed for $metadata");
-        }
-      } catch (e) {
-        _log.w("Failed to parse metadata: $metadata", ex: e);
+    if (metadata == null || metadata.isEmpty) {
+      return;
+    }
+
+    try {
+      final parsed = json.decode(metadata);
+      if (parsed is! List) {
+        _log.w("Unknown runtime type of $parsed for $metadata");
+        return;
       }
+
+      for (var item in parsed) {
+        if (item is! List || item.length != 2) {
+          _log.w("Unknown runtime type of item $item");
+          continue;
+        }
+
+        final key = item[0];
+        final value = item[1];
+        if (key is! String) {
+          _log.w("Unknown runtime type of key $key");
+          continue;
+        }
+
+        _metadataMap[key] = value;
+      }
+    } catch (e) {
+      _log.w("Failed to parse metadata: $metadata", ex: e);
     }
   }
 

@@ -57,6 +57,9 @@ String _localizedExceptionMessage(
       if (originalMessage.contains("dns error") || originalMessage.contains("os error 104")) {
         return texts.generic_network_error;
       }
+      if (originalMessage.contains("Recovery failed:")) {
+        return texts.enter_backup_phrase_error;
+      }
       return originalMessage;
   }
 }

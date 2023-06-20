@@ -47,8 +47,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
           final navigator = Navigator.of(context);
           final queryData = MediaQuery.of(context);
 
-          return AlertDialog(
-            titlePadding: const EdgeInsets.all(0.0),
+          return SimpleDialog(
             title: Stack(
               children: [
                 const TitleBackground(),
@@ -71,49 +70,56 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                 ),
               ],
             ),
-            content: SingleChildScrollView(
-              child: Theme(
-                data: ThemeData(
-                  primaryColor: themeData.primaryTextTheme.bodyMedium!.color,
-                  hintColor: themeData.primaryTextTheme.bodyMedium!.color,
-                ),
-                child: TextField(
-                  enabled: !isUploading,
-                  style: themeData.primaryTextTheme.bodyMedium,
-                  controller: nameInputController,
-                  decoration: InputDecoration(
-                    hintText: texts.breez_avatar_dialog_your_name,
-                  ),
-                  onSubmitted: (text) {},
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: isUploading ? null : () => navigator.pop(),
-                child: Text(
-                  texts.breez_avatar_dialog_action_cancel,
-                  style: themeData.primaryTextTheme.labelLarge,
-                ),
-              ),
-              TextButton(
-                onPressed: isUploading
-                    ? null
-                    : () async {
-                        await saveAvatarChanges();
-                      },
-                child: Text(
-                  texts.breez_avatar_dialog_action_save,
-                  style: themeData.primaryTextTheme.labelLarge,
-                ),
-              ),
-            ],
+            titlePadding: const EdgeInsets.all(0.0),
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
                 bottom: Radius.circular(12.0),
                 top: Radius.circular(13.0),
               ),
             ),
+            children: <Widget>[
+              SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+                child: Theme(
+                  data: ThemeData(
+                    primaryColor: themeData.primaryTextTheme.bodyMedium!.color,
+                    hintColor: themeData.primaryTextTheme.bodyMedium!.color,
+                  ),
+                  child: TextField(
+                    enabled: !isUploading,
+                    style: themeData.primaryTextTheme.bodyMedium,
+                    controller: nameInputController,
+                    decoration: InputDecoration(
+                      hintText: texts.breez_avatar_dialog_your_name,
+                    ),
+                    onSubmitted: (text) {},
+                  ),
+                ),
+              ),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      onPressed: isUploading ? null : () => navigator.pop(),
+                      child: Text(
+                        texts.breez_avatar_dialog_action_cancel,
+                        style: themeData.primaryTextTheme.labelLarge,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: isUploading
+                          ? null
+                          : () async {
+                              await saveAvatarChanges();
+                            },
+                      child: Text(
+                        texts.breez_avatar_dialog_action_save,
+                        style: themeData.primaryTextTheme.labelLarge,
+                      ),
+                    ),
+                  ]),
+            ],
           );
         },
       ),

@@ -98,7 +98,7 @@ class UserApp extends StatelessWidget {
                 },
                 initialRoute: securityState.pinStatus == PinStatus.enabled ? "lockscreen" : "splash",
                 onGenerateRoute: (RouteSettings settings) {
-                  _log.v("New route: ${settings.name}");
+                  _log.v("New route: $settings");
                   switch (settings.name) {
                     case '/intro':
                       return FadeInRoute(
@@ -134,7 +134,7 @@ class UserApp extends StatelessWidget {
                             initialRoute: "/",
                             key: _homeNavigatorKey,
                             onGenerateRoute: (RouteSettings settings) {
-                              _log.v("New inner route: ${settings.name}");
+                              _log.v("New inner route: $settings");
                               switch (settings.name) {
                                 case '/':
                                   return FadeInRoute(
@@ -207,7 +207,7 @@ class UserApp extends StatelessWidget {
                                 case '/withdraw_funds':
                                   return FadeInRoute(
                                     builder: (_) => WithdrawFundsAddressPage(
-                                      withdrawKind: settings.arguments as WithdrawKind,
+                                      policy: settings.arguments as WithdrawFundsPolicy,
                                     ),
                                     settings: settings,
                                   );

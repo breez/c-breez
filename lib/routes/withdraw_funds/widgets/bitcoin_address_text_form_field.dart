@@ -8,9 +8,9 @@ import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class BitcoinAddressTextFormField extends TextFormField {
-  static final _log = FimberLog("BitcoinAddressTextFormField");
+final _log = FimberLog("BitcoinAddressTextFormField");
 
+class BitcoinAddressTextFormField extends TextFormField {
   BitcoinAddressTextFormField({
     Key? key,
     required BuildContext context,
@@ -46,17 +46,14 @@ class BitcoinAddressTextFormField extends TextFormField {
                       return;
                     }
                     controller.text = address;
+                    _onAddressChanged(context, validatorHolder, address);
                   },
                 );
               },
             ),
           ),
           style: theme.FieldTextStyle.textStyle,
-          onChanged: (address) async {
-            await validatorHolder.lock.synchronized(() async {
-              validatorHolder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
-            });
-          },
+          onChanged: (address) => _onAddressChanged(context, validatorHolder, address),
           validator: (address) {
             _log.v("validator called for $address, lock status: ${validatorHolder.lock.locked}");
             if (validatorHolder.valid) {
@@ -66,4 +63,16 @@ class BitcoinAddressTextFormField extends TextFormField {
             }
           },
         );
+
+  static void _onAddressChanged(
+    BuildContext context,
+    ValidatorHolder holder,
+    String address,
+  ) async {
+    _log.v("Address changed $address");
+    await holder.lock.synchronized(() async {
+      _log.v("Calling validator for $address");
+      holder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
+    });
+  }
 }

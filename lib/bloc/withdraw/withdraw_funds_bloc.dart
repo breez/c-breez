@@ -21,6 +21,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
     required String toAddress,
     required int feeRateSatsPerVbyte,
   }) async {
+    _log.v("Sweep to address $toAddress using $feeRateSatsPerVbyte fee vByte");
     await _breezLib.sweep(
       toAddress: toAddress,
       feeRateSatsPerVbyte: feeRateSatsPerVbyte,

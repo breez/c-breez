@@ -48,6 +48,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
           final queryData = MediaQuery.of(context);
 
           return SimpleDialog(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Stack(
               children: [
                 const TitleBackground(),
@@ -79,7 +80,6 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
             ),
             children: <Widget>[
               SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                 child: Theme(
                   data: ThemeData(
                     primaryColor: themeData.primaryTextTheme.bodyMedium!.color,
@@ -96,29 +96,32 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                   ),
                 ),
               ),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextButton(
-                      onPressed: isUploading ? null : () => navigator.pop(),
-                      child: Text(
-                        texts.breez_avatar_dialog_action_cancel,
-                        style: themeData.primaryTextTheme.labelLarge,
+              Padding(
+                  padding: const EdgeInsets.only(top: 24.0, bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: isUploading ? null : () => navigator.pop(),
+                        child: Text(
+                          texts.breez_avatar_dialog_action_cancel,
+                          style: themeData.primaryTextTheme.labelLarge,
+                        ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: isUploading
-                          ? null
-                          : () async {
-                              await saveAvatarChanges();
-                            },
-                      child: Text(
-                        texts.breez_avatar_dialog_action_save,
-                        style: themeData.primaryTextTheme.labelLarge,
+                      TextButton(
+                        onPressed: isUploading
+                            ? null
+                            : () async {
+                                await saveAvatarChanges();
+                              },
+                        child: Text(
+                          texts.breez_avatar_dialog_action_save,
+                          style: themeData.primaryTextTheme.labelLarge,
+                        ),
                       ),
-                    ),
-                  ]),
+                    ],
+                  )),
             ],
           );
         },

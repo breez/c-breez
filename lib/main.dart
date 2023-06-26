@@ -7,6 +7,7 @@ import 'package:c_breez/background/background_task_handler.dart';
 import 'package:c_breez/background/breez_message_handler.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credential_manager.dart';
+import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -108,6 +109,7 @@ void main() async {
               injector.preferences,
             ),
           ),
+          BlocProvider<BackupBloc>(create: (BuildContext context) => BackupBloc(breezLib)),
         ],
         child: UserApp(),
       ),

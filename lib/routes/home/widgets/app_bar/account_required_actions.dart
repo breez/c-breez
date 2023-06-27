@@ -68,7 +68,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
               }
 
               if (backupState?.status == BackupStatus.INPROGRESS) {
-                BackupBloc backupBloc = context.read<BackupBloc>();
+                final backupStateStream = context.watch<BackupBloc>().stream;
                 warnings.add(
                   WarningAction(
                     () async {
@@ -77,7 +77,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
                           useRootNavigator: false,
                           useSafeArea: false,
                           context: context,
-                          builder: (_) => BackupInProgressDialog(backupBloc.stream),
+                          builder: (_) => BackupInProgressDialog(backupStateStream),
                         );
                       }
                     },

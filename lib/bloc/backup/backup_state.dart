@@ -1,7 +1,7 @@
 enum BackupStatus { FAILED, SUCCESS, INPROGRESS }
 
 class BackupState {
-  final BackupStatus? status;
+  final BackupStatus status;
 
-  BackupState({this.status});
+  BackupState({required this.status});
 }

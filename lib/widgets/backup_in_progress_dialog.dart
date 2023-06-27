@@ -21,8 +21,8 @@ class BackupInProgressDialogState extends State<BackupInProgressDialog> {
     _stateSubscription = widget.backupBlocStream.listen(
       (state) {
         if (state?.status != BackupStatus.INPROGRESS) {
-          Navigator.of(context).pop();
           dispose();
+          Navigator.of(context).pop();
         }
       },
     );

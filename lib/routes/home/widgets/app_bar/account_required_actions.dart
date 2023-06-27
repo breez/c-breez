@@ -20,6 +20,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
     return BlocBuilder<AccountBloc, AccountState>(builder: (context, accState) {
       return BlocBuilder<LSPBloc, LspState?>(
         builder: (context, lspState) {
@@ -66,27 +67,35 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
               }
 
               if (backupState?.status == BackupStatus.INPROGRESS) {
-                warnings.add(BackupInProgressDialog(backupState!));
+                warnings.add(Rotator(
+                    child: Image(
+                  image: const AssetImage("src/icon/sync.png"),
+                  color: themeData.iconTheme.color,
+                )));
               }
 
               if (backupState?.status == BackupStatus.FAILED) {
                 warnings.add(WarningAction(() => navigatorState.pushNamed('/backup_manually')));
               }
 
-              Widget Function(BuildContext) dialogBuilder;
-              dialogBuilder = (_) => BackupInProgressDialog(backupState!);
-
               if (warnings.isEmpty) {
                 warnings.add(WarningAction(
                   () {
-                    showDialog(context: context, builder: dialogBuilder);
+                    if (backupState != null) {
+                      showDialog(
+                        useRootNavigator: false,
+                        useSafeArea: false,
+                        context: context,
+                        builder: (_) => BackupInProgressDialog(backupState),
+                      );
+                    }
                   },
-                  iconWidget: const Rotator(child: Image(image: AssetImage("src/icon/sync.png"))),
+                  iconWidget: Rotator(
+                      child: Image(
+                    image: const AssetImage("src/icon/sync.png"),
+                    color: themeData.appBarTheme.actionsIconTheme!.color!,
+                  )),
                 ));
-
-                /*warnings.add(WarningAction(() async {
-                  await ServiceInjector().breezLib.startBackup();
-                }));*/
               }
 
               return Row(

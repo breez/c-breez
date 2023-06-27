@@ -18,9 +18,9 @@ class _BackupInProgressDialogState extends State<BackupInProgressDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.backupState.status == BackupStatus.SUCCESS) {
+    /*if (widget.backupState.status == BackupStatus.SUCCESS) {
       _pop();
-    }
+    }*/
   }
 
   @override
@@ -28,9 +28,9 @@ class _BackupInProgressDialogState extends State<BackupInProgressDialog> {
     super.dispose();
   }
 
-  _pop() {
+  /*_pop() {
     Navigator.of(context).pop();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {

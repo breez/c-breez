@@ -1,40 +1,42 @@
+import 'dart:async';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/backup/backup_state.dart';
-import 'package:c_breez/widgets/loading_animated_text.dart';
+import 'package:c_breez/routes/home/widgets/annimated_loader_dialog.dart';
 import 'package:flutter/material.dart';
 
 class BackupInProgressDialog extends StatefulWidget {
-  final BackupState backupState;
+  final Stream<BackupState?> backupBlocStream;
 
-  const BackupInProgressDialog(this.backupState) : super();
+  const BackupInProgressDialog(this.backupBlocStream);
 
   @override
-  State<StatefulWidget> createState() => _BackupInProgressDialogState();
+  createState() => BackupInProgressDialogState();
 }
 
-class _BackupInProgressDialogState extends State<BackupInProgressDialog> {
-  _BackupInProgressDialogState();
-
+class BackupInProgressDialogState extends State<BackupInProgressDialog> {
+  late StreamSubscription<BackupState?> _stateSubscription;
   @override
-  void initState() {
-    super.initState();
-    /*if (widget.backupState.status == BackupStatus.SUCCESS) {
-      _pop();
-    }*/
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _stateSubscription = widget.backupBlocStream.listen(
+      (state) {
+        if (state?.status != BackupStatus.INPROGRESS) {
+          Navigator.of(context).pop();
+          dispose();
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
+    _stateSubscription.cancel();
     super.dispose();
   }
-
-  /*_pop() {
-    Navigator.of(context).pop();
-  }*/
 
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
-    return LoadingAnimatedText(texts.backup_in_progress);
+    return createAnimatedLoaderDialog(context, texts.backup_in_progress);
   }
 }

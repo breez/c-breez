@@ -5,6 +5,7 @@ import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/bloc/backup/backup_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/routes/backup/backup_now_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/home/widgets/rotator.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
@@ -67,36 +68,34 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
               }
 
               if (backupState?.status == BackupStatus.INPROGRESS) {
-                warnings.add(Rotator(
-                    child: Image(
-                  image: const AssetImage("src/icon/sync.png"),
-                  color: themeData.iconTheme.color,
-                )));
+                BackupBloc backupBloc = context.read<BackupBloc>();
+                warnings.add(
+                  WarningAction(
+                    () async {
+                      if (backupState?.status != null) {
+                        await showDialog(
+                          useRootNavigator: false,
+                          useSafeArea: false,
+                          context: context,
+                          builder: (_) => BackupInProgressDialog(backupBloc.stream),
+                        );
+                      }
+                    },
+                    iconWidget: Rotator(
+                      child: Image(
+                        image: const AssetImage("src/icon/sync.png"),
+                        color: themeData.appBarTheme.actionsIconTheme!.color!,
+                      ),
+                    ),
+                  ),
+                );
               }
 
               if (backupState?.status == BackupStatus.FAILED) {
-                warnings.add(WarningAction(() => navigatorState.pushNamed('/backup_manually')));
+                warnings.add(WarningAction(() => const BackupNowPage()));
               }
 
-              if (warnings.isEmpty) {
-                warnings.add(WarningAction(
-                  () {
-                    if (backupState != null) {
-                      showDialog(
-                        useRootNavigator: false,
-                        useSafeArea: false,
-                        context: context,
-                        builder: (_) => BackupInProgressDialog(backupState),
-                      );
-                    }
-                  },
-                  iconWidget: Rotator(
-                      child: Image(
-                    image: const AssetImage("src/icon/sync.png"),
-                    color: themeData.appBarTheme.actionsIconTheme!.color!,
-                  )),
-                ));
-              }
+              if (warnings.isEmpty) {}
 
               return Row(
                 mainAxisAlignment: MainAxisAlignment.end,

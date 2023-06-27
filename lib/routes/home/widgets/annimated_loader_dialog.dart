@@ -10,6 +10,7 @@ AlertDialog createAnimatedLoaderDialog(
 }) {
   final themeData = Theme.of(context);
   final texts = context.texts();
+  final navigator = Navigator.of(context);
 
   return AlertDialog(
     contentPadding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0),
@@ -37,7 +38,7 @@ AlertDialog createAnimatedLoaderDialog(
                       texts.backup_in_progress_action_confirm,
                       style: themeData.primaryTextTheme.labelLarge,
                     ),
-                    onPressed: () => Navigator.pop(context, false),
+                    onPressed: () => navigator.pop(),
                   ),
                 ]
               : [],

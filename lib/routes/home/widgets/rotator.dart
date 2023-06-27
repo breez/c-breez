@@ -17,7 +17,6 @@ class Rotator extends StatefulWidget {
 class _RotatorState extends State<Rotator> with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-
   final Stream<BackupState> backupStream = BackupBloc(ServiceInjector().breezLib).backupStream;
 
   _RotatorState();
@@ -52,7 +51,7 @@ class _RotatorState extends State<Rotator> with SingleTickerProviderStateMixin {
     return StreamBuilder<BackupState>(
         stream: backupStream,
         builder: (context, snapshot) {
-          if (true /*snapshot.hasData && snapshot.data?.status == BackupStatus.INPROGRESS*/) {
+          if (snapshot.hasData && snapshot.data?.status == BackupStatus.INPROGRESS) {
             return RotationTransition(
               turns: _animation,
               child: widget.child,

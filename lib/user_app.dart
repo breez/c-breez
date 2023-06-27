@@ -220,10 +220,6 @@ class UserApp extends StatelessWidget {
                                   return TransparentPageRoute(
                                     (_) => const MoonPayPage(),
                                   );
-                                case '/backup_manually':
-                                  return MaterialPageRoute(
-                                      fullscreenDialog: false,
-                                      builder: (_) => Container() /*TODO add waringbox);*/);
                               }
                               assert(false);
                               return null;

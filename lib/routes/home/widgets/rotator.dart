@@ -48,17 +48,9 @@ class _RotatorState extends State<Rotator> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<BackupState>(
-        stream: backupStream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data?.status == BackupStatus.INPROGRESS) {
-            return RotationTransition(
-              turns: _animation,
-              child: widget.child,
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        });
+    return RotationTransition(
+      turns: _animation,
+      child: widget.child,
+    );
   }
 }

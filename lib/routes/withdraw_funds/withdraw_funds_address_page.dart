@@ -35,6 +35,15 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
   bool _withdrawMaxValue = false;
 
   @override
+  void initState() {
+    super.initState();
+    _withdrawMaxValue = widget.policy.withdrawKind == WithdrawKind.unexpected_funds;
+    if (_withdrawMaxValue) {
+      _fillAmountControllerWithMaxAmount();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
@@ -77,7 +86,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
                         context: context,
                         bitcoinCurrency: state.bitcoinCurrency,
                         controller: _amountController,
-                        withdrawKind: widget.policy.withdrawKind,
+                        policy: widget.policy,
                         withdrawMaxValue: _withdrawMaxValue,
                       );
                     },
@@ -89,28 +98,18 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
                       style: const TextStyle(color: Colors.white),
                       maxLines: 1,
                     ),
-                    trailing: BlocBuilder<CurrencyBloc, CurrencyState>(
-                      builder: (context, currency) {
-                        return Switch(
-                          value: _withdrawMaxValue,
-                          activeColor: Colors.white,
-                          onChanged: (bool value) async {
-                            setState(() {
-                              _withdrawMaxValue = value;
-                              if (_withdrawMaxValue) {
-                                _amountController.text = currency.bitcoinCurrency
-                                    .format(
-                                      widget.policy.maxValue,
-                                      includeDisplayName: false,
-                                      userInput: true,
-                                    )
-                                    .formatBySatAmountFormFieldFormatter();
-                              } else {
-                                _amountController.text = "";
-                              }
-                            });
-                          },
-                        );
+                    trailing: Switch(
+                      value: _withdrawMaxValue,
+                      activeColor: Colors.white,
+                      onChanged: (bool value) async {
+                        setState(() {
+                          _withdrawMaxValue = value;
+                          if (_withdrawMaxValue) {
+                            _fillAmountControllerWithMaxAmount();
+                          } else {
+                            _amountController.text = "";
+                          }
+                        });
                       },
                     ),
                   ),
@@ -141,6 +140,19 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
       ),
     );
   }
+
+  void _fillAmountControllerWithMaxAmount() {
+    _amountController.text = context
+        .read<CurrencyBloc>()
+        .state
+        .bitcoinCurrency
+        .format(
+          widget.policy.maxValue,
+          includeDisplayName: false,
+          userInput: true,
+        )
+        .formatBySatAmountFormFieldFormatter();
+  }
 }
 
 enum WithdrawKind {
@@ -158,4 +170,9 @@ class WithdrawFundsPolicy {
     this.minValue,
     this.maxValue,
   );
+
+  @override
+  String toString() {
+    return 'WithdrawFundsPolicy{withdrawKind: $withdrawKind, minValue: $minValue, maxValue: $maxValue}';
+  }
 }

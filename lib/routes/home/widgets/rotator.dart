@@ -1,6 +1,3 @@
-import 'package:c_breez/bloc/backup/backup_bloc.dart';
-import 'package:c_breez/bloc/backup/backup_state.dart';
-import 'package:c_breez/services/injector.dart';
 import 'package:flutter/material.dart';
 
 class Rotator extends StatefulWidget {
@@ -17,7 +14,6 @@ class Rotator extends StatefulWidget {
 class _RotatorState extends State<Rotator> with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-  final Stream<BackupState> backupStream = BackupBloc(ServiceInjector().breezLib).backupStream;
 
   _RotatorState();
 

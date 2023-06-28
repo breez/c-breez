@@ -5,7 +5,7 @@ import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/bloc/backup/backup_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
-import 'package:c_breez/routes/backup/backup_now_page.dart';
+import 'package:c_breez/routes/home/widgets/enable_backup_dialog.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/home/widgets/rotator.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
@@ -68,18 +68,15 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
               }
 
               if (backupState?.status == BackupStatus.INPROGRESS) {
-                final backupStateStream = context.watch<BackupBloc>().stream;
                 warnings.add(
                   WarningAction(
-                    () async {
-                      if (backupState?.status != null) {
-                        await showDialog(
-                          useRootNavigator: false,
-                          useSafeArea: false,
-                          context: context,
-                          builder: (_) => BackupInProgressDialog(backupStateStream),
-                        );
-                      }
+                    () {
+                      showDialog(
+                        useRootNavigator: false,
+                        useSafeArea: false,
+                        context: context,
+                        builder: (_) => const BackupInProgressDialog(),
+                      );
                     },
                     iconWidget: Rotator(
                       child: Image(
@@ -92,7 +89,18 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
               }
 
               if (backupState?.status == BackupStatus.FAILED) {
-                warnings.add(WarningAction(() => const BackupNowPage()));
+                warnings.add(
+                  WarningAction(
+                    () {
+                      showDialog(
+                        useRootNavigator: false,
+                        useSafeArea: false,
+                        context: context,
+                        builder: (_) => EnableBackupDialog(context, ServiceInjector().breezLib),
+                      );
+                    },
+                  ),
+                );
               }
 
               if (warnings.isEmpty) {}

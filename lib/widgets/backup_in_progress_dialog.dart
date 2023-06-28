@@ -14,22 +14,14 @@ class BackupInProgressDialog extends StatefulWidget {
 
 class BackupInProgressDialogState extends State<BackupInProgressDialog> {
   @override
-  void dispose() {
-    Navigator.of(context).pop();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final texts = context.texts();
     return BlocListener<BackupBloc, BackupState?>(
-      listener: (context, state) {
-        if (state?.status == BackupStatus.INPROGRESS) {
-          createAnimatedLoaderDialog(context, texts.backup_in_progress);
-        } else {
-          dispose();
-        }
-      },
-    );
+        listener: (context, state) {
+          if (state?.status != BackupStatus.INPROGRESS) {
+            Navigator.of(context).pop();
+          }
+        },
+        child: createAnimatedLoaderDialog(context, texts.backup_in_progress));
   }
 }

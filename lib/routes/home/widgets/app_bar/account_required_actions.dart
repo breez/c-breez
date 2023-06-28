@@ -67,7 +67,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
                 );
               }
 
-              if (backupState?.status == BackupStatus.INPROGRESS) {
+              if (backupState != null && backupState.status == BackupStatus.INPROGRESS) {
                 warnings.add(
                   WarningAction(
                     () {

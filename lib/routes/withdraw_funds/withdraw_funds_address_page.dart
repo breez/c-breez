@@ -31,6 +31,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
   final _addressController = TextEditingController();
   final _amountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _validatorHolder = ValidatorHolder();
   bool _withdrawMaxValue = false;
 
   @override
@@ -68,7 +69,7 @@ class _WithdrawFundsAddressPageState extends State<WithdrawFundsAddressPage> {
                   BitcoinAddressTextFormField(
                     context: context,
                     controller: _addressController,
-                    validatorHolder: ValidatorHolder(),
+                    validatorHolder: _validatorHolder,
                   ),
                   BlocBuilder<CurrencyBloc, CurrencyState>(
                     builder: (context, state) {

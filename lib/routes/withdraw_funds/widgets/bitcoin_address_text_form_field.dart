@@ -55,7 +55,7 @@ class BitcoinAddressTextFormField extends TextFormField {
           style: theme.FieldTextStyle.textStyle,
           onChanged: (address) => _onAddressChanged(context, validatorHolder, address),
           validator: (address) {
-            _log.v("validator called for $address, lock status: ${validatorHolder.lock.locked}");
+            _log.v("validator called for $address, $validatorHolder");
             if (validatorHolder.valid) {
               return null;
             } else {
@@ -73,6 +73,7 @@ class BitcoinAddressTextFormField extends TextFormField {
     await holder.lock.synchronized(() async {
       _log.v("Calling validator for $address");
       holder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
+      _log.v("Address $address validation result $holder");
     });
   }
 }

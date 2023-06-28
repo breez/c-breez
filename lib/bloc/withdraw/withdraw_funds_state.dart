@@ -32,11 +32,13 @@ class FeeOption {
   final ProcessingSpeed processingSpeed;
   final Duration waitingTime;
   final int fee;
+  final int feeVByte;
 
   FeeOption({
     required this.processingSpeed,
     required this.waitingTime,
     required this.fee,
+    required this.feeVByte,
   });
 
   bool isAffordable(int walletBalance) => (walletBalance - fee) > 0;

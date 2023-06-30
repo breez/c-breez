@@ -26,7 +26,9 @@ class RenderBody extends StatelessWidget {
 
     if (loading) {
       return const Center(
-        child: Loader(),
+        child: Loader(
+          color: Colors.white,
+        ),
       );
     }
 

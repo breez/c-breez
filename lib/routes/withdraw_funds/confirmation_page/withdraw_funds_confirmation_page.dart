@@ -10,12 +10,12 @@ import 'widgets/fee_chooser/fee_chooser.dart';
 
 class WithdrawFundsConfirmationPage extends StatefulWidget {
   final String toAddress;
-  final int walletBalance;
+  final int amount;
 
   const WithdrawFundsConfirmationPage({
     Key? key,
     required this.toAddress,
-    required this.walletBalance,
+    required this.amount,
   }) : super(key: key);
 
   @override
@@ -24,7 +24,7 @@ class WithdrawFundsConfirmationPage extends StatefulWidget {
 
 class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmationPage> {
   List<FeeOption> affordableFees = [];
-  late int selectedFeeIndex;
+  int selectedFeeIndex = -1;
 
   late Future<List<FeeOption>> _fetchFeeOptionsFuture;
 
@@ -34,18 +34,8 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
     _fetchFeeOptionsFuture = context.read<WithdrawFundsBloc>().fetchFeeOptions();
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
-        affordableFees = feeOptions.where((f) => f.isAffordable(widget.walletBalance)).toList();
-        // Default to Regular processing speed if possible
+        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amount)).toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
-        /* INFO: We do not add variance when calculating fee, so there's no need for the following logic:
-        // If for some reason(mempool can return same sat/vB for multiple fee rate presets)
-        // the affordability does not match the speed preset order, select first affordable item
-        int firstAffordableIndex =
-            feeOptions.indexWhere((f) => f.isAffordable(widget.walletBalance));
-        if (selectedFeeIndex < firstAffordableIndex) {
-          selectedFeeIndex = firstAffordableIndex;
-        }
-         */
       });
     });
   }
@@ -72,7 +62,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
 
           if (affordableFees.isNotEmpty) {
             return FeeChooser(
-              walletBalance: widget.walletBalance,
+              walletBalance: widget.amount,
               feeOptions: snapshot.data!,
               selectedFeeIndex: selectedFeeIndex,
               onSelect: (index) => setState(() {
@@ -86,12 +76,13 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
           }
         },
       ),
-      bottomNavigationBar: (affordableFees.isNotEmpty)
-          ? SweepButton(
-              toAddress: widget.toAddress,
-              feeRateSatsPerVbyte: 1,
-            )
-          : null,
+      bottomNavigationBar:
+          (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
+              ? SweepButton(
+                  toAddress: widget.toAddress,
+                  feeRateSatsPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
+                )
+              : null,
     );
   }
 }

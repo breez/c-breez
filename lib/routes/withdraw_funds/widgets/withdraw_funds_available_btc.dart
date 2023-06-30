@@ -4,8 +4,11 @@ import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/theme/theme_provider.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+final _log = FimberLog("WithdrawFundsAvailableBtc");
 
 class WithdrawFundsAvailableBtc extends StatelessWidget {
   const WithdrawFundsAvailableBtc();
@@ -30,11 +33,12 @@ class WithdrawFundsAvailableBtc extends StatelessWidget {
             padding: const EdgeInsets.only(left: 3.0),
             child: BlocBuilder<AccountBloc, AccountState>(
               builder: (context, account) {
+                _log.v("Building with wallet balance: ${account.walletBalance} balance: ${account.balance}");
                 return BlocBuilder<CurrencyBloc, CurrencyState>(
                   builder: (context, currencyState) {
                     return Text(
                       currencyState.bitcoinCurrency.format(
-                        account.walletBalance,
+                        account.balance,
                       ),
                       style: textStyle,
                     );

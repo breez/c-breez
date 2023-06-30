@@ -1,5 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
@@ -23,14 +25,14 @@ class SendOptionsBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
 
-    return BlocBuilder<InputBloc, InputState>(
-      builder: (context, snapshot) {
-        _log.v("Building with snapshot: $snapshot");
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 8.0),
-            ListTile(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 8.0),
+        BlocBuilder<InputBloc, InputState>(
+          builder: (context, snapshot) {
+            _log.v("Building paste item with snapshot: $snapshot");
+            return ListTile(
               leading: const BottomActionItemImage(
                 iconAssetPath: "src/icon/paste.png",
               ),
@@ -39,17 +41,20 @@ class SendOptionsBottomSheet extends StatelessWidget {
                 style: theme.bottomSheetTextStyle,
               ),
               onTap: () => _pasteTapped(context, snapshot.inputData, firstPaymentItemKey),
-            ),
-            Divider(
-              height: 0.0,
-              color: Colors.white.withOpacity(0.2),
-              indent: 72.0,
-            ),
-            ListTile(
-              enabled: false, // TODO: enable when we integrate with the SDK
+            );
+          },
+        ),
+        Divider(
+          height: 0.0,
+          color: Colors.white.withOpacity(0.2),
+          indent: 72.0,
+        ),
+        BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, snapshot) {
+            _log.v("Building send to address with snapshot: $snapshot");
+            return ListTile(
               leading: const BottomActionItemImage(
                 iconAssetPath: "src/icon/bitcoin.png",
-                enabled: false, //  TODO: enable when we integrate with the SDK
               ),
               title: Text(
                 texts.bottom_action_bar_send_btc_address,
@@ -58,13 +63,17 @@ class SendOptionsBottomSheet extends StatelessWidget {
               onTap: () => _push(
                 context,
                 "/withdraw_funds",
-                arguments: WithdrawKind.withdraw_funds,
+                arguments: WithdrawFundsPolicy(
+                  WithdrawKind.withdraw_funds,
+                  0,
+                  snapshot.balance,
+                ),
               ),
-            ),
-            const SizedBox(height: 8.0)
-          ],
-        );
-      },
+            );
+          },
+        ),
+        const SizedBox(height: 8.0)
+      ],
     );
   }
 

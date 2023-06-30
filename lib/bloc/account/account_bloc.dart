@@ -271,6 +271,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.v("validatePayment: $amount, $outgoing, $channelMinimumFee");
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
+      _log.v("Amount $amount is bigger than maxPaymentAmount ${accState.maxPaymentAmount}");
       throw PaymentExceededLimitError(accState.maxPaymentAmount);
     }
 
@@ -285,7 +286,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
 
     if (outgoing && amount > accState.maxAllowedToPay) {
+      _log.v("Outgoing but amount $amount is bigger than ${accState.maxAllowedToPay}");
       if (accState.reserveAmount > 0) {
+        _log.v("Reserve amount ${accState.reserveAmount}");
         throw PaymentBelowReserveError(accState.reserveAmount);
       }
       throw const InsufficientLocalBalanceError();

@@ -21,6 +21,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
     required String toAddress,
     required int feeRateSatsPerVbyte,
   }) async {
+    _log.v("Sweep to address $toAddress using $feeRateSatsPerVbyte fee vByte");
     await _breezLib.sweep(
       toAddress: toAddress,
       feeRateSatsPerVbyte: feeRateSatsPerVbyte,
@@ -61,16 +62,19 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
         processingSpeed: ProcessingSpeed.economy,
         waitingTime: const Duration(minutes: 60),
         fee: _calculateTransactionFee(utxos, recommendedFees.hourFee),
+        feeVByte: recommendedFees.hourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.regular,
         waitingTime: const Duration(minutes: 30),
         fee: _calculateTransactionFee(utxos, recommendedFees.halfHourFee),
+        feeVByte: recommendedFees.halfHourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.priority,
         waitingTime: const Duration(minutes: 10),
         fee: _calculateTransactionFee(utxos, recommendedFees.fastestFee),
+        feeVByte: recommendedFees.fastestFee,
       ),
     ];
     emit(WithdrawFundsState(feeOptions: feeOptions));

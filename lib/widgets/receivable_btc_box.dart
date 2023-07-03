@@ -69,33 +69,33 @@ class FeeMessage extends StatelessWidget {
     final themeData = Theme.of(context);
     return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
       final lspInfo = lspState?.lspInfo;
-      return lspInfo == null
-          ? const SizedBox()
-          : WarningBox(
+      return lspInfo != null && lspInfo.openingFeeParamsMenu.values.isNotEmpty
+          ? WarningBox(
               boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    formatFeeMessage(context, lspInfo),
+                    formatFeeMessage(context, lspInfo.openingFeeParamsMenu.values.first),
                     style: themeData.textTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
-            );
+            )
+          : const SizedBox();
     });
   }
 
-  String formatFeeMessage(BuildContext context, LspInformation lspInfo) {
+  String formatFeeMessage(BuildContext context, OpeningFeeParams openingFeeParams) {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final accountState = context.read<AccountBloc>().state;
 
-    final minFee = lspInfo.channelMinimumFeeMsat ~/ 1000;
+    final minFee = openingFeeParams.minMsat ~/ 1000;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFee);
     final minFeeAboveZero = minFee > 0;
-    final setUpFee = (lspInfo.channelFeePermyriad / 100).toString();
+    final setUpFee = (openingFeeParams.proportional / 10000).toString();
     final liquidity = currencyState.bitcoinCurrency.format(
       accountState.maxInboundLiquidity,
     );

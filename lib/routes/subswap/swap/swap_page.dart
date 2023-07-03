@@ -3,15 +3,15 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/swap_in/swap_in_bloc.dart';
 import 'package:c_breez/bloc/swap_in/swap_in_state.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/address_widget_placeholder.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/deposit_widget.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/inprogress_swap.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'widgets/address_widget_placeholder.dart';
-import 'widgets/deposit_widget.dart';
 
 class SwapPage extends StatefulWidget {
   const SwapPage();
@@ -52,14 +52,7 @@ class SwapPageState extends State<SwapPage> {
                         SwapInprogress(swap: swapState.inProgress!)
                     ],
                     if (swapState.error != null) ...[
-                      const Padding(
-                        padding: EdgeInsets.only(
-                          top: 50.0,
-                          left: 30.0,
-                          right: 30.0,
-                        ),
-                        child: Text("Error swapping", textAlign: TextAlign.center),
-                      ),
+                      SwapErrorMessage(errorMessage: swapState.error.toString()),
                     ]
                   ],
                 ),

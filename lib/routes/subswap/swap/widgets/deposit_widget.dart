@@ -44,6 +44,7 @@ class _DepositWidgetState extends State<DepositWidget> {
   @override
   Widget build(BuildContext context) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
+    final openingFeeParams = widget.swap.channelOpeningFees;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -52,26 +53,26 @@ class _DepositWidgetState extends State<DepositWidget> {
           widget.swap.bitcoinAddress,
           backupJson: backupJson,
         ),
-        lspInfo == null
-            ? const SizedBox()
-            : WarningBox(
+        lspInfo != null && openingFeeParams != null
+            ? WarningBox(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      _sendMessage(context, lspInfo),
+                      _sendMessage(context, lspInfo, openingFeeParams),
                       style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-              ),
+              )
+            : const SizedBox(),
       ],
     );
   }
 
   // TODO: Check if there are parts no longer needed with new library
-  String _sendMessage(BuildContext context, LspInformation? lspInfo) {
+  String _sendMessage(BuildContext context, LspInformation lspInfo, OpeningFeeParams openingFeeParams) {
     final accountState = context.read<AccountBloc>().state;
     final currencyState = context.read<CurrencyBloc>().state;
     int minAllowedDeposit = widget.swap.minAllowedDeposit;
@@ -79,7 +80,7 @@ class _DepositWidgetState extends State<DepositWidget> {
 
     final texts = context.texts();
 
-    final minFees = (lspInfo != null) ? lspInfo.channelMinimumFeeMsat ~/ 1000 : 0;
+    final minFees = openingFeeParams.minMsat ~/ 1000;
     final minFeeAboveZero = minFees > 0;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFees);
     final minSats = currencyState.bitcoinCurrency.format(
@@ -93,7 +94,7 @@ class _DepositWidgetState extends State<DepositWidget> {
       maxAllowedDeposit,
       includeDisplayName: true,
     );
-    final setUpFee = (lspInfo!.channelFeePermyriad / 100).toString();
+    final setUpFee = (openingFeeParams.proportional / 10000).toString();
     final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquidity);
     final liquidityAboveZero = accountState.maxInboundLiquidity > 0;
 
@@ -140,7 +141,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     LspInformation? lspInfo,
     int? minAllowedDeposit,
   ) {
-    final minFees = (lspInfo != null) ? lspInfo.channelMinimumFeeMsat ~/ 1000 : 0;
+    final minFees = (lspInfo != null) ? lspInfo.openingFeeParamsMenu.values.first.minMsat ~/ 1000 : 0;
     if (minAllowedDeposit == null) return minFees;
     if (minFees > minAllowedDeposit) return minFees;
     return minAllowedDeposit;

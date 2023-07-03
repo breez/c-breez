@@ -71,10 +71,19 @@ class BreezSDKMock extends Mock implements BreezSDK {
     feeRate: 0,
     timeLockDelta: 0,
     minHtlcMsat: 0,
-    channelFeePermyriad: 0,
     lspPubkey: Uint8List(2),
-    maxInactiveDuration: 0,
-    channelMinimumFeeMsat: 0,
+    openingFeeParamsMenu: OpeningFeeParamsMenu(
+      values: [
+        OpeningFeeParams(
+          minMsat: 2000,
+          proportional: 7,
+          validUntil: DateTime.now().add(const Duration(days: 1)).toUtc().toIso8601String(),
+          maxIdleTime: 1,
+          maxClientToSelfDelay: 1,
+          promise: "",
+        )
+      ],
+    ),
   );
 
   @override

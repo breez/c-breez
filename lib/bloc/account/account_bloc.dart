@@ -264,15 +264,15 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
   }
 
-  Future<sdk.LNInvoice> addInvoice({
+  Future<sdk.ReceivePaymentResponse> addInvoice({
     String description = "",
     required int amountSats,
   }) async {
     _log.v("addInvoice: $description, $amountSats");
-    return await _breezLib.receivePayment(
-      amountSats: amountSats,
-      description: description,
-    );
+
+    final requestData = sdk.ReceivePaymentRequest(amountSats: amountSats, description: description);
+    final responseData = await _breezLib.receivePayment(reqData: requestData);
+    return responseData;
   }
 
   @override

@@ -187,18 +187,18 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     final accountBloc = context.read<AccountBloc>();
     final currencyBloc = context.read<CurrencyBloc>();
 
-    Future<LNInvoice> invoice = accountBloc.addInvoice(
+    Future<ReceivePaymentResponse> receivePaymentResponse = accountBloc.addInvoice(
       description: _descriptionController.text,
       amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
     );
     navigator.pop();
     Widget dialog = FutureBuilder(
-      future: invoice,
-      builder: (BuildContext context, AsyncSnapshot<LNInvoice> invoice) {
-        _log.v("Building QrCodeDialog with invoice: ${invoice.data}, error: ${invoice.error}");
+      future: receivePaymentResponse,
+      builder: (BuildContext context, AsyncSnapshot<ReceivePaymentResponse> snapshot) {
+        _log.v("Building QrCodeDialog with invoice: ${snapshot.data}, error: ${snapshot.error}");
         return QrCodeDialog(
-          invoice.data,
-          invoice.error,
+          snapshot.data,
+          snapshot.error,
           (result) {
             onPaymentFinished(result, currentRoute, navigator);
           },
@@ -207,7 +207,11 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     );
 
     return showDialog(
-        useRootNavigator: false, context: context, barrierDismissible: false, builder: (_) => dialog);
+      useRootNavigator: false,
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => dialog,
+    );
   }
 
   void onPaymentFinished(
@@ -231,7 +235,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   String? validatePayment(BuildContext context, int amount) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
-    int? channelMinimumFee = lspInfo!.channelMinimumFeeMsat ~/ 1000;
+    int? channelMinimumFee =
+        lspInfo != null ? lspInfo.openingFeeParamsMenu.values.first.minMsat ~/ 1000 : null;
 
     return PaymentValidator(
       validatePayment: _validatePayment,

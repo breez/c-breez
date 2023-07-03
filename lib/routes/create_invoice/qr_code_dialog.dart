@@ -2,12 +2,10 @@ import 'dart:async';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/routes/create_invoice/widgets/compact_qr_image.dart';
 import 'package:c_breez/routes/create_invoice/widgets/expiry_and_fee_message.dart';
+import 'package:c_breez/routes/create_invoice/widgets/invoice_qr.dart';
 import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/exceptions.dart';
@@ -20,11 +18,11 @@ import 'package:share_plus/share_plus.dart';
 final _log = FimberLog("QrCodeDialog");
 
 class QrCodeDialog extends StatefulWidget {
-  final LNInvoice? _invoice;
+  final ReceivePaymentResponse? receivePaymentResponse;
   final Object? error;
   final Function(dynamic result) _onFinish;
 
-  const QrCodeDialog(this._invoice, this.error, this._onFinish);
+  const QrCodeDialog(this.receivePaymentResponse, this.error, this._onFinish);
 
   @override
   State<StatefulWidget> createState() {
@@ -60,8 +58,11 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   @override
   void didUpdateWidget(covariant QrCodeDialog oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget._invoice != oldWidget._invoice) {
-      context.read<InputBloc>().trackPayment(widget._invoice!.paymentHash).then((value) {
+    if (widget.receivePaymentResponse?.lnInvoice != oldWidget.receivePaymentResponse?.lnInvoice) {
+      context
+          .read<InputBloc>()
+          .trackPayment(widget.receivePaymentResponse!.lnInvoice.paymentHash)
+          .then((value) {
         Timer(const Duration(milliseconds: 1000), () {
           if (mounted) {
             _controller!.reverse();
@@ -80,8 +81,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
     final texts = context.texts();
     final themeData = Theme.of(context);
 
-    return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
-      return BlocBuilder<InputBloc, InputState>(builder: (context, inputState) {
+    return BlocBuilder<InputBloc, InputState>(
+      builder: (context, inputState) {
         return FadeTransition(
           opacity: _opacityAnimation!,
           child: SimpleDialog(
@@ -100,7 +101,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
                         color: Theme.of(context).primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
-                          Share.share("lightning:${widget._invoice!.bolt11}");
+                          Share.share("lightning:${widget.receivePaymentResponse!.lnInvoice.bolt11}");
                         },
                       ),
                     ),
@@ -113,7 +114,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
                         color: Theme.of(context).primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
-                          ServiceInjector().device.setClipboardText(widget._invoice!.bolt11);
+                          ServiceInjector()
+                              .device
+                              .setClipboardText(widget.receivePaymentResponse!.lnInvoice.bolt11);
                           showFlushbar(
                             context,
                             message: texts.qr_code_dialog_copied,
@@ -137,34 +140,25 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                     texts,
                   ),
                 ),
-                secondChild: widget._invoice == null
+                secondChild: widget.receivePaymentResponse == null
                     ? const SizedBox()
                     : Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: SizedBox(
-                                width: 230.0,
-                                height: 230.0,
-                                child: CompactQRImage(
-                                  data: widget._invoice!.bolt11,
-                                ),
-                              ),
-                            ),
-                          ),
+                          InvoiceQR(bolt11: widget.receivePaymentResponse!.lnInvoice.bolt11),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
-                            child: const ExpiryAndFeeMessage(),
+                            child: ExpiryAndFeeMessage(
+                              lspFees: widget.receivePaymentResponse!.openingFeeMsat,
+                            ),
                           ),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),
                         ],
                       ),
                 duration: const Duration(seconds: 1),
-                crossFadeState:
-                    widget._invoice == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                crossFadeState: widget.receivePaymentResponse == null
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
               ),
               TextButton(
                 onPressed: (() {
@@ -178,8 +172,8 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             ],
           ),
         );
-      });
-    });
+      },
+    );
   }
 
   void onFinish(dynamic result) {

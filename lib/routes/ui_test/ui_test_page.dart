@@ -172,26 +172,29 @@ class UITestPage extends StatelessWidget {
             child: ListTile(
               title: const Text("QrCodeDialog"),
               onTap: () async {
-                Future<LNInvoice> invoice = Future.delayed(
+                LNInvoice invoice = LNInvoice(
+                  paymentHash: "Fake Payment Hash",
+                  amountMsat: 2000000.toInt(),
+                  bolt11: "Fake bolt11",
+                  description: "Fake Description",
+                  expiry: 60.toInt(),
+                  payeePubkey: '',
+                  timestamp: 0,
+                  routingHints: [],
+                  paymentSecret: Uint8List.fromList(
+                    HEX.decode('0c56b71ef'),
+                  ),
+                );
+                Future<ReceivePaymentResponse> response = Future.delayed(
                   const Duration(seconds: 2),
-                  () => LNInvoice(
-                    paymentHash: "Fake Payment Hash",
-                    amountMsat: 2000000.toInt(),
-                    bolt11: "Fake bolt11",
-                    description: "Fake Description",
-                    expiry: 60.toInt(),
-                    payeePubkey: '',
-                    timestamp: 0,
-                    routingHints: [],
-                    paymentSecret: Uint8List.fromList(
-                      HEX.decode('0c56b71ef'),
-                    ),
+                  () => ReceivePaymentResponse(
+                    lnInvoice: invoice,
                   ),
                 );
                 Widget dialog = FutureBuilder(
-                  future: invoice,
-                  builder: (BuildContext context, AsyncSnapshot<LNInvoice> invoice) {
-                    return QrCodeDialog(invoice.data, null, (result) {});
+                  future: response,
+                  builder: (BuildContext context, AsyncSnapshot<ReceivePaymentResponse> response) {
+                    return QrCodeDialog(response.data, null, (result) {});
                   },
                 );
                 return showDialog(

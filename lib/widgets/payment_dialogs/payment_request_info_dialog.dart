@@ -75,7 +75,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         key: _dialogKey,
         width: MediaQuery.of(context).size.width,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.min,
           children: paymentRequestDialog,
         ),
@@ -107,14 +107,9 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           _addIfNotNull(children, _buildErrorMessage(context, currencyState));
           _addIfNotNull(children, _buildActions(context, currencyState, account));
 
-          return Container(
-            padding: const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 16.0),
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: children,
-            ),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(children: children),
           );
         },
       );

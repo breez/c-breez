@@ -66,15 +66,7 @@ class InputHandler extends Handler {
     _handlingRequest = true;
     handleInputData(inputState.inputData)
         .then((result) {
-          _log.v("Input state handled: $result");
-          if (result is LNURLPageResult && result.protocol != null) {
-            final context = contextProvider?.getBuildContext();
-            if (context != null) {
-              handleLNURLPageResult(context, result);
-            } else {
-              _log.v("Skipping handling of result: $result because context is null");
-            }
-          }
+          handleResult(result);
         })
         .whenComplete(() => _handlingRequest = false)
         .onError((error, _) {
@@ -90,6 +82,18 @@ class InputHandler extends Handler {
             }
           }
         });
+  }
+
+  void handleResult(result) {
+    _log.v("Input state handled: $result");
+    if (result is LNURLPageResult && result.protocol != null) {
+      final context = contextProvider?.getBuildContext();
+      if (context != null) {
+        handleLNURLPageResult(context, result);
+      } else {
+        _log.v("Skipping handling of result: $result because context is null");
+      }
+    }
   }
 
   Future handleInputData(dynamic parsedInput) async {
@@ -110,6 +114,8 @@ class InputHandler extends Handler {
     } else if (parsedInput is InputType_NodeId) {
       return handleNodeID(context, parsedInput.nodeId);
     }
+    // Input wasn't handled
+    return false;
   }
 
   Future handleInvoice(BuildContext context, Invoice invoice) async {

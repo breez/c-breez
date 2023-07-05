@@ -1,15 +1,13 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
+import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
-import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/route.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,8 +16,13 @@ final _log = FimberLog("SendOptionsBottomSheet");
 
 class SendOptionsBottomSheet extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
+  final InputHandler inputHandler;
 
-  const SendOptionsBottomSheet({super.key, required this.firstPaymentItemKey});
+  const SendOptionsBottomSheet({
+    super.key,
+    required this.firstPaymentItemKey,
+    required this.inputHandler,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,31 +80,32 @@ class SendOptionsBottomSheet extends StatelessWidget {
     );
   }
 
+  /// This documentation is for clarification purposes.
+  ///
+  /// Even though this function is named paste tapped it assumes that the
+  /// latest inputData on InputBloc's InputState comes from device's clipboard stream.
+  /// Which is a good assumption because otherwise that inputData would've been handled.
   void _pasteTapped(
     BuildContext context,
     dynamic inputData,
     GlobalKey firstPaymentItemKey,
   ) async {
+    // Close bottom sheet
     Navigator.of(context).pop();
-    if (inputData is InputType_NodeId) {
-      _log.v("Input data is of type InputType_NodeId, pushing SpontaneousPaymentPage");
-      Navigator.of(context).push(
-        FadeInRoute(
-          builder: (_) => SpontaneousPaymentPage(
-            inputData.nodeId,
-            firstPaymentItemKey,
-          ),
-        ),
-      );
-    } else {
-      _log.v("Input data is $inputData, showing EnterPaymentInfoDialog");
-      await showDialog(
-        useRootNavigator: false,
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey),
-      );
-    }
+    // and handle input data
+    inputHandler.handleInputData(inputData).then((result) async {
+      // If input data can't be handled(unsupported input type, empty device clipboard) display EnterPaymentInfoDialog
+      if (result == false) {
+        await showDialog(
+          useRootNavigator: false,
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey),
+        );
+      } else {
+        inputHandler.handleResult(result);
+      }
+    });
   }
 
   void _push(BuildContext context, String route, {Object? arguments}) {

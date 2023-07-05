@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/receive_options_bottom_sheet.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/send_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +12,11 @@ import 'bottom_action_item.dart';
 
 class BottomActionsBar extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
+  final InputHandler inputHandler;
 
   const BottomActionsBar(
-    this.firstPaymentItemKey, {
+    this.firstPaymentItemKey,
+    this.inputHandler, {
     Key? key,
   }) : super(key: key);
 
@@ -31,6 +34,7 @@ class BottomActionsBar extends StatelessWidget {
             children: [
               SendOptions(
                 firstPaymentItemKey: firstPaymentItemKey,
+                inputHandler: inputHandler,
                 actionsGroup: actionsGroup,
               ),
               Container(width: 64),
@@ -49,11 +53,13 @@ class BottomActionsBar extends StatelessWidget {
 
 class SendOptions extends StatelessWidget {
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
+  final InputHandler inputHandler;
   final AutoSizeGroup actionsGroup;
 
   const SendOptions({
     Key? key,
     required this.firstPaymentItemKey,
+    required this.inputHandler,
     required this.actionsGroup,
   }) : super(key: key);
 
@@ -67,6 +73,7 @@ class SendOptions extends StatelessWidget {
         builder: (context) {
           return SendOptionsBottomSheet(
             firstPaymentItemKey: firstPaymentItemKey,
+            inputHandler: inputHandler,
           );
         },
       ),

@@ -55,7 +55,7 @@ class InputBloc extends Cubit<InputState> {
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
       try {
-        final parsedInput = await _breezLib.parseInput(input: input);
+        final parsedInput = await parseInput(input: input);
         // Todo: Merge these functions w/o sacrificing readability
         _logParsedInput(parsedInput);
         return await _handleParsedInput(parsedInput);
@@ -147,4 +147,6 @@ class InputBloc extends Cubit<InputState> {
       _log.i("url: ${parsedInput.url}");
     }
   }
+
+  Future<InputType> parseInput({required String input}) async => await _breezLib.parseInput(input: input);
 }

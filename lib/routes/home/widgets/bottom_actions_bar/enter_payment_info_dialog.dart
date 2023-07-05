@@ -1,11 +1,14 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/lnurl.dart';
-import 'package:c_breez/utils/node_id.dart';
 import 'package:c_breez/widgets/flushbar.dart';
+import 'package:c_breez/widgets/loader.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+final _log = FimberLog("EnterPaymentInfoDialog");
 
 class EnterPaymentInfoDialog extends StatefulWidget {
   final GlobalKey paymentItemKey;
@@ -24,6 +27,9 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
   final _paymentInfoFocusNode = FocusNode();
 
   String _scannerErrorMessage = "";
+  String _validatorErrorMessage = "";
+
+  ModalRoute? _loaderRoute;
 
   @override
   void initState() {
@@ -95,12 +101,9 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
                   style: TextStyle(
                     color: themeData.primaryTextTheme.headlineMedium!.color,
                   ),
-                  validator: (v) {
-                    var value = v!;
-                    if (parseNodeId(value) == null &&
-                        _decodeInvoice(value) == null &&
-                        !isLightningAddress(value)) {
-                      return texts.payment_info_dialog_error;
+                  validator: (value) {
+                    if (_validatorErrorMessage.isNotEmpty) {
+                      return _validatorErrorMessage;
                     }
                     return null;
                   },
@@ -151,10 +154,23 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
       actions.add(
         SimpleDialogOption(
           onPressed: (() async {
-            if (_formKey.currentState!.validate()) {
-              Navigator.of(context).pop();
-              final inputBloc = context.read<InputBloc>();
-              inputBloc.addIncomingInput(_paymentInfoController.text);
+            final inputBloc = context.read<InputBloc>();
+            final navigator = Navigator.of(context);
+            _setLoading(true);
+
+            try {
+              await _validateInput(_paymentInfoController.text);
+              if (_formKey.currentState!.validate()) {
+                _setLoading(false);
+                navigator.pop();
+                inputBloc.addIncomingInput(_paymentInfoController.text);
+              }
+            } catch (error) {
+              _setLoading(false);
+              _log.w(error.toString(), ex: error);
+              _setValidatorErrorMessage(texts.payment_info_dialog_error);
+            } finally {
+              _setLoading(false);
             }
           }),
           child: Text(
@@ -186,17 +202,47 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     setState(() {
       _paymentInfoController.text = barcode;
       _scannerErrorMessage = "";
+      _setValidatorErrorMessage("");
     });
   }
 
-  String? _decodeInvoice(String invoiceString) {
-    String normalized = invoiceString.toLowerCase();
-    if (normalized.startsWith("lightning:")) {
-      normalized = normalized.substring(10);
+  Future<void> _validateInput(String input) async {
+    final texts = context.texts();
+    try {
+      _setValidatorErrorMessage("");
+      final inputType = await context.read<InputBloc>().parseInput(input: input);
+      _log.v("Parsed input type: '${inputType.runtimeType.toString()}");
+      // Can't compare against a list of InputType as runtime type comparison is a bit tricky with binding generated enums
+      if (!(inputType is InputType_Bolt11 ||
+          inputType is InputType_LnUrlPay ||
+          inputType is InputType_LnUrlWithdraw ||
+          inputType is InputType_LnUrlAuth ||
+          inputType is InputType_LnUrlError ||
+          inputType is InputType_NodeId)) {
+        _setValidatorErrorMessage(texts.payment_info_dialog_error_unsupported_input);
+      }
+    } catch (e) {
+      rethrow;
     }
-    if (normalized.startsWith("ln") && !normalized.startsWith("lnurl")) {
-      return invoiceString;
+  }
+
+  _setValidatorErrorMessage(String errorMessage) {
+    setState(() {
+      _validatorErrorMessage = errorMessage;
+    });
+    _formKey.currentState?.validate();
+  }
+
+  void _setLoading(bool visible) {
+    if (visible && _loaderRoute == null) {
+      _loaderRoute = createLoaderRoute(context);
+      Navigator.of(context).push(_loaderRoute!);
+      return;
     }
-    return null;
+
+    if (!visible && (_loaderRoute != null && _loaderRoute!.isActive)) {
+      _loaderRoute!.navigator?.removeRoute(_loaderRoute!);
+      _loaderRoute = null;
+    }
   }
 }

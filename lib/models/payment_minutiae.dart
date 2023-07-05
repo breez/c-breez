@@ -85,20 +85,49 @@ class _PaymentMinutiaeFactory {
   _PaymentMinutiaeFactory(this._payment, this._texts) {
     final detailsData = _payment.details.data;
     if (detailsData is LnPaymentDetails) {
-      final metadata = detailsData.lnurlMetadata;
-      if (metadata != null && metadata.isNotEmpty) {
-        try {
-          _metadataMap.addAll(json.decode(metadata));
-        } catch (e) {
-          _log.w("Failed to parse metadata: $metadata", ex: e);
-        }
+      _parseMetadata(detailsData);
+    }
+  }
+
+  void _parseMetadata(LnPaymentDetails detailsData) {
+    final metadata = detailsData.lnurlMetadata;
+    if (metadata == null || metadata.isEmpty) {
+      return;
+    }
+
+    try {
+      final parsed = json.decode(metadata);
+      if (parsed is! List) {
+        _log.w("Unknown runtime type of $parsed for $metadata");
+        return;
       }
+
+      for (var item in parsed) {
+        if (item is! List || item.length != 2) {
+          _log.w("Unknown runtime type of item $item");
+          continue;
+        }
+
+        final key = item[0];
+        final value = item[1];
+        if (key is! String) {
+          _log.w("Unknown runtime type of key $key");
+          continue;
+        }
+
+        _metadataMap[key] = value;
+      }
+    } catch (e) {
+      _log.w("Failed to parse metadata: $metadata", ex: e);
     }
   }
 
   String _title() {
     final description = _payment.description?.replaceAll("\n", " ").trim();
     if (description != null && description.isNotEmpty) {
+      if (description == "Bitcoin Transfer") {
+        return _texts.payment_info_title_bitcoin_transfer;
+      }
       return extractPosMessage(description) ?? description;
     }
 

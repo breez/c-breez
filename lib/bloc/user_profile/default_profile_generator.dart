@@ -23,6 +23,7 @@ class DefaultProfile {
         return "$animal $color";
 
       case 'en':
+      case 'el':
       case 'de':
       case 'fi':
       case 'sv':

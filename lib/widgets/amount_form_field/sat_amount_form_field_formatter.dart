@@ -49,3 +49,10 @@ class SatAmountFormFieldFormatter extends TextInputFormatter {
     );
   }
 }
+
+// Workaround on https://github.com/flutter/flutter/issues/30369
+extension StringFormattedOnSatAmountFormFieldFormatter on String {
+  String formatBySatAmountFormFieldFormatter() => SatAmountFormFieldFormatter()
+      .formatEditUpdate(const TextEditingValue(text: ""), TextEditingValue(text: this))
+      .text;
+}

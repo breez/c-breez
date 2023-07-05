@@ -54,8 +54,11 @@ String _localizedExceptionMessage(
     case "none":
       return texts.payment_error_none;
     default:
-      if (originalMessage.contains("dns error")) {
+      if (originalMessage.contains("dns error") || originalMessage.contains("os error 104")) {
         return texts.generic_network_error;
+      }
+      if (originalMessage.contains("Recovery failed:")) {
+        return texts.enter_backup_phrase_error;
       }
       return originalMessage;
   }

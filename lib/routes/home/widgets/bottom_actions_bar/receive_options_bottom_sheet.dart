@@ -56,6 +56,16 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
               ),
               onTap: () => _push(context, "/swap_page"),
             ),
+            ListTile(
+              leading: const BottomActionItemImage(
+                iconAssetPath: "src/icon/credit_card.png",
+              ),
+              title: Text(
+                texts.bottom_action_bar_buy_bitcoin,
+                style: theme.bottomSheetTextStyle,
+              ),
+              onTap: () => _push(context, "/buy_bitcoin"),
+            ),
             account.maxChanReserve == 0
                 ? const SizedBox(height: 8.0)
                 : WarningBox(

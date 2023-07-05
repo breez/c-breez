@@ -20,6 +20,23 @@ class LNURLPageResult {
         getSystemAppLocalizations(),
         defaultErrorMsg: getSystemAppLocalizations().lnurl_payment_page_unknown_error,
       );
+
+  @override
+  String toString() {
+    return 'LNURLPageResult{protocol: $protocol, successAction: $successAction, error: $error}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LNURLPageResult &&
+          runtimeType == other.runtimeType &&
+          protocol == other.protocol &&
+          successAction == other.successAction &&
+          error == other.error;
+
+  @override
+  int get hashCode => protocol.hashCode ^ successAction.hashCode ^ error.hashCode;
 }
 
 // Supported LNURL specs

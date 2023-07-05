@@ -1,5 +1,7 @@
 import 'package:c_breez/handlers/check_version_handler.dart';
 import 'package:c_breez/handlers/connectivity_handler.dart';
+import 'package:c_breez/handlers/handler.dart';
+import 'package:c_breez/handlers/handler_context_provider.dart';
 import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/handlers/payment_result_handler.dart';
 import 'package:c_breez/routes/home/account_page.dart';
@@ -26,30 +28,40 @@ class Home extends StatefulWidget {
   }
 }
 
-class HomeState extends State<Home> with AutoLockMixin {
+class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<HomeDrawerState> _drawerKey = GlobalKey<HomeDrawerState>();
   final GlobalKey firstPaymentItemKey = GlobalKey();
   final ScrollController scrollController = ScrollController();
+  final handlers = <Handler>[];
 
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback(
-      (_) => initializeListeners(),
-    );
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      handlers.addAll([
+        InputHandler(
+          firstPaymentItemKey,
+          scrollController,
+          _scaffoldKey,
+        ),
+        ConnectivityHandler(),
+        PaymentResultHandler(),
+      ]);
+      for (var handler in handlers) {
+        handler.init(this);
+      }
+      checkVersionDialog(context, context.read());
+    });
   }
 
-  void initializeListeners() {
-    InputHandler(
-      context,
-      firstPaymentItemKey,
-      scrollController,
-      _scaffoldKey,
-    );
-    checkVersionDialog(context, context.read());
-    ConnectivityHandler(context, context.read());
-    PaymentResultHandler(context, context.read());
+  @override
+  void dispose() {
+    super.dispose();
+    for (var handler in handlers) {
+      handler.dispose();
+    }
+    handlers.clear();
   }
 
   @override

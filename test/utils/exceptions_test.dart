@@ -117,6 +117,21 @@ Caused by:
       _texts().payment_error_no_route,
     );
   });
+
+  test("os error 104", () {
+    final message = extractExceptionMessage(
+      const FfiException(
+        "RESULT_ERROR",
+        "error sending request for url (https://mempool.space/api/blocks/tip/height): "
+            "error trying to connect: Connection reset by peer (os error 104)",
+      ),
+      _texts(),
+    );
+    expect(
+      message,
+      _texts().generic_network_error,
+    );
+  });
 }
 
 BreezTranslations _texts() => BreezTranslationsEn();

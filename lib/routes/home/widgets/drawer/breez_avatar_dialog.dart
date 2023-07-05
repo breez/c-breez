@@ -47,8 +47,8 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
           final navigator = Navigator.of(context);
           final queryData = MediaQuery.of(context);
 
-          return AlertDialog(
-            titlePadding: const EdgeInsets.all(0.0),
+          return SimpleDialog(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 24.0),
             title: Stack(
               children: [
                 const TitleBackground(),
@@ -71,49 +71,58 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                 ),
               ],
             ),
-            content: SingleChildScrollView(
-              child: Theme(
-                data: ThemeData(
-                  primaryColor: themeData.primaryTextTheme.bodyMedium!.color,
-                  hintColor: themeData.primaryTextTheme.bodyMedium!.color,
-                ),
-                child: TextField(
-                  enabled: !isUploading,
-                  style: themeData.primaryTextTheme.bodyMedium,
-                  controller: nameInputController,
-                  decoration: InputDecoration(
-                    hintText: texts.breez_avatar_dialog_your_name,
-                  ),
-                  onSubmitted: (text) {},
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: isUploading ? null : () => navigator.pop(),
-                child: Text(
-                  texts.breez_avatar_dialog_action_cancel,
-                  style: themeData.primaryTextTheme.labelLarge,
-                ),
-              ),
-              TextButton(
-                onPressed: isUploading
-                    ? null
-                    : () async {
-                        await saveAvatarChanges();
-                      },
-                child: Text(
-                  texts.breez_avatar_dialog_action_save,
-                  style: themeData.primaryTextTheme.labelLarge,
-                ),
-              ),
-            ],
+            titlePadding: const EdgeInsets.all(0.0),
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.vertical(
                 bottom: Radius.circular(12.0),
                 top: Radius.circular(13.0),
               ),
             ),
+            children: <Widget>[
+              SingleChildScrollView(
+                child: Theme(
+                  data: ThemeData(
+                    primaryColor: themeData.primaryTextTheme.bodyMedium!.color,
+                    hintColor: themeData.primaryTextTheme.bodyMedium!.color,
+                  ),
+                  child: TextField(
+                    enabled: !isUploading,
+                    style: themeData.primaryTextTheme.bodyMedium,
+                    controller: nameInputController,
+                    decoration: InputDecoration(
+                      hintText: texts.breez_avatar_dialog_your_name,
+                    ),
+                    onSubmitted: (text) {},
+                  ),
+                ),
+              ),
+              Padding(
+                  padding: const EdgeInsets.only(top: 24.0, bottom: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: isUploading ? null : () => navigator.pop(),
+                        child: Text(
+                          texts.breez_avatar_dialog_action_cancel,
+                          style: themeData.primaryTextTheme.labelLarge,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: isUploading
+                            ? null
+                            : () async {
+                                await saveAvatarChanges();
+                              },
+                        child: Text(
+                          texts.breez_avatar_dialog_action_save,
+                          style: themeData.primaryTextTheme.labelLarge,
+                        ),
+                      ),
+                    ],
+                  )),
+            ],
           );
         },
       ),

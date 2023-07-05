@@ -10,31 +10,33 @@ import 'package:flutter/material.dart';
 
 import 'widgets/lnurl_page_result.dart';
 
+final _log = FimberLog("handleLNURL");
+
 Future handleLNURL(
   BuildContext context,
   GlobalKey firstPaymentItemKey,
   dynamic requestData,
 ) {
-  final log = FimberLog("handleLNURL");
-  log.v("Handling lnurl requestData: $requestData");
+  _log.v("Handling lnurl requestData: $requestData");
   if (requestData is LnUrlPayRequestData) {
-    log.v("Handling payParams: $requestData");
+    _log.v("Handling payParams: $requestData");
     return handlePayRequest(context, firstPaymentItemKey, requestData);
   } else if (requestData is LnUrlWithdrawRequestData) {
-    log.v("Handling withdrawalParams: $requestData");
+    _log.v("Handling withdrawalParams: $requestData");
     return handleWithdrawRequest(context, requestData);
   } else if (requestData is LnUrlAuthRequestData) {
-    log.v("Handling lnurl auth: $requestData");
+    _log.v("Handling lnurl auth: $requestData");
     return handleAuthRequest(context, requestData);
   } else if (requestData is LnUrlErrorData) {
-    log.v("Handling lnurl error: $requestData");
+    _log.v("Handling lnurl error: $requestData");
     throw requestData.reason;
   }
-  log.w("Unsupported lnurl $requestData");
+  _log.w("Unsupported lnurl $requestData");
   throw context.texts().lnurl_error_unsupported;
 }
 
 void handleLNURLPageResult(BuildContext context, LNURLPageResult result) {
+  _log.v("handle $result");
   switch (result.protocol) {
     case LnUrlProtocol.Pay:
       handleLNURLPaymentPageResult(context, result);

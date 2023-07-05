@@ -88,14 +88,13 @@ class BreezNavigationDrawer extends StatelessWidget {
         ),
         child: Drawer(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ListView(
-                controller: _scrollController,
-                shrinkWrap: true,
-                // Important: Remove any padding from the ListView.
-                padding: const EdgeInsets.all(0.0),
-                children: children,
+              Expanded(
+                child: ListView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(0.0),
+                  children: children,
+                ),
               ),
               const NavigationDrawerFooter(),
             ],

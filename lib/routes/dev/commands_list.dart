@@ -4,9 +4,12 @@ import 'dart:io';
 import 'package:c_breez/routes/dev/widget/render_body.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+
+final _log = FimberLog("CommandsList");
 
 class CommandsList extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -148,6 +151,7 @@ class _CommandsListState extends State<CommandsList> {
   }
 
   void _sendCommand(String command) async {
+    _log.v("Send command: $command");
     if (command.isNotEmpty) {
       FocusScope.of(context).requestFocus(FocusNode());
       setState(() {
@@ -159,6 +163,10 @@ class _CommandsListState extends State<CommandsList> {
       try {
         var commandArgs = command.split(RegExp(r"\s"));
         if (commandArgs.isEmpty) {
+          _log.v("Command args is empty, skipping");
+          setState(() {
+            isLoading = false;
+          });
           return;
         }
         late String reply;
@@ -168,7 +176,12 @@ class _CommandsListState extends State<CommandsList> {
           case 'listPayments':
           case 'listInvoices':
           case 'closeAllChannels':
-            reply = encoder.convert(await _breezLib.executeCommand(command: commandArgs[0].toLowerCase()));
+            final command = commandArgs[0].toLowerCase();
+            _log.v("executing command: $command");
+            final answer = await _breezLib.executeCommand(command: command);
+            _log.v("Received answer: $answer");
+            reply = encoder.convert(answer);
+            _log.v("Reply: $reply");
             break;
           default:
             throw "This command is not supported yet.";
@@ -181,6 +194,7 @@ class _CommandsListState extends State<CommandsList> {
           isLoading = false;
         });
       } catch (error) {
+        _log.w("Error happening", ex: error);
         setState(() {
           _showDefaultCommands = false;
           _cliText = error.toString();

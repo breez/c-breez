@@ -10,6 +10,8 @@ import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 
+final _log = FimberLog("handleLNURLWithdrawPageResult");
+
 Future<LNURLPageResult?> handleWithdrawRequest(
   BuildContext context,
   LnUrlWithdrawRequestData requestData,
@@ -31,14 +33,9 @@ Future<LNURLPageResult?> handleWithdrawRequest(
 }
 
 void handleLNURLWithdrawPageResult(BuildContext context, LNURLPageResult result) {
-  final log = FimberLog("handleLNURLWithdrawPageResult");
+  _log.v("handle $result");
   if (result.hasError) {
-    log.v("Handle LNURL withdraw page result with success");
-    Navigator.of(context).push(
-      TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
-    );
-  } else {
-    log.v("Handle LNURL withdraw page result with error '${result.error}'");
+    _log.v("Handle LNURL withdraw page result with error '${result.error}'");
     final texts = context.texts();
     final themeData = Theme.of(context);
     promptError(
@@ -50,5 +47,10 @@ void handleLNURLWithdrawPageResult(BuildContext context, LNURLPageResult result)
       ),
     );
     throw result.error!;
+  } else {
+    _log.v("Handle LNURL withdraw page result with success");
+    Navigator.of(context).push(
+      TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
+    );
   }
 }

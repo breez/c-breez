@@ -192,7 +192,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
         ),
       ),
       okText: texts.spontaneous_payment_action_pay,
-      cancelText: texts.spontaneous_payment_action_pay,
+      cancelText: texts.spontaneous_payment_action_cancel,
     ).then(
       (ok) async {
         if (ok == true) {

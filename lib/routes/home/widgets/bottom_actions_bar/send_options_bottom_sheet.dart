@@ -60,15 +60,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
                 texts.bottom_action_bar_send_btc_address,
                 style: theme.bottomSheetTextStyle,
               ),
-              onTap: () => _push(
-                context,
-                "/withdraw_funds",
-                arguments: WithdrawFundsPolicy(
-                  WithdrawKind.withdraw_funds,
-                  0,
-                  snapshot.balance,
-                ),
-              ),
+              onTap: () => _sendToBTCAddress(context, snapshot.balance),
             );
           },
         ),
@@ -104,9 +96,18 @@ class SendOptionsBottomSheet extends StatelessWidget {
     }
   }
 
-  void _push(BuildContext context, String route, {Object? arguments}) {
-    final navigatorState = Navigator.of(context);
-    navigatorState.pop();
-    navigatorState.pushNamed(route, arguments: arguments);
+  void _sendToBTCAddress(BuildContext context, int maxValue) {
+    final navigator = Navigator.of(context);
+    // Close bottom sheet
+    navigator.pop();
+    // and open Send to BTC Address page
+    navigator.pushNamed(
+      "/withdraw_funds",
+      arguments: WithdrawFundsPolicy(
+        WithdrawKind.withdraw_funds,
+        0,
+        maxValue,
+      ),
+    );
   }
 }

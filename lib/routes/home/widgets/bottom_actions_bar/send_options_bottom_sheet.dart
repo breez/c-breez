@@ -7,6 +7,7 @@ import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_ite
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 final _log = FimberLog("SendOptionsBottomSheet");
 
-class SendOptionsBottomSheet extends StatelessWidget {
+class SendOptionsBottomSheet extends StatefulWidget {
   final GlobalKey firstPaymentItemKey;
   final InputHandler inputHandler;
 
@@ -23,6 +24,13 @@ class SendOptionsBottomSheet extends StatelessWidget {
     required this.firstPaymentItemKey,
     required this.inputHandler,
   });
+
+  @override
+  State<SendOptionsBottomSheet> createState() => _SendOptionsBottomSheetState();
+}
+
+class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
+  ModalRoute? _loaderRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +79,7 @@ class SendOptionsBottomSheet extends StatelessWidget {
   Future<void> _pasteFromClipboard(BuildContext context) async {
     try {
       final inputBloc = context.read<InputBloc>();
+      _setLoading(true);
       // Get clipboard data
       await Clipboard.getData("text/plain").then(
         (clipboardData) async {
@@ -83,39 +92,45 @@ class SendOptionsBottomSheet extends StatelessWidget {
             await inputBloc.parseInput(input: clipboardText).then(
               (parsedInput) {
                 // Handle parsed input
-                inputHandler.handleInputData(parsedInput).then(
+                widget.inputHandler.handleInputData(parsedInput).then(
                   (result) async {
+                    _setLoading(false);
                     // If input data can't be handled(unsupported input type) display EnterPaymentInfoDialog
                     if (result == false) {
-                      _showEnterPaymentInfoDialog(context, firstPaymentItemKey);
+                      _showEnterPaymentInfoDialog(context, widget.firstPaymentItemKey);
                     } else {
-                      inputHandler.handleResult(result);
+                      widget.inputHandler.handleResult(result);
                     }
                   },
                 ).catchError((e) {
+                  _setLoading(false);
                   // If there's error handling parsed input display EnterPaymentInfoDialog
                   _showEnterPaymentInfoDialog(
                     context,
-                    firstPaymentItemKey,
+                    widget.firstPaymentItemKey,
                   );
                 });
               },
             );
           } else {
+            _setLoading(false);
             // If clipboard data is empty, display EnterPaymentInfoDialog
             _showEnterPaymentInfoDialog(
               context,
-              firstPaymentItemKey,
+              widget.firstPaymentItemKey,
             );
           }
         },
       );
     } catch (e) {
+      _setLoading(false);
       // If there's an error getting the clipboard data, display EnterPaymentInfoDialog
       _showEnterPaymentInfoDialog(
         context,
-        firstPaymentItemKey,
+        widget.firstPaymentItemKey,
       );
+    } finally {
+      _setLoading(false);
     }
   }
 
@@ -146,5 +161,18 @@ class SendOptionsBottomSheet extends StatelessWidget {
         maxValue,
       ),
     );
+  }
+
+  void _setLoading(bool visible) {
+    if (visible && _loaderRoute == null) {
+      _loaderRoute = createLoaderRoute(context);
+      Navigator.of(context).push(_loaderRoute!);
+      return;
+    }
+
+    if (!visible && (_loaderRoute != null && _loaderRoute!.isActive)) {
+      _loaderRoute!.navigator?.removeRoute(_loaderRoute!);
+      _loaderRoute = null;
+    }
   }
 }

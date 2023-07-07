@@ -3,23 +3,32 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
-import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
-import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/route.dart';
+import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final _log = FimberLog("SendOptionsBottomSheet");
 
-class SendOptionsBottomSheet extends StatelessWidget {
+class SendOptionsBottomSheet extends StatefulWidget {
   final GlobalKey firstPaymentItemKey;
 
-  const SendOptionsBottomSheet({super.key, required this.firstPaymentItemKey});
+  const SendOptionsBottomSheet({
+    super.key,
+    required this.firstPaymentItemKey,
+  });
+
+  @override
+  State<SendOptionsBottomSheet> createState() => _SendOptionsBottomSheetState();
+}
+
+class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
+  ModalRoute? _loaderRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +38,15 @@ class SendOptionsBottomSheet extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 8.0),
-        BlocBuilder<InputBloc, InputState>(
-          builder: (context, snapshot) {
-            _log.v("Building paste item with snapshot: $snapshot");
-            return ListTile(
-              leading: const BottomActionItemImage(
-                iconAssetPath: "src/icon/paste.png",
-              ),
-              title: Text(
-                texts.bottom_action_bar_paste_invoice,
-                style: theme.bottomSheetTextStyle,
-              ),
-              onTap: () => _pasteTapped(context, snapshot.inputData, firstPaymentItemKey),
-            );
-          },
+        ListTile(
+          leading: const BottomActionItemImage(
+            iconAssetPath: "src/icon/paste.png",
+          ),
+          title: Text(
+            texts.bottom_action_bar_paste_invoice,
+            style: theme.bottomSheetTextStyle,
+          ),
+          onTap: () => _pasteFromClipboard(context),
         ),
         Divider(
           height: 0.0,
@@ -69,31 +73,69 @@ class SendOptionsBottomSheet extends StatelessWidget {
     );
   }
 
-  void _pasteTapped(
-    BuildContext context,
-    dynamic inputData,
-    GlobalKey firstPaymentItemKey,
-  ) async {
-    Navigator.of(context).pop();
-    if (inputData is InputType_NodeId) {
-      _log.v("Input data is of type InputType_NodeId, pushing SpontaneousPaymentPage");
-      Navigator.of(context).push(
-        FadeInRoute(
-          builder: (_) => SpontaneousPaymentPage(
-            inputData.nodeId,
-            firstPaymentItemKey,
-          ),
-        ),
+  // TODO: Improve error handling flow to reduce open Enter Payment Info Dialog calls
+  Future<void> _pasteFromClipboard(BuildContext context) async {
+    try {
+      final inputBloc = context.read<InputBloc>();
+      // Close bottom sheet
+      Navigator.of(context).pop();
+      _setLoading(true);
+      // Get clipboard data
+      await Clipboard.getData("text/plain").then(
+        (clipboardData) async {
+          final clipboardText = clipboardData?.text;
+          _log.v("Clipboard text: $clipboardText");
+          if (clipboardText != null) {
+            // Parse clipboard text
+            await inputBloc.parseInput(input: clipboardText).then(
+              (inputType) {
+                // Handle parsed input
+                if (!(inputType is InputType_Bolt11 ||
+                    inputType is InputType_LnUrlPay ||
+                    inputType is InputType_LnUrlWithdraw ||
+                    inputType is InputType_LnUrlAuth ||
+                    inputType is InputType_LnUrlError ||
+                    inputType is InputType_NodeId)) {
+                  _showEnterPaymentInfoDialog(context, widget.firstPaymentItemKey);
+                } else {
+                  inputBloc.addIncomingInput(clipboardText);
+                }
+              },
+            );
+          } else {
+            _setLoading(false);
+            // If clipboard data is empty, display EnterPaymentInfoDialog
+            _showEnterPaymentInfoDialog(
+              context,
+              widget.firstPaymentItemKey,
+            );
+          }
+        },
       );
-    } else {
-      _log.v("Input data is $inputData, showing EnterPaymentInfoDialog");
-      await showDialog(
-        useRootNavigator: false,
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey),
+    } catch (e) {
+      _setLoading(false);
+      // If there's an error getting the clipboard data, display EnterPaymentInfoDialog
+      _showEnterPaymentInfoDialog(
+        context,
+        widget.firstPaymentItemKey,
       );
+    } finally {
+      _setLoading(false);
     }
+  }
+
+  Future<void> _showEnterPaymentInfoDialog(
+    BuildContext context,
+    GlobalKey<State<StatefulWidget>> firstPaymentItemKey,
+  ) async {
+    await showDialog(
+      useRootNavigator: false,
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => EnterPaymentInfoDialog(
+        paymentItemKey: firstPaymentItemKey,
+      ),
+    );
   }
 
   void _sendToBTCAddress(BuildContext context, int maxValue) {
@@ -109,5 +151,18 @@ class SendOptionsBottomSheet extends StatelessWidget {
         maxValue,
       ),
     );
+  }
+
+  void _setLoading(bool visible) {
+    if (visible && _loaderRoute == null) {
+      _loaderRoute = createLoaderRoute(context);
+      Navigator.of(context).push(_loaderRoute!);
+      return;
+    }
+
+    if (!visible && (_loaderRoute != null && _loaderRoute!.isActive)) {
+      _loaderRoute!.navigator?.removeRoute(_loaderRoute!);
+      _loaderRoute = null;
+    }
   }
 }

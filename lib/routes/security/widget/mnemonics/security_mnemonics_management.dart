@@ -1,7 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/account/credential_manager.dart';
+import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/mnemonics_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/route.dart';

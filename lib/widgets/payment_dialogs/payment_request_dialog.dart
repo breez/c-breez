@@ -18,13 +18,9 @@ enum PaymentRequestState {
 
 class PaymentRequestDialog extends StatefulWidget {
   final Invoice invoice;
-  final GlobalKey firstPaymentItemKey;
-  final ScrollController scrollController;
 
   const PaymentRequestDialog(
-    this.invoice,
-    this.firstPaymentItemKey,
-    this.scrollController, {
+    this.invoice, {
     Key? key,
   }) : super(key: key);
 
@@ -64,7 +60,6 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
 
     if (_state == PaymentRequestState.PROCESSING_PAYMENT) {
       return ProcessingPaymentDialog(
-        firstPaymentItemKey: widget.firstPaymentItemKey,
         minHeight: minHeight,
         paymentFunc: () => context
             .read<AccountBloc>()

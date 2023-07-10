@@ -19,6 +19,7 @@ import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/config.dart' as cfg;
+import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
@@ -65,14 +66,15 @@ void main() async {
           BlocProvider<LSPBloc>(
             create: (BuildContext context) => LSPBloc(breezLib),
           ),
+          BlocProvider<InputBloc>(
+            create: (BuildContext context) =>
+                InputBloc(breezLib, injector.lightningLinks, injector.device, InputHandler(context: context)),
+          ),
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(
               breezLib,
               CredentialsManager(keyChain: injector.keychain),
             ),
-          ),
-          BlocProvider<InputBloc>(
-            create: (BuildContext context) => InputBloc(breezLib, injector.lightningLinks, injector.device),
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),

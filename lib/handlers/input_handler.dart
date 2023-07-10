@@ -22,24 +22,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = FimberLog("InputHandler");
 
 class InputHandler extends Handler {
-  final GlobalKey firstPaymentItemKey;
-  final ScrollController scrollController;
-  final GlobalKey<ScaffoldState> scaffoldController;
-
   StreamSubscription<InputState>? _subscription;
   ModalRoute? _loaderRoute;
   bool _handlingRequest = false;
+  final BuildContext context;
 
-  InputHandler(
-    this.firstPaymentItemKey,
-    this.scrollController,
-    this.scaffoldController,
-  );
+  InputHandler({required this.context});
 
   @override
   void init(HandlerContextProvider<StatefulWidget> contextProvider) {
-    super.init(contextProvider);
-    _subscription = contextProvider.getBuildContext()!.read<InputBloc>().stream.listen(
+    _subscription = context.read<InputBloc>().stream.listen(
       _listen,
       onError: (error) {
         _handlingRequest = false;
@@ -74,12 +66,7 @@ class InputHandler extends Handler {
           _handlingRequest = false;
           _setLoading(false);
           if (error != null) {
-            final context = contextProvider?.getBuildContext();
-            if (context != null) {
-              showFlushbar(context, message: extractExceptionMessage(error, context.texts()));
-            } else {
-              _log.v("Skipping handling of error: $error because context is null");
-            }
+            showFlushbar(context, message: extractExceptionMessage(error, context.texts()));
           }
         });
   }
@@ -87,30 +74,25 @@ class InputHandler extends Handler {
   void handleResult(result) {
     _log.v("Input state handled: $result");
     if (result is LNURLPageResult && result.protocol != null) {
-      final context = contextProvider?.getBuildContext();
-      if (context != null) {
-        handleLNURLPageResult(context, result);
-      } else {
-        _log.v("Skipping handling of result: $result because context is null");
-      }
+      handleLNURLPageResult(context, result);
     }
   }
 
   Future handleInputData(dynamic parsedInput) async {
     _log.v("handle input $parsedInput");
-    final context = contextProvider?.getBuildContext();
-    if (context == null) {
-      _log.v("Not handling input $parsedInput because context is null");
-      return;
-    }
 
-    if (parsedInput is Invoice) {
-      return handleInvoice(context, parsedInput);
+    if (parsedInput is LNInvoice) {
+      Invoice invoice = Invoice(
+          bolt11: parsedInput.bolt11,
+          paymentHash: parsedInput.paymentHash,
+          amountMsat: parsedInput.amountMsat!,
+          expiry: parsedInput.expiry);
+      return handleInvoice(context, invoice);
     } else if (parsedInput is InputType_LnUrlPay ||
         parsedInput is InputType_LnUrlWithdraw ||
         parsedInput is InputType_LnUrlAuth ||
         parsedInput is InputType_LnUrlError) {
-      return handleLNURL(context, firstPaymentItemKey, parsedInput.data);
+      return handleLNURL(context, parsedInput.data);
     } else if (parsedInput is InputType_NodeId) {
       return handleNodeID(context, parsedInput.nodeId);
     }
@@ -126,8 +108,6 @@ class InputHandler extends Handler {
       barrierDismissible: false,
       builder: (_) => PaymentRequestDialog(
         invoice,
-        firstPaymentItemKey,
-        scrollController,
       ),
     );
   }
@@ -136,10 +116,7 @@ class InputHandler extends Handler {
     _log.v("handle node id $nodeID");
     return await Navigator.of(context).push(
       FadeInRoute(
-        builder: (_) => SpontaneousPaymentPage(
-          nodeID,
-          firstPaymentItemKey,
-        ),
+        builder: (_) => SpontaneousPaymentPage(nodeID),
       ),
     );
   }

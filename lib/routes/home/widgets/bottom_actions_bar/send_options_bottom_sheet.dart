@@ -2,7 +2,6 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
-import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
@@ -17,12 +16,10 @@ final _log = FimberLog("SendOptionsBottomSheet");
 
 class SendOptionsBottomSheet extends StatefulWidget {
   final GlobalKey firstPaymentItemKey;
-  final InputHandler inputHandler;
 
   const SendOptionsBottomSheet({
     super.key,
     required this.firstPaymentItemKey,
-    required this.inputHandler,
   });
 
   @override
@@ -92,14 +89,14 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
             await inputBloc.parseInput(input: clipboardText).then(
               (parsedInput) {
                 // Handle parsed input
-                widget.inputHandler.handleInputData(parsedInput).then(
+                inputBloc.inputHandler.handleInputData(parsedInput).then(
                   (result) async {
                     _setLoading(false);
                     // If input data can't be handled(unsupported input type) display EnterPaymentInfoDialog
                     if (result == false) {
-                      _showEnterPaymentInfoDialog(context, widget.firstPaymentItemKey);
+                      _showEnterPaymentInfoDialog(context);
                     } else {
-                      widget.inputHandler.handleResult(result);
+                      inputBloc.inputHandler.handleResult(result);
                     }
                   },
                 ).catchError((e) {
@@ -107,7 +104,6 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
                   // If there's error handling parsed input display EnterPaymentInfoDialog
                   _showEnterPaymentInfoDialog(
                     context,
-                    widget.firstPaymentItemKey,
                   );
                 });
               },
@@ -117,7 +113,6 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
             // If clipboard data is empty, display EnterPaymentInfoDialog
             _showEnterPaymentInfoDialog(
               context,
-              widget.firstPaymentItemKey,
             );
           }
         },
@@ -127,7 +122,6 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
       // If there's an error getting the clipboard data, display EnterPaymentInfoDialog
       _showEnterPaymentInfoDialog(
         context,
-        widget.firstPaymentItemKey,
       );
     } finally {
       _setLoading(false);
@@ -136,15 +130,12 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
 
   Future<void> _showEnterPaymentInfoDialog(
     BuildContext context,
-    GlobalKey<State<StatefulWidget>> firstPaymentItemKey,
   ) async {
     await showDialog(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => EnterPaymentInfoDialog(
-        paymentItemKey: firstPaymentItemKey,
-      ),
+      builder: (_) => EnterPaymentInfoDialog(),
     );
   }
 

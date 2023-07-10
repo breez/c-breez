@@ -130,10 +130,7 @@ class UITestPage extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   FadeInRoute(
-                    builder: (_) => SpontaneousPaymentPage(
-                      "123",
-                      GlobalKey(debugLabel: "123"),
-                    ),
+                    builder: (_) => const SpontaneousPaymentPage("123"),
                   ),
                 );
               },

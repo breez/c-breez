@@ -34,18 +34,13 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
   final GlobalKey firstPaymentItemKey = GlobalKey();
   final ScrollController scrollController = ScrollController();
   final handlers = <Handler>[];
-  late final InputHandler inputHandler = InputHandler(
-    firstPaymentItemKey,
-    scrollController,
-    _scaffoldKey,
-  );
 
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
       handlers.addAll([
-        inputHandler,
+        InputHandler(context: context),
         ConnectivityHandler(),
         PaymentResultHandler(),
       ]);
@@ -92,7 +87,6 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
             drawer: HomeDrawer(key: _drawerKey),
             bottomNavigationBar: BottomActionsBar(
               firstPaymentItemKey,
-              inputHandler,
             ),
             floatingActionButton: QrActionButton(firstPaymentItemKey),
             floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

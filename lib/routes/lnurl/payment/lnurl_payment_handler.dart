@@ -15,7 +15,6 @@ final _log = FimberLog("handleLNURLPayRequest");
 
 Future<LNURLPageResult?> handlePayRequest(
   BuildContext context,
-  GlobalKey firstPaymentItemKey,
   LnUrlPayRequestData requestData,
 ) async {
   LNURLPaymentInfo? paymentInfo;
@@ -46,7 +45,6 @@ Future<LNURLPageResult?> handlePayRequest(
     barrierDismissible: false,
     builder: (_) => ProcessingPaymentDialog(
       isLnurlPayment: true,
-      firstPaymentItemKey: firstPaymentItemKey,
       paymentFunc: () => context.read<AccountBloc>().lnurlPay(
             amount: paymentInfo!.amount,
             comment: paymentInfo.comment,

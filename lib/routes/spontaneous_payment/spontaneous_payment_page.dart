@@ -24,11 +24,9 @@ import 'widgets/collapsible_list_item.dart';
 
 class SpontaneousPaymentPage extends StatefulWidget {
   final String? nodeID;
-  final GlobalKey firstPaymentItemKey;
 
   const SpontaneousPaymentPage(
-    this.nodeID,
-    this.firstPaymentItemKey, {
+    this.nodeID, {
     Key? key,
   }) : super(key: key);
 
@@ -202,7 +200,6 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
             context: context,
             barrierDismissible: false,
             builder: (_) => ProcessingPaymentDialog(
-              firstPaymentItemKey: widget.firstPaymentItemKey,
               popOnCompletion: true,
               paymentFunc: () {
                 var sendPayment = Future.delayed(

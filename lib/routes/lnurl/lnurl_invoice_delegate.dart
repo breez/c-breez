@@ -14,13 +14,12 @@ final _log = FimberLog("handleLNURL");
 
 Future handleLNURL(
   BuildContext context,
-  GlobalKey firstPaymentItemKey,
   dynamic requestData,
 ) {
   _log.v("Handling lnurl requestData: $requestData");
   if (requestData is LnUrlPayRequestData) {
     _log.v("Handling payParams: $requestData");
-    return handlePayRequest(context, firstPaymentItemKey, requestData);
+    return handlePayRequest(context, requestData);
   } else if (requestData is LnUrlWithdrawRequestData) {
     _log.v("Handling withdrawalParams: $requestData");
     return handleWithdrawRequest(context, requestData);

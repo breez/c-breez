@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
+import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
@@ -13,16 +14,13 @@ import 'package:rxdart/rxdart.dart';
 class InputBloc extends Cubit<InputState> {
   final _log = FimberLog("InputBloc");
   final BreezBridge _breezLib;
+  final InputHandler inputHandler;
   final LightningLinksService _lightningLinks;
   final Device _device;
 
   final _decodeInvoiceController = StreamController<String>();
 
-  InputBloc(
-    this._breezLib,
-    this._lightningLinks,
-    this._device,
-  ) : super(InputState()) {
+  InputBloc(this._breezLib, this._lightningLinks, this._device, this.inputHandler) : super(InputState()) {
     _initializeInputBloc();
   }
 

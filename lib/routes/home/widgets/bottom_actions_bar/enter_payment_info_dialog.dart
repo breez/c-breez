@@ -11,9 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = FimberLog("EnterPaymentInfoDialog");
 
 class EnterPaymentInfoDialog extends StatefulWidget {
-  final GlobalKey paymentItemKey;
-
-  const EnterPaymentInfoDialog({required this.paymentItemKey});
+  const EnterPaymentInfoDialog();
 
   @override
   State<StatefulWidget> createState() {

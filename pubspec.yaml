@@ -30,23 +30,23 @@ dependencies:
   email_validator: ^2.1.17
   extended_image: <8.0.0 # Requires Flutter 3.10
   ffi: ^2.0.2
-  fimber: ^0.6.6
-  fimber_io: ^0.6.6
+  fimber: ^0.7.0
+  fimber_io: ^0.7.0
   # Doesn't support: Linux Mac Windows
-  flutter_fimber: ^0.6.5
+  flutter_fimber: ^0.7.0
   # Doesn't support: Linux Windows
-  firebase_core: ^2.13.1
+  firebase_core: ^2.14.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.3.2
+  firebase_dynamic_links: ^5.3.3
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.6.2
+  firebase_messaging: ^14.6.4
   flutter_bloc: ^8.1.3
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
-  flutter_inappwebview: 6.0.0-beta.23
+  flutter_inappwebview: ^6.0.0-beta.24+1
   flutter_rust_bridge: 1.75.2
   flutter_secure_storage: ^8.0.0
   flutter_svg: <2.0.6 # Requires Flutter 3.10
@@ -56,21 +56,21 @@ dependencies:
       ref: a16aa4deeff1c5e96c6da46da31cb0533f838d8d
   hex: ^0.2.0
   http: <1.0.0 # Requires Flutter 3.10
-  hydrated_bloc: ^9.1.1
+  hydrated_bloc: ^9.1.2
   image: ^4.0.17
   # Doesn't support: Linux Mac Windows
-  image_cropper: ^4.0.1
+  image_cropper: <5.0.0 # Requires Flutter 3.10
   # Doesn't support: Linux Mac Windows
-  image_picker: ^0.8.7+5
+  image_picker: ^1.0.0
   ini: ^2.1.0
   intl: ^0.18.1
   # Doesn't support: Linux Mac
   local_auth: ^2.1.6
-  local_auth_android: ^1.0.31
+  local_auth_android: <1.0.32 # Requires Flutter 3.10
   local_auth_ios: ^1.1.3
   mockito: <5.4.1
   # Doesn't support: Linux Windows
-  mobile_scanner: ^3.2.0
+  mobile_scanner: ^3.3.0
   package_info_plus: ^4.0.2
   path: ^1.8.3
   path_provider: ^2.0.15
@@ -79,16 +79,16 @@ dependencies:
   qr_flutter: ^4.1.0
   rxdart: ^0.27.7
   share_plus: ^7.0.2
-  shared_preferences: ^2.1.1
-  simple_animations: ^5.0.1
+  shared_preferences: ^2.2.0
+  simple_animations: ^5.0.2
   sqflite_common_ffi: ^2.2.5
   sqlite3_flutter_libs: ^0.5.15
   synchronized: ^3.1.0
   theme_provider: ^0.6.0
-  timeago: ^3.4.0
+  timeago: ^3.5.0
   # Doesn't support: Linux Mac Windows
   uni_links: ^0.5.1
-  url_launcher: ^6.1.11
+  url_launcher: <6.1.12 # Requires Flutter 3.10
   vector_math: ^2.1.4
   workmanager:
     git:
@@ -100,7 +100,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: <2.4.0 # Requires Flutter 3.10
-  flutter_lints: ^2.0.1
+  flutter_lints: ^2.0.2
   test: <1.24.0 # Requires Flutter 3.10
 
 dependency_overrides:

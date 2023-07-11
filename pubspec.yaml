@@ -33,7 +33,7 @@ dependencies:
   fimber: ^0.7.0
   fimber_io: ^0.7.0
   # Doesn't support: Linux Mac Windows
-  flutter_fimber: ^0.7.0
+  flutter_fimber: ^0.7.1
   # Doesn't support: Linux Windows
   firebase_core: ^2.14.0
   # Doesn't support: Linux Mac Windows

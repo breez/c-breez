@@ -512,10 +512,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_fimber
-      sha256: "35c0e7d9ae541c6e02d2ae273007208a55f03241708bc3a27138cdc8d3982eb9"
+      sha256: ece05c2a3926bc1266855e0abd22a7ad581231b0009efe6954dd51464e53dd49
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.1"
   flutter_inappwebview:
     dependency: "direct main"
     description:

@@ -1,7 +1,8 @@
 import 'package:breez_sdk/breez_bridge.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
+import 'package:c_breez/config.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:fimber/fimber.dart';
@@ -27,13 +28,13 @@ class MoonPayBloc extends Cubit<MoonPayState> {
       _log.v("fetchMoonpayUrl swapInfo: $swapInfo");
       emit(MoonPayState.swapInProgress(
         swapInfo.bitcoinAddress,
-        swapInfo.status == SwapStatus.Expired,
+        swapInfo.status == sdk.SwapStatus.Expired,
       ));
       return;
     }
 
     try {
-      final url = await _breezLib.buyBitcoin(BuyBitcoinProvider.Moonpay);
+      final url = await _breezLib.buyBitcoin(sdk.BuyBitcoinProvider.Moonpay);
       _log.v("fetchMoonpayUrl url: $url");
       emit(MoonPayState.urlReady(url));
     } catch (e) {
@@ -57,8 +58,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
 
   Future<String> makeExplorerUrl(String address) async {
     _log.v("openExplorer address: $address");
-    final mempoolUrl = await _preferences.getMempoolSpaceUrl() ??
-        (await _breezLib.defaultConfig(EnvironmentType.Production)).mempoolspaceUrl;
+    final mempoolUrl = await _preferences.getMempoolSpaceUrl() ?? (await Config.instance()).defaultMempoolUrl;
     final url = "$mempoolUrl/address/$address";
     _log.v("openExplorer url: $url");
     return url;

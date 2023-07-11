@@ -148,11 +148,12 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
         return AlphaWarningDialog();
       },
     );
-    if (approved) _startNewNode();
+    if (approved) connect();
   }
 
-  void _startNewNode() async {
-    _log.v("Starting new node");
+  void connect({String? mnemonic}) async {
+    final isRestore = mnemonic != null;
+    _log.v("${isRestore ? "Restore" : "Starting new"} node");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
@@ -161,10 +162,12 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
 
     final themeProvider = ThemeProvider.controllerOf(context);
     try {
-      String mnemonic = bip39.generateMnemonic(strength: 128);
-      await accountBloc.startNewNode(mnemonic: mnemonic);
+      await accountBloc.connect(mnemonic: mnemonic ?? bip39.generateMnemonic(strength: 128));
     } catch (error) {
-      _log.i("Failed to register node", ex: error);
+      _log.i("Failed to ${isRestore ? "restore" : "registe"} node", ex: error);
+      if (isRestore) {
+        _restoreNodeFromMnemonicSeed(initialWords: mnemonic.split(" "));
+      }
       showFlushbar(context, message: extractExceptionMessage(error, texts));
       return;
     } finally {
@@ -181,7 +184,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     _log.v("Restore node from mnemonic seed");
     String? mnemonic = await _getMnemonic(initialWords: initialWords);
     if (mnemonic != null) {
-      restoreNode(mnemonic);
+      connect(mnemonic: mnemonic);
     }
   }
 
@@ -193,29 +196,5 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
       "/enter_mnemonics",
       arguments: initialWords,
     );
-  }
-
-  void restoreNode(String mnemonic) async {
-    _log.v("Restore node");
-    final texts = context.texts();
-    final accountBloc = context.read<AccountBloc>();
-    final navigator = Navigator.of(context);
-    var loaderRoute = createLoaderRoute(context);
-    navigator.push(loaderRoute);
-
-    final themeProvider = ThemeProvider.controllerOf(context);
-    try {
-      await accountBloc.recoverNode(mnemonic: mnemonic);
-    } catch (error) {
-      _log.w("Failed to restore node", ex: error);
-      _restoreNodeFromMnemonicSeed(initialWords: mnemonic.split(" "));
-      showFlushbar(context, message: extractExceptionMessage(error, texts));
-      return;
-    } finally {
-      navigator.removeRoute(loaderRoute);
-    }
-
-    themeProvider.setTheme('dark');
-    navigator.pushReplacementNamed('/');
   }
 }

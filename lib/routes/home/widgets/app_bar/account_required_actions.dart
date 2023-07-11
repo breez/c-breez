@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/account/credential_manager.dart';
+import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/bloc/backup/backup_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';

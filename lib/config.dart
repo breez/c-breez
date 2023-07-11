@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
@@ -15,11 +12,14 @@ class Config {
   static Config? _instance;
 
   final sdk.Config sdkConfig;
+  final sdk.NodeConfig nodeConfig;
   final String defaultMempoolUrl;
-  final Uint8List? glCert;
-  final Uint8List? glKey;
 
-  Config._(this.sdkConfig, this.defaultMempoolUrl, this.glCert, this.glKey);
+  Config._({
+    required this.sdkConfig,
+    required this.nodeConfig,
+    required this.defaultMempoolUrl,
+  });
 
   static Future<Config> instance({
     ServiceInjector? serviceInjector,
@@ -30,23 +30,14 @@ class Config {
       final injector = serviceInjector ?? ServiceInjector();
       final breezLib = injector.breezLib;
       final breezConfig = await _getBundledConfig();
-      final defaultConf = await _getDefaultConf(breezLib);
+      final defaultConf = await _getDefaultConf(breezLib, breezConfig.apiKey, breezConfig.nodeConfig);
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
-      sdk.GreenlightCredentials? registerCredentials;
-      try {
-        registerCredentials = sdk.GreenlightCredentials(
-            deviceCert: base64.decode(breezConfig.glCertificate),
-            deviceKey: base64.decode(breezConfig.glKey));
-      } catch (e) {
-        _log.w("Failed to parse register credentials: $e");
-      }
 
       _instance = Config._(
-        sdkConfig,
-        defaultMempoolUrl,
-        registerCredentials?.deviceCert,
-        registerCredentials?.deviceKey,
+        sdkConfig: sdkConfig,
+        nodeConfig: breezConfig.nodeConfig,
+        defaultMempoolUrl: defaultMempoolUrl,
       );
     }
     return _instance!;
@@ -58,11 +49,17 @@ class Config {
   }
 
   static Future<sdk.Config> _getDefaultConf(
-    BreezBridge breezLib, {
+    BreezBridge breezLib,
+    String apiKey,
+    sdk.NodeConfig nodeConfig, {
     sdk.EnvironmentType environmentType = sdk.EnvironmentType.Production,
   }) async {
     _log.v("Getting default SDK config for environment: $environmentType");
-    return await breezLib.defaultConfig(environmentType);
+    return await breezLib.defaultConfig(
+      envType: environmentType,
+      apiKey: apiKey,
+      nodeConfig: nodeConfig,
+    );
   }
 
   static Future<sdk.Config> getSDKConfig(

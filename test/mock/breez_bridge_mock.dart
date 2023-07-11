@@ -13,11 +13,12 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   );
 
   @override
-  Future initServices({
+  Future connect({
     required Config config,
     required Uint8List seed,
-    required GreenlightCredentials creds,
-  }) async {}
+  }) async {
+    await getNodeState();
+  }
 
   Config config = const Config(
     breezserver: '',
@@ -26,21 +27,16 @@ class BreezBridgeMock extends Mock implements BreezBridge {
     paymentTimeoutSec: 10,
     workingDir: '.',
     maxfeePercent: 0.5,
+    nodeConfig: NodeConfig_Greenlight(config: GreenlightNodeConfig()),
   );
 
   @override
-  Future<Config> defaultConfig(EnvironmentType envType) async {
-    return config;
-  }
-
-  @override
-  Future<GreenlightCredentials> recoverNode({
-    required Config config,
-    required Network network,
-    required Uint8List seed,
+  Future<Config> defaultConfig({
+    required EnvironmentType envType,
+    required String apiKey,
+    required NodeConfig nodeConfig,
   }) async {
-    await getNodeState();
-    return credentials;
+    return config;
   }
 
   NodeState? nodeState = const NodeState(

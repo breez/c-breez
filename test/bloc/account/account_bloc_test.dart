@@ -1,6 +1,6 @@
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/account/credential_manager.dart';
+import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -36,12 +36,10 @@ void main() {
     test('recover node', () async {
       var injector = InjectorMock();
       var breezLib = injector.breezLib;
-      injector.keychain.write(CredentialsManager.accountCredsKey, "a3e1");
-      injector.keychain.write(CredentialsManager.accountCredsCert, "a3e61");
       injector.keychain.write(CredentialsManager.accountMnemonic, "a3eed");
       AccountBloc accBloc = AccountBloc(breezLib, CredentialsManager(keyChain: injector.keychain));
 
-      await accBloc.recoverNode(mnemonic: testMnemonic);
+      await accBloc.connect(mnemonic: testMnemonic);
       var accountState = accBloc.state;
       expect(accountState.blockheight, greaterThan(1));
       expect(accountState.id?.length, equals(66));

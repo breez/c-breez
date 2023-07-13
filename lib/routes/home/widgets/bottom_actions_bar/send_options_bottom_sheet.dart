@@ -77,12 +77,12 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
   Future<void> _pasteFromClipboard(BuildContext context) async {
     try {
       final inputBloc = context.read<InputBloc>();
-      // Close bottom sheet
-      Navigator.of(context).pop();
       _setLoading(true);
       // Get clipboard data
       await Clipboard.getData("text/plain").then(
         (clipboardData) async {
+          // Close bottom sheet
+          Navigator.of(context).pop();
           final clipboardText = clipboardData?.text;
           _log.v("Clipboard text: $clipboardText");
           if (clipboardText != null) {

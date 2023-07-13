@@ -56,6 +56,11 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
               ),
               onTap: () => _push(context, "/swap_page"),
             ),
+            Divider(
+              height: 0.0,
+              color: Colors.white.withOpacity(0.2),
+              indent: 72.0,
+            ),
             ListTile(
               leading: const BottomActionItemImage(
                 iconAssetPath: "src/icon/credit_card.png",

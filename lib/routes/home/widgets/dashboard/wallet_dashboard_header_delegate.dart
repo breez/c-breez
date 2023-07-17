@@ -15,8 +15,8 @@ class WalletDashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return WalletDashboard(
-      (kMaxExtent - shrinkOffset).clamp(kMinExtent, kMaxExtent),
-      (shrinkOffset / (kMaxExtent - kMinExtent)).clamp(0.0, 1.0),
+      height: (kMaxExtent - shrinkOffset).clamp(kMinExtent, kMaxExtent),
+      offsetFactor: (shrinkOffset / (kMaxExtent - kMinExtent)).clamp(0.0, 1.0),
     );
   }
 

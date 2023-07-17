@@ -130,6 +130,6 @@ class RestoreFormPageState extends State<RestoreForm> {
       _selectSuggestion(suggestionList.first, itemIndex);
       return List.empty();
     }
-    return suggestionList.isNotEmpty ? suggestionList : List.empty();
+    return suggestionList;
   }
 }

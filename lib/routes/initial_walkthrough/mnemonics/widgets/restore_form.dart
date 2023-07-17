@@ -65,8 +65,9 @@ class RestoreFormPageState extends State<RestoreForm> {
               ),
               autovalidateMode: _autoValidateMode,
               validator: (text) => _onValidate(context, text!),
-              suggestionsCallback: _getSuggestions,
+              suggestionsCallback: (pattern) => _getSuggestions(pattern, itemIndex),
               hideOnEmpty: true,
+              hideOnLoading: true,
               autoFlipDirection: true,
               suggestionsBoxDecoration: const SuggestionsBoxDecoration(
                 color: Colors.white,
@@ -95,17 +96,21 @@ class RestoreFormPageState extends State<RestoreForm> {
                   ),
                 );
               },
-              onSuggestionSelected: <String>(suggestion) {
-                widget.textEditingControllers[itemIndex].text = suggestion;
-                if (itemIndex + 1 < focusNodes.length) {
-                  focusNodes[itemIndex + 1].requestFocus();
-                }
-              },
+              onSuggestionSelected: (suggestion) => _selectSuggestion(suggestion, itemIndex),
             );
           }),
         ),
       ),
     );
+  }
+
+  Function _selectSuggestion(String suggestion, int itemIndex) {
+    return <String>(suggestion) {
+      widget.textEditingControllers[itemIndex].text = suggestion;
+      if (itemIndex + 1 < focusNodes.length) {
+        focusNodes[itemIndex + 1].requestFocus();
+      }
+    };
   }
 
   String? _onValidate(BuildContext context, String text) {
@@ -119,8 +124,12 @@ class RestoreFormPageState extends State<RestoreForm> {
     return null;
   }
 
-  FutureOr<List<String>> _getSuggestions(pattern) {
+  FutureOr<List<String>> _getSuggestions(String pattern, int itemIndex) {
     var suggestionList = WORDLIST.where((item) => item.startsWith(pattern)).toList();
+    if (pattern.length == 4 && suggestionList.isNotEmpty) {
+      _selectSuggestion(suggestionList.first, itemIndex);
+      return List.empty();
+    }
     return suggestionList.isNotEmpty ? suggestionList : List.empty();
   }
 }

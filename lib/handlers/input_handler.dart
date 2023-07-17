@@ -62,8 +62,9 @@ class InputHandler extends Handler {
       return;
     }
 
+    inputState.isLoading ? _handlingRequest = true : _handlingRequest = false;
     _setLoading(inputState.isLoading);
-    _handlingRequest = true;
+
     handleInputData(inputState.inputData)
         .then((result) {
           handleResult(result);

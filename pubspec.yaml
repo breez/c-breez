@@ -18,7 +18,8 @@ dependencies:
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
   breez_sdk:
-    path: ../breez-sdk/libs/sdk-flutter
+    git:
+      url: https://github.com/breez/breez-sdk-flutter
   breez_translations:
     git:
       url: https://github.com/breez/Breez-Translations

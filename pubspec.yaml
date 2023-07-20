@@ -109,6 +109,9 @@ dependency_overrides:
   intl: ^0.18.1
   path: ^1.8.3
   test_api: <0.5.0 # Requires Flutter 3.10
+  # Comment-out to work with breez-sdk from git repository
+  breez_sdk:
+    path: ../breez-sdk/libs/sdk-flutter
 
 flutter:
   uses-material-design: true

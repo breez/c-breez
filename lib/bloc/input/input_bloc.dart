@@ -69,7 +69,7 @@ class InputBloc extends Cubit<InputState> {
   Future<InputState> handlePaymentRequest({required InputType_Bolt11 inputData}) async {
     final LNInvoice lnInvoice = inputData.invoice;
 
-    NodeState? nodeState = await _breezLib.getNodeState();
+    NodeState? nodeState = await _breezLib.nodeInfo();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
       return InputState(isLoading: false);
     }

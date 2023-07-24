@@ -19,7 +19,7 @@ Future<BreezBridge> initializeBreezServices() async {
     print("Initialized Services");
     print("Node has started");
   }
-  await breezLib.syncNode();
+  await breezLib.sync();
   print("Node has synchronized");
   return breezLib;
 }

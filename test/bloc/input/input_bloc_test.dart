@@ -39,7 +39,7 @@ void main() {
       final parsedInput = await breezLib.parseInput(input: input);
 
       final bloc = InputBloc(breezLib, injector.lightningLinks, injector.device);
-      breezLib.getNodeState();
+      breezLib.nodeInfo();
 
       expectLater(
         bloc.stream,

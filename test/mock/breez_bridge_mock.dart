@@ -17,7 +17,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
     required Config config,
     required Uint8List seed,
   }) async {
-    await getNodeState();
+    await nodeInfo();
   }
 
   Config config = const Config(
@@ -54,7 +54,7 @@ class BreezBridgeMock extends Mock implements BreezBridge {
   );
 
   @override
-  Future<NodeState?> getNodeState() async {
+  Future<NodeState?> nodeInfo() async {
     nodeStateController.add(nodeState);
     return nodeState;
   }

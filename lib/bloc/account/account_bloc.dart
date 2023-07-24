@@ -122,7 +122,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
     FGBGEvents.stream.listen((event) async {
       if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
-        await _breezLib.syncNode();
+        await _breezLib.sync();
         lastSync = DateTime.now();
       }
     });

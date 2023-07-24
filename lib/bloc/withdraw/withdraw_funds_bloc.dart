@@ -46,7 +46,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
   }
 
   Future<int> _retrieveUTXOS() async {
-    final nodeState = await _breezLib.getNodeState();
+    final nodeState = await _breezLib.nodeInfo();
     if (nodeState == null) {
       _log.e("_retrieveUTXOS Failed to get node state");
       throw Exception(getSystemAppLocalizations().node_state_error);

@@ -11,7 +11,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 final _log = FimberLog("WithdrawFundsBloc");
 
 class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
 
   WithdrawFundsBloc(
     this._breezLib,

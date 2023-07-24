@@ -8,7 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = FimberLog("RefundBloc");
 
 class RefundBloc extends Cubit<RefundState> {
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
 
   RefundBloc(this._breezLib) : super(RefundState.initial()) {
     _initializeRefundBloc();

@@ -5,9 +5,9 @@ import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';
 
-Future<BreezBridge> initializeBreezServices() async {
+Future<BreezSDK> initializeBreezServices() async {
   final injector = ServiceInjector();
-  final breezLib = injector.breezLib;
+  final breezLib = injector.breezSDK;
   final bool isBreezInitialized = await breezLib.isInitialized();
   print("Is Breez Services initialized: $isBreezInitialized");
   if (!isBreezInitialized) {

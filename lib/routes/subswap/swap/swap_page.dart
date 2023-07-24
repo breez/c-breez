@@ -23,7 +23,7 @@ class SwapPage extends StatefulWidget {
 }
 
 class SwapPageState extends State<SwapPage> {
-  final BreezBridge breezLib = ServiceInjector().breezLib;
+  final BreezSDK breezLib = ServiceInjector().breezSDK;
   SwapInfo? swapInProgress;
   SwapInfo? swapUnused;
   String? bitcoinAddress;

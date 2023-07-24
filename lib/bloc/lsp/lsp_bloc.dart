@@ -8,7 +8,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'lsp_state.dart';
 
 class LSPBloc extends Cubit<LspState?> {
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
   NodeState? _nodeState;
 
   LSPBloc(this._breezLib) : super(null) {
@@ -16,7 +16,7 @@ class LSPBloc extends Cubit<LspState?> {
     // If not instruct the sdk to connect.
     _breezLib.nodeStateStream.where((nodeState) => nodeState != null).listen((nodeState) async {
       // emit first with the current selected lsp
-      emit(LspState(selectedLspId: await _breezLib.getLspId(), lspInfo: state?.lspInfo));
+      emit(LspState(selectedLspId: await _breezLib.lspId(), lspInfo: state?.lspInfo));
       _nodeState = nodeState;
       _refreshLspInfo();
     });

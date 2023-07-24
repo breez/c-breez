@@ -50,7 +50,7 @@ void main() async {
     BreezDateUtils.setupLocales();
     await Firebase.initializeApp();
     final injector = ServiceInjector();
-    final breezLib = injector.breezLib;
+    final breezLib = injector.breezSDK;
     breezLib.initialize();
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     final appDir = await getApplicationDocumentsDirectory();

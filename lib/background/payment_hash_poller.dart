@@ -32,7 +32,7 @@ class PaymentHashPoller {
 
   void isPaymentReceived(Timer timer) async {
     final injector = ServiceInjector();
-    final breezLib = injector.breezLib;
+    final breezLib = injector.breezSDK;
     try {
       final List<Payment> paymentList = await breezLib.listPayments(
         filter: PaymentTypeFilter.Received,

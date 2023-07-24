@@ -6,7 +6,7 @@ import 'package:breez_sdk/bridge_generated.dart' as sdk;
 
 class BackupBloc extends Cubit<BackupState?> {
   final _log = FimberLog("BackupBloc");
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
 
   BackupBloc(this._breezLib) : super(null) {
     _listenBackupEvents();

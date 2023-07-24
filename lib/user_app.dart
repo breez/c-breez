@@ -163,7 +163,7 @@ class UserApp extends StatelessWidget {
                                   return FadeInRoute(
                                     builder: (_) => BlocProvider(
                                       create: (BuildContext context) => SwapInBloc(
-                                        ServiceInjector().breezLib,
+                                        ServiceInjector().breezSDK,
                                       ),
                                       child: const SwapPage(),
                                     ),

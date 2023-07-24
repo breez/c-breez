@@ -21,7 +21,7 @@ class CommandsList extends StatefulWidget {
 }
 
 class _CommandsListState extends State<CommandsList> {
-  final _breezLib = ServiceInjector().breezLib;
+  final _breezLib = ServiceInjector().breezSDK;
 
   final _cliInputController = TextEditingController();
   final FocusNode _cliEntryFocusNode = FocusNode();

@@ -39,7 +39,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Stream<PaymentFilters> get paymentFiltersStream => _paymentFiltersStreamController.stream;
 
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
   final CredentialsManager _credentialsManager;
 
   AccountBloc(

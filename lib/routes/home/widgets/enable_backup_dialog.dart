@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class EnableBackupDialog extends StatefulWidget {
   final BuildContext context;
-  final bridge.BreezBridge breezLib;
+  final bridge.BreezSDK breezLib;
 
   const EnableBackupDialog(this.context, this.breezLib);
 

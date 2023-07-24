@@ -12,7 +12,7 @@ import 'package:rxdart/rxdart.dart';
 
 class InputBloc extends Cubit<InputState> {
   final _log = FimberLog("InputBloc");
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
   final LightningLinksService _lightningLinks;
   final Device _device;
 

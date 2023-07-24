@@ -6,7 +6,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
-class BreezBridgeMock extends Mock implements BreezBridge {
+class BreezSDKMock extends Mock implements BreezSDK {
   GreenlightCredentials credentials = GreenlightCredentials(
     deviceKey: Uint8List(2),
     deviceCert: Uint8List(2),

@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapInBloc extends Cubit<SwapInState> {
   final _log = FimberLog("SwapInBloc");
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
   late Timer timer;
 
   SwapInBloc(this._breezLib) : super(SwapInState(null, null, isLoading: true)) {

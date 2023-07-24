@@ -131,7 +131,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) => CurrencyBloc(injector.breezLib),
+          create: (BuildContext context) => CurrencyBloc(injector.breezSDK),
         ),
         BlocProvider<UserProfileBloc>(
           create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),

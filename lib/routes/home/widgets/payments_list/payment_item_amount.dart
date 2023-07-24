@@ -87,7 +87,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) => CurrencyBloc(ServiceInjector().breezLib),
+          create: (BuildContext context) => CurrencyBloc(ServiceInjector().breezSDK),
         ),
       ],
       child: MaterialApp(

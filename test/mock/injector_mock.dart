@@ -55,10 +55,10 @@ class InjectorMock extends Mock implements ServiceInjector {
   @override
   BreezServer get breezServer => breezServerMock;
 
-  final breezLibMock = BreezBridgeMock();
+  final breezLibMock = BreezSDKMock();
 
   @override
-  BreezBridge get breezLib => breezLibMock;
+  BreezSDK get breezSDK => breezLibMock;
 
   final preferencesMock = PreferencesMock();
 

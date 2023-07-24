@@ -11,7 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = FimberLog("MoonPayBloc");
 
 class MoonPayBloc extends Cubit<MoonPayState> {
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
   final Preferences _preferences;
 
   MoonPayBloc(

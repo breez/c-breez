@@ -6,7 +6,7 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
-  final BreezBridge _breezLib;
+  final BreezSDK _breezLib;
 
   CurrencyBloc(this._breezLib) : super(CurrencyState.initial()) {
     _initializeCurrencyBloc();

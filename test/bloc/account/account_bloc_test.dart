@@ -35,7 +35,7 @@ void main() {
 
     test('recover node', () async {
       var injector = InjectorMock();
-      var breezLib = injector.breezLib;
+      var breezLib = injector.breezSDK;
       injector.keychain.write(CredentialsManager.accountMnemonic, "a3eed");
       AccountBloc accBloc = AccountBloc(breezLib, CredentialsManager(keyChain: injector.keychain));
 

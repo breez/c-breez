@@ -22,7 +22,7 @@ class ServiceInjector {
   DeepLinksService? _deepLinksService;
 
   // breez sdk
-  BreezBridge? _breezBridge;
+  BreezSDK? _breezSDK;
   LightningLinksService? _lightningLinksService;
 
   Device? _device;
@@ -50,7 +50,7 @@ class ServiceInjector {
     return _breezServer ??= BreezServer();
   }
 
-  BreezBridge get breezLib => _breezBridge ??= BreezBridge();
+  BreezSDK get breezSDK => _breezSDK ??= BreezSDK();
 
   Device get device {
     return _device ??= Device();

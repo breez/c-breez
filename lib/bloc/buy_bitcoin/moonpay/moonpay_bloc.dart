@@ -23,24 +23,31 @@ class MoonPayBloc extends Cubit<MoonPayState> {
     try {
       _log.v("fetchMoonpayUrl");
       emit(MoonPayState.loading());
-      final swapInfo = await _breezLib.inProgressSwap();
-      if (swapInfo != null) {
-        _log.v("fetchMoonpayUrl swapInfo: $swapInfo");
-        emit(MoonPayState.swapInProgress(swapInfo.bitcoinAddress, swapInfo.status == sdk.SwapStatus.Expired));
+      final swapInProgress = (await _breezLib.inProgressSwap());
+      sdk.SwapInfo? swapUnused;
+      if (swapInProgress != null) {
+        _log.v("fetchMoonpayUrl swapInfo: $swapInProgress");
+        emit(MoonPayState.swapInProgress(
+            swapInProgress.bitcoinAddress, swapInProgress.status == sdk.SwapStatus.Expired));
         return;
+      } else {
+        sdk.ReceiveOnchainRequest reqData = sdk.ReceiveOnchainRequest(
+          openingFeeParams: swapInProgress?.channelOpeningFees,
+        );
+        swapUnused = (await _breezLib.receiveOnchain(reqData: reqData));
       }
-
-      if (swapInfo?.channelOpeningFees != null) {
+      if (swapUnused.channelOpeningFees != null) {
         sdk.BuyBitcoinRequest reqData = sdk.BuyBitcoinRequest(
           provider: sdk.BuyBitcoinProvider.Moonpay,
-          openingFeeParams: swapInfo!.channelOpeningFees,
+          openingFeeParams: swapUnused.channelOpeningFees,
         );
         final buyBitcoinResponse = await _breezLib.buyBitcoin(reqData: reqData);
-        final url = buyBitcoinResponse.url;
-        _log.v("fetchMoonpayUrl url: $url");
-        emit(MoonPayState.urlReady(url));
+        _log.v("fetchMoonpayUrl url: ${buyBitcoinResponse.url}");
+        if (buyBitcoinResponse.openingFeeParams != null) {
+          emit(MoonPayState.urlReady(buyBitcoinResponse));
+          return;
+        }
       }
-
       emit(MoonPayState.error(getSystemAppLocalizations().add_funds_moonpay_error_address));
     } catch (e) {
       _log.e("fetchMoonpayUrl error: $e");

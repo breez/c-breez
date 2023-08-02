@@ -1,3 +1,5 @@
+import 'package:breez_sdk/bridge_generated.dart';
+
 enum WebViewStatus {
   initial,
   loading,
@@ -18,9 +20,9 @@ abstract class MoonPayState {
       MoonPayStateError(error);
 
   factory MoonPayState.urlReady(
-    String url,
+    BuyBitcoinResponse buyBitcoinResponse,
   ) =>
-      MoonPayStateUrlReady(url);
+      MoonPayStateUrlReady(buyBitcoinResponse);
 
   factory MoonPayState.swapInProgress(
     String address,
@@ -46,20 +48,20 @@ class MoonPayStateError extends MoonPayState {
 }
 
 class MoonPayStateUrlReady extends MoonPayState {
-  final String url;
+  final BuyBitcoinResponse buyBitcoinResponse;
   final WebViewStatus webViewStatus;
 
   const MoonPayStateUrlReady(
-    this.url, {
+    this.buyBitcoinResponse, {
     this.webViewStatus = WebViewStatus.initial,
   });
 
   MoonPayStateUrlReady copyWith({
-    String? url,
+    BuyBitcoinResponse? buyBitcoinResponse,
     WebViewStatus? webViewStatus,
   }) {
     return MoonPayStateUrlReady(
-      url ?? this.url,
+      buyBitcoinResponse ?? this.buyBitcoinResponse,
       webViewStatus: webViewStatus ?? this.webViewStatus,
     );
   }

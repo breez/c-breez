@@ -1,6 +1,7 @@
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
 import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_loading.dart';
+import 'package:c_breez/routes/buy_bitcoin/widgets/lsp_fee_dialog.dart';
 import 'package:c_breez/utils/external_browser.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
@@ -46,14 +47,18 @@ class _MoonPayPageState extends State<MoonPayPage> {
           ],
         ),
         body: BlocListener<MoonPayBloc, MoonPayState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is MoonPayStateError) {
               _closeOnError(context, error: state);
             } else if (state is MoonPayStateUrlReady) {
               if (state.webViewStatus == WebViewStatus.error) {
                 _closeOnError(context);
               } else {
-                _launchMoonPayUrl(context, state.url);
+                await promptLSPFeeAndNavigate(context, state.buyBitcoinResponse.openingFeeParams!).then(
+                  (isApproved) {
+                    _launchMoonPayUrl(context, state.buyBitcoinResponse.url, isApproved);
+                  },
+                );
               }
             }
           },
@@ -65,13 +70,16 @@ class _MoonPayPageState extends State<MoonPayPage> {
 
   // I'm opening a chrome tab instead on loading a in-app web view
   // https://breez-tech.slack.com/archives/C0585MDPTRD/p1685453667050779
-  void _launchMoonPayUrl(BuildContext context, String url) {
+  void _launchMoonPayUrl(BuildContext context, String url, bool? launchBrowser) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MoonPayBloc>().dispose();
       Navigator.of(context).pop();
-      launchLinkOnExternalBrowser(
-        context,
-        linkAddress: url,
-      );
+      if (launchBrowser != null && launchBrowser) {
+        launchLinkOnExternalBrowser(
+          context,
+          linkAddress: url,
+        );
+      }
     });
   }
 

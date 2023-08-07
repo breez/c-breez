@@ -40,10 +40,7 @@ class SwapInBloc extends Cubit<SwapInState> {
       if (swapInProgress != null) {
         swapUnused = null;
       } else {
-        ReceiveOnchainRequest reqData = ReceiveOnchainRequest(
-          openingFeeParams: swapInProgress?.channelOpeningFees,
-        );
-        swapUnused = (await _breezLib.receiveOnchain(reqData: reqData));
+        swapUnused = (await _breezLib.receiveOnchain(reqData: const ReceiveOnchainRequest()));
       }
       emit(SwapInState(swapInProgress, swapUnused));
     } catch (e) {

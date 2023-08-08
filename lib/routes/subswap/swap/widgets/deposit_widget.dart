@@ -141,7 +141,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     LspInformation? lspInfo,
     int? minAllowedDeposit,
   ) {
-    final minFees = (lspInfo != null) ? lspInfo.openingFeeParamsMenu.values.first.minMsat ~/ 1000 : 0;
+    final minFees = (lspInfo != null) ? lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000 : 0;
     if (minAllowedDeposit == null) return minFees;
     if (minFees > minAllowedDeposit) return minFees;
     return minAllowedDeposit;

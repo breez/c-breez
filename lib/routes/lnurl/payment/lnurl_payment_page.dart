@@ -223,7 +223,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
 
     int? channelMinimumFee;
     if (lspInfo != null) {
-      channelMinimumFee = lspInfo.openingFeeParamsMenu.values.first.minMsat ~/ 1000;
+      channelMinimumFee = lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000;
     }
 
     return PaymentValidator(

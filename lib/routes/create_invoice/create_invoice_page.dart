@@ -236,7 +236,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   String? validatePayment(BuildContext context, int amount) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
     int? channelMinimumFee =
-        lspInfo != null ? lspInfo.openingFeeParamsMenu.values.first.minMsat ~/ 1000 : null;
+        lspInfo != null ? lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000 : null;
 
     return PaymentValidator(
       validatePayment: _validatePayment,

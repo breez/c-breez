@@ -72,7 +72,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
     timeLockDelta: 0,
     minHtlcMsat: 0,
     lspPubkey: Uint8List(2),
-    openingFeeParamsMenu: OpeningFeeParamsMenu(
+    openingFeeParamsList: OpeningFeeParamsMenu(
       values: [
         OpeningFeeParams(
           minMsat: 2000,

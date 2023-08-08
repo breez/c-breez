@@ -69,14 +69,14 @@ class FeeMessage extends StatelessWidget {
     final themeData = Theme.of(context);
     return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
       final lspInfo = lspState?.lspInfo;
-      return lspInfo != null && lspInfo.openingFeeParamsMenu.values.isNotEmpty
+      return lspInfo != null && lspInfo.openingFeeParamsList.values.isNotEmpty
           ? WarningBox(
               boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    formatFeeMessage(context, lspInfo.openingFeeParamsMenu.values.first),
+                    formatFeeMessage(context, lspInfo.openingFeeParamsList.values.first),
                     style: themeData.textTheme.titleLarge,
                     textAlign: TextAlign.center,
                   ),

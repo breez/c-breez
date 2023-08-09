@@ -97,7 +97,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     final setUpFee = (openingFeeParams.proportional / 10000).toString();
     final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquidity);
     final liquidityAboveZero = accountState.maxInboundLiquidity > 0;
-    final showFeeMessage = accountState.applyFees;
+    final showFeeMessage = accountState.isFeesApplicable;
 
     if (!showFeeMessage) {
       // Send more than {minSats} and up to {maxSats} to this address. This address can be used only once.

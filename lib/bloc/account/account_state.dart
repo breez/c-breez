@@ -104,6 +104,8 @@ class AccountState {
 
   int get reserveAmount => balance - maxAllowedToPay;
 
+  bool get applyFees => maxAllowedToReceive > maxInboundLiquidity;
+
   // TODO: Add payments toJson
   Map<String, dynamic>? toJson() {
     return {

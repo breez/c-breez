@@ -50,6 +50,9 @@ class PaymentValidator {
       return texts.invoice_payment_validator_error_payment_below_limit(
         currency.format(e.reserveAmount),
       );
+    } on PaymentExceedLiquidityError catch (e) {
+      // TODO: Add translation
+      return "Insufficient inbound liquidity (${currency.format(e.limitSat)})";
     } on InsufficientLocalBalanceError {
       return texts.invoice_payment_validator_error_insufficient_local_balance;
     } on PaymentBelowSetupFeesError catch (e) {

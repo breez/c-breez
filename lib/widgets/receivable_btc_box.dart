@@ -55,7 +55,7 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
               maxLines: 1,
               minFontSize: MinFontSize(context).minFontSize,
             ),
-            FeeMessage(),
+            accountState.applyFees ? FeeMessage() : const SizedBox(),
           ],
         ),
       ),

@@ -97,8 +97,12 @@ class _DepositWidgetState extends State<DepositWidget> {
     final setUpFee = (openingFeeParams.proportional / 10000).toString();
     final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquidity);
     final liquidityAboveZero = accountState.maxInboundLiquidity > 0;
+    final showFeeMessage = accountState.applyFees;
 
-    if (minFeeAboveZero && liquidityAboveZero) {
+    if (!showFeeMessage) {
+      // Send more than {minSats} and up to {maxSats} to this address. This address can be used only once.
+      return texts.invoice_btc_address_channel_not_needed(minFeeFormatted, maxSats);
+    } else if (minFeeAboveZero && liquidityAboveZero) {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
       // will be applied for sending more than {liquidity}.
       return texts.invoice_btc_address_warning_with_min_fee_account_connected(

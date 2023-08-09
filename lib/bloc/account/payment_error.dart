@@ -33,3 +33,11 @@ class PaymentBelowSetupFeesError implements Exception {
     this.setupFees,
   );
 }
+
+class PaymentExceedLiquidityError implements Exception {
+  final int limitSat;
+
+  const PaymentExceedLiquidityError(
+    this.limitSat,
+  );
+}

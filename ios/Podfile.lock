@@ -1,8 +1,12 @@
 PODS:
-  - breez_sdk (0.1.3):
-    - breez_sdkFFI (= 0.1.3)
+  - breez_sdk (0.1.4):
+    - breez_sdk/breez_sdkFFI (= 0.1.4)
+    - breez_sdkFFI
     - Flutter
-  - breez_sdkFFI (0.1.3)
+  - breez_sdk/breez_sdkFFI (0.1.4):
+    - breez_sdkFFI
+    - Flutter
+  - breez_sdkFFI (0.1.4)
   - clipboard_watcher (0.0.1):
     - Flutter
   - connectivity_plus (0.0.1):
@@ -283,8 +287,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
-  breez_sdk: 02ad39b316db6d5b90e27128af8afe5219146512
-  breez_sdkFFI: 945989831ec31233461349d1e000c6044ce94687
+  breez_sdk: ef1b25b92c62ff061239b98f86784e25608a7c1f
+  breez_sdkFFI: 8ad47f4cfec4c3f26ece06a5ea60e03fa4258669
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: 07c49e96d7fc92bc9920617b83238c4d178b446a
   Firebase: 07150e75d142fb9399f6777fa56a187b17f833a0
@@ -299,7 +303,7 @@ SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_fgbg: 31c0d1140a131daea2d342121808f6aa0dcd879d
   flutter_fimber: ec011dfb08d7cbfa16ab6bad8450b99574e6f6a4
-  flutter_inappwebview: 4fe74e5e65809c3d363febfd9e2b21aa79bb0f1c
+  flutter_inappwebview: 50b55a88f5dddadc9e741a7caf72f378116e2156
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   GoogleDataTransport: 54dee9d48d14580407f8f5fbf2f496e92437a2f2

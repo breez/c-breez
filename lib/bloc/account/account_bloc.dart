@@ -9,7 +9,6 @@ import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result.dart';
-import 'package:c_breez/bloc/action_async.dart';
 import 'package:c_breez/config.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fimber/fimber.dart';

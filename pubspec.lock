@@ -281,6 +281,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  csv:
+    dependency: "direct main"
+    description:
+      name: csv
+      sha256: "016b31a51a913744a0a1655c74ff13c9379e1200e246a03d96c81c5d9ed297b5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
   dart_style:
     dependency: transitive
     description:
@@ -397,18 +405,18 @@ packages:
     dependency: "direct main"
     description:
       name: fimber
-      sha256: "42fcfa33acd43556c1e7ebfc12c2b03893418bc04a07931368c3573e228af2f0"
+      sha256: "1415768ddd9fd66f134dbc53f731107554c98175a63d4e93234478a113ffabb8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.6.6"
   fimber_io:
     dependency: "direct main"
     description:
       name: fimber_io
-      sha256: "6b80d4628c717c03e3e8a3a801b2d67b71f0ff2cfd9754b67943576313dbac57"
+      sha256: "73eb090d4442f845a6ab4eeebbe973ca0f767fd67520ce4e2167aa2e3ae1bea9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.6.6"
   firebase_core:
     dependency: "direct main"
     description:
@@ -512,10 +520,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_fimber
-      sha256: ece05c2a3926bc1266855e0abd22a7ad581231b0009efe6954dd51464e53dd49
+      sha256: "6b8ba81faca9c786573c3c7e4c94341b890e594803dc433ae57243a7355c917f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.1"
+    version: "0.6.5"
   flutter_inappwebview:
     dependency: "direct main"
     description:

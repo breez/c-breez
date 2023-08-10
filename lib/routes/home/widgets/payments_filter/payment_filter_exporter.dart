@@ -1,15 +1,19 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/csv_exporter.dart';
+import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PaymentmentFilterExporter extends StatelessWidget {
-  const PaymentmentFilterExporter();
+  final _log = FimberLog("PaymentmentFilterExporter");
+  PaymentmentFilterExporter();
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +55,13 @@ class PaymentmentFilterExporter extends StatelessWidget {
   _exportPayments(BuildContext context) {
     final texts = context.texts();
     final navigator = Navigator.of(context);
+    final currencyState = context.read<CurrencyBloc>().state;
+    final accountState = context.read<AccountBloc>().state;
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
-    Future.value().then((filePath) {
+    CsvExporter(accountState.paymentFilters, currencyState.fiatId, accountState.payments)
+        .export()
+        .then((filePath) {
       if (loaderRoute.isActive) {
         navigator.removeRoute(loaderRoute);
       }
@@ -62,6 +70,7 @@ class PaymentmentFilterExporter extends StatelessWidget {
       if (loaderRoute.isActive) {
         navigator.removeRoute(loaderRoute);
       }
+      _log.e("Received error: $err");
       showFlushbar(
         context,
         message: texts.payments_filter_action_export_failed,

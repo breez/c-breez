@@ -234,7 +234,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
           (amount > accState.maxInboundLiquidity && amount <= channelMinimumFee)) {
         throw PaymentBelowSetupFeesError(channelMinimumFee);
       }
-      if (amount > accState.maxInboundLiquidity) {
+      if (channelMinimumFee == null && amount > accState.maxInboundLiquidity) {
         throw PaymentExceedLiquidityError(accState.maxInboundLiquidity);
       }
       if (amount > accState.maxAllowedToReceive) {

@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
@@ -13,7 +14,12 @@ import 'package:share_plus/share_plus.dart';
 
 class PaymentmentFilterExporter extends StatelessWidget {
   final _log = FimberLog("PaymentmentFilterExporter");
-  PaymentmentFilterExporter();
+  final PaymentTypeFilter filter;
+
+  PaymentmentFilterExporter(
+    this.filter, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,30 +58,46 @@ class PaymentmentFilterExporter extends StatelessWidget {
     choice.function();
   }
 
-  _exportPayments(BuildContext context) {
+  Future _exportPayments(BuildContext context) async {
     final texts = context.texts();
     final navigator = Navigator.of(context);
     final currencyState = context.read<CurrencyBloc>().state;
     final accountState = context.read<AccountBloc>().state;
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
-    CsvExporter(accountState.paymentFilters, currencyState.fiatId, accountState.payments)
-        .export()
-        .then((filePath) {
+    String filePath;
+
+    try {
+      if (accountState.paymentFilters.fromTimestamp != null ||
+          accountState.paymentFilters.toTimestamp != null) {
+        final startDate = DateTime.fromMillisecondsSinceEpoch(accountState.paymentFilters.fromTimestamp!);
+        final endDate = DateTime.fromMillisecondsSinceEpoch(accountState.paymentFilters.toTimestamp!);
+        filePath = await CsvExporter(filter, currencyState.fiatId, accountState,
+                startDate: startDate, endDate: endDate)
+            .export();
+      } else {
+        filePath = await CsvExporter(filter, currencyState.fiatId, accountState).export();
+      }
       if (loaderRoute.isActive) {
         navigator.removeRoute(loaderRoute);
       }
       Share.shareXFiles([XFile(filePath)]);
-    }).catchError((err) {
+    } catch (error) {
+      {
+        if (loaderRoute.isActive) {
+          navigator.removeRoute(loaderRoute);
+        }
+        _log.e("Received error: $error");
+        showFlushbar(
+          context,
+          message: texts.payments_filter_action_export_failed,
+        );
+      }
+    } finally {
       if (loaderRoute.isActive) {
         navigator.removeRoute(loaderRoute);
       }
-      _log.e("Received error: $err");
-      showFlushbar(
-        context,
-        message: texts.payments_filter_action_export_failed,
-      );
-    });
+    }
   }
 }
 

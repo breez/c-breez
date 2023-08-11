@@ -50,7 +50,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
         return Row(
           children: [
             // Insert export paymentfilet here.
-            PaymentmentFilterExporter(),
+            PaymentmentFilterExporter(_getFilterType()),
             PaymentsFilterCalendar(_getFilterType()),
             PaymentsFilterDropdown(
               _filter!,

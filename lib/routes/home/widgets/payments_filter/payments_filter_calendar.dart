@@ -25,7 +25,8 @@ class PaymentsFilterCalendar extends StatelessWidget {
       builder: (context, account) {
         DateTime? firstDate;
         if (account.payments.isNotEmpty) {
-          firstDate = account.payments.first.paymentTime;
+          // The list is backwards so the last element is the first in chronological order.
+          firstDate = account.payments.last.paymentTime;
         }
 
         return Padding(

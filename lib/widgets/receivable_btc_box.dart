@@ -31,7 +31,7 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
   late final texts = context.texts();
   late final currencyState = context.read<CurrencyBloc>().state;
   late final accountState = context.read<AccountBloc>().state;
-
+  late final lspState = context.read<LSPBloc>().state;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,7 +48,9 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
               widget.receiveLabel ??
                   texts.invoice_receive_label(
                     currencyState.bitcoinCurrency.format(
-                      accountState.maxAllowedToReceive,
+                      lspState!.isChannelOpeningAvailiable
+                          ? accountState.maxAllowedToReceive
+                          : accountState.maxInboundLiquidity,
                     ),
                   ),
               style: theme.textStyle,

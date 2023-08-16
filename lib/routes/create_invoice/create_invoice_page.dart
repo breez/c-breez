@@ -7,6 +7,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
@@ -119,15 +120,20 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                       );
                     },
                   ),
-                  BlocBuilder2<AccountBloc, AccountState, CurrencyBloc, CurrencyState>(
-                    builder: (context, accountState, currencyState) {
+                  BlocBuilder3<AccountBloc, AccountState, CurrencyBloc, CurrencyState, LSPBloc, LspState?>(
+                    builder: (context, accountState, currencyState, lspState) {
                       return ReceivableBTCBox(
                         onTap: () {
-                          _amountController.text = currencyState.bitcoinCurrency.format(
-                            accountState.maxAllowedToReceive,
-                            includeDisplayName: false,
-                            userInput: true,
-                          );
+                          lspState!.isChannelOpeningAvailiable
+                              ? _amountController.text = currencyState.bitcoinCurrency.format(
+                                  accountState.maxAllowedToReceive,
+                                  includeDisplayName: false,
+                                  userInput: true,
+                                )
+                              : _amountController.text = currencyState.bitcoinCurrency.format(
+                                  accountState.maxInboundLiquidity,
+                                  includeDisplayName: false,
+                                  userInput: true);
                         },
                       );
                     },

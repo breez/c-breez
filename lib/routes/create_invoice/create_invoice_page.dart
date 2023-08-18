@@ -55,6 +55,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   final _amountController = TextEditingController();
   final _amountFocusNode = FocusNode();
   var _doneAction = KeyboardDoneAction();
+  bool channelCreationPossible = false;
 
   @override
   void initState() {
@@ -65,6 +66,12 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       _amountController.text = (data.maxWithdrawable ~/ 1000).toString();
       _descriptionController.text = data.defaultDescription;
     }
+
+    final lspState = context.read<LSPBloc>().state;
+    if (lspState != null) {
+      channelCreationPossible = lspState.isChannelOpeningAvailiable;
+    }
+
     super.initState();
   }
 
@@ -124,16 +131,20 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     builder: (context, accountState, currencyState, lspState) {
                       return ReceivableBTCBox(
                         onTap: () {
-                          lspState!.isChannelOpeningAvailiable
-                              ? _amountController.text = currencyState.bitcoinCurrency.format(
-                                  accountState.maxAllowedToReceive,
-                                  includeDisplayName: false,
-                                  userInput: true,
-                                )
-                              : _amountController.text = currencyState.bitcoinCurrency.format(
-                                  accountState.maxInboundLiquidity,
-                                  includeDisplayName: false,
-                                  userInput: true);
+                          if (!channelCreationPossible && accountState.maxInboundLiquidity > 0) {
+                            _amountController.text = currencyState.bitcoinCurrency.format(
+                              accountState.maxInboundLiquidity,
+                              includeDisplayName: false,
+                              userInput: true,
+                            );
+                          } else if (!channelCreationPossible && accountState.maxInboundLiquidity == 0) {
+                            // do nothing
+                          } else {
+                            _amountController.text = currencyState.bitcoinCurrency.format(
+                                accountState.maxAllowedToReceive,
+                                includeDisplayName: false,
+                                userInput: true);
+                          }
                         },
                       );
                     },
@@ -271,6 +282,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           amount,
           outgoing,
           channelMinimumFee: channelMinimumFee,
+          channelCreationPossible: channelCreationPossible,
         );
   }
 }

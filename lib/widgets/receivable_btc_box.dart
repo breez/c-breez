@@ -5,6 +5,9 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/routes/lsp/select_lsp_page.dart';
+import 'package:c_breez/routes/lsp/widgets/lsp_list.dart';
+import 'package:c_breez/routes/lsp/widgets/lsp_list_widget.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/warning_box.dart';
@@ -31,7 +34,9 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
   late final texts = context.texts();
   late final currencyState = context.read<CurrencyBloc>().state;
   late final accountState = context.read<AccountBloc>().state;
-  late final lspState = context.read<LSPBloc>().state;
+  late final lspBloc = context.read<LSPBloc>();
+  late final lspState = lspBloc.state;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,19 +49,29 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AutoSizeText(
-              widget.receiveLabel ??
-                  texts.invoice_receive_label(
-                    currencyState.bitcoinCurrency.format(
-                      lspState!.isChannelOpeningAvailiable
-                          ? accountState.maxAllowedToReceive
-                          : accountState.maxInboundLiquidity,
+            (accountState.maxInboundLiquidity <= 0 &&
+                    lspState != null &&
+                    !lspState!.isChannelOpeningAvailiable)
+                ? WarningBox(
+                    boxPadding: const EdgeInsets.only(top: 8),
+                    child: AutoSizeText(
+                      texts.lsp_error_cannot_open_channel,
+                      textAlign: TextAlign.center,
                     ),
+                  )
+                : AutoSizeText(
+                    widget.receiveLabel ??
+                        texts.invoice_receive_label(
+                          currencyState.bitcoinCurrency.format(
+                            lspState!.isChannelOpeningAvailiable
+                                ? accountState.maxAllowedToReceive
+                                : accountState.maxInboundLiquidity,
+                          ),
+                        ),
+                    style: theme.textStyle,
+                    maxLines: 1,
+                    minFontSize: MinFontSize(context).minFontSize,
                   ),
-              style: theme.textStyle,
-              maxLines: 1,
-              minFontSize: MinFontSize(context).minFontSize,
-            ),
             accountState.isFeesApplicable ? FeeMessage() : const SizedBox(),
           ],
         ),

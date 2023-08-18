@@ -41,3 +41,13 @@ class PaymentExceedLiquidityError implements Exception {
     this.limitSat,
   );
 }
+
+class PaymentExcededLiqudityChannelCreationNotPossibleError implements Exception {
+  final int limitSat;
+
+  const PaymentExcededLiqudityChannelCreationNotPossibleError(
+    this.limitSat,
+  );
+}
+
+class NoChannelCreationZeroLiqudityError implements Exception {}

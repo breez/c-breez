@@ -62,7 +62,7 @@ class PaymentValidator {
     } on PaymentExcededLiqudityChannelCreationNotPossibleError catch (e) {
       return texts.lnurl_fetch_invoice_error_max(currency.format(e.limitSat));
     } on NoChannelCreationZeroLiqudityError {
-      return "You cannot receive funds, channel creation not possible.";
+      return texts.lsp_error_cannot_open_channel;
     } catch (e) {
       _log.v("Got Generic error", ex: e);
       return texts.invoice_payment_validator_error_unknown(

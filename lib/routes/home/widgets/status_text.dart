@@ -1,5 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/loading_animated_text.dart';
@@ -23,14 +28,20 @@ class StatusText extends StatelessWidget {
       final texts = context.texts();
       final themeData = Theme.of(context);
 
-      return AutoSizeText(
-        texts.status_text_ready,
-        style: themeData.textTheme.bodyMedium?.copyWith(
-          color: themeData.isLightTheme ? BreezColors.grey[600] : themeData.colorScheme.onSecondary,
-        ),
-        textAlign: TextAlign.center,
-        minFontSize: MinFontSize(context).minFontSize,
-        stepGranularity: 0.1,
+      return BlocBuilder2<AccountBloc, AccountState, LSPBloc, LspState?>(
+        builder: (context, accountState, lspState) {
+          return AutoSizeText(
+            (lspState != null && lspState.isChannelOpeningAvailiable && accountState.maxInboundLiquidity <= 0)
+                ? texts.status_text_ready
+                : texts.lsp_error_cannot_open_channel,
+            style: themeData.textTheme.bodyMedium?.copyWith(
+              color: themeData.isLightTheme ? BreezColors.grey[600] : themeData.colorScheme.onSecondary,
+            ),
+            textAlign: TextAlign.center,
+            minFontSize: MinFontSize(context).minFontSize,
+            stepGranularity: 0.1,
+          );
+        },
       );
     }
   }

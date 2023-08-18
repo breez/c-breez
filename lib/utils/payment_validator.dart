@@ -51,7 +51,6 @@ class PaymentValidator {
         currency.format(e.reserveAmount),
       );
     } on PaymentExceedLiquidityError catch (e) {
-      // TODO(ubbabeck): Add translation
       return "Insufficient inbound liquidity (${currency.format(e.limitSat)})";
     } on InsufficientLocalBalanceError {
       return texts.invoice_payment_validator_error_insufficient_local_balance;
@@ -61,8 +60,7 @@ class PaymentValidator {
         currency.format(e.setupFees),
       );
     } on PaymentExcededLiqudityChannelCreationNotPossibleError catch (e) {
-      // TODO(ubbabeck) Add translation
-      return "Maximum allowed amount to receive is ${e.limitSat}";
+      return texts.lnurl_fetch_invoice_error_max(currency.format(e.limitSat));
     } on NoChannelCreationZeroLiqudityError {
       return "You cannot receive funds, channel creation not possible.";
     } catch (e) {

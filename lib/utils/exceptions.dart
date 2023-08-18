@@ -38,28 +38,28 @@ String _localizedExceptionMessage(
   String originalMessage,
 ) {
   _log.v("localizedExceptionMessage: $originalMessage");
-  switch (originalMessage.toLowerCase()) {
-    case "transport error":
-      return texts.generic_network_error;
-    case "insufficient_balance":
-      return texts.payment_error_insufficient_balance;
-    case "incorrect_payment_details":
-      return texts.payment_error_incorrect_payment_details;
-    case "error":
-      return texts.payment_error_unexpected_error;
-    case "no_route":
-      return texts.payment_error_no_route;
-    case "timeout":
-      return texts.payment_error_payment_timeout_exceeded;
-    case "none":
-      return texts.payment_error_none;
-    default:
-      if (originalMessage.contains("dns error") || originalMessage.contains("os error 104")) {
-        return texts.generic_network_error;
-      }
-      if (originalMessage.contains("Recovery failed:")) {
-        return texts.enter_backup_phrase_error;
-      }
-      return originalMessage;
+  final messageToLower = originalMessage.toLowerCase();
+  if (messageToLower == "transport error") {
+    return texts.generic_network_error;
+  } else if (messageToLower == "insufficient_balance") {
+    return texts.payment_error_insufficient_balance;
+  } else if (messageToLower == "incorrect_payment_details") {
+    return texts.payment_error_incorrect_payment_details;
+  } else if (messageToLower == "error") {
+    return texts.payment_error_unexpected_error;
+  } else if (messageToLower == "no_route") {
+    return texts.payment_error_no_route;
+  } else if (messageToLower == "timeout") {
+    return texts.payment_error_payment_timeout_exceeded;
+  } else if (messageToLower == "none") {
+    return texts.payment_error_none;
+  } else if (messageToLower.startsWith("lsp doesn't support opening a new channel")) {
+    return texts.lsp_error_cannot_open_channel;
+  } else if (messageToLower.contains("dns error") || messageToLower.contains("os error 104")) {
+    return texts.generic_network_error;
+  } else if (messageToLower.contains("Recovery failed:")) {
+    return texts.enter_backup_phrase_error;
+  } else {
+    return originalMessage;
   }
 }

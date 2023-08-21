@@ -6,6 +6,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
@@ -116,6 +117,8 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                         validatorFn: PaymentValidator(
                           validatePayment: accBloc.validatePayment,
                           currency: currencyState.bitcoinCurrency,
+                          channelCreationPossible:
+                              context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
                           texts: context.texts(),
                         ).validateOutgoing,
                         style: theme.FieldTextStyle.textStyle),

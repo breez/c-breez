@@ -4,6 +4,7 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -179,6 +180,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
                 controller: _invoiceAmountController,
                 validatorFn: PaymentValidator(
                   validatePayment: context.read<AccountBloc>().validatePayment,
+                  channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
                   currency: currencyState.bitcoinCurrency,
                   texts: context.texts(),
                 ).validateOutgoing,
@@ -254,6 +256,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     final validationError = PaymentValidator(
       validatePayment: context.read<AccountBloc>().validatePayment,
       currency: currencyState.bitcoinCurrency,
+      channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
       texts: context.texts(),
     ).validateOutgoing(
       amountToPay(currencyState),

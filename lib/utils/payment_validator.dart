@@ -10,15 +10,18 @@ class PaymentValidator {
   final BitcoinCurrency currency;
   final void Function(
     int amount,
-    bool outgoing, {
+    bool outgoing,
+    bool channelCreationPossible, {
     int? channelMinimumFee,
   }) validatePayment;
+  final bool channelCreationPossible;
   final int? channelMinimumFee;
   final BreezTranslations texts;
 
   const PaymentValidator({
     required this.validatePayment,
     required this.currency,
+    required this.channelCreationPossible,
     this.channelMinimumFee,
     required this.texts,
   });
@@ -34,7 +37,7 @@ class PaymentValidator {
   String? _validate(int amount, bool outgoing) {
     _log.v("Validating for $amount and $outgoing");
     try {
-      validatePayment(amount, outgoing, channelMinimumFee: channelMinimumFee);
+      validatePayment(amount, outgoing, channelCreationPossible, channelMinimumFee: channelMinimumFee);
     } on PaymentExceededLimitError catch (e) {
       _log.v("Got PaymentExceededLimitError", ex: e);
       return texts.invoice_payment_validator_error_payment_exceeded_limit(

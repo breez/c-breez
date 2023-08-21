@@ -55,7 +55,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   final _amountController = TextEditingController();
   final _amountFocusNode = FocusNode();
   var _doneAction = KeyboardDoneAction();
-  bool channelCreationPossible = false;
 
   @override
   void initState() {
@@ -66,12 +65,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       _amountController.text = (data.maxWithdrawable ~/ 1000).toString();
       _descriptionController.text = data.defaultDescription;
     }
-
-    final lspState = context.read<LSPBloc>().state;
-    if (lspState != null) {
-      channelCreationPossible = lspState.isChannelOpeningAvailiable;
-    }
-
     super.initState();
   }
 
@@ -131,13 +124,17 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     builder: (context, accountState, currencyState, lspState) {
                       return ReceivableBTCBox(
                         onTap: () {
-                          if (!channelCreationPossible && accountState.maxInboundLiquidity > 0) {
+                          if (lspState != null &&
+                              !lspState.isChannelOpeningAvailiable &&
+                              accountState.maxInboundLiquidity > 0) {
                             _amountController.text = currencyState.bitcoinCurrency.format(
                               accountState.maxInboundLiquidity,
                               includeDisplayName: false,
                               userInput: true,
                             );
-                          } else if (!channelCreationPossible && accountState.maxInboundLiquidity == 0) {
+                          } else if (lspState != null &&
+                              !lspState.isChannelOpeningAvailiable &&
+                              accountState.maxInboundLiquidity == 0) {
                             // do nothing
                           } else {
                             _amountController.text = currencyState.bitcoinCurrency.format(
@@ -259,6 +256,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     return PaymentValidator(
       validatePayment: _validatePayment,
       currency: context.read<CurrencyBloc>().state.bitcoinCurrency,
+      channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);
@@ -266,7 +264,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   void _validatePayment(
     int amount,
-    bool outgoing, {
+    bool outgoing,
+    bool channelCreationPossible, {
     int? channelMinimumFee,
   }) {
     final data = widget.requestData;
@@ -281,8 +280,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     return context.read<AccountBloc>().validatePayment(
           amount,
           outgoing,
+          channelCreationPossible,
           channelMinimumFee: channelMinimumFee,
-          channelCreationPossible: channelCreationPossible,
         );
   }
 }

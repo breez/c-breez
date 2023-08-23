@@ -34,7 +34,9 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions();
+    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions(
+      widget.onchainRecipientAddress,
+    );
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
         affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();

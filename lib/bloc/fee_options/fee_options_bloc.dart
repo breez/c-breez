@@ -33,7 +33,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   }
 
   /// Fetches the current recommended fees
-  Future<List<FeeOption>> fetchFeeOptions() async {
+  Future<List<FeeOption>> fetchFeeOptions(String address) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezLib.recommendedFees();
@@ -41,8 +41,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
-      final utxos = await _retrieveUTXOS();
-      return _constructFeeOptionList(utxos, recommendedFees);
+      return await _constructFeeOptionList(address, recommendedFees);
     } catch (e) {
       _log.severe("fetchFeeOptions error", e);
       emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
@@ -61,24 +60,27 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     return utxos;
   }
 
-  List<FeeOption> _constructFeeOptionList(int utxos, RecommendedFees recommendedFees) {
+  Future<List<FeeOption>> _constructFeeOptionList(
+    String address,
+    RecommendedFees recommendedFees,
+  ) async {
     final List<FeeOption> feeOptions = [
       FeeOption(
         processingSpeed: ProcessingSpeed.economy,
         waitingTime: const Duration(minutes: 60),
-        fee: _calculateTransactionFee(utxos, recommendedFees.hourFee),
+        fee: await _calculateTransactionFee(address, recommendedFees.hourFee),
         feeVByte: recommendedFees.hourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.regular,
         waitingTime: const Duration(minutes: 30),
-        fee: _calculateTransactionFee(utxos, recommendedFees.halfHourFee),
+        fee: await _calculateTransactionFee(address, recommendedFees.halfHourFee),
         feeVByte: recommendedFees.halfHourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.priority,
         waitingTime: const Duration(minutes: 10),
-        fee: _calculateTransactionFee(utxos, recommendedFees.fastestFee),
+        fee: await _calculateTransactionFee(address, recommendedFees.fastestFee),
         feeVByte: recommendedFees.fastestFee,
       ),
     ];
@@ -86,9 +88,11 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     return feeOptions;
   }
 
-  int _calculateTransactionFee(int inputs, int feeRateSatsPerVbyte) {
-    // based on https://bitcoin.stackexchange.com/a/3011
-    final transactionSize = (inputs * 148) + (2 * 34) + 10;
-    return transactionSize * feeRateSatsPerVbyte;
+  Future<int> _calculateTransactionFee(String address, int satsPerVbyte) async {
+    final response = await _breezLib.prepareSweep(
+      address: address,
+      satsPerVbyte: satsPerVbyte,
+    );
+    return response.sweepTxFeeSat;
   }
 }

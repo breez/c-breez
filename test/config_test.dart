@@ -115,6 +115,7 @@ void main() {
 
 sdk.Config _defaultConf() => const sdk.Config(
       maxfeePercent: 7.8,
+      exemptfeeMsat: 2,
       breezserver: "a breez server",
       mempoolspaceUrl: "a mempool space url",
       workingDir: "a working dir",

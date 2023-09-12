@@ -22,6 +22,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
 
   Config config = const Config(
     breezserver: '',
+    exemptfeeMsat: 0,
     mempoolspaceUrl: '',
     network: Network.Bitcoin,
     paymentTimeoutSec: 10,

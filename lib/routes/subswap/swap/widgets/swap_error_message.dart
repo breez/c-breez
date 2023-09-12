@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/min_font_size.dart';
-import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 
 class SwapErrorMessage extends StatelessWidget {
@@ -13,18 +14,17 @@ class SwapErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.texts();
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SizedBox(
         height: 360,
         child: Center(
-          child: WarningBox(
-            boxPadding: EdgeInsets.zero,
-            contentPadding: const EdgeInsets.all(8),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
             child: AutoSizeText(
-              errorMessage,
-              maxLines: 2,
-              textAlign: TextAlign.center,
+              extractExceptionMessage(errorMessage, texts),
+              textAlign: TextAlign.justify,
               minFontSize: MinFontSize(context).minFontSize,
             ),
           ),

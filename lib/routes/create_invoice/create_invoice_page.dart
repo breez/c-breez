@@ -7,6 +7,7 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
@@ -119,15 +120,28 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                       );
                     },
                   ),
-                  BlocBuilder2<AccountBloc, AccountState, CurrencyBloc, CurrencyState>(
-                    builder: (context, accountState, currencyState) {
+                  BlocBuilder3<AccountBloc, AccountState, CurrencyBloc, CurrencyState, LSPBloc, LspState?>(
+                    builder: (context, accountState, currencyState, lspState) {
                       return ReceivableBTCBox(
                         onTap: () {
-                          _amountController.text = currencyState.bitcoinCurrency.format(
-                            accountState.maxAllowedToReceive,
-                            includeDisplayName: false,
-                            userInput: true,
-                          );
+                          if (lspState != null &&
+                              !lspState.isChannelOpeningAvailiable &&
+                              accountState.maxInboundLiquidity > 0) {
+                            _amountController.text = currencyState.bitcoinCurrency.format(
+                              accountState.maxInboundLiquidity,
+                              includeDisplayName: false,
+                              userInput: true,
+                            );
+                          } else if (lspState != null &&
+                              !lspState.isChannelOpeningAvailiable &&
+                              accountState.maxInboundLiquidity == 0) {
+                            // do nothing
+                          } else {
+                            _amountController.text = currencyState.bitcoinCurrency.format(
+                                accountState.maxAllowedToReceive,
+                                includeDisplayName: false,
+                                userInput: true);
+                          }
                         },
                       );
                     },
@@ -242,6 +256,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     return PaymentValidator(
       validatePayment: _validatePayment,
       currency: context.read<CurrencyBloc>().state.bitcoinCurrency,
+      channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);
@@ -249,7 +264,8 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   void _validatePayment(
     int amount,
-    bool outgoing, {
+    bool outgoing,
+    bool channelCreationPossible, {
     int? channelMinimumFee,
   }) {
     final data = widget.requestData;
@@ -264,6 +280,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     return context.read<AccountBloc>().validatePayment(
           amount,
           outgoing,
+          channelCreationPossible,
           channelMinimumFee: channelMinimumFee,
         );
   }

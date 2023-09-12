@@ -208,7 +208,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   String? validatePayment(int amount) {
     final texts = context.texts();
     final accBloc = context.read<AccountBloc>();
-    final lspInfo = context.read<LSPBloc>().state?.lspInfo;
+    final lspState = context.read<LSPBloc>().state;
     final currencyState = context.read<CurrencyBloc>().state;
 
     final maxSendable = widget.requestData.maxSendable ~/ 1000;
@@ -222,13 +222,14 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     }
 
     int? channelMinimumFee;
-    if (lspInfo != null) {
-      channelMinimumFee = lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000;
+    if (lspState != null && lspState.lspInfo != null) {
+      channelMinimumFee = lspState.lspInfo!.openingFeeParamsList.values.first.minMsat ~/ 1000;
     }
 
     return PaymentValidator(
       validatePayment: accBloc.validatePayment,
       currency: currencyState.bitcoinCurrency,
+      channelCreationPossible: lspState?.isChannelOpeningAvailiable ?? false,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);

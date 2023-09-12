@@ -31,6 +31,8 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
   late final texts = context.texts();
   late final currencyState = context.read<CurrencyBloc>().state;
   late final accountState = context.read<AccountBloc>().state;
+  late final lspBloc = context.read<LSPBloc>();
+  late final lspState = lspBloc.state;
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +46,29 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AutoSizeText(
-              widget.receiveLabel ??
-                  texts.invoice_receive_label(
-                    currencyState.bitcoinCurrency.format(
-                      accountState.maxAllowedToReceive,
+            (accountState.maxInboundLiquidity <= 0 &&
+                    lspState != null &&
+                    !lspState!.isChannelOpeningAvailiable)
+                ? WarningBox(
+                    boxPadding: const EdgeInsets.only(top: 8),
+                    child: AutoSizeText(
+                      texts.lsp_error_cannot_open_channel,
+                      textAlign: TextAlign.center,
                     ),
+                  )
+                : AutoSizeText(
+                    widget.receiveLabel ??
+                        texts.invoice_receive_label(
+                          currencyState.bitcoinCurrency.format(
+                            lspState!.isChannelOpeningAvailiable
+                                ? accountState.maxAllowedToReceive
+                                : accountState.maxInboundLiquidity,
+                          ),
+                        ),
+                    style: theme.textStyle,
+                    maxLines: 1,
+                    minFontSize: MinFontSize(context).minFontSize,
                   ),
-              style: theme.textStyle,
-              maxLines: 1,
-              minFontSize: MinFontSize(context).minFontSize,
-            ),
             accountState.isFeesApplicable ? FeeMessage() : const SizedBox(),
           ],
         ),

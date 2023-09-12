@@ -219,7 +219,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   // constraints.
   void validatePayment(
     int amount,
-    bool outgoing, {
+    bool outgoing,
+    bool channelCreationPossible, {
     int? channelMinimumFee,
   }) {
     _log.v("validatePayment: $amount, $outgoing, $channelMinimumFee");
@@ -230,14 +231,16 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
 
     if (!outgoing) {
-      if (channelMinimumFee != null &&
+      if (!channelCreationPossible && accState.maxInboundLiquidity == 0) {
+        throw NoChannelCreationZeroLiqudityError();
+      } else if (!channelCreationPossible && accState.maxInboundLiquidity < amount) {
+        throw PaymentExcededLiqudityChannelCreationNotPossibleError(accState.maxInboundLiquidity);
+      } else if (channelMinimumFee != null &&
           (amount > accState.maxInboundLiquidity && amount <= channelMinimumFee)) {
         throw PaymentBelowSetupFeesError(channelMinimumFee);
-      }
-      if (channelMinimumFee == null && amount > accState.maxInboundLiquidity) {
+      } else if (channelMinimumFee == null && amount > accState.maxInboundLiquidity) {
         throw PaymentExceedLiquidityError(accState.maxInboundLiquidity);
-      }
-      if (amount > accState.maxAllowedToReceive) {
+      } else if (amount > accState.maxAllowedToReceive) {
         throw PaymentExceededLimitError(accState.maxAllowedToReceive);
       }
     }

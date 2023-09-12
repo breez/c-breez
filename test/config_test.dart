@@ -115,7 +115,6 @@ void main() {
 
 sdk.Config _defaultConf() => const sdk.Config(
       maxfeePercent: 7.8,
-      exemptfeeMsat: 2,
       breezserver: "a breez server",
       mempoolspaceUrl: "a mempool space url",
       workingDir: "a working dir",
@@ -123,6 +122,7 @@ sdk.Config _defaultConf() => const sdk.Config(
       paymentTimeoutSec: 123,
       defaultLspId: "a default lsp id",
       apiKey: "an api key",
+      exemptfeeMsat: 2,
       nodeConfig: sdk.NodeConfig_Greenlight(
         config: sdk.GreenlightNodeConfig(
           partnerCredentials: null,

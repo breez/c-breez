@@ -1,6 +1,6 @@
 name: c_breez
 description: A new Flutter project.
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+4
 
 environment:
@@ -25,6 +25,7 @@ dependencies:
       url: https://github.com/breez/Breez-Translations
       ref: 815bae7c82d4260744fbeddbb91fa71453891ac8
   clipboard_watcher: ^0.2.0
+  csv: ^5.0.2
   connectivity_plus: ^4.0.2
   drag_and_drop_lists: ^0.3.3
   duration: ^3.0.13
@@ -94,7 +95,6 @@ dependencies:
   workmanager:
     git:
       url: https://github.com/breez/flutter_workmanager.git
-  csv: ^5.0.2
 
 dev_dependencies:
   integration_test:
@@ -110,10 +110,6 @@ dependency_overrides:
   intl: ^0.18.1
   path: ^1.8.3
   test_api: <0.5.0 # Requires Flutter 3.10
-  fimber: ^0.6.6
-  fimber_io: ^0.6.6
-  # Doesn't support: Linux Mac Windows
-  flutter_fimber: ^0.6.5
   # Comment-out to work with breez-sdk from git repository
   breez_sdk:
     path: ../breez-sdk/libs/sdk-flutter
@@ -127,7 +123,7 @@ flutter:
     - src/icon/
     - src/icon/animals/
     - src/icon/vendors/
-    - src/animations/welcome/    
+    - src/animations/welcome/
     - assets/images/
     - assets/icons/
   fonts:

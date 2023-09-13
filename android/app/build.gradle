@@ -54,14 +54,46 @@ android {
         multiDexEnabled true
     }
 
+    def keystoreProperties = new Properties()
+    def keystorePropertiesFile = rootProject.file('key.properties')
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    }
+
+    signingConfigs {
+        release {
+            String filePath = keystoreProperties['storeFile']
+            if (filePath != null) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(filePath)
+                storePassword keystoreProperties['storePassword']
+            } else {
+                println("No storeFile provided, release builds are not possible")
+            }
+        }
+        debug {
+            String filePath = keystoreProperties['storeFileDebug']
+            if (filePath != null) {
+                keyAlias keystoreProperties['aliasDebug']
+                keyPassword keystoreProperties['passwordDebug']
+                storeFile file(filePath)
+                storePassword keystoreProperties['passwordDebug']
+            } else {
+                println("No storeFile provided, debug builds are using your local debug keystore")
+            }
+        }
+    }
+
     buildTypes {
         debug {
+            signingConfig signingConfigs.debug
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
             resValue "string", "app_name", "Breez Cloud - Debug"
         }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             resValue "string", "app_name", "Breez Cloud"
         }
     }

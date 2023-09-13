@@ -29,6 +29,16 @@ class BreezDateUtils {
     }
   }
 
+  static bool isBetween(
+    DateTime date,
+    DateTime fromDateTime,
+    DateTime toDateTime,
+  ) {
+    final isAfter = date.isAfter(fromDateTime);
+    final isBefore = date.isBefore(toDateTime);
+    return isAfter && isBefore;
+  }
+
   static String formatHourMinute(DateTime d) => _hourMinuteDayFormat.format(d);
 
   static String formatFilterDateRange(DateTime startDate, DateTime endDate) {

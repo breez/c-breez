@@ -2,6 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/routes/home/widgets/payments_filter/payment_filter_exporter.dart';
 import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_calendar.dart';
 import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
 
         return Row(
           children: [
+            PaymentmentFilterExporter(_getFilterType()),
             PaymentsFilterCalendar(_getFilterType()),
             PaymentsFilterDropdown(
               _filter!,

@@ -27,6 +27,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
     paymentTimeoutSec: 10,
     workingDir: '.',
     maxfeePercent: 0.5,
+    exemptfeeMsat: 2,
     nodeConfig: NodeConfig_Greenlight(config: GreenlightNodeConfig()),
   );
 

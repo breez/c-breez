@@ -122,6 +122,7 @@ sdk.Config _defaultConf() => const sdk.Config(
       paymentTimeoutSec: 123,
       defaultLspId: "a default lsp id",
       apiKey: "an api key",
+      exemptfeeMsat: 2,
       nodeConfig: sdk.NodeConfig_Greenlight(
         config: sdk.GreenlightNodeConfig(
           partnerCredentials: null,

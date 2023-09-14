@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   another_flushbar: ^1.12.30
-  archive: ^3.3.7
+  archive: ^3.3.9
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
   breez_sdk:
@@ -106,7 +106,7 @@ dev_dependencies:
   test: <1.24.0 # Requires Flutter 3.10
 
 dependency_overrides:
-  archive: ^3.3.7
+  archive: ^3.3.9
   intl: ^0.18.1
   path: ^1.8.3
   test_api: <0.5.0 # Requires Flutter 3.10

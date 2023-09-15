@@ -1,9 +1,13 @@
 import 'dart:async';
 
+import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment/processing_payment_animated_content.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment/processing_payment_content.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 const _kPaymentListItemHeight = 72.0;
 
@@ -85,6 +89,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
 
   _payAndClose() {
     final navigator = Navigator.of(context);
+    final texts = getSystemAppLocalizations();
     widget.paymentFunc().then((payResult) async {
       await _animateClose();
       if (widget.isLnurlPayment) {
@@ -97,6 +102,12 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
       widget.onStateChange?.call(PaymentRequestState.PAYMENT_COMPLETED);
       if (widget.isLnurlPayment) {
         navigator.pop(err);
+      }
+      if (err is FfiException) {
+        if (_currentRoute != null && _currentRoute!.isActive) {
+          navigator.removeRoute(_currentRoute!);
+        }
+        showFlushbar(context, message: extractExceptionMessage(err, texts));
       }
     });
   }

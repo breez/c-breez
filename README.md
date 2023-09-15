@@ -120,3 +120,6 @@ Do no forget to run `lefthook install` to re-activate `pre-commit` hook.
 ```sh
 $ lefthook install
 ```
+
+### Troubleshooting
+For troubleshooting, please check the [troubleshooting.md](troubleshooting.md) file

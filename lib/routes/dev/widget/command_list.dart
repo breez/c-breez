@@ -2,7 +2,7 @@ import 'package:c_breez/routes/dev/widget/command.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 
-class RenderBody extends StatelessWidget {
+class CommandList extends StatelessWidget {
   final bool loading;
   final bool defaults;
   final List<TextSpan> fallback;
@@ -10,7 +10,7 @@ class RenderBody extends StatelessWidget {
   final TextEditingController inputController;
   final FocusNode focusNode;
 
-  const RenderBody({
+  const CommandList({
     this.loading = false,
     this.defaults = false,
     this.fallback = const [],
@@ -44,6 +44,10 @@ class RenderBody extends StatelessWidget {
               children: [
                 Command(
                   "listPeers",
+                  (c) => _onCommand(context, c),
+                ),
+                Command(
+                  "listPeerChannels",
                   (c) => _onCommand(context, c),
                 ),
                 Command(

@@ -10,7 +10,7 @@ import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_page.dart';
 import 'package:c_breez/routes/create_invoice/create_invoice_page.dart';
-import 'package:c_breez/routes/dev/commands.dart';
+import 'package:c_breez/routes/dev/developers_view.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
 import 'package:c_breez/routes/home/home_page.dart';
 import 'package:c_breez/routes/initial_walkthrough/initial_walkthrough.dart';

@@ -8,8 +8,8 @@ import 'package:breez_translations/generated/breez_translations_fi.dart';
 import 'package:breez_translations/generated/breez_translations_fr.dart';
 import 'package:breez_translations/generated/breez_translations_it.dart';
 import 'package:breez_translations/generated/breez_translations_pt.dart';
-import 'package:breez_translations/generated/breez_translations_sv.dart';
 import 'package:breez_translations/generated/breez_translations_sk.dart';
+import 'package:breez_translations/generated/breez_translations_sv.dart';
 import 'package:flutter/material.dart';
 
 enum ProfileAnimal {

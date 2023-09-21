@@ -36,7 +36,7 @@ void main() {
               feeMsat: 0,
               paymentTime: 1661791810,
               amountMsat: 4321000,
-              pending: false,
+              status: PaymentStatus.Complete,
               description: "",
               details: PaymentDetails.ln(
                 data: LnPaymentDetails(
@@ -62,7 +62,7 @@ void main() {
               feeMsat: 0,
               paymentTime: 1661791810,
               amountMsat: 4321000,
-              pending: false,
+              status: PaymentStatus.Complete,
               description: "A long title\nwith a new line",
               details: PaymentDetails.ln(
                 data: LnPaymentDetails(
@@ -88,7 +88,7 @@ void main() {
               feeMsat: 0,
               paymentTime: 1661791810,
               amountMsat: 4321000,
-              pending: false,
+              status: PaymentStatus.Complete,
               description: "A short title",
               details: PaymentDetails.ln(
                 data: LnPaymentDetails(

@@ -41,7 +41,7 @@ class PaymentHashPoller {
       for (var payment in paymentList) {
         final detailsData = payment.details.data;
         final isPaymentReceived =
-            !payment.pending && detailsData is LnPaymentDetails && detailsData.paymentHash == paymentHash;
+            payment.status != PaymentStatus.Pending && detailsData is LnPaymentDetails && detailsData.paymentHash == paymentHash;
         if (isPaymentReceived) {
           print("Payment received! Stop polling.");
           timer.cancel();

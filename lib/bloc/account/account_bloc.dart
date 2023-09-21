@@ -128,7 +128,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     });
   }
 
-  Future<sdk.LnUrlCallbackStatus> lnurlWithdraw({
+  Future<sdk.LnUrlWithdrawResult> lnurlWithdraw({
     required int amountSats,
     required sdk.LnUrlWithdrawRequestData reqData,
     String? description,

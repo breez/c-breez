@@ -55,7 +55,7 @@ void main() {
               feeMsat: 1234,
               paymentTime: 1661791810,
               amountMsat: 4321000,
-              pending: false,
+              status: PaymentStatus.Complete,
               description: "",
               details: PaymentDetails.ln(
                 data: LnPaymentDetails(
@@ -81,7 +81,7 @@ void main() {
               feeMsat: 1234,
               paymentTime: 1661791810,
               amountMsat: 4321000,
-              pending: true,
+              status: PaymentStatus.Pending,
               description: "",
               details: PaymentDetails.ln(
                 data: LnPaymentDetails(

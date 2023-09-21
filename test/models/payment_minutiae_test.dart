@@ -285,7 +285,7 @@ PaymentMinutiae make({
         paymentTime: paymentTime,
         amountMsat: amountMilliSat,
         feeMsat: feeMilliSat,
-        pending: false,
+        status: PaymentStatus.Complete,
         description: description,
         details: const PaymentDetails.closedChannel(
           data: ClosedChannelPaymentDetails(
@@ -313,7 +313,7 @@ PaymentMinutiae makeLnPayment({
         paymentTime: 3,
         amountMsat: 2,
         feeMsat: 1,
-        pending: false,
+        status: PaymentStatus.Complete,
         description: "description",
         details: PaymentDetails.ln(
           data: LnPaymentDetails(

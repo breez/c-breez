@@ -72,7 +72,7 @@ class PaymentMinutiae {
       amountSat: factory._amountSat(),
       hasMetadata: factory._hasMetadata(),
       isKeySend: factory._isKeySend(),
-      isPending: payment.pending,
+      isPending: payment.status == PaymentStatus.Pending,
     );
   }
 }

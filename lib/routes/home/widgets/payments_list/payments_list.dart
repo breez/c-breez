@@ -66,7 +66,7 @@ void main() async {
         feeMsat: 0,
         paymentTime: 1661791810,
         amountMsat: 4321000,
-        pending: false,
+        status: PaymentStatus.Complete,
         description: "A title",
         details: PaymentDetails.ln(
           data: LnPaymentDetails(
@@ -88,7 +88,7 @@ void main() async {
         feeMsat: 12,
         paymentTime: 1661791810,
         amountMsat: 4321000,
-        pending: false,
+        status: PaymentStatus.Complete,
         description: "A title",
         details: PaymentDetails.ln(
           data: LnPaymentDetails(
@@ -110,7 +110,7 @@ void main() async {
         feeMsat: 3456,
         paymentTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         amountMsat: 4321000,
-        pending: false,
+        status: PaymentStatus.Complete,
         description: "A title",
         details: const PaymentDetails.ln(
           data: LnPaymentDetails(

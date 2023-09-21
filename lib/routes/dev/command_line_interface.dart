@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:c_breez/routes/dev/widget/render_body.dart';
+import 'package:c_breez/routes/dev/widget/command_list.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:fimber/fimber.dart';
@@ -11,16 +11,16 @@ import 'package:share_plus/share_plus.dart';
 
 final _log = FimberLog("CommandsList");
 
-class CommandsList extends StatefulWidget {
+class CommandLineInterface extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const CommandsList({Key? key, required this.scaffoldKey}) : super(key: key);
+  const CommandLineInterface({Key? key, required this.scaffoldKey}) : super(key: key);
 
   @override
-  State<CommandsList> createState() => _CommandsListState();
+  State<CommandLineInterface> createState() => _CommandLineInterfaceState();
 }
 
-class _CommandsListState extends State<CommandsList> {
+class _CommandLineInterfaceState extends State<CommandLineInterface> {
   final _breezLib = ServiceInjector().breezSDK;
 
   final _cliInputController = TextEditingController();
@@ -132,7 +132,7 @@ class _CommandsListState extends State<CommandsList> {
                           ],
                         ),
                   Expanded(
-                    child: RenderBody(
+                    child: CommandList(
                       loading: isLoading,
                       defaults: _showDefaultCommands,
                       fallback: _richCliText,
@@ -172,6 +172,7 @@ class _CommandsListState extends State<CommandsList> {
         late String reply;
         switch (commandArgs[0]) {
           case 'listPeers':
+          case 'listPeerChannels':
           case 'listFunds':
           case 'listPayments':
           case 'listInvoices':

@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/tx_widget.dart';
@@ -16,7 +17,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
-    if (!paymentMinutiae.isPending) {
+    if (paymentMinutiae.status == PaymentStatus.Complete) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [

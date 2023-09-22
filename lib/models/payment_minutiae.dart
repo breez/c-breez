@@ -29,7 +29,7 @@ class PaymentMinutiae {
   final int amountSat;
   final bool hasMetadata;
   final bool isKeySend;
-  final bool isPending;
+  final PaymentStatus status;
 
   const PaymentMinutiae({
     required this.id,
@@ -49,7 +49,7 @@ class PaymentMinutiae {
     required this.amountSat,
     required this.hasMetadata,
     required this.isKeySend,
-    required this.isPending,
+    required this.status,
   });
 
   factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts) {
@@ -72,7 +72,7 @@ class PaymentMinutiae {
       amountSat: factory._amountSat(),
       hasMetadata: factory._hasMetadata(),
       isKeySend: factory._isKeySend(),
-      isPending: payment.status == PaymentStatus.Pending,
+      status: payment.status,
     );
   }
 }

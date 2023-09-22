@@ -29,7 +29,7 @@ class PaymentItemSubtitle extends StatelessWidget {
           BreezDateUtils.formatTimelineRelative(_paymentMinutiae.paymentTime),
           style: subtitleTextStyle,
         ),
-        _paymentMinutiae.isPending
+        _paymentMinutiae.status == PaymentStatus.Pending
             ? Text(
                 texts.wallet_dashboard_payment_item_balance_pending_suffix,
                 style: subtitleTextStyle.copyWith(

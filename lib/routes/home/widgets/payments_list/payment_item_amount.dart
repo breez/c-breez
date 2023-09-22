@@ -46,9 +46,10 @@ class PaymentItemAmount extends StatelessWidget {
             );
 
             return Column(
-              mainAxisAlignment: _paymentMinutiae.feeMilliSat == 0 || _paymentMinutiae.isPending
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.spaceAround,
+              mainAxisAlignment:
+                  _paymentMinutiae.feeMilliSat == 0 || _paymentMinutiae.status == PaymentStatus.Pending
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
@@ -59,7 +60,7 @@ class PaymentItemAmount extends StatelessWidget {
                           : texts.wallet_dashboard_payment_item_balance_negative(amount),
                   style: themeData.paymentItemAmountTextStyle,
                 ),
-                (fee == 0 || _paymentMinutiae.isPending)
+                (fee == 0 || _paymentMinutiae.status == PaymentStatus.Pending)
                     ? const SizedBox()
                     : Text(
                         hideBalance

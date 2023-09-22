@@ -28,8 +28,6 @@ class SendOptionsBottomSheet extends StatefulWidget {
 }
 
 class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
-  ModalRoute? _loaderRoute;
-
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
@@ -46,7 +44,7 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
             texts.bottom_action_bar_paste_invoice,
             style: theme.bottomSheetTextStyle,
           ),
-          onTap: () => _pasteFromClipboard(context),
+          onTap: () => _showEnterPaymentInfoDialog(context, widget.firstPaymentItemKey),
         ),
         Divider(
           height: 0.0,
@@ -71,57 +69,6 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
         const SizedBox(height: 8.0)
       ],
     );
-  }
-
-  // TODO: Improve error handling flow to reduce open Enter Payment Info Dialog calls
-  Future<void> _pasteFromClipboard(BuildContext context) async {
-    try {
-      final inputBloc = context.read<InputBloc>();
-      _setLoading(true);
-      // Get clipboard data
-      await Clipboard.getData("text/plain").then(
-        (clipboardData) async {
-          // Close bottom sheet
-          Navigator.of(context).pop();
-          final clipboardText = clipboardData?.text;
-          _log.v("Clipboard text: $clipboardText");
-          if (clipboardText != null) {
-            // Parse clipboard text
-            await inputBloc.parseInput(input: clipboardText).then(
-              (inputType) {
-                // Handle parsed input
-                if (!(inputType is InputType_Bolt11 ||
-                    inputType is InputType_LnUrlPay ||
-                    inputType is InputType_LnUrlWithdraw ||
-                    inputType is InputType_LnUrlAuth ||
-                    inputType is InputType_LnUrlError ||
-                    inputType is InputType_NodeId)) {
-                  _showEnterPaymentInfoDialog(context, widget.firstPaymentItemKey);
-                } else {
-                  inputBloc.addIncomingInput(clipboardText);
-                }
-              },
-            );
-          } else {
-            _setLoading(false);
-            // If clipboard data is empty, display EnterPaymentInfoDialog
-            _showEnterPaymentInfoDialog(
-              context,
-              widget.firstPaymentItemKey,
-            );
-          }
-        },
-      );
-    } catch (e) {
-      _setLoading(false);
-      // If there's an error getting the clipboard data, display EnterPaymentInfoDialog
-      _showEnterPaymentInfoDialog(
-        context,
-        widget.firstPaymentItemKey,
-      );
-    } finally {
-      _setLoading(false);
-    }
   }
 
   Future<void> _showEnterPaymentInfoDialog(
@@ -151,18 +98,5 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
         maxValue,
       ),
     );
-  }
-
-  void _setLoading(bool visible) {
-    if (visible && _loaderRoute == null) {
-      _loaderRoute = createLoaderRoute(context);
-      Navigator.of(context).push(_loaderRoute!);
-      return;
-    }
-
-    if (!visible && (_loaderRoute != null && _loaderRoute!.isActive)) {
-      _loaderRoute!.navigator?.removeRoute(_loaderRoute!);
-      _loaderRoute = null;
-    }
   }
 }

@@ -1,16 +1,12 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_action_item_image.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/enter_payment_info_dialog.dart';
 import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/loader.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 final _log = FimberLog("SendOptionsBottomSheet");

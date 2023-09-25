@@ -44,9 +44,10 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     final texts = context.texts();
 
     return AlertDialog(
-      titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
+      titlePadding: const EdgeInsets.fromLTRB(24.0, 16.0, 0.0, 8),
       title: Text(texts.payment_info_dialog_title),
-      contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      actionsPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
       content: _buildPaymentInfoForm(context),
       actions: _buildActions(context),
     );
@@ -88,7 +89,6 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
                       icon: Image(
                         image: const AssetImage("src/icon/qr_scan.png"),
                         color: themeData.primaryIconTheme.color,
-                        fit: BoxFit.contain,
                         width: 24.0,
                         height: 24.0,
                       ),

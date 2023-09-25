@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/closed_channel_payment_details.dart';
@@ -19,7 +20,7 @@ class PaymentDetailsDialogClosedChannelDialog extends StatelessWidget {
     return AlertDialog(
       titlePadding: const EdgeInsets.fromLTRB(24, 22, 0, 16),
       title: Text(
-        paymentMinutiae.isPending
+        paymentMinutiae.status == PaymentStatus.Pending
             ? texts.payment_details_dialog_closed_channel_title_pending
             : texts.payment_details_dialog_closed_channel_title,
         style: themeData.dialogTheme.titleTextStyle,

@@ -67,6 +67,15 @@ void main() {
       expect(config.maxfeePercent, maxFee);
     });
 
+    test('exemptfee override on preferences should use the configured value', () async {
+      final defaultConf = _defaultConf();
+      const exemptfee = 2000;
+      injector.preferencesMock.paymentOptionsOverrideFeeEnabled = true;
+      injector.preferencesMock.paymentOptionsExemptfee = exemptfee;
+      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      expect(config.exemptfeeMsat, exemptfee);
+    });
+
     test('mempool space url set in preferences should return it', () async {
       final defaultConf = _defaultConf();
       const mempoolSpaceUrl = "a different mempool space url";
@@ -122,7 +131,7 @@ sdk.Config _defaultConf() => const sdk.Config(
       paymentTimeoutSec: 123,
       defaultLspId: "a default lsp id",
       apiKey: "an api key",
-      exemptfeeMsat: 2,
+      exemptfeeMsat: 20000,
       nodeConfig: sdk.NodeConfig_Greenlight(
         config: sdk.GreenlightNodeConfig(
           partnerCredentials: null,

@@ -77,6 +77,23 @@ void main() {
     expect(injector.preferencesMock.setPaymentOptionsProportionalFeeCalled, 1);
   });
 
+  test('should emit new state when exempt fee changed', () async {
+    final bloc = make();
+    expectLater(
+      bloc.stream,
+      emitsInOrder([
+        const PaymentOptionsState.initial(),
+        const PaymentOptionsState(exemptFeeMsat: 5000, saveEnabled: true),
+        const PaymentOptionsState(exemptFeeMsat: 5000),
+      ]),
+    );
+    // Delay to allow the bloc to initialize
+    await Future.delayed(const Duration(milliseconds: 1));
+    await bloc.setExemptfeeMsat(5000);
+    await bloc.saveFees();
+    expect(injector.preferencesMock.setPaymentOptionsExemptFeeCalled, 1);
+  });
+
   test('should emit new state when reset fees', () async {
     final bloc = make();
     expectLater(
@@ -90,11 +107,13 @@ void main() {
         const PaymentOptionsState.initial().copyWith(
           overrideFeeEnabled: true,
           proportionalFee: 0.01,
+          exemptFeeMsat: 20000,
           saveEnabled: true,
         ),
         const PaymentOptionsState.initial().copyWith(
           overrideFeeEnabled: true,
           proportionalFee: 0.01,
+          exemptFeeMsat: 20000,
         ),
         const PaymentOptionsState.initial(),
       ]),
@@ -103,10 +122,12 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 1));
     await bloc.setOverrideFeeEnabled(true);
     await bloc.setProportionalFee(0.01);
+    await bloc.setExemptfeeMsat(20000);
     await bloc.saveFees();
     await bloc.resetFees();
     expect(injector.preferencesMock.setPaymentOptionsOverrideFeeEnabledCalled, 2);
     expect(injector.preferencesMock.setPaymentOptionsProportionalFeeCalled, 2);
+    expect(injector.preferencesMock.setPaymentOptionsExemptFeeCalled, 2);
   });
 
   test('cancel editing should clear the unsaved state', () async {
@@ -122,6 +143,7 @@ void main() {
         const PaymentOptionsState.initial().copyWith(
           overrideFeeEnabled: true,
           proportionalFee: 0.01,
+          exemptFeeMsat: 20000,
           saveEnabled: true,
         ),
         const PaymentOptionsState.initial(),
@@ -131,10 +153,12 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 1));
     await bloc.setOverrideFeeEnabled(true);
     await bloc.setProportionalFee(0.01);
+    await bloc.setExemptfeeMsat(20000);
     await bloc.cancelEditing();
     // Delay to allow the fetch to complete
     await Future.delayed(const Duration(milliseconds: 1));
     expect(injector.preferencesMock.setPaymentOptionsOverrideFeeEnabledCalled, 0);
     expect(injector.preferencesMock.setPaymentOptionsProportionalFeeCalled, 0);
+    expect(injector.preferencesMock.setPaymentOptionsExemptFeeCalled, 0);
   });
 }

@@ -21,6 +21,27 @@ String? baseFeeValidator(
   return null;
 }
 
+String? exemptFeeValidator(
+  String? value,
+) {
+  final texts = getSystemAppLocalizations();
+  if (value == null) {
+    return texts.payment_options_base_fee_label;
+  }
+  if (value.isEmpty) {
+    return texts.payment_options_base_fee_label;
+  }
+  try {
+    final newExemptFee = int.parse(value);
+    if (newExemptFee < 0) {
+      return texts.payment_options_base_fee_label;
+    }
+  } catch (e) {
+    return texts.payment_options_base_fee_label;
+  }
+  return null;
+}
+
 String? proportionalFeeValidator(
   String? value,
 ) {

@@ -72,6 +72,7 @@ class Config {
       maxfeePercent: await _configuredMaxFeePercent(serviceInjector, defaultConf),
       workingDir: await _workingDir(),
       mempoolspaceUrl: await _mempoolSpaceUrl(serviceInjector, defaultConf),
+      exemptfeeMsat: await _configuredExempMsatFee(serviceInjector, defaultConf),
       apiKey: breezConfig.apiKey,
     );
   }
@@ -88,6 +89,20 @@ class Config {
       return configuredMaxFeePercent;
     }
     return defaultConf.maxfeePercent;
+  }
+
+  static Future<int> _configuredExempMsatFee(
+    ServiceInjector serviceInjector,
+    sdk.Config defaultConf,
+  ) async {
+    final preferences = serviceInjector.preferences;
+    final configuredExemptFeeEnabled = await preferences.getPaymentOptionsOverrideFeeEnabled();
+    if (configuredExemptFeeEnabled) {
+      final configuredExemptFee = await preferences.getPaymentOptionsExemptFee();
+      _log.v("Using exemptMsatFee from preferences: $configuredExemptFee");
+      return configuredExemptFee;
+    }
+    return defaultConf.exemptfeeMsat;
   }
 
   static Future<String> _mempoolSpaceUrl(

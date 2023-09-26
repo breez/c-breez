@@ -3,10 +3,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const kDefaultOverrideFee = false;
 const kDefaultProportionalFee = 1.0;
+const kDefaultExemptFeeMsat = 20000;
 
 const _mempoolSpaceUrlKey = "mempool_space_url";
 const _kPaymentOptionOverrideFee = "payment_options_override_fee";
 const _kPaymentOptionProportionalFee = "payment_options_proportional_fee";
+const _kPaymentOptionExemptFee = "payment_options_exempt_fee";
 
 final _log = FimberLog("preferences");
 
@@ -47,5 +49,16 @@ class Preferences {
     _log.d("set payment options proportional fee: $fee");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_kPaymentOptionProportionalFee, fee);
+  }
+
+  Future<int> getPaymentOptionsExemptFee() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_kPaymentOptionExemptFee) ?? kDefaultExemptFeeMsat;
+  }
+
+  Future<void> setPaymentOptionsExemptFee(int exemptfeeMsat) async {
+    _log.d("set payment options exempt fee : $exemptfeeMsat");
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_kPaymentOptionExemptFee, exemptfeeMsat);
   }
 }

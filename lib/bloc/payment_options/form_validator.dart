@@ -1,43 +1,22 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 
-String? baseFeeValidator(
-  String? value,
-) {
-  final texts = getSystemAppLocalizations();
-  if (value == null) {
-    return texts.payment_options_base_fee_label;
-  }
-  if (value.isEmpty) {
-    return texts.payment_options_base_fee_label;
-  }
-  try {
-    final newBaseFee = int.parse(value);
-    if (newBaseFee < 0) {
-      return texts.payment_options_base_fee_label;
-    }
-  } catch (e) {
-    return texts.payment_options_base_fee_label;
-  }
-  return null;
-}
-
 String? exemptFeeValidator(
   String? value,
 ) {
   final texts = getSystemAppLocalizations();
   if (value == null) {
-    return texts.payment_options_base_fee_label;
+    return texts.payment_options_exemptfee_label;
   }
   if (value.isEmpty) {
-    return texts.payment_options_base_fee_label;
+    return texts.payment_options_exemptfee_label;
   }
   try {
     final newExemptFee = int.parse(value);
     if (newExemptFee < 0) {
-      return texts.payment_options_base_fee_label;
+      return texts.payment_options_exemptfee_label;
     }
   } catch (e) {
-    return texts.payment_options_base_fee_label;
+    return texts.payment_options_exemptfee_label;
   }
   return null;
 }

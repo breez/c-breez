@@ -55,7 +55,7 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
                     keyboardType: const TextInputType.numberWithOptions(),
                     controller: _exemptFeeController,
                     decoration: InputDecoration(
-                      labelText: texts.payment_options_base_fee_label,
+                      labelText: texts.payment_options_exemptfee_label,
                       border: const UnderlineInputBorder(),
                     ),
                     validator: exemptFeeValidator,

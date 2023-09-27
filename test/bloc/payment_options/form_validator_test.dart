@@ -5,29 +5,29 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('base fee validator', () {
-    test('should return payment_options_base_fee_label when value is null', () {
-      final result = baseFeeValidator(null);
-      expect(result, _texts().payment_options_base_fee_label);
+    test('should return payment_options_exemptfee_label  when value is null', () {
+      final result = exemptFeeValidator(null);
+      expect(result, _texts().payment_options_exemptfee_label);
     });
 
-    test('should return payment_options_base_fee_label when value is empty', () {
-      final result = baseFeeValidator('');
-      expect(result, _texts().payment_options_base_fee_label);
+    test('should return payment_options_exemptfee_label  when value is empty', () {
+      final result = exemptFeeValidator('');
+      expect(result, _texts().payment_options_exemptfee_label);
     });
 
-    test('should return payment_options_base_fee_label when value is negative', () {
-      final result = baseFeeValidator('-1');
-      expect(result, _texts().payment_options_base_fee_label);
+    test('should return payment_options_exemptfee_label  when value is negative', () {
+      final result = exemptFeeValidator('-1');
+      expect(result, _texts().payment_options_exemptfee_label);
     });
 
     test('should return null when value is valid', () {
-      final result = baseFeeValidator('1');
+      final result = exemptFeeValidator('1');
       expect(result, null);
     });
 
-    test('should return payment_options_base_fee_label when value is not a number', () {
-      final result = baseFeeValidator('a');
-      expect(result, _texts().payment_options_base_fee_label);
+    test('should return payment_options_exemptfee_label  when value is not a number', () {
+      final result = exemptFeeValidator('a');
+      expect(result, _texts().payment_options_exemptfee_label);
     });
   });
 

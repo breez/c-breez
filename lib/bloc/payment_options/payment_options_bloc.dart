@@ -66,13 +66,13 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
     _log.v("Fetching payments override settings");
     final enabled = await _preferences.getPaymentOptionsOverrideFeeEnabled();
     final proportional = await _preferences.getPaymentOptionsProportionalFee();
-    final excemptFeeMsat = await _preferences.getPaymentOptionsExemptFee();
+    final exemptFeeMsat = await _preferences.getPaymentOptionsExemptFee();
     _log.v(
-        "Payments override fetched: enabled: $enabled, proportional: $proportional, excemptFeeMsat: $excemptFeeMsat");
+        "Payments override fetched: enabled: $enabled, proportional: $proportional, exemptFeeMsat: $exemptFeeMsat");
     emit(PaymentOptionsState(
       overrideFeeEnabled: enabled,
       proportionalFee: proportional,
-      exemptFeeMsat: excemptFeeMsat,
+      exemptFeeMsat: exemptFeeMsat,
       saveEnabled: false,
     ));
   }

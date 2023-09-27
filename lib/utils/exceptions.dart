@@ -1,5 +1,5 @@
 import 'package:breez_translations/generated/breez_translations.dart';
-import 'package:flutter_fimber/flutter_fimber.dart';
+import 'package:fimber/fimber.dart';
 import "package:flutter_rust_bridge/flutter_rust_bridge.dart";
 
 final _log = FimberLog("exceptions");

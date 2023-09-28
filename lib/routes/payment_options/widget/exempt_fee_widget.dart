@@ -61,14 +61,14 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
                     validator: exemptFeeValidator,
                     onChanged: (value) {
                       _log.v("onChanged: $value");
-                      int excemptFeeSat;
+                      int exemptFeeSat;
                       try {
-                        excemptFeeSat = int.parse(value);
+                        exemptFeeSat = int.parse(value);
                       } catch (_) {
                         _log.v("Failed to parse $value as int");
                         return;
                       }
-                      context.read<PaymentOptionsBloc>().setExemptfeeMsat(excemptFeeSat * 1000);
+                      context.read<PaymentOptionsBloc>().setExemptfeeMsat(exemptFeeSat * 1000);
                     },
                   );
                 },
@@ -84,12 +84,12 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
     final bloc = context.read<PaymentOptionsBloc>();
     _subscription = bloc.stream.startWith(bloc.state).distinct().listen((state) {
       if (!state.saveEnabled) {
-        final excemptFeeSat = (state.exemptFeeMsat ~/ 1000).toString();
+        final exemptFeeSat = (state.exemptFeeMsat ~/ 1000).toString();
 
-        if (_exemptFeeController.text != excemptFeeSat) {
-          _log.v("Setting exemptFee to $excemptFeeSat");
+        if (_exemptFeeController.text != exemptFeeSat) {
+          _log.v("Setting exemptFee to $exemptFeeSat");
           setState(() {
-            _exemptFeeController.text = excemptFeeSat;
+            _exemptFeeController.text = exemptFeeSat;
           });
         }
       }

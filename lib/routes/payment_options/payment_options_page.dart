@@ -1,7 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/routes/payment_options/widget/actions_fee.dart';
-import 'package:c_breez/routes/payment_options/widget/excempt_fee_widget.dart';
+import 'package:c_breez/routes/payment_options/widget/exempt_fee_widget.dart';
 import 'package:c_breez/routes/payment_options/widget/header_fee.dart';
 import 'package:c_breez/routes/payment_options/widget/override_fee.dart';
 import 'package:c_breez/routes/payment_options/widget/proportional_fee_widget.dart';

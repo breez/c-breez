@@ -1,8 +1,10 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
+import 'package:c_breez/bloc/reverse_swap_in/reverse_swaps_in_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/bloc/swap_in/swap_in_bloc.dart';
@@ -26,7 +28,8 @@ import 'package:c_breez/routes/security/security_page.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/get_refund_page.dart';
 import 'package:c_breez/routes/subswap/swap/swap_page.dart';
-import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
+import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_page.dart';
+import 'package:c_breez/routes/withdraw/sweep/sweep_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
@@ -159,13 +162,32 @@ class UserApp extends StatelessWidget {
                                     ),
                                     settings: settings,
                                   );
-                                case '/swap_page':
+                                case '/swap':
                                   return FadeInRoute(
                                     builder: (_) => BlocProvider(
                                       create: (BuildContext context) => SwapInBloc(
                                         ServiceInjector().breezSDK,
                                       ),
                                       child: const SwapPage(),
+                                    ),
+                                    settings: settings,
+                                  );
+                                case '/reverse_swap':
+                                  return FadeInRoute(
+                                    builder: (_) => BlocProvider(
+                                      create: (BuildContext context) => ReverseSwapsInBloc(
+                                        ServiceInjector().breezSDK,
+                                      ),
+                                      child: ReverseSwapPage(
+                                        btcAddressData: settings.arguments as BitcoinAddressData?,
+                                      ),
+                                    ),
+                                    settings: settings,
+                                  );
+                                case '/unexpected_funds':
+                                  return FadeInRoute(
+                                    builder: (_) => SweepPage(
+                                      walletBalance: settings.arguments as int,
                                     ),
                                     settings: settings,
                                   );
@@ -202,13 +224,6 @@ class UserApp extends StatelessWidget {
                                   return MaterialPageRoute<String>(
                                     fullscreenDialog: true,
                                     builder: (_) => QRScan(),
-                                    settings: settings,
-                                  );
-                                case '/withdraw_funds':
-                                  return FadeInRoute(
-                                    builder: (_) => WithdrawFundsAddressPage(
-                                      policy: settings.arguments as WithdrawFundsPolicy,
-                                    ),
                                     settings: settings,
                                   );
                                 case '/payment_options':

@@ -9,7 +9,6 @@ import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/home/widgets/enable_backup_dialog.dart';
 import 'package:c_breez/routes/home/widgets/rotator.dart';
-import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/backup_in_progress_dialog.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +32,8 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
           warnings.add(
             WarningAction(
               () => navigatorState.pushNamed(
-                "/withdraw_funds",
-                arguments: WithdrawFundsPolicy(
-                  WithdrawKind.unexpected_funds,
-                  walletBalance,
-                  walletBalance,
-                ),
+                "/unexpected_funds",
+                arguments: walletBalance,
               ),
             ),
           );

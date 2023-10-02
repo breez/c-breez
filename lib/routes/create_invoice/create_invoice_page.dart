@@ -82,7 +82,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         leading: const back_button.BackButton(),
-        actions: const [],
         title: Text(texts.invoice_title),
       ),
       body: Form(

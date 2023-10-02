@@ -1,28 +1,31 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
-import 'package:c_breez/routes/withdraw_funds/confirmation_page/widgets/sweep_button.dart';
+import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/widgets/reverse_swap_button.dart';
+import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'widgets/fee_chooser/fee_chooser.dart';
+class ReverseSwapConfirmationPage extends StatefulWidget {
+  final int amountSat;
+  final String onchainRecipientAddress;
+  final String feesHash;
+  final int? boltzFees;
 
-class WithdrawFundsConfirmationPage extends StatefulWidget {
-  final String toAddress;
-  final int amount;
-
-  const WithdrawFundsConfirmationPage({
+  const ReverseSwapConfirmationPage({
     Key? key,
-    required this.toAddress,
-    required this.amount,
+    required this.amountSat,
+    required this.onchainRecipientAddress,
+    required this.feesHash,
+    this.boltzFees,
   }) : super(key: key);
 
   @override
-  State<WithdrawFundsConfirmationPage> createState() => _WithdrawFundsConfirmationPageState();
+  State<ReverseSwapConfirmationPage> createState() => _ReverseSwapConfirmationPageState();
 }
 
-class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmationPage> {
+class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPage> {
   List<FeeOption> affordableFees = [];
   int selectedFeeIndex = -1;
 
@@ -34,7 +37,7 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
     _fetchFeeOptionsFuture = context.read<WithdrawFundsBloc>().fetchFeeOptions();
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
-        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amount)).toList();
+        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
       });
     });
@@ -62,9 +65,10 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
 
           if (affordableFees.isNotEmpty) {
             return FeeChooser(
-              walletBalance: widget.amount,
+              walletBalance: widget.amountSat,
               feeOptions: snapshot.data!,
               selectedFeeIndex: selectedFeeIndex,
+              boltzFees: widget.boltzFees,
               onSelect: (index) => setState(() {
                 selectedFeeIndex = index;
               }),
@@ -78,9 +82,13 @@ class _WithdrawFundsConfirmationPageState extends State<WithdrawFundsConfirmatio
       ),
       bottomNavigationBar:
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
-              ? SweepButton(
-                  toAddress: widget.toAddress,
-                  feeRateSatsPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
+              ? SafeArea(
+                  child: ReverseSwapButton(
+                    amountSat: widget.amountSat,
+                    onchainRecipientAddress: widget.onchainRecipientAddress,
+                    satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
+                    feesHash: widget.feesHash,
+                  ),
                 )
               : null,
     );

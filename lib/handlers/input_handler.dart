@@ -111,7 +111,7 @@ class InputHandler extends Handler {
         parsedInput is InputType_LnUrlWithdraw ||
         parsedInput is InputType_LnUrlAuth ||
         parsedInput is InputType_LnUrlError) {
-      return handleLNURL(context, firstPaymentItemKey, parsedInput.data);
+      return handleLNURL(context, firstPaymentItemKey, parsedInput.btcAddressData);
     } else if (parsedInput is InputType_NodeId) {
       return handleNodeID(context, parsedInput.nodeId);
     }

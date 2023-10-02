@@ -2,23 +2,24 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/routes/withdraw_funds/withdraw_funds_address_page.dart';
+import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("WithdrawAmountTextFormField");
+final _log = FimberLog("WithdrawFundsAmountTextFormField");
 
-class WithdrawAmountTextFormField extends AmountFormField {
-  WithdrawAmountTextFormField({
+class WithdrawFundsAmountTextFormField extends AmountFormField {
+  WithdrawFundsAmountTextFormField({
     super.key,
     required BitcoinCurrency bitcoinCurrency,
     required BuildContext context,
     required TextEditingController controller,
     required bool withdrawMaxValue,
     required WithdrawFundsPolicy policy,
+    required int balance,
   }) : super(
           controller: controller,
           texts: context.texts(),
@@ -38,6 +39,9 @@ class WithdrawAmountTextFormField extends AmountFormField {
                 }
                 if (amount > policy.maxValue) {
                   throw PaymentExceededLimitError(policy.maxValue);
+                }
+                if (amount > balance) {
+                  throw const InsufficientLocalBalanceError();
                 }
               },
             ).validateOutgoing(amount);

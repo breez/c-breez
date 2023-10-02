@@ -51,7 +51,7 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
                 texts.bottom_action_bar_receive_btc_address,
                 style: theme.bottomSheetTextStyle,
               ),
-              onTap: () => _push(context, "/swap_page"),
+              onTap: () => _push(context, '/swap'),
             ),
             Divider(
               height: 0.0,

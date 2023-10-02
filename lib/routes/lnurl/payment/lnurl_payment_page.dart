@@ -85,7 +85,6 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       key: _scaffoldKey,
       appBar: AppBar(
         leading: const back_button.BackButton(),
-        actions: const [],
         // Todo: Use domain from request data
         title: Text(texts.lnurl_fetch_invoice_pay_to_payee(Uri.parse(widget.requestData.callback).host)),
       ),

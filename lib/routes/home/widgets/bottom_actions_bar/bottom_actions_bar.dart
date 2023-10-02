@@ -65,8 +65,10 @@ class SendOptions extends StatelessWidget {
       onPress: () => showModalBottomSheet(
         context: context,
         builder: (context) {
-          return SendOptionsBottomSheet(
-            firstPaymentItemKey: firstPaymentItemKey,
+          return SafeArea(
+            child: SendOptionsBottomSheet(
+              firstPaymentItemKey: firstPaymentItemKey,
+            ),
           );
         },
       ),
@@ -96,9 +98,11 @@ class ReceiveOptions extends StatelessWidget {
       onPress: () => showModalBottomSheet(
         context: context,
         builder: (context) {
-          return ReceiveOptionsBottomSheet(
-            account: account,
-            firstPaymentItemKey: firstPaymentItemKey,
+          return SafeArea(
+            child: ReceiveOptionsBottomSheet(
+              account: account,
+              firstPaymentItemKey: firstPaymentItemKey,
+            ),
           );
         },
       ),

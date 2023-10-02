@@ -20,18 +20,11 @@ class SwapInBloc extends Cubit<SwapInState> {
   pollSwapAddress() {
     _log.i("swap in address polling started");
     emit(SwapInState(null, null, isLoading: true));
-    timer = Timer.periodic(const Duration(seconds: 5), refreshAddresses);
-    refreshAddresses(timer);
+    timer = Timer.periodic(const Duration(seconds: 5), _refreshAddresses);
+    _refreshAddresses(timer);
   }
 
-  @override
-  Future<void> close() {
-    timer.cancel();
-    _log.i("swap in address polling finished");
-    return super.close();
-  }
-
-  void refreshAddresses(Timer timer) async {
+  void _refreshAddresses(Timer timer) async {
     final currentState = state;
     final texts = getSystemAppLocalizations();
     try {
@@ -49,5 +42,12 @@ class SwapInBloc extends Cubit<SwapInState> {
       timer.cancel();
       _log.i("swap in address polling finished due to error");
     }
+  }
+
+  @override
+  Future<void> close() {
+    timer.cancel();
+    _log.i("swap in address polling finished");
+    return super.close();
   }
 }

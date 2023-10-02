@@ -2,24 +2,31 @@ import 'package:breez_translations/generated/breez_translations.dart';
 
 class WithdrawFundsState {
   final List<FeeOption> feeOptions;
-  final String errorMessage;
+  final String? reverseSwapErrorMessage;
+  final String? sweepErrorMessage;
+  final String? feeErrorMessage;
 
   WithdrawFundsState({
     this.feeOptions = const [],
-    this.errorMessage = "",
+    this.reverseSwapErrorMessage = "",
+    this.sweepErrorMessage = "",
+    this.feeErrorMessage = "",
   });
 
   WithdrawFundsState.initial() : this();
 
   WithdrawFundsState copyWith({
     List<FeeOption>? feeOptions,
-    String? errorMessage,
-  }) {
-    return WithdrawFundsState(
-      feeOptions: feeOptions ?? this.feeOptions,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
-  }
+    String? reverseSwapErrorMessage,
+    String? sweepErrorMessage,
+    String? feeErrorMessage,
+  }) =>
+      WithdrawFundsState(
+        feeOptions: feeOptions ?? this.feeOptions,
+        reverseSwapErrorMessage: reverseSwapErrorMessage ?? this.reverseSwapErrorMessage,
+        sweepErrorMessage: sweepErrorMessage ?? this.sweepErrorMessage,
+        feeErrorMessage: feeErrorMessage ?? this.feeErrorMessage,
+      );
 }
 
 enum ProcessingSpeed {

@@ -1,8 +1,8 @@
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/swap_in/swap_in_bloc.dart';
-import 'package:c_breez/bloc/swap_in/swap_in_state.dart';
+import 'package:c_breez/bloc/swap_in_progress/swap_in_progress_bloc.dart';
+import 'package:c_breez/bloc/swap_in_progress/swap_in_progress_state.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/address_widget_placeholder.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/deposit_widget.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/inprogress_swap.dart';
@@ -31,8 +31,8 @@ class SwapPageState extends State<SwapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SwapInBloc, SwapInState>(builder: (context, swapState) {
-      final SwapInBloc swapInBloc = context.read();
+    return BlocBuilder<SwapInProgressBloc, SwapInProgressState>(builder: (context, swapState) {
+      final SwapInProgressBloc swapInBloc = context.read();
       final texts = context.texts();
       return Scaffold(
         appBar: AppBar(

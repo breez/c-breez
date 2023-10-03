@@ -2,23 +2,25 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/reverse_swap_in/reverse_swaps_in_state.dart';
+import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ReverseSwapsInBloc extends Cubit<ReverseSwapsInState> {
-  final _log = FimberLog("ReverseSwapsInBloc");
-  final BreezSDK _breezLib;
-  late Timer timer;
+final _log = FimberLog("RevSwapsInProgressBloc");
 
-  ReverseSwapsInBloc(this._breezLib) : super(ReverseSwapsInState(isLoading: true)) {
+class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
+  final BreezSDK _breezLib;
+
+  RevSwapsInProgressBloc(this._breezLib) : super(RevSwapsInProgressState(isLoading: true)) {
     pollReverseSwapsInProgress();
   }
 
+  late Timer timer;
+
   pollReverseSwapsInProgress() {
     _log.i("reverse swaps in progress polling started");
-    emit(ReverseSwapsInState(isLoading: true));
+    emit(RevSwapsInProgressState(isLoading: true));
     timer = Timer.periodic(const Duration(seconds: 5), _refreshInProgressReverseSwaps);
     _refreshInProgressReverseSwaps(timer);
   }

@@ -1,24 +1,24 @@
 import 'package:breez_sdk/bridge_generated.dart';
 
-class ReverseSwapsInState {
+class RevSwapsInProgressState {
   final List<ReverseSwapInfo> reverseSwapsInProgress;
   final bool isLoading;
   final String? error;
 
-  ReverseSwapsInState({
+  RevSwapsInProgressState({
     this.reverseSwapsInProgress = const [],
     this.isLoading = false,
     this.error,
   });
 
-  ReverseSwapsInState.initial() : this();
+  RevSwapsInProgressState.initial() : this();
 
-  ReverseSwapsInState copyWith({
+  RevSwapsInProgressState copyWith({
     List<ReverseSwapInfo>? reverseSwapsInProgress,
     bool? isLoading,
     String? error,
   }) =>
-      ReverseSwapsInState(
+      RevSwapsInProgressState(
         reverseSwapsInProgress: reverseSwapsInProgress ?? this.reverseSwapsInProgress,
         isLoading: isLoading ?? this.isLoading,
         error: error ?? this.error,

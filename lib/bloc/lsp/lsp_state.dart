@@ -7,7 +7,7 @@ class LspState {
   LspState({this.lspInfo, this.selectedLspId});
 
   // this returns true if the current LSP supports opening new channels.
-  bool get isChannelOpeningAvailiable {
+  bool get isChannelOpeningAvailable {
     return (lspInfo != null) ? lspInfo!.openingFeeParamsList.values.isNotEmpty : false;
   }
 }

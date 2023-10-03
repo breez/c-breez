@@ -31,7 +31,7 @@ class WithdrawFundsAmountTextFormField extends AmountFormField {
             return PaymentValidator(
               currency: bitcoinCurrency,
               texts: context.texts(),
-              channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
+              channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
               validatePayment: (amount, outgoing, channelCreationPossible, {channelMinimumFee}) {
                 _log.v("Validating $amount $policy");
                 if (amount < policy.minValue) {

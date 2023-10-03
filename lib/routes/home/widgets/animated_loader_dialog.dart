@@ -19,7 +19,7 @@ AlertDialog createAnimatedLoaderDialog(
       mainAxisSize: MainAxisSize.min,
       children: [
         LoadingAnimatedText(
-          text,
+          loadingMessage: text,
           textStyle: themeData.dialogTheme.contentTextStyle,
           textAlign: TextAlign.center,
         ),

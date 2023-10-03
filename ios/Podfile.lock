@@ -14,14 +14,14 @@ PODS:
   - Firebase/Messaging (10.15.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 10.15.0)
-  - firebase_core (2.16.0):
+  - firebase_core (2.17.0):
     - Firebase/CoreOnly (= 10.15.0)
     - Flutter
-  - firebase_dynamic_links (5.3.6):
+  - firebase_dynamic_links (5.3.7):
     - Firebase/DynamicLinks (= 10.15.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (14.6.8):
+  - firebase_messaging (14.6.9):
     - Firebase/Messaging (= 10.15.0)
     - firebase_core
     - Flutter
@@ -49,8 +49,6 @@ PODS:
     - nanopb (< 2.30910.0, >= 2.30908.0)
   - Flutter (1.0.0)
   - flutter_fgbg (0.0.1):
-    - Flutter
-  - flutter_fimber (0.0.1):
     - Flutter
   - flutter_inappwebview (0.0.1):
     - Flutter
@@ -184,7 +182,6 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_fgbg (from `.symlinks/plugins/flutter_fgbg/ios`)
-  - flutter_fimber (from `.symlinks/plugins/flutter_fimber/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
@@ -244,8 +241,6 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_fgbg:
     :path: ".symlinks/plugins/flutter_fgbg/ios"
-  flutter_fimber:
-    :path: ".symlinks/plugins/flutter_fimber/ios"
   flutter_inappwebview:
     :path: ".symlinks/plugins/flutter_inappwebview/ios"
   flutter_keyboard_visibility:
@@ -284,9 +279,9 @@ SPEC CHECKSUMS:
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: 07c49e96d7fc92bc9920617b83238c4d178b446a
   Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
-  firebase_core: 77172d0a9d8d19d07606e24406e4c2fc14d3265b
-  firebase_dynamic_links: 27625ac999a9353d6e323c07db85c3b55c5c6839
-  firebase_messaging: 6aff54d420b7ce7080c26dd131b08bc632666852
+  firebase_core: 28e84c2a4fcf6a50ef83f47b145ded8c1fa331e4
+  firebase_dynamic_links: 52f5d054c676061cf17f4390f3bad9cc964cfdeb
+  firebase_messaging: 91ec967913a5d144f951b3c3ac17a57796d38735
   FirebaseCore: 2cec518b43635f96afe7ac3a9c513e47558abd2e
   FirebaseCoreInternal: 2f4bee5ed00301b5e56da0849268797a2dd31fb4
   FirebaseDynamicLinks: 206d4ed3efd2b722822598017f3980d9fda89815
@@ -294,7 +289,6 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 0c0ae1eb722ef0c07f7801e5ded8dccd1357d6d4
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_fgbg: 31c0d1140a131daea2d342121808f6aa0dcd879d
-  flutter_fimber: ec011dfb08d7cbfa16ab6bad8450b99574e6f6a4
   flutter_inappwebview: db0387fb3c2298997710505e7128eda00d15fc54
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be

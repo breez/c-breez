@@ -48,7 +48,7 @@ To create your firebase app follow the following link
 
 After creating the app follow the instructions to create the specific 
 configuration file for your platform:
-* For android - place the google-services.json in the andrpod/app folder
+* For android - place the google-services.json in the android/app folder
 * For iOS - place the GoogleService-info.plist under ios/Runner folder
 
 ### Android

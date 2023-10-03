@@ -2,15 +2,14 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
+import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_bloc.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
-import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
-import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/reverse_swap_confirmation_page.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/in_progress/reverse_swaps_in_progress_page.dart';
-import 'package:c_breez/routes/withdraw/widgets/withdraw_funds_amount_text_form_field.dart';
 import 'package:c_breez/routes/withdraw/widgets/bitcoin_address_text_form_field.dart';
+import 'package:c_breez/routes/withdraw/widgets/withdraw_funds_amount_text_form_field.dart';
 import 'package:c_breez/routes/withdraw/widgets/withdraw_funds_available_btc.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/validator_holder.dart';
@@ -132,11 +131,6 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                           ReverseSwapsInProgressPage(
                             reverseSwaps: inProgressSwapState.reverseSwapsInProgress,
                           );
-                        }
-
-                        // Todo: Should we handle and display errors for reverse swaps in progress?
-                        if (inProgressSwapState.error != null) {
-                          SwapErrorMessage(errorMessage: inProgressSwapState.error!);
                         }
 
                         return Column(

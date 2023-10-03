@@ -1,5 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
+import 'package:c_breez/bloc/sweep/sweep_bloc.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -29,13 +29,13 @@ class SweepButton extends StatelessWidget {
 
   Future _sweep(BuildContext context) async {
     final texts = context.texts();
-    final withdrawFundsBloc = context.read<WithdrawFundsBloc>();
+    final sweepBloc = context.read<SweepBloc>();
 
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
     try {
-      await withdrawFundsBloc.sweep(
+      await sweepBloc.sweep(
         toAddress: toAddress,
         feeRateSatsPerVbyte: feeRateSatsPerVbyte,
       );

@@ -1,5 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
+import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_option_button.dart';
 import 'package:flutter/material.dart';
 

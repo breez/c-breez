@@ -1,4 +1,4 @@
-import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
+import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_breakdown.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_chooser_header.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/processing_speed_wait_time.dart';

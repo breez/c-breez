@@ -1,5 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
+import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -33,13 +33,13 @@ class ReverseSwapButton extends StatelessWidget {
 
   Future _sendOnchain(BuildContext context) async {
     final texts = context.texts();
-    final withdrawFundsBloc = context.read<WithdrawFundsBloc>();
+    final reverseSwapBloc = context.read<ReverseSwapBloc>();
 
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
     try {
-      withdrawFundsBloc.sendOnchain(
+      reverseSwapBloc.sendOnchain(
         amountSat: amountSat,
         pairHash: feesHash,
         onchainRecipientAddress: onchainRecipientAddress,

@@ -34,10 +34,11 @@ class PaymentHashPoller {
     final injector = ServiceInjector();
     final breezLib = injector.breezSDK;
     try {
-      final List<Payment> paymentList = await breezLib.listPayments(
+      final ListPaymentsRequest request = ListPaymentsRequest(
         filter: PaymentTypeFilter.Received,
         fromTimestamp: DateTime.now().subtract(const Duration(minutes: 30)).millisecondsSinceEpoch,
       );
+      final List<Payment> paymentList = await breezLib.listPayments(request: request);
       for (var payment in paymentList) {
         final detailsData = payment.details.data;
         final isPaymentReceived = payment.status == PaymentStatus.Complete &&

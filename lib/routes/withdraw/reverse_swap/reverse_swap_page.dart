@@ -2,9 +2,9 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/bloc/reverse_swap_in/reverse_swaps_in_bloc.dart';
-import 'package:c_breez/bloc/reverse_swap_in/reverse_swaps_in_state.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
+import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_bloc.dart';
+import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
+import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/reverse_swap_confirmation_page.dart';
@@ -58,9 +58,9 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   }
 
   Future _fetchReverseSwapPairInfo() async {
-    final withdrawFundsBloc = context.read<WithdrawFundsBloc>();
+    final feeOptionsBloc = context.read<FeeOptionsBloc>();
     setState(() {
-      _pairInfoFuture = withdrawFundsBloc.fetchReverseSwapFees();
+      _pairInfoFuture = feeOptionsBloc.fetchReverseSwapFees();
     });
   }
 
@@ -118,7 +118,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                   );
                 } else {
                   return SafeArea(
-                    child: BlocBuilder<ReverseSwapsInBloc, ReverseSwapsInState>(
+                    child: BlocBuilder<RevSwapsInProgressBloc, RevSwapsInProgressState>(
                       builder: (context, inProgressSwapState) {
                         if (inProgressSwapState.isLoading) {
                           return Center(
@@ -199,10 +199,10 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                 () async {
                                   final navigator = Navigator.of(context);
                                   if (_formKey.currentState?.validate() ?? false) {
-                                    final withdrawFundsBloc = context.read<WithdrawFundsBloc>();
+                                    final feeOptionsBloc = context.read<FeeOptionsBloc>();
                                     int amount = _getAmount();
                                     final boltzFees =
-                                        await withdrawFundsBloc.fetchReverseSwapFees(amountSat: amount);
+                                        await feeOptionsBloc.fetchReverseSwapFees(amountSat: amount);
 
                                     navigator.push(
                                       FadeInRoute(

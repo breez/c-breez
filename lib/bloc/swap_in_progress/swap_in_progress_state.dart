@@ -1,10 +1,10 @@
 import 'package:breez_sdk/bridge_generated.dart';
 
-class SwapInState {
+class SwapInProgressState {
   final SwapInfo? inProgress;
   final SwapInfo? unused;
   final bool isLoading;
   final String? error;
 
-  SwapInState(this.inProgress, this.unused, {this.isLoading = false, this.error});
+  SwapInProgressState(this.inProgress, this.unused, {this.isLoading = false, this.error});
 }

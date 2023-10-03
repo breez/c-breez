@@ -16,7 +16,6 @@ import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
-import 'package:c_breez/bloc/swap_in/swap_in_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/config.dart' as cfg;
@@ -65,9 +64,6 @@ void main() async {
         providers: [
           BlocProvider<LSPBloc>(
             create: (BuildContext context) => LSPBloc(breezLib),
-          ),
-          BlocProvider<SwapInBloc>(
-            create: (BuildContext context) => SwapInBloc(breezLib),
           ),
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(

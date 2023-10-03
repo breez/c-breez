@@ -3,92 +3,37 @@ import 'dart:async';
 import 'package:breez_sdk/breez_bridge.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
+import 'package:c_breez/bloc/fee_options/fee_option.dart';
+import 'package:c_breez/bloc/fee_options/fee_options_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:fimber/fimber.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-final _log = FimberLog("WithdrawFundsBloc");
+final _log = FimberLog("FeeOptionsBloc");
 
-class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
+class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   final BreezSDK _breezLib;
 
-  WithdrawFundsBloc(
-    this._breezLib,
-  ) : super(WithdrawFundsState.initial());
+  FeeOptionsBloc(this._breezLib) : super(FeeOptionsState.initial());
 
-  /* Reverse Swap */
-
-  Future<ReverseSwapInfo> sendOnchain({
-    required int amountSat,
-    required String onchainRecipientAddress,
-    required String pairHash,
-    required int satPerVbyte,
-  }) async {
-    try {
-      _log.v(
-        "Reverse Swap of $amountSat sats to address $onchainRecipientAddress using $satPerVbyte sats/vByte as"
-        " fee rate w/ pairHash: $pairHash",
-      );
-      final reverseSwapInfo = await _breezLib.sendOnchain(
-        amountSat: amountSat,
-        onchainRecipientAddress: onchainRecipientAddress,
-        pairHash: pairHash,
-        satPerVbyte: satPerVbyte,
-      );
-      _log.v(
-        "Reverse Swap Info for id: ${reverseSwapInfo.id}, ${reverseSwapInfo.onchainAmountSat} sats to address"
-        " ${reverseSwapInfo.claimPubkey} w/ status: ${reverseSwapInfo.status}",
-      );
-      emit(state.copyWith(reverseSwapErrorMessage: ""));
-      return reverseSwapInfo;
-    } catch (e) {
-      _log.e("sendOnchain error", ex: e);
-      final reverseSwapErrorMessage = extractExceptionMessage(e, getSystemAppLocalizations());
-      emit(state.copyWith(reverseSwapErrorMessage: reverseSwapErrorMessage));
-      rethrow;
-    }
-  }
-
+  /// Lookup the most recent reverse swap pair info using the Boltz API
   Future<ReverseSwapPairInfo> fetchReverseSwapFees({int? amountSat}) async {
     try {
       _log.v("Estimate reverse swap fees for: $amountSat");
-      ReverseSwapPairInfo reverseSwapPairInfo =
-          await _breezLib.fetchReverseSwapFees(sendAmountSat: amountSat);
+      ReverseSwapPairInfo reverseSwapPairInfo = await _breezLib.fetchReverseSwapFees(
+        sendAmountSat: amountSat,
+      );
       _log.v("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
-      emit(state.copyWith(reverseSwapErrorMessage: ""));
+      emit(state.copyWith(reverseSwapPairInfo: reverseSwapPairInfo, error: ""));
       return reverseSwapPairInfo;
     } catch (e) {
       _log.e("fetchReverseSwapFees error", ex: e);
-      final reverseSwapErrorMessage = extractExceptionMessage(e, getSystemAppLocalizations());
-      emit(state.copyWith(reverseSwapErrorMessage: reverseSwapErrorMessage));
+      emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }
 
-  /* Sweep */
-
-  Future sweep({
-    required String toAddress,
-    required int feeRateSatsPerVbyte,
-  }) async {
-    try {
-      _log.v("Sweep to address $toAddress using $feeRateSatsPerVbyte fee vByte");
-      await _breezLib.sweep(
-        toAddress: toAddress,
-        feeRateSatsPerVbyte: feeRateSatsPerVbyte,
-      );
-      emit(state.copyWith(sweepErrorMessage: ""));
-    } catch (e) {
-      _log.e("sweep error", ex: e);
-      final sweepErrorMessage = extractExceptionMessage(e, getSystemAppLocalizations());
-      emit(state.copyWith(sweepErrorMessage: sweepErrorMessage));
-      rethrow;
-    }
-  }
-
-  /* Recommended Fees */
-
+  /// Fetches the current recommended fees
   Future<List<FeeOption>> fetchFeeOptions() async {
     RecommendedFees recommendedFees;
     try {
@@ -101,8 +46,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
       return _constructFeeOptionList(utxos, recommendedFees);
     } catch (e) {
       _log.e("fetchFeeOptions error", ex: e);
-      final feeErrorMessage = extractExceptionMessage(e, getSystemAppLocalizations());
-      emit(state.copyWith(feeErrorMessage: feeErrorMessage));
+      emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }
@@ -139,7 +83,7 @@ class WithdrawFundsBloc extends Cubit<WithdrawFundsState> {
         feeVByte: recommendedFees.fastestFee,
       ),
     ];
-    emit(state.copyWith(feeOptions: feeOptions, feeErrorMessage: ""));
+    emit(state.copyWith(feeOptions: feeOptions));
     return feeOptions;
   }
 

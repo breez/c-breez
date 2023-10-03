@@ -11,13 +11,15 @@ import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
+import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
+import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
+import 'package:c_breez/bloc/sweep/sweep_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
 import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
@@ -83,8 +85,14 @@ void main() async {
           BlocProvider<SecurityBloc>(
             create: (BuildContext context) => SecurityBloc(),
           ),
-          BlocProvider<WithdrawFundsBloc>(
-            create: (BuildContext context) => WithdrawFundsBloc(breezLib),
+          BlocProvider<SweepBloc>(
+            create: (BuildContext context) => SweepBloc(breezLib),
+          ),
+          BlocProvider<ReverseSwapBloc>(
+            create: (BuildContext context) => ReverseSwapBloc(breezLib),
+          ),
+          BlocProvider<FeeOptionsBloc>(
+            create: (BuildContext context) => FeeOptionsBloc(breezLib),
           ),
           BlocProvider<ConnectivityBloc>(
             create: (BuildContext context) => ConnectivityBloc(),

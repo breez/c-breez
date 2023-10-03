@@ -4,10 +4,10 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
-import 'package:c_breez/bloc/reverse_swap_in/reverse_swaps_in_bloc.dart';
+import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
-import 'package:c_breez/bloc/swap_in/swap_in_bloc.dart';
+import 'package:c_breez/bloc/swap_in_progress/swap_in_progress_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_page.dart';
@@ -165,7 +165,7 @@ class UserApp extends StatelessWidget {
                                 case '/swap':
                                   return FadeInRoute(
                                     builder: (_) => BlocProvider(
-                                      create: (BuildContext context) => SwapInBloc(
+                                      create: (BuildContext context) => SwapInProgressBloc(
                                         ServiceInjector().breezSDK,
                                       ),
                                       child: const SwapPage(),
@@ -175,7 +175,7 @@ class UserApp extends StatelessWidget {
                                 case '/reverse_swap':
                                   return FadeInRoute(
                                     builder: (_) => BlocProvider(
-                                      create: (BuildContext context) => ReverseSwapsInBloc(
+                                      create: (BuildContext context) => RevSwapsInProgressBloc(
                                         ServiceInjector().breezSDK,
                                       ),
                                       child: ReverseSwapPage(

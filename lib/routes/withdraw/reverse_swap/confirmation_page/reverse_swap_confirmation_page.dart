@@ -1,6 +1,6 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_bloc.dart';
-import 'package:c_breez/bloc/withdraw/withdraw_funds_state.dart';
+import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
+import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/widgets/reverse_swap_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -34,7 +34,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<WithdrawFundsBloc>().fetchFeeOptions();
+    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions();
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
         affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();

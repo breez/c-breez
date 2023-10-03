@@ -37,7 +37,7 @@ class ProcessingPaymentContent extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   LoadingAnimatedText(
-                    texts.processing_payment_dialog_wait,
+                    loadingMessage: texts.processing_payment_dialog_wait,
                     textStyle: themeData.dialogTheme.contentTextStyle,
                     textAlign: TextAlign.center,
                   ),

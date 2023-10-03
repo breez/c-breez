@@ -105,7 +105,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
                         textAlign: TextAlign.center,
                       )
                     : LoadingAnimatedText(
-                        texts.lnurl_withdraw_dialog_wait,
+                        loadingMessage: texts.lnurl_withdraw_dialog_wait,
                         textStyle: themeData.dialogTheme.contentTextStyle,
                         textAlign: TextAlign.center,
                       ),

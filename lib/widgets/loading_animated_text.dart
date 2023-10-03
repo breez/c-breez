@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class LoadingAnimatedText extends StatefulWidget {
-  final String _loadingMessage;
+  final String loadingMessage;
   final TextStyle? textStyle;
   final TextAlign? textAlign;
   final List<TextSpan> textElements;
 
-  const LoadingAnimatedText(this._loadingMessage,
-      {this.textStyle, this.textAlign, this.textElements = const []});
+  const LoadingAnimatedText({
+    this.loadingMessage = "",
+    this.textStyle,
+    this.textAlign,
+    this.textElements = const [],
+  });
 
   @override
   State<StatefulWidget> createState() {
@@ -46,7 +50,7 @@ class LoadingAnimatedTextState extends State<LoadingAnimatedText> {
               Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(context).colorScheme.onSecondary,
                   ),
-          text: widget._loadingMessage,
+          text: widget.loadingMessage,
           children: textElements
             ..addAll(
               <TextSpan>[

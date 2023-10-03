@@ -123,23 +123,21 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     builder: (context, accountState, currencyState, lspState) {
                       return ReceivableBTCBox(
                         onTap: () {
-                          if (lspState != null &&
-                              !lspState.isChannelOpeningAvailiable &&
-                              accountState.maxInboundLiquidity > 0) {
+                          final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
+                          if (!isChannelOpeningAvailable && accountState.maxInboundLiquidity > 0) {
                             _amountController.text = currencyState.bitcoinCurrency.format(
                               accountState.maxInboundLiquidity,
                               includeDisplayName: false,
                               userInput: true,
                             );
-                          } else if (lspState != null &&
-                              !lspState.isChannelOpeningAvailiable &&
-                              accountState.maxInboundLiquidity == 0) {
+                          } else if (!isChannelOpeningAvailable && accountState.maxInboundLiquidity == 0) {
                             // do nothing
                           } else {
                             _amountController.text = currencyState.bitcoinCurrency.format(
-                                accountState.maxAllowedToReceive,
-                                includeDisplayName: false,
-                                userInput: true);
+                              accountState.maxAllowedToReceive,
+                              includeDisplayName: false,
+                              userInput: true,
+                            );
                           }
                         },
                       );
@@ -255,7 +253,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     return PaymentValidator(
       validatePayment: _validatePayment,
       currency: context.read<CurrencyBloc>().state.bitcoinCurrency,
-      channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
+      channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);

@@ -228,7 +228,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     return PaymentValidator(
       validatePayment: accBloc.validatePayment,
       currency: currencyState.bitcoinCurrency,
-      channelCreationPossible: lspState?.isChannelOpeningAvailiable ?? false,
+      channelCreationPossible: lspState?.isChannelOpeningAvailable ?? false,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
     ).validateIncoming(amount);

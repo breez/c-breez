@@ -180,7 +180,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
                 controller: _invoiceAmountController,
                 validatorFn: PaymentValidator(
                   validatePayment: context.read<AccountBloc>().validatePayment,
-                  channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
+                  channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
                   currency: currencyState.bitcoinCurrency,
                   texts: context.texts(),
                 ).validateOutgoing,
@@ -256,7 +256,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     final validationError = PaymentValidator(
       validatePayment: context.read<AccountBloc>().validatePayment,
       currency: currencyState.bitcoinCurrency,
-      channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
+      channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
       texts: context.texts(),
     ).validateOutgoing(
       amountToPay(currencyState),

@@ -37,15 +37,15 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, account) {
+      builder: (context, accountState) {
         return BlocBuilder<UserProfileBloc, UserProfileState>(
           builder: (context, userModel) {
-            _log.v("AccountPage build with ${account.payments.length} payments");
+            _log.v("AccountPage build with ${accountState.payments.length} payments");
             return Container(
               color: Theme.of(context).customData.dashboardBgColor,
               child: _build(
                 context,
-                account,
+                accountState,
                 userModel,
               ),
             );
@@ -57,11 +57,11 @@ class AccountPage extends StatelessWidget {
 
   Widget _build(
     BuildContext context,
-    AccountState account,
+    AccountState accountState,
     UserProfileState userModel,
   ) {
-    final nonFilteredPayments = account.payments;
-    final paymentFilters = account.paymentFilters;
+    final nonFilteredPayments = accountState.payments;
+    final paymentFilters = accountState.paymentFilters;
     final filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
       final fromTimestamp = paymentFilters.fromTimestamp;
       final toTimestamp = paymentFilters.toTimestamp;
@@ -126,14 +126,14 @@ class AccountPage extends StatelessWidget {
           ),
         ),
       );
-    } else if (!account.initial && nonFilteredPayments.isEmpty) {
+    } else if (!accountState.initial && nonFilteredPayments.isEmpty) {
       slivers.add(
         SliverPersistentHeader(
           delegate: FixedSliverDelegate(
             250.0,
             builder: (context, shrinkedHeight, overlapContent) {
               return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
-                var isConnecting = account.connectionStatus == ConnectionStatus.CONNECTING;
+                var isConnecting = accountState.connectionStatus == ConnectionStatus.CONNECTING;
                 if (!isConnecting && lspState != null && lspState.selectedLspId == null) {
                   return const Padding(
                     padding: EdgeInsets.only(top: 120.0),
@@ -142,7 +142,7 @@ class AccountPage extends StatelessWidget {
                 }
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                  child: StatusText(isConnecting: isConnecting),
+                  child: StatusText(accountState: accountState, lspState: lspState),
                 );
               });
             },

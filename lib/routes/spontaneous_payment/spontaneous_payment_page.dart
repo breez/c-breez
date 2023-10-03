@@ -118,7 +118,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                           validatePayment: accBloc.validatePayment,
                           currency: currencyState.bitcoinCurrency,
                           channelCreationPossible:
-                              context.read<LSPBloc>().state?.isChannelOpeningAvailiable ?? false,
+                              context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
                           texts: context.texts(),
                         ).validateOutgoing,
                         style: theme.FieldTextStyle.textStyle),

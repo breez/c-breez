@@ -4,7 +4,6 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
-import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:c_breez/widgets/warning_box.dart';
@@ -31,11 +30,12 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
   late final texts = context.texts();
   late final currencyState = context.read<CurrencyBloc>().state;
   late final accountState = context.read<AccountBloc>().state;
-  late final lspBloc = context.read<LSPBloc>();
-  late final lspState = lspBloc.state;
+  late final lspState = context.read<LSPBloc>().state;
 
   @override
   Widget build(BuildContext context) {
+    final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
+
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 164,
@@ -46,9 +46,7 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            (accountState.maxInboundLiquidity <= 0 &&
-                    lspState != null &&
-                    !lspState!.isChannelOpeningAvailiable)
+            (!isChannelOpeningAvailable && accountState.maxInboundLiquidity <= 0)
                 ? WarningBox(
                     boxPadding: const EdgeInsets.only(top: 8),
                     child: AutoSizeText(
@@ -60,16 +58,18 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
                     widget.receiveLabel ??
                         texts.invoice_receive_label(
                           currencyState.bitcoinCurrency.format(
-                            lspState!.isChannelOpeningAvailiable
-                                ? accountState.maxAllowedToReceive
-                                : accountState.maxInboundLiquidity,
+                            (isChannelOpeningAvailable)
+                                ? accountState.maxInboundLiquidity
+                                : accountState.maxAllowedToReceive,
                           ),
                         ),
                     style: theme.textStyle,
                     maxLines: 1,
                     minFontSize: MinFontSize(context).minFontSize,
                   ),
-            accountState.isFeesApplicable ? FeeMessage() : const SizedBox(),
+            isChannelOpeningAvailable && accountState.isFeesApplicable
+                ? FeeMessage(lspState!.lspInfo!.openingFeeParamsList.values.first)
+                : const SizedBox(),
           ],
         ),
       ),
@@ -78,27 +78,27 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
 }
 
 class FeeMessage extends StatelessWidget {
+  final OpeningFeeParams openingFeeParams;
+
+  const FeeMessage(this.openingFeeParams);
+
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
-      final lspInfo = lspState?.lspInfo;
-      return lspInfo != null && lspInfo.openingFeeParamsList.values.isNotEmpty
-          ? WarningBox(
-              boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    formatFeeMessage(context, lspInfo.openingFeeParamsList.values.first),
-                    style: themeData.textTheme.titleLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            )
-          : const SizedBox();
-    });
+
+    return WarningBox(
+      boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            formatFeeMessage(context, openingFeeParams),
+            style: themeData.textTheme.titleLarge,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 
   String formatFeeMessage(BuildContext context, OpeningFeeParams openingFeeParams) {

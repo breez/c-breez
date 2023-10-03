@@ -39,7 +39,7 @@ class ReverseSwapButton extends StatelessWidget {
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
     try {
-      reverseSwapBloc.sendOnchain(
+      await reverseSwapBloc.sendOnchain(
         amountSat: amountSat,
         pairHash: feesHash,
         onchainRecipientAddress: onchainRecipientAddress,

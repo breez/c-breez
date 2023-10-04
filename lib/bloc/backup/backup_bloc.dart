@@ -31,4 +31,7 @@ class BackupBloc extends Cubit<BackupState?> {
       emit(BackupState(status: BackupStatus.FAILED));
     });
   }
+
+  /// Start the backup process
+  Future<void> backup() async => await _breezLib.backup();
 }

@@ -29,6 +29,10 @@ class FiatConversion {
     return (fiatAmount / exchangeRate * 100000000).round();
   }
 
+  RegExp get whitelistedPattern => currencyData.info.fractionSize == 0
+      ? RegExp(r'\d+')
+      : RegExp("^\\d+[.,]?\\d{0,${currencyData.info.fractionSize}}");
+
   double satToFiat(int satoshies) {
     return satoshies.toDouble() / 100000000 * exchangeRate;
   }

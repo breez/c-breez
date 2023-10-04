@@ -78,7 +78,14 @@ class AmountFormField extends TextFormField {
           enabled: enabled,
           controller: controller,
           inputFormatters: bitcoinCurrency != BitcoinCurrency.SAT
-              ? [FilteringTextInputFormatter.allow(RegExp(r'\d+\.?\d*'))]
+              ? [
+                  FilteringTextInputFormatter.allow(bitcoinCurrency.whitelistedPattern),
+                  TextInputFormatter.withFunction(
+                    (_, newValue) => newValue.copyWith(
+                      text: newValue.text.replaceAll(',', '.'),
+                    ),
+                  ),
+                ]
               : [SatAmountFormFieldFormatter()],
           onFieldSubmitted: onFieldSubmitted,
           onSaved: onSaved,

@@ -62,11 +62,11 @@ class BitcoinCurrency extends Object {
   RegExp get whitelistedPattern {
     switch (tickerSymbol) {
       case "BTC":
-        return RegExp("^\\d+\\.?\\d{0,8}");
+        return RegExp("^\\d+[.,]?\\d{0,8}");
       case "SAT":
         return RegExp(r'\d+');
       default:
-        return RegExp("^\\d+\\.?\\d{0,8}");
+        return RegExp("^\\d+[.,]?\\d{0,8}");
     }
   }
 

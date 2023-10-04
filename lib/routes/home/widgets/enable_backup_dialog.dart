@@ -1,14 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/breez_bridge.dart' as bridge;
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EnableBackupDialog extends StatefulWidget {
-  final BuildContext context;
-  final bridge.BreezSDK breezLib;
-
-  const EnableBackupDialog(this.context, this.breezLib);
+  const EnableBackupDialog();
 
   @override
   EnableBackupDialogState createState() {
@@ -20,10 +18,6 @@ class EnableBackupDialogState extends State<EnableBackupDialog> {
   final AutoSizeGroup _autoSizeGroup = AutoSizeGroup();
   @override
   Widget build(BuildContext context) {
-    return createEnableBackupDialog(context);
-  }
-
-  Widget createEnableBackupDialog(BuildContext context) {
     final texts = context.texts();
     return Theme(
       data: Theme.of(context).copyWith(
@@ -57,7 +51,7 @@ class EnableBackupDialogState extends State<EnableBackupDialog> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(widget.context),
+            onPressed: () => Navigator.pop(context),
             child: Text(
               texts.backup_dialog_option_cancel,
               style: Theme.of(context).primaryTextTheme.labelLarge,
@@ -66,8 +60,8 @@ class EnableBackupDialogState extends State<EnableBackupDialog> {
           ),
           TextButton(
             onPressed: (() {
-              Navigator.pop(widget.context);
-              widget.breezLib.backup();
+              Navigator.pop(context);
+              context.read<BackupBloc>().backup();
             }),
             child: Text(
               texts.backup_dialog_option_ok_default,

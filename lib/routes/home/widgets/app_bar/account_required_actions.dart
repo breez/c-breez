@@ -97,7 +97,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
                   useRootNavigator: false,
                   useSafeArea: false,
                   context: context,
-                  builder: (_) => EnableBackupDialog(context, ServiceInjector().breezSDK),
+                  builder: (_) => const EnableBackupDialog(),
                 );
               },
             ),

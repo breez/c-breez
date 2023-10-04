@@ -15,22 +15,15 @@ class ReverseSwapsInProgressPage extends StatefulWidget {
 class _ReverseSwapsInProgressPageState extends State<ReverseSwapsInProgressPage> {
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: const back_button.BackButton(),
-        title: Text(texts.swap_in_progress_title),
-      ),
-      body: ListView.builder(
-        shrinkWrap: true,
-        itemCount: widget.reverseSwaps.length,
-        itemBuilder: (context, index) {
-          ReverseSwapInfo reverseSwap = widget.reverseSwaps[index];
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: widget.reverseSwaps.length,
+      itemBuilder: (context, index) {
+        ReverseSwapInfo reverseSwap = widget.reverseSwaps[index];
 
-          return ReverseSwapInprogress(reverseSwap: reverseSwap);
-        },
-      ),
+        return ReverseSwapInprogress(reverseSwap: reverseSwap);
+      },
     );
   }
 }

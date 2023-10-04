@@ -37,6 +37,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
       } else {
         swapUnused = (await _breezLib.receiveOnchain(reqData: const ReceiveOnchainRequest()));
       }
+      _log.i("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
       emit(SwapInProgressState(swapInProgress, swapUnused));
     } catch (e) {
       final errorMessage = extractExceptionMessage(e, texts);

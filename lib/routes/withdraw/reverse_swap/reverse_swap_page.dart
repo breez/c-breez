@@ -128,7 +128,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                         }
 
                         if (inProgressSwapState.reverseSwapsInProgress.isNotEmpty) {
-                          ReverseSwapsInProgressPage(
+                          return ReverseSwapsInProgressPage(
                             reverseSwaps: inProgressSwapState.reverseSwapsInProgress,
                           );
                         }

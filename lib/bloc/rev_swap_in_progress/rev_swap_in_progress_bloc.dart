@@ -29,10 +29,15 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
     final texts = getSystemAppLocalizations();
     try {
       final reverseSwapsInProgress = await _breezLib.inProgressReverseSwaps();
-      emit(state.copyWith(reverseSwapsInProgress: reverseSwapsInProgress, isLoading: false, error: ""));
+      for (var revSwapInfo in reverseSwapsInProgress) {
+        _log.i(
+          "Reverse Swap ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats status:${revSwapInfo.status.name}",
+        );
+      }
+      emit(RevSwapsInProgressState(reverseSwapsInProgress: reverseSwapsInProgress));
     } catch (e) {
       final errorMessage = extractExceptionMessage(e, texts);
-      emit(state.copyWith(isLoading: false, error: errorMessage));
+      emit(RevSwapsInProgressState(error: errorMessage));
       timer.cancel();
       _log.i("reverse swaps in progress polling finished due to error");
     }

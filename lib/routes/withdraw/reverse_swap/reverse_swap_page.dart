@@ -196,7 +196,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                     final feeOptionsBloc = context.read<FeeOptionsBloc>();
                                     int amount = _getAmount();
                                     final boltzFees =
-                                        await feeOptionsBloc.fetchReverseSwapFees(amountSat: amount);
+                                        await feeOptionsBloc.fetchReverseSwapFees(sendAmountSat: amount);
 
                                     navigator.push(
                                       FadeInRoute(

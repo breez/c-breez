@@ -17,12 +17,11 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   FeeOptionsBloc(this._breezLib) : super(FeeOptionsState.initial());
 
   /// Lookup the most recent reverse swap pair info using the Boltz API
-  Future<ReverseSwapPairInfo> fetchReverseSwapFees({int? amountSat}) async {
+  Future<ReverseSwapPairInfo> fetchReverseSwapFees({int? sendAmountSat}) async {
     try {
-      _log.v("Estimate reverse swap fees for: $amountSat");
-      ReverseSwapPairInfo reverseSwapPairInfo = await _breezLib.fetchReverseSwapFees(
-        sendAmountSat: amountSat,
-      );
+      _log.v("Estimate reverse swap fees for: $sendAmountSat");
+      final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat);
+      ReverseSwapPairInfo reverseSwapPairInfo = await _breezLib.fetchReverseSwapFees(req: req);
       _log.v("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
       emit(state.copyWith(reverseSwapPairInfo: reverseSwapPairInfo, error: ""));
       return reverseSwapPairInfo;

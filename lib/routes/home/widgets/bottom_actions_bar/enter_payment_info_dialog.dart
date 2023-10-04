@@ -44,10 +44,9 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     final texts = context.texts();
 
     return AlertDialog(
-      titlePadding: const EdgeInsets.fromLTRB(24.0, 16.0, 0.0, 8),
+      titlePadding: const EdgeInsets.fromLTRB(24.0, 22.0, 0.0, 16.0),
       title: Text(texts.payment_info_dialog_title),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      actionsPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+      contentPadding: const EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 24.0),
       content: _buildPaymentInfoForm(context),
       actions: _buildActions(context),
     );
@@ -75,61 +74,59 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
         width: MediaQuery.of(context).size.width,
         child: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: texts.payment_info_dialog_hint,
-                    suffixIcon: IconButton(
-                      padding: const EdgeInsets.only(top: 21.0),
-                      alignment: Alignment.bottomRight,
-                      icon: Image(
-                        image: const AssetImage("src/icon/qr_scan.png"),
-                        color: themeData.primaryIconTheme.color,
-                        width: 24.0,
-                        height: 24.0,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: texts.payment_info_dialog_hint,
+                  suffixIcon: IconButton(
+                    padding: const EdgeInsets.only(top: 21.0),
+                    alignment: Alignment.bottomRight,
+                    icon: Image(
+                      image: const AssetImage("src/icon/qr_scan.png"),
+                      color: themeData.primaryIconTheme.color,
+                      width: 24.0,
+                      height: 24.0,
+                    ),
+                    tooltip: texts.payment_info_dialog_barcode,
+                    onPressed: () => _scanBarcode(context),
+                  ),
+                ),
+                focusNode: _paymentInfoFocusNode,
+                controller: _paymentInfoController,
+                style: TextStyle(
+                  color: themeData.primaryTextTheme.headlineMedium!.color,
+                ),
+                validator: (value) {
+                  if (_validatorErrorMessage.isNotEmpty) {
+                    return _validatorErrorMessage;
+                  }
+                  return null;
+                },
+              ),
+              _scannerErrorMessage.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        _scannerErrorMessage,
+                        style: theme.validatorStyle,
                       ),
-                      tooltip: texts.payment_info_dialog_barcode,
-                      onPressed: () => _scanBarcode(context),
-                    ),
-                  ),
-                  focusNode: _paymentInfoFocusNode,
-                  controller: _paymentInfoController,
-                  style: TextStyle(
-                    color: themeData.primaryTextTheme.headlineMedium!.color,
-                  ),
-                  validator: (value) {
-                    if (_validatorErrorMessage.isNotEmpty) {
-                      return _validatorErrorMessage;
-                    }
-                    return null;
-                  },
-                ),
-                _scannerErrorMessage.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          _scannerErrorMessage,
-                          style: theme.validatorStyle,
-                        ),
-                      )
-                    : const SizedBox(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    texts.payment_info_dialog_hint_expanded,
-                    style: theme.FieldTextStyle.labelStyle.copyWith(
-                      fontSize: 13.0,
-                      color:
-                          themeData.isLightTheme ? theme.BreezColors.grey[500] : theme.BreezColors.white[200],
-                    ),
+                    )
+                  : const SizedBox(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  texts.payment_info_dialog_hint_expanded,
+                  style: theme.FieldTextStyle.labelStyle.copyWith(
+                    fontSize: 13.0,
+                    color:
+                        themeData.isLightTheme ? theme.BreezColors.grey[500] : theme.BreezColors.white[200],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

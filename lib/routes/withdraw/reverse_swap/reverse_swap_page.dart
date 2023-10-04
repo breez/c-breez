@@ -26,6 +26,7 @@ final _log = FimberLog("ReverseSwapPage");
 
 class ReverseSwapPage extends StatefulWidget {
   final BitcoinAddressData? btcAddressData;
+
   const ReverseSwapPage({super.key, required this.btcAddressData});
 
   @override
@@ -74,7 +75,6 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
     /// widget.btcAddressData!.label
     /// Message that describes the transaction to the user.
     /// widget.btcAddressData!.message
-    /// Set amount field as readOnly if widget.btcAddressData!.amountSat is available
   }
 
   @override

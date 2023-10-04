@@ -91,7 +91,8 @@ class InputBloc extends Cubit<InputState> {
         parsedInput is InputType_LnUrlWithdraw ||
         parsedInput is InputType_LnUrlAuth ||
         parsedInput is InputType_LnUrlError ||
-        parsedInput is InputType_NodeId) {
+        parsedInput is InputType_NodeId ||
+        parsedInput is InputType_BitcoinAddress) {
       return InputState(inputData: parsedInput);
     } else {
       return InputState(isLoading: false);
@@ -145,6 +146,15 @@ class InputBloc extends Cubit<InputState> {
       _log.i("nodeId: ${parsedInput.nodeId}");
     } else if (parsedInput is InputType_Url) {
       _log.i("url: ${parsedInput.url}");
+    } else if (parsedInput is InputType_BitcoinAddress) {
+      final btcAddressData = parsedInput.address;
+      _log.i(
+        "address: ${btcAddressData.address}\n"
+        "network: ${btcAddressData.network}\n"
+        "amountSat: ${btcAddressData.amountSat}\n"
+        "label: ${btcAddressData.label}\n"
+        "message: ${btcAddressData.message}",
+      );
     }
   }
 

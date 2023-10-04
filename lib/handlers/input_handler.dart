@@ -10,6 +10,7 @@ import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
+import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_page.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -114,6 +115,8 @@ class InputHandler extends Handler {
       return handleLNURL(context, firstPaymentItemKey, parsedInput.btcAddressData);
     } else if (parsedInput is InputType_NodeId) {
       return handleNodeID(context, parsedInput.nodeId);
+    } else if (parsedInput is InputType_BitcoinAddress) {
+      return handleBTCAddress(context, parsedInput.address);
     }
   }
 
@@ -138,6 +141,17 @@ class InputHandler extends Handler {
         builder: (_) => SpontaneousPaymentPage(
           nodeID,
           firstPaymentItemKey,
+        ),
+      ),
+    );
+  }
+
+  Future handleBTCAddress(BuildContext context, BitcoinAddressData btcAddressData) async {
+    _log.v("handle btc address ${btcAddressData.address}");
+    return await Navigator.of(context).push(
+      FadeInRoute(
+        builder: (_) => ReverseSwapPage(
+          btcAddressData: btcAddressData,
         ),
       ),
     );

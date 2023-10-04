@@ -126,8 +126,11 @@ class RestoreFormPageState extends State<RestoreForm> {
 
   FutureOr<List<String>> _getSuggestions(String pattern, int itemIndex) {
     var suggestionList = WORDLIST.where((item) => item.startsWith(pattern)).toList();
-    if (pattern.length == 4 && suggestionList.isNotEmpty) {
-      _selectSuggestion(suggestionList.first, itemIndex);
+    if (suggestionList.isNotEmpty && suggestionList.length == 1) {
+      widget.textEditingControllers[itemIndex].text = suggestionList.first;
+      if (itemIndex + 1 < focusNodes.length) {
+        focusNodes[itemIndex + 1].requestFocus();
+      }
       return List.empty();
     }
     return suggestionList;

@@ -1,4 +1,4 @@
-import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:fimber/fimber.dart';

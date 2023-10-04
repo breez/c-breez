@@ -13,7 +13,6 @@ class ReverseSwapsInProgressPage extends StatefulWidget {
 class _ReverseSwapsInProgressPageState extends State<ReverseSwapsInProgressPage> {
   @override
   Widget build(BuildContext context) {
-
     return ListView.builder(
       shrinkWrap: true,
       itemCount: widget.reverseSwaps.length,

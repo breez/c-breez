@@ -8,7 +8,7 @@ class RevSwapsInProgressState {
   RevSwapsInProgressState({
     this.reverseSwapsInProgress = const [],
     this.isLoading = false,
-    this.error,
+    this.error = "",
   });
 
   RevSwapsInProgressState.initial() : this();

@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:bip39/bip39.dart' as bip39;
-import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/breez_sdk.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';

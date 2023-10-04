@@ -1,4 +1,4 @@
-import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/breez_sdk.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';

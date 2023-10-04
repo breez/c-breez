@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';

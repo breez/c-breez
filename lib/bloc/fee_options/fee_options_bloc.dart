@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_bridge.dart';
+import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/fee_options/fee_option.dart';

@@ -12,11 +12,11 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/warning_box.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("SweepPage");
+final _log = Logger("SweepPage");
 
 class SweepPage extends StatefulWidget {
   final int walletBalance;
@@ -150,7 +150,7 @@ class _SweepPageState extends State<SweepPage> {
     try {
       amount = bitcoinCurrency.parse(_amountController.text);
     } catch (e) {
-      _log.w("Failed to parse the input amount", ex: e);
+      _log.warning("Failed to parse the input amount", e);
     }
     return amount;
   }

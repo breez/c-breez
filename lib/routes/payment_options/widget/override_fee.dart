@@ -1,11 +1,11 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("OverrideFee");
+final _log = Logger("OverrideFee");
 
 class OverrideFee extends StatelessWidget {
   const OverrideFee({
@@ -25,7 +25,7 @@ class OverrideFee extends StatelessWidget {
           controlAffinity: ListTileControlAffinity.leading,
           value: state.overrideFeeEnabled,
           onChanged: (value) {
-            _log.v("onChanged: $value");
+            _log.fine("onChanged: $value");
             if (value != null) {
               context.read<PaymentOptionsBloc>().setOverrideFeeEnabled(value);
             }

@@ -3,12 +3,12 @@ library breez.logger;
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
-import 'package:fimber_io/fimber_io.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-final _log = FimberLog("logger");
+final _log = Logger("logger");
 
 void shareLog() async {
   final appDir = await getApplicationDocumentsDirectory();
@@ -23,71 +23,63 @@ void shareLog() async {
 
 class BreezLogger {
   BreezLogger() {
-    final logLevels = [
-      "V", // log.v Verbose
-      "D", // log.d Debug
-      "I", // log.i Info
-      "W", // log.w Warning
-      "E", // log.e Error
-    ];
+    Logger.root.level = Level.ALL;
 
     if (kDebugMode) {
-      Fimber.plantTree(DebugTree(
-        logLevels: logLevels,
-      ));
+      Logger.root.onRecord.listen((record) {
+        print(_recordToString(record));
+      });
     }
 
-    getApplicationDocumentsDirectory().then(
-      (appDir) {
-        _pruneLogs(appDir);
-        final tokens = [
-          CustomFormatTree.timeStampToken,
-          CustomFormatTree.levelToken,
-          CustomFormatTree.tagToken,
-          CustomFormatTree.messageToken,
-          CustomFormatTree.fileNameToken,
-          CustomFormatTree.lineNumberToken,
-          CustomFormatTree.filePathToken,
-          CustomFormatTree.exceptionMsgToken,
-          CustomFormatTree.exceptionStackToken,
-        ];
-        Fimber.plantTree(
-          SizeRollingFileTree(
-            DataSize(megabytes: 10),
-            filenamePrefix: "${appDir.path}/logs/c_breez.",
-            filenamePostfix: ".log",
-            logLevels: logLevels,
-            logFormat: tokens.fold("", (p, e) => p == "" ? e : "$p :: $e"),
-          ),
-        );
-        FlutterError.onError = (FlutterErrorDetails details) async {
-          FlutterError.presentError(details);
-          final name = details.context?.name ?? "FlutterError";
-          final exception = details.exceptionAsString();
-          _log.e("$exception --$name", ex: details, stacktrace: details.stack);
-        };
-      },
-    );
-  }
-}
+    getApplicationDocumentsDirectory().then((appDir) {
+      _pruneLogs(appDir);
+      final file = File("${_logDir(appDir)}/${DateTime.now().millisecondsSinceEpoch}.log");
+      try {
+        file.createSync(recursive: true);
+      } catch (e) {
+        _log.severe("Failed to create log file", e);
+        return;
+      }
+      final sync = file.openWrite(mode: FileMode.append);
+      Logger.root.onRecord.listen((record) {
+        sync.writeln(_recordToString(record));
+      }, onDone: () {
+        sync.flush();
+        sync.close();
+      });
+    });
 
-void _pruneLogs(Directory appDir) {
-  final loggingFolder = Directory("${appDir.path}/logs/");
-  if (loggingFolder.existsSync()) {
-    // Get and sort log files by modified date
-    List<FileSystemEntity> filesToBePruned = loggingFolder
-        .listSync(followLinks: false)
-        .where((e) => e.path.endsWith('.log'))
-        .toList()
-      ..sort((l, r) => l.statSync().modified.compareTo(r.statSync().modified));
-    // Delete all except last 2 logs
-    if (filesToBePruned.length > 2) {
-      filesToBePruned.removeRange(
-        filesToBePruned.length - 2,
-        filesToBePruned.length,
-      );
-      for (var logFile in filesToBePruned) {
-        logFile.delete();
+    FlutterError.onError = (FlutterErrorDetails details) async {
+      FlutterError.presentError(details);
+      final name = details.context?.name ?? "FlutterError";
+      final exception = details.exceptionAsString();
+      _log.severe("$exception -- $name", details, details.stack);
+    };
+  }
+
+  String _recordToString(LogRecord record) =>
+      "[${record.loggerName}] {${record.level.name}} (${record.time}) : ${record.message}";
+
+  String _logDir(Directory appDir) => "${appDir.path}/logs/";
+
+  void _pruneLogs(Directory appDir) {
+    final loggingFolder = Directory(_logDir(appDir));
+    if (loggingFolder.existsSync()) {
+      // Get and sort log files by modified date
+      List<FileSystemEntity> filesToBePruned = loggingFolder
+          .listSync(followLinks: false)
+          .where((e) => e.path.endsWith('.log'))
+          .toList()
+        ..sort((l, r) => l.statSync().modified.compareTo(r.statSync().modified));
+      // Delete all except last 10 logs
+      if (filesToBePruned.length > 10) {
+        filesToBePruned.removeRange(
+          filesToBePruned.length - 10,
+          filesToBePruned.length,
+        );
+        for (var logFile in filesToBePruned) {
+          logFile.delete();
+        }
       }
     }
   }

@@ -7,13 +7,13 @@ import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/notifications.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
 const PROFILE_DATA_FOLDER_PATH = "profile";
 
-final _log = FimberLog("UserProfileBloc");
+final _log = Logger("UserProfileBloc");
 
 class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
   final BreezServer _breezServer;
@@ -24,10 +24,10 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     this._notifications,
   ) : super(UserProfileState.initial()) {
     var profile = state;
-    _log.v("State: ${profile.profileSettings.toJson()}");
+    _log.fine("State: ${profile.profileSettings.toJson()}");
     final settings = profile.profileSettings;
     if (settings.color == null || settings.animal == null || settings.name == null) {
-      _log.v("Profile is missing fields, generating new random ones…");
+      _log.fine("Profile is missing fields, generating new random ones…");
       final defaultProfile = generateDefaultProfile();
       final color = settings.color ?? defaultProfile.color;
       final animal = settings.animal ?? defaultProfile.animal;
@@ -45,11 +45,11 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
   }
 
   Future registerForNotifications() async {
-    _log.v("registerForNotifications");
+    _log.fine("registerForNotifications");
     String? token = await _notifications.getToken();
     if (token != null) {
       if (token != state.profileSettings.token) {
-        _log.v("Got a new token, registering…");
+        _log.fine("Got a new token, registering…");
         var userID = await _breezServer.registerDevice(token, token);
         emit(state.copyWith(
           profileSettings: state.profileSettings.copyWith(
@@ -59,15 +59,15 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
           ),
         ));
       } else {
-        _log.v("Token is the same as before");
+        _log.fine("Token is the same as before");
       }
     } else {
-      _log.w("Failed to get token");
+      _log.warning("Failed to get token");
     }
   }
 
   Future<String> uploadImage(List<int> bytes) async {
-    _log.v("uploadImage ${bytes.length}");
+    _log.fine("uploadImage ${bytes.length}");
     try {
       // TODO upload image to server
       // return await _breezServer.uploadLogo(bytes);
@@ -87,7 +87,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     AppMode? appMode,
     bool? expandPreferences,
   }) {
-    _log.v(
+    _log.fine(
         "updateProfile $name $color $animal $image $registrationRequested $hideBalance $appMode $expandPreferences");
     var profile = state.profileSettings;
     profile = profile.copyWith(

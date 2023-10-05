@@ -7,12 +7,12 @@ import 'package:c_breez/bloc/account/payment_result.dart';
 import 'package:c_breez/handlers/handler.dart';
 import 'package:c_breez/handlers/handler_context_provider.dart';
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
-final _log = FimberLog("PaymentResultHandler");
+final _log = Logger("PaymentResultHandler");
 
 class PaymentResultHandler extends Handler {
   StreamSubscription<PaymentResult>? _subscription;
@@ -20,7 +20,7 @@ class PaymentResultHandler extends Handler {
   @override
   void init(HandlerContextProvider contextProvider) {
     super.init(contextProvider);
-    _log.v("PaymentResultHandler inited");
+    _log.fine("PaymentResultHandler inited");
     _subscription = contextProvider
         .getBuildContext()!
         .read<AccountBloc>()
@@ -37,10 +37,10 @@ class PaymentResultHandler extends Handler {
   }
 
   void _listen(PaymentResult paymentResult) async {
-    _log.v("Received paymentResult: $paymentResult");
+    _log.fine("Received paymentResult: $paymentResult");
     final context = contextProvider?.getBuildContext();
     if (context == null) {
-      _log.w("Failed to proceed because context is null");
+      _log.warning("Failed to proceed because context is null");
       return;
     }
 
@@ -57,7 +57,7 @@ class PaymentResultHandler extends Handler {
         ),
       );
     } else if (paymentResult.error != null) {
-      _log.v("paymentResult error: ${paymentResult.error}");
+      _log.fine("paymentResult error: ${paymentResult.error}");
       showFlushbar(
         context,
         message: paymentResult.errorMessage(),

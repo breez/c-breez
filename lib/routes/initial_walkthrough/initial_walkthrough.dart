@@ -7,7 +7,7 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:theme_provider/theme_provider.dart';
@@ -19,7 +19,7 @@ class InitialWalkthroughPage extends StatefulWidget {
 
 class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  final _log = FimberLog("InitialWalkthrough");
+  final _log = Logger("InitialWalkthrough");
   AnimationController? _controller;
   Animation<int>? _animation;
 
@@ -139,7 +139,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _letsBreez(BuildContext context) async {
-    _log.v("Lets breez");
+    _log.fine("Lets breez");
     bool approved = await showDialog(
       useRootNavigator: false,
       context: context,
@@ -153,7 +153,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
 
   void connect({String? mnemonic}) async {
     final isRestore = mnemonic != null;
-    _log.v("${isRestore ? "Restore" : "Starting new"} node");
+    _log.fine("${isRestore ? "Restore" : "Starting new"} node");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
@@ -164,7 +164,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     try {
       await accountBloc.connect(mnemonic: mnemonic ?? bip39.generateMnemonic(strength: 128));
     } catch (error) {
-      _log.i("Failed to ${isRestore ? "restore" : "registe"} node", ex: error);
+      _log.info("Failed to ${isRestore ? "restore" : "registe"} node", error);
       if (isRestore) {
         _restoreNodeFromMnemonicSeed(initialWords: mnemonic.split(" "));
       }
@@ -181,7 +181,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   void _restoreNodeFromMnemonicSeed({
     List<String>? initialWords,
   }) async {
-    _log.v("Restore node from mnemonic seed");
+    _log.fine("Restore node from mnemonic seed");
     String? mnemonic = await _getMnemonic(initialWords: initialWords);
     if (mnemonic != null) {
       connect(mnemonic: mnemonic);
@@ -191,7 +191,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   Future<String?> _getMnemonic({
     List<String>? initialWords,
   }) async {
-    _log.v("Get mnemonic, initialWords: ${initialWords?.length}");
+    _log.fine("Get mnemonic, initialWords: ${initialWords?.length}");
     return await Navigator.of(context).pushNamed<String>(
       "/enter_mnemonics",
       arguments: initialWords,

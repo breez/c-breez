@@ -2,11 +2,11 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
 import 'package:c_breez/routes/payment_options/widget/save_dialog.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("ActionsFee");
+final _log = Logger("ActionsFee");
 
 class ActionsFee extends StatelessWidget {
   const ActionsFee({
@@ -33,7 +33,7 @@ class ActionsFee extends StatelessWidget {
                   texts.payment_options_fee_action_reset,
                 ),
                 onPressed: () {
-                  _log.v("onPressed: reset");
+                  _log.fine("onPressed: reset");
                   context.read<PaymentOptionsBloc>().resetFees();
                 },
               ),
@@ -47,7 +47,7 @@ class ActionsFee extends StatelessWidget {
                   texts.payment_options_fee_action_save,
                 ),
                 onPressed: () {
-                  _log.v("onPressed: save");
+                  _log.fine("onPressed: save");
                   if (state.overrideFeeEnabled) {
                     showDialog(
                       context: context,

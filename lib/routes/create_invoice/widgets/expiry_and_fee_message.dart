@@ -3,11 +3,11 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:c_breez/widgets/warning_box.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final log = FimberLog("ExpiryAndFeeMessage");
+final log = Logger("ExpiryAndFeeMessage");
 
 class ExpiryAndFeeMessage extends StatelessWidget {
   final int? lspFees;

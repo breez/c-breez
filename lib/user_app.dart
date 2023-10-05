@@ -35,7 +35,7 @@ import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,7 +43,7 @@ import 'package:theme_provider/theme_provider.dart';
 
 const String THEME_ID_PREFERENCE_KEY = "themeID";
 
-final _log = FimberLog("UserApp");
+final _log = Logger("UserApp");
 
 class UserApp extends StatelessWidget {
   final GlobalKey _appKey = GlobalKey();
@@ -101,7 +101,7 @@ class UserApp extends StatelessWidget {
                 },
                 initialRoute: securityState.pinStatus == PinStatus.enabled ? "lockscreen" : "splash",
                 onGenerateRoute: (RouteSettings settings) {
-                  _log.v("New route: $settings");
+                  _log.fine("New route: $settings");
                   switch (settings.name) {
                     case '/intro':
                       return FadeInRoute(
@@ -137,7 +137,7 @@ class UserApp extends StatelessWidget {
                             initialRoute: "/",
                             key: _homeNavigatorKey,
                             onGenerateRoute: (RouteSettings settings) {
-                              _log.v("New inner route: $settings");
+                              _log.fine("New inner route: $settings");
                               switch (settings.name) {
                                 case '/':
                                   return FadeInRoute(

@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uni_links/uni_links.dart';
 
 class LightningLinksService {
-  final _log = FimberLog("LightningLinksService");
+  final _log = Logger("LightningLinksService");
   final StreamController<String> _linksNotificationsController = BehaviorSubject<String>();
 
   Stream<String> get linksNotifications => _linksNotificationsController.stream;
@@ -15,7 +15,7 @@ class LightningLinksService {
       getInitialLink().asStream(),
       linkStream,
     ]).where(_canHandle).listen((l) {
-      _log.i("Got lightning link: $l");
+      _log.info("Got lightning link: $l");
       if (l!.startsWith("breez:")) {
         l = l.substring(6);
       }

@@ -4,14 +4,14 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/payment_options/form_validator.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
-final _log = FimberLog("ProportionalFeeWidget");
+final _log = Logger("ProportionalFeeWidget");
 
 class ProportionalFeeWidget extends StatefulWidget {
   const ProportionalFeeWidget({
@@ -66,12 +66,12 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
                     ),
                     validator: proportionalFeeValidator,
                     onChanged: (value) {
-                      _log.v("onChanged: $value");
+                      _log.fine("onChanged: $value");
                       double proportionalFee;
                       try {
                         proportionalFee = double.parse(value);
                       } catch (_) {
-                        _log.v("Failed to parse $value as double");
+                        _log.fine("Failed to parse $value as double");
                         return;
                       }
                       context.read<PaymentOptionsBloc>().setProportionalFee(proportionalFee);
@@ -92,7 +92,7 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
       if (!state.saveEnabled) {
         final proportionalFee = state.proportionalFee.toStringAsFixed(2);
         if (_proportionalFeeController.text != proportionalFee) {
-          _log.v("Setting proportionalFee to $proportionalFee");
+          _log.fine("Setting proportionalFee to $proportionalFee");
           setState(() {
             _proportionalFeeController.text = proportionalFee;
           });

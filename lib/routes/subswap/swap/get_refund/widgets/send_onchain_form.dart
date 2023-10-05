@@ -7,12 +7,12 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("SendOnchainForm");
+final _log = Logger("SendOnchainForm");
 
 class SendOnchainForm extends StatefulWidget {
   final int amount;
@@ -114,7 +114,7 @@ class SendOnchainFormState extends State<SendOnchainForm> {
                 );
               },
               validator: (address) {
-                _log.v('validator called for $address, lock status: ${validatorHolder.lock.locked}');
+                _log.fine('validator called for $address, lock status: ${validatorHolder.lock.locked}');
                 if (validatorHolder.valid) {
                   return null;
                 } else {

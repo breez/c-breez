@@ -5,11 +5,11 @@ import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
 import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("WithdrawFundsAmountTextFormField");
+final _log = Logger("WithdrawFundsAmountTextFormField");
 
 class WithdrawFundsAmountTextFormField extends AmountFormField {
   WithdrawFundsAmountTextFormField({
@@ -27,13 +27,13 @@ class WithdrawFundsAmountTextFormField extends AmountFormField {
           readOnly: policy.withdrawKind == WithdrawKind.unexpected_funds || withdrawMaxValue,
           bitcoinCurrency: bitcoinCurrency,
           validatorFn: (amount) {
-            _log.v("Validator called for $amount");
+            _log.fine("Validator called for $amount");
             return PaymentValidator(
               currency: bitcoinCurrency,
               texts: context.texts(),
               channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
               validatePayment: (amount, outgoing, channelCreationPossible, {channelMinimumFee}) {
-                _log.v("Validating $amount $policy");
+                _log.fine("Validating $amount $policy");
                 if (amount < policy.minValue) {
                   throw PaymentBelowLimitError(policy.minValue);
                 }

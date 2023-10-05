@@ -15,14 +15,14 @@ import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_sliv
 import 'package:c_breez/routes/home/widgets/payments_list/payments_list.dart';
 import 'package:c_breez/routes/home/widgets/status_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 const _kFilterMaxSize = 64.0;
 const _kPaymentListItemHeight = 72.0;
 
-final _log = FimberLog("AccountPage");
+final _log = Logger("AccountPage");
 
 class AccountPage extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
@@ -40,7 +40,7 @@ class AccountPage extends StatelessWidget {
       builder: (context, accountState) {
         return BlocBuilder<UserProfileBloc, UserProfileState>(
           builder: (context, userModel) {
-            _log.v("AccountPage build with ${accountState.payments.length} payments");
+            _log.fine("AccountPage build with ${accountState.payments.length} payments");
             return Container(
               color: Theme.of(context).customData.dashboardBgColor,
               child: _build(

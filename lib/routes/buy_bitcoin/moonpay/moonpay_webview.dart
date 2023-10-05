@@ -1,12 +1,12 @@
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
 import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_loading.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-final _log = FimberLog("MoonpayWebView");
+final _log = Logger("MoonpayWebView");
 
 class MoonpayWebView extends StatelessWidget {
   final String url;
@@ -32,27 +32,27 @@ class MoonpayWebView extends StatelessWidget {
             url: WebUri(url),
           ),
           onLoadStart: (controller, url) {
-            _log.v("onLoadStart url: $url");
+            _log.fine("onLoadStart url: $url");
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.loading);
           },
           onLoadStop: (controller, url) {
-            _log.v("onLoadStop url: $url");
+            _log.fine("onLoadStop url: $url");
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.success);
           },
           onReceivedError: (controller, request, error) {
-            _log.w("onReceivedError error: $error", ex: error);
+            _log.warning("onReceivedError error: $error", error);
             if (error.type == WebResourceErrorType.UNKNOWN) {
-              _log.v("Ignoring unknown error");
+              _log.fine("Ignoring unknown error");
               return;
             }
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.error);
           },
           onReceivedHttpError: (controller, request, error) {
-            _log.w("onReceivedHttpError error: $error", ex: error);
+            _log.warning("onReceivedHttpError error: $error", error);
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.error);
           },
           onConsoleMessage: (controller, consoleMessage) {
-            _log.v("onConsoleMessage: $consoleMessage");
+            _log.fine("onConsoleMessage: $consoleMessage");
           },
         ),
       ],

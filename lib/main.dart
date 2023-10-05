@@ -25,7 +25,7 @@ import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,7 +38,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'bloc/network/network_settings_bloc.dart';
 
-final _log = FimberLog("Main");
+final _log = Logger("Main");
 
 void main() async {
   // runZonedGuarded wrapper is required to log Dart errors.
@@ -124,7 +124,7 @@ void main() async {
     );
   }, (error, stackTrace) async {
     if (error is! FlutterErrorDetails) {
-      _log.e("FlutterError: $error", ex: error, stacktrace: stackTrace);
+      _log.severe("FlutterError: $error", error, stackTrace);
     }
   });
 }

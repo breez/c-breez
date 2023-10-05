@@ -1,11 +1,11 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/bloc/network/network_settings_state.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("MempoolSettingsWidget");
+final _log = Logger("MempoolSettingsWidget");
 
 class MempoolSettingsWidget extends StatefulWidget {
   const MempoolSettingsWidget({
@@ -28,7 +28,7 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
 
     return BlocBuilder<NetworkSettingsBloc, NetworkSettingsState>(
       builder: (context, state) {
-        _log.v("Building: $state, userChanged: $_userChanged, saving: $_saving, errorOnSave: $_errorOnSave");
+        _log.fine("Building: $state, userChanged: $_userChanged, saving: $_saving, errorOnSave: $_errorOnSave");
         if (_mempoolUrlController.text.isEmpty && !_userChanged) {
           _mempoolUrlController.text = state.mempoolUrl;
         }

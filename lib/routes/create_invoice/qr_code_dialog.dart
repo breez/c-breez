@@ -10,12 +10,12 @@ import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
-final _log = FimberLog("QrCodeDialog");
+final _log = Logger("QrCodeDialog");
 
 class QrCodeDialog extends StatefulWidget {
   final ReceivePaymentResponse? receivePaymentResponse;
@@ -69,7 +69,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
           }
         });
       }).catchError((e) {
-        _log.w("Failed to track payment", ex: e);
+        _log.warning("Failed to track payment", e);
         showFlushbar(context, message: extractExceptionMessage(e, context.texts()));
         onFinish(false);
       });
@@ -177,7 +177,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   void onFinish(dynamic result) {
-    _log.v("onFinish $result, mounted: $mounted, _currentRoute: ${_currentRoute?.isCurrent}");
+    _log.fine("onFinish $result, mounted: $mounted, _currentRoute: ${_currentRoute?.isCurrent}");
     if (mounted && _currentRoute != null && _currentRoute!.isCurrent) {
       Navigator.removeRoute(context, _currentRoute!);
     }

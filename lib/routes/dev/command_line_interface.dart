@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:c_breez/routes/dev/widget/command_list.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-final _log = FimberLog("CommandsList");
+final _log = Logger("CommandsList");
 
 class CommandLineInterface extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -151,7 +151,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
   }
 
   void _sendCommand(String command) async {
-    _log.v("Send command: $command");
+    _log.fine("Send command: $command");
     if (command.isNotEmpty) {
       FocusScope.of(context).requestFocus(FocusNode());
       setState(() {
@@ -163,7 +163,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
       try {
         var commandArgs = command.split(RegExp(r"\s"));
         if (commandArgs.isEmpty) {
-          _log.v("Command args is empty, skipping");
+          _log.fine("Command args is empty, skipping");
           setState(() {
             isLoading = false;
           });
@@ -178,11 +178,11 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
           case 'listInvoices':
           case 'closeAllChannels':
             final command = commandArgs[0].toLowerCase();
-            _log.v("executing command: $command");
+            _log.fine("executing command: $command");
             final answer = await _breezLib.executeCommand(command: command);
-            _log.v("Received answer: $answer");
+            _log.fine("Received answer: $answer");
             reply = encoder.convert(answer);
-            _log.v("Reply: $reply");
+            _log.fine("Reply: $reply");
             break;
           default:
             throw "This command is not supported yet.";
@@ -195,7 +195,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
           isLoading = false;
         });
       } catch (error) {
-        _log.w("Error happening", ex: error);
+        _log.warning("Error happening", error);
         setState(() {
           _showDefaultCommands = false;
           _cliText = error.toString();

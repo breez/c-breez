@@ -3,7 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/lsp/widgets/lsp_list.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +24,7 @@ class LspListWidget extends StatefulWidget {
 }
 
 class _LspListWidgetState extends State<LspListWidget> {
-  final _log = FimberLog("LspPage");
+  final _log = Logger("LspPage");
 
   Object? error;
 
@@ -45,7 +45,7 @@ class _LspListWidgetState extends State<LspListWidget> {
             error = lspListSnapshot.error;
 
             if (error != null) {
-              _log.e("Error: $error");
+              _log.severe("Error: $error");
               widget.onError(error!);
               return const _LspErrorText();
             }

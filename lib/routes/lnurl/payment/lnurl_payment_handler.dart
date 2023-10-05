@@ -7,11 +7,11 @@ import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialo
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("handleLNURLPayRequest");
+final _log = Logger("handleLNURLPayRequest");
 
 Future<LNURLPageResult?> handlePayRequest(
   BuildContext context,
@@ -56,20 +56,20 @@ Future<LNURLPageResult?> handlePayRequest(
   ).then((result) {
     if (result is LnUrlPayResult) {
       if (result is LnUrlPayResult_EndpointSuccess) {
-        _log.v("LNURL payment success, action: ${result.data}");
+        _log.fine("LNURL payment success, action: ${result.data}");
         return LNURLPageResult(
           protocol: LnUrlProtocol.Pay,
           successAction: result.data,
         );
       } else if (result is LnUrlPayResult_EndpointError) {
-        _log.v("LNURL payment failed: ${result.data.reason}");
+        _log.fine("LNURL payment failed: ${result.data.reason}");
         return LNURLPageResult(
           protocol: LnUrlProtocol.Pay,
           error: result.data.reason,
         );
       }
     }
-    _log.w("Error sending LNURL payment", ex: result);
+    _log.warning("Error sending LNURL payment", result);
     throw LNURLPageResult(error: result).errorMessage;
   });
 }
@@ -78,7 +78,7 @@ void handleLNURLPaymentPageResult(BuildContext context, LNURLPageResult result) 
   if (result.successAction != null) {
     _handleSuccessAction(context, result.successAction!);
   } else if (result.hasError) {
-    _log.v("Handle LNURL payment page result with error '${result.error}'");
+    _log.fine("Handle LNURL payment page result with error '${result.error}'");
     throw Exception(result.errorMessage);
   }
 }
@@ -88,14 +88,14 @@ Future _handleSuccessAction(BuildContext context, SuccessActionProcessed success
   String? url;
   if (successAction is SuccessActionProcessed_Message) {
     message = successAction.data.message;
-    _log.v("Handle LNURL payment page result with message action '$message'");
+    _log.fine("Handle LNURL payment page result with message action '$message'");
   } else if (successAction is SuccessActionProcessed_Url) {
     message = successAction.data.description;
     url = successAction.data.url;
-    _log.v("Handle LNURL payment page result with url action '$message', '$url'");
+    _log.fine("Handle LNURL payment page result with url action '$message', '$url'");
   } else if (successAction is SuccessActionProcessed_Aes) {
     message = "${successAction.data.description} ${successAction.data.plaintext}";
-    _log.v("Handle LNURL payment page result with aes action '$message'");
+    _log.fine("Handle LNURL payment page result with aes action '$message'");
   }
   return showDialog(
     useRootNavigator: false,

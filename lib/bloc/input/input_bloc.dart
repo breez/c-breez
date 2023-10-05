@@ -6,12 +6,12 @@ import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 class InputBloc extends Cubit<InputState> {
-  final _log = FimberLog("InputBloc");
+  final _log = Logger("InputBloc");
   final BreezSDK _breezLib;
   final LightningLinksService _lightningLinks;
   final Device _device;
@@ -27,19 +27,19 @@ class InputBloc extends Cubit<InputState> {
   }
 
   void _initializeInputBloc() async {
-    _log.d("initializeInputBloc");
+    _log.config("initializeInputBloc");
     await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
     _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
   void addIncomingInput(String bolt11) {
-    _log.v("addIncomingInput: $bolt11");
+    _log.fine("addIncomingInput: $bolt11");
     _decodeInvoiceController.add(bolt11);
   }
 
   Future trackPayment(String paymentHash) async {
     await _breezLib.invoicePaidStream.firstWhere((invoice) {
-      _log.v("invoice paid: ${invoice.paymentHash} we are waiting for "
+      _log.fine("invoice paid: ${invoice.paymentHash} we are waiting for "
           "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
       return invoice.paymentHash == paymentHash;
     });
@@ -47,11 +47,11 @@ class InputBloc extends Cubit<InputState> {
 
   Stream<InputState?> _watchIncomingInvoices() {
     return Rx.merge([
-      _decodeInvoiceController.stream.doOnData((event) => _log.v("decodeInvoiceController: $event")),
-      _lightningLinks.linksNotifications.doOnData((event) => _log.v("lightningLinks: $event")),
-      _device.clipboardStream.distinct().skip(1).doOnData((event) => _log.v("clipboardStream: $event")),
+      _decodeInvoiceController.stream.doOnData((event) => _log.fine("decodeInvoiceController: $event")),
+      _lightningLinks.linksNotifications.doOnData((event) => _log.fine("lightningLinks: $event")),
+      _device.clipboardStream.distinct().skip(1).doOnData((event) => _log.fine("clipboardStream: $event")),
     ]).asyncMap((input) async {
-      _log.v("Incoming input: '$input'");
+      _log.fine("Incoming input: '$input'");
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(InputState(isLoading: true));
       try {
@@ -60,7 +60,7 @@ class InputBloc extends Cubit<InputState> {
         _logParsedInput(parsedInput);
         return await _handleParsedInput(parsedInput);
       } catch (e) {
-        _log.e("Failed to parse input", ex: e);
+        _log.severe("Failed to parse input", e);
         return InputState(isLoading: false);
       }
     });
@@ -100,10 +100,10 @@ class InputBloc extends Cubit<InputState> {
 
   void _logParsedInput(InputType parsedInput) {
     // Todo: Find a better way to serialize parsed input
-    _log.v("Parsed input type: '${parsedInput.runtimeType.toString()}");
+    _log.fine("Parsed input type: '${parsedInput.runtimeType.toString()}");
     if (parsedInput is InputType_Bolt11) {
       final lnInvoice = parsedInput.invoice;
-      _log.i(
+      _log.info(
         "bolt11: ${lnInvoice.bolt11}\n"
         "payeePubkey: ${lnInvoice.payeePubkey}\n"
         "paymentHash: ${lnInvoice.paymentHash}\n"
@@ -117,7 +117,7 @@ class InputBloc extends Cubit<InputState> {
       );
     } else if (parsedInput is InputType_LnUrlPay) {
       final lnUrlPayReqData = parsedInput.data;
-      _log.i(
+      _log.info(
         "${lnUrlPayReqData.toString()}\n"
         "callback: ${lnUrlPayReqData.callback}\n"
         "minSendable: ${lnUrlPayReqData.minSendable}\n"
@@ -128,7 +128,7 @@ class InputBloc extends Cubit<InputState> {
       );
     } else if (parsedInput is InputType_LnUrlWithdraw) {
       final lnUrlWithdrawReqData = parsedInput.data;
-      _log.i(
+      _log.info(
         "callback: ${lnUrlWithdrawReqData.callback}\n"
         "k1: ${lnUrlWithdrawReqData.k1}\n"
         "defaultDescription: ${lnUrlWithdrawReqData.defaultDescription}\n"
@@ -137,14 +137,14 @@ class InputBloc extends Cubit<InputState> {
       );
     } else if (parsedInput is InputType_LnUrlAuth) {
       final lnUrlAuthReqData = parsedInput.data;
-      _log.i("k1: ${lnUrlAuthReqData.k1}");
+      _log.info("k1: ${lnUrlAuthReqData.k1}");
     } else if (parsedInput is InputType_LnUrlError) {
       final lnUrlErrorData = parsedInput.data;
-      _log.i("reason: ${lnUrlErrorData.reason}");
+      _log.info("reason: ${lnUrlErrorData.reason}");
     } else if (parsedInput is InputType_NodeId) {
-      _log.i("nodeId: ${parsedInput.nodeId}");
+      _log.info("nodeId: ${parsedInput.nodeId}");
     } else if (parsedInput is InputType_Url) {
-      _log.i("url: ${parsedInput.url}");
+      _log.info("url: ${parsedInput.url}");
     }
   }
 

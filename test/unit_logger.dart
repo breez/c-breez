@@ -1,24 +1,12 @@
-import 'package:fimber/fimber.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 
-void setUpLogger() => Fimber.plantTree(UnitLogTree());
+void setUpLogger() {
+  Logger.root.level = Level.ALL;
 
-class UnitLogTree extends LogTree {
-  @override
-  List<String> getLevels() => ["V", "D", "I", "W", "E"];
-
-  @override
-  void log(
-    String level,
-    String message, {
-    String? tag,
-    Object? ex,
-    StackTrace? stacktrace,
-  }) {
-    if (kDebugMode) {
-      print("$tag [$level] $message");
-      if (ex != null) print(ex);
-      if (stacktrace != null) print(stacktrace);
-    }
+  if (kDebugMode) {
+    Logger.root.onRecord.listen((record) {
+      print("[${record.loggerName}] {${record.level.name}} (${record.time}) : ${record.message}");
+    });
   }
 }

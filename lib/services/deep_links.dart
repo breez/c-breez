@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DeepLinksService {
   static const SESSION_SECRET = "sessionSecret";
-  final _log = FimberLog("DeepLinksService");
+  final _log = Logger("DeepLinksService");
 
   final StreamController<String> _linksNotificationsController = BehaviorSubject<String>();
   Stream<String> get linksNotifications => _linksNotificationsController.stream;
@@ -27,7 +27,7 @@ class DeepLinksService {
     _dynamicLinks!.onLink.listen((data) {
       publishLink(data);
     }).onError((err) {
-      _log.e("Failed to fetch dynamic link $err", ex: err);
+      _log.severe("Failed to fetch dynamic link $err", err);
       return Future.value(null);
     });
   }

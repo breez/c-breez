@@ -4,13 +4,13 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/payment_options/form_validator.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
-final _log = FimberLog("ExemptfeeMsatWidget");
+final _log = Logger("ExemptfeeMsatWidget");
 
 class ExemptfeeMsatWidget extends StatefulWidget {
   const ExemptfeeMsatWidget({
@@ -60,12 +60,12 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
                     ),
                     validator: exemptFeeValidator,
                     onChanged: (value) {
-                      _log.v("onChanged: $value");
+                      _log.fine("onChanged: $value");
                       int exemptFeeSat;
                       try {
                         exemptFeeSat = int.parse(value);
                       } catch (_) {
-                        _log.v("Failed to parse $value as int");
+                        _log.fine("Failed to parse $value as int");
                         return;
                       }
                       context.read<PaymentOptionsBloc>().setExemptfeeMsat(exemptFeeSat * 1000);
@@ -87,7 +87,7 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
         final exemptFeeSat = (state.exemptFeeMsat ~/ 1000).toString();
 
         if (_exemptFeeController.text != exemptFeeSat) {
-          _log.v("Setting exemptFee to $exemptFeeSat");
+          _log.fine("Setting exemptFee to $exemptFeeSat");
           setState(() {
             _exemptFeeController.text = exemptFeeSat;
           });

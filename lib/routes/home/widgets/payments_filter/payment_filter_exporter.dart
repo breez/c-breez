@@ -7,13 +7,13 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PaymentmentFilterExporter extends StatelessWidget {
-  final _log = FimberLog("PaymentmentFilterExporter");
+  final _log = Logger("PaymentmentFilterExporter");
   final PaymentTypeFilter filter;
 
   PaymentmentFilterExporter(
@@ -87,7 +87,7 @@ class PaymentmentFilterExporter extends StatelessWidget {
         if (loaderRoute.isActive) {
           navigator.removeRoute(loaderRoute);
         }
-        _log.e("Received error: $error");
+        _log.severe("Received error: $error");
         showFlushbar(
           context,
           message: texts.payments_filter_action_export_failed,

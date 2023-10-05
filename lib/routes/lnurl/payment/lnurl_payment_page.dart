@@ -13,12 +13,12 @@ import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 // import 'package:email_validator/email_validator.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("LNURLPaymentPage");
+final _log = Logger("LNURLPaymentPage");
 
 class LNURLPaymentPage extends StatefulWidget {
   final sdk.LnUrlPayRequestData requestData;
@@ -193,7 +193,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             final currencyBloc = context.read<CurrencyBloc>();
             final amount = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
             final comment = _commentController.text;
-            _log.v("LNURL payment of $amount sats where "
+            _log.fine("LNURL payment of $amount sats where "
                 "min is ${widget.requestData.minSendable} msats "
                 "and max is ${widget.requestData.maxSendable} msats."
                 "with comment $comment");

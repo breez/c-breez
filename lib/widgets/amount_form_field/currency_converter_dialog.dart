@@ -177,7 +177,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     }
 
     final fiatConversion = FiatConversion(fiatCurrency, fiatExchangeRate);
-    final int fractionSize = fiatCurrency.info.fractionSize;
     final borderColor = themeData.isLightTheme ? Colors.red : themeData.colorScheme.error;
 
     return Column(
@@ -212,10 +211,14 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
                 style: themeData.dialogTheme.contentTextStyle,
               ),
             ),
-            // Do not allow '.' when fractionSize is 0 and only allow fiat currencies fractionSize number of digits after decimal point
             inputFormatters: [
               FilteringTextInputFormatter.allow(
-                fractionSize == 0 ? RegExp(r'\d+') : RegExp("^\\d+\\.?\\d{0,$fractionSize}"),
+                fiatConversion.whitelistedPattern,
+              ),
+              TextInputFormatter.withFunction(
+                (_, newValue) => newValue.copyWith(
+                  text: newValue.text.replaceAll(',', '.'),
+                ),
               ),
             ],
             keyboardType: const TextInputType.numberWithOptions(decimal: true),

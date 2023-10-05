@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 
 import 'widgets/lnurl_page_result.dart';
 
-final _log = Logger("handleLNURL");
+final _log = Logger("HandleLNURL");
 
 Future handleLNURL(
   BuildContext context,

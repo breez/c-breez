@@ -44,7 +44,7 @@ void main() async {
   // runZonedGuarded wrapper is required to log Dart errors.
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    BreezLogger();
+    final logger = BreezLogger();
     SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
     );
@@ -52,8 +52,11 @@ void main() async {
     BreezDateUtils.setupLocales();
     await Firebase.initializeApp();
     final injector = ServiceInjector();
+
     final breezLib = injector.breezSDK;
     breezLib.initialize();
+    logger.registerBreezSdkLog(breezLib);
+
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     final appDir = await getApplicationDocumentsDirectory();
     final config = await cfg.Config.instance();

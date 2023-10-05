@@ -11,7 +11,7 @@ import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = Logger("handleLNURLPayRequest");
+final _log = Logger("HandleLNURLPayRequest");
 
 Future<LNURLPageResult?> handlePayRequest(
   BuildContext context,

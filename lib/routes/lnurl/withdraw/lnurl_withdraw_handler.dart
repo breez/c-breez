@@ -10,7 +10,7 @@ import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 
-final _log = Logger("handleLNURLWithdrawPageResult");
+final _log = Logger("HandleLNURLWithdrawPageResult");
 
 Future<LNURLPageResult?> handleWithdrawRequest(
   BuildContext context,

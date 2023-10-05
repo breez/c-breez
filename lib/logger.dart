@@ -3,12 +3,14 @@ library breez.logger;
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:breez_sdk/breez_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-final _log = Logger("logger");
+final _log = Logger("Logger");
+final _sdkLog = Logger("BreezSdk");
 
 void shareLog() async {
   final appDir = await getApplicationDocumentsDirectory();
@@ -27,7 +29,10 @@ class BreezLogger {
 
     if (kDebugMode) {
       Logger.root.onRecord.listen((record) {
-        print(_recordToString(record));
+        // Dart analyzer doesn't understand that here we are in debug mode so we have to use kDebugMode again
+        if (kDebugMode) {
+          print(_recordToString(record));
+        }
       });
     }
 
@@ -55,6 +60,29 @@ class BreezLogger {
       final exception = details.exceptionAsString();
       _log.severe("$exception -- $name", details, details.stack);
     };
+  }
+
+  /// Log entries according to their severity
+  void registerBreezSdkLog(BreezSDK sdk) {
+    sdk.logStream.listen((log) {
+      switch (log.level) {
+        case "ERROR":
+          _sdkLog.severe(log.line);
+          break;
+        case "WARN":
+          _sdkLog.warning(log.line);
+          break;
+        case "INFO":
+          _sdkLog.info(log.line);
+          break;
+        case "DEBUG":
+          _sdkLog.config(log.line);
+          break;
+        default:
+          _sdkLog.fine(log.line);
+          break;
+      }
+    });
   }
 
   String _recordToString(LogRecord record) =>

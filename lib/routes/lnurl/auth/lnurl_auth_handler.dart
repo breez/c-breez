@@ -9,7 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = Logger("handleLNURLAuthRequest");
+final _log = Logger("HandleLNURLAuthRequest");
 
 Future<LNURLPageResult?> handleAuthRequest(
   BuildContext context,

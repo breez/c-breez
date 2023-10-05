@@ -6,7 +6,10 @@ void setUpLogger() {
 
   if (kDebugMode) {
     Logger.root.onRecord.listen((record) {
-      print("[${record.loggerName}] {${record.level.name}} (${record.time}) : ${record.message}");
+      // Dart analyzer doesn't understand that here we are in debug mode so we have to use kDebugMode again
+      if (kDebugMode) {
+        print("[${record.loggerName}] {${record.level.name}} (${record.time}) : ${record.message}");
+      }
     });
   }
 }

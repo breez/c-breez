@@ -86,7 +86,9 @@ class BreezLogger {
   }
 
   String _recordToString(LogRecord record) =>
-      "[${record.loggerName}] {${record.level.name}} (${record.time}) : ${record.message}";
+      "[${record.loggerName}] {${record.level.name}} (${_formatTime(record.time)}) : ${record.message}";
+
+  String _formatTime(DateTime time) => time.toUtc().toIso8601String();
 
   String _logDir(Directory appDir) => "${appDir.path}/logs/";
 

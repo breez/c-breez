@@ -117,7 +117,7 @@ class DevelopersView extends StatelessWidget {
 
   void _exportStaticBackup(BuildContext context) async {
     final accBloc = context.read<AccountBloc>();
-    const name = "emergency.recover";
+    const name = "scb.recover";
     final staticBackup = await accBloc.exportStaticChannelBackup();
 
     if (staticBackup.backup != null) {

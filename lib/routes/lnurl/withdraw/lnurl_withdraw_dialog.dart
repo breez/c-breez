@@ -149,7 +149,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
         description: description,
       );
       if (resp is sdk.LnUrlWithdrawResult_Ok) {
-        final paymentHash = (resp.data as sdk.LnUrlWithdrawSuccessData).invoice.paymentHash;
+        final paymentHash = resp.data.invoice.paymentHash;
         _log.v("LNURL withdraw success for $paymentHash");
         return const LNURLPageResult(protocol: LnUrlProtocol.Withdraw);
       } else if (resp is sdk.LnUrlWithdrawResult_ErrorStatus) {

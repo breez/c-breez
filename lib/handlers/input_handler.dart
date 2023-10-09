@@ -1,23 +1,26 @@
 import 'dart:async';
 
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/handlers/handler.dart';
 import 'package:c_breez/handlers/handler_context_provider.dart';
 import 'package:c_breez/models/invoice.dart';
+import 'package:c_breez/routes/lnurl/auth/lnurl_auth_handler.dart';
 import 'package:c_breez/routes/lnurl/lnurl_invoice_delegate.dart';
+import 'package:c_breez/routes/lnurl/payment/lnurl_payment_handler.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
+import 'package:c_breez/routes/lnurl/withdraw/lnurl_withdraw_handler.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("InputHandler");
 
@@ -62,10 +65,11 @@ class InputHandler extends Handler {
       return;
     }
 
-    inputState.isLoading ? _handlingRequest = true : _handlingRequest = false;
-    _setLoading(inputState.isLoading);
+    final isLoading = inputState is LoadingInputState;
+    _handlingRequest = isLoading;
+    _setLoading(isLoading);
 
-    handleInputData(inputState.inputData)
+    handleInputData(inputState)
         .then((result) {
           handleResult(result);
         })
@@ -97,23 +101,28 @@ class InputHandler extends Handler {
     }
   }
 
-  Future handleInputData(dynamic parsedInput) async {
-    _log.fine("handle input $parsedInput");
+  Future handleInputData(InputState inputState) async {
+    _log.fine("handle input $inputState");
     final context = contextProvider?.getBuildContext();
     if (context == null) {
-      _log.fine("Not handling input $parsedInput because context is null");
+      _log.fine("Not handling input $inputState because context is null");
       return;
     }
 
-    if (parsedInput is Invoice) {
-      return handleInvoice(context, parsedInput);
-    } else if (parsedInput is InputType_LnUrlPay ||
-        parsedInput is InputType_LnUrlWithdraw ||
-        parsedInput is InputType_LnUrlAuth ||
-        parsedInput is InputType_LnUrlError) {
-      return handleLNURL(context, firstPaymentItemKey, parsedInput.data);
-    } else if (parsedInput is InputType_NodeId) {
-      return handleNodeID(context, parsedInput.nodeId);
+    if (inputState is InvoiceInputState) {
+      return handleInvoice(context, inputState.invoice);
+    } else if (inputState is LnUrlPayInputState) {
+      handlePayRequest(context, firstPaymentItemKey, inputState.data);
+    } else if (inputState is LnUrlWithdrawInputState) {
+      handleWithdrawRequest(context, inputState.data);
+    } else if (inputState is LnUrlAuthInputState) {
+      handleAuthRequest(context, inputState.data);
+    } else if (inputState is LnUrlErrorInputState) {
+      throw inputState.data.reason;
+    } else if (inputState is NodeIdInputState) {
+      return handleNodeID(context, inputState.nodeId);
+    } else if (inputState is BitcoinAddressInputState) {
+      return handleBitcoinAddress(context, inputState);
     }
   }
 
@@ -141,6 +150,13 @@ class InputHandler extends Handler {
         ),
       ),
     );
+  }
+
+  Future handleBitcoinAddress(BuildContext context, BitcoinAddressInputState inputState) async {
+    _log.fine("handle bitcoin address $inputState");
+    if (inputState.source == InputSource.qrcode_reader) {
+      return await Navigator.of(context).pushNamed("/reverse_swap", arguments: inputState.data);
+    }
   }
 
   void _setLoading(bool visible) {

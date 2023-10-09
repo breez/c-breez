@@ -13,6 +13,7 @@ import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
@@ -25,7 +26,6 @@ import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
-import 'package:logging/logging.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,6 +33,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -77,7 +78,12 @@ void main() async {
             ),
           ),
           BlocProvider<InputBloc>(
-            create: (BuildContext context) => InputBloc(breezLib, injector.lightningLinks, injector.device),
+            create: (BuildContext context) => InputBloc(
+              breezLib,
+              injector.lightningLinks,
+              injector.device,
+              const InputPrinter(),
+            ),
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),

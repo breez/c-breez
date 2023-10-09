@@ -198,9 +198,13 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     final accountBloc = context.read<AccountBloc>();
     final currencyBloc = context.read<CurrencyBloc>();
 
+    final lspInfo = context.read<LSPBloc>().state?.lspInfo;
+    final cheapestFeeParams = lspInfo?.openingFeeParamsList.values.first;
+
     Future<ReceivePaymentResponse> receivePaymentResponse = accountBloc.addInvoice(
       description: _descriptionController.text,
       amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
+      chosenFeeParams: cheapestFeeParams
     );
     navigator.pop();
     Widget dialog = FutureBuilder(

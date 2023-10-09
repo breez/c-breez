@@ -6,12 +6,15 @@ import 'package:c_breez/bloc/backup/backup_state.dart';
 import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/home/widgets/enable_backup_dialog.dart';
 import 'package:c_breez/routes/home/widgets/rotator.dart';
+import 'package:c_breez/routes/subswap/swap/get_refund/get_refund_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/backup_in_progress_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AccountRequiredActionsIndicator extends StatelessWidget {
   const AccountRequiredActionsIndicator({
@@ -24,6 +27,8 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
     return BlocBuilder3<AccountBloc, AccountState, LSPBloc, LspState?, BackupBloc, BackupState?>(
       builder: (context, accState, lspState, backupState) {
         final navigatorState = Navigator.of(context);
+        final refundBloc = context.read<RefundBloc>();
+        final refundState = refundBloc.state;
 
         List<Widget> warnings = [];
         int walletBalance = accState.walletBalance;
@@ -94,6 +99,16 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
                   context: context,
                   builder: (_) => const EnableBackupDialog(),
                 );
+              },
+            ),
+          );
+        }
+
+        if (refundState.refundables != null && refundState.refundables!.isNotEmpty) {
+          warnings.add(
+            WarningAction(
+              () {
+                showDialog(context: context, builder: (_) => GetRefundPage(refundBloc: refundBloc));
               },
             ),
           );

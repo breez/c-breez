@@ -1,11 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/receive_options_bottom_sheet.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/send_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bottom_action_item.dart';
 
@@ -21,29 +18,26 @@ class BottomActionsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final actionsGroup = AutoSizeGroup();
 
-    return BlocBuilder<AccountBloc, AccountState>(builder: (context, account) {
-      return BottomAppBar(
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SendOptions(
-                firstPaymentItemKey: firstPaymentItemKey,
-                actionsGroup: actionsGroup,
-              ),
-              Container(width: 64),
-              ReceiveOptions(
-                account: account,
-                firstPaymentItemKey: firstPaymentItemKey,
-                actionsGroup: actionsGroup,
-              )
-            ],
-          ),
+    return BottomAppBar(
+      child: SizedBox(
+        height: 60,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SendOptions(
+              firstPaymentItemKey: firstPaymentItemKey,
+              actionsGroup: actionsGroup,
+            ),
+            Container(width: 64),
+            ReceiveOptions(
+              firstPaymentItemKey: firstPaymentItemKey,
+              actionsGroup: actionsGroup,
+            )
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
 }
 
@@ -80,13 +74,11 @@ class SendOptions extends StatelessWidget {
 }
 
 class ReceiveOptions extends StatelessWidget {
-  final AccountState account;
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
   final AutoSizeGroup actionsGroup;
 
   const ReceiveOptions({
     Key? key,
-    required this.account,
     required this.firstPaymentItemKey,
     required this.actionsGroup,
   }) : super(key: key);
@@ -100,7 +92,6 @@ class ReceiveOptions extends StatelessWidget {
         builder: (context) {
           return SafeArea(
             child: ReceiveOptionsBottomSheet(
-              account: account,
               firstPaymentItemKey: firstPaymentItemKey,
             ),
           );

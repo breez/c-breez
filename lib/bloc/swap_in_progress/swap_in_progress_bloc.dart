@@ -5,10 +5,10 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/swap_in_progress/swap_in_progress_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("SwapInProgressBloc");
+final _log = Logger("SwapInProgressBloc");
 
 class SwapInProgressBloc extends Cubit<SwapInProgressState> {
   final BreezSDK _breezLib;
@@ -20,7 +20,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
   late Timer timer;
 
   pollSwapAddress() {
-    _log.i("swap in address polling started");
+    _log.info("swap in address polling started");
     emit(SwapInProgressState(null, null, isLoading: true));
     timer = Timer.periodic(const Duration(seconds: 5), _refreshAddresses);
     _refreshAddresses(timer);
@@ -37,20 +37,20 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
       } else {
         swapUnused = (await _breezLib.receiveOnchain(reqData: const ReceiveOnchainRequest()));
       }
-      _log.i("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
+      _log.info("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
       emit(SwapInProgressState(swapInProgress, swapUnused));
     } catch (e) {
       final errorMessage = extractExceptionMessage(e, texts);
       emit(SwapInProgressState(null, null, error: errorMessage));
       timer.cancel();
-      _log.i("swap in address polling finished due to error");
+      _log.info("swap in address polling finished due to error");
     }
   }
 
   @override
   Future<void> close() {
     timer.cancel();
-    _log.i("swap in address polling finished");
+    _log.info("swap in address polling finished");
     return super.close();
   }
 }

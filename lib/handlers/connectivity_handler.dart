@@ -8,11 +8,11 @@ import 'package:c_breez/handlers/handler.dart';
 import 'package:c_breez/handlers/handler_context_provider.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("ConnectivityHandler");
+final _log = Logger("ConnectivityHandler");
 
 class ConnectivityHandler extends Handler {
   StreamSubscription<ConnectivityState>? _subscription;
@@ -38,7 +38,7 @@ class ConnectivityHandler extends Handler {
   }
 
   void _listen(ConnectivityState connectivityState) async {
-    _log.v("Received connectivityState $connectivityState");
+    _log.fine("Received connectivityState $connectivityState");
     if (connectivityState.lastStatus == ConnectivityResult.none) {
       showNoInternetConnectionFlushbar();
     } else {
@@ -50,7 +50,7 @@ class ConnectivityHandler extends Handler {
     dismissFlushbarIfNeed();
     final context = contextProvider?.getBuildContext();
     if (context == null) {
-      _log.v("Skipping connection flushbar as context is null");
+      _log.fine("Skipping connection flushbar as context is null");
       return;
     }
     _flushbar = _getNoConnectionFlushbar(context);

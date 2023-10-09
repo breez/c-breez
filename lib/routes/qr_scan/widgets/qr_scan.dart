@@ -1,13 +1,13 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/qr_scan/scan_overlay.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-final _log = FimberLog("QRScan");
+final _log = Logger("QRScan");
 
 class QRScan extends StatefulWidget {
   @override
@@ -45,21 +45,21 @@ class QRScanState extends State<QRScan> {
                     onDetect: (capture) {
                       final List<Barcode> barcodes = capture.barcodes;
                       for (final barcode in barcodes) {
-                        _log.i("Barcode detected: $barcode");
+                        _log.info("Barcode detected: $barcode");
                         if (popped) {
-                          _log.v("Skipping, already popped");
+                          _log.fine("Skipping, already popped");
                           return;
                         }
                         if (!mounted) {
-                          _log.v("Skipping, not mounted");
+                          _log.fine("Skipping, not mounted");
                           return;
                         }
                         final code = barcode.rawValue;
                         if (code == null) {
-                          _log.w("Failed to scan QR code.");
+                          _log.warning("Failed to scan QR code.");
                         } else {
                           popped = true;
-                          _log.i("Popping read QR code $code");
+                          _log.info("Popping read QR code $code");
                           Navigator.of(context).pop(code);
                         }
                       }
@@ -123,24 +123,24 @@ class ImagePickerButton extends StatelessWidget {
         final picker = ImagePicker();
         // ignore: body_might_complete_normally_catch_error
         final pickedFile = await picker.pickImage(source: ImageSource.gallery).catchError((err) {
-          _log.w("Failed to pick image", ex: err);
+          _log.warning("Failed to pick image", err);
         });
         final filePath = pickedFile?.path;
-        _log.i("Picked image: $filePath");
+        _log.info("Picked image: $filePath");
         try {
           final found = filePath != null && await cameraController.analyzeImage(filePath);
           if (!found) {
-            _log.i("No QR code found in image");
+            _log.info("No QR code found in image");
             scaffoldMessenger.showSnackBar(
               SnackBar(
                 content: Text(texts.qr_scan_gallery_failed),
               ),
             );
           } else {
-            _log.i("QR code found in image");
+            _log.info("QR code found in image");
           }
         } catch (err) {
-          _log.w("Failed to analyze image", ex: err);
+          _log.warning("Failed to analyze image", err);
         }
       },
     );

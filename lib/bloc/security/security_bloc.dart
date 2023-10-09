@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:c_breez/bloc/security/security_state.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -12,7 +12,7 @@ import 'package:local_auth_android/local_auth_android.dart';
 import 'package:local_auth_ios/types/auth_messages_ios.dart';
 
 class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
-  final _log = FimberLog("LocalAuthenticationService");
+  final _log = Logger("LocalAuthenticationService");
   final _auth = LocalAuthentication();
   final _secureStorage = const FlutterSecureStorage();
   Timer? _autoLock;
@@ -110,7 +110,7 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
       if (error.code == "LockedOut" || error.code == "PermanentlyLockedOut") {
         throw error.message!;
       }
-      _log.e("Error Code: ${error.code} - Message: ${error.message}", ex: error);
+      _log.severe("Error Code: ${error.code} - Message: ${error.message}", error);
       await _auth.stopAuthentication();
       _setLockState(LockState.locked);
       return false;

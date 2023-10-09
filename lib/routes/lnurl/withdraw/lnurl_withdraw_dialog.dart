@@ -5,11 +5,11 @@ import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/loading_animated_text.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("LNURLWithdrawDialog");
+final _log = Logger("LNURLWithdrawDialog");
 
 class LNURLWithdrawDialog extends StatefulWidget {
   final Function(LNURLPageResult? result) onFinish;
@@ -52,7 +52,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
         _future = _withdraw(context).then((result) {
           if (result.error == null && mounted) {
             controller.addStatusListener((status) {
-              _log.v("Animation status $status");
+              _log.fine("Animation status $status");
               if (status == AnimationStatus.dismissed && mounted) {
                 finishCalled = true;
                 widget.onFinish(result);
@@ -92,7 +92,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
           builder: (context, snapshot) {
             final data = snapshot.data;
             final error = snapshot.error ?? data?.error;
-            _log.v("Building with data $data, error $error");
+            _log.fine("Building with data $data, error $error");
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -134,13 +134,13 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
   }
 
   Future<LNURLPageResult> _withdraw(BuildContext context) async {
-    _log.v("Withdraw ${widget.amountSats} sats");
+    _log.fine("Withdraw ${widget.amountSats} sats");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final description = widget.requestData.defaultDescription;
 
     try {
-      _log.v("LNURL withdraw of ${widget.amountSats} sats where "
+      _log.fine("LNURL withdraw of ${widget.amountSats} sats where "
           "min is ${widget.requestData.minWithdrawable} msats "
           "and max is ${widget.requestData.maxWithdrawable} msats.");
       final resp = await accountBloc.lnurlWithdraw(
@@ -150,24 +150,24 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       );
       if (resp is sdk.LnUrlWithdrawResult_Ok) {
         final paymentHash = resp.data.invoice.paymentHash;
-        _log.v("LNURL withdraw success for $paymentHash");
+        _log.fine("LNURL withdraw success for $paymentHash");
         return const LNURLPageResult(protocol: LnUrlProtocol.Withdraw);
       } else if (resp is sdk.LnUrlWithdrawResult_ErrorStatus) {
         final reason = resp.data.reason;
-        _log.v("LNURL withdraw failed: $reason");
+        _log.fine("LNURL withdraw failed: $reason");
         return LNURLPageResult(
           protocol: LnUrlProtocol.Withdraw,
           error: reason,
         );
       } else {
-        _log.w("Unknown response from lnurlWithdraw: $resp");
+        _log.warning("Unknown response from lnurlWithdraw: $resp");
         return LNURLPageResult(
           protocol: LnUrlProtocol.Withdraw,
           error: texts.lnurl_payment_page_unknown_error,
         );
       }
     } catch (e) {
-      _log.w("Error withdrawing LNURL payment", ex: e);
+      _log.warning("Error withdrawing LNURL payment", e);
       return LNURLPageResult(protocol: LnUrlProtocol.Withdraw, error: e);
     }
   }
@@ -177,7 +177,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       return;
     }
     finishCalled = true;
-    _log.v("Finishing with result $result");
+    _log.fine("Finishing with result $result");
     widget.onFinish(result);
   }
 }

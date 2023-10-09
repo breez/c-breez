@@ -4,10 +4,10 @@ import 'dart:typed_data';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 
-final _log = FimberLog("PaymentDetails");
+final _log = Logger("PaymentDetails");
 
 /// Hold formatted data from Payment to be displayed in the UI, using the minutiae noun instead of details or
 /// info to avoid conflicts and make it easier to differentiate when reading the code.
@@ -98,27 +98,27 @@ class _PaymentMinutiaeFactory {
     try {
       final parsed = json.decode(metadata);
       if (parsed is! List) {
-        _log.w("Unknown runtime type of $parsed for $metadata");
+        _log.warning("Unknown runtime type of $parsed for $metadata");
         return;
       }
 
       for (var item in parsed) {
         if (item is! List || item.length != 2) {
-          _log.w("Unknown runtime type of item $item");
+          _log.warning("Unknown runtime type of item $item");
           continue;
         }
 
         final key = item[0];
         final value = item[1];
         if (key is! String) {
-          _log.w("Unknown runtime type of key $key");
+          _log.warning("Unknown runtime type of key $key");
           continue;
         }
 
         _metadataMap[key] = value;
       }
     } catch (e) {
-      _log.w("Failed to parse metadata: $metadata", ex: e);
+      _log.warning("Failed to parse metadata: $metadata", e);
     }
   }
 
@@ -246,7 +246,7 @@ class _PaymentMinutiaeFactory {
       try {
         bytes = base64Decode(base64String);
       } catch (e) {
-        _log.w("Failed to decode image: $base64String", ex: e);
+        _log.warning("Failed to decode image: $base64String", e);
         return null;
       }
       if (bytes.isNotEmpty) {

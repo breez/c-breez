@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:c_breez/services/keychain.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CredentialsManager {
-  final _log = FimberLog("CredentialsManager");
+  final _log = Logger("CredentialsManager");
   static const String accountMnemonic = "account_mnemonic";
 
   final KeyChain keyChain;
@@ -17,7 +17,7 @@ class CredentialsManager {
   }) async {
     try {
       await _storeMnemonic(mnemonic);
-      _log.i("Stored credentials successfully");
+      _log.info("Stored credentials successfully");
     } catch (err) {
       throw Exception(err.toString());
     }
@@ -26,7 +26,7 @@ class CredentialsManager {
   Future<String> restoreMnemonic() async {
     try {
       String? mnemonicStr = await keyChain.read(accountMnemonic);
-      _log.i("Restored credentials successfully");
+      _log.info("Restored credentials successfully");
       return mnemonicStr!;
     } catch (err) {
       throw Exception(err.toString());

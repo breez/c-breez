@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:c_breez/background/breez_service_initializer.dart';
 import 'package:c_breez/main.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:workmanager/workmanager.dart';
 
-final log = FimberLog("BreezMessageHandler");
+final _log = Logger("BreezMessageHandler");
 
 @pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 class BreezMessageHandler {
@@ -15,7 +15,7 @@ class BreezMessageHandler {
   BreezMessageHandler(this.message);
 
   Future<void> handleBackgroundMessage() async {
-    log.i("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
+    _log.info("Handling a background message: ${message.messageId}\nMessage data: ${message.data}");
     await initializeBreezServices();
     await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
 

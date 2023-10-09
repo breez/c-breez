@@ -4,10 +4,10 @@ import 'package:c_breez/routes/subswap/swap/get_refund/send_onchain.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/wait_broadcast_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 
-final _log = FimberLog("RefundItemAction");
+final _log = Logger("RefundItemAction");
 
 class RefundItemAction extends StatelessWidget {
   final SwapInfo swapInfo;
@@ -68,7 +68,7 @@ class RefundItemAction extends StatelessWidget {
     String destAddress,
     int feeRate,
   ) {
-    _log.v("showWaitToBroadcastDialog destAddress: $destAddress feeRate: $feeRate");
+    _log.fine("showWaitToBroadcastDialog destAddress: $destAddress feeRate: $feeRate");
     final texts = context.texts();
 
     return showDialog<String>(

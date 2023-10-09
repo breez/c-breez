@@ -5,15 +5,16 @@ import 'package:c_breez/routes/lnurl/auth/login_text.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+final _log = Logger("HandleLNURLAuthRequest");
 
 Future<LNURLPageResult?> handleAuthRequest(
   BuildContext context,
   LnUrlAuthRequestData requestData,
 ) async {
-  final log = FimberLog("handleLNURLAuthRequest");
   return promptAreYouSure(context, null, LoginText(domain: requestData.domain)).then(
     (permitted) async {
       if (permitted == true) {
@@ -24,20 +25,20 @@ Future<LNURLPageResult?> handleAuthRequest(
         try {
           final resp = await context.read<AccountBloc>().lnurlAuth(reqData: requestData);
           if (resp is LnUrlCallbackStatus_Ok) {
-            log.v("LNURL auth success");
+            _log.fine("LNURL auth success");
             return const LNURLPageResult(protocol: LnUrlProtocol.Auth);
           } else if (resp is LnUrlCallbackStatus_ErrorStatus) {
-            log.v("LNURL auth failed: ${resp.data.reason}");
+            _log.fine("LNURL auth failed: ${resp.data.reason}");
             return LNURLPageResult(protocol: LnUrlProtocol.Auth, error: resp.data.reason);
           } else {
-            log.w("Unknown response from lnurlAuth: $resp");
+            _log.warning("Unknown response from lnurlAuth: $resp");
             return LNURLPageResult(
               protocol: LnUrlProtocol.Auth,
               error: texts.lnurl_payment_page_unknown_error,
             );
           }
         } catch (e) {
-          log.w("Error authenticating LNURL auth", ex: e);
+          _log.warning("Error authenticating LNURL auth", e);
           if (loaderRoute.isActive) {
             navigator.removeRoute(loaderRoute);
           }
@@ -54,9 +55,8 @@ Future<LNURLPageResult?> handleAuthRequest(
 }
 
 void handleLNURLAuthPageResult(BuildContext context, LNURLPageResult result) {
-  final log = FimberLog("handleLNURLAuthPageResult");
   if (result.hasError) {
-    log.v("Handle LNURL auth page result with error '${result.error}'");
+    _log.fine("Handle LNURL auth page result with error '${result.error}'");
     promptError(
       context,
       context.texts().lnurl_webview_error_title,

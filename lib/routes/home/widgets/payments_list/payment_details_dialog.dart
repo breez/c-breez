@@ -12,13 +12,13 @@ import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_preimage.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_success_action.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_title.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 
 final AutoSizeGroup _labelGroup = AutoSizeGroup();
 final AutoSizeGroup _valueGroup = AutoSizeGroup();
 
-final _log = FimberLog("PaymentDetailsDialog");
+final _log = Logger("PaymentDetailsDialog");
 
 class PaymentDetailsDialog extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
@@ -27,7 +27,7 @@ class PaymentDetailsDialog extends StatelessWidget {
     super.key,
     required this.paymentMinutiae,
   }) {
-    _log.v("PaymentDetailsDialog for payment: ${paymentMinutiae.id}");
+    _log.fine("PaymentDetailsDialog for payment: ${paymentMinutiae.id}");
   }
 
   @override

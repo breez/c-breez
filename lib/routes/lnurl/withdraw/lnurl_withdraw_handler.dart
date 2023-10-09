@@ -7,10 +7,10 @@ import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 
-final _log = FimberLog("handleLNURLWithdrawPageResult");
+final _log = Logger("HandleLNURLWithdrawPageResult");
 
 Future<LNURLPageResult?> handleWithdrawRequest(
   BuildContext context,
@@ -33,9 +33,9 @@ Future<LNURLPageResult?> handleWithdrawRequest(
 }
 
 void handleLNURLWithdrawPageResult(BuildContext context, LNURLPageResult result) {
-  _log.v("handle $result");
+  _log.fine("handle $result");
   if (result.hasError) {
-    _log.v("Handle LNURL withdraw page result with error '${result.error}'");
+    _log.fine("Handle LNURL withdraw page result with error '${result.error}'");
     final texts = context.texts();
     final themeData = Theme.of(context);
     promptError(
@@ -48,7 +48,7 @@ void handleLNURLWithdrawPageResult(BuildContext context, LNURLPageResult result)
     );
     throw result.error!;
   } else {
-    _log.v("Handle LNURL withdraw page result with success");
+    _log.fine("Handle LNURL withdraw page result with success");
     Navigator.of(context).push(
       TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
     );

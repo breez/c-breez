@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -11,7 +11,7 @@ abstract class Notifications {
 }
 
 class FirebaseNotifications implements Notifications {
-  final _log = FimberLog("FirebaseNotifications");
+  final _log = Logger("FirebaseNotifications");
 
   FirebaseMessaging get _firebaseMessaging {
     return FirebaseMessaging.instance;
@@ -28,7 +28,7 @@ class FirebaseNotifications implements Notifications {
   }
 
   Future _onMessage(RemoteMessage message) {
-    _log.i("_onMessage = ${message.data}");
+    _log.info("_onMessage = ${message.data}");
     var data = message.data["data"] ?? message.data["aps"] ?? message.data;
     if (data != null) {
       if (data is String) data = json.decode(data);
@@ -38,7 +38,7 @@ class FirebaseNotifications implements Notifications {
   }
 
   Future _onResume(RemoteMessage message) {
-    _log.i("_onResume = ${message.data}");
+    _log.info("_onResume = ${message.data}");
     var data = message.data["data"] ?? message.data;
     if (data != null) {
       if (data is String) data = json.decode(data);
@@ -49,14 +49,14 @@ class FirebaseNotifications implements Notifications {
 
   @override
   Future<String?> getToken() async {
-    _log.v("getToken");
+    _log.fine("getToken");
     NotificationSettings firebaseNotificationSettings =
         await _firebaseMessaging.requestPermission(sound: true, badge: true, alert: true);
     if (firebaseNotificationSettings.authorizationStatus == AuthorizationStatus.authorized) {
-      _log.v("Authorized to get token");
+      _log.fine("Authorized to get token");
       return _firebaseMessaging.getToken();
     } else {
-      _log.w("Unauthorized to get token");
+      _log.warning("Unauthorized to get token");
       return null;
     }
   }

@@ -21,12 +21,12 @@ import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("CreateInvoicePage");
+final _log = Logger("CreateInvoicePage");
 
 class CreateInvoicePage extends StatefulWidget {
   final Function(LNURLPageResult? result)? onFinish;
@@ -170,7 +170,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     BuildContext context,
     LnUrlWithdrawRequestData data,
   ) async {
-    _log.v("Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
+    _log.fine("Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
         "min=${data.minWithdrawable}, max=${data.maxWithdrawable}");
     final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
 
@@ -192,7 +192,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   }
 
   Future _createInvoice(BuildContext context) async {
-    _log.v("Create invoice: description=${_descriptionController.text}, amount=${_amountController.text}");
+    _log.fine("Create invoice: description=${_descriptionController.text}, amount=${_amountController.text}");
     final navigator = Navigator.of(context);
     final currentRoute = ModalRoute.of(navigator.context)!;
     final accountBloc = context.read<AccountBloc>();
@@ -206,7 +206,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     Widget dialog = FutureBuilder(
       future: receivePaymentResponse,
       builder: (BuildContext context, AsyncSnapshot<ReceivePaymentResponse> snapshot) {
-        _log.v("Building QrCodeDialog with invoice: ${snapshot.data}, error: ${snapshot.error}");
+        _log.fine("Building QrCodeDialog with invoice: ${snapshot.data}, error: ${snapshot.error}");
         return QrCodeDialog(
           snapshot.data,
           snapshot.error,
@@ -230,7 +230,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     ModalRoute currentRoute,
     NavigatorState navigator,
   ) {
-    _log.v("Payment finished: $result");
+    _log.fine("Payment finished: $result");
     if (result == true) {
       if (currentRoute.isCurrent) {
         navigator.push(

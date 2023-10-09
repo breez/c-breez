@@ -1,11 +1,11 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-final _log = FimberLog("ExternalBrowser");
+final _log = Logger("ExternalBrowser");
 
 Future<void> launchLinkOnExternalBrowser(
   BuildContext context, {
@@ -40,7 +40,7 @@ Future<void> launchLinkOnExternalBrowser(
       throw Exception(texts.link_launcher_failed_to_launch(linkAddress));
     }
   } catch (error) {
-    _log.w(error.toString(), ex: error);
+    _log.warning(error.toString(), error);
     rethrow;
   } finally {
     navigator.removeRoute(loaderRoute);

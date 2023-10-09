@@ -4,11 +4,11 @@ import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("EnterPaymentInfoDialog");
+final _log = Logger("EnterPaymentInfoDialog");
 
 class EnterPaymentInfoDialog extends StatefulWidget {
   final GlobalKey paymentItemKey;
@@ -164,7 +164,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
               }
             } catch (error) {
               _setLoading(false);
-              _log.w(error.toString(), ex: error);
+              _log.warning(error.toString(), error);
               _setValidatorErrorMessage(texts.payment_info_dialog_error);
             } finally {
               _setLoading(false);
@@ -208,7 +208,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     try {
       _setValidatorErrorMessage("");
       final inputType = await context.read<InputBloc>().parseInput(input: input);
-      _log.v("Parsed input type: '${inputType.runtimeType.toString()}");
+      _log.fine("Parsed input type: '${inputType.runtimeType.toString()}");
       // Can't compare against a list of InputType as runtime type comparison is a bit tricky with binding generated enums
       if (!(inputType is InputType_Bolt11 ||
           inputType is InputType_LnUrlPay ||

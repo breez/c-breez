@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'connectivity_state.dart';
 
 class ConnectivityBloc extends Cubit<ConnectivityState> {
-  final _log = FimberLog("ConnectivityBloc");
+  final _log = Logger("ConnectivityBloc");
 
   final Connectivity _connectivity = Connectivity();
 
@@ -28,7 +28,7 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
     try {
       result = await _updateConnectionStatus(await _connectivity.checkConnectivity());
     } on PlatformException catch (e) {
-      _log.e("Failed to check connectivity", ex: e);
+      _log.severe("Failed to check connectivity", e);
       rethrow;
     }
     final connectivityState = ConnectivityState(lastStatus: result);
@@ -37,7 +37,7 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
   }
 
   Future<ConnectivityResult> _updateConnectionStatus(ConnectivityResult connectionStatus) async {
-    _log.i("Connection status changed to: ${connectionStatus.name}");
+    _log.info("Connection status changed to: ${connectionStatus.name}");
     if (connectionStatus != ConnectivityResult.none) {
       bool isDeviceConnected = await _isConnected();
       if (!isDeviceConnected) {
@@ -55,11 +55,11 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         return true;
       } else {
-        _log.e("Connection has no internet access");
+        _log.severe("Connection has no internet access");
         return false;
       }
     } on SocketException catch (e) {
-      _log.e("Socket operation failed", ex: e);
+      _log.severe("Socket operation failed", e);
       return false;
     }
   }

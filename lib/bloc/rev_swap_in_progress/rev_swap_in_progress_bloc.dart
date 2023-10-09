@@ -4,10 +4,10 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("RevSwapsInProgressBloc");
+final _log = Logger("RevSwapsInProgressBloc");
 
 class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
   final BreezSDK _breezLib;
@@ -19,7 +19,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
   late Timer timer;
 
   pollReverseSwapsInProgress() {
-    _log.i("reverse swaps in progress polling started");
+    _log.info("reverse swaps in progress polling started");
     emit(RevSwapsInProgressState(isLoading: true));
     timer = Timer.periodic(const Duration(seconds: 5), _refreshInProgressReverseSwaps);
     _refreshInProgressReverseSwaps(timer);
@@ -30,7 +30,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
     try {
       final reverseSwapsInProgress = await _breezLib.inProgressReverseSwaps();
       for (var revSwapInfo in reverseSwapsInProgress) {
-        _log.i(
+        _log.info(
           "Reverse Swap ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats status:${revSwapInfo.status.name}",
         );
       }
@@ -39,14 +39,14 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
       final errorMessage = extractExceptionMessage(e, texts);
       emit(RevSwapsInProgressState(error: errorMessage));
       timer.cancel();
-      _log.i("reverse swaps in progress polling finished due to error");
+      _log.info("reverse swaps in progress polling finished due to error");
     }
   }
 
   @override
   Future<void> close() {
     timer.cancel();
-    _log.i("reverse swaps in progress polling finished");
+    _log.info("reverse swaps in progress polling finished");
     return super.close();
   }
 }

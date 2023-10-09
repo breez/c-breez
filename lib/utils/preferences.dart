@@ -1,4 +1,4 @@
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const kDefaultOverrideFee = false;
@@ -10,7 +10,7 @@ const _kPaymentOptionOverrideFee = "payment_options_override_fee";
 const _kPaymentOptionProportionalFee = "payment_options_proportional_fee";
 const _kPaymentOptionExemptFee = "payment_options_exempt_fee";
 
-final _log = FimberLog("preferences");
+final _log = Logger("Preferences");
 
 class Preferences {
   Future<String?> getMempoolSpaceUrl() async {
@@ -19,7 +19,7 @@ class Preferences {
   }
 
   Future<void> setMempoolSpaceUrl(String url) async {
-    _log.d("set mempool space url: $url");
+    _log.fine("set mempool space url: $url");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_mempoolSpaceUrlKey, url);
   }
@@ -35,7 +35,7 @@ class Preferences {
   }
 
   Future<void> setPaymentOptionsOverrideFeeEnabled(bool enabled) async {
-    _log.d("set payment options override fee enabled: $enabled");
+    _log.fine("set payment options override fee enabled: $enabled");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPaymentOptionOverrideFee, enabled);
   }
@@ -46,7 +46,7 @@ class Preferences {
   }
 
   Future<void> setPaymentOptionsProportionalFee(double fee) async {
-    _log.d("set payment options proportional fee: $fee");
+    _log.fine("set payment options proportional fee: $fee");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_kPaymentOptionProportionalFee, fee);
   }
@@ -57,7 +57,7 @@ class Preferences {
   }
 
   Future<void> setPaymentOptionsExemptFee(int exemptfeeMsat) async {
-    _log.d("set payment options exempt fee : $exemptfeeMsat");
+    _log.fine("set payment options exempt fee : $exemptfeeMsat");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kPaymentOptionExemptFee, exemptfeeMsat);
   }

@@ -1,9 +1,9 @@
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
 import 'package:c_breez/utils/preferences.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-final _log = FimberLog("PaymentOptionsBloc");
+final _log = Logger("PaymentOptionsBloc");
 
 class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   final Preferences _preferences;
@@ -11,7 +11,7 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   PaymentOptionsBloc(
     this._preferences,
   ) : super(const PaymentOptionsState.initial()) {
-    _fetchPaymentsOverrideSettings().then((_) => _log.v("Initial settings read"));
+    _fetchPaymentsOverrideSettings().then((_) => _log.fine("Initial settings read"));
   }
 
   Future<void> setOverrideFeeEnabled(bool enabled) async {
@@ -36,7 +36,7 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   }
 
   Future<void> resetFees() async {
-    _log.v("Resetting payments override settings to default: enabled: $kDefaultOverrideFee, "
+    _log.fine("Resetting payments override settings to default: enabled: $kDefaultOverrideFee, "
         "proportional: $kDefaultProportionalFee");
     await _preferences.setPaymentOptionsOverrideFeeEnabled(kDefaultOverrideFee);
     await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
@@ -46,7 +46,7 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
 
   Future<void> saveFees() async {
     final state = this.state;
-    _log.v("Saving payments override settings: enabled: ${state.overrideFeeEnabled}, "
+    _log.fine("Saving payments override settings: enabled: ${state.overrideFeeEnabled}, "
         "proportional: ${state.proportionalFee}"
         "Exemptfee: ${state.exemptFeeMsat}");
     await _preferences.setPaymentOptionsOverrideFeeEnabled(state.overrideFeeEnabled);
@@ -56,18 +56,18 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   }
 
   Future<void> cancelEditing() async {
-    _log.v("Canceling editing");
+    _log.fine("Canceling editing");
     if (state.saveEnabled) {
       await _fetchPaymentsOverrideSettings();
     }
   }
 
   Future<void> _fetchPaymentsOverrideSettings() async {
-    _log.v("Fetching payments override settings");
+    _log.fine("Fetching payments override settings");
     final enabled = await _preferences.getPaymentOptionsOverrideFeeEnabled();
     final proportional = await _preferences.getPaymentOptionsProportionalFee();
     final exemptFeeMsat = await _preferences.getPaymentOptionsExemptFee();
-    _log.v(
+    _log.fine(
         "Payments override fetched: enabled: $enabled, proportional: $proportional, exemptFeeMsat: $exemptFeeMsat");
     emit(PaymentOptionsState(
       overrideFeeEnabled: enabled,

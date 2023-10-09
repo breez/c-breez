@@ -15,11 +15,11 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("InputHandler");
+final _log = Logger("InputHandler");
 
 class InputHandler extends Handler {
   final GlobalKey firstPaymentItemKey;
@@ -56,9 +56,9 @@ class InputHandler extends Handler {
   }
 
   void _listen(InputState inputState) {
-    _log.v("Input state changed: $inputState");
+    _log.fine("Input state changed: $inputState");
     if (_handlingRequest) {
-      _log.v("Already handling request, skipping state change");
+      _log.fine("Already handling request, skipping state change");
       return;
     }
 
@@ -71,7 +71,7 @@ class InputHandler extends Handler {
         })
         .whenComplete(() => _handlingRequest = false)
         .onError((error, _) {
-          _log.e("Input state error", ex: error);
+          _log.severe("Input state error", error);
           _handlingRequest = false;
           _setLoading(false);
           if (error != null) {
@@ -79,29 +79,29 @@ class InputHandler extends Handler {
             if (context != null) {
               showFlushbar(context, message: extractExceptionMessage(error, context.texts()));
             } else {
-              _log.v("Skipping handling of error: $error because context is null");
+              _log.fine("Skipping handling of error: $error because context is null");
             }
           }
         });
   }
 
   void handleResult(result) {
-    _log.v("Input state handled: $result");
+    _log.fine("Input state handled: $result");
     if (result is LNURLPageResult && result.protocol != null) {
       final context = contextProvider?.getBuildContext();
       if (context != null) {
         handleLNURLPageResult(context, result);
       } else {
-        _log.v("Skipping handling of result: $result because context is null");
+        _log.fine("Skipping handling of result: $result because context is null");
       }
     }
   }
 
   Future handleInputData(dynamic parsedInput) async {
-    _log.v("handle input $parsedInput");
+    _log.fine("handle input $parsedInput");
     final context = contextProvider?.getBuildContext();
     if (context == null) {
-      _log.v("Not handling input $parsedInput because context is null");
+      _log.fine("Not handling input $parsedInput because context is null");
       return;
     }
 
@@ -118,7 +118,7 @@ class InputHandler extends Handler {
   }
 
   Future handleInvoice(BuildContext context, Invoice invoice) async {
-    _log.v("handle invoice $invoice");
+    _log.fine("handle invoice $invoice");
     return await showDialog(
       useRootNavigator: false,
       context: context,
@@ -132,7 +132,7 @@ class InputHandler extends Handler {
   }
 
   Future handleNodeID(BuildContext context, String nodeID) async {
-    _log.v("handle node id $nodeID");
+    _log.fine("handle node id $nodeID");
     return await Navigator.of(context).push(
       FadeInRoute(
         builder: (_) => SpontaneousPaymentPage(

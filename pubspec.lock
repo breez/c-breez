@@ -95,7 +95,7 @@ packages:
       path: "../breez-sdk/libs/sdk-flutter"
       relative: true
     source: path
-    version: "0.2.3"
+    version: "0.2.5"
   breez_translations:
     dependency: "direct main"
     description:
@@ -402,18 +402,10 @@ packages:
     source: hosted
     version: "0.9.3+1"
   fimber:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: fimber
       sha256: "42fcfa33acd43556c1e7ebfc12c2b03893418bc04a07931368c3573e228af2f0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.0"
-  fimber_io:
-    dependency: "direct main"
-    description:
-      name: fimber_io
-      sha256: "6b80d4628c717c03e3e8a3a801b2d67b71f0ff2cfd9754b67943576313dbac57"
       url: "https://pub.dev"
     source: hosted
     version: "0.7.0"
@@ -983,7 +975,7 @@ packages:
     source: hosted
     version: "1.0.8"
   logging:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: logging
       sha256: "623a88c9594aa774443aa3eb2d41807a48486b5613e67599fb4c41c0ad47c340"

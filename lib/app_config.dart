@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 
-final _log = FimberLog("AppConfig");
+final _log = Logger("AppConfig");
 
 class AppConfig {
   final String apiKey = const String.fromEnvironment("API_KEY");
@@ -17,7 +17,7 @@ class AppConfig {
         deviceKey: base64.decode(glKey),
       );
     } catch (e) {
-      _log.w("Failed to parse partner credentials: $e");
+      _log.warning("Failed to parse partner credentials: $e");
       return null;
     }
   }

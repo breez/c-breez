@@ -4,11 +4,11 @@ import 'package:c_breez/models/bitcoin_address_info.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("BitcoinAddressTextFormField");
+final _log = Logger("BitcoinAddressTextFormField");
 
 class BitcoinAddressTextFormField extends TextFormField {
   BitcoinAddressTextFormField({
@@ -34,9 +34,9 @@ class BitcoinAddressTextFormField extends TextFormField {
               onPressed: () async {
                 Navigator.pushNamed<String>(context, "/qr_scan").then(
                   (barcode) {
-                    _log.v("Scanned string: '$barcode'");
+                    _log.fine("Scanned string: '$barcode'");
                     final address = BitcoinAddressInfo.fromScannedString(barcode).address;
-                    _log.v("BitcoinAddressInfoFromScannedString: '$address'");
+                    _log.fine("BitcoinAddressInfoFromScannedString: '$address'");
                     if (address == null) return;
                     if (address.isEmpty) {
                       showFlushbar(
@@ -55,7 +55,7 @@ class BitcoinAddressTextFormField extends TextFormField {
           style: theme.FieldTextStyle.textStyle,
           onChanged: (address) => _onAddressChanged(context, validatorHolder, address),
           validator: (address) {
-            _log.v("validator called for $address, $validatorHolder");
+            _log.fine("validator called for $address, $validatorHolder");
             if (validatorHolder.valid) {
               return null;
             } else {
@@ -69,11 +69,11 @@ class BitcoinAddressTextFormField extends TextFormField {
     ValidatorHolder holder,
     String address,
   ) async {
-    _log.v("Address changed $address");
+    _log.fine("Address changed $address");
     await holder.lock.synchronized(() async {
-      _log.v("Calling validator for $address");
+      _log.fine("Calling validator for $address");
       holder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
-      _log.v("Address $address validation result $holder");
+      _log.fine("Address $address validation result $holder");
     });
   }
 }

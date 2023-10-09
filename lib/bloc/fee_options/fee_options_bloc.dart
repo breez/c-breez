@@ -6,10 +6,10 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/fee_options/fee_options_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-final _log = FimberLog("FeeOptionsBloc");
+final _log = Logger("FeeOptionsBloc");
 
 class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   final BreezSDK _breezLib;
@@ -19,14 +19,14 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   /// Lookup the most recent reverse swap pair info using the Boltz API
   Future<ReverseSwapPairInfo> fetchReverseSwapFees({int? sendAmountSat}) async {
     try {
-      _log.v("Estimate reverse swap fees for: $sendAmountSat");
+      _log.fine("Estimate reverse swap fees for: $sendAmountSat");
       final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat);
       ReverseSwapPairInfo reverseSwapPairInfo = await _breezLib.fetchReverseSwapFees(req: req);
-      _log.v("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
+      _log.fine("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
       emit(state.copyWith(reverseSwapPairInfo: reverseSwapPairInfo, error: ""));
       return reverseSwapPairInfo;
     } catch (e) {
-      _log.e("fetchReverseSwapFees error", ex: e);
+      _log.severe("fetchReverseSwapFees error", e);
       emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
@@ -37,14 +37,14 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezLib.recommendedFees();
-      _log.v(
+      _log.fine(
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
       final utxos = await _retrieveUTXOS();
       return _constructFeeOptionList(utxos, recommendedFees);
     } catch (e) {
-      _log.e("fetchFeeOptions error", ex: e);
+      _log.severe("fetchFeeOptions error", e);
       emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
@@ -53,11 +53,11 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   Future<int> _retrieveUTXOS() async {
     final nodeState = await _breezLib.nodeInfo();
     if (nodeState == null) {
-      _log.e("_retrieveUTXOS Failed to get node state");
+      _log.severe("_retrieveUTXOS Failed to get node state");
       throw Exception(getSystemAppLocalizations().node_state_error);
     }
     final utxos = nodeState.utxos.length;
-    _log.v("_retrieveUTXOS utxos: $utxos");
+    _log.fine("_retrieveUTXOS utxos: $utxos");
     return utxos;
   }
 

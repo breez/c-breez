@@ -6,11 +6,11 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';
 import 'package:c_breez/utils/fiat_conversion.dart';
-import 'package:fimber/fimber.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-final _log = FimberLog("LNURLPaymentDialog");
+final _log = Logger("LNURLPaymentDialog");
 
 class LNURLPaymentDialog extends StatefulWidget {
   final sdk.LnUrlPayRequestData requestData;
@@ -147,7 +147,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           ),
           onPressed: () {
             final amount = widget.requestData.maxSendable ~/ 1000;
-            _log.v("LNURL payment of $amount sats where "
+            _log.fine("LNURL payment of $amount sats where "
                 "min is ${widget.requestData.minSendable} msats "
                 "and max is ${widget.requestData.maxSendable} msats.");
             Navigator.pop(context, LNURLPaymentInfo(amount: amount));

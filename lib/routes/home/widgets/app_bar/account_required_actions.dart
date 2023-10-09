@@ -15,6 +15,9 @@ import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/backup_in_progress_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger("AccountRequiredActionsIndicator");
 
 class AccountRequiredActionsIndicator extends StatelessWidget {
   const AccountRequiredActionsIndicator({
@@ -26,6 +29,7 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
     final themeData = Theme.of(context);
     return BlocBuilder3<AccountBloc, AccountState, LSPBloc, LspState?, BackupBloc, BackupState?>(
       builder: (context, accState, lspState, backupState) {
+        _log.fine("Building with: accState: $accState lspState: $lspState backupState: $backupState");
         final navigatorState = Navigator.of(context);
         final refundBloc = context.read<RefundBloc>();
         final refundState = refundBloc.state;

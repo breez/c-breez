@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 
@@ -126,7 +128,7 @@ class AccountState {
     };
   }
 
-// TODO: Generate payments fromJson
+  // TODO: Generate payments fromJson
   factory AccountState.fromJson(Map<String, dynamic> json) {
     return AccountState(
       id: json["id"],
@@ -151,4 +153,7 @@ class AccountState {
           : VerificationStatus.UNVERIFIED,
     );
   }
+
+  @override
+  String toString() => jsonEncode(toJson());
 }

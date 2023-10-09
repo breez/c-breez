@@ -70,12 +70,13 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future connect({
     String? mnemonic,
+    bool restored = false,
   }) async {
     if (mnemonic != null) {
       await _credentialsManager.storeMnemonic(mnemonic: mnemonic);
       emit(state.copyWith(
         initial: false,
-        verificationStatus: VerificationStatus.VERIFIED,
+        verificationStatus: restored ? VerificationStatus.VERIFIED : null,
       ));
     }
     await _startSdkForever();

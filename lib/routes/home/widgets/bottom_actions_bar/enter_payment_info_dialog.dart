@@ -1,6 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -160,7 +161,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
               if (_formKey.currentState!.validate()) {
                 _setLoading(false);
                 navigator.pop();
-                inputBloc.addIncomingInput(_paymentInfoController.text);
+                inputBloc.addIncomingInput(_paymentInfoController.text, InputSource.input_field);
               }
             } catch (error) {
               _setLoading(false);

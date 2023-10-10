@@ -1,5 +1,6 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
+import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -59,7 +60,7 @@ class QrActionButton extends StatelessWidget {
           );
           return;
         }
-        inputBloc.addIncomingInput(barcode);
+        inputBloc.addIncomingInput(barcode, InputSource.qrcode_reader);
       },
     );
   }

@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/input/input_data.dart';
+import 'package:c_breez/bloc/input/input_printer.dart';
+import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/device.dart';
@@ -15,14 +18,16 @@ class InputBloc extends Cubit<InputState> {
   final BreezSDK _breezLib;
   final LightningLinksService _lightningLinks;
   final Device _device;
+  final InputPrinter _printer;
 
-  final _decodeInvoiceController = StreamController<String>();
+  final _decodeInvoiceController = StreamController<InputData>();
 
   InputBloc(
     this._breezLib,
     this._lightningLinks,
     this._device,
-  ) : super(InputState()) {
+    this._printer,
+  ) : super(const InputState.empty()) {
     _initializeInputBloc();
   }
 
@@ -32,9 +37,9 @@ class InputBloc extends Cubit<InputState> {
     _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
-  void addIncomingInput(String bolt11) {
-    _log.fine("addIncomingInput: $bolt11");
-    _decodeInvoiceController.add(bolt11);
+  void addIncomingInput(String bolt11, InputSource source) {
+    _log.fine("addIncomingInput: $bolt11 source: $source");
+    _decodeInvoiceController.add(InputData(data: bolt11, source: source));
   }
 
   Future trackPayment(String paymentHash) async {
@@ -48,104 +53,69 @@ class InputBloc extends Cubit<InputState> {
   Stream<InputState?> _watchIncomingInvoices() {
     return Rx.merge([
       _decodeInvoiceController.stream.doOnData((event) => _log.fine("decodeInvoiceController: $event")),
-      _lightningLinks.linksNotifications.doOnData((event) => _log.fine("lightningLinks: $event")),
-      _device.clipboardStream.distinct().skip(1).doOnData((event) => _log.fine("clipboardStream: $event")),
+      _lightningLinks.linksNotifications
+          .map((data) => InputData(data: data, source: InputSource.hyperlink))
+          .doOnData((event) => _log.fine("lightningLinks: $event")),
+      _device.clipboardStream
+          .distinct()
+          .skip(1)
+          .map((data) => InputData(data: data, source: InputSource.clipboard))
+          .doOnData((event) => _log.fine("clipboardStream: $event")),
     ]).asyncMap((input) async {
       _log.fine("Incoming input: '$input'");
       // Emit an empty InputState with isLoading to display a loader on UI layer
-      emit(InputState(isLoading: true));
+      emit(const InputState.loading());
       try {
-        final parsedInput = await parseInput(input: input);
-        // Todo: Merge these functions w/o sacrificing readability
-        _logParsedInput(parsedInput);
-        return await _handleParsedInput(parsedInput);
+        final parsedInput = await parseInput(input: input.data);
+        return await _handleParsedInput(parsedInput, input.source);
       } catch (e) {
         _log.severe("Failed to parse input", e);
-        return InputState(isLoading: false);
+        return const InputState.empty();
       }
     });
   }
 
-  Future<InputState> handlePaymentRequest({required InputType_Bolt11 inputData}) async {
+  Future<InputState> handlePaymentRequest(InputType_Bolt11 inputData, InputSource source) async {
     final LNInvoice lnInvoice = inputData.invoice;
 
     NodeState? nodeState = await _breezLib.nodeInfo();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
-      return InputState(isLoading: false);
+      return const InputState.empty();
     }
-    var invoice = Invoice(
+    final invoice = Invoice(
       bolt11: lnInvoice.bolt11,
       paymentHash: lnInvoice.paymentHash,
       description: lnInvoice.description ?? "",
       amountMsat: lnInvoice.amountMsat ?? 0,
       expiry: lnInvoice.expiry,
     );
-
-    return InputState(inputData: invoice);
+    return InputState.invoice(invoice, source);
   }
 
-  Future<InputState> _handleParsedInput(InputType parsedInput) async {
+  Future<InputState> _handleParsedInput(InputType parsedInput, InputSource source) async {
+    _log.fine("handleParsedInput: $source => ${_printer.inputTypeToString(parsedInput)}");
+    InputState result;
     if (parsedInput is InputType_Bolt11) {
-      return await handlePaymentRequest(inputData: parsedInput);
-    } else if (parsedInput is InputType_LnUrlPay ||
-        parsedInput is InputType_LnUrlWithdraw ||
-        parsedInput is InputType_LnUrlAuth ||
-        parsedInput is InputType_LnUrlError ||
-        parsedInput is InputType_NodeId) {
-      return InputState(inputData: parsedInput);
-    } else {
-      return InputState(isLoading: false);
-    }
-  }
-
-  void _logParsedInput(InputType parsedInput) {
-    // Todo: Find a better way to serialize parsed input
-    _log.fine("Parsed input type: '${parsedInput.runtimeType.toString()}");
-    if (parsedInput is InputType_Bolt11) {
-      final lnInvoice = parsedInput.invoice;
-      _log.info(
-        "bolt11: ${lnInvoice.bolt11}\n"
-        "payeePubkey: ${lnInvoice.payeePubkey}\n"
-        "paymentHash: ${lnInvoice.paymentHash}\n"
-        "description: ${lnInvoice.description}\n"
-        "descriptionHash: ${lnInvoice.descriptionHash}\n"
-        "amountMsat: ${lnInvoice.amountMsat}\n"
-        "timestamp: ${lnInvoice.timestamp}\n"
-        "expiry: ${lnInvoice.expiry}\n"
-        "routingHints: ${lnInvoice.routingHints}\n"
-        "paymentSecret: ${lnInvoice.paymentSecret}",
-      );
+      result = await handlePaymentRequest(parsedInput, source);
     } else if (parsedInput is InputType_LnUrlPay) {
-      final lnUrlPayReqData = parsedInput.data;
-      _log.info(
-        "${lnUrlPayReqData.toString()}\n"
-        "callback: ${lnUrlPayReqData.callback}\n"
-        "minSendable: ${lnUrlPayReqData.minSendable}\n"
-        "maxSendable: ${lnUrlPayReqData.maxSendable}\n"
-        "metadataStr: ${lnUrlPayReqData.metadataStr}\n"
-        "commentAllowed: ${lnUrlPayReqData.commentAllowed}\n"
-        "domain: ${lnUrlPayReqData.domain}",
-      );
+      result = InputState.lnUrlPay(parsedInput.data, source);
     } else if (parsedInput is InputType_LnUrlWithdraw) {
-      final lnUrlWithdrawReqData = parsedInput.data;
-      _log.info(
-        "callback: ${lnUrlWithdrawReqData.callback}\n"
-        "k1: ${lnUrlWithdrawReqData.k1}\n"
-        "defaultDescription: ${lnUrlWithdrawReqData.defaultDescription}\n"
-        "minWithdrawable: ${lnUrlWithdrawReqData.minWithdrawable}\n"
-        "maxWithdrawable: ${lnUrlWithdrawReqData.maxWithdrawable}",
-      );
+      result = InputState.lnUrlWithdraw(parsedInput.data, source);
     } else if (parsedInput is InputType_LnUrlAuth) {
-      final lnUrlAuthReqData = parsedInput.data;
-      _log.info("k1: ${lnUrlAuthReqData.k1}");
+      result = InputState.lnUrlAuth(parsedInput.data, source);
     } else if (parsedInput is InputType_LnUrlError) {
-      final lnUrlErrorData = parsedInput.data;
-      _log.info("reason: ${lnUrlErrorData.reason}");
+      result = InputState.lnUrlError(parsedInput.data, source);
     } else if (parsedInput is InputType_NodeId) {
-      _log.info("nodeId: ${parsedInput.nodeId}");
+      result = InputState.nodeId(parsedInput.nodeId, source);
+    } else if (parsedInput is InputType_BitcoinAddress) {
+      result = InputState.bitcoinAddress(parsedInput.address, source);
     } else if (parsedInput is InputType_Url) {
-      _log.info("url: ${parsedInput.url}");
+      result = InputState.url(parsedInput.url, source);
+    } else {
+      result = const InputState.empty();
     }
+    _log.fine("handleParsedInput: result: $result");
+    return result;
   }
 
   Future<InputType> parseInput({required String input}) async => await _breezLib.parseInput(input: input);

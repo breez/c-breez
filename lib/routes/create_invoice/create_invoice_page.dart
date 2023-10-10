@@ -21,10 +21,10 @@ import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("CreateInvoicePage");
 

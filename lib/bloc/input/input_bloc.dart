@@ -56,7 +56,9 @@ class InputBloc extends Cubit<InputState> {
       _lightningLinks.linksNotifications
           .map((data) => InputData(data: data, source: InputSource.hyperlink))
           .doOnData((event) => _log.fine("lightningLinks: $event")),
-      _device.clipboardStream.distinct().skip(1)
+      _device.clipboardStream
+          .distinct()
+          .skip(1)
           .map((data) => InputData(data: data, source: InputSource.clipboard))
           .doOnData((event) => _log.fine("clipboardStream: $event")),
     ]).asyncMap((input) async {
@@ -107,7 +109,7 @@ class InputBloc extends Cubit<InputState> {
       result = InputState.nodeId(parsedInput.nodeId, source);
     } else if (parsedInput is InputType_BitcoinAddress) {
       result = InputState.bitcoinAddress(parsedInput.address, source);
-    } else if(parsedInput is InputType_Url) {
+    } else if (parsedInput is InputType_Url) {
       result = InputState.url(parsedInput.url, source);
     } else {
       result = const InputState.empty();

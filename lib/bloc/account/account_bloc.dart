@@ -11,9 +11,9 @@ import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result.dart';
 import 'package:c_breez/config.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 
@@ -56,7 +56,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _listenPaymentResultEvents();
   }
 
-  // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state accordingly
+  // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state
+  // accordingly
   _watchAccountChanges() {
     return Rx.combineLatest3<List<sdk.Payment>, PaymentFilters, sdk.NodeState?, AccountState>(
       _breezLib.paymentsStream,

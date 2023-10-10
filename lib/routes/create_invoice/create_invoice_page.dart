@@ -78,6 +78,10 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   Widget build(BuildContext context) {
     final texts = context.texts();
 
+    final lspState = context.watch<LSPBloc>().state;
+    final cheapestFeeParams = lspState?.lspInfo?.openingFeeParamsList.values.first;
+    final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -123,7 +127,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     builder: (context, accountState, currencyState, lspState) {
                       return ReceivableBTCBox(
                         onTap: () {
-                          final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
                           if (!isChannelOpeningAvailable && accountState.maxInboundLiquidity > 0) {
                             _amountController.text = currencyState.bitcoinCurrency.format(
                               accountState.maxInboundLiquidity,
@@ -158,7 +161,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
             if (data != null) {
               _withdraw(context, data);
             } else {
-              _createInvoice(context);
+              _createInvoice(context, cheapestFeeParams);
             }
           }
         },
@@ -191,15 +194,12 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     );
   }
 
-  Future _createInvoice(BuildContext context) async {
+  Future _createInvoice(BuildContext context, OpeningFeeParams? cheapestFeeParams) async {
     _log.fine("Create invoice: description=${_descriptionController.text}, amount=${_amountController.text}");
     final navigator = Navigator.of(context);
     final currentRoute = ModalRoute.of(navigator.context)!;
     final accountBloc = context.read<AccountBloc>();
     final currencyBloc = context.read<CurrencyBloc>();
-
-    final lspInfo = context.read<LSPBloc>().state?.lspInfo;
-    final cheapestFeeParams = lspInfo?.openingFeeParamsList.values.first;
 
     Future<ReceivePaymentResponse> receivePaymentResponse = accountBloc.addInvoice(
       description: _descriptionController.text,

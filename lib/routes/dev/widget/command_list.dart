@@ -43,6 +43,10 @@ class CommandList extends StatelessWidget {
               title: const Text("General"),
               children: [
                 Command(
+                  "getInfo",
+                  (c) => _onCommand(context, c),
+                ),
+                Command(
                   "listPeers",
                   (c) => _onCommand(context, c),
                 ),

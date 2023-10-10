@@ -7,9 +7,9 @@ import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 class InitialWalkthroughPage extends StatefulWidget {
@@ -162,7 +162,10 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
 
     final themeProvider = ThemeProvider.controllerOf(context);
     try {
-      await accountBloc.connect(mnemonic: mnemonic ?? bip39.generateMnemonic(strength: 128));
+      await accountBloc.connect(
+        mnemonic: mnemonic ?? bip39.generateMnemonic(strength: 128),
+        restored: isRestore,
+      );
     } catch (error) {
       _log.info("Failed to ${isRestore ? "restore" : "registe"} node", error);
       if (isRestore) {

@@ -10,4 +10,9 @@ class LspState {
   bool get isChannelOpeningAvailable {
     return (lspInfo != null) ? lspInfo!.openingFeeParamsList.values.isNotEmpty : false;
   }
+
+  @override
+  String toString() {
+    return 'LspState{lspInfo: $lspInfo, selectedLspId: $selectedLspId}';
+  }
 }

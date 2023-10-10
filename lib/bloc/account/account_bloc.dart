@@ -274,10 +274,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<sdk.ReceivePaymentResponse> addInvoice({
     String description = "",
     required int amountSats,
+    required sdk.OpeningFeeParams? chosenFeeParams,
   }) async {
     _log.fine("addInvoice: $description, $amountSats");
 
-    final requestData = sdk.ReceivePaymentRequest(amountSats: amountSats, description: description);
+    final requestData = sdk.ReceivePaymentRequest(amountSats: amountSats, description: description, openingFeeParams: chosenFeeParams);
     final responseData = await _breezLib.receivePayment(reqData: requestData);
     return responseData;
   }

@@ -46,7 +46,7 @@ class ReverseSwapButton extends StatelessWidget {
         satPerVbyte: satPerVbyte,
       );
 
-      navigator.popUntil((route) => route.settings.name == "/");
+      navigator.pushReplacementNamed("/");
     } catch (e) {
       final themeData = Theme.of(context);
       navigator.pop(loaderRoute);

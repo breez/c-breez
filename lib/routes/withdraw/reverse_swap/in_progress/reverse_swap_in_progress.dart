@@ -1,12 +1,13 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';
 import 'package:flutter/material.dart';
 
 class ReverseSwapInprogress extends StatelessWidget {
-  final ReverseSwapInfo reverseSwap;
+  final sdk.ReverseSwapInfo reverseSwap;
 
   const ReverseSwapInprogress({
     required this.reverseSwap,
@@ -24,33 +25,48 @@ class ReverseSwapInprogress extends StatelessWidget {
           content: Text(texts.swap_in_progress_message_waiting_confirmation, textAlign: TextAlign.center),
           top: 50.0,
         ),
-        _ContentWrapper(
-          content: _TxLink(txid: reverseSwap.claimPubkey),
-        ),
+        // TODO add _TxLink when claimtxid is avaliable.
       ],
     );
   }
 }
 
 class _TxLink extends StatelessWidget {
-  final String txid;
+  final String? txid;
 
-  const _TxLink({required this.txid});
+  _TxLink({required this.txid});
+
+  late Future<Config> _config;
+  initState() async {
+    _config = Config.instance();
+  }
 
   @override
   Widget build(BuildContext context) {
     final text = context.texts();
 
-    return LinkLauncher(
-      linkName: txid,
-      linkAddress: "https://blockstream.info/tx/$txid",
-      onCopy: () {
-        ServiceInjector().device.setClipboardText(txid);
-        showFlushbar(
-          context,
-          message: text.add_funds_transaction_id_copied,
-          duration: const Duration(seconds: 3),
-        );
+    return FutureBuilder(
+      future: _config,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && !snapshot.hasError) {
+          final blockExplorer = snapshot.data!.defaultMempoolUrl;
+
+          if (txid != null) {
+            return LinkLauncher(
+              linkName: txid,
+              linkAddress: "$blockExplorer/tx/$txid",
+              onCopy: () {
+                ServiceInjector().device.setClipboardText(txid!);
+                showFlushbar(
+                  context,
+                  message: text.add_funds_transaction_id_copied,
+                  duration: const Duration(seconds: 3),
+                );
+              },
+            );
+          }
+        }
+        return Container();
       },
     );
   }

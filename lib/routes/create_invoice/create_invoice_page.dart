@@ -202,10 +202,9 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     final currencyBloc = context.read<CurrencyBloc>();
 
     Future<ReceivePaymentResponse> receivePaymentResponse = accountBloc.addInvoice(
-      description: _descriptionController.text,
-      amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
-      chosenFeeParams: cheapestFeeParams
-    );
+        description: _descriptionController.text,
+        amountSats: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
+        chosenFeeParams: cheapestFeeParams);
     navigator.pop();
     Widget dialog = FutureBuilder(
       future: receivePaymentResponse,

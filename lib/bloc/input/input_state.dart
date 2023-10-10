@@ -57,6 +57,13 @@ class EmptyInputState extends InputState {
   String toString() {
     return 'EmptyInputState{}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is EmptyInputState && runtimeType == other.runtimeType;
+
+  @override
+  int get hashCode => 0;
 }
 
 class LoadingInputState extends InputState {
@@ -66,6 +73,13 @@ class LoadingInputState extends InputState {
   String toString() {
     return 'LoadingInputState{}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is LoadingInputState && runtimeType == other.runtimeType;
+
+  @override
+  int get hashCode => 0;
 }
 
 class InvoiceInputState extends InputState {
@@ -81,6 +95,17 @@ class InvoiceInputState extends InputState {
   String toString() {
     return 'InvoiceInputState{invoice: $invoice, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InvoiceInputState &&
+          runtimeType == other.runtimeType &&
+          invoice == other.invoice &&
+          source == other.source;
+
+  @override
+  int get hashCode => invoice.hashCode ^ source.hashCode;
 }
 
 class LnUrlPayInputState extends InputState {
@@ -96,6 +121,17 @@ class LnUrlPayInputState extends InputState {
   String toString() {
     return 'LnUrlPayInputState{data: $data, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LnUrlPayInputState &&
+          runtimeType == other.runtimeType &&
+          data == other.data &&
+          source == other.source;
+
+  @override
+  int get hashCode => data.hashCode ^ source.hashCode;
 }
 
 class LnUrlWithdrawInputState extends InputState {
@@ -111,6 +147,17 @@ class LnUrlWithdrawInputState extends InputState {
   String toString() {
     return 'LnUrlWithdrawInputState{data: $data, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LnUrlWithdrawInputState &&
+          runtimeType == other.runtimeType &&
+          data == other.data &&
+          source == other.source;
+
+  @override
+  int get hashCode => data.hashCode ^ source.hashCode;
 }
 
 class LnUrlAuthInputState extends InputState {
@@ -126,6 +173,17 @@ class LnUrlAuthInputState extends InputState {
   String toString() {
     return 'LnUrlAuthInputState{data: $data, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LnUrlAuthInputState &&
+          runtimeType == other.runtimeType &&
+          data == other.data &&
+          source == other.source;
+
+  @override
+  int get hashCode => data.hashCode ^ source.hashCode;
 }
 
 class LnUrlErrorInputState extends InputState {
@@ -141,6 +199,17 @@ class LnUrlErrorInputState extends InputState {
   String toString() {
     return 'LnUrlErrorInputState{data: $data, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LnUrlErrorInputState &&
+          runtimeType == other.runtimeType &&
+          data == other.data &&
+          source == other.source;
+
+  @override
+  int get hashCode => data.hashCode ^ source.hashCode;
 }
 
 class NodeIdInputState extends InputState {
@@ -156,6 +225,17 @@ class NodeIdInputState extends InputState {
   String toString() {
     return 'NodeIdInputState{nodeId: $nodeId, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NodeIdInputState &&
+          runtimeType == other.runtimeType &&
+          nodeId == other.nodeId &&
+          source == other.source;
+
+  @override
+  int get hashCode => nodeId.hashCode ^ source.hashCode;
 }
 
 class BitcoinAddressInputState extends InputState {
@@ -171,6 +251,17 @@ class BitcoinAddressInputState extends InputState {
   String toString() {
     return 'BitcoinAddressInputState{data: $data, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BitcoinAddressInputState &&
+          runtimeType == other.runtimeType &&
+          data == other.data &&
+          source == other.source;
+
+  @override
+  int get hashCode => data.hashCode ^ source.hashCode;
 }
 
 class UrlInputState extends InputState {
@@ -186,4 +277,15 @@ class UrlInputState extends InputState {
   String toString() {
     return 'UrlInputState{url: $url, source: $source}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UrlInputState &&
+          runtimeType == other.runtimeType &&
+          url == other.url &&
+          source == other.source;
+
+  @override
+  int get hashCode => url.hashCode ^ source.hashCode;
 }

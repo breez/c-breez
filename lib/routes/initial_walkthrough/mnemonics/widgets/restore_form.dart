@@ -67,6 +67,7 @@ class RestoreFormPageState extends State<RestoreForm> {
               validator: (text) => _onValidate(context, text!),
               suggestionsCallback: _getSuggestions,
               hideOnEmpty: true,
+              hideOnLoading: true,
               autoFlipDirection: true,
               suggestionsBoxDecoration: const SuggestionsBoxDecoration(
                 color: Colors.white,
@@ -122,8 +123,7 @@ class RestoreFormPageState extends State<RestoreForm> {
   FutureOr<List<String>> _getSuggestions(pattern) {
     if (pattern.toString().isEmpty) {
       return List.empty();
-    }
-    else {
+    } else {
       var suggestionList = WORDLIST.where((item) => item.startsWith(pattern)).toList();
       return suggestionList.isNotEmpty ? suggestionList : List.empty();
     }

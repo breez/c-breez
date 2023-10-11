@@ -52,14 +52,16 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
               );
         }
       },
-      child: Text(
-        widget.currencyState.fiatConversion()?.format(widget.accountState.balance) ?? "",
-        style: theme.balanceFiatConversionTextStyle.copyWith(
-          color: themeData.colorScheme.onSecondary.withOpacity(
-            pow(1.00 - widget.offsetFactor, 2).toDouble(),
-          ),
-        ),
-      ),
+      child: widget.accountState.balance > 0
+          ? Text(
+              widget.currencyState.fiatConversion()?.format(widget.accountState.balance) ?? "",
+              style: theme.balanceFiatConversionTextStyle.copyWith(
+                color: themeData.colorScheme.onSecondary.withOpacity(
+                  pow(1.00 - widget.offsetFactor, 2).toDouble(),
+                ),
+              ),
+            )
+          : Container(),
     );
   }
 

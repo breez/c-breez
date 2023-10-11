@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:flutter/foundation.dart';
+import 'package:git_info/git_info.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -60,6 +61,12 @@ class BreezLogger {
       final exception = details.exceptionAsString();
       _log.severe("$exception -- $name", details, details.stack);
     };
+
+    GitInfo.get().then((it) {
+      _log.info("Logging initialized, app build on ${it.branch} at commit ${it.hash}");
+    }, onError: (error) {
+      _log.severe("Failed to get git info", error);
+    });
   }
 
   /// Log entries according to their severity

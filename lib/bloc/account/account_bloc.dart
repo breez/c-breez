@@ -301,7 +301,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<sdk.StaticBackupResponse> exportStaticChannelBackup() async {
-    _log.v("exportStaticChannelBackup");
+    _log.fine("exportStaticChannelBackup");
     return _credentialsManager.exportStaticChannelBackup();
   }
 

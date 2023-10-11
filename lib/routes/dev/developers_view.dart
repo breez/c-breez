@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/logger.dart';
@@ -116,6 +117,7 @@ class DevelopersView extends StatelessWidget {
   }
 
   void _exportStaticBackup(BuildContext context) async {
+    final texts = getSystemAppLocalizations();
     final accBloc = context.read<AccountBloc>();
     const name = "scb.recover";
     final staticBackup = await accBloc.exportStaticChannelBackup();
@@ -134,7 +136,7 @@ class DevelopersView extends StatelessWidget {
       Share.shareXFiles([storageFile]);
     } else {
       // ignore: use_build_context_synchronously
-      showFlushbar(context, title: "Static backup data is missing");
+      showFlushbar(context, title: texts.backup_export_static_error_data_missing);
     }
   }
 }

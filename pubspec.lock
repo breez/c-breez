@@ -100,8 +100,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0304720f24266d8c1e887c86d8e41e80bf217d92"
-      resolved-ref: "0304720f24266d8c1e887c86d8e41e80bf217d92"
+      ref: "782e52c6f272a4901ff85ecb76981085b355acd1"
+      resolved-ref: "782e52c6f272a4901ff85ecb76981085b355acd1"
       url: "https://github.com/breez/Breez-Translations"
     source: git
     version: "1.0.0"
@@ -401,14 +401,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+1"
-  fimber:
-    dependency: transitive
-    description:
-      name: fimber
-      sha256: "42fcfa33acd43556c1e7ebfc12c2b03893418bc04a07931368c3573e228af2f0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.0"
   firebase_core:
     dependency: "direct main"
     description:

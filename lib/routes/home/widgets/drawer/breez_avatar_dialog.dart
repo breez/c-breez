@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
@@ -15,6 +14,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as dart_image;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logging/logging.dart';
+
+final _log = Logger("BreezAvatarDialog");
 
 class BreezAvatarDialog extends StatefulWidget {
   @override
@@ -130,6 +132,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
   }
 
   Future<void> saveAvatarChanges() async {
+    _log.fine("saveAvatarChanges");
     final navigator = Navigator.of(context);
     final texts = context.texts();
     try {
@@ -158,6 +161,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
   }
 
   void generateRandomProfile() {
+    _log.fine("generateRandomProfile");
     final DefaultProfile randomUser = generateDefaultProfile();
     setState(() {
       nameInputController.text = "${randomUser.color} ${randomUser.animal}";
@@ -169,21 +173,34 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
   }
 
   pickImageFromGallery() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    final File file = File(pickedFile!.path);
-    CroppedFile? croppedFile = await ImageCropper().cropImage(
-      sourcePath: file.path,
-      cropStyle: CropStyle.circle,
-      aspectRatioPresets: [CropAspectRatioPreset.square],
-    );
-    setState(() {
-      pickedImage = croppedFile;
-      randomAvatarPath = null;
+    _log.fine("pickImageFromGallery");
+    ImagePicker().pickImage(source: ImageSource.gallery).then((pickedFile) {
+      final pickedFilePath = pickedFile?.path;
+      _log.fine("pickedFile $pickedFilePath");
+      if (pickedFilePath != null) {
+        ImageCropper().cropImage(
+          sourcePath: pickedFilePath,
+          cropStyle: CropStyle.circle,
+          aspectRatioPresets: [CropAspectRatioPreset.square],
+        ).then((croppedFile) {
+          _log.info("croppedFile ${croppedFile?.path}");
+          if (croppedFile != null) {
+            setState(() {
+              pickedImage = croppedFile;
+              randomAvatarPath = null;
+            });
+          }
+        }, onError: (error) {
+          _log.severe("Failed to crop image", error);
+        });
+      }
+    }, onError: (error) {
+      _log.severe("Failed to pick image", error);
     });
   }
 
   Future<void> uploadAvatar() async {
+    _log.fine("uploadAvatar ${pickedImage?.path} $randomAvatarPath");
     if (pickedImage != null) {
       String imageUrl = await userBloc.uploadImage(await scaleAndFormatPNG());
       userBloc.updateProfile(image: imageUrl);
@@ -193,6 +210,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
   }
 
   Future<List<int>> scaleAndFormatPNG() async {
+    _log.fine("scaleAndFormatPNG");
     const int scaledSize = 200;
     try {
       final image = dart_image.decodeImage(await pickedImage!.readAsBytes());

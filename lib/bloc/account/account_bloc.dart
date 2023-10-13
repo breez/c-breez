@@ -300,6 +300,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     return _credentialsManager.exportCredentials();
   }
 
+  Future<sdk.StaticBackupResponse> exportStaticChannelBackup() async {
+    _log.fine("exportStaticChannelBackup");
+    return _credentialsManager.exportStaticChannelBackup();
+  }
+
   void recursiveFolderCopySync(String path1, String path2) {
     _log.fine("recursiveFolderCopySync: $path1, $path2");
     Directory dir1 = Directory(path1);

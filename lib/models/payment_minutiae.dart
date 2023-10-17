@@ -30,6 +30,8 @@ class PaymentMinutiae {
   final bool hasMetadata;
   final bool isKeySend;
   final PaymentStatus status;
+  final String? fundingTxid;
+  final String? closingTxid;
 
   const PaymentMinutiae({
     required this.id,
@@ -50,6 +52,8 @@ class PaymentMinutiae {
     required this.hasMetadata,
     required this.isKeySend,
     required this.status,
+    required this.fundingTxid,
+    required this.closingTxid,
   });
 
   factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts) {
@@ -73,6 +77,8 @@ class PaymentMinutiae {
       hasMetadata: factory._hasMetadata(),
       isKeySend: factory._isKeySend(),
       status: payment.status,
+      fundingTxid: factory._fundingTx(),
+      closingTxid: factory._closedTx(),
     );
   }
 }
@@ -285,5 +291,21 @@ class _PaymentMinutiaeFactory {
   bool _isKeySend() {
     final details = _payment.details.data;
     return (details is LnPaymentDetails) ? details.keysend : false;
+  }
+
+  String? _fundingTx() {
+    final details = _payment.details.data;
+    if (details is ClosedChannelPaymentDetails) {
+      return details.fundingTxid;
+    }
+    return null;
+  }
+
+  String? _closedTx() {
+    final details = _payment.details.data;
+    if (details is ClosedChannelPaymentDetails) {
+      return details.closingTxid;
+    }
+    return null;
   }
 }

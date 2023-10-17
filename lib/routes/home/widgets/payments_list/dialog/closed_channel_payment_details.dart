@@ -43,7 +43,8 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
               ],
             );
           }
-
+          // TODO pendingExpirationHeight
+          // TODO hoursToExpire
           String estimation = texts.payment_details_dialog_closed_channel_transfer_no_estimation;
 
           return Column(

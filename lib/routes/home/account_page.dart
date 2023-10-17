@@ -40,7 +40,7 @@ class AccountPage extends StatelessWidget {
       builder: (context, accountState) {
         return BlocBuilder<UserProfileBloc, UserProfileState>(
           builder: (context, userModel) {
-            _log.fine("AccountPage build with ${accountState.payments.length} payments");
+            _log.info("AccountPage build with ${accountState.payments.length} payments");
             return Container(
               color: Theme.of(context).customData.dashboardBgColor,
               child: _build(

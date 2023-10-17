@@ -20,7 +20,7 @@ class SweepBloc extends Cubit<SweepState> {
     required int feeRateSatsPerVbyte,
   }) async {
     try {
-      _log.fine("Sweep to address $toAddress using $feeRateSatsPerVbyte fee vByte");
+      _log.info("Sweep to address $toAddress using $feeRateSatsPerVbyte fee vByte");
       final request = SweepRequest(toAddress: toAddress, feeRateSatsPerVbyte: feeRateSatsPerVbyte);
       final sweepRes = await _breezLib.sweep(request: request);
       emit(SweepState(sweepTxId: sweepRes.txid));

@@ -33,9 +33,9 @@ Future<LNURLPageResult?> handleWithdrawRequest(
 }
 
 void handleLNURLWithdrawPageResult(BuildContext context, LNURLPageResult result) {
-  _log.fine("handle $result");
+  _log.info("handle $result");
   if (result.hasError) {
-    _log.fine("Handle LNURL withdraw page result with error '${result.error}'");
+    _log.info("Handle LNURL withdraw page result with error '${result.error}'");
     final texts = context.texts();
     final themeData = Theme.of(context);
     promptError(
@@ -48,7 +48,7 @@ void handleLNURLWithdrawPageResult(BuildContext context, LNURLPageResult result)
     );
     throw result.error!;
   } else {
-    _log.fine("Handle LNURL withdraw page result with success");
+    _log.info("Handle LNURL withdraw page result with success");
     Navigator.of(context).push(
       TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
     );

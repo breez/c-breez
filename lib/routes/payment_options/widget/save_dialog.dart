@@ -39,7 +39,7 @@ class SaveDialog extends StatelessWidget {
             style: themeData.primaryTextTheme.labelLarge,
           ),
           onPressed: () {
-            _log.fine("onPressed: save");
+            _log.info("onPressed: save");
             context.read<PaymentOptionsBloc>().saveFees();
             Navigator.pop(context);
             FocusManager.instance.primaryFocus?.unfocus();

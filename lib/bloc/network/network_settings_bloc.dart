@@ -17,15 +17,15 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
     http.Client? httpClient,
   })  : _httpClient = httpClient ?? http.Client(),
         super(NetworkSettingsState.initial()) {
-    _fetchMempoolSettings().then((_) => _log.fine("Initial mempool settings read"));
+    _fetchMempoolSettings().then((_) => _log.info("Initial mempool settings read"));
   }
 
   Future<bool> setMempoolUrl(String mempoolUrl) async {
-    _log.fine("Changing mempool url to: $mempoolUrl");
+    _log.info("Changing mempool url to: $mempoolUrl");
     Uri? uri;
     try {
       if (mempoolUrl.startsWith(RegExp(r'\d'))) {
-        _log.fine("Mempool url starts with a digit, adding https://");
+        _log.info("Mempool url starts with a digit, adding https://");
         uri = Uri.parse("https://$mempoolUrl");
       } else {
         uri = Uri.parse(mempoolUrl);
@@ -35,7 +35,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
       return false;
     }
     if (!uri.hasScheme) {
-      _log.fine("Mempool url scheme is missing, adding https://");
+      _log.info("Mempool url scheme is missing, adding https://");
       try {
         uri = Uri.parse("https://$mempoolUrl");
       } catch (e) {
@@ -58,7 +58,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   }
 
   Future<void> resetMempoolSpaceSettings() async {
-    _log.fine("Resetting mempool url to default");
+    _log.info("Resetting mempool url to default");
     await _preferences.resetMempoolSpaceUrl();
     await _fetchMempoolSettings();
   }
@@ -74,10 +74,10 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   }
 
   Future<void> _fetchMempoolSettings() async {
-    _log.fine("Fetching mempool settings");
+    _log.info("Fetching mempool settings");
     final mempoolUrl = await _preferences.getMempoolSpaceUrl();
     final mempoolDefaultUrl = _config.defaultMempoolUrl;
-    _log.fine("Mempool url fetched: $mempoolUrl, default: $mempoolDefaultUrl");
+    _log.info("Mempool url fetched: $mempoolUrl, default: $mempoolDefaultUrl");
     emit(state.copyWith(
       mempoolUrl: mempoolUrl ?? mempoolDefaultUrl,
     ));

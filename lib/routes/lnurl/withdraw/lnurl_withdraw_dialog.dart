@@ -52,7 +52,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
         _future = _withdraw(context).then((result) {
           if (result.error == null && mounted) {
             controller.addStatusListener((status) {
-              _log.fine("Animation status $status");
+              _log.info("Animation status $status");
               if (status == AnimationStatus.dismissed && mounted) {
                 finishCalled = true;
                 widget.onFinish(result);
@@ -92,7 +92,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
           builder: (context, snapshot) {
             final data = snapshot.data;
             final error = snapshot.error ?? data?.error;
-            _log.fine("Building with data $data, error $error");
+            _log.info("Building with data $data, error $error");
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -134,13 +134,13 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
   }
 
   Future<LNURLPageResult> _withdraw(BuildContext context) async {
-    _log.fine("Withdraw ${widget.amountSats} sats");
+    _log.info("Withdraw ${widget.amountSats} sats");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final description = widget.requestData.defaultDescription;
 
     try {
-      _log.fine("LNURL withdraw of ${widget.amountSats} sats where "
+      _log.info("LNURL withdraw of ${widget.amountSats} sats where "
           "min is ${widget.requestData.minWithdrawable} msats "
           "and max is ${widget.requestData.maxWithdrawable} msats.");
       final resp = await accountBloc.lnurlWithdraw(
@@ -150,11 +150,11 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       );
       if (resp is sdk.LnUrlWithdrawResult_Ok) {
         final paymentHash = resp.data.invoice.paymentHash;
-        _log.fine("LNURL withdraw success for $paymentHash");
+        _log.info("LNURL withdraw success for $paymentHash");
         return const LNURLPageResult(protocol: LnUrlProtocol.Withdraw);
       } else if (resp is sdk.LnUrlWithdrawResult_ErrorStatus) {
         final reason = resp.data.reason;
-        _log.fine("LNURL withdraw failed: $reason");
+        _log.info("LNURL withdraw failed: $reason");
         return LNURLPageResult(
           protocol: LnUrlProtocol.Withdraw,
           error: reason,
@@ -177,7 +177,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       return;
     }
     finishCalled = true;
-    _log.fine("Finishing with result $result");
+    _log.info("Finishing with result $result");
     widget.onFinish(result);
   }
 }

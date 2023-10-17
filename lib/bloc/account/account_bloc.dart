@@ -84,7 +84,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future _startSdkForever() async {
-    _log.fine("starting sdk forever");
+    _log.info("starting sdk forever");
     await _startSdkOnce();
 
     // in case we failed to start (lack of inet connection probably)
@@ -106,7 +106,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future _startSdkOnce() async {
-    _log.fine("starting sdk once");
+    _log.info("starting sdk once");
     try {
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
       final mnemonic = await _credentialsManager.restoreMnemonic();
@@ -120,7 +120,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // Once connected sync sdk periodically on foreground events.
   void _onConnected() {
-    _log.fine("on connected");
+    _log.info("on connected");
     var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
     FGBGEvents.stream.listen((event) async {
       if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
@@ -135,7 +135,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required sdk.LnUrlWithdrawRequestData reqData,
     String? description,
   }) async {
-    _log.fine("lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
+    _log.info("lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
     try {
       return await _breezLib.lnurlWithdraw(
         amountSats: amountSats,
@@ -153,7 +153,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required sdk.LnUrlPayRequestData reqData,
     String? comment,
   }) async {
-    _log.fine("lnurlPay amount: $amount, comment: '$comment', reqData: $reqData");
+    _log.info("lnurlPay amount: $amount, comment: '$comment', reqData: $reqData");
     try {
       return await _breezLib.lnurlPay(
         userAmountSat: amount,
@@ -169,7 +169,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<sdk.LnUrlCallbackStatus> lnurlAuth({
     required sdk.LnUrlAuthRequestData reqData,
   }) async {
-    _log.fine("lnurlAuth amount: reqData: $reqData");
+    _log.info("lnurlAuth amount: reqData: $reqData");
     try {
       return await _breezLib.lnurlAuth(reqData: reqData);
     } catch (e) {
@@ -179,7 +179,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future sendPayment(String bolt11, int? amountMsat) async {
-    _log.fine("sendPayment: $bolt11, $amountMsat");
+    _log.info("sendPayment: $bolt11, $amountMsat");
     try {
       await _breezLib.sendPayment(bolt11: bolt11, amountMsat: amountMsat);
     } catch (e) {
@@ -189,7 +189,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future cancelPayment(String bolt11) async {
-    _log.fine("cancelPayment: $bolt11");
+    _log.info("cancelPayment: $bolt11");
     throw Exception("not implemented");
   }
 
@@ -198,7 +198,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     String description,
     int amountSats,
   ) async {
-    _log.fine("sendSpontaneousPayment: $nodeId, $description, $amountSats");
+    _log.info("sendSpontaneousPayment: $nodeId, $description, $amountSats");
     _log.info("description field is not being used by the SDK yet");
     try {
       await _breezLib.sendSpontaneousPayment(
@@ -212,7 +212,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<bool> isValidBitcoinAddress(String? address) async {
-    _log.fine("isValidBitcoinAddress: $address");
+    _log.info("isValidBitcoinAddress: $address");
     if (address == null) return false;
     return _breezLib.isValidBitcoinAddress(address);
   }
@@ -225,10 +225,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     bool channelCreationPossible, {
     int? channelMinimumFee,
   }) {
-    _log.fine("validatePayment: $amount, $outgoing, $channelMinimumFee");
+    _log.info("validatePayment: $amount, $outgoing, $channelMinimumFee");
     var accState = state;
     if (amount > accState.maxPaymentAmount) {
-      _log.fine("Amount $amount is bigger than maxPaymentAmount ${accState.maxPaymentAmount}");
+      _log.info("Amount $amount is bigger than maxPaymentAmount ${accState.maxPaymentAmount}");
       throw PaymentExceededLimitError(accState.maxPaymentAmount);
     }
 
@@ -248,9 +248,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
 
     if (outgoing && amount > accState.maxAllowedToPay) {
-      _log.fine("Outgoing but amount $amount is bigger than ${accState.maxAllowedToPay}");
+      _log.info("Outgoing but amount $amount is bigger than ${accState.maxAllowedToPay}");
       if (accState.reserveAmount > 0) {
-        _log.fine("Reserve amount ${accState.reserveAmount}");
+        _log.info("Reserve amount ${accState.reserveAmount}");
         throw PaymentBelowReserveError(accState.reserveAmount);
       }
       throw const InsufficientLocalBalanceError();
@@ -262,7 +262,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
-    _log.fine("changePaymentFilter: $filter, $fromTimestamp, $toTimestamp");
+    _log.info("changePaymentFilter: $filter, $fromTimestamp, $toTimestamp");
     _paymentFiltersStreamController.add(
       state.paymentFilters.copyWith(
         filter: filter,
@@ -277,7 +277,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     required int amountSats,
     required sdk.OpeningFeeParams? chosenFeeParams,
   }) async {
-    _log.fine("addInvoice: $description, $amountSats");
+    _log.info("addInvoice: $description, $amountSats");
 
     final requestData = sdk.ReceivePaymentRequest(
         amountSats: amountSats, description: description, openingFeeParams: chosenFeeParams);
@@ -296,7 +296,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<List<File>> exportCredentialFiles() async {
-    _log.fine("exportCredentialFiles");
+    _log.info("exportCredentialFiles");
     return _credentialsManager.exportCredentials();
   }
 
@@ -306,7 +306,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void recursiveFolderCopySync(String path1, String path2) {
-    _log.fine("recursiveFolderCopySync: $path1, $path2");
+    _log.info("recursiveFolderCopySync: $path1, $path2");
     Directory dir1 = Directory(path1);
     Directory dir2 = Directory(path2);
     if (!dir2.existsSync()) {
@@ -326,7 +326,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void _listenPaymentResultEvents() {
-    _log.fine("_listenPaymentResultEvents");
+    _log.info("_listenPaymentResultEvents");
     _breezLib.paymentResultStream.listen((paymentInfo) {
       _paymentResultStreamController.add(
         PaymentResult(paymentInfo: paymentInfo),
@@ -337,7 +337,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void mnemonicsValidated() {
-    _log.fine("mnemonicsValidated");
+    _log.info("mnemonicsValidated");
     emit(state.copyWith(verificationStatus: VerificationStatus.VERIFIED));
   }
 }

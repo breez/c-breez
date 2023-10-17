@@ -114,7 +114,7 @@ class SendOnchainFormState extends State<SendOnchainForm> {
                 );
               },
               validator: (address) {
-                _log.fine('validator called for $address, lock status: ${validatorHolder.lock.locked}');
+                _log.info('validator called for $address, lock status: ${validatorHolder.lock.locked}');
                 if (validatorHolder.valid) {
                   return null;
                 } else {

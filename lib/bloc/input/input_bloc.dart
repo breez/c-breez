@@ -32,19 +32,19 @@ class InputBloc extends Cubit<InputState> {
   }
 
   void _initializeInputBloc() async {
-    _log.config("initializeInputBloc");
+    _log.info("initializeInputBloc");
     await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
     _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
   void addIncomingInput(String bolt11, InputSource source) {
-    _log.fine("addIncomingInput: $bolt11 source: $source");
+    _log.info("addIncomingInput: $bolt11 source: $source");
     _decodeInvoiceController.add(InputData(data: bolt11, source: source));
   }
 
   Future trackPayment(String paymentHash) async {
     await _breezLib.invoicePaidStream.firstWhere((invoice) {
-      _log.fine("invoice paid: ${invoice.paymentHash} we are waiting for "
+      _log.info("invoice paid: ${invoice.paymentHash} we are waiting for "
           "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
       return invoice.paymentHash == paymentHash;
     });
@@ -52,17 +52,17 @@ class InputBloc extends Cubit<InputState> {
 
   Stream<InputState?> _watchIncomingInvoices() {
     return Rx.merge([
-      _decodeInvoiceController.stream.doOnData((event) => _log.fine("decodeInvoiceController: $event")),
+      _decodeInvoiceController.stream.doOnData((event) => _log.info("decodeInvoiceController: $event")),
       _lightningLinks.linksNotifications
           .map((data) => InputData(data: data, source: InputSource.hyperlink))
-          .doOnData((event) => _log.fine("lightningLinks: $event")),
+          .doOnData((event) => _log.info("lightningLinks: $event")),
       _device.clipboardStream
           .distinct()
           .skip(1)
           .map((data) => InputData(data: data, source: InputSource.clipboard))
-          .doOnData((event) => _log.fine("clipboardStream: $event")),
+          .doOnData((event) => _log.info("clipboardStream: $event")),
     ]).asyncMap((input) async {
-      _log.fine("Incoming input: '$input'");
+      _log.info("Incoming input: '$input'");
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(const InputState.loading());
       try {
@@ -93,7 +93,7 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future<InputState> _handleParsedInput(InputType parsedInput, InputSource source) async {
-    _log.fine("handleParsedInput: $source => ${_printer.inputTypeToString(parsedInput)}");
+    _log.info("handleParsedInput: $source => ${_printer.inputTypeToString(parsedInput)}");
     InputState result;
     if (parsedInput is InputType_Bolt11) {
       result = await handlePaymentRequest(parsedInput, source);

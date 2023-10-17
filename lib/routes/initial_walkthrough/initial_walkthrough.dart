@@ -139,7 +139,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   }
 
   void _letsBreez(BuildContext context) async {
-    _log.fine("Lets breez");
+    _log.info("Lets breez");
     bool approved = await showDialog(
       useRootNavigator: false,
       context: context,
@@ -153,7 +153,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
 
   void connect({String? mnemonic}) async {
     final isRestore = mnemonic != null;
-    _log.fine("${isRestore ? "Restore" : "Starting new"} node");
+    _log.info("${isRestore ? "Restore" : "Starting new"} node");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final navigator = Navigator.of(context);
@@ -184,7 +184,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   void _restoreNodeFromMnemonicSeed({
     List<String>? initialWords,
   }) async {
-    _log.fine("Restore node from mnemonic seed");
+    _log.info("Restore node from mnemonic seed");
     String? mnemonic = await _getMnemonic(initialWords: initialWords);
     if (mnemonic != null) {
       connect(mnemonic: mnemonic);
@@ -194,7 +194,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   Future<String?> _getMnemonic({
     List<String>? initialWords,
   }) async {
-    _log.fine("Get mnemonic, initialWords: ${initialWords?.length}");
+    _log.info("Get mnemonic, initialWords: ${initialWords?.length}");
     return await Navigator.of(context).pushNamed<String>(
       "/enter_mnemonics",
       arguments: initialWords,

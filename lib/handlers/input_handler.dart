@@ -59,9 +59,9 @@ class InputHandler extends Handler {
   }
 
   void _listen(InputState inputState) {
-    _log.fine("Input state changed: $inputState");
+    _log.info("Input state changed: $inputState");
     if (_handlingRequest) {
-      _log.fine("Already handling request, skipping state change");
+      _log.info("Already handling request, skipping state change");
       return;
     }
 
@@ -83,29 +83,29 @@ class InputHandler extends Handler {
             if (context != null) {
               showFlushbar(context, message: extractExceptionMessage(error, context.texts()));
             } else {
-              _log.fine("Skipping handling of error: $error because context is null");
+              _log.info("Skipping handling of error: $error because context is null");
             }
           }
         });
   }
 
   void handleResult(result) {
-    _log.fine("Input state handled: $result");
+    _log.info("Input state handled: $result");
     if (result is LNURLPageResult && result.protocol != null) {
       final context = contextProvider?.getBuildContext();
       if (context != null) {
         handleLNURLPageResult(context, result);
       } else {
-        _log.fine("Skipping handling of result: $result because context is null");
+        _log.info("Skipping handling of result: $result because context is null");
       }
     }
   }
 
   Future handleInputData(InputState inputState) async {
-    _log.fine("handle input $inputState");
+    _log.info("handle input $inputState");
     final context = contextProvider?.getBuildContext();
     if (context == null) {
-      _log.fine("Not handling input $inputState because context is null");
+      _log.info("Not handling input $inputState because context is null");
       return;
     }
 
@@ -127,7 +127,7 @@ class InputHandler extends Handler {
   }
 
   Future handleInvoice(BuildContext context, Invoice invoice) async {
-    _log.fine("handle invoice $invoice");
+    _log.info("handle invoice $invoice");
     return await showDialog(
       useRootNavigator: false,
       context: context,
@@ -141,7 +141,7 @@ class InputHandler extends Handler {
   }
 
   Future handleNodeID(BuildContext context, String nodeID) async {
-    _log.fine("handle node id $nodeID");
+    _log.info("handle node id $nodeID");
     return await Navigator.of(context).push(
       FadeInRoute(
         builder: (_) => SpontaneousPaymentPage(

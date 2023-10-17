@@ -48,10 +48,10 @@ class QrActionButton extends StatelessWidget {
     final texts = context.texts();
     InputBloc inputBloc = context.read<InputBloc>();
 
-    _log.fine("Start qr code scan");
+    _log.info("Start qr code scan");
     Navigator.pushNamed<String>(context, "/qr_scan").then(
       (barcode) {
-        _log.fine("Scanned string: '$barcode'");
+        _log.info("Scanned string: '$barcode'");
         if (barcode == null) return;
         if (barcode.isEmpty) {
           showFlushbar(

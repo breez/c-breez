@@ -56,13 +56,13 @@ Future<LNURLPageResult?> handlePayRequest(
   ).then((result) {
     if (result is LnUrlPayResult) {
       if (result is LnUrlPayResult_EndpointSuccess) {
-        _log.fine("LNURL payment success, action: ${result.data}");
+        _log.info("LNURL payment success, action: ${result.data}");
         return LNURLPageResult(
           protocol: LnUrlProtocol.Pay,
           successAction: result.data,
         );
       } else if (result is LnUrlPayResult_EndpointError) {
-        _log.fine("LNURL payment failed: ${result.data.reason}");
+        _log.info("LNURL payment failed: ${result.data.reason}");
         return LNURLPageResult(
           protocol: LnUrlProtocol.Pay,
           error: result.data.reason,
@@ -78,7 +78,7 @@ void handleLNURLPaymentPageResult(BuildContext context, LNURLPageResult result) 
   if (result.successAction != null) {
     _handleSuccessAction(context, result.successAction!);
   } else if (result.hasError) {
-    _log.fine("Handle LNURL payment page result with error '${result.error}'");
+    _log.info("Handle LNURL payment page result with error '${result.error}'");
     throw Exception(result.errorMessage);
   }
 }
@@ -88,14 +88,14 @@ Future _handleSuccessAction(BuildContext context, SuccessActionProcessed success
   String? url;
   if (successAction is SuccessActionProcessed_Message) {
     message = successAction.data.message;
-    _log.fine("Handle LNURL payment page result with message action '$message'");
+    _log.info("Handle LNURL payment page result with message action '$message'");
   } else if (successAction is SuccessActionProcessed_Url) {
     message = successAction.data.description;
     url = successAction.data.url;
-    _log.fine("Handle LNURL payment page result with url action '$message', '$url'");
+    _log.info("Handle LNURL payment page result with url action '$message', '$url'");
   } else if (successAction is SuccessActionProcessed_Aes) {
     message = "${successAction.data.description} ${successAction.data.plaintext}";
-    _log.fine("Handle LNURL payment page result with aes action '$message'");
+    _log.info("Handle LNURL payment page result with aes action '$message'");
   }
   return showDialog(
     useRootNavigator: false,

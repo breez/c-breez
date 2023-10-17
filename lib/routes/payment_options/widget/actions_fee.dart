@@ -33,7 +33,7 @@ class ActionsFee extends StatelessWidget {
                   texts.payment_options_fee_action_reset,
                 ),
                 onPressed: () {
-                  _log.fine("onPressed: reset");
+                  _log.info("onPressed: reset");
                   context.read<PaymentOptionsBloc>().resetFees();
                 },
               ),
@@ -47,7 +47,7 @@ class ActionsFee extends StatelessWidget {
                   texts.payment_options_fee_action_save,
                 ),
                 onPressed: () {
-                  _log.fine("onPressed: save");
+                  _log.info("onPressed: save");
                   if (state.overrideFeeEnabled) {
                     showDialog(
                       context: context,

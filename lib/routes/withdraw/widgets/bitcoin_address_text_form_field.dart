@@ -34,9 +34,9 @@ class BitcoinAddressTextFormField extends TextFormField {
               onPressed: () async {
                 Navigator.pushNamed<String>(context, "/qr_scan").then(
                   (barcode) {
-                    _log.fine("Scanned string: '$barcode'");
+                    _log.info("Scanned string: '$barcode'");
                     final address = BitcoinAddressInfo.fromScannedString(barcode).address;
-                    _log.fine("BitcoinAddressInfoFromScannedString: '$address'");
+                    _log.info("BitcoinAddressInfoFromScannedString: '$address'");
                     if (address == null) return;
                     if (address.isEmpty) {
                       showFlushbar(
@@ -55,7 +55,7 @@ class BitcoinAddressTextFormField extends TextFormField {
           style: theme.FieldTextStyle.textStyle,
           onChanged: (address) => _onAddressChanged(context, validatorHolder, address),
           validator: (address) {
-            _log.fine("validator called for $address, $validatorHolder");
+            _log.info("validator called for $address, $validatorHolder");
             if (validatorHolder.valid) {
               return null;
             } else {
@@ -69,11 +69,11 @@ class BitcoinAddressTextFormField extends TextFormField {
     ValidatorHolder holder,
     String address,
   ) async {
-    _log.fine("Address changed $address");
+    _log.info("Address changed $address");
     await holder.lock.synchronized(() async {
-      _log.fine("Calling validator for $address");
+      _log.info("Calling validator for $address");
       holder.valid = await context.read<AccountBloc>().isValidBitcoinAddress(address);
-      _log.fine("Address $address validation result $holder");
+      _log.info("Address $address validation result $holder");
     });
   }
 }

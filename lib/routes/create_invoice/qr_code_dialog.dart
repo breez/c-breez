@@ -177,7 +177,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   }
 
   void onFinish(dynamic result) {
-    _log.fine("onFinish $result, mounted: $mounted, _currentRoute: ${_currentRoute?.isCurrent}");
+    _log.info("onFinish $result, mounted: $mounted, _currentRoute: ${_currentRoute?.isCurrent}");
     if (mounted && _currentRoute != null && _currentRoute!.isCurrent) {
       Navigator.removeRoute(context, _currentRoute!);
     }

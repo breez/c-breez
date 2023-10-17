@@ -25,10 +25,10 @@ Future<LNURLPageResult?> handleAuthRequest(
         try {
           final resp = await context.read<AccountBloc>().lnurlAuth(reqData: requestData);
           if (resp is LnUrlCallbackStatus_Ok) {
-            _log.fine("LNURL auth success");
+            _log.info("LNURL auth success");
             return const LNURLPageResult(protocol: LnUrlProtocol.Auth);
           } else if (resp is LnUrlCallbackStatus_ErrorStatus) {
-            _log.fine("LNURL auth failed: ${resp.data.reason}");
+            _log.info("LNURL auth failed: ${resp.data.reason}");
             return LNURLPageResult(protocol: LnUrlProtocol.Auth, error: resp.data.reason);
           } else {
             _log.warning("Unknown response from lnurlAuth: $resp");
@@ -56,7 +56,7 @@ Future<LNURLPageResult?> handleAuthRequest(
 
 void handleLNURLAuthPageResult(BuildContext context, LNURLPageResult result) {
   if (result.hasError) {
-    _log.fine("Handle LNURL auth page result with error '${result.error}'");
+    _log.info("Handle LNURL auth page result with error '${result.error}'");
     promptError(
       context,
       context.texts().lnurl_webview_error_title,

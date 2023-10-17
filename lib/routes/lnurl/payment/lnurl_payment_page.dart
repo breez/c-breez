@@ -193,7 +193,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             final currencyBloc = context.read<CurrencyBloc>();
             final amount = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
             final comment = _commentController.text;
-            _log.fine("LNURL payment of $amount sats where "
+            _log.info("LNURL payment of $amount sats where "
                 "min is ${widget.requestData.minSendable} msats "
                 "and max is ${widget.requestData.maxSendable} msats."
                 "with comment $comment");

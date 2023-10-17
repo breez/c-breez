@@ -33,7 +33,7 @@ class WithdrawFundsAvailableBtc extends StatelessWidget {
             padding: const EdgeInsets.only(left: 3.0),
             child: BlocBuilder<AccountBloc, AccountState>(
               builder: (context, account) {
-                _log.fine(
+                _log.info(
                     "Building with wallet balance: ${account.walletBalance} balance: ${account.balance}");
                 return BlocBuilder<CurrencyBloc, CurrencyState>(
                   builder: (context, currencyState) {

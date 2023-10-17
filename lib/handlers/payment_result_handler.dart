@@ -20,7 +20,7 @@ class PaymentResultHandler extends Handler {
   @override
   void init(HandlerContextProvider contextProvider) {
     super.init(contextProvider);
-    _log.fine("PaymentResultHandler inited");
+    _log.info("PaymentResultHandler inited");
     _subscription = contextProvider
         .getBuildContext()!
         .read<AccountBloc>()
@@ -37,7 +37,7 @@ class PaymentResultHandler extends Handler {
   }
 
   void _listen(PaymentResult paymentResult) async {
-    _log.fine("Received paymentResult: $paymentResult");
+    _log.info("Received paymentResult: $paymentResult");
     final context = contextProvider?.getBuildContext();
     if (context == null) {
       _log.warning("Failed to proceed because context is null");
@@ -57,7 +57,7 @@ class PaymentResultHandler extends Handler {
         ),
       );
     } else if (paymentResult.error != null) {
-      _log.fine("paymentResult error: ${paymentResult.error}");
+      _log.info("paymentResult error: ${paymentResult.error}");
       showFlushbar(
         context,
         message: paymentResult.errorMessage(),

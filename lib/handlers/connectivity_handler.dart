@@ -38,7 +38,7 @@ class ConnectivityHandler extends Handler {
   }
 
   void _listen(ConnectivityState connectivityState) async {
-    _log.fine("Received connectivityState $connectivityState");
+    _log.info("Received connectivityState $connectivityState");
     if (connectivityState.lastStatus == ConnectivityResult.none) {
       showNoInternetConnectionFlushbar();
     } else {
@@ -50,7 +50,7 @@ class ConnectivityHandler extends Handler {
     dismissFlushbarIfNeed();
     final context = contextProvider?.getBuildContext();
     if (context == null) {
-      _log.fine("Skipping connection flushbar as context is null");
+      _log.info("Skipping connection flushbar as context is null");
       return;
     }
     _flushbar = _getNoConnectionFlushbar(context);

@@ -32,17 +32,17 @@ class MoonpayWebView extends StatelessWidget {
             url: WebUri(url),
           ),
           onLoadStart: (controller, url) {
-            _log.fine("onLoadStart url: $url");
+            _log.info("onLoadStart url: $url");
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.loading);
           },
           onLoadStop: (controller, url) {
-            _log.fine("onLoadStop url: $url");
+            _log.info("onLoadStop url: $url");
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.success);
           },
           onReceivedError: (controller, request, error) {
             _log.warning("onReceivedError error: $error", error);
             if (error.type == WebResourceErrorType.UNKNOWN) {
-              _log.fine("Ignoring unknown error");
+              _log.info("Ignoring unknown error");
               return;
             }
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.error);
@@ -52,7 +52,7 @@ class MoonpayWebView extends StatelessWidget {
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.error);
           },
           onConsoleMessage: (controller, consoleMessage) {
-            _log.fine("onConsoleMessage: $consoleMessage");
+            _log.info("onConsoleMessage: $consoleMessage");
           },
         ),
       ],

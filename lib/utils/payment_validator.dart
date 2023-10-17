@@ -35,21 +35,21 @@ class PaymentValidator {
   }
 
   String? _validate(int amount, bool outgoing) {
-    _log.fine("Validating for $amount and $outgoing");
+    _log.info("Validating for $amount and $outgoing");
     try {
       validatePayment(amount, outgoing, channelCreationPossible, channelMinimumFee: channelMinimumFee);
     } on PaymentExceededLimitError catch (e) {
-      _log.fine("Got PaymentExceededLimitError", e);
+      _log.info("Got PaymentExceededLimitError", e);
       return texts.invoice_payment_validator_error_payment_exceeded_limit(
         currency.format(e.limitSat),
       );
     } on PaymentBelowLimitError catch (e) {
-      _log.fine("Got PaymentBelowLimitError", e);
+      _log.info("Got PaymentBelowLimitError", e);
       return texts.invoice_payment_validator_error_payment_below_invoice_limit(
         currency.format(e.limitSat),
       );
     } on PaymentBelowReserveError catch (e) {
-      _log.fine("Got PaymentBelowReserveError", e);
+      _log.info("Got PaymentBelowReserveError", e);
       return texts.invoice_payment_validator_error_payment_below_limit(
         currency.format(e.reserveAmount),
       );
@@ -58,7 +58,7 @@ class PaymentValidator {
     } on InsufficientLocalBalanceError {
       return texts.invoice_payment_validator_error_insufficient_local_balance;
     } on PaymentBelowSetupFeesError catch (e) {
-      _log.fine("Got PaymentBelowSetupFeesError", e);
+      _log.info("Got PaymentBelowSetupFeesError", e);
       return texts.invoice_payment_validator_error_payment_below_setup_fees_error(
         currency.format(e.setupFees),
       );
@@ -67,7 +67,7 @@ class PaymentValidator {
     } on NoChannelCreationZeroLiqudityError {
       return texts.lsp_error_cannot_open_channel;
     } catch (e) {
-      _log.fine("Got Generic error", e);
+      _log.info("Got Generic error", e);
       return texts.invoice_payment_validator_error_unknown(
         extractExceptionMessage(e, texts),
       );

@@ -43,16 +43,12 @@ class _TxLink extends StatelessWidget {
 
   const _TxLink({required this.txid});
 
-  Future<Config> _fetchConfig() async {
-    return Config.instance();
-  }
-
   @override
   Widget build(BuildContext context) {
     final text = context.texts();
 
     return FutureBuilder(
-      future: _fetchConfig(),
+      future: Config.instance(),
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Loader();

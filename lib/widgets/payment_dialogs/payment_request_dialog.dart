@@ -68,7 +68,7 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
         minHeight: minHeight,
         paymentFunc: () => context
             .read<AccountBloc>()
-            .sendPayment(widget.invoice.bolt11, widget.invoice.amountMsat == 0 ? _amountToPay! : null),
+            .sendPayment(widget.invoice.bolt11, widget.invoice.amountMsat == 0 ? _amountToPay! * 1000 : null),
         onStateChange: (state) => _onStateChange(context, state),
       );
     } else if (_state == PaymentRequestState.WAITING_FOR_CONFIRMATION) {

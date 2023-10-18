@@ -3,6 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';
+import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 
 class SwapInprogress extends StatelessWidget {
@@ -49,15 +50,25 @@ class _TxLink extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = context.texts();
 
-    return LinkLauncher(
-      linkName: txid,
-      linkAddress: "https://blockstream.info/tx/$txid",
-      onCopy: () {
-        ServiceInjector().device.setClipboardText(txid);
-        showFlushbar(
-          context,
-          message: text.add_funds_transaction_id_copied,
-          duration: const Duration(seconds: 3),
+    return FutureBuilder(
+      future: ServiceInjector().blockexplorer,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Loader();
+        }
+        final blockexplorer = snapshot.data!;
+
+        return LinkLauncher(
+          linkName: txid,
+          linkAddress: "$blockexplorer/tx/$txid",
+          onCopy: () {
+            ServiceInjector().device.setClipboardText(txid);
+            showFlushbar(
+              context,
+              message: text.add_funds_transaction_id_copied,
+              duration: const Duration(seconds: 3),
+            );
+          },
         );
       },
     );

@@ -1,6 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';
@@ -48,17 +47,17 @@ class _TxLink extends StatelessWidget {
     final text = context.texts();
 
     return FutureBuilder(
-      future: Config.instance(),
+      future: ServiceInjector().blockexplorer,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Loader();
         }
 
-        final blockExplorer = snapshot.data!.defaultMempoolUrl;
+        final blockexplorer = snapshot.data!;
 
         return LinkLauncher(
           linkName: txid,
-          linkAddress: "$blockExplorer/tx/$txid",
+          linkAddress: "$blockexplorer/tx/$txid",
           onCopy: () {
             ServiceInjector().device.setClipboardText(txid);
             showFlushbar(

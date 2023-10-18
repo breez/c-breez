@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:c_breez/config.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
@@ -76,5 +77,15 @@ class ServiceInjector {
 
   Preferences get preferences {
     return _preferences ??= Preferences();
+  }
+
+  Future<String> get blockexplorer async {
+    String? blockexplorer = await _preferences?.getMempoolSpaceUrl();
+
+    if (blockexplorer == null) {
+      final config = await Config.instance();
+      blockexplorer = config.defaultMempoolUrl;
+    }
+    return blockexplorer;
   }
 }

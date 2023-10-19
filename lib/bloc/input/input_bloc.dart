@@ -9,8 +9,8 @@ import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/lightning_links.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
 class InputBloc extends Cubit<InputState> {
@@ -33,7 +33,6 @@ class InputBloc extends Cubit<InputState> {
 
   void _initializeInputBloc() async {
     _log.info("initializeInputBloc");
-    await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
     _watchIncomingInvoices().listen((inputState) => emit(inputState!));
   }
 
@@ -43,6 +42,7 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future trackPayment(String paymentHash) async {
+    _log.info("trackPayment: $paymentHash");
     await _breezLib.invoicePaidStream.firstWhere((invoice) {
       _log.info("invoice paid: ${invoice.paymentHash} we are waiting for "
           "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
@@ -51,6 +51,7 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Stream<InputState?> _watchIncomingInvoices() {
+    _log.info("watchIncomingInvoices");
     return Rx.merge([
       _decodeInvoiceController.stream.doOnData((event) => _log.info("decodeInvoiceController: $event")),
       _lightningLinks.linksNotifications
@@ -63,6 +64,8 @@ class InputBloc extends Cubit<InputState> {
           .doOnData((event) => _log.info("clipboardStream: $event")),
     ]).asyncMap((input) async {
       _log.info("Incoming input: '$input'");
+      // wait for node state to be available
+      await _waitForNodeState();
       // Emit an empty InputState with isLoading to display a loader on UI layer
       emit(const InputState.loading());
       try {
@@ -76,6 +79,7 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future<InputState> handlePaymentRequest(InputType_Bolt11 inputData, InputSource source) async {
+    _log.info("handlePaymentRequest: $inputData source: $source");
     final LNInvoice lnInvoice = inputData.invoice;
 
     NodeState? nodeState = await _breezLib.nodeInfo();
@@ -118,5 +122,14 @@ class InputBloc extends Cubit<InputState> {
     return result;
   }
 
-  Future<InputType> parseInput({required String input}) async => await _breezLib.parseInput(input: input);
+  Future<InputType> parseInput({required String input}) async {
+    _log.info("parseInput: $input");
+    return await _breezLib.parseInput(input: input);
+  }
+
+  Future<void> _waitForNodeState() async {
+    _log.info("waitForNodeState");
+    await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
+    _log.info("waitForNodeState: done");
+  }
 }

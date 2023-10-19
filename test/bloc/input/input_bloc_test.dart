@@ -7,6 +7,7 @@ import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
+import '../../mock/breez_bridge_mock.dart';
 import '../../mock/injector_mock.dart';
 import '../../unit_logger.dart';
 import '../../utils/fake_path_provider_platform.dart';

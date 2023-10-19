@@ -117,7 +117,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
   Stream<InvoicePaidDetails> get invoicePaidStream => invoicePaidController.stream;
 
   @override
-  final nodeStateController = StreamController<NodeState?>.broadcast();
+  final nodeStateController = BehaviorSubject<NodeState?>();
 
   @override
   Stream<NodeState?> get nodeStateStream => nodeStateController.stream;

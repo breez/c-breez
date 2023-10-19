@@ -47,11 +47,11 @@ class QRScanState extends State<QRScan> {
                       for (final barcode in barcodes) {
                         _log.info("Barcode detected: $barcode");
                         if (popped) {
-                          _log.fine("Skipping, already popped");
+                          _log.info("Skipping, already popped");
                           return;
                         }
                         if (!mounted) {
-                          _log.fine("Skipping, not mounted");
+                          _log.info("Skipping, not mounted");
                           return;
                         }
                         final code = barcode.rawValue;

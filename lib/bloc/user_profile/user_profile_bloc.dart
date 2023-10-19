@@ -24,10 +24,10 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     this._notifications,
   ) : super(UserProfileState.initial()) {
     var profile = state;
-    _log.fine("State: ${profile.profileSettings.toJson()}");
+    _log.info("State: ${profile.profileSettings.toJson()}");
     final settings = profile.profileSettings;
     if (settings.color == null || settings.animal == null || settings.name == null) {
-      _log.fine("Profile is missing fields, generating new random ones…");
+      _log.info("Profile is missing fields, generating new random ones…");
       final defaultProfile = generateDefaultProfile();
       final color = settings.color ?? defaultProfile.color;
       final animal = settings.animal ?? defaultProfile.animal;
@@ -45,11 +45,11 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
   }
 
   Future registerForNotifications() async {
-    _log.fine("registerForNotifications");
+    _log.info("registerForNotifications");
     String? token = await _notifications.getToken();
     if (token != null) {
       if (token != state.profileSettings.token) {
-        _log.fine("Got a new token, registering…");
+        _log.info("Got a new token, registering…");
         var userID = await _breezServer.registerDevice(token, token);
         emit(state.copyWith(
           profileSettings: state.profileSettings.copyWith(
@@ -59,7 +59,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
           ),
         ));
       } else {
-        _log.fine("Token is the same as before");
+        _log.info("Token is the same as before");
       }
     } else {
       _log.warning("Failed to get token");
@@ -67,7 +67,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
   }
 
   Future<String> uploadImage(List<int> bytes) async {
-    _log.fine("uploadImage ${bytes.length}");
+    _log.info("uploadImage ${bytes.length}");
     try {
       // TODO upload image to server
       // return await _breezServer.uploadLogo(bytes);
@@ -87,7 +87,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     AppMode? appMode,
     bool? expandPreferences,
   }) {
-    _log.fine(
+    _log.info(
         "updateProfile $name $color $animal $image $registrationRequested $hideBalance $appMode $expandPreferences");
     var profile = state.profileSettings;
     profile = profile.copyWith(

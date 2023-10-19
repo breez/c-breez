@@ -147,7 +147,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           ),
           onPressed: () {
             final amount = widget.requestData.maxSendable ~/ 1000;
-            _log.fine("LNURL payment of $amount sats where "
+            _log.info("LNURL payment of $amount sats where "
                 "min is ${widget.requestData.minSendable} msats "
                 "and max is ${widget.requestData.maxSendable} msats.");
             Navigator.pop(context, LNURLPaymentInfo(amount: amount));

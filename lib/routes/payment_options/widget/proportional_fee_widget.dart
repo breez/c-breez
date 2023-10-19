@@ -66,12 +66,12 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
                     ),
                     validator: proportionalFeeValidator,
                     onChanged: (value) {
-                      _log.fine("onChanged: $value");
+                      _log.info("onChanged: $value");
                       double proportionalFee;
                       try {
                         proportionalFee = double.parse(value);
                       } catch (_) {
-                        _log.fine("Failed to parse $value as double");
+                        _log.info("Failed to parse $value as double");
                         return;
                       }
                       context.read<PaymentOptionsBloc>().setProportionalFee(proportionalFee);
@@ -92,7 +92,7 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
       if (!state.saveEnabled) {
         final proportionalFee = state.proportionalFee.toStringAsFixed(2);
         if (_proportionalFeeController.text != proportionalFee) {
-          _log.fine("Setting proportionalFee to $proportionalFee");
+          _log.info("Setting proportionalFee to $proportionalFee");
           setState(() {
             _proportionalFeeController.text = proportionalFee;
           });

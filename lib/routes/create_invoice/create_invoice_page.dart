@@ -21,10 +21,10 @@ import 'package:c_breez/widgets/keyboard_done_action.dart';
 import 'package:c_breez/widgets/receivable_btc_box.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
 
 final _log = Logger("CreateInvoicePage");
 
@@ -173,7 +173,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     BuildContext context,
     LnUrlWithdrawRequestData data,
   ) async {
-    _log.fine("Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
+    _log.info("Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
         "min=${data.minWithdrawable}, max=${data.maxWithdrawable}");
     final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
 
@@ -195,7 +195,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   }
 
   Future _createInvoice(BuildContext context, OpeningFeeParams? cheapestFeeParams) async {
-    _log.fine("Create invoice: description=${_descriptionController.text}, amount=${_amountController.text}");
+    _log.info("Create invoice: description=${_descriptionController.text}, amount=${_amountController.text}");
     final navigator = Navigator.of(context);
     final currentRoute = ModalRoute.of(navigator.context)!;
     final accountBloc = context.read<AccountBloc>();
@@ -209,7 +209,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     Widget dialog = FutureBuilder(
       future: receivePaymentResponse,
       builder: (BuildContext context, AsyncSnapshot<ReceivePaymentResponse> snapshot) {
-        _log.fine("Building QrCodeDialog with invoice: ${snapshot.data}, error: ${snapshot.error}");
+        _log.info("Building QrCodeDialog with invoice: ${snapshot.data}, error: ${snapshot.error}");
         return QrCodeDialog(
           snapshot.data,
           snapshot.error,
@@ -233,7 +233,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     ModalRoute currentRoute,
     NavigatorState navigator,
   ) {
-    _log.fine("Payment finished: $result");
+    _log.info("Payment finished: $result");
     if (result == true) {
       if (currentRoute.isCurrent) {
         navigator.push(

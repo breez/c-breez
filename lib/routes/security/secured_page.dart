@@ -38,7 +38,7 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
           : BlocBuilder<SecurityBloc, SecurityState>(
               key: ValueKey(DateTime.now().millisecondsSinceEpoch),
               builder: (context, state) {
-                _log.fine("Building with: $state");
+                _log.info("Building with: $state");
                 if (state.pinStatus == PinStatus.enabled && !_allowed) {
                   final texts = context.texts();
                   return Scaffold(
@@ -48,7 +48,7 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
                     body: PinCodeWidget(
                       label: texts.lock_screen_enter_pin,
                       testPinCodeFunction: (pin) async {
-                        _log.fine("Testing pin code");
+                        _log.info("Testing pin code");
                         bool pinMatches = false;
                         try {
                           pinMatches = await context.read<SecurityBloc>().testPin(pin);
@@ -60,13 +60,13 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
                           );
                         }
                         if (pinMatches) {
-                          _log.fine("Pin matches");
+                          _log.info("Pin matches");
                           setState(() {
                             _allowed = true;
                           });
                           return const TestPinResult(true);
                         } else {
-                          _log.fine("Pin didn't match");
+                          _log.info("Pin didn't match");
                           return TestPinResult(
                             false,
                             errorMessage: texts.lock_screen_pin_incorrect,

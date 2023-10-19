@@ -25,7 +25,7 @@ class OverrideFee extends StatelessWidget {
           controlAffinity: ListTileControlAffinity.leading,
           value: state.overrideFeeEnabled,
           onChanged: (value) {
-            _log.fine("onChanged: $value");
+            _log.info("onChanged: $value");
             if (value != null) {
               context.read<PaymentOptionsBloc>().setOverrideFeeEnabled(value);
             }

@@ -60,12 +60,12 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
                     ),
                     validator: exemptFeeValidator,
                     onChanged: (value) {
-                      _log.fine("onChanged: $value");
+                      _log.info("onChanged: $value");
                       int exemptFeeSat;
                       try {
                         exemptFeeSat = int.parse(value);
                       } catch (_) {
-                        _log.fine("Failed to parse $value as int");
+                        _log.info("Failed to parse $value as int");
                         return;
                       }
                       context.read<PaymentOptionsBloc>().setExemptfeeMsat(exemptFeeSat * 1000);
@@ -87,7 +87,7 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
         final exemptFeeSat = (state.exemptFeeMsat ~/ 1000).toString();
 
         if (_exemptFeeController.text != exemptFeeSat) {
-          _log.fine("Setting exemptFee to $exemptFeeSat");
+          _log.info("Setting exemptFee to $exemptFeeSat");
           setState(() {
             _exemptFeeController.text = exemptFeeSat;
           });

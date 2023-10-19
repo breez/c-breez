@@ -22,7 +22,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     required int satPerVbyte,
   }) async {
     try {
-      _log.fine(
+      _log.info(
         "Reverse Swap of $amountSat sats to address $onchainRecipientAddress using $satPerVbyte sats/vByte as"
         " fee rate w/ pairHash: $pairHash",
       );
@@ -32,7 +32,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         pairHash: pairHash,
         satPerVbyte: satPerVbyte,
       );
-      _log.fine(
+      _log.info(
         "Reverse Swap Info for id: ${reverseSwapInfo.id}, ${reverseSwapInfo.onchainAmountSat} sats to address"
         " ${reverseSwapInfo.claimPubkey} w/ status: ${reverseSwapInfo.status}",
       );

@@ -19,10 +19,10 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   /// Lookup the most recent reverse swap pair info using the Boltz API
   Future<ReverseSwapPairInfo> fetchReverseSwapFees({int? sendAmountSat}) async {
     try {
-      _log.fine("Estimate reverse swap fees for: $sendAmountSat");
+      _log.info("Estimate reverse swap fees for: $sendAmountSat");
       final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat);
       ReverseSwapPairInfo reverseSwapPairInfo = await _breezLib.fetchReverseSwapFees(req: req);
-      _log.fine("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
+      _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
       emit(state.copyWith(reverseSwapPairInfo: reverseSwapPairInfo, error: ""));
       return reverseSwapPairInfo;
     } catch (e) {
@@ -37,7 +37,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezLib.recommendedFees();
-      _log.fine(
+      _log.info(
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
@@ -57,7 +57,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
       throw Exception(getSystemAppLocalizations().node_state_error);
     }
     final utxos = nodeState.utxos.length;
-    _log.fine("_retrieveUTXOS utxos: $utxos");
+    _log.info("_retrieveUTXOS utxos: $utxos");
     return utxos;
   }
 

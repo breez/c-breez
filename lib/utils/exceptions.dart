@@ -9,7 +9,7 @@ String extractExceptionMessage(
   BreezTranslations texts, {
   String? defaultErrorMsg,
 }) {
-  _log.fine("extractExceptionMessage: $exception");
+  _log.info("extractExceptionMessage: $exception");
   if (exception is FfiException) {
     if (exception.message.isNotEmpty) {
       var message = exception.message.replaceAll("\n", " ").trim();
@@ -22,7 +22,7 @@ String extractExceptionMessage(
 }
 
 String? _extractInnerErrorMessage(String content) {
-  _log.fine("extractInnerErrorMessage: $content");
+  _log.info("extractInnerErrorMessage: $content");
   final innerMessageRegex = RegExp(r'((?<=message: \\")(.*)(?=.*\\"))');
   final messageRegex = RegExp(r'((?<=message: ")(.*)(?=.*"))');
   final causedByRegex = RegExp(r'((?<=Caused by: )(.*)(?=.*))');
@@ -37,7 +37,7 @@ String _localizedExceptionMessage(
   BreezTranslations texts,
   String originalMessage,
 ) {
-  _log.fine("localizedExceptionMessage: $originalMessage");
+  _log.info("localizedExceptionMessage: $originalMessage");
   final messageToLower = originalMessage.toLowerCase();
   if (messageToLower == "transport error") {
     return texts.generic_network_error;

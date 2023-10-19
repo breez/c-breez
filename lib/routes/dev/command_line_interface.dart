@@ -151,7 +151,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
   }
 
   void _sendCommand(String command) async {
-    _log.fine("Send command: $command");
+    _log.info("Send command: $command");
     if (command.isNotEmpty) {
       FocusScope.of(context).requestFocus(FocusNode());
       setState(() {
@@ -163,7 +163,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
       try {
         var commandArgs = command.split(RegExp(r"\s"));
         if (commandArgs.isEmpty) {
-          _log.fine("Command args is empty, skipping");
+          _log.info("Command args is empty, skipping");
           setState(() {
             isLoading = false;
           });
@@ -179,11 +179,11 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
           case 'listInvoices':
           case 'closeAllChannels':
             final command = commandArgs[0].toLowerCase();
-            _log.fine("executing command: $command");
+            _log.info("executing command: $command");
             final answer = await _breezLib.executeCommand(command: command);
-            _log.fine("Received answer: $answer");
+            _log.info("Received answer: $answer");
             reply = encoder.convert(answer);
-            _log.fine("Reply: $reply");
+            _log.info("Reply: $reply");
             break;
           default:
             throw "This command is not supported yet.";

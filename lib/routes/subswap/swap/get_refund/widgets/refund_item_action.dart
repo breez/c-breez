@@ -68,7 +68,7 @@ class RefundItemAction extends StatelessWidget {
     String destAddress,
     int feeRate,
   ) {
-    _log.fine("showWaitToBroadcastDialog destAddress: $destAddress feeRate: $feeRate");
+    _log.info("showWaitToBroadcastDialog destAddress: $destAddress feeRate: $feeRate");
     final texts = context.texts();
 
     return showDialog<String>(

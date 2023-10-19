@@ -27,13 +27,13 @@ class WithdrawFundsAmountTextFormField extends AmountFormField {
           readOnly: policy.withdrawKind == WithdrawKind.unexpected_funds || withdrawMaxValue,
           bitcoinCurrency: bitcoinCurrency,
           validatorFn: (amount) {
-            _log.fine("Validator called for $amount");
+            _log.info("Validator called for $amount");
             return PaymentValidator(
               currency: bitcoinCurrency,
               texts: context.texts(),
               channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
               validatePayment: (amount, outgoing, channelCreationPossible, {channelMinimumFee}) {
-                _log.fine("Validating $amount $policy");
+                _log.info("Validating $amount $policy");
                 if (amount < policy.minValue) {
                   throw PaymentBelowLimitError(policy.minValue);
                 }

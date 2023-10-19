@@ -21,12 +21,12 @@ class MoonPayBloc extends Cubit<MoonPayState> {
 
   Future<void> fetchMoonpayUrl() async {
     try {
-      _log.fine("fetchMoonpayUrl");
+      _log.info("fetchMoonpayUrl");
       emit(MoonPayState.loading());
       final swapInProgress = (await _breezLib.inProgressSwap());
 
       if (swapInProgress != null) {
-        _log.fine("fetchMoonpayUrl swapInfo: $swapInProgress");
+        _log.info("fetchMoonpayUrl swapInfo: $swapInProgress");
         emit(MoonPayState.swapInProgress(
             swapInProgress.bitcoinAddress, swapInProgress.status == sdk.SwapStatus.Expired));
         return;
@@ -34,7 +34,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
 
       sdk.BuyBitcoinRequest reqData = const sdk.BuyBitcoinRequest(provider: sdk.BuyBitcoinProvider.Moonpay);
       final buyBitcoinResponse = await _breezLib.buyBitcoin(reqData: reqData);
-      _log.fine("fetchMoonpayUrl url: ${buyBitcoinResponse.url}");
+      _log.info("fetchMoonpayUrl url: ${buyBitcoinResponse.url}");
       if (buyBitcoinResponse.openingFeeParams != null) {
         emit(MoonPayState.urlReady(buyBitcoinResponse));
         return;
@@ -48,7 +48,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
   }
 
   void updateWebViewStatus(WebViewStatus status) {
-    _log.fine("updateWebViewStatus status: $status");
+    _log.info("updateWebViewStatus status: $status");
     final state = this.state;
     if (state is MoonPayStateUrlReady) {
       emit(state.copyWith(webViewStatus: status));
@@ -58,15 +58,15 @@ class MoonPayBloc extends Cubit<MoonPayState> {
   }
 
   Future<String> makeExplorerUrl(String address) async {
-    _log.fine("openExplorer address: $address");
+    _log.info("openExplorer address: $address");
     final mempoolUrl = await _preferences.getMempoolSpaceUrl() ?? (await Config.instance()).defaultMempoolUrl;
     final url = "$mempoolUrl/address/$address";
-    _log.fine("openExplorer url: $url");
+    _log.info("openExplorer url: $url");
     return url;
   }
 
   void dispose() {
-    _log.fine("dispose");
+    _log.info("dispose");
     emit(MoonPayState.initial());
   }
 }

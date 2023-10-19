@@ -19,7 +19,7 @@ class Preferences {
   }
 
   Future<void> setMempoolSpaceUrl(String url) async {
-    _log.fine("set mempool space url: $url");
+    _log.info("set mempool space url: $url");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_mempoolSpaceUrlKey, url);
   }
@@ -35,7 +35,7 @@ class Preferences {
   }
 
   Future<void> setPaymentOptionsOverrideFeeEnabled(bool enabled) async {
-    _log.fine("set payment options override fee enabled: $enabled");
+    _log.info("set payment options override fee enabled: $enabled");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPaymentOptionOverrideFee, enabled);
   }
@@ -46,7 +46,7 @@ class Preferences {
   }
 
   Future<void> setPaymentOptionsProportionalFee(double fee) async {
-    _log.fine("set payment options proportional fee: $fee");
+    _log.info("set payment options proportional fee: $fee");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_kPaymentOptionProportionalFee, fee);
   }
@@ -57,7 +57,7 @@ class Preferences {
   }
 
   Future<void> setPaymentOptionsExemptFee(int exemptfeeMsat) async {
-    _log.fine("set payment options exempt fee : $exemptfeeMsat");
+    _log.info("set payment options exempt fee : $exemptfeeMsat");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kPaymentOptionExemptFee, exemptfeeMsat);
   }

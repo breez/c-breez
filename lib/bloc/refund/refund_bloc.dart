@@ -32,14 +32,14 @@ class RefundBloc extends Cubit<RefundState> {
     required String toAddress,
     required int satPerVbyte,
   }) async {
-    _log.fine("Refunding swap $swapAddress to $toAddress with fee $satPerVbyte");
+    _log.info("Refunding swap $swapAddress to $toAddress with fee $satPerVbyte");
     try {
       final txId = await _breezLib.refund(
         swapAddress: swapAddress,
         toAddress: toAddress,
         satPerVbyte: satPerVbyte,
       );
-      _log.fine("Refund txId: $txId");
+      _log.info("Refund txId: $txId");
       return txId;
     } catch (e) {
       _log.severe("Failed to refund swap", e);

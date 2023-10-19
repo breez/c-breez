@@ -24,9 +24,9 @@ class Config {
   static Future<Config> instance({
     ServiceInjector? serviceInjector,
   }) async {
-    _log.fine("Getting Config instance");
+    _log.info("Getting Config instance");
     if (_instance == null) {
-      _log.fine("Creating Config instance");
+      _log.info("Creating Config instance");
       final injector = serviceInjector ?? ServiceInjector();
       final breezLib = injector.breezSDK;
       final breezConfig = await _getBundledConfig();
@@ -44,7 +44,7 @@ class Config {
   }
 
   static Future<AppConfig> _getBundledConfig() async {
-    _log.fine("Getting bundled config");
+    _log.info("Getting bundled config");
     return AppConfig();
   }
 
@@ -54,7 +54,7 @@ class Config {
     sdk.NodeConfig nodeConfig, {
     sdk.EnvironmentType environmentType = sdk.EnvironmentType.Production,
   }) async {
-    _log.fine("Getting default SDK config for environment: $environmentType");
+    _log.info("Getting default SDK config for environment: $environmentType");
     return await breezLib.defaultConfig(
       envType: environmentType,
       apiKey: apiKey,
@@ -67,7 +67,7 @@ class Config {
     sdk.Config defaultConf,
     AppConfig breezConfig,
   ) async {
-    _log.fine("Getting SDK config");
+    _log.info("Getting SDK config");
     return defaultConf.copyWith(
       maxfeePercent: await _configuredMaxFeePercent(serviceInjector, defaultConf),
       workingDir: await _workingDir(),
@@ -85,7 +85,7 @@ class Config {
     final configuredMaxFeeEnabled = await preferences.getPaymentOptionsOverrideFeeEnabled();
     if (configuredMaxFeeEnabled) {
       final configuredMaxFeePercent = await preferences.getPaymentOptionsProportionalFee();
-      _log.fine("Using maxfeePercent from preferences: $configuredMaxFeePercent");
+      _log.info("Using maxfeePercent from preferences: $configuredMaxFeePercent");
       return configuredMaxFeePercent;
     }
     return defaultConf.maxfeePercent;
@@ -99,7 +99,7 @@ class Config {
     final configuredExemptFeeEnabled = await preferences.getPaymentOptionsOverrideFeeEnabled();
     if (configuredExemptFeeEnabled) {
       final configuredExemptFee = await preferences.getPaymentOptionsExemptFee();
-      _log.fine("Using exemptMsatFee from preferences: $configuredExemptFee");
+      _log.info("Using exemptMsatFee from preferences: $configuredExemptFee");
       return configuredExemptFee;
     }
     return defaultConf.exemptfeeMsat;
@@ -113,11 +113,11 @@ class Config {
 
     final url = await preferences.getMempoolSpaceUrl();
     if (url != null) {
-      _log.fine("Using mempoolspace url from preferences: $url");
+      _log.info("Using mempoolspace url from preferences: $url");
       return url;
     } else {
       final defaultUrl = defaultConf.mempoolspaceUrl;
-      _log.fine("No mempoolspace url in preferences, using default: $defaultUrl");
+      _log.info("No mempoolspace url in preferences, using default: $defaultUrl");
       return defaultUrl;
     }
   }
@@ -125,7 +125,7 @@ class Config {
   static Future<String> _workingDir() async {
     final workingDir = await getApplicationDocumentsDirectory();
     final path = workingDir.path;
-    _log.fine("Using workingDir: $path");
+    _log.info("Using workingDir: $path");
     return path;
   }
 }

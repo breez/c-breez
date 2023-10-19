@@ -13,7 +13,7 @@ class BackupBloc extends Cubit<BackupState?> {
   }
 
   _listenBackupEvents() {
-    _log.fine("_listenBackupEvents");
+    _log.info("_listenBackupEvents");
     _breezLib.backupStream.listen((event) {
       _log.info('got state: $event');
       if (event is sdk.BreezEvent_BackupStarted) {

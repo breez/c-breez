@@ -27,6 +27,7 @@ dependencies:
   clipboard_watcher: ^0.2.0
   csv: ^5.0.2
   connectivity_plus: ^4.0.2
+  device_info_plus: ^9.1.0
   drag_and_drop_lists: ^0.3.3
   duration: ^3.0.13
   email_validator: ^2.1.17

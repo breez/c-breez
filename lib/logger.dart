@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:git_info/git_info.dart';
 import 'package:logging/logging.dart';
@@ -64,6 +65,12 @@ class BreezLogger {
 
     GitInfo.get().then((it) {
       _log.info("Logging initialized, app build on ${it.branch} at commit ${it.hash}");
+      DeviceInfoPlugin().deviceInfo.then((deviceInfo) {
+        _log.info("Device info:");
+        deviceInfo.data.forEach((key, value) => _log.info("$key: $value"));
+      }, onError: (error) {
+        _log.severe("Failed to get device info", error);
+      });
     }, onError: (error) {
       _log.severe("Failed to get git info", error);
     });

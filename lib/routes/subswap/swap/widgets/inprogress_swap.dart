@@ -1,11 +1,13 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/utils/mempool_helper.dart';
+import 'package:c_breez/utils/blockchain_explorer_utils.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapInprogress extends StatelessWidget {
   final SwapInfo swap;
@@ -50,18 +52,20 @@ class _TxLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = context.texts();
-    final mempoolExplorer = MempoolHelper();
+    final networkSettingsBloc = context.read<NetworkSettingsBloc>();
+
     return FutureBuilder(
-      future: mempoolExplorer.blockexplorer,
+      future: networkSettingsBloc.mempoolInstance,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Loader();
         }
-        final blockexplorer = snapshot.data!;
+        final mempoolInstance = snapshot.data!;
 
         return LinkLauncher(
           linkName: txid,
-          linkAddress: mempoolExplorer.formatTransactionUrl(txid: txid, blockexplorer: blockexplorer),
+          linkAddress:
+              BlockChainExplorerUtils().formatTransactionUrl(txid: txid, mempoolInstance: mempoolInstance),
           onCopy: () {
             ServiceInjector().device.setClipboardText(txid);
             showFlushbar(

@@ -1,7 +1,8 @@
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/utils/mempool_helper.dart';
+import 'package:c_breez/utils/blockchain_explorer_utils.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -46,16 +47,17 @@ class _TxLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = context.texts();
-    final mempoolHelper = MempoolHelper();
+    final networkSettingsBloc = context.read<NetworkSettingsBloc>();
 
     return FutureBuilder(
-      future: mempoolHelper.blockexplorer,
+      future: networkSettingsBloc.mempoolInstance,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Loader();
         }
 
-        final transactionUrl = mempoolHelper.formatTransactionUrl(blockexplorer: snapshot.data!, txid: txid);
+        final transactionUrl =
+            BlockChainExplorerUtils().formatTransactionUrl(mempoolInstance: snapshot.data!, txid: txid);
 
         return LinkLauncher(
           linkName: txid,

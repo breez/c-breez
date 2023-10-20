@@ -16,22 +16,22 @@ final _log = Logger("HandleLNURLPayRequest");
 Future<LNURLPageResult?> handlePayRequest(
   BuildContext context,
   GlobalKey firstPaymentItemKey,
-  LnUrlPayRequestData requestData,
+  LnUrlPayRequestData data,
 ) async {
   LNURLPaymentInfo? paymentInfo;
-  bool fixedAmount = requestData.minSendable == requestData.maxSendable;
-  if (fixedAmount && !(requestData.commentAllowed > 0)) {
+  bool fixedAmount = data.minSendable == data.maxSendable;
+  if (fixedAmount && !(data.commentAllowed > 0)) {
     // Show dialog if payment is of fixed amount with no payer comment allowed
     paymentInfo = await showDialog<LNURLPaymentInfo>(
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => LNURLPaymentDialog(requestData: requestData),
+      builder: (_) => LNURLPaymentDialog(data: data),
     );
   } else {
     paymentInfo = await Navigator.of(context).push<LNURLPaymentInfo>(
       FadeInRoute(
-        builder: (_) => LNURLPaymentPage(requestData: requestData),
+        builder: (_) => LNURLPaymentPage(data: data),
       ),
     );
   }
@@ -47,11 +47,15 @@ Future<LNURLPageResult?> handlePayRequest(
     builder: (_) => ProcessingPaymentDialog(
       isLnurlPayment: true,
       firstPaymentItemKey: firstPaymentItemKey,
-      paymentFunc: () => context.read<AccountBloc>().lnurlPay(
-            amount: paymentInfo!.amount,
-            comment: paymentInfo.comment,
-            reqData: requestData,
-          ),
+      paymentFunc: () {
+        final accBloc = context.read<AccountBloc>();
+        final req = LnUrlPayRequest(
+          amountMsat: paymentInfo!.amount * 1000,
+          comment: paymentInfo.comment,
+          data: data,
+        );
+        return accBloc.lnurlPay(req: req);
+      },
     ),
   ).then((result) {
     if (result is LnUrlPayResult) {

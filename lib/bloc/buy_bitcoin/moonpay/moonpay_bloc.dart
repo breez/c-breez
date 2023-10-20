@@ -32,8 +32,8 @@ class MoonPayBloc extends Cubit<MoonPayState> {
         return;
       }
 
-      sdk.BuyBitcoinRequest reqData = const sdk.BuyBitcoinRequest(provider: sdk.BuyBitcoinProvider.Moonpay);
-      final buyBitcoinResponse = await _breezLib.buyBitcoin(reqData: reqData);
+      sdk.BuyBitcoinRequest req = const sdk.BuyBitcoinRequest(provider: sdk.BuyBitcoinProvider.Moonpay);
+      final buyBitcoinResponse = await _breezLib.buyBitcoin(req: req);
       _log.info("fetchMoonpayUrl url: ${buyBitcoinResponse.url}");
       if (buyBitcoinResponse.openingFeeParams != null) {
         emit(MoonPayState.urlReady(buyBitcoinResponse));

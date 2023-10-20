@@ -143,11 +143,12 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       _log.info("LNURL withdraw of ${widget.amountSats} sats where "
           "min is ${widget.requestData.minWithdrawable} msats "
           "and max is ${widget.requestData.maxWithdrawable} msats.");
-      final resp = await accountBloc.lnurlWithdraw(
-        reqData: widget.requestData,
-        amountSats: widget.amountSats,
+      final req = sdk.LnUrlWithdrawRequest(
+        amountMsat: widget.amountSats * 1000,
+        data: widget.requestData,
         description: description,
       );
+      final resp = await accountBloc.lnurlWithdraw(req: req);
       if (resp is sdk.LnUrlWithdrawResult_Ok) {
         final paymentHash = resp.data.invoice.paymentHash;
         _log.info("LNURL withdraw success for $paymentHash");

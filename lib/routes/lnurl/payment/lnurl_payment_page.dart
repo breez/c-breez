@@ -21,7 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = Logger("LNURLPaymentPage");
 
 class LNURLPaymentPage extends StatefulWidget {
-  final sdk.LnUrlPayRequestData requestData;
+  final sdk.LnUrlPayRequestData data;
   /*TODO: Add domain information to parse results #118(https://github.com/breez/breez-sdk/issues/118)
   final String domain;
   TODO: Add support for LUD-18: Payer identity in payRequest protocol(https://github.com/breez/breez-sdk/issues/117)
@@ -32,7 +32,7 @@ class LNURLPaymentPage extends StatefulWidget {
  */
 
   const LNURLPaymentPage({
-    required this.requestData,
+    required this.data,
     /*
     required this.domain,
     this.name,
@@ -66,9 +66,9 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   @override
   void initState() {
     super.initState();
-    fixedAmount = widget.requestData.minSendable == widget.requestData.maxSendable;
+    fixedAmount = widget.data.minSendable == widget.data.maxSendable;
     if (fixedAmount) {
-      _amountController.text = (widget.requestData.maxSendable ~/ 1000).toString();
+      _amountController.text = (widget.data.maxSendable ~/ 1000).toString();
     }
   }
 
@@ -77,7 +77,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final metadataMap = {
-      for (var v in json.decode(widget.requestData.metadataStr)) v[0] as String: v[1],
+      for (var v in json.decode(widget.data.metadataStr)) v[0] as String: v[1],
     };
     String? base64String = metadataMap['image/png;base64'] ?? metadataMap['image/jpeg;base64'];
 
@@ -86,7 +86,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       appBar: AppBar(
         leading: const back_button.BackButton(),
         // Todo: Use domain from request data
-        title: Text(texts.lnurl_fetch_invoice_pay_to_payee(Uri.parse(widget.requestData.callback).host)),
+        title: Text(texts.lnurl_fetch_invoice_pay_to_payee(Uri.parse(widget.data.callback).host)),
       ),
       body: Form(
         key: _formKey,
@@ -96,13 +96,13 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (widget.requestData.commentAllowed > 0) ...[
+              if (widget.data.commentAllowed > 0) ...[
                 TextFormField(
                   controller: _commentController,
                   keyboardType: TextInputType.multiline,
                   textInputAction: TextInputAction.done,
                   maxLines: null,
-                  maxLength: widget.requestData.commentAllowed.toInt(),
+                  maxLength: widget.data.commentAllowed.toInt(),
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   decoration: InputDecoration(
                     labelText: texts.lnurl_payment_page_comment,
@@ -125,8 +125,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   ),
                   child: Text(
                     texts.lnurl_fetch_invoice_limit(
-                      currencyState.bitcoinCurrency.format((widget.requestData.minSendable ~/ 1000)),
-                      currencyState.bitcoinCurrency.format((widget.requestData.maxSendable ~/ 1000)),
+                      currencyState.bitcoinCurrency.format((widget.data.minSendable ~/ 1000)),
+                      currencyState.bitcoinCurrency.format((widget.data.maxSendable ~/ 1000)),
                     ),
                     textAlign: TextAlign.left,
                     style: theme.FieldTextStyle.labelStyle,
@@ -194,8 +194,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
             final amount = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
             final comment = _commentController.text;
             _log.info("LNURL payment of $amount sats where "
-                "min is ${widget.requestData.minSendable} msats "
-                "and max is ${widget.requestData.maxSendable} msats."
+                "min is ${widget.data.minSendable} msats "
+                "and max is ${widget.data.maxSendable} msats."
                 "with comment $comment");
             Navigator.pop(context, LNURLPaymentInfo(amount: amount, comment: comment));
           }
@@ -210,12 +210,12 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     final lspState = context.read<LSPBloc>().state;
     final currencyState = context.read<CurrencyBloc>().state;
 
-    final maxSendable = widget.requestData.maxSendable ~/ 1000;
+    final maxSendable = widget.data.maxSendable ~/ 1000;
     if (amount > maxSendable) {
       return texts.lnurl_payment_page_error_exceeds_limit(maxSendable);
     }
 
-    final minSendable = widget.requestData.minSendable ~/ 1000;
+    final minSendable = widget.data.minSendable ~/ 1000;
     if (amount < minSendable) {
       return texts.lnurl_payment_page_error_below_limit(minSendable);
     }

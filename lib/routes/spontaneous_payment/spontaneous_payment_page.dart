@@ -212,9 +212,9 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                   const Duration(seconds: 1),
                   () {
                     sendFuture = accBloc.sendSpontaneousPayment(
-                      widget.nodeID!,
-                      tipMessage,
-                      amount,
+                      nodeId: widget.nodeID!,
+                      description: tipMessage,
+                      amountMsat: amount * 1000,
                     );
                     return sendFuture;
                   },

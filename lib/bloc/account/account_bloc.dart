@@ -131,35 +131,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<sdk.LnUrlWithdrawResult> lnurlWithdraw({
-    required int amountSats,
-    required sdk.LnUrlWithdrawRequestData reqData,
-    String? description,
+    required sdk.LnUrlWithdrawRequest req,
   }) async {
-    _log.info("lnurlWithdraw amount: $amountSats, description: '$description', reqData: $reqData");
     try {
-      return await _breezLib.lnurlWithdraw(
-        amountSats: amountSats,
-        reqData: reqData,
-        description: description,
-      );
+      return await _breezLib.lnurlWithdraw(req: req);
     } catch (e) {
       _log.severe("lnurlWithdraw error", e);
       rethrow;
     }
   }
 
-  Future<sdk.LnUrlPayResult> lnurlPay({
-    required int amount,
-    required sdk.LnUrlPayRequestData reqData,
-    String? comment,
-  }) async {
-    _log.info("lnurlPay amount: $amount, comment: '$comment', reqData: $reqData");
+  Future<sdk.LnUrlPayResult> lnurlPay({required req}) async {
     try {
-      return await _breezLib.lnurlPay(
-        userAmountSat: amount,
-        reqData: reqData,
-        comment: comment,
-      );
+      return await _breezLib.lnurlPay(req: req);
     } catch (e) {
       _log.severe("lnurlPay error", e);
       rethrow;
@@ -181,7 +165,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future sendPayment(String bolt11, int? amountMsat) async {
     _log.info("sendPayment: $bolt11, $amountMsat");
     try {
-      await _breezLib.sendPayment(bolt11: bolt11, amountMsat: amountMsat);
+      final req = sdk.SendPaymentRequest(
+        bolt11: bolt11,
+        amountMsat: amountMsat,
+      );
+      await _breezLib.sendPayment(req: req);
     } catch (e) {
       _log.severe("sendPayment error", e);
       return Future.error(e);
@@ -193,18 +181,19 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     throw Exception("not implemented");
   }
 
-  Future sendSpontaneousPayment(
-    String nodeId,
-    String description,
-    int amountSats,
-  ) async {
-    _log.info("sendSpontaneousPayment: $nodeId, $description, $amountSats");
+  Future sendSpontaneousPayment({
+    required String nodeId,
+    String? description,
+    required int amountMsat,
+  }) async {
+    _log.info("sendSpontaneousPayment: $nodeId, $description, $amountMsat");
     _log.info("description field is not being used by the SDK yet");
     try {
-      await _breezLib.sendSpontaneousPayment(
+      final req = sdk.SendSpontaneousPaymentRequest(
         nodeId: nodeId,
-        amountSats: amountSats,
+        amountMsat: amountMsat,
       );
+      await _breezLib.sendSpontaneousPayment(req: req);
     } catch (e) {
       _log.severe("sendSpontaneousPayment error", e);
       return Future.error(e);
@@ -274,15 +263,17 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future<sdk.ReceivePaymentResponse> addInvoice({
     String description = "",
-    required int amountSats,
+    required int amountMsat,
     required sdk.OpeningFeeParams? chosenFeeParams,
   }) async {
-    _log.info("addInvoice: $description, $amountSats");
+    _log.info("addInvoice: $description, $amountMsat");
 
-    final requestData = sdk.ReceivePaymentRequest(
-        amountSats: amountSats, description: description, openingFeeParams: chosenFeeParams);
-    final responseData = await _breezLib.receivePayment(reqData: requestData);
-    return responseData;
+    final req = sdk.ReceivePaymentRequest(
+      amountMsat: amountMsat,
+      description: description,
+      openingFeeParams: chosenFeeParams,
+    );
+    return await _breezLib.receivePayment(req: req);
   }
 
   @override

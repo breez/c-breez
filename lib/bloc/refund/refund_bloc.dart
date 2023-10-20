@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,13 +35,14 @@ class RefundBloc extends Cubit<RefundState> {
   }) async {
     _log.info("Refunding swap $swapAddress to $toAddress with fee $satPerVbyte");
     try {
-      final txId = await _breezLib.refund(
+      final req = RefundRequest(
         swapAddress: swapAddress,
         toAddress: toAddress,
         satPerVbyte: satPerVbyte,
       );
-      _log.info("Refund txId: $txId");
-      return txId;
+      final refundResponse = await _breezLib.refund(req: req);
+      _log.info("Refund txId: ${refundResponse.refundTxId}");
+      return refundResponse.refundTxId;
     } catch (e) {
       _log.severe("Failed to refund swap", e);
       rethrow;

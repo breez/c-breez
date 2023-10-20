@@ -13,9 +13,9 @@ final _log = Logger("HandleLNURLAuthRequest");
 
 Future<LNURLPageResult?> handleAuthRequest(
   BuildContext context,
-  LnUrlAuthRequestData requestData,
+  LnUrlAuthRequestData reqData,
 ) async {
-  return promptAreYouSure(context, null, LoginText(domain: requestData.domain)).then(
+  return promptAreYouSure(context, null, LoginText(domain: reqData.domain)).then(
     (permitted) async {
       if (permitted == true) {
         final texts = context.texts();
@@ -23,7 +23,7 @@ Future<LNURLPageResult?> handleAuthRequest(
         final loaderRoute = createLoaderRoute(context);
         navigator.push(loaderRoute);
         try {
-          final resp = await context.read<AccountBloc>().lnurlAuth(reqData: requestData);
+          final resp = await context.read<AccountBloc>().lnurlAuth(reqData: reqData);
           if (resp is LnUrlCallbackStatus_Ok) {
             _log.info("LNURL auth success");
             return const LNURLPageResult(protocol: LnUrlProtocol.Auth);

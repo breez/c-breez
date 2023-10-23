@@ -4,10 +4,10 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/payment_options/form_validator.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
 final _log = Logger("ExemptfeeMsatWidget");

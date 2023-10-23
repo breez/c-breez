@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/keychain.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:c_breez/config.dart';
 
 class CredentialsManager {
   final _log = Logger("CredentialsManager");

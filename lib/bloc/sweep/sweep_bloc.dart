@@ -5,8 +5,8 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/sweep/sweep_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:logging/logging.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("SweepBloc");
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:logging/logging.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class Notifications {

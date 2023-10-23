@@ -10,9 +10,9 @@ import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
 
 final _log = Logger("QrCodeDialog");

@@ -1,6 +1,6 @@
 import 'package:breez_translations/generated/breez_translations.dart';
-import 'package:logging/logging.dart';
 import "package:flutter_rust_bridge/flutter_rust_bridge.dart";
+import 'package:logging/logging.dart';
 
 final _log = Logger("Exceptions");
 

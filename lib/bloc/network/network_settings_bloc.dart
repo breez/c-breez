@@ -5,9 +5,9 @@ import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/blockchain_explorer_utils.dart';
 import 'package:c_breez/utils/preferences.dart';
-import 'package:logging/logging.dart';
 import 'package:http/http.dart' as http;
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:logging/logging.dart';
 
 class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin {
   final Preferences _preferences;

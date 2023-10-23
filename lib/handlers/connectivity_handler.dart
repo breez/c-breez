@@ -8,9 +8,9 @@ import 'package:c_breez/handlers/handler.dart';
 import 'package:c_breez/handlers/handler_context_provider.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("ConnectivityHandler");
 

@@ -4,9 +4,9 @@ import 'package:c_breez/models/bitcoin_address_info.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("BitcoinAddressTextFormField");
 

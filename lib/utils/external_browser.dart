@@ -1,8 +1,8 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:logging/logging.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 final _log = Logger("ExternalBrowser");

@@ -1,7 +1,7 @@
 import 'package:c_breez/bloc/payment_options/payment_options_state.dart';
 import 'package:c_breez/utils/preferences.dart';
-import 'package:logging/logging.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("PaymentOptionsBloc");
 

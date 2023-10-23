@@ -7,8 +7,8 @@ import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("HandleLNURLWithdrawPageResult");
 

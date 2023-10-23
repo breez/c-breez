@@ -7,9 +7,9 @@ import 'package:c_breez/bloc/account/payment_result.dart';
 import 'package:c_breez/handlers/handler.dart';
 import 'package:c_breez/handlers/handler_context_provider.dart';
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
 final _log = Logger("PaymentResultHandler");

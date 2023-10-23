@@ -7,9 +7,9 @@ import 'package:c_breez/routes/lnurl/payment/success_action/success_action_dialo
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("HandleLNURLPayRequest");
 

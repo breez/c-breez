@@ -35,10 +35,10 @@ import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 const String THEME_ID_PREFERENCE_KEY = "themeID";

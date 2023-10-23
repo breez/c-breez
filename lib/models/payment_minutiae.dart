@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("PaymentDetails");
 

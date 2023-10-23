@@ -5,8 +5,8 @@ import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/preferences.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("MoonPayBloc");
 

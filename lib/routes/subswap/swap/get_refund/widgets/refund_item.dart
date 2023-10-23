@@ -31,8 +31,7 @@ class RefundItem extends StatelessWidget {
 class _RefundItemAmount extends StatelessWidget {
   final int confirmedSats;
 
-  const _RefundItemAmount(
-    this.confirmedSats);
+  const _RefundItemAmount(this.confirmedSats);
 
   @override
   Widget build(BuildContext context) {

@@ -4,8 +4,8 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("RevSwapsInProgressBloc");
 

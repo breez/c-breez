@@ -5,9 +5,9 @@ import 'package:c_breez/routes/lnurl/auth/login_text.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/loader.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("HandleLNURLAuthRequest");
 

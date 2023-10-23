@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:clipboard_watcher/clipboard_watcher.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';

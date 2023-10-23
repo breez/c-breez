@@ -546,7 +546,7 @@ class BreezDropdownButton<T> extends StatefulWidget {
     this.iconSize = 24.0,
     this.isDense = false,
     this.isExpanded = false,
-  })  : assert(items.isEmpty ||
+  }) : assert(items.isEmpty ||
             value == null ||
             items.where((DropdownMenuItem<T> item) => item.value == value).length == 1);
 

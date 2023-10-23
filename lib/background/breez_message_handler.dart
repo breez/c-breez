@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:c_breez/background/breez_service_initializer.dart';
 import 'package:c_breez/main.dart';
-import 'package:logging/logging.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:logging/logging.dart';
 import 'package:workmanager/workmanager.dart';
 
 final _log = Logger("BreezMessageHandler");

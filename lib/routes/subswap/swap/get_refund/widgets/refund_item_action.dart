@@ -4,8 +4,8 @@ import 'package:c_breez/routes/subswap/swap/get_refund/send_onchain.dart';
 import 'package:c_breez/routes/subswap/swap/get_refund/wait_broadcast_dialog.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 final _log = Logger("RefundItemAction");
 

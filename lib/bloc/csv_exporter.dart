@@ -7,8 +7,8 @@ import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:csv/csv.dart';
-import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
 final _log = Logger("CsvExporter");

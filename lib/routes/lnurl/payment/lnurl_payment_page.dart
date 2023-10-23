@@ -42,8 +42,8 @@ class LNURLPaymentPage extends StatefulWidget {
     this.identifier,
      */
 
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() {

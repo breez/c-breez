@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class NoLSPWidget extends StatelessWidget {
   const NoLSPWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

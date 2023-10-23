@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class FadeInWidget extends StatefulWidget {
   final Widget child;
 
-  const FadeInWidget({Key? key, required this.child}) : super(key: key);
+  const FadeInWidget({super.key, required this.child});
 
   @override
   State<StatefulWidget> createState() {

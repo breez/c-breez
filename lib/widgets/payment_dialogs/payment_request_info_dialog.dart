@@ -31,8 +31,8 @@ class PaymentRequestInfoDialog extends StatefulWidget {
     this._onPaymentApproved,
     this._setAmountToPay,
     this.minHeight, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() {

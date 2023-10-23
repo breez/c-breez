@@ -20,7 +20,7 @@ class ShareablePaymentRow extends StatelessWidget {
   final AutoSizeGroup? valueAutoSizeGroup;
 
   const ShareablePaymentRow({
-    Key? key,
+    super.key,
     required this.title,
     required this.sharedValue,
     this.isURL = false,
@@ -32,7 +32,7 @@ class ShareablePaymentRow extends StatelessWidget {
     this.childrenPadding,
     this.labelAutoSizeGroup,
     this.valueAutoSizeGroup,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -11,9 +11,9 @@ class SecurityPinInterval extends StatelessWidget {
   final Duration interval;
 
   const SecurityPinInterval({
-    Key? key,
+    super.key,
     required this.interval,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -17,13 +17,13 @@ class PinCodeWidget extends StatefulWidget {
   final Future<TestPinResult> Function()? testBiometricsFunction;
 
   const PinCodeWidget({
-    Key? key,
+    super.key,
     this.pinLength = 6,
     required this.label,
     required this.testPinCodeFunction,
     this.testBiometricsFunction,
     this.localAuthenticationOption = LocalAuthenticationOption.none,
-  }) : super(key: key);
+  });
 
   @override
   State<PinCodeWidget> createState() => _PinCodeWidgetState();

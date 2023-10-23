@@ -14,12 +14,12 @@ class ReverseSwapConfirmationPage extends StatefulWidget {
   final int? boltzFees;
 
   const ReverseSwapConfirmationPage({
-    Key? key,
+    super.key,
     required this.amountSat,
     required this.onchainRecipientAddress,
     required this.feesHash,
     this.boltzFees,
-  }) : super(key: key);
+  });
 
   @override
   State<ReverseSwapConfirmationPage> createState() => _ReverseSwapConfirmationPageState();
@@ -101,9 +101,8 @@ class _ErrorMessage extends StatelessWidget {
   final String message;
 
   const _ErrorMessage({
-    Key? key,
     required this.message,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

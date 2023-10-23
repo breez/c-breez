@@ -9,12 +9,12 @@ class NumPadWidget extends StatelessWidget {
   final Function(ActionKey) onActionKeyPressed;
 
   const NumPadWidget({
-    Key? key,
+    super.key,
     this.lhsActionKey = ActionKey.Clear,
     this.rhsActionKey = ActionKey.Backspace,
     required this.onDigitPressed,
     required this.onActionKeyPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -18,8 +18,8 @@ class PaymentItem extends StatefulWidget {
     this._paymentMinutiae,
     this._firstItem,
     this.firstPaymentItemKey, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<PaymentItem> createState() => _PaymentItemState();

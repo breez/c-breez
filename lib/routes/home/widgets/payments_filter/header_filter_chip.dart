@@ -11,9 +11,8 @@ class HeaderFilterChip extends SliverPadding {
     double maxHeight,
     DateTime startDate,
     DateTime endDate, {
-    Key? key,
+    super.key,
   }) : super(
-          key: key,
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           sliver: SliverPersistentHeader(
             pinned: true,

@@ -14,7 +14,7 @@ final _log = Logger("CommandsList");
 class CommandLineInterface extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const CommandLineInterface({Key? key, required this.scaffoldKey}) : super(key: key);
+  const CommandLineInterface({super.key, required this.scaffoldKey});
 
   @override
   State<CommandLineInterface> createState() => _CommandLineInterfaceState();

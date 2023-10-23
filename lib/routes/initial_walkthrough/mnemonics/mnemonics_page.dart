@@ -12,7 +12,7 @@ class MnemonicsPage extends StatefulWidget {
   final String mnemonics;
   final bool viewMode;
 
-  const MnemonicsPage({Key? key, required this.mnemonics, this.viewMode = false}) : super(key: key);
+  const MnemonicsPage({super.key, required this.mnemonics, this.viewMode = false});
 
   @override
   MnemonicsPageState createState() => MnemonicsPageState();

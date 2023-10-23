@@ -24,22 +24,21 @@ class AmountFormField extends TextFormField {
     required BuildContext context,
     Color? iconColor,
     Function(String amount)? returnFN,
-    TextEditingController? controller,
+    super.controller,
     Key? key,
     String? initialValue,
-    FocusNode? focusNode,
+    super.focusNode,
     InputDecoration decoration = const InputDecoration(),
-    TextStyle? style,
+    super.style,
     TextAlign textAlign = TextAlign.start,
     int maxLines = 1,
     int? maxLength,
-    ValueChanged<String>? onFieldSubmitted,
-    FormFieldSetter<String>? onSaved,
-    bool? enabled,
-    ValueChanged<String>? onChanged,
+    super.onFieldSubmitted,
+    super.onSaved,
+    super.enabled,
+    super.onChanged,
     bool? readOnly,
   }) : super(
-          focusNode: focusNode,
           keyboardType: TextInputType.numberWithOptions(
             decimal: bitcoinCurrency != BitcoinCurrency.SAT,
           ),
@@ -74,9 +73,6 @@ class AmountFormField extends TextFormField {
                     ),
                   ),
           ),
-          style: style,
-          enabled: enabled,
-          controller: controller,
           inputFormatters: bitcoinCurrency != BitcoinCurrency.SAT
               ? [
                   FilteringTextInputFormatter.allow(bitcoinCurrency.whitelistedPattern),
@@ -87,9 +83,6 @@ class AmountFormField extends TextFormField {
                   ),
                 ]
               : [SatAmountFormFieldFormatter()],
-          onFieldSubmitted: onFieldSubmitted,
-          onSaved: onSaved,
-          onChanged: onChanged,
           readOnly: readOnly ?? false,
         );
 

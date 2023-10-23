@@ -12,10 +12,10 @@ class FlipTransition extends StatefulWidget {
   const FlipTransition(
     this.firstChild,
     this.secondChild, {
-    Key? key,
+    super.key,
     required this.radius,
     required this.onComplete,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() {

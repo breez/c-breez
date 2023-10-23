@@ -15,9 +15,9 @@ class FeeBreakdown extends StatelessWidget {
   const FeeBreakdown(
     this.total,
     this.fee, {
-    Key? key,
+    super.key,
     this.boltzFees,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

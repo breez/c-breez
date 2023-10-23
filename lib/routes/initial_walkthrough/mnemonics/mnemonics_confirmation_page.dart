@@ -55,8 +55,8 @@ class MnemonicsConfirmationPageState extends State<MnemonicsConfirmationPage> {
 
 class MnemonicsImage extends StatelessWidget {
   const MnemonicsImage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,10 +99,10 @@ class ConfirmationCheckbox extends StatelessWidget {
   final Function(bool value) onPressed;
 
   const ConfirmationCheckbox({
-    Key? key,
+    super.key,
     required this.onPressed,
     required this.isUnderstood,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -139,10 +139,10 @@ class ConfirmButton extends StatelessWidget {
   final String mnemonics;
 
   const ConfirmButton({
-    Key? key,
+    super.key,
     required this.isUnderstood,
     required this.mnemonics,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

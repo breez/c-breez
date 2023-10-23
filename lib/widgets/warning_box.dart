@@ -9,7 +9,7 @@ class WarningBox extends StatelessWidget {
   final Color? borderColor;
 
   const WarningBox({
-    Key? key,
+    super.key,
     required this.child,
     this.boxPadding = const EdgeInsets.symmetric(
       vertical: 16,
@@ -21,7 +21,7 @@ class WarningBox extends StatelessWidget {
     ),
     this.backgroundColor,
     this.borderColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

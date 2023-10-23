@@ -11,12 +11,12 @@ class TxWidget extends StatelessWidget {
   final EdgeInsets? padding;
 
   const TxWidget({
-    Key? key,
+    super.key,
     required this.txURL,
     required this.txID,
     this.txLabel,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -19,10 +19,10 @@ class WalletDashboard extends StatefulWidget {
   final double offsetFactor;
 
   const WalletDashboard({
-    Key? key,
+    super.key,
     required this.height,
     required this.offsetFactor,
-  }) : super(key: key);
+  });
 
   @override
   State<WalletDashboard> createState() => _WalletDashboardState();

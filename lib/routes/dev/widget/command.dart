@@ -7,8 +7,8 @@ class Command extends StatelessWidget {
   const Command(
     this.command,
     this.onTap, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

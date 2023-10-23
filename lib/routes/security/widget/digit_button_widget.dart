@@ -8,13 +8,12 @@ class DigitButtonWidget extends StatelessWidget {
   final Function(String?)? onPressed;
 
   const DigitButtonWidget({
-    Key? key,
+    super.key,
     this.digit,
     this.icon,
     this.foregroundColor = Colors.white,
     this.onPressed,
-  })  : assert(digit != null || icon != null, "Either digit or icon must be provided"),
-        super(key: key);
+  })  : assert(digit != null || icon != null, "Either digit or icon must be provided");
 
   @override
   Widget build(BuildContext context) {

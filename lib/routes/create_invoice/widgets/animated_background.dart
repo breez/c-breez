@@ -4,8 +4,8 @@ import 'package:simple_animations/simple_animations.dart';
 
 class AnimatedBackground extends StatelessWidget {
   const AnimatedBackground({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

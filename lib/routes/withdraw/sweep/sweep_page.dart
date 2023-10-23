@@ -23,8 +23,8 @@ class SweepPage extends StatefulWidget {
 
   const SweepPage({
     required this.walletBalance,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<SweepPage> createState() => _SweepPageState();

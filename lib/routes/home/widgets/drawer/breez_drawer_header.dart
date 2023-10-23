@@ -4,14 +4,14 @@ const double _kBreezDrawerHeaderHeight = 160.0 + 1.0; // bottom edge
 
 class BreezDrawerHeader extends DrawerHeader {
   const BreezDrawerHeader({
-    Key? key,
+    super.key,
     super.decoration,
     super.margin = const EdgeInsets.only(bottom: 16.0),
     super.padding = const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
     super.duration = const Duration(milliseconds: 250),
     super.curve = Curves.fastOutSlowIn,
     required super.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

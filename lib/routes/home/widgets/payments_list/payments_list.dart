@@ -27,8 +27,8 @@ class PaymentsList extends StatelessWidget {
     this._payments,
     this._itemHeight,
     this.firstPaymentItemKey, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

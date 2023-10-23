@@ -12,9 +12,9 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
   const ClosedChannelPaymentDetailsWidget({
-    Key? key,
+    super.key,
     required this.paymentMinutiae,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

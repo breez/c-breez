@@ -8,9 +8,9 @@ class WarningAction extends StatefulWidget {
 
   const WarningAction(
     this.onTap, {
-    Key? key,
+    super.key,
     this.iconWidget,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() {

@@ -68,13 +68,6 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
     if (addressData.amountSat != null) {
       _setAmount(addressData.amountSat!);
     }
-
-    /// TODO: When handling BTC addresses through InputHandler, display label & message of BitcoinAddressData
-    /// The label of the address - e.g. name of the receiver.
-    /// widget.btcAddressData!.label
-    /// Message that describes the transaction to the user.
-    /// widget.btcAddressData!.message
-    /// Set amount field as readOnly if widget.btcAddressData!.amountSat is available
   }
 
   @override

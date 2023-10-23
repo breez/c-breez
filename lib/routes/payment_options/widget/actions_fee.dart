@@ -10,8 +10,8 @@ final _log = Logger("ActionsFee");
 
 class ActionsFee extends StatelessWidget {
   const ActionsFee({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

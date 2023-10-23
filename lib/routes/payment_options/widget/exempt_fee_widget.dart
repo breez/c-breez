@@ -14,8 +14,8 @@ final _log = Logger("ExemptfeeMsatWidget");
 
 class ExemptfeeMsatWidget extends StatefulWidget {
   const ExemptfeeMsatWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ExemptfeeMsatWidget> createState() => _ExemptfeeMsatState();

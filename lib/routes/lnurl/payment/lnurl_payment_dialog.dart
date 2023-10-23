@@ -17,8 +17,8 @@ class LNURLPaymentDialog extends StatefulWidget {
 
   const LNURLPaymentDialog({
     required this.data,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() {

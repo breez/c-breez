@@ -10,11 +10,11 @@ class MnemonicItem extends StatelessWidget {
   final AutoSizeGroup? autoSizeGroup;
 
   const MnemonicItem({
-    Key? key,
+    super.key,
     required this.mnemonic,
     required this.index,
     this.autoSizeGroup,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -9,8 +9,8 @@ final _log = Logger("OverrideFee");
 
 class OverrideFee extends StatelessWidget {
   const OverrideFee({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

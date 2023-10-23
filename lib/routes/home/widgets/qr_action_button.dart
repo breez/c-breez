@@ -17,8 +17,8 @@ class QrActionButton extends StatelessWidget {
 
   const QrActionButton(
     this.firstPaymentItemKey, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

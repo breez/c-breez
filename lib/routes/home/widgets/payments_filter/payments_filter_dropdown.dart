@@ -9,8 +9,8 @@ class PaymentsFilterDropdown extends StatelessWidget {
   const PaymentsFilterDropdown(
     this.filter,
     this.onFilterChanged, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

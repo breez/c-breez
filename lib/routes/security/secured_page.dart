@@ -12,9 +12,9 @@ class SecuredPage<T> extends StatefulWidget {
   final Widget securedWidget;
 
   const SecuredPage({
-    Key? key,
+    super.key,
     required this.securedWidget,
-  }) : super(key: key);
+  });
 
   @override
   State<SecuredPage<T>> createState() => _SecuredPageState<T>();

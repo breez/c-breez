@@ -9,10 +9,10 @@ class ProcessingPaymentContent extends StatelessWidget {
   final Color color;
 
   const ProcessingPaymentContent({
-    Key? key,
+    super.key,
     this.dialogKey,
     this.color = Colors.transparent,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

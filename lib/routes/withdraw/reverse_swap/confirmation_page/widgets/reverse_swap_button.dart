@@ -14,12 +14,12 @@ class ReverseSwapButton extends StatelessWidget {
   final int satPerVbyte;
 
   const ReverseSwapButton({
-    Key? key,
+    super.key,
     required this.amountSat,
     required this.onchainRecipientAddress,
     required this.feesHash,
     required this.satPerVbyte,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +48,10 @@ class ReverseSwapButton extends StatelessWidget {
 
       navigator.pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false);
     } catch (e) {
+      // ignore: use_build_context_synchronously
       final themeData = Theme.of(context);
       navigator.pop(loaderRoute);
+      // ignore: use_build_context_synchronously
       promptError(
         context,
         null,

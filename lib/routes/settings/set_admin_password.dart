@@ -10,9 +10,9 @@ class SetAdminPasswordPage extends StatefulWidget {
   final String submitAction;
 
   const SetAdminPasswordPage({
-    Key? key,
+    super.key,
     required this.submitAction,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() {

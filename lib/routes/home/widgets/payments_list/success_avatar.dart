@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class SuccessAvatar extends StatelessWidget {
   final double? radius;
 
-  const SuccessAvatar({Key? key, this.radius}) : super(key: key);
+  const SuccessAvatar({super.key, this.radius});
 
   @override
   Widget build(BuildContext context) {

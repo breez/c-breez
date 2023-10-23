@@ -15,8 +15,8 @@ const double ITEM_HEIGHT = 72.0;
 
 class FiatCurrencySettings extends StatefulWidget {
   const FiatCurrencySettings({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   FiatCurrencySettingsState createState() {

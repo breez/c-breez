@@ -7,8 +7,8 @@ class Preview extends StatefulWidget {
 
   const Preview(
     this.children, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<Preview> createState() => _PreviewState();

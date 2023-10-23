@@ -8,13 +8,13 @@ class FeeOptionButton extends StatelessWidget {
   final Function onSelect;
 
   const FeeOptionButton({
-    Key? key,
+    super.key,
     required this.index,
     required this.text,
     required this.isAffordable,
     required this.isSelected,
     required this.onSelect,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

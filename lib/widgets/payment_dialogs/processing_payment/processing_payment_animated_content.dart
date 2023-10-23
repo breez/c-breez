@@ -11,7 +11,7 @@ class ProcessingPaymentAnimatedContent extends StatelessWidget {
   final Widget child;
 
   const ProcessingPaymentAnimatedContent({
-    Key? key,
+    super.key,
     required this.color,
     required this.opacity,
     required this.moment,
@@ -19,7 +19,7 @@ class ProcessingPaymentAnimatedContent extends StatelessWidget {
     required this.startHeight,
     required this.transitionAnimation,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

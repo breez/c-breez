@@ -11,14 +11,14 @@ class SimpleSwitch extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
 
   const SimpleSwitch({
-    Key? key,
+    super.key,
     required this.text,
     required this.switchValue,
     this.trailing,
     this.group,
     this.onTap,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -16,9 +16,9 @@ class FeeChooser extends StatefulWidget {
     required this.feeOptions,
     required this.selectedFeeIndex,
     required this.onSelect,
-    Key? key,
+    super.key,
     this.boltzFees,
-  }) : super(key: key);
+  });
 
   @override
   State<FeeChooser> createState() => _FeeChooserState();

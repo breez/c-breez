@@ -11,10 +11,10 @@ class AddressQRWidget extends StatelessWidget {
   final String backupJson;
 
   const AddressQRWidget({
-    Key? key,
+    super.key,
     required this.address,
     required this.backupJson,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

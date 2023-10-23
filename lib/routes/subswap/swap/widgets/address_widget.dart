@@ -28,9 +28,9 @@ class AddressHeaderWidget extends StatelessWidget {
   final String address;
 
   const AddressHeaderWidget({
-    Key? key,
+    super.key,
     required this.address,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +60,8 @@ class _ShareIcon extends StatelessWidget {
   final String address;
 
   const _ShareIcon({
-    Key? key,
     required this.address,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -88,9 +87,8 @@ class _CopyIcon extends StatelessWidget {
   final String address;
 
   const _CopyIcon({
-    Key? key,
     required this.address,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 class MoonpayLoading extends StatelessWidget {
   const MoonpayLoading({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

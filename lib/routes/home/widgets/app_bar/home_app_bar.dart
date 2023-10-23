@@ -7,11 +7,10 @@ import 'account_required_actions.dart';
 
 class HomeAppBar extends AppBar {
   HomeAppBar({
-    Key? key,
+    super.key,
     required ThemeData themeData,
     required GlobalKey<ScaffoldState> scaffoldKey,
   }) : super(
-          key: key,
           centerTitle: false,
           actions: [
             const Padding(

@@ -13,8 +13,8 @@ class SelectLSPPage extends StatelessWidget {
   final selectedLspController = StreamController<LspInformation?>();
 
   SelectLSPPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +67,10 @@ class _LspActionButton extends StatelessWidget {
   final void Function() resetLsp;
 
   const _LspActionButton({
-    Key? key,
     this.selectedLsp,
     required this.error,
     required this.resetLsp,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

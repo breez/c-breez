@@ -21,7 +21,7 @@ import 'package:hex/hex.dart';
 import 'package:theme_provider/theme_provider.dart';
 
 class UITestPage extends StatelessWidget {
-  const UITestPage({Key? key}) : super(key: key);
+  const UITestPage({super.key});
 
   @override
   Widget build(BuildContext context) {

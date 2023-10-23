@@ -10,8 +10,8 @@ class RefundItem extends StatelessWidget {
 
   const RefundItem(
     this.swapInfo, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +32,7 @@ class _RefundItemAmount extends StatelessWidget {
   final int confirmedSats;
 
   const _RefundItemAmount(
-    this.confirmedSats, {
-    Key? key,
-  }) : super(key: key);
+    this.confirmedSats);
 
   @override
   Widget build(BuildContext context) {

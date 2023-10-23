@@ -10,8 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MoonPayPage extends StatefulWidget {
   const MoonPayPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<MoonPayPage> createState() => _MoonPayPageState();

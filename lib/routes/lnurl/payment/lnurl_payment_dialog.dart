@@ -13,10 +13,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 final _log = Logger("LNURLPaymentDialog");
 
 class LNURLPaymentDialog extends StatefulWidget {
-  final sdk.LnUrlPayRequestData requestData;
+  final sdk.LnUrlPayRequestData data;
 
   const LNURLPaymentDialog({
-    required this.requestData,
+    required this.data,
     Key? key,
   }) : super(key: key);
 
@@ -40,7 +40,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
     final metadataMap = {
-      for (var v in json.decode(widget.requestData.metadataStr)) v[0] as String: v[1],
+      for (var v in json.decode(widget.data.metadataStr)) v[0] as String: v[1],
     };
     final description = metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
     FiatConversion? fiatConversion;
@@ -53,7 +53,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
 
     return AlertDialog(
       title: Text(
-        Uri.parse(widget.requestData.callback).host,
+        Uri.parse(widget.data.callback).host,
         style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
         textAlign: TextAlign.center,
       ),
@@ -84,9 +84,9 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               ),
               child: Text(
                 _showFiatCurrency && fiatConversion != null
-                    ? fiatConversion.format(widget.requestData.maxSendable ~/ 1000)
+                    ? fiatConversion.format(widget.data.maxSendable ~/ 1000)
                     : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                        .format(widget.requestData.maxSendable ~/ 1000),
+                        .format(widget.data.maxSendable ~/ 1000),
                 style: themeData.primaryTextTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
@@ -146,10 +146,10 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             }),
           ),
           onPressed: () {
-            final amount = widget.requestData.maxSendable ~/ 1000;
+            final amount = widget.data.maxSendable ~/ 1000;
             _log.info("LNURL payment of $amount sats where "
-                "min is ${widget.requestData.minSendable} msats "
-                "and max is ${widget.requestData.maxSendable} msats.");
+                "min is ${widget.data.minSendable} msats "
+                "and max is ${widget.data.maxSendable} msats.");
             Navigator.pop(context, LNURLPaymentInfo(amount: amount));
           },
           child: Text(

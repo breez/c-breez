@@ -21,13 +21,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
         with: 
-          path: 'cbreez'              
+          path: 'cbreez'            
 
       - uses: actions/checkout@v3
         with:         
-          repository: 'breez/breez-sdk'                   
+          repository: 'breez/breez-sdk' 
+          ref: 'bindings_request_response'                  
           ssh-key: ${{secrets.REPO_SSH_KEY}}          
           path: 'breez-sdk'
+          
 
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2

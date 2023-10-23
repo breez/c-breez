@@ -58,6 +58,7 @@ class CredentialsManager {
     final breezLib = ServiceInjector().breezSDK;
     Config config = await Config.instance();
     String workingDir = config.sdkConfig.workingDir;
-    return await breezLib.staticBackup(request: sdk.StaticBackupRequest(workingDir: workingDir));
+    final req = sdk.StaticBackupRequest(workingDir: workingDir);
+    return await breezLib.staticBackup(req: req);
   }
 }

@@ -35,7 +35,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
       if (swapInProgress != null) {
         swapUnused = null;
       } else {
-        swapUnused = (await _breezLib.receiveOnchain(reqData: const ReceiveOnchainRequest()));
+        swapUnused = (await _breezLib.receiveOnchain(req: const ReceiveOnchainRequest()));
       }
       _log.info("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
       emit(SwapInProgressState(swapInProgress, swapUnused));

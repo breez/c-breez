@@ -26,12 +26,14 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         "Reverse Swap of $amountSat sats to address $onchainRecipientAddress using $satPerVbyte sats/vByte as"
         " fee rate w/ pairHash: $pairHash",
       );
-      final reverseSwapInfo = await _breezLib.sendOnchain(
+      final req = SendOnchainRequest(
         amountSat: amountSat,
         onchainRecipientAddress: onchainRecipientAddress,
         pairHash: pairHash,
         satPerVbyte: satPerVbyte,
       );
+      final reverseSwapReponse = await _breezLib.sendOnchain(req: req);
+      final reverseSwapInfo = reverseSwapReponse.reverseSwapInfo;
       _log.info(
         "Reverse Swap Info for id: ${reverseSwapInfo.id}, ${reverseSwapInfo.onchainAmountSat} sats to address"
         " ${reverseSwapInfo.claimPubkey} w/ status: ${reverseSwapInfo.status}",

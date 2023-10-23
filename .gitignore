@@ -32,6 +32,9 @@
 /build/
 untranslated_messages.txt
 
+# fenv related
+.flutter-version
+
 # Web related
 lib/generated_plugin_registrant.dart
 

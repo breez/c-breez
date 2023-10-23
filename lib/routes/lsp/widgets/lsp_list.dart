@@ -10,8 +10,7 @@ class LspList extends StatefulWidget {
   final LspInformation? selectedLsp;
   final ValueChanged<LspInformation> onSelected;
 
-  const LspList({Key? key, required this.lspList, required this.selectedLsp, required this.onSelected})
-      : super(key: key);
+  const LspList({super.key, required this.lspList, required this.selectedLsp, required this.onSelected});
 
   @override
   State<LspList> createState() => _LspListState();

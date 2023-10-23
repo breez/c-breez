@@ -9,8 +9,8 @@ final _log = Logger("MempoolSettingsWidget");
 
 class MempoolSettingsWidget extends StatefulWidget {
   const MempoolSettingsWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<MempoolSettingsWidget> createState() => _MempoolSettingsWidgetState();

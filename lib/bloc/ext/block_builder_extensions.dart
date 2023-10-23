@@ -9,9 +9,9 @@ class BlocBuilder2<Bloc1 extends BlocBase<State1>, State1, Bloc2 extends BlocBas
   final BlocWidgetBuilder2<State1, State2> builder;
 
   const BlocBuilder2({
-    Key? key,
+    super.key,
     required this.builder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +31,9 @@ class BlocBuilder3<Bloc1 extends BlocBase<State1>, State1, Bloc2 extends BlocBas
   final BlocWidgetBuilder3<State1, State2, State3> builder;
 
   const BlocBuilder3({
-    Key? key,
+    super.key,
     required this.builder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

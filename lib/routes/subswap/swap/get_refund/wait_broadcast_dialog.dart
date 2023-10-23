@@ -120,8 +120,8 @@ class WaitBroadcastDialog extends StatelessWidget {
 
 class WaitingBroadcastContent extends StatelessWidget {
   const WaitingBroadcastContent({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +153,9 @@ class BroadcastResultContent extends StatelessWidget {
   final String txId;
 
   const BroadcastResultContent({
-    Key? key,
+    super.key,
     required this.txId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -191,9 +191,8 @@ class _TransactionDetails extends StatelessWidget {
   final String txId;
 
   const _TransactionDetails({
-    Key? key,
     required this.txId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -222,9 +221,8 @@ class _ShareAndCopyTxID extends StatelessWidget {
   final String txId;
 
   const _ShareAndCopyTxID({
-    Key? key,
     required this.txId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -274,9 +272,8 @@ class _TransactionID extends StatelessWidget {
   final String txId;
 
   const _TransactionID({
-    Key? key,
     required this.txId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

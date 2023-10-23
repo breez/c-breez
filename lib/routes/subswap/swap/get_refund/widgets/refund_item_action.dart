@@ -14,8 +14,8 @@ class RefundItemAction extends StatelessWidget {
 
   const RefundItemAction(
     this.swapInfo, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

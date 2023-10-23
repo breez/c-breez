@@ -100,8 +100,8 @@ class ImagePickerButton extends StatelessWidget {
 
   const ImagePickerButton(
     this.cameraController, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -149,8 +149,8 @@ class ImagePickerButton extends StatelessWidget {
 
 class QRScanCancelButton extends StatelessWidget {
   const QRScanCancelButton({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

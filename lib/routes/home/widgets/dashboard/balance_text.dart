@@ -12,12 +12,12 @@ class BalanceText extends StatefulWidget {
   final double offsetFactor;
 
   const BalanceText({
-    Key? key,
+    super.key,
     required this.userProfileState,
     required this.currencyState,
     required this.accountState,
     required this.offsetFactor,
-  }) : super(key: key);
+  });
 
   @override
   State<BalanceText> createState() => _BalanceTextState();

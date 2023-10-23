@@ -33,14 +33,13 @@ class CreateInvoicePage extends StatefulWidget {
   final LnUrlWithdrawRequestData? requestData;
 
   const CreateInvoicePage({
-    Key? key,
+    super.key,
     this.requestData,
     this.onFinish,
   })  : assert(
           requestData == null || (onFinish != null),
           "If you are using LNURL withdraw, you must provide an onFinish callback.",
-        ),
-        super(key: key);
+        );
 
   @override
   State<StatefulWidget> createState() {

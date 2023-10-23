@@ -18,8 +18,8 @@ class PaymentmentFilterExporter extends StatelessWidget {
 
   PaymentmentFilterExporter(
     this.filter, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +88,7 @@ class PaymentmentFilterExporter extends StatelessWidget {
           navigator.removeRoute(loaderRoute);
         }
         _log.severe("Received error: $error");
+        // ignore: use_build_context_synchronously
         showFlushbar(
           context,
           message: texts.payments_filter_action_export_failed,

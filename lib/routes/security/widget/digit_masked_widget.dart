@@ -10,12 +10,12 @@ class DigitMaskedWidget extends StatelessWidget {
   final Color unfilledColor;
 
   const DigitMaskedWidget({
-    Key? key,
+    super.key,
     this.size = 32,
     this.filled = false,
     this.filledColor = Colors.white,
     this.unfilledColor = Colors.transparent,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,8 +64,8 @@ class DigitMaskedWidget extends StatelessWidget {
 
 class DigitMaskedWidgetPreview extends StatefulWidget {
   const DigitMaskedWidgetPreview({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<DigitMaskedWidgetPreview> createState() => _DigitMaskedWidgetPreviewState();

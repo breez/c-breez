@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class FadeInRoute<T> extends CupertinoPageRoute<T> {
-  FadeInRoute({required WidgetBuilder builder, RouteSettings? settings})
-      : super(builder: builder, settings: settings);
+  FadeInRoute({required super.builder, super.settings});
 
   @override
   Widget buildTransitions(
@@ -18,8 +17,7 @@ class FadeInRoute<T> extends CupertinoPageRoute<T> {
 }
 
 class NoTransitionRoute<T> extends CupertinoPageRoute<T> {
-  NoTransitionRoute({required WidgetBuilder builder, RouteSettings? settings})
-      : super(builder: builder, settings: settings);
+  NoTransitionRoute({required super.builder, super.settings});
 
   @override
   Widget buildTransitions(

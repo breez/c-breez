@@ -4,7 +4,7 @@ import 'package:sqflite_common_ffi/src/mixin/handler_mixin.dart';
 
 void sqfliteFfiInitAsMockMethodCallHandler() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  final binding = TestDefaultBinaryMessengerBinding.instance!;
+  final binding = TestDefaultBinaryMessengerBinding.instance;
   binding.defaultBinaryMessenger.setMockMethodCallHandler(
     const MethodChannel('com.tekartik.sqflite'),
     (methodCall) async {

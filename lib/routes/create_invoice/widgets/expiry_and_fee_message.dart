@@ -13,9 +13,9 @@ class ExpiryAndFeeMessage extends StatelessWidget {
   final int? lspFees;
 
   const ExpiryAndFeeMessage({
-    Key? key,
+    super.key,
     required this.lspFees,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

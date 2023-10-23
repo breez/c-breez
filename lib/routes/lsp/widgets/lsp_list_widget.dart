@@ -13,11 +13,11 @@ class LspListWidget extends StatefulWidget {
   final ValueChanged<Object> onError;
 
   const LspListWidget({
-    Key? key,
+    super.key,
     required this.selectedLsp,
     required this.onSelected,
     required this.onError,
-  }) : super(key: key);
+  });
 
   @override
   State<LspListWidget> createState() => _LspListWidgetState();
@@ -67,7 +67,7 @@ class _LspListWidgetState extends State<LspListWidget> {
 }
 
 class _LspErrorText extends StatelessWidget {
-  const _LspErrorText({Key? key}) : super(key: key);
+  const _LspErrorText();
 
   @override
   Widget build(BuildContext context) {

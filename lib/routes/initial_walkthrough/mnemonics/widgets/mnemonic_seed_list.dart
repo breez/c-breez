@@ -7,9 +7,9 @@ class MnemonicSeedList extends StatelessWidget {
   final List<String> mnemonicsList;
 
   const MnemonicSeedList({
-    Key? key,
+    super.key,
     required this.mnemonicsList,
-  }) : super(key: key);
+  });
 
   get autoSizeGroup => AutoSizeGroup();
 

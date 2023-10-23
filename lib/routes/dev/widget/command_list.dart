@@ -17,8 +17,8 @@ class CommandList extends StatelessWidget {
     this.fallbackTextStyle = const TextStyle(),
     required this.inputController,
     required this.focusNode,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

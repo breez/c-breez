@@ -31,8 +31,8 @@ class AccountPage extends StatelessWidget {
   const AccountPage(
     this.firstPaymentItemKey,
     this.scrollController, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

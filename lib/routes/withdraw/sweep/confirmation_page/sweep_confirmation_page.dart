@@ -12,10 +12,10 @@ class SweepConfirmationPage extends StatefulWidget {
   final int amountSat;
 
   const SweepConfirmationPage({
-    Key? key,
+    super.key,
     required this.toAddress,
     required this.amountSat,
-  }) : super(key: key);
+  });
 
   @override
   State<SweepConfirmationPage> createState() => _SweepConfirmationPageState();
@@ -94,9 +94,8 @@ class _ErrorMessage extends StatelessWidget {
   final String message;
 
   const _ErrorMessage({
-    Key? key,
     required this.message,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

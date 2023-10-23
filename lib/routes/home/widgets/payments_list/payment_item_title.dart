@@ -10,8 +10,8 @@ class PaymentItemTitle extends StatelessWidget {
 
   const PaymentItemTitle(
     this._paymentMinutiae, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

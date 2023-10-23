@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Rotator extends StatefulWidget {
   final Widget child;
 
-  const Rotator({Key? key, required this.child}) : super(key: key);
+  const Rotator({super.key, required this.child});
 
   @override
   State<StatefulWidget> createState() {

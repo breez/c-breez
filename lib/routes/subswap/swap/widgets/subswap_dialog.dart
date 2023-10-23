@@ -7,9 +7,9 @@ class SwapDialog extends StatelessWidget {
   final String backupJson;
 
   const SwapDialog({
-    Key? key,
+    super.key,
     required this.backupJson,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

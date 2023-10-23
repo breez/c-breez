@@ -14,11 +14,11 @@ class FiatBalanceText extends StatefulWidget {
   final double offsetFactor;
 
   const FiatBalanceText({
-    Key? key,
+    super.key,
     required this.currencyState,
     required this.accountState,
     required this.offsetFactor,
-  }) : super(key: key);
+  });
 
   @override
   State<FiatBalanceText> createState() => _FiatBalanceTextState();

@@ -34,8 +34,8 @@ class Choice {
 
 class DevelopersView extends StatelessWidget {
   const DevelopersView({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

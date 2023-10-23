@@ -12,13 +12,11 @@ final _log = Logger("BitcoinAddressTextFormField");
 
 class BitcoinAddressTextFormField extends TextFormField {
   BitcoinAddressTextFormField({
-    Key? key,
+    super.key,
     required BuildContext context,
-    required TextEditingController controller,
+    required TextEditingController super.controller,
     required ValidatorHolder validatorHolder,
   }) : super(
-          key: key,
-          controller: controller,
           decoration: InputDecoration(
             labelText: context.texts().withdraw_funds_btc_address,
             suffixIcon: IconButton(

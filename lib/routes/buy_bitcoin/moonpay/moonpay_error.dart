@@ -8,9 +8,9 @@ class MoonpayError extends StatelessWidget {
   final String error;
 
   const MoonpayError({
-    Key? key,
+    super.key,
     required this.error,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

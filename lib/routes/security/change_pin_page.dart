@@ -13,8 +13,8 @@ import 'package:path_provider/path_provider.dart';
 
 class ChangePinPage extends StatefulWidget {
   const ChangePinPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ChangePinPage> createState() => _ChangePinPageState();

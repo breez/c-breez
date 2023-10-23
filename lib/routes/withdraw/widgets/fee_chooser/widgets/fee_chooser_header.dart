@@ -14,8 +14,8 @@ class FeeChooserHeader extends StatefulWidget {
     required this.feeOptions,
     required this.selectedFeeIndex,
     required this.onSelect,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<FeeChooserHeader> createState() => _FeeChooserHeaderState();

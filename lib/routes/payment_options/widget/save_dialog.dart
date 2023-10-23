@@ -8,8 +8,8 @@ final _log = Logger("SaveDialog");
 
 class SaveDialog extends StatelessWidget {
   const SaveDialog({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

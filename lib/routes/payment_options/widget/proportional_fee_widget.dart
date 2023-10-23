@@ -15,8 +15,8 @@ final _log = Logger("ProportionalFeeWidget");
 
 class ProportionalFeeWidget extends StatefulWidget {
   const ProportionalFeeWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ProportionalFeeWidget> createState() => _ProportionalFeeWidgetState();

@@ -13,8 +13,8 @@ class PaymentsFilterCalendar extends StatelessWidget {
 
   const PaymentsFilterCalendar(
     this.filter, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

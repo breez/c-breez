@@ -11,8 +11,8 @@ class BottomActionsBar extends StatelessWidget {
 
   const BottomActionsBar(
     this.firstPaymentItemKey, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +46,10 @@ class SendOptions extends StatelessWidget {
   final AutoSizeGroup actionsGroup;
 
   const SendOptions({
-    Key? key,
+    super.key,
     required this.firstPaymentItemKey,
     required this.actionsGroup,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +78,10 @@ class ReceiveOptions extends StatelessWidget {
   final AutoSizeGroup actionsGroup;
 
   const ReceiveOptions({
-    Key? key,
+    super.key,
     required this.firstPaymentItemKey,
     required this.actionsGroup,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

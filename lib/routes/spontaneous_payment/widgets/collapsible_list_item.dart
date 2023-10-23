@@ -12,12 +12,12 @@ class CollapsibleListItem extends StatelessWidget {
   final TextStyle userStyle;
 
   const CollapsibleListItem({
-    Key? key,
+    super.key,
     required this.title,
     this.sharedValue,
     this.labelGroup,
     required this.userStyle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

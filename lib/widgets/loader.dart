@@ -44,14 +44,13 @@ class FullScreenLoader extends StatelessWidget {
   final Function? onClose;
 
   const FullScreenLoader(
-      {Key? key,
+      {super.key,
       this.message,
       this.opacity = 0.5,
       this.value,
       this.progressColor,
       this.bgColor = Colors.black,
-      this.onClose})
-      : super(key: key);
+      this.onClose});
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +106,7 @@ class TransparentRouteLoader extends StatefulWidget {
   final Function? onClose;
 
   const TransparentRouteLoader(
-      {Key? key, required this.message, this.opacity = 0.5, this.action, this.onClose})
-      : super(key: key);
+      {super.key, required this.message, this.opacity = 0.5, this.action, this.onClose});
 
   @override
   State<StatefulWidget> createState() {

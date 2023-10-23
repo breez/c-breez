@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class ProcessingPaymentTitle extends StatelessWidget {
   const ProcessingPaymentTitle({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

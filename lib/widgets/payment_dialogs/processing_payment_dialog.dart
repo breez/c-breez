@@ -26,8 +26,8 @@ class ProcessingPaymentDialog extends StatefulWidget {
     this.isLnurlPayment = false,
     required this.paymentFunc,
     this.onStateChange,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ProcessingPaymentDialogState createState() {

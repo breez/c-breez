@@ -17,9 +17,9 @@ class LockScreen extends StatelessWidget {
   final AuthorizedAction authorizedAction;
 
   const LockScreen({
-    Key? key,
+    super.key,
     required this.authorizedAction,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

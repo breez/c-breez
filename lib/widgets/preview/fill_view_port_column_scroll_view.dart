@@ -4,9 +4,9 @@ class FillViewPortColumnScrollView extends StatelessWidget {
   final List<Widget> children;
 
   const FillViewPortColumnScrollView({
-    Key? key,
+    super.key,
     required this.children,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

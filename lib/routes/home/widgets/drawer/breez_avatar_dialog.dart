@@ -153,6 +153,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
         isUploading = false;
         pickedImage = null;
       });
+      // ignore: use_build_context_synchronously
       showFlushbar(
         context,
         message: texts.breez_avatar_dialog_error_upload,
@@ -228,8 +229,8 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
 
 class TitleBackground extends StatelessWidget {
   const TitleBackground({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +253,7 @@ class RandomButton extends StatelessWidget {
   final Function() onPressed;
   final AutoSizeGroup? autoSizeGroup;
 
-  const RandomButton({Key? key, required this.onPressed, this.autoSizeGroup}) : super(key: key);
+  const RandomButton({super.key, required this.onPressed, this.autoSizeGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -287,11 +288,11 @@ class AvatarPreview extends StatelessWidget {
   final bool isUploading;
 
   const AvatarPreview({
-    Key? key,
+    super.key,
     required this.pickedImage,
     required this.randomAvatarPath,
     required this.isUploading,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -319,8 +320,8 @@ class AvatarPreview extends StatelessWidget {
 
 class AvatarSpinner extends StatelessWidget {
   const AvatarSpinner({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +345,7 @@ class GalleryButton extends StatelessWidget {
   final Function() onPressed;
   final AutoSizeGroup? autoSizeGroup;
 
-  const GalleryButton({Key? key, required this.onPressed, this.autoSizeGroup}) : super(key: key);
+  const GalleryButton({super.key, required this.onPressed, this.autoSizeGroup});
 
   @override
   Widget build(BuildContext context) {

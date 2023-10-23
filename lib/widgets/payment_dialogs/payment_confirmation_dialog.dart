@@ -17,8 +17,8 @@ class PaymentConfirmationDialog extends StatelessWidget {
     this._onCancel,
     this._onPaymentApproved,
     this.minHeight, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

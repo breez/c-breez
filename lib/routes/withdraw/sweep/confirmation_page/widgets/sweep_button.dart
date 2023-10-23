@@ -12,10 +12,10 @@ class SweepButton extends StatelessWidget {
   final int feeRateSatsPerVbyte;
 
   const SweepButton({
-    Key? key,
+    super.key,
     required this.toAddress,
     required this.feeRateSatsPerVbyte,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +41,10 @@ class SweepButton extends StatelessWidget {
       );
       navigator.popUntil((route) => route.settings.name == "/");
     } catch (e) {
+      // ignore: use_build_context_synchronously
       final themeData = Theme.of(context);
       navigator.pop(loaderRoute);
+      // ignore: use_build_context_synchronously
       promptError(
         context,
         null,

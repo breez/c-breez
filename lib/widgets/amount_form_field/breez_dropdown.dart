@@ -90,10 +90,10 @@ class _DropdownScrollBehavior extends ScrollBehavior {
 
 class _DropdownMenu<T> extends StatefulWidget {
   const _DropdownMenu({
-    Key? key,
+    super.key,
     required this.padding,
     required this.route,
-  }) : super(key: key);
+  });
 
   final _DropdownRoute<T> route;
   final EdgeInsets padding;
@@ -342,7 +342,7 @@ class _DropdownRoute<T> extends PopupRoute<_DropdownRouteResult<T>> {
 
 class _DropdownRoutePage<T> extends StatelessWidget {
   const _DropdownRoutePage({
-    Key? key,
+    super.key,
     required this.route,
     required this.constraints,
     required this.items,
@@ -352,7 +352,7 @@ class _DropdownRoutePage<T> extends StatelessWidget {
     this.elevation = 8,
     required this.theme,
     required this.style,
-  }) : super(key: key);
+  });
 
   final _DropdownRoute<T> route;
   final BoxConstraints constraints;
@@ -530,7 +530,7 @@ class BreezDropdownButton<T> extends StatefulWidget {
   /// defaults, so do not need to be specified). The boolean [isDense] and
   /// [isExpanded] arguments must not be null.
   BreezDropdownButton({
-    Key? key,
+    super.key,
     required this.items,
     this.selectedItemBuilder,
     required this.value,
@@ -548,8 +548,7 @@ class BreezDropdownButton<T> extends StatefulWidget {
     this.isExpanded = false,
   })  : assert(items.isEmpty ||
             value == null ||
-            items.where((DropdownMenuItem<T> item) => item.value == value).length == 1),
-        super(key: key);
+            items.where((DropdownMenuItem<T> item) => item.value == value).length == 1);
 
   /// The list of items the user can select.
   ///
@@ -855,7 +854,7 @@ class BreezDropdownButtonState<T> extends State<BreezDropdownButton<T>> with Wid
       items.add(DefaultTextStyle(
         style: _textStyle.copyWith(color: Theme.of(context).hintColor),
         child: IgnorePointer(
-          ignoringSemantics: false,
+          ignoring: false,
           child: emplacedHint,
         ),
       ));
@@ -946,15 +945,15 @@ class DropdownButtonFormField<T> extends FormField<T> {
   ///
   /// The [DropdownButton] [items] parameters must not be null.
   DropdownButtonFormField({
-    Key? key,
+    super.key,
     T? value,
     required List<DropdownMenuItem<T>> items,
     Widget? hint,
     required this.onChanged,
     this.decoration = const InputDecoration(),
-    FormFieldSetter<T>? onSaved,
-    FormFieldValidator<T>? validator,
-    AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
+    super.onSaved,
+    super.validator,
+    AutovalidateMode super.autovalidateMode = AutovalidateMode.disabled,
     Widget? disabledHint,
     int? elevation = 8,
     TextStyle? style,
@@ -968,11 +967,7 @@ class DropdownButtonFormField<T> extends FormField<T> {
             value == null ||
             items.where((DropdownMenuItem<T> item) => item.value == value).length == 1),
         super(
-          key: key,
-          onSaved: onSaved,
           initialValue: value,
-          validator: validator,
-          autovalidateMode: autovalidateMode,
           builder: (FormFieldState<T> field) {
             final InputDecoration effectiveDecoration = decoration.applyDefaults(
               Theme.of(field.context).inputDecorationTheme,

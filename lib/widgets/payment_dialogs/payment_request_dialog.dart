@@ -25,8 +25,8 @@ class PaymentRequestDialog extends StatefulWidget {
     this.invoice,
     this.firstPaymentItemKey,
     this.scrollController, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() {

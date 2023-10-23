@@ -9,11 +9,11 @@ class PaymentsFilterSliver extends StatefulWidget {
   final ScrollController scrollController;
 
   const PaymentsFilterSliver({
-    Key? key,
+    super.key,
     required this.maxSize,
     required this.hasFilter,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   @override
   State<PaymentsFilterSliver> createState() => _PaymentsFilterSliverState();

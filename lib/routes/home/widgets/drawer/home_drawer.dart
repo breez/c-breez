@@ -21,8 +21,8 @@ const _kActiveAccountRoutes = [
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<HomeDrawer> createState() => HomeDrawerState();

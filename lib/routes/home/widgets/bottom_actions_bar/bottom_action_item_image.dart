@@ -5,10 +5,10 @@ class BottomActionItemImage extends StatelessWidget {
   final bool enabled;
 
   const BottomActionItemImage({
-    Key? key,
+    super.key,
     required this.iconAssetPath,
     this.enabled = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

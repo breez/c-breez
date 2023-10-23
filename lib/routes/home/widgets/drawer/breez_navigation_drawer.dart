@@ -61,8 +61,8 @@ class BreezNavigationDrawer extends StatelessWidget {
   BreezNavigationDrawer(
     this._drawerGroupedItems,
     this._onItemSelected, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -380,13 +380,12 @@ class _ExpansionTile extends StatelessWidget {
   final bool isExpanded;
 
   const _ExpansionTile({
-    Key? key,
     required this.items,
     required this.title,
     required this.icon,
     required this.controller,
     this.isExpanded = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

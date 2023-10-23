@@ -14,7 +14,7 @@ import 'address_widget.dart';
 class DepositWidget extends StatefulWidget {
   final SwapInfo swap;
 
-  const DepositWidget(this.swap, {Key? key}) : super(key: key);
+  const DepositWidget(this.swap, {super.key});
 
   @override
   State<DepositWidget> createState() => _DepositWidgetState();

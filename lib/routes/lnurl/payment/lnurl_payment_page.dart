@@ -12,6 +12,7 @@ import 'package:c_breez/utils/payment_validator.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
+import 'package:flutter/gestures.dart';
 // import 'package:email_validator/email_validator.dart';
 import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
@@ -67,9 +68,17 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   void initState() {
     super.initState();
     fixedAmount = widget.data.minSendable == widget.data.maxSendable;
-    if (fixedAmount) {
-      _amountController.text = (widget.data.maxSendable ~/ 1000).toString();
-    }
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (fixedAmount) {
+          final currencyState = context.read<CurrencyBloc>().state;
+          _amountController.text = currencyState.bitcoinCurrency.format(
+            (widget.data.maxSendable ~/ 1000),
+            includeDisplayName: false,
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -120,18 +129,44 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               ),
               if (!fixedAmount) ...[
                 Padding(
-                  padding: const EdgeInsets.only(
-                    top: 8,
-                  ),
-                  child: Text(
-                    texts.lnurl_fetch_invoice_limit(
-                      currencyState.bitcoinCurrency.format((widget.data.minSendable ~/ 1000)),
-                      currencyState.bitcoinCurrency.format((widget.data.maxSendable ~/ 1000)),
+                    padding: const EdgeInsets.only(
+                      top: 8,
                     ),
-                    textAlign: TextAlign.left,
-                    style: theme.FieldTextStyle.labelStyle,
-                  ),
-                ),
+                    child: RichText(
+                      text: TextSpan(
+                        style: theme.FieldTextStyle.labelStyle,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: texts.lnurl_fetch_invoice_min(
+                              currencyState.bitcoinCurrency.format(
+                                (widget.data.minSendable ~/ 1000),
+                              ),
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                _amountController.text = currencyState.bitcoinCurrency.format(
+                                  (widget.data.minSendable ~/ 1000),
+                                  includeDisplayName: false,
+                                );
+                              },
+                          ),
+                          TextSpan(
+                            text: texts.lnurl_fetch_invoice_and(
+                              currencyState.bitcoinCurrency.format(
+                                (widget.data.maxSendable ~/ 1000),
+                              ),
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                _amountController.text = currencyState.bitcoinCurrency.format(
+                                  (widget.data.maxSendable ~/ 1000),
+                                  includeDisplayName: false,
+                                );
+                              },
+                          )
+                        ],
+                      ),
+                    )),
               ],
               /*
               if (widget.name?.mandatory == true) ...[

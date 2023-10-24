@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server.dart';
+import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/notifications.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -41,16 +43,31 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
       );
     }
     emit(profile);
-    registerForNotifications();
+    final injector = ServiceInjector();
+    final breezLib = injector.breezSDK;
+    breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((_) {
+      registerForNotifications(breezLib);
+    });
   }
 
-  Future registerForNotifications() async {
+  Future registerForNotifications(BreezSDK breezLib) async {
     _log.info("registerForNotifications");
     String? token = await _notifications.getToken();
     if (token != null) {
       if (token != state.profileSettings.token) {
         _log.info("Got a new token, registering…");
-        var userID = await _breezServer.registerDevice(token, token);
+        String platform = Platform.isIOS
+            ? "ios"
+            : Platform.isAndroid
+                ? "android"
+                : "";
+        
+        String webhookUrlBase = "https://notifier.breez.technology";
+        String webhookUrl = "$webhookUrlBase/api/v1/notify?platform=$platform&token=$token";
+        _log.info("Registering webhook: $webhookUrl");
+        await breezLib.registerWebhook(webhookUrl: webhookUrl);
+
+        String? userID; // TODO: randomize a user id after registering for notifications
         emit(state.copyWith(
           profileSettings: state.profileSettings.copyWith(
             token: token,

@@ -101,7 +101,7 @@ class UserApp extends StatelessWidget {
                 },
                 initialRoute: securityState.pinStatus == PinStatus.enabled ? "lockscreen" : "splash",
                 onGenerateRoute: (RouteSettings settings) {
-                  _log.info("New route: $settings");
+                  _log.info("New route: ${settings.name}");
                   switch (settings.name) {
                     case '/intro':
                       return FadeInRoute(
@@ -137,7 +137,7 @@ class UserApp extends StatelessWidget {
                             initialRoute: "/",
                             key: _homeNavigatorKey,
                             onGenerateRoute: (RouteSettings settings) {
-                              _log.info("New inner route: $settings");
+                              _log.info("New inner route: ${settings.name}");
                               switch (settings.name) {
                                 case '/':
                                   return FadeInRoute(

@@ -67,9 +67,17 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   void initState() {
     super.initState();
     fixedAmount = widget.data.minSendable == widget.data.maxSendable;
-    if (fixedAmount) {
-      _amountController.text = (widget.data.maxSendable ~/ 1000).toString();
-    }
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (fixedAmount) {
+          final currencyState = context.read<CurrencyBloc>().state;
+          _amountController.text = currencyState.bitcoinCurrency.format(
+            (widget.data.maxSendable ~/ 1000),
+            includeDisplayName: false,
+          );
+        }
+      },
+    );
   }
 
   @override

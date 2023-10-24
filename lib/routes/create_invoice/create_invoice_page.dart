@@ -58,14 +58,22 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
   @override
   void initState() {
+    super.initState();
     _doneAction = KeyboardDoneAction(focusNodes: [_amountFocusNode]);
 
-    final data = widget.requestData;
-    if (data != null) {
-      _amountController.text = (data.maxWithdrawable ~/ 1000).toString();
-      _descriptionController.text = data.defaultDescription;
-    }
-    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        final data = widget.requestData;
+        if (data != null) {
+          final currencyState = context.read<CurrencyBloc>().state;
+          _amountController.text = currencyState.bitcoinCurrency.format(
+            data.maxWithdrawable ~/ 1000,
+            includeDisplayName: false,
+          );
+          _descriptionController.text = data.defaultDescription;
+        }
+      },
+    );
   }
 
   @override

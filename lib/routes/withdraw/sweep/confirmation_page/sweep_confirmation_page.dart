@@ -30,7 +30,7 @@ class _SweepConfirmationPageState extends State<SweepConfirmationPage> {
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions();
+    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions(widget.toAddress);
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
         affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
@@ -56,7 +56,11 @@ class _SweepConfirmationPageState extends State<SweepConfirmationPage> {
             );
           }
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: Loader());
+            return const Center(
+              child: Loader(
+                color: Colors.white,
+              ),
+            );
           }
 
           if (affordableFees.isNotEmpty) {

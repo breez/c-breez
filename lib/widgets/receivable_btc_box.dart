@@ -27,13 +27,12 @@ class ReceivableBTCBox extends StatefulWidget {
 }
 
 class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
-  late final texts = context.texts();
-  late final currencyState = context.read<CurrencyBloc>().state;
-  late final accountState = context.read<AccountBloc>().state;
-  late final lspState = context.read<LSPBloc>().state;
-
   @override
   Widget build(BuildContext context) {
+    final texts = context.texts();
+    final currencyState = context.read<CurrencyBloc>().state;
+    final accountState = context.read<AccountBloc>().state;
+    final lspState = context.watch<LSPBloc>().state;
     final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
 
     return Container(
@@ -57,11 +56,9 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
                 : AutoSizeText(
                     widget.receiveLabel ??
                         texts.invoice_receive_label(
-                          currencyState.bitcoinCurrency.format(
-                            (isChannelOpeningAvailable)
-                                ? accountState.maxInboundLiquidity
-                                : accountState.maxAllowedToReceive,
-                          ),
+                          currencyState.bitcoinCurrency.format((isChannelOpeningAvailable)
+                              ? accountState.maxAllowedToReceive
+                              : accountState.maxInboundLiquidity),
                         ),
                     style: theme.textStyle,
                     maxLines: 1,

@@ -1,4 +1,5 @@
 import 'package:breez_translations/generated/breez_translations.dart';
+import 'package:breez_translations/generated/breez_translations_bg.dart';
 import 'package:breez_translations/generated/breez_translations_cs.dart';
 import 'package:breez_translations/generated/breez_translations_de.dart';
 import 'package:breez_translations/generated/breez_translations_el.dart';
@@ -178,6 +179,7 @@ extension ProfileColorExtension on ProfileColor {
 }
 
 Map<String, Map<String, ProfileColor>> _colorsFromName = {
+  "bg": _buildColorsFromName(BreezTranslationsBg()),
   "cs": _buildColorsFromName(BreezTranslationsCs()),
   "de": _buildColorsFromName(BreezTranslationsDe()),
   "el": _buildColorsFromName(BreezTranslationsEl()),

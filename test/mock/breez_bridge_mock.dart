@@ -132,4 +132,14 @@ class BreezSDKMock extends Mock implements BreezSDK {
 
   @override
   Stream<Payment> get paymentResultStream => paymentResultController.stream;
+
+  bool isInitializesController = false;
+
+  @override
+  Future<bool> isInitialized() async {
+    return isInitializesController;
+  }
+
+  @override
+  Future fetchNodeData() async {}
 }

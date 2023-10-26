@@ -49,17 +49,6 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     }
   }
 
-  Future<int> _retrieveUTXOS() async {
-    final nodeState = await _breezLib.nodeInfo();
-    if (nodeState == null) {
-      _log.severe("_retrieveUTXOS Failed to get node state");
-      throw Exception(getSystemAppLocalizations().node_state_error);
-    }
-    final utxos = nodeState.utxos.length;
-    _log.info("_retrieveUTXOS utxos: $utxos");
-    return utxos;
-  }
-
   Future<List<FeeOption>> _constructFeeOptionList(
     String address,
     RecommendedFees recommendedFees,

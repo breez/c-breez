@@ -5,6 +5,7 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
+import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
@@ -18,17 +19,16 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 
-import 'account_state_assembler.dart';
-
 const maxPaymentAmount = 4294967;
 const nodeSyncInterval = 60;
+
+final _log = Logger("AccountBloc");
 
 // AccountBloc is the business logic unit that is responsible to communicating with the lightning service
 // and reflect the node state. It is responsible for:
 // 1. Synchronizing with the node state.
 // 2. Abstracting actions exposed by the lightning service.
 class AccountBloc extends Cubit<AccountState> with HydratedMixin {
-  final _log = Logger("AccountBloc");
   static const String paymentFilterSettingsKey = "payment_filter_settings";
   static const int defaultInvoiceExpiry = Duration.secondsPerHour;
 
@@ -47,8 +47,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     this._breezLib,
     this._credentialsManager,
   ) : super(AccountState.initial()) {
-    // emit on every change
-    _watchAccountChanges().listen((acc) => emit(acc));
+    _watchAccountChanges().listen((acc) {
+      _log.info("State changed: $acc");
+      emit(acc);
+    });
 
     _paymentFiltersStreamController.add(state.paymentFilters);
 
@@ -59,7 +61,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   // TODO: _watchAccountChanges listens to every change in the local storage and assemble a new account state
   // accordingly
-  _watchAccountChanges() {
+  Stream<AccountState> _watchAccountChanges() {
     return Rx.combineLatest3<List<sdk.Payment>, PaymentFilters, sdk.NodeState?, AccountState>(
       _breezLib.paymentsStream,
       paymentFiltersStream,
@@ -74,6 +76,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     String? mnemonic,
     bool restored = false,
   }) async {
+    _log.info("connect new mnemonic: ${mnemonic != null}, restored: $restored");
     if (mnemonic != null) {
       await _credentialsManager.storeMnemonic(mnemonic: mnemonic);
       emit(state.copyWith(
@@ -108,13 +111,22 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _startSdkOnce() async {
     _log.info("starting sdk once");
+    if (await _breezLib.isInitialized()) {
+      _log.info("sdk already initialized");
+      await _breezLib.fetchNodeData();
+      emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
+      return;
+    }
     try {
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
       final mnemonic = await _credentialsManager.restoreMnemonic();
       final seed = bip39.mnemonicToSeed(mnemonic);
+      _log.info("connecting to breez lib");
       await _breezLib.connect(config: (await Config.instance()).sdkConfig, seed: seed);
+      _log.info("connected to breez lib");
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
     } catch (e) {
+      _log.warning("failed to connect to breez lib", e);
       emit(state.copyWith(connectionStatus: ConnectionStatus.DISCONNECTED));
     }
   }
@@ -134,6 +146,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<sdk.LnUrlWithdrawResult> lnurlWithdraw({
     required sdk.LnUrlWithdrawRequest req,
   }) async {
+    _log.info("lnurlWithdraw amount: req: $req");
     try {
       return await _breezLib.lnurlWithdraw(req: req);
     } catch (e) {
@@ -143,6 +156,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<sdk.LnUrlPayResult> lnurlPay({required req}) async {
+    _log.info("lnurlPay amount: req: $req");
     try {
       return await _breezLib.lnurlPay(req: req);
     } catch (e) {

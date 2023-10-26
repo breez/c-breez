@@ -14,7 +14,7 @@ import 'package:share_plus/share_plus.dart';
 
 class PaymentmentFilterExporter extends StatelessWidget {
   final _log = Logger("PaymentmentFilterExporter");
-  final PaymentTypeFilter filter;
+  final List<PaymentTypeFilter> filter;
 
   PaymentmentFilterExporter(
     this.filter, {

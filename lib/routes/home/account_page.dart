@@ -15,9 +15,9 @@ import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_sliv
 import 'package:c_breez/routes/home/widgets/payments_list/payments_list.dart';
 import 'package:c_breez/routes/home/widgets/status_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
 
 const _kFilterMaxSize = 64.0;
 const _kPaymentListItemHeight = 72.0;
@@ -31,8 +31,8 @@ class AccountPage extends StatelessWidget {
   const AccountPage(
     this.firstPaymentItemKey,
     this.scrollController, {
-    super.key,
-  });
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +69,8 @@ class AccountPage extends StatelessWidget {
       if (fromTimestamp != null && toTimestamp != null) {
         return fromTimestamp < milliseconds && milliseconds < toTimestamp;
       }
-      if (paymentFilters.filter != PaymentTypeFilter.All) {
-        return paymentMinutiae.paymentType.name == paymentFilters.filter.name;
+      if (paymentFilters.filters != PaymentTypeFilter.values) {
+        return false;
       }
       return true;
     }).toList();
@@ -85,14 +85,15 @@ class AccountPage extends StatelessWidget {
       ),
     );
 
-    final bool showSliver = nonFilteredPayments.isNotEmpty || paymentFilters.filter != PaymentTypeFilter.All;
+    final bool showSliver =
+        nonFilteredPayments.isNotEmpty || paymentFilters.filters != PaymentTypeFilter.values;
 
     if (showSliver) {
       slivers.add(
         PaymentsFilterSliver(
           maxSize: _kFilterMaxSize,
           scrollController: scrollController,
-          hasFilter: paymentFilters.filter != PaymentTypeFilter.All,
+          hasFilter: paymentFilters.filters != PaymentTypeFilter.values,
         ),
       );
     }

@@ -17,7 +17,7 @@ class CsvExporter {
   final AccountState accountState;
   final bool usesUtcTime;
   final String fiatCurrency;
-  final PaymentTypeFilter filter;
+  final List<PaymentTypeFilter> filter;
   final DateTime? startDate;
   final DateTime? endDate;
 
@@ -114,9 +114,9 @@ class CsvExporter {
 
   String _appendFilterInformation(String filePath) {
     _log.info("add filter information to path started");
-    if (filter == PaymentTypeFilter.Sent) {
+    if (!filter.contains(PaymentTypeFilter.Received)) {
       filePath += "_sent";
-    } else if (filter == PaymentTypeFilter.Received) {
+    } else if (!filter.contains(PaymentTypeFilter.Sent)) {
       filePath += "_received";
     }
     if (startDate != null && endDate != null) {

@@ -1,13 +1,12 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:flutter/foundation.dart';
 
 class PaymentFilters implements Exception {
-  final PaymentTypeFilter filter;
+  final List<PaymentTypeFilter>? filters;
   final int? fromTimestamp;
   final int? toTimestamp;
 
   PaymentFilters({
-    this.filter = PaymentTypeFilter.All,
+    this.filters = PaymentTypeFilter.values,
     this.fromTimestamp,
     this.toTimestamp,
   });
@@ -15,12 +14,12 @@ class PaymentFilters implements Exception {
   PaymentFilters.initial() : this();
 
   PaymentFilters copyWith({
-    PaymentTypeFilter? filter,
+    List<PaymentTypeFilter>? filters,
     int? fromTimestamp,
     int? toTimestamp,
   }) {
     return PaymentFilters(
-      filter: filter ?? this.filter,
+      filters: filters ?? this.filters,
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
     );
@@ -28,8 +27,7 @@ class PaymentFilters implements Exception {
 
   factory PaymentFilters.fromJson(Map<String, dynamic> json) {
     return PaymentFilters(
-      filter: PaymentTypeFilter.values
-          .firstWhere((n) => n.name == json["filter"], orElse: () => PaymentTypeFilter.All),
+      filters: PaymentTypeFilter.values,
       fromTimestamp: json["fromTimestamp"],
       toTimestamp: json["toTimestamp"],
     );
@@ -37,7 +35,7 @@ class PaymentFilters implements Exception {
 
   Map<String, dynamic> toJson() {
     return {
-      "filter": describeEnum(filter),
+      "filters": filters.toString(),
       "fromTimestamp": fromTimestamp,
       "toTimestamp": toTimestamp,
     };

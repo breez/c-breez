@@ -35,7 +35,7 @@ class PaymentHashPoller {
     final breezLib = injector.breezSDK;
     try {
       final ListPaymentsRequest req = ListPaymentsRequest(
-        filter: PaymentTypeFilter.Received,
+        filters: [PaymentTypeFilter.Received],
         fromTimestamp: DateTime.now().subtract(const Duration(minutes: 30)).millisecondsSinceEpoch,
       );
       final List<Payment> paymentList = await breezLib.listPayments(req: req);

@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:c_breez/bloc/network/network_settings_state.dart';
 import 'package:c_breez/config.dart' as lib;
+import 'package:c_breez/config.dart';
+import 'package:c_breez/services/injector.dart';
+import 'package:c_breez/utils/blockchain_explorer_utils.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:logging/logging.dart';
 import 'package:http/http.dart' as http;
@@ -47,7 +51,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
       _log.warning("Invalid mempool url: $mempoolUrl");
       return false;
     }
-    if (!await _testUri(uri)) {
+    if (!await _testUriSupportsMempoolApi(uri)) {
       _log.warning("Mempool url is not reachable: $mempoolUrl");
       return false;
     }
@@ -83,10 +87,28 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
     ));
   }
 
-  Future<bool> _testUri(Uri uri) async {
+  Future<String> get mempoolInstance async {
+    String? mempoolInstance = await ServiceInjector().preferences.getMempoolSpaceUrl();
+    if (mempoolInstance == null) {
+      final config = await Config.instance();
+      mempoolInstance = config.defaultMempoolUrl;
+    }
+    return mempoolInstance;
+  }
+
+  Future<bool> _testUriSupportsMempoolApi(Uri uri) async {
+    // We need to make sure that the mempool rest api is supported
+    // as the sdk depends on it.
+    final mempoolUri =
+        Uri.tryParse(BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: uri.toString()));
+    if (mempoolUri == null) return false;
     try {
-      final response = await _httpClient.get(uri);
-      return response.statusCode < 400;
+      final response = await _httpClient.get(mempoolUri);
+      if (response.statusCode != 200) {
+        return false;
+      }
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      return body.containsKey("fastestFee");
     } catch (e) {
       _log.warning("Failed to test mempool url: $uri", e);
       return false;

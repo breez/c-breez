@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/bloc/network/network_settings_state.dart';
 import 'package:c_breez/services/injector.dart';
+import 'package:c_breez/utils/blockchain_explorer_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -11,6 +14,17 @@ import '../../mock/lib_config_mock.dart';
 import '../../unit_logger.dart';
 import '../../utils/fake_path_provider_platform.dart';
 import '../../utils/hydrated_bloc_storage.dart';
+
+String get _recomendedMockFeesResponse {
+  final Map<String, dynamic> recomendedFees = {
+    "fastestFee": 1,
+    "halfHourFee": 1,
+    "hourFee": 1,
+    "economyFee": 1,
+    "minimumFee": 1
+  };
+  return jsonEncode(recomendedFees);
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -75,8 +89,12 @@ void main() {
 
     test('set mempool space url with a valid url should set on the preferences', () async {
       const url = "https://mempool.space";
+
       httpClient.getAnswer[url] = http.Response("{}", 200);
       final bloc = make();
+
+      httpClient.getAnswer[BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)] =
+          http.Response(_recomendedMockFeesResponse, 200);
       final result = await bloc.setMempoolUrl(url);
       expect(result, true);
       expect(injector.preferencesMock.setMempoolSpaceUrlUrl, url);
@@ -84,8 +102,11 @@ void main() {
 
     test('set mempool space url with a valid url missing scheme should set on the preferences', () async {
       const url = "mempool.space";
-      httpClient.getAnswer["https://$url"] = http.Response("{}", 200);
+
       final bloc = make();
+      httpClient.getAnswer[
+              "https://${BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)}"] =
+          http.Response(_recomendedMockFeesResponse, 200);
       final result = await bloc.setMempoolUrl(url);
       expect(result, true);
       expect(injector.preferencesMock.setMempoolSpaceUrlUrl, "https://$url");
@@ -101,8 +122,9 @@ void main() {
 
     test('set mempool space url with an ip should should set on the preferences', () async {
       const url = "https://192.168.15.2";
-      httpClient.getAnswer[url] = http.Response("{}", 200);
       final bloc = make();
+      httpClient.getAnswer[BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)] =
+          http.Response(_recomendedMockFeesResponse, 200);
       final result = await bloc.setMempoolUrl(url);
       expect(result, true);
       expect(injector.preferencesMock.setMempoolSpaceUrlUrl, url);
@@ -110,8 +132,9 @@ void main() {
 
     test('set mempool space url with an ip and port should should set on the preferences', () async {
       const url = "https://192.168.15.2:3006";
-      httpClient.getAnswer[url] = http.Response("{}", 200);
       final bloc = make();
+      httpClient.getAnswer[BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)] =
+          http.Response(_recomendedMockFeesResponse, 200);
       final result = await bloc.setMempoolUrl(url);
       expect(result, true);
       expect(injector.preferencesMock.setMempoolSpaceUrlUrl, url);
@@ -119,8 +142,10 @@ void main() {
 
     test('set mempool space url with an ip missing scheme should should set on the preferences', () async {
       const url = "192.168.15.2";
-      httpClient.getAnswer["https://$url"] = http.Response("{}", 200);
       final bloc = make();
+      httpClient.getAnswer[
+              "https://${BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)}"] =
+          http.Response(_recomendedMockFeesResponse, 200);
       final result = await bloc.setMempoolUrl(url);
       expect(result, true);
       expect(injector.preferencesMock.setMempoolSpaceUrlUrl, "https://$url");

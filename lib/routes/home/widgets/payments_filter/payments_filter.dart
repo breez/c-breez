@@ -59,7 +59,7 @@ class PaymentsFilterState extends State<PaymentsFilters> {
                 });
                 final accountBloc = context.read<AccountBloc>();
                 accountBloc.changePaymentFilter(
-                  filter: _getFilterType(),
+                  filters: _getFilterType(),
                 );
               },
             ),

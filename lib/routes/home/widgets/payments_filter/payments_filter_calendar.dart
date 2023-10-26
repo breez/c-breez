@@ -50,7 +50,7 @@ class PaymentsFilterCalendar extends StatelessWidget {
                     final accountBloc = context.read<AccountBloc>();
                     if (result != null) {
                       accountBloc.changePaymentFilter(
-                        filter: filter,
+                        filters: filter,
                         fromTimestamp: result[0].millisecondsSinceEpoch,
                         toTimestamp: result[1].millisecondsSinceEpoch,
                       );

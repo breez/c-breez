@@ -31,8 +31,8 @@ class AccountPage extends StatelessWidget {
   const AccountPage(
     this.firstPaymentItemKey,
     this.scrollController, {
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,8 +69,15 @@ class AccountPage extends StatelessWidget {
       if (fromTimestamp != null && toTimestamp != null) {
         return fromTimestamp < milliseconds && milliseconds < toTimestamp;
       }
-      if (paymentFilters.filters != PaymentTypeFilter.values) {
-        return false;
+      if ((paymentFilters.filters == null) ||
+          (paymentFilters.filters != null && paymentFilters.filters != PaymentTypeFilter.values)) {
+        for (var p in paymentFilters.filters!) {
+          // We include closed channels as sent when filtering.
+          if (p == PaymentTypeFilter.Sent && paymentMinutiae.paymentType == PaymentType.ClosedChannel) {
+            return true;
+          }
+          return p.name == paymentMinutiae.paymentType.name;
+        }
       }
       return true;
     }).toList();

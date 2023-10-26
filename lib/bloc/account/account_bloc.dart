@@ -247,14 +247,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   void changePaymentFilter({
-    List<sdk.PaymentTypeFilter>? filter,
+    List<sdk.PaymentTypeFilter>? filters,
     int? fromTimestamp,
     int? toTimestamp,
   }) async {
-    _log.info("changePaymentFilter: $filter, $fromTimestamp, $toTimestamp");
+    _log.info("changePaymentFilter: $filters, $fromTimestamp, $toTimestamp");
     _paymentFiltersStreamController.add(
       state.paymentFilters.copyWith(
-        filters: filter,
+        filters: filters,
         fromTimestamp: fromTimestamp,
         toTimestamp: toTimestamp,
       ),

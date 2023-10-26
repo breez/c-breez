@@ -17,12 +17,12 @@ class CsvExporter {
   final AccountState accountState;
   final bool usesUtcTime;
   final String fiatCurrency;
-  final List<PaymentTypeFilter> filter;
+  final List<PaymentTypeFilter>? filters;
   final DateTime? startDate;
   final DateTime? endDate;
 
   CsvExporter(
-    this.filter,
+    this.filters,
     this.fiatCurrency,
     this.accountState, {
     this.usesUtcTime = false,
@@ -113,11 +113,20 @@ class CsvExporter {
   }
 
   String _appendFilterInformation(String filePath) {
-    _log.info("add filter information to path started");
-    if (!filter.contains(PaymentTypeFilter.Received)) {
-      filePath += "_sent";
-    } else if (!filter.contains(PaymentTypeFilter.Sent)) {
-      filePath += "_received";
+    _log.info("add filter information to path started $filePath");
+    List<PaymentTypeFilter>? filterList = filters;
+    if (filterList != null && filterList != PaymentTypeFilter.values) {
+      loop:
+      for (var filter in filterList) {
+        switch (filter) {
+          case PaymentTypeFilter.Sent || PaymentTypeFilter.ClosedChannels:
+            filePath += "_sent";
+            break loop;
+          case PaymentTypeFilter.Received:
+            filePath += "_received";
+            break loop;
+        }
+      }
     }
     if (startDate != null && endDate != null) {
       DateFormat dateFilterFormat = DateFormat("d.M.yy");

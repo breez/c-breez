@@ -51,3 +51,7 @@ ios/Runner/GoogleService-Info.plist
 build-ios.sh
 .vscode/
 config.json
+
+# Direnv
+.envrc
+.env

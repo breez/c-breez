@@ -62,25 +62,7 @@ class AccountPage extends StatelessWidget {
   ) {
     final nonFilteredPayments = accountState.payments;
     final paymentFilters = accountState.paymentFilters;
-    final filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
-      final fromTimestamp = paymentFilters.fromTimestamp;
-      final toTimestamp = paymentFilters.toTimestamp;
-      final milliseconds = paymentMinutiae.paymentTime.millisecondsSinceEpoch;
-      if (fromTimestamp != null && toTimestamp != null) {
-        return fromTimestamp < milliseconds && milliseconds < toTimestamp;
-      }
-      if ((paymentFilters.filters == null) ||
-          (paymentFilters.filters != null && paymentFilters.filters != PaymentTypeFilter.values)) {
-        for (var p in paymentFilters.filters!) {
-          // We include closed channels as sent when filtering.
-          if (p == PaymentTypeFilter.Sent && paymentMinutiae.paymentType == PaymentType.ClosedChannel) {
-            return true;
-          }
-          return p.name == paymentMinutiae.paymentType.name;
-        }
-      }
-      return true;
-    }).toList();
+    var filteredPayments = context.read<AccountBloc>().filterPaymentList(paymentFilters, nonFilteredPayments);
 
     List<Widget> slivers = [];
 

@@ -10,6 +10,7 @@ import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result.dart';
 import 'package:c_breez/config.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -330,5 +331,40 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   void mnemonicsValidated() {
     _log.info("mnemonicsValidated");
     emit(state.copyWith(verificationStatus: VerificationStatus.VERIFIED));
+  }
+
+  List<PaymentMinutiae> filterPaymentList(
+      PaymentFilters paymentFilters, List<PaymentMinutiae> nonFilteredPayments) {
+    var filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
+      final fromTimestamp = paymentFilters.fromTimestamp;
+      final toTimestamp = paymentFilters.toTimestamp;
+      final milliseconds = paymentMinutiae.paymentTime.millisecondsSinceEpoch;
+      if (fromTimestamp != null && toTimestamp != null) {
+        return fromTimestamp < milliseconds && milliseconds < toTimestamp;
+      }
+      return true;
+    }).toList();
+
+    if ((paymentFilters.filters == null) ||
+        (paymentFilters.filters != null && paymentFilters.filters != sdk.PaymentTypeFilter.values)) {
+      filteredPayments = filteredPayments.where((paymentMinutiae) {
+        for (var f in paymentFilters.filters!) {
+          if (f == sdk.PaymentTypeFilter.Sent && paymentMinutiae.paymentType == sdk.PaymentType.Sent) {
+            return true;
+          }
+          if (f == sdk.PaymentTypeFilter.ClosedChannels &&
+              paymentMinutiae.paymentType == sdk.PaymentType.ClosedChannel) {
+            return true;
+          }
+          if (f == sdk.PaymentTypeFilter.Received &&
+              paymentMinutiae.paymentType == sdk.PaymentType.Received) {
+            return true;
+          }
+          return false;
+        }
+        return true;
+      }).toList();
+    }
+    return filteredPayments;
   }
 }

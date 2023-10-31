@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/models/payment_minutiae.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
@@ -13,17 +12,15 @@ import 'package:path_provider/path_provider.dart';
 final _log = Logger("CsvExporter");
 
 class CsvExporter {
-  final AccountState accountState;
+  final AccountBloc accountBloc;
   final bool usesUtcTime;
   final String fiatCurrency;
-  final List<PaymentTypeFilter>? filters;
   final DateTime? startDate;
   final DateTime? endDate;
 
   CsvExporter(
-    this.filters,
     this.fiatCurrency,
-    this.accountState, {
+    this.accountBloc, {
     this.usesUtcTime = false,
     this.startDate,
     this.endDate,
@@ -40,12 +37,12 @@ class CsvExporter {
   List _generateList() {
     // fetch currencystate map values accordingly
     _log.info("generating payment list started");
-
+    final accountState = accountBloc.state;
     final texts = getSystemAppLocalizations();
-    final data = _filterPaymentData(accountState.payments, accountState.paymentFilters.filters);
-    List<List<String>> paymentList = List.generate(data.length, (index) {
+    final payments = accountBloc.filterPaymentList(accountState.paymentFilters, accountState.payments);
+    List<List<String>> paymentList = List.generate(payments.length, (index) {
       List<String> paymentItem = [];
-      final data = accountState.payments.elementAt(index);
+      final data = payments.elementAt(index);
       final paymentInfo = data;
       paymentItem.add(
         BreezDateUtils.formatYearMonthDayHourMinute(
@@ -75,41 +72,6 @@ class CsvExporter {
     return paymentList;
   }
 
-  List<PaymentMinutiae?> _filterPaymentData(
-      List<PaymentMinutiae?> payments, List<PaymentTypeFilter>? filters) {
-    if (payments.isEmpty) {
-      return payments;
-    }
-
-    if (startDate != null && endDate != null) {
-      payments = payments
-          .where(
-            (element) =>
-                (element != null && BreezDateUtils.isBetween(element.paymentTime, startDate!, endDate!)),
-          )
-          .toList();
-    }
-
-    if (filters != null) {
-      List<PaymentMinutiae?> results = [];
-      for (var f in filters) {
-        for (var p in payments) {
-          if (f == PaymentTypeFilter.Sent && p?.paymentType == PaymentType.Sent) {
-            results.add(p);
-          }
-          if (f == PaymentTypeFilter.ClosedChannels && p?.paymentType == PaymentType.ClosedChannel) {
-            results.add(p);
-          }
-          if (f == PaymentTypeFilter.Received && p?.paymentType == PaymentType.Received) {
-            results.add(p);
-          }
-        }
-      }
-      return results;
-    }
-    return payments;
-  }
-
   Future<String> _saveCsvFile(String csv) async {
     _log.info("save breez payments to csv started");
     String filePath = await _createCsvFilePath();
@@ -131,10 +93,10 @@ class CsvExporter {
 
   String _appendFilterInformation(String filePath) {
     _log.info("add filter information to path started $filePath");
-    List<PaymentTypeFilter>? filterList = filters;
-    if (filterList != null && filterList != PaymentTypeFilter.values) {
+    final paymentFilters = accountBloc.state.paymentFilters;
+    if (paymentFilters.filters != null && paymentFilters.filters != PaymentTypeFilter.values) {
       loop:
-      for (var filter in filterList) {
+      for (var filter in paymentFilters.filters!) {
         switch (filter) {
           case PaymentTypeFilter.Sent || PaymentTypeFilter.ClosedChannels:
             filePath += "_sent";

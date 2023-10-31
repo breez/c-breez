@@ -60,6 +60,8 @@ class PaymentsFilterState extends State<PaymentsFilters> {
                 final accountBloc = context.read<AccountBloc>();
                 accountBloc.changePaymentFilter(
                   filters: _getFilterType(),
+                  fromTimestamp: accountBloc.state.paymentFilters.fromTimestamp,
+                  toTimestamp: accountBloc.state.paymentFilters.toTimestamp,
                 );
               },
             ),

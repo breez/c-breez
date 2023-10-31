@@ -62,7 +62,8 @@ class PaymentmentFilterExporter extends StatelessWidget {
     final texts = context.texts();
     final navigator = Navigator.of(context);
     final currencyState = context.read<CurrencyBloc>().state;
-    final accountState = context.read<AccountBloc>().state;
+    final accountBloc = context.read<AccountBloc>();
+    final accountState = accountBloc.state;
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
     String filePath;
@@ -72,11 +73,11 @@ class PaymentmentFilterExporter extends StatelessWidget {
           accountState.paymentFilters.toTimestamp != null) {
         final startDate = DateTime.fromMillisecondsSinceEpoch(accountState.paymentFilters.fromTimestamp!);
         final endDate = DateTime.fromMillisecondsSinceEpoch(accountState.paymentFilters.toTimestamp!);
-        filePath = await CsvExporter(filter, currencyState.fiatId, accountState,
-                startDate: startDate, endDate: endDate)
-            .export();
+        filePath =
+            await CsvExporter(currencyState.fiatId, accountBloc, startDate: startDate, endDate: endDate)
+                .export();
       } else {
-        filePath = await CsvExporter(filter, currencyState.fiatId, accountState).export();
+        filePath = await CsvExporter(currencyState.fiatId, accountBloc).export();
       }
       if (loaderRoute.isActive) {
         navigator.removeRoute(loaderRoute);

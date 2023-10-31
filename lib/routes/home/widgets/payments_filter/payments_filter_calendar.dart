@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class PaymentsFilterCalendar extends StatelessWidget {
-  final PaymentTypeFilter filter;
+  final List<PaymentTypeFilter> filter;
 
   const PaymentsFilterCalendar(
     this.filter, {
@@ -50,7 +50,7 @@ class PaymentsFilterCalendar extends StatelessWidget {
                     final accountBloc = context.read<AccountBloc>();
                     if (result != null) {
                       accountBloc.changePaymentFilter(
-                        filter: filter,
+                        filters: filter,
                         fromTimestamp: result[0].millisecondsSinceEpoch,
                         toTimestamp: result[1].millisecondsSinceEpoch,
                       );

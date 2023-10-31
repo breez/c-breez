@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:csv/csv.dart';
@@ -17,12 +16,12 @@ class CsvExporter {
   final AccountState accountState;
   final bool usesUtcTime;
   final String fiatCurrency;
-  final PaymentTypeFilter filter;
+  final List<PaymentTypeFilter>? filters;
   final DateTime? startDate;
   final DateTime? endDate;
 
   CsvExporter(
-    this.filter,
+    this.filters,
     this.fiatCurrency,
     this.accountState, {
     this.usesUtcTime = false,
@@ -43,7 +42,7 @@ class CsvExporter {
     _log.info("generating payment list started");
 
     final texts = getSystemAppLocalizations();
-    final data = _filterPaymentData(accountState.payments, accountState.paymentFilters);
+    final data = _filterPaymentData(accountState.payments, accountState.paymentFilters.filters);
     List<List<String>> paymentList = List.generate(data.length, (index) {
       List<String> paymentItem = [];
       final data = accountState.payments.elementAt(index);
@@ -76,16 +75,34 @@ class CsvExporter {
     return paymentList;
   }
 
-  List<PaymentMinutiae?> _filterPaymentData(List<PaymentMinutiae?> payments, PaymentFilters filter) {
+  List<PaymentMinutiae?> _filterPaymentData(
+      List<PaymentMinutiae?> payments, List<PaymentTypeFilter>? filters) {
     if (payments.isEmpty) {
       return payments;
     }
 
     if (startDate != null && endDate != null) {
+      payments = payments
+          .where(
+            (element) =>
+                (element != null && BreezDateUtils.isBetween(element.paymentTime, startDate!, endDate!)),
+          )
+          .toList();
+    }
+
+    if (filters != null) {
       List<PaymentMinutiae?> results = [];
-      for (var element in payments) {
-        if (element != null && BreezDateUtils.isBetween(element.paymentTime, startDate!, endDate!)) {
-          results.add(element);
+      for (var f in filters) {
+        for (var p in payments) {
+          if (f == PaymentTypeFilter.Sent && p?.paymentType == PaymentType.Sent) {
+            results.add(p);
+          }
+          if (f == PaymentTypeFilter.ClosedChannels && p?.paymentType == PaymentType.ClosedChannel) {
+            results.add(p);
+          }
+          if (f == PaymentTypeFilter.Received && p?.paymentType == PaymentType.Received) {
+            results.add(p);
+          }
         }
       }
       return results;
@@ -113,11 +130,20 @@ class CsvExporter {
   }
 
   String _appendFilterInformation(String filePath) {
-    _log.info("add filter information to path started");
-    if (filter == PaymentTypeFilter.Sent) {
-      filePath += "_sent";
-    } else if (filter == PaymentTypeFilter.Received) {
-      filePath += "_received";
+    _log.info("add filter information to path started $filePath");
+    List<PaymentTypeFilter>? filterList = filters;
+    if (filterList != null && filterList != PaymentTypeFilter.values) {
+      loop:
+      for (var filter in filterList) {
+        switch (filter) {
+          case PaymentTypeFilter.Sent || PaymentTypeFilter.ClosedChannels:
+            filePath += "_sent";
+            break loop;
+          case PaymentTypeFilter.Received:
+            filePath += "_received";
+            break loop;
+        }
+      }
     }
     if (startDate != null && endDate != null) {
       DateFormat dateFilterFormat = DateFormat("d.M.yy");

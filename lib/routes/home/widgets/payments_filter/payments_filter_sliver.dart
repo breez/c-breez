@@ -60,7 +60,7 @@ class _PaymentsFilterSliverState extends State<PaymentsFilterSliver> {
                 child: Container(
                   color: themeData.customData.paymentListBgColor,
                   height: widget.maxSize,
-                  child: const PaymentsFilter(),
+                  child: const PaymentsFilters(),
                 ),
               ),
             ),

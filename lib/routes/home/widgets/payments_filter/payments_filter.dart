@@ -8,8 +8,8 @@ import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_drop
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class PaymentsFilter extends StatefulWidget {
-  const PaymentsFilter({
+class PaymentsFilters extends StatefulWidget {
+  const PaymentsFilters({
     super.key,
   });
 
@@ -19,9 +19,9 @@ class PaymentsFilter extends StatefulWidget {
   }
 }
 
-class PaymentsFilterState extends State<PaymentsFilter> {
+class PaymentsFilterState extends State<PaymentsFilters> {
   String? _filter;
-  Map<String, PaymentTypeFilter> _filterMap = {};
+  Map<String, List<PaymentTypeFilter>> _filterMap = {};
 
   @override
   void didChangeDependencies() {
@@ -37,13 +37,13 @@ class PaymentsFilterState extends State<PaymentsFilter> {
       builder: (context, account) {
         if (_filter == null) {
           _filterMap = {
-            texts.payments_filter_option_all: PaymentTypeFilter.All,
-            texts.payments_filter_option_sent: PaymentTypeFilter.Sent,
-            texts.payments_filter_option_received: PaymentTypeFilter.Received,
+            texts.payments_filter_option_all: PaymentTypeFilter.values,
+            texts.payments_filter_option_sent: [PaymentTypeFilter.Sent, PaymentTypeFilter.ClosedChannels],
+            texts.payments_filter_option_received: [PaymentTypeFilter.Received],
           };
           _filter = _getFilterTypeString(
             context,
-            account.paymentFilters.filter,
+            account.paymentFilters.filters,
           );
         }
 
@@ -59,7 +59,7 @@ class PaymentsFilterState extends State<PaymentsFilter> {
                 });
                 final accountBloc = context.read<AccountBloc>();
                 accountBloc.changePaymentFilter(
-                  filter: _getFilterType(),
+                  filters: _getFilterType(),
                 );
               },
             ),
@@ -69,16 +69,16 @@ class PaymentsFilterState extends State<PaymentsFilter> {
     );
   }
 
-  PaymentTypeFilter _getFilterType() {
-    return _filterMap[_filter] ?? PaymentTypeFilter.All;
+  List<PaymentTypeFilter> _getFilterType() {
+    return _filterMap[_filter] ?? PaymentTypeFilter.values;
   }
 
   String _getFilterTypeString(
     BuildContext context,
-    PaymentTypeFilter filterType,
+    List<PaymentTypeFilter>? filterType,
   ) {
     for (var entry in _filterMap.entries) {
-      if (filterType == entry.value) {
+      if (entry.value == filterType) {
         return entry.key;
       }
     }

@@ -10,6 +10,7 @@ import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result.dart';
 import 'package:c_breez/config.dart';
+import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -330,5 +331,37 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   void mnemonicsValidated() {
     _log.info("mnemonicsValidated");
     emit(state.copyWith(verificationStatus: VerificationStatus.VERIFIED));
+  }
+
+  List<PaymentMinutiae> filterPaymentList() {
+    final nonFilteredPayments = state.payments;
+    final paymentFilters = state.paymentFilters;
+
+    var filteredPayments = nonFilteredPayments;
+    // Apply date filters, if there's any
+    if (paymentFilters.fromTimestamp != null || paymentFilters.toTimestamp != null) {
+      filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
+        final fromTimestamp = paymentFilters.fromTimestamp;
+        final toTimestamp = paymentFilters.toTimestamp;
+        final milliseconds = paymentMinutiae.paymentTime.millisecondsSinceEpoch;
+        if (fromTimestamp != null && toTimestamp != null) {
+          return fromTimestamp < milliseconds && milliseconds < toTimestamp;
+        }
+        return true;
+      }).toList();
+    }
+
+    // Apply payment type filters, if there's any
+    final paymentTypeFilters = paymentFilters.filters;
+    if (paymentTypeFilters != null && paymentTypeFilters != sdk.PaymentTypeFilter.values) {
+      filteredPayments = filteredPayments.where((paymentMinutiae) {
+        return paymentTypeFilters.any(
+          (filter) {
+            return filter.name == paymentMinutiae.paymentType.name;
+          },
+        );
+      }).toList();
+    }
+    return filteredPayments;
   }
 }

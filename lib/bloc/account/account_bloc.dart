@@ -333,8 +333,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     emit(state.copyWith(verificationStatus: VerificationStatus.VERIFIED));
   }
 
-  List<PaymentMinutiae> filterPaymentList(
-      PaymentFilters paymentFilters, List<PaymentMinutiae> nonFilteredPayments) {
+  List<PaymentMinutiae> filterPaymentList() {
+    final nonFilteredPayments = state.payments;
+    final paymentFilters = state.paymentFilters;
+
     var filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
       final fromTimestamp = paymentFilters.fromTimestamp;
       final toTimestamp = paymentFilters.toTimestamp;

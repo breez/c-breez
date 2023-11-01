@@ -15,9 +15,9 @@ import 'package:c_breez/routes/home/widgets/payments_filter/payments_filter_sliv
 import 'package:c_breez/routes/home/widgets/payments_list/payments_list.dart';
 import 'package:c_breez/routes/home/widgets/status_text.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 
 const _kFilterMaxSize = 64.0;
 const _kPaymentListItemHeight = 72.0;
@@ -62,7 +62,7 @@ class AccountPage extends StatelessWidget {
   ) {
     final nonFilteredPayments = accountState.payments;
     final paymentFilters = accountState.paymentFilters;
-    var filteredPayments = context.read<AccountBloc>().filterPaymentList(paymentFilters, nonFilteredPayments);
+    final filteredPayments = context.read<AccountBloc>().filterPaymentList();
 
     List<Widget> slivers = [];
 

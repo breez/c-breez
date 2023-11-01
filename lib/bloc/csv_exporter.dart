@@ -35,14 +35,13 @@ class CsvExporter {
   }
 
   List _generateList() {
-    // fetch currencystate map values accordingly
+    // Fetch CurrencyState map values accordingly
     _log.info("generating payment list started");
-    final accountState = accountBloc.state;
     final texts = getSystemAppLocalizations();
-    final payments = accountBloc.filterPaymentList(accountState.paymentFilters, accountState.payments);
-    List<List<String>> paymentList = List.generate(payments.length, (index) {
+    final filteredPayments = accountBloc.filterPaymentList();
+    List<List<String>> paymentList = List.generate(filteredPayments.length, (index) {
       List<String> paymentItem = [];
-      final data = payments.elementAt(index);
+      final data = filteredPayments.elementAt(index);
       final paymentInfo = data;
       paymentItem.add(
         BreezDateUtils.formatYearMonthDayHourMinute(

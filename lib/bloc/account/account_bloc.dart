@@ -337,18 +337,22 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     final nonFilteredPayments = state.payments;
     final paymentFilters = state.paymentFilters;
 
-    var filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
-      final fromTimestamp = paymentFilters.fromTimestamp;
-      final toTimestamp = paymentFilters.toTimestamp;
-      final milliseconds = paymentMinutiae.paymentTime.millisecondsSinceEpoch;
-      if (fromTimestamp != null && toTimestamp != null) {
-        return fromTimestamp < milliseconds && milliseconds < toTimestamp;
-      }
-      return true;
-    }).toList();
+    var filteredPayments = nonFilteredPayments;
+    // Apply date filters, if there's any
+    if (paymentFilters.fromTimestamp != null || paymentFilters.toTimestamp != null) {
+      filteredPayments = nonFilteredPayments.where((paymentMinutiae) {
+        final fromTimestamp = paymentFilters.fromTimestamp;
+        final toTimestamp = paymentFilters.toTimestamp;
+        final milliseconds = paymentMinutiae.paymentTime.millisecondsSinceEpoch;
+        if (fromTimestamp != null && toTimestamp != null) {
+          return fromTimestamp < milliseconds && milliseconds < toTimestamp;
+        }
+        return true;
+      }).toList();
+    }
 
-    if ((paymentFilters.filters == null) ||
-        (paymentFilters.filters != null && paymentFilters.filters != sdk.PaymentTypeFilter.values)) {
+    // Apply payment type filters, if there's any
+    if (paymentFilters.filters != null && paymentFilters.filters != sdk.PaymentTypeFilter.values) {
       filteredPayments = filteredPayments.where((paymentMinutiae) {
         for (var f in paymentFilters.filters!) {
           if (f == sdk.PaymentTypeFilter.Sent && paymentMinutiae.paymentType == sdk.PaymentType.Sent) {

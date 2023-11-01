@@ -352,23 +352,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
 
     // Apply payment type filters, if there's any
-    if (paymentFilters.filters != null && paymentFilters.filters != sdk.PaymentTypeFilter.values) {
+    final paymentTypeFilters = paymentFilters.filters;
+    if (paymentTypeFilters != null && paymentTypeFilters != sdk.PaymentTypeFilter.values) {
       filteredPayments = filteredPayments.where((paymentMinutiae) {
-        for (var f in paymentFilters.filters!) {
-          if (f == sdk.PaymentTypeFilter.Sent && paymentMinutiae.paymentType == sdk.PaymentType.Sent) {
-            return true;
-          }
-          if (f == sdk.PaymentTypeFilter.ClosedChannels &&
-              paymentMinutiae.paymentType == sdk.PaymentType.ClosedChannel) {
-            return true;
-          }
-          if (f == sdk.PaymentTypeFilter.Received &&
-              paymentMinutiae.paymentType == sdk.PaymentType.Received) {
-            return true;
-          }
-          return false;
-        }
-        return true;
+        return paymentTypeFilters.any(
+          (filter) {
+            return filter.name == paymentMinutiae.paymentType.name;
+          },
+        );
       }).toList();
     }
     return filteredPayments;

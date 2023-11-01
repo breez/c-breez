@@ -38,7 +38,7 @@ class PaymentsFilterState extends State<PaymentsFilters> {
         if (_filter == null) {
           _filterMap = {
             texts.payments_filter_option_all: PaymentTypeFilter.values,
-            texts.payments_filter_option_sent: [PaymentTypeFilter.Sent, PaymentTypeFilter.ClosedChannels],
+            texts.payments_filter_option_sent: [PaymentTypeFilter.Sent, PaymentTypeFilter.ClosedChannel],
             texts.payments_filter_option_received: [PaymentTypeFilter.Received],
           };
           _filter = _getFilterTypeString(

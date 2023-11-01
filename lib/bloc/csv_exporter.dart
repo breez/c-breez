@@ -92,12 +92,12 @@ class CsvExporter {
 
   String _appendFilterInformation(String filePath) {
     _log.info("add filter information to path started $filePath");
-    final paymentFilters = accountBloc.state.paymentFilters;
-    if (paymentFilters.filters != null && paymentFilters.filters != PaymentTypeFilter.values) {
+    final paymentTypeFilters = accountBloc.state.paymentFilters.filters;
+    if (paymentTypeFilters != null && paymentTypeFilters != PaymentTypeFilter.values) {
       loop:
-      for (var filter in paymentFilters.filters!) {
+      for (var filter in paymentTypeFilters) {
         switch (filter) {
-          case PaymentTypeFilter.Sent || PaymentTypeFilter.ClosedChannels:
+          case PaymentTypeFilter.Sent || PaymentTypeFilter.ClosedChannel:
             filePath += "_sent";
             break loop;
           case PaymentTypeFilter.Received:

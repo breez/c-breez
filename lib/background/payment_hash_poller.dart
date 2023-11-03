@@ -25,7 +25,8 @@ class PaymentHashPoller {
     Future.delayed(timeoutDuration).then((_) {
       print("Timeout exceeded. Stop polling.\nCompleted payment_received task for $paymentHash.");
       paymentReceivedTimer.cancel();
-      taskCompleter.complete(false);
+      // To prevent additional retries by the OS we mark the task as succeeded
+      taskCompleter.complete(true);
     });
     return taskCompleter.future;
   }

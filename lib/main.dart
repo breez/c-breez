@@ -55,8 +55,10 @@ void main() async {
     final injector = ServiceInjector();
 
     final breezLib = injector.breezSDK;
-    breezLib.initialize();
-    logger.registerBreezSdkLog(breezLib);
+    if (!await breezLib.isInitialized()) {
+      breezLib.initialize();
+      logger.registerBreezSdkLog(breezLib);
+    }
 
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     final appDir = await getApplicationDocumentsDirectory();

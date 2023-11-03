@@ -35,17 +35,9 @@ class PaymentHashPoller {
     final injector = ServiceInjector();
     final breezLib = injector.breezSDK;
     try {
-      final ListPaymentsRequest req = ListPaymentsRequest(
-        filters: [PaymentTypeFilter.Received],
-        fromTimestamp: DateTime.now().subtract(const Duration(minutes: 30)).millisecondsSinceEpoch,
-      );
-      final List<Payment> paymentList = await breezLib.listPayments(req: req);
-      for (var payment in paymentList) {
-        final detailsData = payment.details.data;
-        final isPaymentReceived = payment.status == PaymentStatus.Complete &&
-            detailsData is LnPaymentDetails &&
-            detailsData.paymentHash == paymentHash;
-        if (isPaymentReceived) {
+      final Payment? payment = await breezLib.paymentByHash(hash: paymentHash);
+      if (payment != null) {
+        if (payment.status == PaymentStatus.Complete) {
           print("Payment received! Stop polling.");
           timer.cancel();
           print("Completed payment_received task for $paymentHash.");

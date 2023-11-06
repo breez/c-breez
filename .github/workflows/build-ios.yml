@@ -15,7 +15,7 @@ jobs:
 
   build:
 
-    runs-on: macOS-latest
+    runs-on: macOS-13
     env:
       SHEME: Runner
       BUILD_CONFIGURATION: Release
@@ -42,11 +42,11 @@ jobs:
           security set-keychain-settings -t 6400 -l $KEYCHAIN_PATH
 
           CERT_PATH=$RUNNER_TEMP/apple_distribution.cer
-          echo -n "$DISTRIBUTION_CERT" | base64 --decode --output $CERT_PATH
+          echo -n "$DISTRIBUTION_CERT" | base64 --decode -o $CERT_PATH
           security import $CERT_PATH -k $KEYCHAIN_PATH -A
 
           P12_KEY_PATH=$RUNNER_TEMP/key.p12
-          echo -n "$P12_BASE64" | base64 --decode --output $P12_KEY_PATH
+          echo -n "$P12_BASE64" | base64 --decode -o $P12_KEY_PATH
           security import $P12_KEY_PATH -k $KEYCHAIN_PATH -P "$P12_PASSWORD" -A
           
           security set-key-partition-list -S apple-tool:,apple: -s -k ci $KEYCHAIN_PATH > /dev/null
@@ -61,11 +61,11 @@ jobs:
           repository: 'breez/breez-sdk'                   
           ssh-key: ${{secrets.REPO_SSH_KEY}}          
           path: 'breez-sdk'
-
+     
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.8'
+          flutter-version: '3.13.9'
           channel: 'stable'          
 
       - name: install dependencies
@@ -120,7 +120,7 @@ jobs:
           # create variables
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           # import provisioning profile from secrets
-          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode -o $PP_PATH
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles      

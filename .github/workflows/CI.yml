@@ -15,7 +15,7 @@ jobs:
 
   build:
 
-    runs-on: macOS-latest
+    runs-on: macOS-13
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -29,11 +29,11 @@ jobs:
           ssh-key: ${{secrets.REPO_SSH_KEY}}          
           path: 'breez-sdk'
           
-
+          
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.8'
+          flutter-version: '3.13.9'
           channel: 'stable'
 
       - uses: actions/setup-java@v2

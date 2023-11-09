@@ -23,6 +23,7 @@ class WaitBroadcastDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
     final refundBloc = context.read<RefundBloc>();
+    final texts = context.texts();
 
     return Theme(
       data: themeData.copyWith(
@@ -42,79 +43,38 @@ class WaitBroadcastDialog extends StatelessWidget {
           final error = snapshot.error;
           return AlertDialog(
             title: Text(
-              _getTitleText(context, error: error),
+              (error != null)
+                  ? texts.waiting_broadcast_dialog_dialog_title_error
+                  : texts.waiting_broadcast_dialog_dialog_title,
               style: themeData.dialogTheme.titleTextStyle,
               textAlign: TextAlign.center,
             ),
-            content: getContent(
-              context,
-              txId: txId,
-              error: error,
-            ),
-            actions: _buildWaitBroadcastActions(
-              context,
-              txId: txId,
-              error: error,
-            ),
+            content: (error != null)
+                ? Text(
+                    texts.waiting_broadcast_dialog_content_error(
+                      extractExceptionMessage(error, texts),
+                    ),
+                    style: themeData.dialogTheme.contentTextStyle,
+                    textAlign: TextAlign.center,
+                  )
+                : (txId == null)
+                    ? const WaitingBroadcastContent()
+                    : BroadcastResultContent(txId: txId),
+            actions: error == null && txId == null
+                ? []
+                : [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(txId),
+                      child: Text(
+                        texts.waiting_broadcast_dialog_action_close,
+                        style: themeData.primaryTextTheme.labelLarge,
+                      ),
+                    ),
+                  ],
           );
         },
       ),
     );
-  }
-
-  List<Widget> _buildWaitBroadcastActions(
-    BuildContext context, {
-    String? txId,
-    Object? error,
-  }) {
-    final themeData = Theme.of(context);
-    final texts = context.texts();
-
-    return txId == null && error == null
-        ? []
-        : [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(txId),
-              child: Text(
-                texts.waiting_broadcast_dialog_action_close,
-                style: themeData.primaryTextTheme.labelLarge,
-              ),
-            ),
-          ];
-  }
-
-  String _getTitleText(
-    BuildContext context, {
-    Object? error,
-  }) {
-    final texts = context.texts();
-    if (error != null) {
-      return texts.waiting_broadcast_dialog_dialog_title_error;
-    }
-    return texts.waiting_broadcast_dialog_dialog_title;
-  }
-
-  Widget getContent(
-    BuildContext context, {
-    String? txId,
-    Object? error,
-  }) {
-    final texts = context.texts();
-    final themeData = Theme.of(context);
-
-    if (error != null) {
-      return Text(
-        texts.waiting_broadcast_dialog_content_error(
-          extractExceptionMessage(error, texts),
-        ),
-        style: themeData.dialogTheme.contentTextStyle,
-        textAlign: TextAlign.center,
-      );
-    }
-    if (txId == null) {
-      return const WaitingBroadcastContent();
-    }
-    return BroadcastResultContent(txId: txId);
   }
 }
 

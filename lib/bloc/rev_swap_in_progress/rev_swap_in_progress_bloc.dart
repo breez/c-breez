@@ -34,10 +34,15 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
           "Reverse Swap ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats status:${revSwapInfo.status.name}",
         );
       }
-      emit(RevSwapsInProgressState(reverseSwapsInProgress: reverseSwapsInProgress));
+      if (!isClosed) {
+        emit(RevSwapsInProgressState(reverseSwapsInProgress: reverseSwapsInProgress));
+      }
     } catch (e) {
       final errorMessage = extractExceptionMessage(e, texts);
-      emit(RevSwapsInProgressState(error: errorMessage));
+      if (!isClosed) {
+        emit(RevSwapsInProgressState(error: errorMessage));
+      }
+
       timer.cancel();
       _log.info("reverse swaps in progress polling finished due to error");
     }

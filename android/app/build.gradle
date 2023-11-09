@@ -76,7 +76,7 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.development
+            signingConfig signingConfigs.debug
             applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
             resValue "string", "app_name", "Breez Cloud - Debug"

@@ -80,6 +80,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   Widget build(BuildContext context) {
     final texts = context.texts();
     final themeData = Theme.of(context);
+    final error = widget.error;
 
     return BlocBuilder<InputBloc, InputState>(
       builder: (context, inputState) {
@@ -134,11 +135,10 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
             children: <Widget>[
               AnimatedCrossFade(
                 firstChild: LoadingOrError(
-                  error: widget.error,
-                  displayErrorMessage: extractExceptionMessage(
-                    widget.error ?? texts.qr_code_dialog_warning_message_error,
-                    texts,
-                  ),
+                  error: error,
+                  displayErrorMessage: error != null
+                      ? extractExceptionMessage(error, texts)
+                      : texts.qr_code_dialog_warning_message_error,
                 ),
                 secondChild: widget.receivePaymentResponse == null
                     ? const SizedBox()

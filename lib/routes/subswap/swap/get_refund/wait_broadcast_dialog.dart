@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/services/injector.dart';
@@ -9,15 +10,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
 class WaitBroadcastDialog extends StatelessWidget {
-  final String _fromAddress;
-  final String _toAddress;
-  final int _feeRate;
+  final RefundRequest req;
+  final int? feeSat; // TODO: Display the fees on WaitBroadcastDialog
 
-  const WaitBroadcastDialog(
-    this._fromAddress,
-    this._toAddress,
-    this._feeRate,
-  );
+  const WaitBroadcastDialog({
+    required this.req,
+    this.feeSat,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +32,7 @@ class WaitBroadcastDialog extends StatelessWidget {
         ),
       ),
       child: FutureBuilder(
-        future: refundBloc.refund(
-          swapAddress: _fromAddress,
-          toAddress: _toAddress,
-          satPerVbyte: _feeRate,
-        ),
+        future: refundBloc.refund(req: req),
         builder: (context, snapshot) {
           final txId = snapshot.data;
           final error = snapshot.error;

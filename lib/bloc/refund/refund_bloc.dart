@@ -28,18 +28,30 @@ class RefundBloc extends Cubit<RefundState> {
     emit(state.copyWith(refundables: await _breezSDK.listRefundables()));
   }
 
-  Future<String> refund({
-    required String swapAddress,
-    required String toAddress,
-    required int satPerVbyte,
+  /// Prepares a refund transaction for a failed/expired swap.
+  ///
+  /// Can optionally be used before refund to know how much fees will be paid
+  /// to perform the refund.
+  Future<int> prepareRefund({
+    required PrepareRefundRequest req,
   }) async {
-    _log.info("Refunding swap $swapAddress to $toAddress with fee $satPerVbyte");
+    _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
-      final req = RefundRequest(
-        swapAddress: swapAddress,
-        toAddress: toAddress,
-        satPerVbyte: satPerVbyte,
-      );
+      final resp = await _breezSDK.prepareRefund(req: req);
+      _log.info("Refund txId: ${resp.refundTxWeight}, ${resp.refundTxFeeSat}");
+      return resp.refundTxFeeSat;
+    } catch (e) {
+      _log.severe("Failed to refund swap", e);
+      rethrow;
+    }
+  }
+
+  /// Construct and broadcast a refund transaction for a failed/expired swap
+  Future<String> refund({
+    required RefundRequest req,
+  }) async {
+    _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
+    try {
       final refundResponse = await _breezSDK.refund(req: req);
       _log.info("Refund txId: ${refundResponse.refundTxId}");
       return refundResponse.refundTxId;

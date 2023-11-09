@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
 
   another_flushbar: ^1.12.30
-  archive: ^3.4.6
+  archive: ^3.4.9
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
   breez_sdk:
@@ -34,11 +34,11 @@ dependencies:
   extended_image: ^8.1.1
   ffi: ^2.1.0
   # Doesn't support: Linux Windows
-  firebase_core: ^2.20.0
+  firebase_core: ^2.21.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.4.2
+  firebase_dynamic_links: ^5.4.3
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.7.2
+  firebase_messaging: ^14.7.3
   flutter_bloc: ^8.1.3
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
@@ -48,7 +48,7 @@ dependencies:
   flutter_inappwebview: ^6.0.0-beta.25
   flutter_rust_bridge: 1.80.1
   flutter_secure_storage: ^9.0.0
-  flutter_svg: ^2.0.8
+  flutter_svg: ^2.0.9
   flutter_typeahead:
     git:
       url: https://github.com/breez/flutter_typeahead.git
@@ -67,11 +67,11 @@ dependencies:
   # Doesn't support: Linux Mac
   local_auth: ^2.1.7
   local_auth_android: ^1.0.35
-  local_auth_ios: ^1.1.4
+  local_auth_ios: ^1.1.5
   logging: ^1.2.0
   mockito: ^5.4.2
   # Doesn't support: Linux Windows
-  mobile_scanner: ^3.5.1
+  mobile_scanner: ^3.5.2
   package_info_plus: ^4.2.0
   path: ^1.8.3
   path_provider: ^2.1.1
@@ -82,8 +82,8 @@ dependencies:
   share_plus: ^7.2.1
   shared_preferences: ^2.2.2
   simple_animations: ^5.0.2
-  sqflite_common_ffi: ^2.3.0+2
-  sqlite3_flutter_libs: ^0.5.17
+  sqflite_common_ffi: ^2.3.0+3
+  sqlite3_flutter_libs: ^0.5.18
   synchronized: ^3.1.0
   theme_provider: ^0.6.0
   timeago: ^3.6.0
@@ -101,13 +101,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.6
-  flutter_lints: ^3.0.0
+  flutter_lints: ^3.0.1
   test: ^1.24.9
 
 dependency_overrides:
-  archive: ^3.4.6
-  intl: ^0.18.1
-  path: ^1.8.3
   test_api: ^0.6.1
   # Comment-out to work with breez-sdk from git repository
   breez_sdk:

@@ -1,4 +1,3 @@
-import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/swap_in_progress/swap_in_progress_bloc.dart';
@@ -7,7 +6,6 @@ import 'package:c_breez/routes/subswap/swap/widgets/address_widget_placeholder.d
 import 'package:c_breez/routes/subswap/swap/widgets/deposit_widget.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/inprogress_swap.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
-import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -24,7 +22,6 @@ class SwapPage extends StatefulWidget {
 }
 
 class SwapPageState extends State<SwapPage> {
-  final BreezSDK breezLib = ServiceInjector().breezSDK;
   SwapInfo? swapInProgress;
   SwapInfo? swapUnused;
   String? bitcoinAddress;

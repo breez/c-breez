@@ -184,6 +184,7 @@ class UITestPage extends StatelessWidget {
                   paymentSecret: Uint8List.fromList(
                     HEX.decode('0c56b71ef'),
                   ),
+                  minFinalCltvExpiryDelta: 18,
                 );
                 Future<ReceivePaymentResponse> response = Future.delayed(
                   const Duration(seconds: 2),

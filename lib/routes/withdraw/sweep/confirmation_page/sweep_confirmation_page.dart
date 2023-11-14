@@ -83,7 +83,7 @@ class _SweepConfirmationPageState extends State<SweepConfirmationPage> {
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
               ? SweepButton(
                   toAddress: widget.toAddress,
-                  feeRateSatsPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
+                  satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
                 )
               : null,
     );

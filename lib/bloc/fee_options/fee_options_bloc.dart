@@ -78,10 +78,8 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   }
 
   Future<int> _calculateTransactionFee(String address, int satsPerVbyte) async {
-    final response = await _breezLib.prepareSweep(
-      address: address,
-      satsPerVbyte: satsPerVbyte,
-    );
+    final req = PrepareSweepRequest(satPerVbyte: satsPerVbyte, toAddress: address);
+    final response = await _breezLib.prepareSweep(req: req);
     return response.sweepTxFeeSat;
   }
 }

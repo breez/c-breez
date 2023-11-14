@@ -59,7 +59,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   Future _fetchReverseSwapPairInfo() async {
     final revSwapBloc = context.read<ReverseSwapBloc>();
     setState(() {
-      _revSwapOptionsFuture = revSwapBloc.fetchReverseSwapOptions();      
+      _revSwapOptionsFuture = revSwapBloc.fetchReverseSwapOptions();
     });
   }
 
@@ -71,7 +71,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     final bitcoinCurrency = context.read<CurrencyBloc>().state.bitcoinCurrency;
 
     final texts = context.texts();

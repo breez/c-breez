@@ -57,7 +57,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
       final maxAmountResponse = await _breezLib.maxReverseSwapAmount();
       return ReverseSwapOptions(pairInfo: reverseSwapPairInfo, maxAmountSat: maxAmountResponse.totalSat);
     } catch (e) {
-      _log.severe("fetchReverseSwapFees error", e);      
+      _log.severe("fetchReverseSwapOptions error", e);      
       rethrow;
     }
   }

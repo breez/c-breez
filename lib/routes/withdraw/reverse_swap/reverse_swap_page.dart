@@ -1,10 +1,10 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
-import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_bloc.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
+import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
+import 'package:c_breez/bloc/reverse_swap/reverse_swap_state.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/reverse_swap_confirmation_page.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/in_progress/reverse_swaps_in_progress_page.dart';
@@ -39,7 +39,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   final _validatorHolder = ValidatorHolder();
 
   bool _withdrawMaxValue = false;
-  Future<ReverseSwapPairInfo>? _pairInfoFuture;
+  Future<ReverseSwapOptions>? _revSwapOptionsFuture;
 
   @override
   void initState() {
@@ -57,9 +57,9 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   }
 
   Future _fetchReverseSwapPairInfo() async {
-    final feeOptionsBloc = context.read<FeeOptionsBloc>();
+    final revSwapBloc = context.read<ReverseSwapBloc>();
     setState(() {
-      _pairInfoFuture = feeOptionsBloc.fetchReverseSwapFees();
+      _revSwapOptionsFuture = revSwapBloc.fetchReverseSwapOptions();
     });
   }
 
@@ -72,7 +72,6 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final balance = context.read<AccountBloc>().state.balance;
     final bitcoinCurrency = context.read<CurrencyBloc>().state.bitcoinCurrency;
 
     final texts = context.texts();
@@ -83,9 +82,9 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
         leading: const back_button.BackButton(),
         title: Text(texts.reverse_swap_title),
       ),
-      body: FutureBuilder<ReverseSwapPairInfo>(
-          future: _pairInfoFuture,
-          builder: (BuildContext context, AsyncSnapshot<ReverseSwapPairInfo> snapshot) {
+      body: FutureBuilder<ReverseSwapOptions>(
+          future: _revSwapOptionsFuture,
+          builder: (BuildContext context, AsyncSnapshot<ReverseSwapOptions> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
               case ConnectionState.waiting:
@@ -109,6 +108,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                     ),
                   );
                 } else {
+                  final maxSendableAmount = snapshot.data!.maxAmountSat;
                   return SafeArea(
                     child: BlocBuilder<RevSwapsInProgressBloc, RevSwapsInProgressState>(
                       builder: (context, inProgressSwapState) {
@@ -144,11 +144,11 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                       bitcoinCurrency: bitcoinCurrency,
                                       controller: _amountController,
                                       withdrawMaxValue: _withdrawMaxValue,
-                                      balance: balance,
+                                      balance: maxSendableAmount,
                                       policy: WithdrawFundsPolicy(
                                         WithdrawKind.withdraw_funds,
-                                        snapshot.data!.min,
-                                        snapshot.data!.max,
+                                        snapshot.data!.pairInfo.min,
+                                        snapshot.data!.pairInfo.max,
                                       ),
                                     ),
                                     ListTile(
@@ -165,7 +165,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                           setState(() {
                                             _withdrawMaxValue = value;
                                             if (_withdrawMaxValue) {
-                                              _setAmount(balance);
+                                              _setAmount(maxSendableAmount);
                                             } else {
                                               _amountController.text = "";
                                             }
@@ -186,18 +186,18 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                 () async {
                                   final navigator = Navigator.of(context);
                                   if (_formKey.currentState?.validate() ?? false) {
-                                    final feeOptionsBloc = context.read<FeeOptionsBloc>();
+                                    final revSwapBloc = context.read<ReverseSwapBloc>();
                                     int amount = _getAmount();
-                                    final boltzFees =
-                                        await feeOptionsBloc.fetchReverseSwapFees(sendAmountSat: amount);
+                                    final revSwapOptions =
+                                        await revSwapBloc.fetchReverseSwapOptions(sendAmountSat: amount);
 
                                     navigator.push(
                                       FadeInRoute(
                                         builder: (_) => ReverseSwapConfirmationPage(
                                           amountSat: amount,
                                           onchainRecipientAddress: _addressController.text,
-                                          feesHash: boltzFees.feesHash,
-                                          boltzFees: boltzFees.totalEstimatedFees,
+                                          feesHash: revSwapOptions.pairInfo.feesHash,
+                                          boltzFees: revSwapOptions.pairInfo.totalEstimatedFees,
                                         ),
                                       ),
                                     );

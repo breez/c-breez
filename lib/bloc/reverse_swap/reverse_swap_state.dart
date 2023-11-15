@@ -17,3 +17,10 @@ class ReverseSwapState {
         error: error ?? this.error,
       );
 }
+
+class ReverseSwapOptions {
+  final ReverseSwapPairInfo pairInfo;
+  final int maxAmountSat;
+
+  ReverseSwapOptions({required this.pairInfo, required this.maxAmountSat});
+}

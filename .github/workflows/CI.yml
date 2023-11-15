@@ -28,6 +28,7 @@ jobs:
           repository: 'breez/breez-sdk'                 
           ssh-key: ${{secrets.REPO_SSH_KEY}}          
           path: 'breez-sdk'
+          ref: 'v0.2.9'
           
           
       # Setup the flutter environment.

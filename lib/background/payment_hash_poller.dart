@@ -41,7 +41,9 @@ class PaymentHashPoller {
           print("Payment received! Stop polling.");
           timer.cancel();
           print("Completed payment_received task for $paymentHash.");
-          taskCompleter.complete(true);
+          // TODO Remove this delay when we have a reliable way tell if the signer is connected (Greenlight webhooks)
+          // Artificial delay to keep the signer running for longer, to ensure the preimage is sent
+          await Future.delayed(const Duration(seconds: 10), () => taskCompleter.complete(true));
           return;
         }
       }

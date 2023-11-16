@@ -54,30 +54,30 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     _log.info("registerForNotifications");
     String? token = await _notifications.getToken();
     if (token != null) {
-      if (token != state.profileSettings.token) {
-        _log.info("Got a new token, registering…");
-        String platform = Platform.isIOS
-            ? "ios"
-            : Platform.isAndroid
-                ? "android"
-                : "";
-        
-        String webhookUrlBase = "https://notifier.breez.technology";
-        String webhookUrl = "$webhookUrlBase/api/v1/notify?platform=$platform&token=$token";
-        _log.info("Registering webhook: $webhookUrl");
-        await breezLib.registerWebhook(webhookUrl: webhookUrl);
+      _log.info("Retrieved token, registering…");
+      String platform = Platform.isIOS
+          ? "ios"
+          : Platform.isAndroid
+              ? "android"
+              : "";
 
-        String? userID; // TODO: randomize a user id after registering for notifications
-        emit(state.copyWith(
-          profileSettings: state.profileSettings.copyWith(
-            token: token,
-            userID: userID,
-            registrationRequested: true,
-          ),
-        ));
-      } else {
-        _log.info("Token is the same as before");
-      }
+      String webhookUrlBase = "https://notifier.breez.technology";
+      String webhookUrl = "$webhookUrlBase/api/v1/notify?platform=$platform&token=$token";
+      _log.info("Registering webhook: $webhookUrl");
+      await breezLib.registerWebhook(webhookUrl: webhookUrl);
+
+      /* userID field of UserProfileSettings isn't being used anywhere at this stage on C-Breez
+       * when it gets utilized again:
+      // TODO: randomize a user id after registering for notifications
+       */
+      String? userID;
+      emit(state.copyWith(
+        profileSettings: state.profileSettings.copyWith(
+          token: token,
+          userID: userID,
+          registrationRequested: true,
+        ),
+      ));
     } else {
       _log.warning("Failed to get token");
     }

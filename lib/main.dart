@@ -88,7 +88,11 @@ void main() async {
             ),
           ),
           BlocProvider<UserProfileBloc>(
-            create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
+            create: (BuildContext context) => UserProfileBloc(
+              breezLib,
+              injector.breezServer,
+              injector.notifications,
+            ),
           ),
           BlocProvider<CurrencyBloc>(
             create: (BuildContext context) => CurrencyBloc(breezLib),

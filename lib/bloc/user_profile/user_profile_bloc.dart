@@ -7,7 +7,6 @@ import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server.dart';
-import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/notifications.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -18,10 +17,12 @@ const PROFILE_DATA_FOLDER_PATH = "profile";
 final _log = Logger("UserProfileBloc");
 
 class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
+  final BreezSDK _breezLib;
   final BreezServer _breezServer;
   final Notifications _notifications;
 
   UserProfileBloc(
+    this._breezLib,
     this._breezServer,
     this._notifications,
   ) : super(UserProfileState.initial()) {
@@ -43,14 +44,12 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
       );
     }
     emit(profile);
-    final injector = ServiceInjector();
-    final breezLib = injector.breezSDK;
-    breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((_) {
-      registerForNotifications(breezLib);
+    _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((_) {
+      registerForNotifications();
     });
   }
 
-  Future registerForNotifications(BreezSDK breezLib) async {
+  Future registerForNotifications() async {
     _log.info("registerForNotifications");
     String? token = await _notifications.getToken();
     if (token != null) {
@@ -64,7 +63,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
       String webhookUrlBase = "https://notifier.breez.technology";
       String webhookUrl = "$webhookUrlBase/api/v1/notify?platform=$platform&token=$token";
       _log.info("Registering webhook: $webhookUrl");
-      await breezLib.registerWebhook(webhookUrl: webhookUrl);
+      await _breezLib.registerWebhook(webhookUrl: webhookUrl);
 
       /* userID field of UserProfileSettings isn't being used anywhere at this stage on C-Breez
        * when it gets utilized again:

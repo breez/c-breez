@@ -25,6 +25,7 @@ void main() {
       PathProviderPlatform.instance = platform;
       await hydratedBlocStorage.setUpHydratedBloc();
       userProfileBloc = UserProfileBloc(
+        injector.breezSDK,
         injector.breezServer,
         injector.notifications,
       );
@@ -48,6 +49,7 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 100));
 
       userProfileBloc = UserProfileBloc(
+        injector.breezSDK,
         injector.breezServer,
         injector.notifications,
       );

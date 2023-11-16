@@ -59,24 +59,28 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
           : Platform.isAndroid
               ? "android"
               : "";
+      // Only register webhook on iOS & Android platforms
+      if (platform.isNotEmpty) {
+        String webhookUrlBase = "https://notifier.breez.technology";
+        String webhookUrl = "$webhookUrlBase/api/v1/notify?platform=$platform&token=$token";
+        _log.info("Registering webhook: $webhookUrl");
+        await _breezLib.registerWebhook(webhookUrl: webhookUrl);
 
-      String webhookUrlBase = "https://notifier.breez.technology";
-      String webhookUrl = "$webhookUrlBase/api/v1/notify?platform=$platform&token=$token";
-      _log.info("Registering webhook: $webhookUrl");
-      await _breezLib.registerWebhook(webhookUrl: webhookUrl);
-
-      /* userID field of UserProfileSettings isn't being used anywhere at this stage on C-Breez
-       * when it gets utilized again:
-      // TODO: randomize a user id after registering for notifications
-       */
-      String? userID;
-      emit(state.copyWith(
-        profileSettings: state.profileSettings.copyWith(
-          token: token,
-          userID: userID,
-          registrationRequested: true,
-        ),
-      ));
+        // userID field of UserProfileSettings isn't being used anywhere at this stage on C-Breez
+        // when it gets utilized again:
+        // TODO: randomize a user id after registering for notifications
+        String? userID;
+        emit(state.copyWith(
+          profileSettings: state.profileSettings.copyWith(
+            token: token,
+            userID: userID, // Unused Field
+            registrationRequested: true, // Unused Field
+          ),
+        ));
+      } else {
+        // Do not update/remove existing token if platform is not supported
+        throw Exception("Notifications for platform is not supported");
+      }
     } else {
       _log.warning("Failed to get token");
     }

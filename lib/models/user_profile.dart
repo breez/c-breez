@@ -1,13 +1,13 @@
 enum AppMode { balance, apps }
 
 class UserProfileSettings {
-  final String? userID;
+  final String? userID; // Unused Field
   final String? name;
   final String? color;
   final String? animal;
   final String? image;
   final String token;
-  final bool registrationRequested;
+  final bool registrationRequested; // Unused Field
   final bool hideBalance;
   final AppMode appMode;
   final bool expandPreferences;

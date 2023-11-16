@@ -31,7 +31,7 @@ dependencies:
   drag_and_drop_lists: ^0.3.3
   duration: ^3.0.13
   email_validator: ^2.1.17
-  extended_image: ^8.1.1
+  extended_image: ^8.2.0
   ffi: ^2.1.0
   # Doesn't support: Linux Windows
   firebase_core: ^2.22.0
@@ -45,7 +45,7 @@ dependencies:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
-  flutter_inappwebview: ^6.0.0-beta.25
+  flutter_inappwebview: ^6.0.0-beta.28
   flutter_rust_bridge: 1.80.1
   flutter_secure_storage: ^9.0.0
   flutter_svg: ^2.0.9
@@ -82,7 +82,7 @@ dependencies:
   share_plus: ^7.2.1
   shared_preferences: ^2.2.2
   simple_animations: ^5.0.2
-  sqflite_common_ffi: ^2.3.0+3
+  sqflite_common_ffi: ^2.3.0+4
   sqlite3_flutter_libs: ^0.5.18
   synchronized: ^3.1.0
   theme_provider: ^0.6.0

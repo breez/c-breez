@@ -48,14 +48,10 @@ class ActionsFee extends StatelessWidget {
                 ),
                 onPressed: () {
                   _log.info("onPressed: save");
-                  if (state.overrideFeeEnabled) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const SaveDialog(),
-                    );
-                  } else {
-                    context.read<PaymentOptionsBloc>().saveFees();
-                  }
+                  showDialog(
+                    context: context,
+                    builder: (context) => const SaveDialog(),
+                  );
                 },
               ),
             ],

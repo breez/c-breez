@@ -29,17 +29,6 @@ class Preferences {
     await prefs.remove(_mempoolSpaceUrlKey);
   }
 
-  Future<bool> getPaymentOptionsOverrideFeeEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_kPaymentOptionOverrideFee) ?? kDefaultOverrideFee;
-  }
-
-  Future<void> setPaymentOptionsOverrideFeeEnabled(bool enabled) async {
-    _log.info("set payment options override fee enabled: $enabled");
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_kPaymentOptionOverrideFee, enabled);
-  }
-
   Future<double> getPaymentOptionsProportionalFee() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getDouble(_kPaymentOptionProportionalFee) ?? kDefaultProportionalFee;

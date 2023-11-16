@@ -14,13 +14,6 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
     _fetchPaymentsOverrideSettings().then((_) => _log.info("Initial settings read"));
   }
 
-  Future<void> setOverrideFeeEnabled(bool enabled) async {
-    emit(state.copyWith(
-      overrideFeeEnabled: enabled,
-      saveEnabled: true,
-    ));
-  }
-
   Future<void> setProportionalFee(double proportionalFee) async {
     emit(state.copyWith(
       proportionalFee: proportionalFee,
@@ -38,7 +31,6 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   Future<void> resetFees() async {
     _log.info("Resetting payments override settings to default: enabled: $kDefaultOverrideFee, "
         "proportional: $kDefaultProportionalFee");
-    await _preferences.setPaymentOptionsOverrideFeeEnabled(kDefaultOverrideFee);
     await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
     await _preferences.setPaymentOptionsExemptFee(kDefaultExemptFeeMsat);
     emit(const PaymentOptionsState.initial());
@@ -46,10 +38,10 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
 
   Future<void> saveFees() async {
     final state = this.state;
-    _log.info("Saving payments override settings: enabled: ${state.overrideFeeEnabled}, "
+    _log.info("Saving payments override settings: enabled:"
         "proportional: ${state.proportionalFee}"
+        "saved enabled. ${state.saveEnabled}"
         "Exemptfee: ${state.exemptFeeMsat}");
-    await _preferences.setPaymentOptionsOverrideFeeEnabled(state.overrideFeeEnabled);
     await _preferences.setPaymentOptionsProportionalFee(state.proportionalFee);
     await _preferences.setPaymentOptionsExemptFee(state.exemptFeeMsat);
     emit(state.copyWith(saveEnabled: false));
@@ -64,13 +56,10 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
 
   Future<void> _fetchPaymentsOverrideSettings() async {
     _log.info("Fetching payments override settings");
-    final enabled = await _preferences.getPaymentOptionsOverrideFeeEnabled();
     final proportional = await _preferences.getPaymentOptionsProportionalFee();
     final exemptFeeMsat = await _preferences.getPaymentOptionsExemptFee();
-    _log.info(
-        "Payments override fetched: enabled: $enabled, proportional: $proportional, exemptFeeMsat: $exemptFeeMsat");
+    _log.info("Payments override fetched: proportional: $proportional, exemptFeeMsat: $exemptFeeMsat");
     emit(PaymentOptionsState(
-      overrideFeeEnabled: enabled,
       proportionalFee: proportional,
       exemptFeeMsat: exemptFeeMsat,
       saveEnabled: false,

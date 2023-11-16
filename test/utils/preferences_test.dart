@@ -34,19 +34,6 @@ void main() {
     });
   });
 
-  group('payment options override fee', () {
-    test('default', () async {
-      final preferences = Preferences();
-      expect(await preferences.getPaymentOptionsOverrideFeeEnabled(), kDefaultOverrideFee);
-    });
-
-    test('set', () async {
-      final preferences = Preferences();
-      await preferences.setPaymentOptionsOverrideFeeEnabled(true);
-      expect(await preferences.getPaymentOptionsOverrideFeeEnabled(), true);
-    });
-  });
-
   group('payment options proportional fee', () {
     test('default', () async {
       final preferences = Preferences();

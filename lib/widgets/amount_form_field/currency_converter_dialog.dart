@@ -93,17 +93,17 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
         _updateExchangeLabel(exchangeRate);
 
         return AlertDialog(
-          title: _dialogBody(context, currencyState),
+          title: _dialogBody(currencyState),
           titlePadding: const EdgeInsets.fromLTRB(24.0, 16.0, 16.0, 8.0),
           contentPadding: const EdgeInsets.fromLTRB(24.0, 0.0, 24.0, 16.0),
-          content: _dialogContent(context, currencyState),
-          actions: _buildActions(context, currencyState),
+          content: _dialogContent(currencyState),
+          actions: _buildActions(currencyState),
         );
       },
     );
   }
 
-  Widget _dialogBody(BuildContext context, CurrencyState currencyState) {
+  Widget _dialogBody(CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
@@ -168,7 +168,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     );
   }
 
-  Widget _dialogContent(BuildContext context, CurrencyState currencyState) {
+  Widget _dialogContent(CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final fiatCurrency = currencyState.fiatCurrency;
     final fiatExchangeRate = currencyState.fiatExchangeRate;
@@ -237,12 +237,12 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
           child: Column(
             children: [
               Text(
-                _contentMessage(context, currencyState),
+                _contentMessage(currencyState),
                 style: themeData.textTheme.headlineSmall!.copyWith(
                   fontSize: 16.0,
                 ),
               ),
-              _buildExchangeRateLabel(context, fiatConversion),
+              _buildExchangeRateLabel(fiatConversion),
             ],
           ),
         ),
@@ -250,7 +250,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     );
   }
 
-  List<Widget> _buildActions(BuildContext context, CurrencyState currencyState) {
+  List<Widget> _buildActions(CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
@@ -290,7 +290,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     return actions;
   }
 
-  String _contentMessage(BuildContext context, CurrencyState currencyState) {
+  String _contentMessage(CurrencyState currencyState) {
     final amount = _fiatAmountController.text.isNotEmpty
         ? currencyState.bitcoinCurrency.format(
             _convertedSatoshies(currencyState),
@@ -321,7 +321,6 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   }
 
   Widget _buildExchangeRateLabel(
-    BuildContext context,
     FiatConversion fiatConversion,
   ) {
     final themeData = Theme.of(context);

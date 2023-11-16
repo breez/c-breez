@@ -110,7 +110,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
                       texts.initial_walk_through_lets_breeze,
                       style: themeData.textTheme.labelLarge,
                     ),
-                    onPressed: () => _letsBreez(context),
+                    onPressed: () => _letsBreez(),
                   ),
                 ),
                 Expanded(
@@ -138,7 +138,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     );
   }
 
-  void _letsBreez(BuildContext context) async {
+  void _letsBreez() async {
     _log.info("Lets breez");
     bool approved = await showDialog(
       useRootNavigator: false,

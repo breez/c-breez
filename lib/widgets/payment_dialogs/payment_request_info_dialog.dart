@@ -101,12 +101,12 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       return BlocBuilder<AccountBloc, AccountState>(
         builder: (context, account) {
           List<Widget> children = [];
-          _addIfNotNull(children, _buildPayeeNameWidget(context));
-          _addIfNotNull(children, _buildRequestPayTextWidget(context));
-          _addIfNotNull(children, _buildAmountWidget(context, account, currencyState));
-          _addIfNotNull(children, _buildDescriptionWidget(context));
-          _addIfNotNull(children, _buildErrorMessage(context, currencyState));
-          _addIfNotNull(children, _buildActions(context, currencyState, account));
+          _addIfNotNull(children, _buildPayeeNameWidget());
+          _addIfNotNull(children, _buildRequestPayTextWidget());
+          _addIfNotNull(children, _buildAmountWidget(account, currencyState));
+          _addIfNotNull(children, _buildDescriptionWidget());
+          _addIfNotNull(children, _buildErrorMessage(currencyState));
+          _addIfNotNull(children, _buildActions(currencyState, account));
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -123,7 +123,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     }
   }
 
-  Widget? _buildPayeeNameWidget(BuildContext context) {
+  Widget? _buildPayeeNameWidget() {
     return widget.invoice.payeeName.isEmpty
         ? null
         : Text(
@@ -133,7 +133,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           );
   }
 
-  Widget _buildRequestPayTextWidget(BuildContext context) {
+  Widget _buildRequestPayTextWidget() {
     final themeData = Theme.of(context);
     final texts = context.texts();
     final payeeName = widget.invoice.payeeName;
@@ -145,7 +145,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     );
   }
 
-  Widget _buildAmountWidget(BuildContext context, AccountState account, CurrencyState currencyState) {
+  Widget _buildAmountWidget(AccountState account, CurrencyState currencyState) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
@@ -224,7 +224,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     );
   }
 
-  Widget? _buildDescriptionWidget(BuildContext context) {
+  Widget? _buildDescriptionWidget() {
     final themeData = Theme.of(context);
     final description = widget.invoice.extractDescription();
 
@@ -252,7 +252,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
           );
   }
 
-  Widget? _buildErrorMessage(BuildContext context, CurrencyState currencyState) {
+  Widget? _buildErrorMessage(CurrencyState currencyState) {
     final validationError = PaymentValidator(
       validatePayment: context.read<AccountBloc>().validatePayment,
       currency: currencyState.bitcoinCurrency,
@@ -281,7 +281,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     );
   }
 
-  Widget _buildActions(BuildContext context, CurrencyState currency, AccountState accState) {
+  Widget _buildActions(CurrencyState currency, AccountState accState) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 

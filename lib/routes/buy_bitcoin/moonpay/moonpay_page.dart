@@ -49,14 +49,14 @@ class _MoonPayPageState extends State<MoonPayPage> {
         body: BlocListener<MoonPayBloc, MoonPayState>(
           listener: (context, state) async {
             if (state is MoonPayStateError) {
-              _closeOnError(context, error: state);
+              _closeOnError(error: state);
             } else if (state is MoonPayStateUrlReady) {
               if (state.webViewStatus == WebViewStatus.error) {
-                _closeOnError(context);
+                _closeOnError();
               } else {
                 await promptLSPFeeAndNavigate(context, state.buyBitcoinResponse.openingFeeParams!).then(
                   (isApproved) {
-                    _launchMoonPayUrl(context, state.buyBitcoinResponse.url, isApproved);
+                    _launchMoonPayUrl(state.buyBitcoinResponse.url, isApproved);
                   },
                 );
               }
@@ -70,7 +70,7 @@ class _MoonPayPageState extends State<MoonPayPage> {
 
   // I'm opening a chrome tab instead on loading a in-app web view
   // https://breez-tech.slack.com/archives/C0585MDPTRD/p1685453667050779
-  void _launchMoonPayUrl(BuildContext context, String url, bool? launchBrowser) {
+  void _launchMoonPayUrl(String url, bool? launchBrowser) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MoonPayBloc>().dispose();
       Navigator.of(context).pop();
@@ -85,7 +85,7 @@ class _MoonPayPageState extends State<MoonPayPage> {
 
   // Right now we are not dealing with errors edge case scenarios, discussion:
   // https://breez-tech.slack.com/archives/C0585MDPTRD/p1685453667050779
-  void _closeOnError(BuildContext context, {MoonPayStateError? error}) {
+  void _closeOnError({MoonPayStateError? error}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<MoonPayBloc>().dispose();
       Navigator.of(context).pop();

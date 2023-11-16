@@ -125,7 +125,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                         bitcoinCurrency: currencyState.bitcoinCurrency,
                         focusNode: _amountFocusNode,
                         controller: _amountController,
-                        validatorFn: (v) => validatePayment(context, v),
+                        validatorFn: (v) => validatePayment(v),
                         style: theme.FieldTextStyle.textStyle,
                       );
                     },
@@ -166,9 +166,9 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
           if (_formKey.currentState?.validate() ?? false) {
             final data = widget.requestData;
             if (data != null) {
-              _withdraw(context, data);
+              _withdraw(data);
             } else {
-              _createInvoice(context, cheapestFeeParams);
+              _createInvoice(cheapestFeeParams);
             }
           }
         },
@@ -177,7 +177,6 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   }
 
   Future<void> _withdraw(
-    BuildContext context,
     LnUrlWithdrawRequestData data,
   ) async {
     _log.info("Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
@@ -201,7 +200,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     );
   }
 
-  Future _createInvoice(BuildContext context, OpeningFeeParams? cheapestFeeParams) async {
+  Future _createInvoice(OpeningFeeParams? cheapestFeeParams) async {
     _log.info("Create invoice: description=${_descriptionController.text}, amount=${_amountController.text}");
     final navigator = Navigator.of(context);
     final currentRoute = ModalRoute.of(navigator.context)!;
@@ -254,7 +253,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     }
   }
 
-  String? validatePayment(BuildContext context, int amount) {
+  String? validatePayment(int amount) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
     int? channelMinimumFee = lspInfo != null && lspInfo.openingFeeParamsList.values.isNotEmpty
         ? lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/restore_form_page.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
@@ -26,8 +24,17 @@ class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
     final texts = context.texts();
     final query = MediaQuery.of(context);
 
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: _currentPage == 1,
+      onPopInvoked: (_) async {
+        if (_currentPage > 1) {
+          FocusScope.of(context).requestFocus(FocusNode());
+          setState(() {
+            _currentPage--;
+          });
+          return;
+        }
+      },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -67,18 +74,5 @@ class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
         ),
       ),
     );
-  }
-
-  Future<bool> _onWillPop() async {
-    if (_currentPage == 1) {
-      return true;
-    } else if (_currentPage > 1) {
-      FocusScope.of(context).requestFocus(FocusNode());
-      setState(() {
-        _currentPage--;
-      });
-      return false;
-    }
-    return false;
   }
 }

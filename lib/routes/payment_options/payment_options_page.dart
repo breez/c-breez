@@ -19,8 +19,11 @@ class PaymentOptionsPage extends StatelessWidget {
     final themeData = Theme.of(context);
     final bloc = context.read<PaymentOptionsBloc>();
 
-    return WillPopScope(
-      onWillPop: () => bloc.cancelEditing().then((_) => true),
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (_) async {
+        await bloc.cancelEditing();
+      },
       child: Scaffold(
         appBar: AppBar(
           key: GlobalKey<ScaffoldState>(),

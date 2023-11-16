@@ -128,10 +128,8 @@ class UserApp extends StatelessWidget {
                       );
                     case '/':
                       return FadeInRoute(
-                        builder: (_) => WillPopScope(
-                          onWillPop: () async {
-                            return !await _homeNavigatorKey.currentState!.maybePop();
-                          },
+                        builder: (_) => NavigatorPopHandler(
+                          onPop: () => _homeNavigatorKey.currentState!.pop(),
                           child: Navigator(
                             initialRoute: "/",
                             key: _homeNavigatorKey,

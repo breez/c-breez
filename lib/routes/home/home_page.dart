@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/handlers/check_version_handler.dart';
 import 'package:c_breez/handlers/connectivity_handler.dart';
 import 'package:c_breez/handlers/handler.dart';
@@ -7,11 +10,11 @@ import 'package:c_breez/handlers/payment_result_handler.dart';
 import 'package:c_breez/routes/home/account_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/home_app_bar.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_actions_bar.dart';
-import 'package:c_breez/routes/home/widgets/close_popup.dart';
 import 'package:c_breez/routes/home/widgets/drawer/home_drawer.dart';
 import 'package:c_breez/routes/home/widgets/fade_in_widget.dart';
 import 'package:c_breez/routes/home/widgets/qr_action_button.dart';
 import 'package:c_breez/routes/security/auto_lock_mixin.dart';
+import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -69,11 +72,27 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
     final themeData = Theme.of(context);
     final mediaSize = MediaQuery.of(context).size;
 
-    return WillPopScope(
-      onWillPop: willPopCallback(
-        context,
-        canCancel: () => _scaffoldKey.currentState?.isDrawerOpen ?? false,
-      ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (_) async {
+        // Only close drawer if it's open
+        final NavigatorState navigator = Navigator.of(context);
+        if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+          navigator.pop();
+          return;
+        }
+
+        // If drawer is not open, prompt user to approve exiting the app
+        final texts = context.texts();
+        final bool? shouldPop = await promptAreYouSure(
+          context,
+          texts.close_popup_title,
+          Text(texts.close_popup_message),
+        );
+        if (shouldPop ?? false) {
+          exit(0);
+        }
+      },
       child: SizedBox(
         height: mediaSize.height,
         width: mediaSize.width,

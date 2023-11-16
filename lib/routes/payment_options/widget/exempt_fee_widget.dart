@@ -51,7 +51,6 @@ class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
               child: BlocBuilder<PaymentOptionsBloc, PaymentOptionsState>(
                 builder: (context, state) {
                   return TextFormField(
-                    enabled: state.overrideFeeEnabled,
                     keyboardType: const TextInputType.numberWithOptions(),
                     controller: _exemptFeeController,
                     decoration: InputDecoration(

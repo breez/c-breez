@@ -52,7 +52,6 @@ class _ProportionalFeeWidgetState extends State<ProportionalFeeWidget> {
               child: BlocBuilder<PaymentOptionsBloc, PaymentOptionsState>(
                 builder: (context, state) {
                   return TextFormField(
-                    enabled: state.overrideFeeEnabled,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),

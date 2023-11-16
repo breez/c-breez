@@ -82,13 +82,9 @@ class Config {
     sdk.Config defaultConf,
   ) async {
     final preferences = serviceInjector.preferences;
-    final configuredMaxFeeEnabled = await preferences.getPaymentOptionsOverrideFeeEnabled();
-    if (configuredMaxFeeEnabled) {
-      final configuredMaxFeePercent = await preferences.getPaymentOptionsProportionalFee();
-      _log.info("Using maxfeePercent from preferences: $configuredMaxFeePercent");
-      return configuredMaxFeePercent;
-    }
-    return defaultConf.maxfeePercent;
+    final configuredMaxFeePercent = await preferences.getPaymentOptionsProportionalFee();
+    _log.info("Using maxfeePercent from preferences: $configuredMaxFeePercent");
+    return configuredMaxFeePercent;
   }
 
   static Future<int> _configuredExempMsatFee(
@@ -96,13 +92,9 @@ class Config {
     sdk.Config defaultConf,
   ) async {
     final preferences = serviceInjector.preferences;
-    final configuredExemptFeeEnabled = await preferences.getPaymentOptionsOverrideFeeEnabled();
-    if (configuredExemptFeeEnabled) {
-      final configuredExemptFee = await preferences.getPaymentOptionsExemptFee();
-      _log.info("Using exemptMsatFee from preferences: $configuredExemptFee");
-      return configuredExemptFee;
-    }
-    return defaultConf.exemptfeeMsat;
+    final configuredExemptFee = await preferences.getPaymentOptionsExemptFee();
+    _log.info("Using exemptMsatFee from preferences: $configuredExemptFee");
+    return configuredExemptFee;
   }
 
   static Future<String> _mempoolSpaceUrl(

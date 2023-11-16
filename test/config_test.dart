@@ -61,7 +61,6 @@ void main() {
     test('max fee percent override on preferences should use the configured value', () async {
       final defaultConf = _defaultConf();
       const maxFee = 3.4;
-      injector.preferencesMock.paymentOptionsOverrideFeeEnabled = true;
       injector.preferencesMock.paymentOptionsProportionalFee = maxFee;
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.maxfeePercent, maxFee);
@@ -70,7 +69,6 @@ void main() {
     test('exemptfee override on preferences should use the configured value', () async {
       final defaultConf = _defaultConf();
       const exemptfee = 2000;
-      injector.preferencesMock.paymentOptionsOverrideFeeEnabled = true;
       injector.preferencesMock.paymentOptionsExemptfee = exemptfee;
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.exemptfeeMsat, exemptfee);

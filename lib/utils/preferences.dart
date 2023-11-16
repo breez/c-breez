@@ -6,7 +6,6 @@ const kDefaultProportionalFee = 1.0;
 const kDefaultExemptFeeMsat = 20000;
 
 const _mempoolSpaceUrlKey = "mempool_space_url";
-const _kPaymentOptionOverrideFee = "payment_options_override_fee";
 const _kPaymentOptionProportionalFee = "payment_options_proportional_fee";
 const _kPaymentOptionExemptFee = "payment_options_exempt_fee";
 

@@ -19,7 +19,9 @@ class FeeOption {
     required this.feeVByte,
   });
 
-  bool isAffordable(int walletBalance) => (walletBalance - fee) > 0;
+  bool isAffordable(int walletBalance) {
+    return (walletBalance - fee) > 0;
+  }
 
   String getDisplayName(BreezTranslations texts) {
     switch (processingSpeed) {

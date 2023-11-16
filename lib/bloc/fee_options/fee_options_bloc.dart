@@ -17,7 +17,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   FeeOptionsBloc(this._breezSDK) : super(FeeOptionsState.initial());
 
   /// Fetches the current recommended fees
-  Future<List<FeeOption>> fetchFeeOptions(String toAddress) async {
+  Future<List<FeeOption>> fetchFeeOptions({required String toAddress, String? swapAddress}) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();
@@ -25,7 +25,11 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
-      return await _constructFeeOptionList(toAddress, recommendedFees);
+      return await _constructFeeOptionList(
+        swapAddress: swapAddress,
+        toAddress: toAddress,
+        recommendedFees: recommendedFees,
+      );
     } catch (e) {
       _log.severe("fetchFeeOptions error", e);
       emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
@@ -34,26 +38,35 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   }
 
   Future<List<FeeOption>> _constructFeeOptionList(
-    String toAddress,
-    RecommendedFees recommendedFees,
-  ) async {
+      {required String toAddress, required RecommendedFees recommendedFees, String? swapAddress}) async {
     final List<FeeOption> feeOptions = [
       FeeOption(
         processingSpeed: ProcessingSpeed.economy,
         waitingTime: const Duration(minutes: 60),
-        fee: await _calculateTransactionFee(toAddress, recommendedFees.hourFee),
+        fee: swapAddress == null
+            ? await _calculateSweepTransactionFee(toAddress: toAddress, satPerVbyte: recommendedFees.hourFee)
+            : await _calculateRefundTransactionFee(
+                satPerVbyte: recommendedFees.hourFee, toAddress: toAddress, swapAddress: swapAddress),
         feeVByte: recommendedFees.hourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.regular,
         waitingTime: const Duration(minutes: 30),
-        fee: await _calculateTransactionFee(toAddress, recommendedFees.halfHourFee),
+        fee: swapAddress == null
+            ? await _calculateSweepTransactionFee(
+                toAddress: toAddress, satPerVbyte: recommendedFees.halfHourFee)
+            : await _calculateRefundTransactionFee(
+                satPerVbyte: recommendedFees.halfHourFee, toAddress: toAddress, swapAddress: swapAddress),
         feeVByte: recommendedFees.halfHourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.priority,
         waitingTime: const Duration(minutes: 10),
-        fee: await _calculateTransactionFee(toAddress, recommendedFees.fastestFee),
+        fee: swapAddress == null
+            ? await _calculateSweepTransactionFee(
+                toAddress: toAddress, satPerVbyte: recommendedFees.fastestFee)
+            : await _calculateRefundTransactionFee(
+                satPerVbyte: recommendedFees.fastestFee, toAddress: toAddress, swapAddress: swapAddress),
         feeVByte: recommendedFees.fastestFee,
       ),
     ];
@@ -61,12 +74,21 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     return feeOptions;
   }
 
-  Future<int> _calculateTransactionFee(String toAddress, int satsPerVbyte) async {
-    final req = PrepareSweepRequest(
-      satPerVbyte: satsPerVbyte,
-      toAddress: toAddress,
-    );
-    final response = await _breezSDK.prepareSweep(req: req);
+  Future<int> _calculateSweepTransactionFee({required String toAddress, required int satPerVbyte}) async {
+    final response = await _breezSDK.prepareSweep(
+        req: PrepareSweepRequest(toAddress: toAddress, satPerVbyte: satPerVbyte));
     return response.sweepTxFeeSat;
+  }
+
+  Future<int> _calculateRefundTransactionFee(
+      {required toAddress, required int satPerVbyte, required String swapAddress}) async {
+    final response = await _breezSDK.prepareRefund(
+      req: PrepareRefundRequest(
+        swapAddress: swapAddress,
+        toAddress: toAddress,
+        satPerVbyte: satPerVbyte,
+      ),
+    );
+    return response.refundTxFeeSat;
   }
 }

@@ -26,7 +26,7 @@ import 'package:c_breez/routes/security/lock_screen.dart';
 import 'package:c_breez/routes/security/secured_page.dart';
 import 'package:c_breez/routes/security/security_page.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
-import 'package:c_breez/routes/subswap/swap/get_refund/get_refund_page.dart';
+import 'package:c_breez/routes/get-refund/get_refund_page.dart';
 import 'package:c_breez/routes/subswap/swap/swap_page.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_page.dart';
 import 'package:c_breez/routes/withdraw/sweep/sweep_page.dart';

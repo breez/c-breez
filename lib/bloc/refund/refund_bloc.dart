@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -46,7 +48,7 @@ class RefundBloc extends Cubit<RefundState> {
     }
   }
 
-  /// Construct and broadcast a refund transaction for a failed/expired swap
+  /// Broadcast a refund transaction for a failed/expired swap
   Future<String> refund({
     required RefundRequest req,
   }) async {
@@ -54,9 +56,11 @@ class RefundBloc extends Cubit<RefundState> {
     try {
       final refundResponse = await _breezSDK.refund(req: req);
       _log.info("Refund txId: ${refundResponse.refundTxId}");
+      emit(RefundState(refundTxId: refundResponse.refundTxId));
       return refundResponse.refundTxId;
     } catch (e) {
       _log.severe("Failed to refund swap", e);
+      emit(RefundState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }

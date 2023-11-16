@@ -6,7 +6,6 @@ import 'package:c_breez/bloc/security/security_state.dart';
 import 'package:c_breez/routes/security/widget/pin_code_widget.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -26,8 +25,8 @@ class LockScreen extends StatelessWidget {
     final texts = context.texts();
     final navigator = Navigator.of(context);
 
-    return WillPopScope(
-      onWillPop: () => SynchronousFuture(false),
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         body: BlocBuilder<SecurityBloc, SecurityState>(
           builder: (context, state) {

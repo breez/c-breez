@@ -17,15 +17,14 @@ Future<void> promptError(
   final themeData = Theme.of(context);
 
   bool canPop = !disableBack;
-  Future<bool> canPopCallback() => Future.value(canPop);
 
   return showDialog<void>(
     useRootNavigator: false,
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
-      return WillPopScope(
-        onWillPop: canPopCallback,
+      return PopScope(
+        canPop: canPop,
         child: AlertDialog(
           contentPadding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
           title: title == null ? null : Text(title),

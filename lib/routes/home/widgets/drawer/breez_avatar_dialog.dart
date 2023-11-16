@@ -40,8 +40,8 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => Future.value(!isUploading),
+    return PopScope(
+      canPop: !isUploading,
       child: StatefulBuilder(
         builder: (context, setState) {
           final texts = context.texts();
@@ -139,6 +139,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
       setState(() {
         isUploading = true;
       });
+      await Future.delayed(const Duration(seconds: 15));
       var userName = nameInputController.text.isNotEmpty
           ? nameInputController.text
           : userBloc.state.profileSettings.name;

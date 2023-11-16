@@ -15,7 +15,7 @@ import 'package:rxdart/rxdart.dart';
 
 class InputBloc extends Cubit<InputState> {
   final _log = Logger("InputBloc");
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
   final LightningLinksService _lightningLinks;
   final Device _device;
   final InputPrinter _printer;
@@ -23,7 +23,7 @@ class InputBloc extends Cubit<InputState> {
   final _decodeInvoiceController = StreamController<InputData>();
 
   InputBloc(
-    this._breezLib,
+    this._breezSDK,
     this._lightningLinks,
     this._device,
     this._printer,
@@ -43,7 +43,7 @@ class InputBloc extends Cubit<InputState> {
 
   Future trackPayment(String paymentHash) async {
     _log.info("trackPayment: $paymentHash");
-    await _breezLib.invoicePaidStream.firstWhere((invoice) {
+    await _breezSDK.invoicePaidStream.firstWhere((invoice) {
       _log.info("invoice paid: ${invoice.paymentHash} we are waiting for "
           "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
       return invoice.paymentHash == paymentHash;
@@ -82,7 +82,7 @@ class InputBloc extends Cubit<InputState> {
     _log.info("handlePaymentRequest: $inputData source: $source");
     final LNInvoice lnInvoice = inputData.invoice;
 
-    NodeState? nodeState = await _breezLib.nodeInfo();
+    NodeState? nodeState = await _breezSDK.nodeInfo();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
       return const InputState.empty();
     }
@@ -124,12 +124,12 @@ class InputBloc extends Cubit<InputState> {
 
   Future<InputType> parseInput({required String input}) async {
     _log.info("parseInput: $input");
-    return await _breezLib.parseInput(input: input);
+    return await _breezSDK.parseInput(input: input);
   }
 
   Future<void> _waitForNodeState() async {
     _log.info("waitForNodeState");
-    await _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null);
+    await _breezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null);
     _log.info("waitForNodeState: done");
   }
 }

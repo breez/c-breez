@@ -9,14 +9,14 @@ import 'package:logging/logging.dart';
 final _log = Logger("RefundBloc");
 
 class RefundBloc extends Cubit<RefundState> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
 
-  RefundBloc(this._breezLib) : super(RefundState.initial()) {
+  RefundBloc(this._breezSDK) : super(RefundState.initial()) {
     _initializeRefundBloc();
   }
 
   void _initializeRefundBloc() {
-    _breezLib.nodeStateStream.where((nodeState) => nodeState != null).listen(
+    _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
       (nodeState) async {
         listRefundables();
       },
@@ -25,7 +25,7 @@ class RefundBloc extends Cubit<RefundState> {
 
   // fetch the refundable swaps list from the sdk.
   void listRefundables() async {
-    emit(state.copyWith(refundables: await _breezLib.listRefundables()));
+    emit(state.copyWith(refundables: await _breezSDK.listRefundables()));
   }
 
   Future<String> refund({
@@ -40,7 +40,7 @@ class RefundBloc extends Cubit<RefundState> {
         toAddress: toAddress,
         satPerVbyte: satPerVbyte,
       );
-      final refundResponse = await _breezLib.refund(req: req);
+      final refundResponse = await _breezSDK.refund(req: req);
       _log.info("Refund txId: ${refundResponse.refundTxId}");
       return refundResponse.refundTxId;
     } catch (e) {

@@ -28,9 +28,9 @@ class Config {
     if (_instance == null) {
       _log.info("Creating Config instance");
       final injector = serviceInjector ?? ServiceInjector();
-      final breezLib = injector.breezSDK;
+      final breezSDK = injector.breezSDK;
       final breezConfig = await _getBundledConfig();
-      final defaultConf = await _getDefaultConf(breezLib, breezConfig.apiKey, breezConfig.nodeConfig);
+      final defaultConf = await _getDefaultConf(breezSDK, breezConfig.apiKey, breezConfig.nodeConfig);
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
 
@@ -49,13 +49,13 @@ class Config {
   }
 
   static Future<sdk.Config> _getDefaultConf(
-    BreezSDK breezLib,
+    BreezSDK breezSDK,
     String apiKey,
     sdk.NodeConfig nodeConfig, {
     sdk.EnvironmentType environmentType = sdk.EnvironmentType.Production,
   }) async {
     _log.info("Getting default SDK config for environment: $environmentType");
-    return await breezLib.defaultConfig(
+    return await breezSDK.defaultConfig(
       envType: environmentType,
       apiKey: apiKey,
       nodeConfig: nodeConfig,

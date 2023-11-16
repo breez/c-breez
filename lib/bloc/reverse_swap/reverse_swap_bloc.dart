@@ -11,9 +11,9 @@ import 'package:logging/logging.dart';
 final _log = Logger("ReverseSwapBloc");
 
 class ReverseSwapBloc extends Cubit<ReverseSwapState> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
 
-  ReverseSwapBloc(this._breezLib) : super(ReverseSwapState.initial());
+  ReverseSwapBloc(this._breezSDK) : super(ReverseSwapState.initial());
 
   Future<ReverseSwapInfo> sendOnchain({
     required int amountSat,
@@ -32,7 +32,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         pairHash: pairHash,
         satPerVbyte: satPerVbyte,
       );
-      final reverseSwapReponse = await _breezLib.sendOnchain(req: req);
+      final reverseSwapReponse = await _breezSDK.sendOnchain(req: req);
       final reverseSwapInfo = reverseSwapReponse.reverseSwapInfo;
       _log.info(
         "Reverse Swap Info for id: ${reverseSwapInfo.id}, ${reverseSwapInfo.onchainAmountSat} sats to address"
@@ -52,9 +52,9 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     try {
       _log.info("Estimate reverse swap fees for: $sendAmountSat");
       final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat);
-      ReverseSwapPairInfo reverseSwapPairInfo = await _breezLib.fetchReverseSwapFees(req: req);
+      ReverseSwapPairInfo reverseSwapPairInfo = await _breezSDK.fetchReverseSwapFees(req: req);
       _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
-      final maxAmountResponse = await _breezLib.maxReverseSwapAmount();
+      final maxAmountResponse = await _breezSDK.maxReverseSwapAmount();
       return ReverseSwapOptions(pairInfo: reverseSwapPairInfo, maxAmountSat: maxAmountResponse.totalSat);
     } catch (e) {
       _log.severe("fetchReverseSwapOptions error", e);

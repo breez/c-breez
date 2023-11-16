@@ -10,9 +10,9 @@ import 'package:logging/logging.dart';
 final _log = Logger("RevSwapsInProgressBloc");
 
 class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
 
-  RevSwapsInProgressBloc(this._breezLib) : super(RevSwapsInProgressState(isLoading: true)) {
+  RevSwapsInProgressBloc(this._breezSDK) : super(RevSwapsInProgressState(isLoading: true)) {
     pollReverseSwapsInProgress();
   }
 
@@ -28,7 +28,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
   void _refreshInProgressReverseSwaps(Timer timer) async {
     final texts = getSystemAppLocalizations();
     try {
-      final reverseSwapsInProgress = await _breezLib.inProgressReverseSwaps();
+      final reverseSwapsInProgress = await _breezSDK.inProgressReverseSwaps();
       for (var revSwapInfo in reverseSwapsInProgress) {
         _log.info(
           "Reverse Swap ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats status:${revSwapInfo.status.name}",

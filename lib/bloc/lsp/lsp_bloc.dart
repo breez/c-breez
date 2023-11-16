@@ -8,15 +8,15 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'lsp_state.dart';
 
 class LSPBloc extends Cubit<LspState?> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
   NodeState? _nodeState;
 
-  LSPBloc(this._breezLib) : super(null) {
+  LSPBloc(this._breezSDK) : super(null) {
     // for every change in node state check if we have the current selected lsp as a peer.
     // If not instruct the sdk to connect.
-    _breezLib.nodeStateStream.where((nodeState) => nodeState != null).listen((nodeState) async {
+    _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen((nodeState) async {
       // emit first with the current selected lsp
-      emit(LspState(selectedLspId: await _breezLib.lspId(), lspInfo: state?.lspInfo));
+      emit(LspState(selectedLspId: await _breezSDK.lspId(), lspInfo: state?.lspInfo));
       _nodeState = nodeState;
       _refreshLspInfo();
     });
@@ -51,16 +51,16 @@ class LSPBloc extends Cubit<LspState?> {
   bool _isLspConnected(List<String> connectedPeers, String pubkey) => connectedPeers.contains(pubkey);
 
   // connect to a specific lsp
-  Future connectLSP(String lspID) async => await _breezLib.connectLSP(lspID);
+  Future connectLSP(String lspID) async => await _breezSDK.connectLSP(lspID);
 
   // fetch the connected lsp from the sdk.
   Future<LspInformation?> fetchCurrentLSP() async {
     if (state?.selectedLspId == null) {
       return null;
     }
-    return await _breezLib.fetchLspInfo(state!.selectedLspId!);
+    return await _breezSDK.fetchLspInfo(state!.selectedLspId!);
   }
 
   // fetch the lsp list from the sdk.
-  Future<List<LspInformation>> get lspList async => await _breezLib.listLsps();
+  Future<List<LspInformation>> get lspList async => await _breezSDK.listLsps();
 }

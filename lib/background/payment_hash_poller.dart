@@ -33,9 +33,9 @@ class PaymentHashPoller {
 
   void isPaymentReceived(Timer timer) async {
     final injector = ServiceInjector();
-    final breezLib = injector.breezSDK;
+    final breezSDK = injector.breezSDK;
     try {
-      final Payment? payment = await breezLib.paymentByHash(hash: paymentHash);
+      final Payment? payment = await breezSDK.paymentByHash(hash: paymentHash);
       if (payment != null) {
         if (payment.status == PaymentStatus.Complete) {
           print("Payment received! Stop polling.");

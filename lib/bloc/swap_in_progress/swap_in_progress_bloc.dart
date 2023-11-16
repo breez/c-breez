@@ -11,9 +11,9 @@ import 'package:logging/logging.dart';
 final _log = Logger("SwapInProgressBloc");
 
 class SwapInProgressBloc extends Cubit<SwapInProgressState> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
 
-  SwapInProgressBloc(this._breezLib) : super(SwapInProgressState(null, null, isLoading: true)) {
+  SwapInProgressBloc(this._breezSDK) : super(SwapInProgressState(null, null, isLoading: true)) {
     pollSwapAddress();
   }
 
@@ -30,12 +30,12 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
     final currentState = state;
     final texts = getSystemAppLocalizations();
     try {
-      final swapInProgress = (await _breezLib.inProgressSwap());
+      final swapInProgress = (await _breezSDK.inProgressSwap());
       SwapInfo? swapUnused = currentState.unused;
       if (swapInProgress != null) {
         swapUnused = null;
       } else {
-        swapUnused = (await _breezLib.receiveOnchain(req: const ReceiveOnchainRequest()));
+        swapUnused = (await _breezSDK.receiveOnchain(req: const ReceiveOnchainRequest()));
       }
       _log.info("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
       if (!isClosed) {

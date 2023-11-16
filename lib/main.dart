@@ -54,10 +54,10 @@ void main() async {
     await Firebase.initializeApp();
     final injector = ServiceInjector();
 
-    final breezLib = injector.breezSDK;
-    if (!await breezLib.isInitialized()) {
-      breezLib.initialize();
-      logger.registerBreezSdkLog(breezLib);
+    final breezSDK = injector.breezSDK;
+    if (!await breezSDK.isInitialized()) {
+      breezSDK.initialize();
+      logger.registerBreezSdkLog(breezSDK);
     }
 
     FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
@@ -71,17 +71,17 @@ void main() async {
       MultiBlocProvider(
         providers: [
           BlocProvider<LSPBloc>(
-            create: (BuildContext context) => LSPBloc(breezLib),
+            create: (BuildContext context) => LSPBloc(breezSDK),
           ),
           BlocProvider<AccountBloc>(
             create: (BuildContext context) => AccountBloc(
-              breezLib,
+              breezSDK,
               CredentialsManager(keyChain: injector.keychain),
             ),
           ),
           BlocProvider<InputBloc>(
             create: (BuildContext context) => InputBloc(
-              breezLib,
+              breezSDK,
               injector.lightningLinks,
               injector.device,
               const InputPrinter(),
@@ -89,31 +89,31 @@ void main() async {
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) => UserProfileBloc(
-              breezLib,
+              breezSDK,
               injector.breezServer,
               injector.notifications,
             ),
           ),
           BlocProvider<CurrencyBloc>(
-            create: (BuildContext context) => CurrencyBloc(breezLib),
+            create: (BuildContext context) => CurrencyBloc(breezSDK),
           ),
           BlocProvider<SecurityBloc>(
             create: (BuildContext context) => SecurityBloc(),
           ),
           BlocProvider<SweepBloc>(
-            create: (BuildContext context) => SweepBloc(breezLib),
+            create: (BuildContext context) => SweepBloc(breezSDK),
           ),
           BlocProvider<ReverseSwapBloc>(
-            create: (BuildContext context) => ReverseSwapBloc(breezLib),
+            create: (BuildContext context) => ReverseSwapBloc(breezSDK),
           ),
           BlocProvider<FeeOptionsBloc>(
-            create: (BuildContext context) => FeeOptionsBloc(breezLib),
+            create: (BuildContext context) => FeeOptionsBloc(breezSDK),
           ),
           BlocProvider<ConnectivityBloc>(
             create: (BuildContext context) => ConnectivityBloc(),
           ),
           BlocProvider<RefundBloc>(
-            create: (BuildContext context) => RefundBloc(breezLib),
+            create: (BuildContext context) => RefundBloc(breezSDK),
           ),
           BlocProvider<NetworkSettingsBloc>(
             create: (BuildContext context) => NetworkSettingsBloc(
@@ -128,11 +128,11 @@ void main() async {
           ),
           BlocProvider<MoonPayBloc>(
             create: (BuildContext context) => MoonPayBloc(
-              breezLib,
+              breezSDK,
               injector.preferences,
             ),
           ),
-          BlocProvider<BackupBloc>(create: (BuildContext context) => BackupBloc(breezLib)),
+          BlocProvider<BackupBloc>(create: (BuildContext context) => BackupBloc(breezSDK)),
         ],
         child: UserApp(),
       ),

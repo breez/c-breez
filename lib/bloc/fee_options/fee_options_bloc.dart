@@ -12,15 +12,15 @@ import 'package:logging/logging.dart';
 final _log = Logger("FeeOptionsBloc");
 
 class FeeOptionsBloc extends Cubit<FeeOptionsState> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
 
-  FeeOptionsBloc(this._breezLib) : super(FeeOptionsState.initial());
+  FeeOptionsBloc(this._breezSDK) : super(FeeOptionsState.initial());
 
   /// Fetches the current recommended fees
   Future<List<FeeOption>> fetchFeeOptions(String toAddress) async {
     RecommendedFees recommendedFees;
     try {
-      recommendedFees = await _breezLib.recommendedFees();
+      recommendedFees = await _breezSDK.recommendedFees();
       _log.info(
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
@@ -66,7 +66,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
       satPerVbyte: satsPerVbyte,
       toAddress: toAddress,
     );
-    final response = await _breezLib.prepareSweep(req: req);
+    final response = await _breezSDK.prepareSweep(req: req);
     return response.sweepTxFeeSat;
   }
 }

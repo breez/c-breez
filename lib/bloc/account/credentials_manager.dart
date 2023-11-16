@@ -55,10 +55,10 @@ class CredentialsManager {
   }
 
   Future<sdk.StaticBackupResponse> exportStaticChannelBackup() async {
-    final breezLib = ServiceInjector().breezSDK;
+    final breezSDK = ServiceInjector().breezSDK;
     Config config = await Config.instance();
     String workingDir = config.sdkConfig.workingDir;
     final req = sdk.StaticBackupRequest(workingDir: workingDir);
-    return await breezLib.staticBackup(req: req);
+    return await breezSDK.staticBackup(req: req);
   }
 }

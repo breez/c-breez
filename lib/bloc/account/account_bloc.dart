@@ -40,11 +40,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Stream<PaymentFilters> get paymentFiltersStream => _paymentFiltersStreamController.stream;
 
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
   final CredentialsManager _credentialsManager;
 
   AccountBloc(
-    this._breezLib,
+    this._breezSDK,
     this._credentialsManager,
   ) : super(AccountState.initial()) {
     _watchAccountChanges().listen((acc) {
@@ -63,9 +63,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   // accordingly
   Stream<AccountState> _watchAccountChanges() {
     return Rx.combineLatest3<List<sdk.Payment>, PaymentFilters, sdk.NodeState?, AccountState>(
-      _breezLib.paymentsStream,
+      _breezSDK.paymentsStream,
       paymentFiltersStream,
-      _breezLib.nodeStateStream,
+      _breezSDK.nodeStateStream,
       (payments, paymentFilters, nodeState) {
         return assembleAccountState(payments, paymentFilters, nodeState, state) ?? state;
       },
@@ -111,9 +111,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _startSdkOnce() async {
     _log.info("starting sdk once");
-    if (await _breezLib.isInitialized()) {
+    if (await _breezSDK.isInitialized()) {
       _log.info("sdk already initialized");
-      await _breezLib.fetchNodeData();
+      await _breezSDK.fetchNodeData();
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
       return;
     }
@@ -122,7 +122,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       final mnemonic = await _credentialsManager.restoreMnemonic();
       final seed = bip39.mnemonicToSeed(mnemonic);
       _log.info("connecting to breez lib");
-      await _breezLib.connect(config: (await Config.instance()).sdkConfig, seed: seed);
+      await _breezSDK.connect(config: (await Config.instance()).sdkConfig, seed: seed);
       _log.info("connected to breez lib");
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
     } catch (e) {
@@ -137,7 +137,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
     FGBGEvents.stream.listen((event) async {
       if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
-        await _breezLib.sync();
+        await _breezSDK.sync();
         lastSync = DateTime.now();
       }
     });
@@ -148,7 +148,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }) async {
     _log.info("lnurlWithdraw amount: req: $req");
     try {
-      return await _breezLib.lnurlWithdraw(req: req);
+      return await _breezSDK.lnurlWithdraw(req: req);
     } catch (e) {
       _log.severe("lnurlWithdraw error", e);
       rethrow;
@@ -158,7 +158,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<sdk.LnUrlPayResult> lnurlPay({required req}) async {
     _log.info("lnurlPay amount: req: $req");
     try {
-      return await _breezLib.lnurlPay(req: req);
+      return await _breezSDK.lnurlPay(req: req);
     } catch (e) {
       _log.severe("lnurlPay error", e);
       rethrow;
@@ -170,7 +170,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }) async {
     _log.info("lnurlAuth amount: reqData: $reqData");
     try {
-      return await _breezLib.lnurlAuth(reqData: reqData);
+      return await _breezSDK.lnurlAuth(reqData: reqData);
     } catch (e) {
       _log.severe("lnurlAuth error", e);
       rethrow;
@@ -184,7 +184,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         bolt11: bolt11,
         amountMsat: amountMsat,
       );
-      await _breezLib.sendPayment(req: req);
+      await _breezSDK.sendPayment(req: req);
     } catch (e) {
       _log.severe("sendPayment error", e);
       return Future.error(e);
@@ -208,7 +208,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         nodeId: nodeId,
         amountMsat: amountMsat,
       );
-      await _breezLib.sendSpontaneousPayment(req: req);
+      await _breezSDK.sendSpontaneousPayment(req: req);
     } catch (e) {
       _log.severe("sendSpontaneousPayment error", e);
       return Future.error(e);
@@ -218,7 +218,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<bool> isValidBitcoinAddress(String? address) async {
     _log.info("isValidBitcoinAddress: $address");
     if (address == null) return false;
-    return _breezLib.isValidBitcoinAddress(address);
+    return _breezSDK.isValidBitcoinAddress(address);
   }
 
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity
@@ -288,7 +288,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       description: description,
       openingFeeParams: chosenFeeParams,
     );
-    return await _breezLib.receivePayment(req: req);
+    return await _breezSDK.receivePayment(req: req);
   }
 
   @override
@@ -333,7 +333,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   void _listenPaymentResultEvents() {
     _log.info("_listenPaymentResultEvents");
-    _breezLib.paymentResultStream.listen((paymentInfo) {
+    _breezSDK.paymentResultStream.listen((paymentInfo) {
       _paymentResultStreamController.add(
         PaymentResult(paymentInfo: paymentInfo),
       );

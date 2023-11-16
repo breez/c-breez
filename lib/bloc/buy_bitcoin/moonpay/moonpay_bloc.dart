@@ -11,11 +11,11 @@ import 'package:logging/logging.dart';
 final _log = Logger("MoonPayBloc");
 
 class MoonPayBloc extends Cubit<MoonPayState> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
   final Preferences _preferences;
 
   MoonPayBloc(
-    this._breezLib,
+    this._breezSDK,
     this._preferences,
   ) : super(MoonPayState.initial());
 
@@ -23,7 +23,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
     try {
       _log.info("fetchMoonpayUrl");
       emit(MoonPayState.loading());
-      final swapInProgress = (await _breezLib.inProgressSwap());
+      final swapInProgress = (await _breezSDK.inProgressSwap());
 
       if (swapInProgress != null) {
         _log.info("fetchMoonpayUrl swapInfo: $swapInProgress");
@@ -33,7 +33,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
       }
 
       sdk.BuyBitcoinRequest req = const sdk.BuyBitcoinRequest(provider: sdk.BuyBitcoinProvider.Moonpay);
-      final buyBitcoinResponse = await _breezLib.buyBitcoin(req: req);
+      final buyBitcoinResponse = await _breezSDK.buyBitcoin(req: req);
       _log.info("fetchMoonpayUrl url: ${buyBitcoinResponse.url}");
       if (buyBitcoinResponse.openingFeeParams != null) {
         emit(MoonPayState.urlReady(buyBitcoinResponse));

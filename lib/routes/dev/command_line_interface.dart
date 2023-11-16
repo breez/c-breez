@@ -21,7 +21,7 @@ class CommandLineInterface extends StatefulWidget {
 }
 
 class _CommandLineInterfaceState extends State<CommandLineInterface> {
-  final _breezLib = ServiceInjector().breezSDK;
+  final _breezSDK = ServiceInjector().breezSDK;
 
   final _cliInputController = TextEditingController();
   final FocusNode _cliEntryFocusNode = FocusNode();
@@ -181,7 +181,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
           case 'stop':
             final command = commandArgs[0].toLowerCase();
             _log.info("executing command: $command");
-            final answer = await _breezLib.executeCommand(command: command);
+            final answer = await _breezSDK.executeCommand(command: command);
             _log.info("Received answer: $answer");
             reply = encoder.convert(answer);
             _log.info("Reply: $reply");

@@ -17,12 +17,12 @@ const PROFILE_DATA_FOLDER_PATH = "profile";
 final _log = Logger("UserProfileBloc");
 
 class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
   final BreezServer _breezServer;
   final Notifications _notifications;
 
   UserProfileBloc(
-    this._breezLib,
+    this._breezSDK,
     this._breezServer,
     this._notifications,
   ) : super(UserProfileState.initial()) {
@@ -44,7 +44,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
       );
     }
     emit(profile);
-    _breezLib.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((_) {
+    _breezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((_) {
       registerForNotifications();
     });
   }
@@ -64,7 +64,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
         String webhookUrlBase = "https://notifier.breez.technology";
         String webhookUrl = "$webhookUrlBase/api/v1/notify?platform=$platform&token=$token";
         _log.info("Registering webhook: $webhookUrl");
-        await _breezLib.registerWebhook(webhookUrl: webhookUrl);
+        await _breezSDK.registerWebhook(webhookUrl: webhookUrl);
 
         // userID field of UserProfileSettings isn't being used anywhere at this stage on C-Breez
         // when it gets utilized again:

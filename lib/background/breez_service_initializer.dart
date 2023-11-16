@@ -7,19 +7,19 @@ import 'package:c_breez/services/injector.dart';
 
 Future<BreezSDK> initializeBreezServices() async {
   final injector = ServiceInjector();
-  final breezLib = injector.breezSDK;
-  final bool isBreezInitialized = await breezLib.isInitialized();
+  final breezSDK = injector.breezSDK;
+  final bool isBreezInitialized = await breezSDK.isInitialized();
   print("Is Breez Services initialized: $isBreezInitialized");
   if (!isBreezInitialized) {
     final credentialsManager = CredentialsManager(keyChain: injector.keychain);
     final mnemonic = await credentialsManager.restoreMnemonic();
     final seed = bip39.mnemonicToSeed(mnemonic);
     print("Retrieved credentials");
-    await breezLib.connect(config: (await Config.instance()).sdkConfig, seed: seed);
+    await breezSDK.connect(config: (await Config.instance()).sdkConfig, seed: seed);
     print("Initialized Services");
     print("Node has started");
   }
-  await breezLib.sync();
+  await breezSDK.sync();
   print("Node has synchronized");
-  return breezLib;
+  return breezSDK;
 }

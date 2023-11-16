@@ -6,15 +6,15 @@ import 'package:logging/logging.dart';
 
 class BackupBloc extends Cubit<BackupState?> {
   final _log = Logger("BackupBloc");
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
 
-  BackupBloc(this._breezLib) : super(null) {
+  BackupBloc(this._breezSDK) : super(null) {
     _listenBackupEvents();
   }
 
   _listenBackupEvents() {
     _log.info("_listenBackupEvents");
-    _breezLib.backupStream.listen((event) {
+    _breezSDK.backupStream.listen((event) {
       _log.info('got state: $event');
       if (event is sdk.BreezEvent_BackupStarted) {
         emit(BackupState(status: BackupStatus.INPROGRESS));
@@ -33,5 +33,5 @@ class BackupBloc extends Cubit<BackupState?> {
   }
 
   /// Start the backup process
-  Future<void> backup() async => await _breezLib.backup();
+  Future<void> backup() async => await _breezSDK.backup();
 }

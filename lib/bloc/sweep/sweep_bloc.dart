@@ -11,9 +11,9 @@ import 'package:logging/logging.dart';
 final _log = Logger("SweepBloc");
 
 class SweepBloc extends Cubit<SweepState> {
-  final BreezSDK _breezLib;
+  final BreezSDK _breezSDK;
 
-  SweepBloc(this._breezLib) : super(SweepState.initial());
+  SweepBloc(this._breezSDK) : super(SweepState.initial());
 
   Future<SweepResponse> sweep({
     required String toAddress,
@@ -25,7 +25,7 @@ class SweepBloc extends Cubit<SweepState> {
         toAddress: toAddress,
         satPerVbyte: satPerVbyte,
       );
-      final sweepRes = await _breezLib.sweep(req: req);
+      final sweepRes = await _breezSDK.sweep(req: req);
       emit(SweepState(sweepTxId: sweepRes.txid));
       return sweepRes;
     } catch (e) {

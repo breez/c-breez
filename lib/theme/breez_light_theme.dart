@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'breez_colors.dart';
 
 final ThemeData breezLightTheme = ThemeData(
+  useMaterial3: false,
   colorScheme: const ColorScheme.dark().copyWith(
     primary: Colors.white,
     secondary: Colors.white,

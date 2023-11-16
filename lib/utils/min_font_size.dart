@@ -6,5 +6,5 @@ class MinFontSize {
 
   MinFontSize(this.context, {this.fontSize});
 
-  double get minFontSize => ((fontSize ?? 12) / MediaQuery.of(context).textScaleFactor).floorToDouble();
+  double get minFontSize => MediaQuery.of(context).textScaler.scale((fontSize ?? 12)).floorToDouble();
 }

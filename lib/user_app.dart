@@ -45,6 +45,8 @@ const String THEME_ID_PREFERENCE_KEY = "themeID";
 
 final _log = Logger("UserApp");
 
+const _kMaxTitleTextScaleFactor = 1.3;
+
 class UserApp extends StatelessWidget {
   final GlobalKey _appKey = GlobalKey();
   final GlobalKey<NavigatorState> _homeNavigatorKey = GlobalKey<NavigatorState>();
@@ -91,11 +93,8 @@ class UserApp extends StatelessWidget {
                 localizationsDelegates: localizationsDelegates(),
                 supportedLocales: supportedLocales(),
                 builder: (BuildContext context, Widget? child) {
-                  final MediaQueryData data = MediaQuery.of(context);
-                  return MediaQuery(
-                    data: data.copyWith(
-                      textScaleFactor: (data.textScaleFactor >= 1.3) ? 1.3 : data.textScaleFactor,
-                    ),
+                  return MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: _kMaxTitleTextScaleFactor,
                     child: child!,
                   );
                 },

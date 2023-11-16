@@ -30,7 +30,7 @@ class BottomActionItem extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: theme.bottomAppBarBtnStyle.copyWith(
-            fontSize: 13.5 / MediaQuery.of(context).textScaleFactor,
+            fontSize: MediaQuery.of(context).textScaler.scale(13.5),
           ),
           maxLines: 1,
         ),

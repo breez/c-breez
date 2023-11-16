@@ -17,13 +17,13 @@ class SweepBloc extends Cubit<SweepState> {
 
   Future<SweepResponse> sweep({
     required String toAddress,
-    required int feeRateSatsPerVbyte,
+    required int satPerVbyte,
   }) async {
     try {
-      _log.info("Sweep to address $toAddress using $feeRateSatsPerVbyte fee vByte");
+      _log.info("Sweep to address $toAddress using $satPerVbyte fee vByte");
       final req = SweepRequest(
         toAddress: toAddress,
-        feeRateSatsPerVbyte: feeRateSatsPerVbyte,
+        satPerVbyte: satPerVbyte,
       );
       final sweepRes = await _breezLib.sweep(req: req);
       emit(SweepState(sweepTxId: sweepRes.txid));

@@ -9,12 +9,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SweepButton extends StatelessWidget {
   final String toAddress;
-  final int feeRateSatsPerVbyte;
+  final int satPerVbyte;
 
   const SweepButton({
     super.key,
     required this.toAddress,
-    required this.feeRateSatsPerVbyte,
+    required this.satPerVbyte,
   });
 
   @override
@@ -37,7 +37,7 @@ class SweepButton extends StatelessWidget {
     try {
       await sweepBloc.sweep(
         toAddress: toAddress,
-        feeRateSatsPerVbyte: feeRateSatsPerVbyte,
+        satPerVbyte: satPerVbyte,
       );
       navigator.popUntil((route) => route.settings.name == "/");
     } catch (e) {

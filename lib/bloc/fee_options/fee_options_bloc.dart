@@ -17,7 +17,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   FeeOptionsBloc(this._breezLib) : super(FeeOptionsState.initial());
 
   /// Fetches the current recommended fees
-  Future<List<FeeOption>> fetchFeeOptions(String address) async {
+  Future<List<FeeOption>> fetchFeeOptions(String toAddress) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezLib.recommendedFees();
@@ -25,7 +25,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
-      return await _constructFeeOptionList(address, recommendedFees);
+      return await _constructFeeOptionList(toAddress, recommendedFees);
     } catch (e) {
       _log.severe("fetchFeeOptions error", e);
       emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
@@ -34,26 +34,26 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   }
 
   Future<List<FeeOption>> _constructFeeOptionList(
-    String address,
+    String toAddress,
     RecommendedFees recommendedFees,
   ) async {
     final List<FeeOption> feeOptions = [
       FeeOption(
         processingSpeed: ProcessingSpeed.economy,
         waitingTime: const Duration(minutes: 60),
-        fee: await _calculateTransactionFee(address, recommendedFees.hourFee),
+        fee: await _calculateTransactionFee(toAddress, recommendedFees.hourFee),
         feeVByte: recommendedFees.hourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.regular,
         waitingTime: const Duration(minutes: 30),
-        fee: await _calculateTransactionFee(address, recommendedFees.halfHourFee),
+        fee: await _calculateTransactionFee(toAddress, recommendedFees.halfHourFee),
         feeVByte: recommendedFees.halfHourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.priority,
         waitingTime: const Duration(minutes: 10),
-        fee: await _calculateTransactionFee(address, recommendedFees.fastestFee),
+        fee: await _calculateTransactionFee(toAddress, recommendedFees.fastestFee),
         feeVByte: recommendedFees.fastestFee,
       ),
     ];
@@ -61,11 +61,12 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     return feeOptions;
   }
 
-  Future<int> _calculateTransactionFee(String address, int satsPerVbyte) async {
-    final response = await _breezLib.prepareSweep(
-      address: address,
-      satsPerVbyte: satsPerVbyte,
+  Future<int> _calculateTransactionFee(String toAddress, int satsPerVbyte) async {
+    final req = PrepareSweepRequest(
+      satPerVbyte: satsPerVbyte,
+      toAddress: toAddress,
     );
+    final response = await _breezLib.prepareSweep(req: req);
     return response.sweepTxFeeSat;
   }
 }

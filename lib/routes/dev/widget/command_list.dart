@@ -70,6 +70,10 @@ class CommandList extends StatelessWidget {
                   "closeAllChannels",
                   (c) => _onCommand(context, c),
                 ),
+                Command(
+                  "stop",
+                  (c) => _onCommand(context, c),
+                ),
               ],
             ),
           ],

@@ -178,6 +178,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
           case 'listPayments':
           case 'listInvoices':
           case 'closeAllChannels':
+          case 'stop':
             final command = commandArgs[0].toLowerCase();
             _log.info("executing command: $command");
             final answer = await _breezLib.executeCommand(command: command);

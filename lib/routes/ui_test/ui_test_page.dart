@@ -185,12 +185,11 @@ class UITestPage extends StatelessWidget {
                     HEX.decode('0c56b71ef'),
                   ),
                   minFinalCltvExpiryDelta: 18,
+                  network: Network.Bitcoin,
                 );
                 Future<ReceivePaymentResponse> response = Future.delayed(
                   const Duration(seconds: 2),
-                  () => ReceivePaymentResponse(
-                    lnInvoice: invoice,
-                  ),
+                  () => ReceivePaymentResponse(lnInvoice: invoice),
                 );
                 Widget dialog = FutureBuilder(
                   future: response,

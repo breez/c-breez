@@ -134,7 +134,11 @@ void main() async {
           create: (BuildContext context) => CurrencyBloc(injector.breezSDK),
         ),
         BlocProvider<UserProfileBloc>(
-          create: (BuildContext context) => UserProfileBloc(injector.breezServer, injector.notifications),
+          create: (BuildContext context) => UserProfileBloc(
+            injector.breezSDK,
+            injector.breezServer,
+            injector.notifications,
+          ),
         ),
       ],
       child: MaterialApp(

@@ -1,9 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/routes/get-refund/widgets/refund_item_action.dart';
+import 'package:c_breez/widgets/available_btc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RefundItem extends StatelessWidget {
   final SwapInfo swapInfo;
@@ -17,33 +15,8 @@ class RefundItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _RefundItemAmount(swapInfo.confirmedSats),
+        AvailableBTC(swapInfo.confirmedSats),
         RefundItemAction(swapInfo),
-      ],
-    );
-  }
-}
-
-class _RefundItemAmount extends StatelessWidget {
-  final int confirmedSats;
-
-  const _RefundItemAmount(this.confirmedSats);
-
-  @override
-  Widget build(BuildContext context) {
-    final texts = context.texts();
-    final currencyState = context.read<CurrencyBloc>().state;
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          child: Text(
-            texts.get_refund_amount(
-              currencyState.bitcoinCurrency.format(confirmedSats),
-            ),
-            textAlign: TextAlign.left,
-          ),
-        ),
       ],
     );
   }

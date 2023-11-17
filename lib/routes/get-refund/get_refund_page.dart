@@ -46,7 +46,17 @@ class _GetRefundPageState extends State<GetRefundPage> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: RefundItem(refundables.elementAt(index)),
+                child: Column(
+                  children: [
+                    RefundItem(
+                      refundables.elementAt(index),
+                    ),
+                    const Divider(
+                      height: 0.0,
+                      color: Color.fromRGBO(255, 255, 255, 0.52),
+                    )
+                  ],
+                ),
               );
             },
           );

@@ -209,17 +209,18 @@ class UITestPage extends StatelessWidget {
           ),
           Card(
             child: ListTile(
-                title: const Text("RefundConfirmationPage"),
-                onTap: () {
-                  Navigator.of(context).push(
-                    FadeInRoute(
-                      builder: (_) => const RefundConfirmationPage(
-                          amountSat: 200000,
-                          toAddress: "3A2DSxJraw7e2vCR1xHy3oFctLQTHhecHF",
-                          swapAddress: "bc1q57hrkfavjgmupur67kqua2t5r0anzudr40amaj"),
-                    ),
-                  );
-                }),
+              title: const Text("RefundConfirmationPage"),
+              onTap: () {
+                Navigator.of(context).push(
+                  FadeInRoute(
+                    builder: (_) => const RefundConfirmationPage(
+                        amountSat: 200000,
+                        toAddress: "3A2DSxJraw7e2vCR1xHy3oFctLQTHhecHF",
+                        swapAddress: "bc1q57hrkfavjgmupur67kqua2t5r0anzudr40amaj"),
+                  ),
+                );
+              },
+            ),
           )
         ],
       ),

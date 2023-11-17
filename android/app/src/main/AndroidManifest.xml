@@ -128,7 +128,7 @@
         <!-- Enable Flutter's new rendering engine, Impeller, on Android devices that support Vulkan. -->
         <meta-data
             android:name="io.flutter.embedding.android.EnableImpeller"
-            android:value="true" />
+            android:value="false" />
 
         <!-- Plugin activities -->
        <!-- image_cropper -->

@@ -30,24 +30,6 @@ class RefundBloc extends Cubit<RefundState> {
     emit(state.copyWith(refundables: await _breezSDK.listRefundables()));
   }
 
-  /// Prepares a refund transaction for a failed/expired swap.
-  ///
-  /// Can optionally be used before refund to know how much fees will be paid
-  /// to perform the refund.
-  Future<int> prepareRefund({
-    required PrepareRefundRequest req,
-  }) async {
-    _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
-    try {
-      final resp = await _breezSDK.prepareRefund(req: req);
-      _log.info("Refund txId: ${resp.refundTxWeight}, ${resp.refundTxFeeSat}");
-      return resp.refundTxFeeSat;
-    } catch (e) {
-      _log.severe("Failed to refund swap", e);
-      rethrow;
-    }
-  }
-
   /// Broadcast a refund transaction for a failed/expired swap
   Future<String> refund({
     required RefundRequest req,

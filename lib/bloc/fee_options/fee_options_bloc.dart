@@ -81,14 +81,29 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
         toAddress: toAddress,
         satPerVbyte: satPerVbyte,
       );
-      final response = await _breezSDK.prepareRefund(req: req);
-      return response.refundTxFeeSat;
+      _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
+      try {
+        final resp = await _breezSDK.prepareRefund(req: req);
+        _log.info("Refund txId: ${resp.refundTxWeight}, ${resp.refundTxFeeSat}");
+        return resp.refundTxFeeSat;
+      } catch (e) {
+        _log.severe("Failed to refund swap", e);
+        rethrow;
+      }
     }
     final req = PrepareSweepRequest(
       toAddress: toAddress,
       satPerVbyte: satPerVbyte,
     );
-    final response = await _breezSDK.prepareSweep(req: req);
-    return response.sweepTxFeeSat;
+
+    _log.info("Sweep to ${req.toAddress} with fee ${req.satPerVbyte}");
+    try {
+      final resp = await _breezSDK.prepareSweep(req: req);
+      _log.info("Refund txId: ${resp.sweepTxFeeSat}, with tx weight ${resp.sweepTxWeight}");
+      return resp.sweepTxFeeSat;
+    } catch (e) {
+      _log.severe("Failed to refund swap", e);
+      rethrow;
+    }
   }
 }

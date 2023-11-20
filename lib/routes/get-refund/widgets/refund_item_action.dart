@@ -30,6 +30,8 @@ class _RefundItemActionState extends State<RefundItemAction> {
     final ids = widget.swapInfo.confirmedTxIds;
     final txID = ids[ids.length - 1];
 
+    final refundTxIds = widget.swapInfo.refundTxIds;
+
     return FutureBuilder(
       future: networkSettingsBloc.mempoolInstance,
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
@@ -43,24 +45,32 @@ class _RefundItemActionState extends State<RefundItemAction> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TxWidget(
-                txURL: BlockChainExplorerUtils()
-                    .formatTransactionUrl(mempoolInstance: mempoolInstance, txid: txID),
-                txID: txID),
+                txURL: BlockChainExplorerUtils().formatTransactionUrl(
+                  mempoolInstance: mempoolInstance,
+                  txid: _extractRefundTxid(refundTxIds) ?? txID,
+                ),
+                txID: _extractRefundTxid(refundTxIds) ?? txID),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 height: 36.0,
                 width: 145.0,
-                child: SubmitButton(
-                  texts.get_refund_action_continue,
-                  () {
-                    Navigator.of(context).push(
-                      FadeInRoute(
-                        builder: (_) => RefundPage(widget.swapInfo),
+                child: widget.swapInfo.refundTxIds.isEmpty
+                    ? SubmitButton(
+                        texts.get_refund_action_continue,
+                        () {
+                          Navigator.of(context).push(
+                            FadeInRoute(
+                              builder: (_) => RefundPage(widget.swapInfo),
+                            ),
+                          );
+                        },
+                      )
+                    : SubmitButton(
+                        texts.get_refund_action_broadcasted,
+                        null,
+                        enabled: false,
                       ),
-                    );
-                  },
-                ),
               ),
             ),
           ],
@@ -69,3 +79,6 @@ class _RefundItemActionState extends State<RefundItemAction> {
     );
   }
 }
+
+String? _extractRefundTxid(List<String> refundTxIds) =>
+    refundTxIds.isEmpty ? null : refundTxIds[refundTxIds.length - 1];

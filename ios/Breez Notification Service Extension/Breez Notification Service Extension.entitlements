@@ -2,15 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>aps-environment</key>
-	<string>development</string>
-	<key>com.apple.developer.associated-domains</key>
-	<array/>
-	<key>com.apple.developer.nfc.readersession.formats</key>
-	<array>
-		<string>NDEF</string>
-		<string>TAG</string>
-	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.F7R2LZH3W5.com.cBreez.client</string>
@@ -19,5 +10,7 @@
 	<array>
 		<string>$(AppIdentifierPrefix)SharedKeychain</string>
 	</array>
+	<key>com.apple.developer.usernotifications.filtering</key>
+	<true/>
 </dict>
 </plist>

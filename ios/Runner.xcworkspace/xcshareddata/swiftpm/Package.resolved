@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "breez-sdk-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/breez/breez-sdk-swift.git",
+      "state" : {
+        "revision" : "dcbb39d45bc6797447bf20f52bc22344026d0662",
+        "version" : "0.2.9"
+      }
+    },
+    {
+      "identity" : "keychainaccess",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kishikawakatsumi/KeychainAccess.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "e0c7eebc5a4465a3c4680764f26b7a61f567cdaf"
+      }
+    }
+  ],
+  "version" : 2
+}

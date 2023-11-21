@@ -69,14 +69,14 @@ dependencies:
   local_auth_android: ^1.0.35
   local_auth_ios: ^1.1.5
   logging: ^1.2.0
-  mockito: ^5.4.2
+  mockito: ^5.4.3
   # Doesn't support: Linux Windows
   mobile_scanner: ^3.5.4
   package_info_plus: ^5.0.1
   path: ^1.8.3
   path_provider: ^2.1.1
   path_provider_platform_interface: ^2.1.1
-  plugin_platform_interface: ^2.1.6
+  plugin_platform_interface: ^2.1.7
   qr_flutter: ^4.1.0
   rxdart: ^0.27.7
   share_plus: ^7.2.1

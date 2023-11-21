@@ -23,6 +23,9 @@ class BreezMessageHandler {
       case "payment_received":
         await handlePaymentReceivedMsg();
         break;
+      case "modified_notification":
+        _log.info("Received modified notification from Breez Notification Service Extension.");
+        break;
     }
 
     return Future<void>.value();

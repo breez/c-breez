@@ -325,9 +325,9 @@ SPEC CHECKSUMS:
   sqlite3_flutter_libs: eb769059df0356dc52ddda040f09cacc9391a7cf
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
-  url_launcher_ios: 68d46cc9766d0c41dbdc884310529557e3cd7a86
+  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
 
 PODFILE CHECKSUM: c96af939aa4bed7ae41ad6e1d2e156da5f5ee11a
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.14.3

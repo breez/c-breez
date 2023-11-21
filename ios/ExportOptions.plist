@@ -9,7 +9,9 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.cBreez.client</key>
-		<string>cbreez-dist-profile</string>        
+		<string>cbreez-dist-profile</string>
+        <key>com.cBreez.client.Breez-Notification-Service-Extension</key>
+		<string>notification-service</string>
 	</dict>
 	<key>signingCertificate</key>
 	<string>Apple Distribution</string>

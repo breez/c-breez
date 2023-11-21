@@ -26,7 +26,6 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
       return await _constructFeeOptionList(
-        swapAddress: swapAddress,
         toAddress: toAddress,
         recommendedFees: recommendedFees,
       );
@@ -40,28 +39,33 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   Future<List<FeeOption>> _constructFeeOptionList({
     required String toAddress,
     required RecommendedFees recommendedFees,
-    String? swapAddress,
   }) async {
     final List<FeeOption> feeOptions = [
       FeeOption(
         processingSpeed: ProcessingSpeed.economy,
         waitingTime: const Duration(minutes: 60),
         fee: await _calculateTransactionFee(
-            toAddress: toAddress, satPerVbyte: recommendedFees.hourFee, swapAddress: swapAddress),
+          toAddress: toAddress,
+          satPerVbyte: recommendedFees.hourFee,
+        ),
         feeVByte: recommendedFees.hourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.regular,
         waitingTime: const Duration(minutes: 30),
         fee: await _calculateTransactionFee(
-            toAddress: toAddress, satPerVbyte: recommendedFees.halfHourFee, swapAddress: swapAddress),
+          toAddress: toAddress,
+          satPerVbyte: recommendedFees.halfHourFee,
+        ),
         feeVByte: recommendedFees.halfHourFee,
       ),
       FeeOption(
         processingSpeed: ProcessingSpeed.priority,
         waitingTime: const Duration(minutes: 10),
         fee: await _calculateTransactionFee(
-            toAddress: toAddress, satPerVbyte: recommendedFees.fastestFee, swapAddress: swapAddress),
+          toAddress: toAddress,
+          satPerVbyte: recommendedFees.fastestFee,
+        ),
         feeVByte: recommendedFees.fastestFee,
       ),
     ];
@@ -72,30 +76,11 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   Future<int> _calculateTransactionFee({
     required toAddress,
     required int satPerVbyte,
-    String? swapAddress,
   }) async {
-    // When the swap address is present we proceed with calculating a prepare refund request.
-    if (swapAddress != null) {
-      final req = PrepareRefundRequest(
-        swapAddress: swapAddress,
-        toAddress: toAddress,
-        satPerVbyte: satPerVbyte,
-      );
-      _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
-      try {
-        final resp = await _breezSDK.prepareRefund(req: req);
-        _log.info("Refund txId: ${resp.refundTxWeight}, ${resp.refundTxFeeSat}");
-        return resp.refundTxFeeSat;
-      } catch (e) {
-        _log.severe("Failed to refund swap", e);
-        rethrow;
-      }
-    }
     final req = PrepareSweepRequest(
       toAddress: toAddress,
       satPerVbyte: satPerVbyte,
     );
-
     _log.info("Sweep to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
       final resp = await _breezSDK.prepareSweep(req: req);

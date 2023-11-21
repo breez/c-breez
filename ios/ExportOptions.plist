@@ -9,7 +9,7 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.cBreez.client</key>
-		<string>C-Breez Distribution Profile</string>
+		<string>cbreez-dist-profile</string>        
 	</dict>
 	<key>signingCertificate</key>
 	<string>Apple Distribution</string>

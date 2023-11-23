@@ -13,6 +13,7 @@ final _log = Logger("FeeOptionsBloc");
 
 class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   final BreezSDK _breezSDK;
+  final waitingTime = [60, 30, 10];
 
   FeeOptionsBloc(this._breezSDK) : super(FeeOptionsState.initial());
 
@@ -52,29 +53,28 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     required String toAddress,
     required RecommendedFees recommendedFees,
   }) async {
-    List<FeeOption> feeOptions = [];
-    Set<int> waitingTimeSet = Set.unmodifiable({60, 30, 10});
-    final Set<int> recommendedFeeSet = {
+    final recommendedFeeList = [
       recommendedFees.hourFee,
       recommendedFees.halfHourFee,
       recommendedFees.fastestFee,
-    };
-    for (var i = 0; i < 3; i++) {
-      final recommendedFee = recommendedFeeSet.elementAt(i);
-      final req = PrepareSweepRequest(
-        toAddress: toAddress,
-        satPerVbyte: recommendedFee,
-      );
-      final fee = await prepareSweep(req);
-      feeOptions.add(
-        FeeOption(
-          processingSpeed: ProcessingSpeed.values.elementAt(i),
-          waitingTime: Duration(minutes: waitingTimeSet.elementAt(i)),
+    ];
+    final feeOptions = await Future.wait(
+      List.generate(3, (index) async {
+        final recommendedFee = recommendedFeeList.elementAt(index);
+        final req = PrepareSweepRequest(
+          toAddress: toAddress,
+          satPerVbyte: recommendedFee,
+        );
+        final fee = await prepareSweep(req);
+
+        return FeeOption(
+          processingSpeed: ProcessingSpeed.values.elementAt(index),
+          waitingTime: Duration(minutes: waitingTime.elementAt(index)),
           fee: fee,
-          feeVByte: recommendedFeeSet.elementAt(i),
-        ),
-      );
-    }
+          feeVByte: recommendedFee,
+        );
+      }),
+    );
 
     emit(state.copyWith(feeOptions: feeOptions));
     return feeOptions;

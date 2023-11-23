@@ -1,6 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/routes/get-refund/refund_page.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/tx_widget.dart';

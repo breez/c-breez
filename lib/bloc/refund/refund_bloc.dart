@@ -73,44 +73,36 @@ class RefundBloc extends Cubit<RefundState> {
   Future<List<FeeOption>> _constructFeeOptionList({
     required String toAddress,
     required RecommendedFees recommendedFees,
-    String? swapAddress,
+    required String swapAddress,
   }) async {
-    final List<FeeOption> feeOptions = [
-      FeeOption(
-        processingSpeed: ProcessingSpeed.economy,
-        waitingTime: const Duration(minutes: 60),
-        fee: await _calculateTransactionFee(
-            toAddress: toAddress, satPerVbyte: recommendedFees.hourFee, swapAddress: swapAddress),
-        feeVByte: recommendedFees.hourFee,
-      ),
-      FeeOption(
-        processingSpeed: ProcessingSpeed.regular,
-        waitingTime: const Duration(minutes: 30),
-        fee: await _calculateTransactionFee(
-            toAddress: toAddress, satPerVbyte: recommendedFees.halfHourFee, swapAddress: swapAddress),
-        feeVByte: recommendedFees.halfHourFee,
-      ),
-      FeeOption(
-        processingSpeed: ProcessingSpeed.priority,
-        waitingTime: const Duration(minutes: 10),
-        fee: await _calculateTransactionFee(
-            toAddress: toAddress, satPerVbyte: recommendedFees.fastestFee, swapAddress: swapAddress),
-        feeVByte: recommendedFees.fastestFee,
-      ),
-    ];
+    List<FeeOption> feeOptions = [];
+    Set<int> waitingTimeSet = Set.unmodifiable({60, 30, 10});
+    final Set<int> recommendedFeeSet = {
+      recommendedFees.hourFee,
+      recommendedFees.halfHourFee,
+      recommendedFees.fastestFee,
+    };
+    for (var i = 0; i < 3; i++) {
+      final recommendedFee = recommendedFeeSet.elementAt(i);
+      final req = PrepareRefundRequest(
+        swapAddress: swapAddress,
+        toAddress: toAddress,
+        satPerVbyte: recommendedFee,
+      );
+      final fee = await prepareRefund(req);
+      feeOptions.add(
+        FeeOption(
+          processingSpeed: ProcessingSpeed.values.elementAt(i),
+          waitingTime: Duration(minutes: waitingTimeSet.elementAt(i)),
+          fee: fee,
+          feeVByte: recommendedFeeSet.elementAt(i),
+        ),
+      );
+    }
     return feeOptions;
   }
 
-  Future<int> _calculateTransactionFee({
-    required toAddress,
-    required int satPerVbyte,
-    required swapAddress,
-  }) async {
-    final req = PrepareRefundRequest(
-      swapAddress: swapAddress,
-      toAddress: toAddress,
-      satPerVbyte: satPerVbyte,
-    );
+  Future<int> prepareRefund(PrepareRefundRequest req) async {
     _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
       final resp = await _breezSDK.prepareRefund(req: req);

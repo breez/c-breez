@@ -36,51 +36,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     }
   }
 
-  Future<List<FeeOption>> _constructFeeOptionList({
-    required String toAddress,
-    required RecommendedFees recommendedFees,
-  }) async {
-    final List<FeeOption> feeOptions = [
-      FeeOption(
-        processingSpeed: ProcessingSpeed.economy,
-        waitingTime: const Duration(minutes: 60),
-        fee: await _calculateTransactionFee(
-          toAddress: toAddress,
-          satPerVbyte: recommendedFees.hourFee,
-        ),
-        feeVByte: recommendedFees.hourFee,
-      ),
-      FeeOption(
-        processingSpeed: ProcessingSpeed.regular,
-        waitingTime: const Duration(minutes: 30),
-        fee: await _calculateTransactionFee(
-          toAddress: toAddress,
-          satPerVbyte: recommendedFees.halfHourFee,
-        ),
-        feeVByte: recommendedFees.halfHourFee,
-      ),
-      FeeOption(
-        processingSpeed: ProcessingSpeed.priority,
-        waitingTime: const Duration(minutes: 10),
-        fee: await _calculateTransactionFee(
-          toAddress: toAddress,
-          satPerVbyte: recommendedFees.fastestFee,
-        ),
-        feeVByte: recommendedFees.fastestFee,
-      ),
-    ];
-    emit(state.copyWith(feeOptions: feeOptions));
-    return feeOptions;
-  }
-
-  Future<int> _calculateTransactionFee({
-    required toAddress,
-    required int satPerVbyte,
-  }) async {
-    final req = PrepareSweepRequest(
-      toAddress: toAddress,
-      satPerVbyte: satPerVbyte,
-    );
+  Future<int> prepareSweep(PrepareSweepRequest req) async {
     _log.info("Sweep to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
       final resp = await _breezSDK.prepareSweep(req: req);
@@ -90,5 +46,37 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
       _log.severe("Failed to refund swap", e);
       rethrow;
     }
+  }
+
+  Future<List<FeeOption>> _constructFeeOptionList({
+    required String toAddress,
+    required RecommendedFees recommendedFees,
+  }) async {
+    List<FeeOption> feeOptions = [];
+    Set<int> waitingTimeSet = Set.unmodifiable({60, 30, 10});
+    final Set<int> recommendedFeeSet = {
+      recommendedFees.hourFee,
+      recommendedFees.halfHourFee,
+      recommendedFees.fastestFee,
+    };
+    for (var i = 0; i < 3; i++) {
+      final recommendedFee = recommendedFeeSet.elementAt(i);
+      final req = PrepareSweepRequest(
+        toAddress: toAddress,
+        satPerVbyte: recommendedFee,
+      );
+      final fee = await prepareSweep(req);
+      feeOptions.add(
+        FeeOption(
+          processingSpeed: ProcessingSpeed.values.elementAt(i),
+          waitingTime: Duration(minutes: waitingTimeSet.elementAt(i)),
+          fee: fee,
+          feeVByte: recommendedFeeSet.elementAt(i),
+        ),
+      );
+    }
+
+    emit(state.copyWith(feeOptions: feeOptions));
+    return feeOptions;
   }
 }

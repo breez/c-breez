@@ -1,5 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/routes/get-refund/refund_page.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/tx_widget.dart';
@@ -28,9 +29,9 @@ class _RefundItemActionState extends State<RefundItemAction> {
     final texts = context.texts();
     final networkSettingsBloc = context.read<NetworkSettingsBloc>();
     final ids = widget.swapInfo.confirmedTxIds;
-    final txID = ids[ids.length - 1];
-
     final refundTxIds = widget.swapInfo.refundTxIds;
+
+    final txID = _extractRefundTxid(refundTxIds) ?? ids[ids.length - 1];
 
     return FutureBuilder(
       future: networkSettingsBloc.mempoolInstance,
@@ -45,32 +46,31 @@ class _RefundItemActionState extends State<RefundItemAction> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TxWidget(
-                txURL: BlockChainExplorerUtils().formatTransactionUrl(
-                  mempoolInstance: mempoolInstance,
-                  txid: _extractRefundTxid(refundTxIds) ?? txID,
-                ),
-                txID: _extractRefundTxid(refundTxIds) ?? txID),
+              txURL: BlockChainExplorerUtils().formatTransactionUrl(
+                mempoolInstance: mempoolInstance,
+                txid: txID,
+              ),
+              txID: txID,
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 height: 36.0,
                 width: 145.0,
-                child: widget.swapInfo.refundTxIds.isEmpty
-                    ? SubmitButton(
-                        texts.get_refund_action_continue,
-                        () {
-                          Navigator.of(context).push(
-                            FadeInRoute(
-                              builder: (_) => RefundPage(widget.swapInfo),
-                            ),
-                          );
-                        },
-                      )
-                    : SubmitButton(
-                        texts.get_refund_action_broadcasted,
-                        null,
-                        enabled: false,
-                      ),
+                child: SubmitButton(
+                    widget.swapInfo.refundTxIds.isEmpty
+                        ? texts.get_refund_action_continue
+                        : texts.get_refund_action_broadcasted,
+                    widget.swapInfo.refundTxIds.isEmpty
+                        ? () {
+                            Navigator.of(context).push(
+                              FadeInRoute(
+                                builder: (_) => RefundPage(widget.swapInfo),
+                              ),
+                            );
+                          }
+                        : null,
+                    enabled: widget.swapInfo.refundTxIds.isEmpty),
               ),
             ),
           ],

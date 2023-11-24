@@ -6,6 +6,7 @@ import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/routes/get-refund/widgets/refund_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
+import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,10 +38,7 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<RefundBloc>().fetchRefundFeeOptions(
-          toAddress: widget.toAddress,
-          swapAddress: widget.swapAddress,
-        );
+    _fetchFeeOptionsFuture = _fetchFeeOption();
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
         affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
@@ -97,8 +95,27 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
                       toAddress: widget.toAddress,
                       swapAddress: widget.swapAddress),
                 )
-              : null,
+              : SingleButtonBottomBar(
+                  text: texts.sweep_all_coins_action_retry,
+                  onPressed: () async {
+                    _fetchFeeOptionsFuture = _fetchFeeOption();
+                    _fetchFeeOptionsFuture.then((feeOptions) {
+                      setState(() {
+                        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
+                        selectedFeeIndex = (affordableFees.length / 2).floor();
+                      });
+                    });
+                  },
+                  stickToBottom: true,
+                ),
     );
+  }
+
+  Future<List<FeeOption>> _fetchFeeOption() async {
+    return context.read<RefundBloc>().fetchRefundFeeOptions(
+          toAddress: widget.toAddress,
+          swapAddress: widget.swapAddress,
+        );
   }
 }
 

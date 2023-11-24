@@ -1,7 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
-import 'package:c_breez/routes/subswap/swap/get_refund/widgets/refund_item.dart';
+import 'package:c_breez/routes/get-refund/widgets/refund_item.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,7 +46,17 @@ class _GetRefundPageState extends State<GetRefundPage> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: RefundItem(refundables.elementAt(index)),
+                child: Column(
+                  children: [
+                    RefundItem(
+                      refundables.elementAt(index),
+                    ),
+                    const Divider(
+                      height: 0.0,
+                      color: Color.fromRGBO(255, 255, 255, 0.52),
+                    )
+                  ],
+                ),
               );
             },
           );

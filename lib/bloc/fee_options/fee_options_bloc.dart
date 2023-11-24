@@ -13,11 +13,12 @@ final _log = Logger("FeeOptionsBloc");
 
 class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   final BreezSDK _breezSDK;
+  final waitingTime = [60, 30, 10];
 
   FeeOptionsBloc(this._breezSDK) : super(FeeOptionsState.initial());
 
   /// Fetches the current recommended fees
-  Future<List<FeeOption>> fetchFeeOptions(String toAddress) async {
+  Future<List<FeeOption>> fetchFeeOptions({required String toAddress, String? swapAddress}) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();
@@ -25,7 +26,10 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
-      return await _constructFeeOptionList(toAddress, recommendedFees);
+      return await _constructFeeOptionList(
+        toAddress: toAddress,
+        recommendedFees: recommendedFees,
+      );
     } catch (e) {
       _log.severe("fetchFeeOptions error", e);
       emit(FeeOptionsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
@@ -33,40 +37,46 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     }
   }
 
-  Future<List<FeeOption>> _constructFeeOptionList(
-    String toAddress,
-    RecommendedFees recommendedFees,
-  ) async {
-    final List<FeeOption> feeOptions = [
-      FeeOption(
-        processingSpeed: ProcessingSpeed.economy,
-        waitingTime: const Duration(minutes: 60),
-        fee: await _calculateTransactionFee(toAddress, recommendedFees.hourFee),
-        feeVByte: recommendedFees.hourFee,
-      ),
-      FeeOption(
-        processingSpeed: ProcessingSpeed.regular,
-        waitingTime: const Duration(minutes: 30),
-        fee: await _calculateTransactionFee(toAddress, recommendedFees.halfHourFee),
-        feeVByte: recommendedFees.halfHourFee,
-      ),
-      FeeOption(
-        processingSpeed: ProcessingSpeed.priority,
-        waitingTime: const Duration(minutes: 10),
-        fee: await _calculateTransactionFee(toAddress, recommendedFees.fastestFee),
-        feeVByte: recommendedFees.fastestFee,
-      ),
-    ];
-    emit(state.copyWith(feeOptions: feeOptions));
-    return feeOptions;
+  Future<int> prepareSweep(PrepareSweepRequest req) async {
+    _log.info("Sweep to ${req.toAddress} with fee ${req.satPerVbyte}");
+    try {
+      final resp = await _breezSDK.prepareSweep(req: req);
+      _log.info("Refund txId: ${resp.sweepTxFeeSat}, with tx weight ${resp.sweepTxWeight}");
+      return resp.sweepTxFeeSat;
+    } catch (e) {
+      _log.severe("Failed to refund swap", e);
+      rethrow;
+    }
   }
 
-  Future<int> _calculateTransactionFee(String toAddress, int satsPerVbyte) async {
-    final req = PrepareSweepRequest(
-      satPerVbyte: satsPerVbyte,
-      toAddress: toAddress,
+  Future<List<FeeOption>> _constructFeeOptionList({
+    required String toAddress,
+    required RecommendedFees recommendedFees,
+  }) async {
+    final recommendedFeeList = [
+      recommendedFees.hourFee,
+      recommendedFees.halfHourFee,
+      recommendedFees.fastestFee,
+    ];
+    final feeOptions = await Future.wait(
+      List.generate(3, (index) async {
+        final recommendedFee = recommendedFeeList.elementAt(index);
+        final req = PrepareSweepRequest(
+          toAddress: toAddress,
+          satPerVbyte: recommendedFee,
+        );
+        final fee = await prepareSweep(req);
+
+        return FeeOption(
+          processingSpeed: ProcessingSpeed.values.elementAt(index),
+          waitingTime: Duration(minutes: waitingTime.elementAt(index)),
+          fee: fee,
+          feeVByte: recommendedFee,
+        );
+      }),
     );
-    final response = await _breezSDK.prepareSweep(req: req);
-    return response.sweepTxFeeSat;
+
+    emit(state.copyWith(feeOptions: feeOptions));
+    return feeOptions;
   }
 }

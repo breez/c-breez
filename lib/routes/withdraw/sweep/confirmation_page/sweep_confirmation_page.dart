@@ -30,7 +30,9 @@ class _SweepConfirmationPageState extends State<SweepConfirmationPage> {
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions(widget.toAddress);
+    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions(
+          toAddress: widget.toAddress,
+        );
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
         affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();

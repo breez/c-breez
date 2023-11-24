@@ -10,7 +10,7 @@ import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/home/widgets/enable_backup_dialog.dart';
 import 'package:c_breez/routes/home/widgets/rotator.dart';
-import 'package:c_breez/routes/subswap/swap/get_refund/get_refund_page.dart';
+import 'package:c_breez/routes/get-refund/get_refund_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/backup_in_progress_dialog.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +112,9 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
           warnings.add(
             WarningAction(
               () {
-                showDialog(context: context, builder: (_) => GetRefundPage(refundBloc: refundBloc));
+                navigatorState.push(MaterialPageRoute(
+                  builder: (_) => GetRefundPage(refundBloc: refundBloc),
+                ));
               },
             ),
           );

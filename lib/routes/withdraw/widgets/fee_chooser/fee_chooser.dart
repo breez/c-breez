@@ -48,7 +48,7 @@ class _FeeChooserState extends State<FeeChooser> {
             widget.walletBalance,
             widget.feeOptions.elementAt(widget.selectedFeeIndex).fee,
             boltzFees: widget.boltzFees,
-          ),
+          )
         ],
       ),
     );

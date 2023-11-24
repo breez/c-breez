@@ -40,11 +40,13 @@ class SingleButtonBottomBar extends StatelessWidget {
 class SubmitButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final String text;
+  final bool enabled;
 
   const SubmitButton(
     this.text,
-    this.onPressed,
-  );
+    this.onPressed, {
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,7 @@ class SubmitButton extends StatelessWidget {
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).primaryColor,
+          backgroundColor: enabled ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
           elevation: 0.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),

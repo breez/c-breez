@@ -6,13 +6,13 @@ import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/create_invoice/qr_code_dialog.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
-import 'package:c_breez/routes/get-refund/refund_confirmation_page.dart';
 import 'package:c_breez/routes/home/widgets/payments_filter/calendar_dialog.dart';
 import 'package:c_breez/routes/initial_walkthrough/beta_warning_dialog.dart';
 import 'package:c_breez/routes/initial_walkthrough/initial_walkthrough.dart';
 import 'package:c_breez/routes/settings/set_admin_password.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
+import 'package:c_breez/routes/withdraw/sweep/confirmation_page/sweep_confirmation_page.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
@@ -209,15 +209,14 @@ class UITestPage extends StatelessWidget {
           ),
           Card(
             child: ListTile(
-              title: const Text("RefundConfirmationPage"),
+              title: const Text("SweepConfirmationPage"),
               onTap: () {
                 Navigator.of(context).push(
                   FadeInRoute(
-                    builder: (_) => const RefundConfirmationPage(
-                        amountSat: 200000,
-                        toAddress: "3A2DSxJraw7e2vCR1xHy3oFctLQTHhecHF",
-                        swapAddress: "bc1q57hrkfavjgmupur67kqua2t5r0anzudr40amaj"),
-                  ),
+                      builder: (_) => const SweepConfirmationPage(
+                            amountSat: 200000,
+                            toAddress: "3A2DSxJraw7e2vCR1xHy3oFctLQTHhecHF",
+                          )),
                 );
               },
             ),

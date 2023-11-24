@@ -112,7 +112,9 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
           warnings.add(
             WarningAction(
               () {
-                showDialog(context: context, builder: (_) => GetRefundPage(refundBloc: refundBloc));
+                navigatorState.push(MaterialPageRoute(
+                  builder: (_) => GetRefundPage(refundBloc: refundBloc),
+                ));
               },
             ),
           );

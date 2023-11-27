@@ -10,7 +10,5 @@
 	<array>
 		<string>$(AppIdentifierPrefix)SharedKeychain</string>
 	</array>
-	<key>com.apple.developer.usernotifications.filtering</key>
-	<true/>
 </dict>
 </plist>

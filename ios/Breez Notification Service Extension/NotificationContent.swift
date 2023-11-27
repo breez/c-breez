@@ -1,7 +1,6 @@
 import UserNotifications
 import BreezSDK
 
-
 extension UNMutableNotificationContent {
     
     func fillForReceivedPayments(payments: [Payment]) {

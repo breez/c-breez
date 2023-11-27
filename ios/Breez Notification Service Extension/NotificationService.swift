@@ -1,5 +1,4 @@
 import UserNotifications
-import BreezSDK
 import Combine
 import os.log
 import notify
@@ -141,7 +140,7 @@ class NotificationService: UNNotificationServiceExtension {
             
             /// Ensure SDK is connected and wait for payment
             do {
-                guard let breezSDK = try? BreezManager.shared.connect() else {
+                guard let breezSDK = try? BreezManager.shared.connectSDK() else {
                     throw SdkError.Generic(message: "Failed to connect to Breez SDK")
                 }
                 // TODO: Wait for payment

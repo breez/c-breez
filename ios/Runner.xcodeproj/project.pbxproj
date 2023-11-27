@@ -11,6 +11,9 @@
 		1C3EE2FE9C178DF4C7EB9FAD /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C0E1FF7ADE2E39952475509 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */; };
+		6FFE6B602B14C75500BEB472 /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFE6B5F2B14C75500BEB472 /* BreezSDK.swift */; };
+		6FFE6B622B14CDED00BEB472 /* breez_sdkFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFE6B612B14CDED00BEB472 /* breez_sdkFFI.xcframework */; };
+		6FFE6B632B14CDED00BEB472 /* breez_sdkFFI.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFE6B612B14CDED00BEB472 /* breez_sdkFFI.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -19,7 +22,6 @@
 		E87F5EBD2B0E24D7007FB1DF /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87F5EBC2B0E24D7007FB1DF /* NotificationService.swift */; };
 		E87F5EC12B0E24D7007FB1DF /* Breez Notification Service Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E87F5EBA2B0E24D7007FB1DF /* Breez Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E89C2CC92B0E96960084A5BF /* BreezManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89C2CC82B0E96960084A5BF /* BreezManager.swift */; };
-		E89C2CCC2B0E972C0084A5BF /* BreezSDK in Frameworks */ = {isa = PBXBuildFile; productRef = E89C2CCB2B0E972C0084A5BF /* BreezSDK */; };
 		E89C2CCE2B0E978B0084A5BF /* NotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89C2CCD2B0E978B0084A5BF /* NotificationContent.swift */; };
 		E89C2CD22B0E9A190084A5BF /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89C2CD12B0E9A190084A5BF /* CredentialsManager.swift */; };
 		E89C2CD42B0E9F9A0084A5BF /* KeyChainAccessGroupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89C2CD32B0E9F9A0084A5BF /* KeyChainAccessGroupHelper.swift */; };
@@ -38,6 +40,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		6FFE6B642B14CDED00BEB472 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6FFE6B632B14CDED00BEB472 /* breez_sdkFFI.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -68,6 +81,8 @@
 		4C0E1FF7ADE2E39952475509 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6F2FC2C729783D6900DC3B60 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		6FFE6B5F2B14C75500BEB472 /* BreezSDK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezSDK.swift; sourceTree = "<group>"; };
+		6FFE6B612B14CDED00BEB472 /* breez_sdkFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = breez_sdkFFI.xcframework; path = Pods/breez_sdkFFI/breez_sdkFFI.xcframework; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -108,7 +123,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E89C2CD72B0EA0CD0084A5BF /* KeychainAccess in Frameworks */,
-				E89C2CCC2B0E972C0084A5BF /* BreezSDK in Frameworks */,
+				6FFE6B622B14CDED00BEB472 /* breez_sdkFFI.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +192,7 @@
 		BBE778C978EF78E8EB3A3E1F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6FFE6B612B14CDED00BEB472 /* breez_sdkFFI.xcframework */,
 				E806FB23296F5B310051A873 /* libbreez_sdk_core.a */,
 				4C0E1FF7ADE2E39952475509 /* Pods_Runner.framework */,
 			);
@@ -194,6 +210,7 @@
 				E89C2CD12B0E9A190084A5BF /* CredentialsManager.swift */,
 				E89C2CD32B0E9F9A0084A5BF /* KeyChainAccessGroupHelper.swift */,
 				E89C2CDA2B0EC0600084A5BF /* Environment.swift */,
+				6FFE6B5F2B14C75500BEB472 /* BreezSDK.swift */,
 			);
 			path = "Breez Notification Service Extension";
 			sourceTree = "<group>";
@@ -232,6 +249,7 @@
 				E87F5EB62B0E24D7007FB1DF /* Sources */,
 				E87F5EB72B0E24D7007FB1DF /* Frameworks */,
 				E87F5EB82B0E24D7007FB1DF /* Resources */,
+				6FFE6B642B14CDED00BEB472 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -239,7 +257,6 @@
 			);
 			name = "Breez Notification Service Extension";
 			packageProductDependencies = (
-				E89C2CCB2B0E972C0084A5BF /* BreezSDK */,
 				E89C2CD62B0EA0CD0084A5BF /* KeychainAccess */,
 			);
 			productName = "Breez Notification Service Extension";
@@ -280,7 +297,6 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				E89C2CCA2B0E972C0084A5BF /* XCRemoteSwiftPackageReference "breez-sdk-swift" */,
 				E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -402,6 +418,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FFE6B602B14C75500BEB472 /* BreezSDK.swift in Sources */,
 				E89C2CD22B0E9A190084A5BF /* CredentialsManager.swift in Sources */,
 				E89C2CDB2B0EC0600084A5BF /* Environment.swift in Sources */,
 				E89C2CC92B0E96960084A5BF /* BreezManager.swift in Sources */,
@@ -853,14 +870,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E89C2CCA2B0E972C0084A5BF /* XCRemoteSwiftPackageReference "breez-sdk-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/breez/breez-sdk-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.9;
-			};
-		};
 		E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
@@ -872,11 +881,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E89C2CCB2B0E972C0084A5BF /* BreezSDK */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E89C2CCA2B0E972C0084A5BF /* XCRemoteSwiftPackageReference "breez-sdk-swift" */;
-			productName = BreezSDK;
-		};
 		E89C2CD62B0EA0CD0084A5BF /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */;

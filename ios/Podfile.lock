@@ -1,6 +1,8 @@
 PODS:
-  - breez_sdk (0.1.9):
+  - breez_sdk (0.2.10):
+    - breez_sdkFFI (= 0.2.10)
     - Flutter
+  - breez_sdkFFI (0.2.10)
   - clipboard_watcher (0.0.1):
     - Flutter
   - connectivity_plus (0.0.1):
@@ -204,6 +206,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - breez_sdkFFI
     - Firebase
     - FirebaseCore
     - FirebaseCoreInternal
@@ -280,7 +283,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
-  breez_sdk: 233b05873a9e87762e4da7f12eb7a91cf2caff0b
+  breez_sdk: 20a0d4f894371a0c75f9399784c6b42bd23d1c3d
+  breez_sdkFFI: bea35d8872751d7c07591b5e4be63df3e870801e
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
@@ -328,6 +332,6 @@ SPEC CHECKSUMS:
   url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
 
-PODFILE CHECKSUM: c96af939aa4bed7ae41ad6e1d2e156da5f5ee11a
+PODFILE CHECKSUM: 887b1d2f8c1c3755ba49fdb4dc7c93b7f9137612
 
 COCOAPODS: 1.14.3

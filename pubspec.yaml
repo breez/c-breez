@@ -59,7 +59,7 @@ dependencies:
   hydrated_bloc: ^9.1.2
   image: ^4.1.3
   # Doesn't support: Linux Mac Windows
-  image_cropper: ^5.0.0
+  image_cropper: ^5.0.1
   # Doesn't support: Linux Mac Windows
   image_picker: ^1.0.4
   ini: ^2.1.0
@@ -107,8 +107,8 @@ dev_dependencies:
 dependency_overrides:
   test_api: ^0.6.1
   # Comment-out to work with breez-sdk from git repository
-  breez_sdk:
-    path: ../breez-sdk/libs/sdk-flutter
+  #breez_sdk:
+  #path: ../breez-sdk/libs/sdk-flutter
 
 flutter:
   uses-material-design: true

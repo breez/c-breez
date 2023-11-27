@@ -1,6 +1,5 @@
 import UserNotifications
 
-
 extension UNMutableNotificationContent {
     
     func fillForReceivedPayments(payments: [Payment]) {

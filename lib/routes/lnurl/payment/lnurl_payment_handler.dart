@@ -104,8 +104,13 @@ Future _handleSuccessAction(BuildContext context, SuccessActionProcessed success
     url = successAction.data.url;
     _log.info("Handle LNURL payment page result with url action '$message', '$url'");
   } else if (successAction is SuccessActionProcessed_Aes) {
-    message = "${successAction.data.description} ${successAction.data.plaintext}";
+    final result = successAction.result;
+    if (result is AesSuccessActionDataResult_Decrypted) {
+     message = "${result.data.description} ${result.data.plaintext}";
     _log.info("Handle LNURL payment page result with aes action '$message'");
+    } else if (result is AesSuccessActionDataResult_ErrorStatus) {
+      throw Exception(result.reason);      
+    }
   }
   return showDialog(
     useRootNavigator: false,

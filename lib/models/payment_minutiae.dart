@@ -225,7 +225,10 @@ class _PaymentMinutiaeFactory {
       } else if (successAction is SuccessActionProcessed_Url) {
         return successAction.data.description;
       } else if (successAction is SuccessActionProcessed_Aes) {
-        return "${successAction.data.description} ${successAction.data.plaintext}";
+        final result = successAction.result;
+        if (result is AesSuccessActionDataResult_Decrypted) {          
+          return "${result.data.description} ${result.data.plaintext}";        
+        }
       }
     }
     return "";

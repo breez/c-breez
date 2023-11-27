@@ -156,10 +156,11 @@ void main() {
       const successActionPlainText = "successActionPlainText";
       final extracted = makeLnPayment(
         successActionProcessed: const SuccessActionProcessed.aes(
-          data: AesSuccessActionDataDecrypted(
+          result: AesSuccessActionDataResult_Decrypted(
+            data: AesSuccessActionDataDecrypted(
             description: successActionDescription,
             plaintext: successActionPlainText,
-          ),
+          )),
         ),
       ).successActionMessage;
       expect(extracted, "$successActionDescription $successActionPlainText");
@@ -168,10 +169,11 @@ void main() {
     test("url when payment is a ln payment and action is an aes should return null", () {
       final successActionUrl = makeLnPayment(
         successActionProcessed: const SuccessActionProcessed.aes(
-          data: AesSuccessActionDataDecrypted(
+          result: AesSuccessActionDataResult_Decrypted(
+            data: AesSuccessActionDataDecrypted(
             description: "",
             plaintext: "",
-          ),
+          )),
         ),
       ).successActionUrl;
       expect(successActionUrl, isNull);

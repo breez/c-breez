@@ -1,5 +1,4 @@
 import Foundation
-import BreezSDK
 import Combine
 import os.log
 
@@ -27,7 +26,7 @@ class BreezManager {
     
     private init() {/* must use shared instance */}
     
-    public func connect() throws -> BlockingBreezServices? {
+    public func connectSDK() throws -> BlockingBreezServices? {
         log.trace("connect()")
         
         // Create the default config
@@ -46,7 +45,7 @@ class BreezManager {
         guard seed != nil else {
             return nil
         }
-        breezSDK = try? BreezSDK.connect(config: config, seed: seed!, listener: SDKListener())
+        breezSDK = try? connect(config: config, seed: seed!, listener: SDKListener())
         
         return breezSDK
     }

@@ -226,8 +226,8 @@ class _PaymentMinutiaeFactory {
         return successAction.data.description;
       } else if (successAction is SuccessActionProcessed_Aes) {
         final result = successAction.result;
-        if (result is AesSuccessActionDataResult_Decrypted) {          
-          return "${result.data.description} ${result.data.plaintext}";        
+        if (result is AesSuccessActionDataResult_Decrypted) {
+          return "${result.data.description} ${result.data.plaintext}";
         }
       }
     }

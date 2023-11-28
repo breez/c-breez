@@ -106,10 +106,10 @@ Future _handleSuccessAction(BuildContext context, SuccessActionProcessed success
   } else if (successAction is SuccessActionProcessed_Aes) {
     final result = successAction.result;
     if (result is AesSuccessActionDataResult_Decrypted) {
-     message = "${result.data.description} ${result.data.plaintext}";
-    _log.info("Handle LNURL payment page result with aes action '$message'");
+      message = "${result.data.description} ${result.data.plaintext}";
+      _log.info("Handle LNURL payment page result with aes action '$message'");
     } else if (result is AesSuccessActionDataResult_ErrorStatus) {
-      throw Exception(result.reason);      
+      throw Exception(result.reason);
     }
   }
   return showDialog(

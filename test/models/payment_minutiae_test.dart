@@ -158,9 +158,10 @@ void main() {
         successActionProcessed: const SuccessActionProcessed.aes(
           result: AesSuccessActionDataResult_Decrypted(
             data: AesSuccessActionDataDecrypted(
-            description: successActionDescription,
-            plaintext: successActionPlainText,
-          )),
+              description: successActionDescription,
+              plaintext: successActionPlainText,
+            ),
+          ),
         ),
       ).successActionMessage;
       expect(extracted, "$successActionDescription $successActionPlainText");
@@ -171,9 +172,10 @@ void main() {
         successActionProcessed: const SuccessActionProcessed.aes(
           result: AesSuccessActionDataResult_Decrypted(
             data: AesSuccessActionDataDecrypted(
-            description: "",
-            plaintext: "",
-          )),
+              description: "",
+              plaintext: "",
+            ),
+          ),
         ),
       ).successActionUrl;
       expect(successActionUrl, isNull);

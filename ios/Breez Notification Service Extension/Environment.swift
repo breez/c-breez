@@ -14,10 +14,10 @@ public enum Environment {
     }()
 
     ///Get variables
-    static let glApiKey: String = {
+    static func glApiKey() throws -> String {
         guard let glApiKeyStr = Environment.infoDictionary [Keys.glApiKey] as? String else {
-            fatalError("API_KEY not set in plist")
+            throw SdkError.Generic(message: "seed not found")
         }
         return glApiKeyStr
-    }()
+    }
 }

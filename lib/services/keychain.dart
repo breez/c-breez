@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class KeyChain {
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
     iOptions: IOSOptions(
-      groupId: "SharedKeychain",
+      groupId: "${const String.fromEnvironment("APP_ID_PREFIX")}.SharedKeychain",
     ),
   );
 

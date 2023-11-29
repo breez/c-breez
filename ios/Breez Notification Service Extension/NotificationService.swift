@@ -17,6 +17,8 @@ class NotificationService: UNNotificationServiceExtension {
     private var contentHandler: ((UNNotificationContent) -> Void)?
     private var bestAttemptContent: UNMutableNotificationContent?
     
+    private var breezSDK = BreezManager()
+    
     private var breezStarted: Bool = false
     private var srvExtDone: Bool = false
     
@@ -93,7 +95,7 @@ class NotificationService: UNNotificationServiceExtension {
                 log.debug("paymentHashPollerTimer.fire()")
                 // TODO: Once SDK is connected, wait for payment to arrive on BreezManager and once it does, send the received payment to NotificationService through listeners
                 if let paymentHash = bestAttemptContent?.userInfo["payment_hash"] as? String  {
-                    if let payment = BreezManager.shared.paymentByHash(hash: paymentHash) {
+                    if let payment = breezSDK.paymentByHash(hash: paymentHash) {
                         didReceivePayment(payment)
                     }
                 }
@@ -140,7 +142,9 @@ class NotificationService: UNNotificationServiceExtension {
             
             /// Ensure SDK is connected and wait for payment
             do {
-                guard let breezSDK = try? BreezManager.shared.connectSDK() else {
+                guard (try? breezSDK.connectSDK(paymentListener: {[weak self](payment: Payment?) in
+                    self?.didReceivePayment(payment)
+                })) != nil else {
                     throw SdkError.Generic(message: "Failed to connect to Breez SDK")
                 }
                 // TODO: Wait for payment
@@ -157,17 +161,20 @@ class NotificationService: UNNotificationServiceExtension {
             breezStarted = false
             
             do {
-                try BreezManager.shared.disconnect()
+                try breezSDK.disconnect()
             } catch let error {
                 log.error("Failed to disconnect Breez SDK. Error: \(error)")
             }
         }
     }
     
-    private func didReceivePayment(_ payment: Payment) {
+    private func didReceivePayment(_ payment: Payment?) {
         log.trace("didReceivePayment()")
-        
-        receivedPayments.append(payment)
+        if(payment != nil){
+            receivedPayments.append(payment!)
+        } else {
+            log.trace("payment information is not available")
+        }
         if !srvExtDone {
             startPostPaymentTimer()
         }

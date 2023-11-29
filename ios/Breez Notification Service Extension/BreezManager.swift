@@ -27,26 +27,26 @@ class BreezManager {
     private init() {/* must use shared instance */}
     
     public func connectSDK() throws -> BlockingBreezServices? {
-        log.trace("connect()")
+        log.trace("connectSDK()")
         
         // Create the default config
-        let deviceKey = [UInt8](Data(base64Encoded: Environment.glKey) ?? Data())
-        let deviceCert = [UInt8](Data(base64Encoded: Environment.glCert) ?? Data())
-        let partnerCredentials = GreenlightCredentials(deviceKey: deviceKey, deviceCert: deviceCert)
-        var config = defaultConfig(envType: EnvironmentType.production, apiKey: Environment.glApiKey,
+        log.trace("API_KEY: .\(Environment.glApiKey)")
+        let config = defaultConfig(envType: EnvironmentType.production, apiKey: Environment.glApiKey,
                                    nodeConfig: NodeConfig.greenlight(
-                                    config: GreenlightNodeConfig(partnerCredentials: partnerCredentials, inviteCode: nil)))
+                                    config: GreenlightNodeConfig(partnerCredentials: nil, inviteCode: nil)))
         
         // Construct the seed
         let mnemonic = CredentialsManager.shared.restoreMnemonic() ?? ""
+        log.trace("mnemonic: .\(mnemonic)")
         let seed = try? mnemonicToSeed(phrase: mnemonic)
         
         // Connect to the Breez SDK make it ready for use
         guard seed != nil else {
             return nil
         }
+        log.trace("Connecting to Breez SDK")
         breezSDK = try? connect(config: config, seed: seed!, listener: SDKListener())
-        
+        log.trace("Connected to Breez SDK")
         return breezSDK
     }
     

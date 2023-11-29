@@ -13,20 +13,35 @@ fileprivate var log = Logger(OSLog.disabled)
 
 // SDK events listener
 class SDKListener: EventListener {
+    
+    var paymentListener : PaymentListener
+    
+    init(paymentListener: @escaping PaymentListener) {
+        self.paymentListener = paymentListener
+    }
+    
     func onEvent(e: BreezEvent) {
-        print("received event ", e)
+        switch e {
+        case .invoicePaid(details: let details):
+            log.info("Received payment. Bolt11: \(details.bolt11)\nPayment Hash:\(details.paymentHash)")
+            paymentListener(details.payment ?? nil)
+            return
+        default:
+            break
+        }
     }
 }
 
+typealias PaymentListener = (Payment?) -> Void
+
 class BreezManager {
-    
-    public static let shared = BreezManager()
-    
     public var breezSDK: BlockingBreezServices?
     
-    private init() {/* must use shared instance */}
+    private var paymentListener: PaymentListener? = nil
     
-    public func connectSDK() throws -> BlockingBreezServices? {
+    public init() {}
+    
+    public func connectSDK(paymentListener: @escaping PaymentListener) throws -> BlockingBreezServices? {
         log.trace("connectSDK()")
         
         // Create the default config
@@ -45,7 +60,7 @@ class BreezManager {
             return nil
         }
         log.trace("Connecting to Breez SDK")
-        breezSDK = try? connect(config: config, seed: seed!, listener: SDKListener())
+        breezSDK = try? connect(config: config, seed: seed!, listener: SDKListener(paymentListener: paymentListener))
         log.trace("Connected to Breez SDK")
         return breezSDK
     }

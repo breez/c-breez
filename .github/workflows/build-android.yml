@@ -24,32 +24,32 @@ jobs:
         with:
           path: ~/.android/debug.keystore
           key: debug.keystore
-      
+
       - uses: actions/checkout@v3
         with: 
           path: 'cbreez'
 
       - name: copy-config
-        env:          
+        env:
           GOOGLE_SERVICES: ${{secrets.GOOGLE_SERVICES}}
         run: |
-          cd cbreez          
+          cd cbreez
           echo "$GOOGLE_SERVICES" > android/app/google-services.json
 
       - uses: actions/checkout@v3
-        with:         
-          repository: 'breez/breez-sdk'                   
-          ssh-key: ${{secrets.REPO_SSH_KEY}}          
+        with:
+          repository: 'breez/breez-sdk'
+          ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
-             
+
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
-          channel: 'stable'          
+          channel: 'stable'
+          cache: true
 
       - name: install dependencies
-        run: |          
+        run: |
           cargo install cargo-ndk@2.12.2
           brew install protobuf
           cd breez-sdk/libs/sdk-flutter
@@ -71,12 +71,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '17'      
-
-      - name: flutter-doctor
-        run: |
-          cd cbreez
-          flutter doctor
+          java-version: '17'
 
       - name: pub-get
         run: |
@@ -94,15 +89,15 @@ jobs:
           flutter test
 
       - name: override-config
-        env:          
-          CONFIG_FILE: ${{secrets.CONFIG_FILE}}          
-        run: |          
-          echo "$CONFIG_FILE" > ./cbreez/config.json        
+        env:
+          CONFIG_FILE: ${{secrets.CONFIG_FILE}}
+        run: |
+          echo "$CONFIG_FILE" > ./cbreez/config.json
 
       - name: build-apk
         run: |
           cd cbreez
-          flutter build apk --split-per-abi --dart-define-from-file=config.json
+          flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --split-per-abi --dart-define-from-file=config.json
 
       - name: Upload apk
         uses: actions/upload-artifact@v3

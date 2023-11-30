@@ -16,6 +16,7 @@ class NotificationService: UNNotificationServiceExtension {
     
     private var breezSDK: BlockingBreezServices?
     private var paymentReceivers: [PaymentReceiver] = []
+    private var paymentHashPollerTimer: Timer?
 
     override func didReceive(
         _ request: UNNotificationRequest,
@@ -40,7 +41,27 @@ class NotificationService: UNNotificationServiceExtension {
                         }
                     })                    
                 } catch {
-                    self.onPaymentsMissed()
+                    self.shutdown()
+                }
+            }
+            self.startPaymentHashPollerTimer()
+        }
+    }
+    
+    private func startPaymentHashPollerTimer() {
+        log.trace("startPaymentHashPollerTimer()")
+
+        paymentHashPollerTimer = Timer.scheduledTimer(
+            withTimeInterval : 2.0,
+            repeats          : true
+        ) {[weak self](_: Timer) in
+
+            if let self = self {
+                log.debug("paymentHashPollerTimer.fire()")
+                for r in self.paymentReceivers {
+                    if let payment = try? self.breezSDK!.paymentByHash(hash: r.paymentHash) {
+                        self.onPaymentReceived(paymentHash: r.paymentHash)
+                    }
                 }
             }
         }
@@ -52,14 +73,15 @@ class NotificationService: UNNotificationServiceExtension {
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
         // otherwise the original push payload will be used.
-        self.onPaymentsMissed()
+        self.shutdown()
     }
     
-    private func onPaymentsMissed() -> Void {
+    private func shutdown() -> Void {
         for r in self.paymentReceivers {
             r.displayPushNotification(title: "Missed payment")
         }
         self.paymentReceivers = []
+        self.paymentHashPollerTimer?.invalidate()
     }
     
     private func onPaymentReceived(paymentHash: String) -> Void {

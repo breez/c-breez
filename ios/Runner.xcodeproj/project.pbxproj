@@ -15,6 +15,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		C88B7E9315559CC81422E581 /* BreezSDK.swift in Resources */ = {isa = PBXBuildFile; fileRef = A367147D9B9DB2C0EF36937F /* BreezSDK.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		E84F35832B19599500D8302B /* breez_sdkFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84F35822B19599500D8302B /* breez_sdkFFI.xcframework */; };
 		E863A0682B18C90E002FB6FD /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = A367147D9B9DB2C0EF36937F /* BreezSDK.swift */; };
 		E87F5EBD2B0E24D7007FB1DF /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87F5EBC2B0E24D7007FB1DF /* NotificationService.swift */; };
@@ -300,7 +301,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -322,6 +323,7 @@
 				6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+				C88B7E9315559CC81422E581 /* BreezSDK.swift in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -875,7 +877,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+		E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
 			requirement = {
@@ -888,7 +890,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		E89C2CD62B0EA0CD0084A5BF /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			package = E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */;
 			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */

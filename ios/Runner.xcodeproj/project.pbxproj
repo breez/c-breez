@@ -14,7 +14,6 @@
 		6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */; };
 		6FFE6B602B14C75500BEB472 /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFE6B5F2B14C75500BEB472 /* BreezSDK.swift */; };
 		6FFE6B622B14CDED00BEB472 /* breez_sdkFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFE6B612B14CDED00BEB472 /* breez_sdkFFI.xcframework */; };
-		6FFE6B632B14CDED00BEB472 /* breez_sdkFFI.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFE6B612B14CDED00BEB472 /* breez_sdkFFI.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -41,17 +40,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		6FFE6B642B14CDED00BEB472 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				6FFE6B632B14CDED00BEB472 /* breez_sdkFFI.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -250,7 +238,6 @@
 				E87F5EB62B0E24D7007FB1DF /* Sources */,
 				E87F5EB72B0E24D7007FB1DF /* Frameworks */,
 				E87F5EB82B0E24D7007FB1DF /* Resources */,
-				6FFE6B642B14CDED00BEB472 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

@@ -2,9 +2,7 @@ PODS:
   - app_group_directory (1.0.0):
     - Flutter
   - breez_sdk (0.2.10):
-    - breez_sdkFFI (= 0.2.10)
     - Flutter
-  - breez_sdkFFI (0.2.10)
   - clipboard_watcher (0.0.1):
     - Flutter
   - connectivity_plus (0.0.1):
@@ -209,7 +207,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - breez_sdkFFI
     - Firebase
     - FirebaseCore
     - FirebaseCoreInternal
@@ -289,8 +286,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
-  breez_sdk: 20a0d4f894371a0c75f9399784c6b42bd23d1c3d
-  breez_sdkFFI: bea35d8872751d7c07591b5e4be63df3e870801e
+  breez_sdk: 21d4d3fcc3def0d2ecf136f1f69573de1a488680
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6

@@ -1,4 +1,6 @@
 PODS:
+  - app_group_directory (1.0.0):
+    - Flutter
   - breez_sdk (0.2.10):
     - breez_sdkFFI (= 0.2.10)
     - Flutter
@@ -178,6 +180,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - app_group_directory (from `.symlinks/plugins/app_group_directory/ios`)
   - breez_sdk (from `.symlinks/plugins/breez_sdk/ios`)
   - clipboard_watcher (from `.symlinks/plugins/clipboard_watcher/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
@@ -231,6 +234,8 @@ SPEC REPOS:
     - TOCropViewController
 
 EXTERNAL SOURCES:
+  app_group_directory:
+    :path: ".symlinks/plugins/app_group_directory/ios"
   breez_sdk:
     :path: ".symlinks/plugins/breez_sdk/ios"
   clipboard_watcher:
@@ -283,6 +288,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
+  app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
   breez_sdk: 20a0d4f894371a0c75f9399784c6b42bd23d1c3d
   breez_sdkFFI: bea35d8872751d7c07591b5e4be63df3e870801e
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
@@ -334,4 +340,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: c96af939aa4bed7ae41ad6e1d2e156da5f5ee11a
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.12.1

@@ -95,6 +95,7 @@ dependencies:
   workmanager:
     git:
       url: https://github.com/breez/flutter_workmanager.git
+  app_group_directory: ^2.0.0
 
 dev_dependencies:
   integration_test:

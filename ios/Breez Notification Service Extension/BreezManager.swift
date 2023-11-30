@@ -24,7 +24,9 @@ class SDKListener: EventListener {
         switch e {
         case .invoicePaid(details: let details):
             log.info("Received payment. Bolt11: \(details.bolt11)\nPayment Hash:\(details.paymentHash)")
-            paymentListener(details.paymentHash)
+            if details.payment != nil {
+                paymentListener(details.payment!)
+            }
             return
         default:
             break
@@ -38,9 +40,14 @@ func connectSDK(paymentListener: @escaping PaymentListener) throws -> BlockingBr
     // Create the default config
     let apiKey = try Environment.glApiKey()
     log.trace("API_KEY: .\(apiKey)")
-    let config = defaultConfig(envType: EnvironmentType.production, apiKey: apiKey,
+    var config = defaultConfig(envType: EnvironmentType.production, apiKey: apiKey,
                                nodeConfig: NodeConfig.greenlight(
                                 config: GreenlightNodeConfig(partnerCredentials: nil, inviteCode: nil)))
+    
+    config.workingDir = FileManager
+        .default.containerURL(forSecurityApplicationGroupIdentifier: "group.F7R2LZH3W5.com.cBreez.client")!
+        .absoluteString
+    
     // Construct the seed
     let mnemonic = CredentialsManager.shared.restoreMnemonic() ?? ""
     log.trace("mnemonic: .\(mnemonic)")
@@ -50,9 +57,9 @@ func connectSDK(paymentListener: @escaping PaymentListener) throws -> BlockingBr
         throw SdkError.Generic(message: "seed not found")
     }
     log.trace("Connecting to Breez SDK")
-    let breezSDK = try? connect(config: config, seed: seed!, listener: SDKListener(paymentListener: paymentListener))
+    let breezSDK = try connect(config: config, seed: seed!, listener: SDKListener(paymentListener: paymentListener))
     log.trace("Connected to Breez SDK")
     return breezSDK
 }
 
-typealias PaymentListener = (String) -> Void
+typealias PaymentListener = (Payment) -> Void

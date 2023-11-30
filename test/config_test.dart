@@ -1,7 +1,9 @@
+import 'package:app_group_directory/app_group_directory.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/app_config.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
@@ -90,6 +92,7 @@ void main() {
     });
 
     test('working dir should use application documents directory', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
       final defaultConf = _defaultConf();
       final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.workingDir, await platform.getApplicationDocumentsPath());

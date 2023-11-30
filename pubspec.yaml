@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
 
   another_flushbar: ^1.12.30
+  app_group_directory: ^2.0.0
   archive: ^3.4.9
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
@@ -95,7 +96,6 @@ dependencies:
   workmanager:
     git:
       url: https://github.com/breez/flutter_workmanager.git
-  app_group_directory: ^2.0.0
 
 dev_dependencies:
   integration_test:

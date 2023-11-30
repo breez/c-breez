@@ -21,12 +21,7 @@ class CredentialsManager {
     
     func restoreMnemonic() -> String? {
         log.trace("restoreMnemonic")
-        
-        //let info = KeyChainAccessGroupHelper.getAccessGroupInfo()
-        //let accessGroup = String(format: "%@.SharedKeychain", info?.prefix ?? "")
-        let accessGroup = kSecAttrAccessGroup as String
-        log.trace("Accessing shared keychain access group. \(accessGroup)")
-        let keychain = Keychain(service: Bundle.main.bundleIdentifier!, accessGroup: accessGroup)
+        let keychain = Keychain(service: "flutter_secure_storage_service", accessGroup: "group.F7R2LZH3W5.com.cBreez.client")
         do {
             return try keychain.getString(accountMnemonic)
         } catch let error {

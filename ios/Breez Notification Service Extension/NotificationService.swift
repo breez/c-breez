@@ -29,17 +29,18 @@ class NotificationService: UNNotificationServiceExtension {
             contentHandler(bestAttemptContent)
             return
         }
+        
         let paymentReciever = PaymentReceiver(contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, paymentHash: paymentHash)
         
         DispatchQueue.main.async {
             self.paymentReceivers.append(paymentReciever)
             if self.breezSDK == nil {
                 do {
-                    self.breezSDK = try connectSDK(paymentListener: {[weak self](paymentHash: String) in
+                    self.breezSDK = try connectSDK(paymentListener: {[weak self](payment: Payment) in
                         DispatchQueue.main.async {
-                            self?.onPaymentReceived(paymentHash: paymentHash)
+                            self?.onPaymentReceived(payment: payment)
                         }
-                    })                    
+                    })
                 } catch {
                     self.shutdown()
                 }
@@ -52,7 +53,7 @@ class NotificationService: UNNotificationServiceExtension {
         log.trace("startPaymentHashPollerTimer()")
 
         paymentHashPollerTimer = Timer.scheduledTimer(
-            withTimeInterval : 2.0,
+            withTimeInterval : 1.0,
             repeats          : true
         ) {[weak self](_: Timer) in
 
@@ -60,7 +61,9 @@ class NotificationService: UNNotificationServiceExtension {
                 log.debug("paymentHashPollerTimer.fire()")
                 for r in self.paymentReceivers {
                     if let payment = try? self.breezSDK!.paymentByHash(hash: r.paymentHash) {
-                        self.onPaymentReceived(paymentHash: r.paymentHash)
+                        if payment.status == PaymentStatus.complete {
+                            self.onPaymentReceived(payment: payment)
+                        }
                     }
                 }
             }
@@ -78,19 +81,23 @@ class NotificationService: UNNotificationServiceExtension {
     
     private func shutdown() -> Void {
         for r in self.paymentReceivers {
-            r.displayPushNotification(title: "Missed payment")
+            r.displayPushNotification(title: "Receive payment failed")
         }
         self.paymentReceivers = []
         self.paymentHashPollerTimer?.invalidate()
     }
     
-    private func onPaymentReceived(paymentHash: String) -> Void {
+    private func onPaymentReceived(payment: Payment) -> Void {
+        //let details = payment.details
+        guard case .ln(let data) = payment.details else {
+            return
+        }
         for r in self.paymentReceivers {
-            if r.paymentHash == paymentHash {
-                r.displayPushNotification(title: "Received payment")
+            if r.paymentHash == data.paymentHash {
+                r.displayPushNotification(title: "Received \(payment.amountMsat/1000) sats")
             }
         }
-        self.paymentReceivers.removeAll(where: {$0.paymentHash == paymentHash})
+        self.paymentReceivers.removeAll(where: {$0.paymentHash == data.paymentHash})
     }
 }
 

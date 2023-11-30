@@ -2,7 +2,7 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:logging/logging.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:app_group_directory/app_group_directory.dart';
 
 import 'app_config.dart';
 
@@ -115,8 +115,12 @@ class Config {
   }
 
   static Future<String> _workingDir() async {
-    final workingDir = await getApplicationDocumentsDirectory();
-    final path = workingDir.path;
+    final sharedDirectory = await AppGroupDirectory.getAppGroupDirectory(
+          "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client");
+    if (sharedDirectory == null) {
+      throw Exception("Could not get shared directory");
+    }
+    final path = sharedDirectory.path;
     _log.info("Using workingDir: $path");
     return path;
   }

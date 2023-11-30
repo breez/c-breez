@@ -100,11 +100,9 @@ packages:
   breez_sdk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "v0.2.10"
-      resolved-ref: f834c64af435fdc0a35571466e3bb3a7fe4b78f9
-      url: "https://github.com/breez/breez-sdk-flutter"
-    source: git
+      path: "../breez-sdk/libs/sdk-flutter"
+      relative: true
+    source: path
     version: "0.2.10"
   breez_translations:
     dependency: "direct main"

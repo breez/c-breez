@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:c_breez/bloc/security/security_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -82,10 +82,14 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   Future<LocalAuthenticationOption> localAuthenticationOption() async {
     final availableBiometrics = await _auth.getAvailableBiometrics();
     if (availableBiometrics.contains(BiometricType.face)) {
-      return Platform.isIOS ? LocalAuthenticationOption.faceId : LocalAuthenticationOption.face;
+      return defaultTargetPlatform == TargetPlatform.iOS
+          ? LocalAuthenticationOption.faceId
+          : LocalAuthenticationOption.face;
     }
     if (availableBiometrics.contains(BiometricType.fingerprint)) {
-      return Platform.isIOS ? LocalAuthenticationOption.touchId : LocalAuthenticationOption.fingerprint;
+      return defaultTargetPlatform == TargetPlatform.iOS
+          ? LocalAuthenticationOption.touchId
+          : LocalAuthenticationOption.fingerprint;
     }
     final otherBiometrics = await _auth.isDeviceSupported();
     return otherBiometrics ? LocalAuthenticationOption.other : LocalAuthenticationOption.none;

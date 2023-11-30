@@ -8,6 +8,7 @@ import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/notifications.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -54,9 +55,10 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     String? token = await _notifications.getToken();
     if (token != null) {
       _log.info("Retrieved token, registering…");
-      String platform = Platform.isIOS
+
+      String platform = defaultTargetPlatform == TargetPlatform.iOS
           ? "ios"
-          : Platform.isAndroid
+          : defaultTargetPlatform == TargetPlatform.android
               ? "android"
               : "";
       // Only register webhook on iOS & Android platforms

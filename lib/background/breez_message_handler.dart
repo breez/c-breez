@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:c_breez/background/breez_service_initializer.dart';
 import 'package:c_breez/main.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -35,8 +34,8 @@ class BreezMessageHandler {
     final uniqueName = message.data["payment_hash"] as String;
     final taskName = message.data["notification_type"] as String;
     await Workmanager().registerOneOffTask(
-      (Platform.isIOS) ? "com.cBreez.paymentreceived" : uniqueName,
-      (Platform.isIOS) ? "com.cBreez.paymentreceived" : taskName,
+      (defaultTargetPlatform == TargetPlatform.iOS) ? "com.cBreez.paymentreceived" : uniqueName,
+      (defaultTargetPlatform == TargetPlatform.iOS) ? "com.cBreez.paymentreceived" : taskName,
       constraints: Constraints(
         networkType: NetworkType.connected,
         requiresCharging: false,

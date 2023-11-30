@@ -17,7 +17,7 @@ jobs:
 
     runs-on: macOS-13
     env:
-      SHEME: Runner
+      SCHEME: Runner
       BUILD_CONFIGURATION: Release
       TESTFLIGHT_USERNAME: ${{secrets.TESTFLIGHT_USERNAME}}
       TESTFLIGHT_PASSWORD: ${{secrets.TESTFLIGHT_PASSWORD}}
@@ -48,28 +48,28 @@ jobs:
           P12_KEY_PATH=$RUNNER_TEMP/key.p12
           echo -n "$P12_BASE64" | base64 --decode -o $P12_KEY_PATH
           security import $P12_KEY_PATH -k $KEYCHAIN_PATH -P "$P12_PASSWORD" -A
-          
+
           security set-key-partition-list -S apple-tool:,apple: -s -k ci $KEYCHAIN_PATH > /dev/null
 
-      - name: copy-config        
+      - name: copy-config
         run: |
-          cd cbreez          
+          cd cbreez
           echo "$GOOGLE_SERVICES_IOS" > ios/Runner/GoogleService-Info.plist
 
       - uses: actions/checkout@v3
-        with:         
-          repository: 'breez/breez-sdk'                   
-          ssh-key: ${{secrets.REPO_SSH_KEY}}          
+        with:
+          repository: 'breez/breez-sdk'
+          ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
-     
+
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.16.0'
-          channel: 'stable'          
+          channel: 'stable'
+          cache: true
 
       - name: install dependencies
-        run: |          
+        run: |
           cargo install cargo-ndk@2.12.2
           brew install protobuf
           cd breez-sdk/libs/sdk-flutter
@@ -91,12 +91,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: '17'      
-
-      - name: flutter-doctor
-        run: |
-          cd cbreez
-          flutter doctor
+          java-version: '17'
 
       - name: pub-get
         run: |
@@ -128,22 +123,22 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
           cp $NOTIFICATIONS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-          
+
       - name: override-config
-        env:          
-          CONFIG_FILE: ${{secrets.CONFIG_FILE}}          
-        run: |          
+        env:
+          CONFIG_FILE: ${{secrets.CONFIG_FILE}}
+        run: |
           echo "$CONFIG_FILE" > ./cbreez/config.json
 
       - name: Build Flutter
         run: |
           cd cbreez
-          flutter build ios --release --no-codesign --dart-define-from-file=config.json
+          flutter build ios --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --no-codesign --dart-define-from-file=config.json
 
       - name: Build resolve Swift dependencies
         run: |
           cd cbreez
-          xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme ${{ env.SHEME }} -configuration ${{ env.BUILD_CONFIGURATION }}
+          xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme ${{ env.SCHEME }} -configuration ${{ env.BUILD_CONFIGURATION }}
 
       - name: Build xArchive
         run: |
@@ -151,7 +146,7 @@ jobs:
           buildNumber=$(($GITHUB_RUN_NUMBER + 6000)).1
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ env.IOS_VERSION_STRING }}" ios/Runner/Info.plist
-          xcodebuild -workspace ios/Runner.xcworkspace -scheme ${{ env.SHEME }} -configuration ${{ env.BUILD_CONFIGURATION }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive clean archive
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme ${{ env.SCHEME }} -configuration ${{ env.BUILD_CONFIGURATION }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive clean archive
       - name: Export ipa
         run: |
           cd cbreez
@@ -162,7 +157,7 @@ jobs:
         with:
           name: release-ios
           path: cbreez/build-output/ios
-      
+
       - name: Publish to Testflight
         run: |
           altool="$(dirname "$(xcode-select -p)")/Developer/usr/bin/altool"

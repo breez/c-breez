@@ -269,10 +269,10 @@ packages:
     dependency: transitive
     description:
       name: cross_file
-      sha256: "2f9d2cbccb76127ba28528cb3ae2c2326a122446a83de5a056aaa3880d3882c5"
+      sha256: fedaadfa3a6996f75211d835aaeb8fede285dae94262485698afd832371b9a5e
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3+7"
+    version: "0.3.3+8"
   crypto:
     dependency: transitive
     description:
@@ -520,18 +520,18 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_inappwebview
-      sha256: bd62be6aef0662a4bb55a10fd4dc0a5f0070ad92e2c4879f903a355468ca7643
+      sha256: b34fb3b0a8232a5adae1501e4beb6997717e4a17664eab528d4a0b8fd596d417
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.0-beta.30"
+    version: "6.0.0-beta.31"
   flutter_inappwebview_android:
     dependency: transitive
     description:
       name: flutter_inappwebview_android
-      sha256: e74d15bf6a62ae399427f00c75e4bb44b349a1ad39df6690ec5268f65fb19918
+      sha256: "555a439e61a431080d3c9fc6295f632e3143b2b2d0472453c4423d63bffe2042"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.5"
   flutter_inappwebview_internal_annotations:
     dependency: transitive
     description:
@@ -544,34 +544,34 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview_ios
-      sha256: "8381d7d74d6fad661147eabf9b0d8996c40152dbc6761ed74f79478ba771c3b0"
+      sha256: "6214edac39eae8b2ea52e510b81553249611c64b1f49c59d98ba36f604db3cac"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.5"
   flutter_inappwebview_macos:
     dependency: transitive
     description:
       name: flutter_inappwebview_macos
-      sha256: "22c851a4f4647fc51906566feae8019252c3d198179bf9f1190db6ea158fe98b"
+      sha256: "8958985fc95f9a5700129514d80cab025fbe285c09616b969611d797562ee268"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.3"
   flutter_inappwebview_platform_interface:
     dependency: transitive
     description:
       name: flutter_inappwebview_platform_interface
-      sha256: d614f7d4cfee774094e136b9a7c3b3596c971fcaee99706fa6c8e133082a49c7
+      sha256: efc08458cde40f1b2ea213334d02892910c0f5bf2c8a8cd418d0f0522de7e016
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.5"
   flutter_inappwebview_web:
     dependency: transitive
     description:
       name: flutter_inappwebview_web
-      sha256: e276e5417c286d5ba66b833151edb3ec6706fa46b0d1cee04cdfa046595ea797
+      sha256: "04b3c587b9593db615d61ca3916b676e2dcbf15a349a303f167ae8fd92b7c2ce"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -1783,10 +1783,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: "7c99c0e1e2fa190b48d25c81ca5e42036d5cac81430ef249027d97b0935c553f"
+      sha256: b0f37db61ba2f2e9b7a78a1caece0052564d1bc70668156cf3a29d676fe4e574
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "5.1.1"
   win32_registry:
     dependency: transitive
     description:
@@ -1816,10 +1816,10 @@ packages:
     dependency: transitive
     description:
       name: xml
-      sha256: af5e77e9b83f2f4adc5d3f0a4ece1c7f45a2467b695c2540381bac793e34e556
+      sha256: b015a8ad1c488f66851d762d3090a21c600e479dc75e68328c52774040cf9226
       url: "https://pub.dev"
     source: hosted
-    version: "6.4.2"
+    version: "6.5.0"
   yaml:
     dependency: transitive
     description:

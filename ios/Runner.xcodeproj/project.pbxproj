@@ -10,6 +10,7 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		1C3EE2FE9C178DF4C7EB9FAD /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C0E1FF7ADE2E39952475509 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		6F1E36BB2B17D41E00480FB9 /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFE6B5F2B14C75500BEB472 /* BreezSDK.swift */; };
 		6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */; };
 		6FFE6B602B14C75500BEB472 /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFE6B5F2B14C75500BEB472 /* BreezSDK.swift */; };
 		6FFE6B622B14CDED00BEB472 /* breez_sdkFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FFE6B612B14CDED00BEB472 /* breez_sdkFFI.xcframework */; };
@@ -410,6 +411,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				6F1E36BB2B17D41E00480FB9 /* BreezSDK.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

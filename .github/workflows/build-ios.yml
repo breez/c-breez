@@ -87,7 +87,7 @@ jobs:
           cd ../sdk-core
           make init
 
-      - name: 🔨 Build Breez SDK
+      - name: 🔒 Install SSH Key
         env:
           SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}
         run: |
@@ -95,8 +95,10 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           sudo chmod 600 ~/.ssh/id_rsa
           ssh-add ~/.ssh/id_rsa
-          cd breez-sdk/libs/sdk-flutter
-          make ios-dev
+
+      - name: 🔨 Build Breez SDK
+        working-directory: breez-sdk/libs/sdk-flutter
+        run: make ios-dev
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         working-directory: cbreez

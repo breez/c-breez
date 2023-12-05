@@ -53,7 +53,7 @@ jobs:
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
 
-      - name: Install Breez SDK dependencies
+      - name: 📦 Install Breez SDK dependencies
         run: |
           cargo install cargo-ndk@2.12.2
           brew install protobuf
@@ -62,7 +62,7 @@ jobs:
           cd ../sdk-core
           make init
 
-      - name: Build Breez SDK
+      - name: 🔨 Build Breez SDK
         env:
           SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}
         run: |
@@ -73,28 +73,28 @@ jobs:
           cd breez-sdk/libs/sdk-flutter
           make android    
 
-      - name: Populate Flutter tool's cache of binary artifacts.
+      - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         run: flutter precache
 
       - name: 📦 Install Flutter dependencies
         run: flutter pub get
 
-      - name: Perform static analysis
+      - name: 🔍 Perform static analysis
         working-directory: cbreez
         run: dart analyze --fatal-infos
 
-      - name: Run tests
+      - name: 🛠️ Run tests
         working-directory: cbreez
         run: flutter test
 
-      - name: Setup compile-time variables
+      - name: ⚙️ Setup compile-time variables
         env:
           CONFIG_FILE: ${{secrets.CONFIG_FILE}}
         run: echo "$CONFIG_FILE" > ./cbreez/config.json
 
       - name: 🚀 Build Release apk
         working-directory: cbreez
-        run: flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --split-per-abi --dart-define-from-file=config.json
+        run: flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --no-pub --split-per-abi --dart-define-from-file=config.json
 
       - name: 🗃️ Compress build folder (APK)
         uses: TheDoctor0/zip-release@master

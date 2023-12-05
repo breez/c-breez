@@ -98,24 +98,21 @@ jobs:
 
       - name: 🗃️ Compress build folder (APK)
         uses: TheDoctor0/zip-release@master
-        working-directory: cbreez
         with:
           filename: build.zip
-          directory: build/app/outputs/flutter-apk
+          directory: cbreez/build/app/outputs/flutter-apk
           type: zip
 
       - name: 📤 Upload asset (APK)
-        working-directory: cbreez
         uses: svenstaro/upload-release-action@v2
         with:
           asset_name: Android-APK.zip
-          file: build/app/outputs/flutter-apk/build.zip
+          file: cbreez/build/app/outputs/flutter-apk/build.zip
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📤 Upload artifact (APK)
-        working-directory: cbreez
         uses: actions/upload-artifact@v3
         with:
           name: Android-APK
-          path: build/app/outputs/flutter-apk/app-*.apk
+          path: cbreez/build/app/outputs/flutter-apk/app-*.apk

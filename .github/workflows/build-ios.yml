@@ -1,4 +1,4 @@
-name: Build IOS
+name: Build iOS
 
 # Controls when the workflow will run
 on:
@@ -12,9 +12,8 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  build:
-
+  build-ios:
+    name: Build iOS
     runs-on: macOS-13
     env:
       SCHEME: Runner
@@ -22,18 +21,29 @@ jobs:
       TESTFLIGHT_USERNAME: ${{secrets.TESTFLIGHT_USERNAME}}
       TESTFLIGHT_PASSWORD: ${{secrets.TESTFLIGHT_PASSWORD}}
       IOS_VERSION_STRING: 0.1.0
-      DISTRIBUTION_CERT:  ${{secrets.DISTRIBUTION_CERT}}
+      DISTRIBUTION_CERT: ${{secrets.DISTRIBUTION_CERT}}
       P12_BASE64: ${{secrets.P12_BASE64}}
       P12_PASSWORD: ${{secrets.P12_PASSWORD}}
       GOOGLE_SERVICES_IOS: ${{secrets.GOOGLE_SERVICES_IOS}}
-
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-        with: 
+      - name: 🏗️ Setup c-breez repository
+        uses: actions/checkout@v4
+        with:
           path: 'cbreez'
 
-      - name: Install keychain keys
+      - name: 🏗️ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🏗️ Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: 🔐 Install Keychain keys
         run: |
           KEYCHAIN_PATH=$RUNNER_TEMP/ios-build.keychain
           security create-keychain -p ci $KEYCHAIN_PATH
@@ -51,37 +61,32 @@ jobs:
 
           security set-key-partition-list -S apple-tool:,apple: -s -k ci $KEYCHAIN_PATH > /dev/null
 
-      - name: copy-config
-        run: |
-          cd cbreez
-          echo "$GOOGLE_SERVICES_IOS" > ios/Runner/GoogleService-Info.plist
+      - name: 🏗️ Copy Firebase configuration file
+        working-directory: cbreez
+        run: echo "$GOOGLE_SERVICES_IOS" > ios/Runner/GoogleService-Info.plist
 
-      - uses: actions/checkout@v3
+      - name: 🏗️ Setup breez-sdk repository
+        uses: actions/checkout@v4
         with:
           repository: 'breez/breez-sdk'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
 
-      # Setup the flutter environment.
-      - uses: subosito/flutter-action@v2
+      - name: 🏗️ Rust cache
+        uses: Swatinem/rust-cache@v2
         with:
-          channel: 'stable'
-          cache: true
+          workspaces: breez-sdk/libs
 
-      - name: install dependencies
+      - name: 📦 Install Breez SDK dependencies
         run: |
-          cargo install cargo-ndk@2.12.2
+          cargo install cargo-ndk
           brew install protobuf
           cd breez-sdk/libs/sdk-flutter
           make init
           cd ../sdk-core
           make init
 
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: breez-sdk/libs
-          
-      - name: build sdk
+      - name: 🔨 Build Breez SDK
         env:
           SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}
         run: |
@@ -92,27 +97,28 @@ jobs:
           cd breez-sdk/libs/sdk-flutter
           make ios-dev
 
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+      - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
+        working-directory: cbreez
+        run: flutter precache
 
-      - name: pub-get
-        run: |
-          cd cbreez
-          flutter pub get
+      - name: 📦 Install Flutter dependencies
+        working-directory: cbreez
+        run: flutter pub get
 
-      - name: dart-analyze
-        run: |
-          cd cbreez
-          dart analyze --fatal-infos
+      - name: 🔍 Perform static analysis
+        working-directory: cbreez
+        run: dart analyze --fatal-infos
 
-      - name: run-tests
-        run: |
-          cd cbreez
-          flutter test
+      - name: 🛠️ Run tests
+        working-directory: cbreez
+        run: flutter test
 
-      - name: Install the provisioning profile
+      - name: ⚙️ Setup compile-time variables
+        env:
+          CONFIG_FILE: ${{secrets.CONFIG_FILE}}
+        run: echo "$CONFIG_FILE" > ./cbreez/config.json
+
+      - name: 📝 Install the Provisioning Profile
         env:
           PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
           NOTIFICATION_PROVISIONING_PROFILE_BASE64: ${{ secrets.NOTIFICATION_PROVISIONING_PROFILE_BASE64 }}
@@ -128,33 +134,21 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
           cp $NOTIFICATIONS_PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: override-config
-        env:
-          CONFIG_FILE: ${{secrets.CONFIG_FILE}}
-        run: |
-          echo "$CONFIG_FILE" > ./cbreez/config.json
+      - name: 🚀 Build app
+        working-directory: cbreez
+        run: flutter build ios --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --no-codesign --dart-define-from-file=config.json
 
-      - name: Build Flutter
-        run: |
-          cd cbreez
-          flutter build ios --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --no-codesign --dart-define-from-file=config.json
+      - name: 📦 Resolve Swift package dependencies
+        working-directory: cbreez
+        run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme ${{ env.SCHEME }} -configuration ${{ env.BUILD_CONFIGURATION }}
 
-      - name: Build resolve Swift dependencies
+      - name: 🔨 Build application and generate xcarchive file
+        working-directory: cbreez
         run: |
-          cd cbreez
-          xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme ${{ env.SCHEME }} -configuration ${{ env.BUILD_CONFIGURATION }}
-
-      - name: Build xArchive
-        run: |
-          cd cbreez
           buildNumber=$(($GITHUB_RUN_NUMBER + 6000)).1
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ env.IOS_VERSION_STRING }}" ios/Runner/Info.plist
           xcodebuild -workspace ios/Runner.xcworkspace -scheme ${{ env.SCHEME }} -configuration ${{ env.BUILD_CONFIGURATION }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive clean archive
-      - name: Export ipa
-        run: |
-          cd cbreez
-          xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
 
       - name: 📤 Export the archive to an ipa file
         working-directory: cbreez
@@ -164,8 +158,9 @@ jobs:
         if: github.event_name == 'release'
         uses: TheDoctor0/zip-release@master
         with:
-          name: release-ios
-          path: cbreez/build-output/ios
+          filename: build.zip
+          directory: cbreez/build/ios/iphoneos
+          type: zip
 
       - name: 📤 Upload release
         if: github.event_name == 'release'

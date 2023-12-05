@@ -103,6 +103,7 @@ jobs:
         run: flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --no-pub --split-per-abi --dart-define-from-file=config.json
 
       - name: 🗃️ Compress build folder (APK)
+        if: github.event_name == 'release'
         uses: TheDoctor0/zip-release@master
         with:
           filename: build.zip
@@ -110,6 +111,7 @@ jobs:
           type: zip
 
       - name: 📤 Upload asset (APK)
+        if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
           asset_name: Android-APK.zip
@@ -118,6 +120,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📤 Upload artifact (APK)
+        if: github.event_name != 'release'
         uses: actions/upload-artifact@v3
         with:
           name: Android-APK

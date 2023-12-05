@@ -53,6 +53,11 @@ jobs:
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
 
+      - name: 🏗️ Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: breez-sdk/libs
+
       - name: 📦 Install Breez SDK dependencies
         run: |
           cargo install cargo-ndk
@@ -61,10 +66,6 @@ jobs:
           make init
           cd ../sdk-core
           make init
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: breez-sdk/libs
           
       - name: 🔨 Build Breez SDK
         env:
@@ -75,7 +76,7 @@ jobs:
           sudo chmod 600 ~/.ssh/id_rsa
           ssh-add ~/.ssh/id_rsa
           cd breez-sdk/libs/sdk-flutter
-          make android    
+          make android
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         working-directory: cbreez

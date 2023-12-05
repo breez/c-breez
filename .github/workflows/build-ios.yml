@@ -156,13 +156,34 @@ jobs:
           cd cbreez
           xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
 
-      - name: Publish iOS Artefacts
-        uses: actions/upload-artifact@v1
+      - name: 📤 Export the archive to an ipa file
+        working-directory: cbreez
+        run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
+
+      - name: 🗃️ Compress build folder
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
         with:
           name: release-ios
           path: cbreez/build-output/ios
 
-      - name: Publish to Testflight
+      - name: 📤 Upload release
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: release-iOS.zip
+          file: cbreez/build/ios/iphoneos/build.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-iOS
+          path: cbreez/build/ios/iphoneos
+
+      - name: 📱 Publish to TestFlight
         run: |
           altool="$(dirname "$(xcode-select -p)")/Developer/usr/bin/altool"
           ipa="$PWD/cbreez/build-output/ios/c_breez.ipa"

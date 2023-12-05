@@ -76,6 +76,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: breez-sdk/libs
+          cache-all-crates: true
 
       - name: 📦 Install Breez SDK dependencies
         run: |

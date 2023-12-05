@@ -77,6 +77,10 @@ jobs:
           cd ../sdk-core
           make init
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: breez-sdk/libs
+          
       - name: build sdk
         env:
           SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}

@@ -12,43 +12,48 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  build:
-
+  build-android:
+    name: Build Android
     runs-on: macOS-latest
-
     steps:
-      - name: Android cache
+      - name: 🏗️ Setup c-breez repository
+        uses: actions/checkout@v4
+        with:
+          path: 'cbreez'
+
+      - name: 🏗️ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🏗️ Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: 🏗️ Android cache
         id: android-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.android/debug.keystore
           key: debug.keystore
 
-      - uses: actions/checkout@v3
-        with: 
-          path: 'cbreez'
-
-      - name: copy-config
+      - name: 🏗️ Copy Firebase configuration file
+        working-directory: cbreez
         env:
           GOOGLE_SERVICES: ${{secrets.GOOGLE_SERVICES}}
-        run: |
-          cd cbreez
-          echo "$GOOGLE_SERVICES" > android/app/google-services.json
+        run: echo "$GOOGLE_SERVICES" > android/app/google-services.json
 
-      - uses: actions/checkout@v3
+      - name: 🏗️ Setup breez-sdk repository
+        uses: actions/checkout@v4
         with:
           repository: 'breez/breez-sdk'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
 
-      # Setup the flutter environment.
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-
-      - name: install dependencies
+      - name: Install Breez SDK dependencies
         run: |
           cargo install cargo-ndk@2.12.2
           brew install protobuf
@@ -57,7 +62,7 @@ jobs:
           cd ../sdk-core
           make init
 
-      - name: build sdk
+      - name: Build Breez SDK
         env:
           SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}
         run: |
@@ -66,41 +71,51 @@ jobs:
           sudo chmod 600 ~/.ssh/id_rsa
           ssh-add ~/.ssh/id_rsa
           cd breez-sdk/libs/sdk-flutter
-          make android
+          make android    
 
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+      - name: Populate Flutter tool's cache of binary artifacts.
+        run: flutter precache
 
-      - name: pub-get
-        run: |
-          cd cbreez
-          flutter pub get
+      - name: 📦 Install Flutter dependencies
+        run: flutter pub get
 
-      - name: dart-analyze
-        run: |
-          cd cbreez
-          dart analyze --fatal-infos
+      - name: Perform static analysis
+        working-directory: cbreez
+        run: dart analyze --fatal-infos
 
-      - name: run-tests
-        run: |
-          cd cbreez
-          flutter test
+      - name: Run tests
+        working-directory: cbreez
+        run: flutter test
 
-      - name: override-config
+      - name: Setup compile-time variables
         env:
           CONFIG_FILE: ${{secrets.CONFIG_FILE}}
-        run: |
-          echo "$CONFIG_FILE" > ./cbreez/config.json
+        run: echo "$CONFIG_FILE" > ./cbreez/config.json
 
-      - name: build-apk
-        run: |
-          cd cbreez
-          flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --split-per-abi --dart-define-from-file=config.json
+      - name: 🚀 Build Release apk
+        working-directory: cbreez
+        run: flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --split-per-abi --dart-define-from-file=config.json
 
-      - name: Upload apk
+      - name: 🗃️ Compress build folder (APK)
+        uses: TheDoctor0/zip-release@master
+        working-directory: cbreez
+        with:
+          filename: build.zip
+          directory: build/app/outputs/flutter-apk
+          type: zip
+
+      - name: 📤 Upload asset (APK)
+        working-directory: cbreez
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: Android-APK.zip
+          file: build/app/outputs/flutter-apk/build.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload artifact (APK)
+        working-directory: cbreez
         uses: actions/upload-artifact@v3
         with:
-          name: c-breez
-          path: cbreez/build/app/outputs/flutter-apk/app-*.apk
+          name: Android-APK
+          path: build/app/outputs/flutter-apk/app-*.apk

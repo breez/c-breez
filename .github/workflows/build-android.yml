@@ -55,7 +55,7 @@ jobs:
 
       - name: 📦 Install Breez SDK dependencies
         run: |
-          cargo install cargo-ndk@2.12.2
+          cargo install cargo-ndk
           brew install protobuf
           cd breez-sdk/libs/sdk-flutter
           make init
@@ -74,9 +74,11 @@ jobs:
           make android    
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
+        working-directory: cbreez
         run: flutter precache
 
       - name: 📦 Install Flutter dependencies
+        working-directory: cbreez
         run: flutter pub get
 
       - name: 🔍 Perform static analysis

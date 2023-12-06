@@ -47,8 +47,8 @@ dependencies:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
-  flutter_inappwebview: ^6.0.0-beta.30
-  flutter_rust_bridge: 1.80.1
+  flutter_inappwebview: ^6.0.0-beta.31
+  flutter_rust_bridge: 1.82.4
   flutter_secure_storage: ^9.0.0
   flutter_svg: ^2.0.9
   flutter_typeahead:
@@ -75,7 +75,7 @@ dependencies:
   # Doesn't support: Linux Windows
   mobile_scanner: ^3.5.5
   package_info_plus: ^5.0.1
-  path: ^1.8.3
+  path: ^1.8.3 # Pinned to version 1.8.3 by flutter_test from the flutter SDK.
   path_provider: ^2.1.1
   path_provider_platform_interface: ^2.1.1
   plugin_platform_interface: ^2.1.7
@@ -84,7 +84,7 @@ dependencies:
   share_plus: ^7.2.1
   shared_preferences: ^2.2.2
   simple_animations: ^5.0.2
-  sqflite_common_ffi: ^2.3.0+4
+  sqflite_common_ffi: ^2.3.1
   sqlite3_flutter_libs: ^0.5.18
   synchronized: ^3.1.0
   theme_provider: ^0.6.0

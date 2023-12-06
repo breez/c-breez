@@ -528,10 +528,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview_android
-      sha256: "555a439e61a431080d3c9fc6295f632e3143b2b2d0472453c4423d63bffe2042"
+      sha256: "836f41de4ae6f4c7696d9de804d7d0b893b37549afe0deafb74768783a9ed7c9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.6"
   flutter_inappwebview_internal_annotations:
     dependency: transitive
     description:
@@ -544,18 +544,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview_ios
-      sha256: "6214edac39eae8b2ea52e510b81553249611c64b1f49c59d98ba36f604db3cac"
+      sha256: "670372d96c9249cbe8c0d4e2d4e2c9fe2ca2b097adcd824a99fc9470cf1d941a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.7"
   flutter_inappwebview_macos:
     dependency: transitive
     description:
       name: flutter_inappwebview_macos
-      sha256: "8958985fc95f9a5700129514d80cab025fbe285c09616b969611d797562ee268"
+      sha256: "814fcd7c363707b2ee0e45b44366a07f33a70deccaaed8b0c30778479a4c0a34"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.5"
   flutter_inappwebview_platform_interface:
     dependency: transitive
     description:
@@ -568,10 +568,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview_web
-      sha256: "04b3c587b9593db615d61ca3916b676e2dcbf15a349a303f167ae8fd92b7c2ce"
+      sha256: "77ac7a82fec6e7a84ad4ea9d219cc84c8e542fb5791f208614e82620a4c3d7f4"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -645,10 +645,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_rust_bridge
-      sha256: ff90d5ddd0cda6d94ed048cc9c4a4d993d1a4bb11605d60a1282fc1bbf173c77
+      sha256: "7c5e94d037ccb0de7b5f7de3ff2491548d292b5aad01b01f5a5703f8aac9389b"
       url: "https://pub.dev"
     source: hosted
-    version: "1.80.1"
+    version: "1.82.4"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -1451,6 +1451,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
+  sprintf:
+    dependency: transitive
+    description:
+      name: sprintf
+      sha256: "1fc9ffe69d4df602376b52949af107d8f5703b77cda567c4d7d86a0693120f23"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.0"
   sqflite_common:
     dependency: transitive
     description:
@@ -1463,10 +1471,10 @@ packages:
     dependency: "direct main"
     description:
       name: sqflite_common_ffi
-      sha256: "35d2fce1e971707c227cc4775cc017d5eafe06c2654c3435ebd5c3ad6c170f5f"
+      sha256: "873677ee78738a723d1ded4ccb23980581998d873d30ee9c331f6a81748663ff"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0+4"
+    version: "2.3.1"
   sqlite3:
     dependency: transitive
     description:
@@ -1695,10 +1703,10 @@ packages:
     dependency: transitive
     description:
       name: uuid
-      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
+      sha256: df5a4d8f22ee4ccd77f8839ac7cb274ebc11ef9adcce8b92be14b797fe889921
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.7"
+    version: "4.2.1"
   vector_graphics:
     dependency: transitive
     description:

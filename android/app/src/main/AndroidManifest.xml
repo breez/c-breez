@@ -11,6 +11,16 @@
         android:name="${applicationName}"
         android:roundIcon="@mipmap/ic_launcher"
         android:icon="@mipmap/ic_launcher">
+
+        <service
+            android:name=".BreezFCMService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

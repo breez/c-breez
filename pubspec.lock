@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: _flutterfire_internals
-      sha256: eb0ac20f704799b986049fbb3c1c16421eca319a1b872378d669513e12452ba5
+      sha256: "3f2bd3396aae3e349b9ecb3880c9a77aa13c1497ba7ac6314813afd48fcb506f"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.14"
+    version: "1.3.15"
   analyzer:
     dependency: transitive
     description:
@@ -421,10 +421,10 @@ packages:
     dependency: "direct main"
     description:
       name: firebase_core
-      sha256: d301561d614487688d797717bef013a264c517d1d09e4c5c1325c3a64c835efb
+      sha256: "070eb6ee4e5087fb7f9e792a328ce1cc3007a932c8fcb519c65d3bd358566264"
       url: "https://pub.dev"
     source: hosted
-    version: "2.24.0"
+    version: "2.24.1"
   firebase_core_platform_interface:
     dependency: transitive
     description:
@@ -437,50 +437,50 @@ packages:
     dependency: transitive
     description:
       name: firebase_core_web
-      sha256: "10159d9ee42c79f4548971d92f3f0fcd5791f6738cda3583a4e3b2c8b244c018"
+      sha256: d585bdf3c656c3f7821ba1bd44da5f13365d22fcecaf5eb75c4295246aaa83c0
       url: "https://pub.dev"
     source: hosted
-    version: "2.9.0"
+    version: "2.10.0"
   firebase_dynamic_links:
     dependency: "direct main"
     description:
       name: firebase_dynamic_links
-      sha256: "300bd7e1c2dafe7e90cfe7f0890e1371bd30f37043bf64cde406b53ecd1dd4af"
+      sha256: "0238a21f60841597d086e6b5e153e857692eb9eaf37e93031f141eb1ed525d67"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.6"
+    version: "5.4.7"
   firebase_dynamic_links_platform_interface:
     dependency: transitive
     description:
       name: firebase_dynamic_links_platform_interface
-      sha256: "1d1d2d90a2edb1a67aad66a44ffc92ba43b4550631c62b4fd988dff771d91edd"
+      sha256: "940b5c8ce8ed24ae24f2251caf1ab1cc6715fa776e50cb15b05a3de2db915f40"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.6+14"
+    version: "0.2.6+15"
   firebase_messaging:
     dependency: "direct main"
     description:
       name: firebase_messaging
-      sha256: "260064e1b512a9e1970b5964d645eba888208ca3de42459c38e484c8ecdc37a9"
+      sha256: b0381c8c7f3df2d04e744eee2ac3d08f52318ae62976a16bbb69367f8705117b
       url: "https://pub.dev"
     source: hosted
-    version: "14.7.6"
+    version: "14.7.7"
   firebase_messaging_platform_interface:
     dependency: transitive
     description:
       name: firebase_messaging_platform_interface
-      sha256: "81fb8c983356dd75ee660f276c918380325df7a1ab1e981ede911809e9ddff30"
+      sha256: "9a32b356acd2172694856006e88613c66e4be33da11462f9ad0f324bdc70feea"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.15"
+    version: "4.5.16"
   firebase_messaging_web:
     dependency: transitive
     description:
       name: firebase_messaging_web
-      sha256: "1c5d9b6cf929ab471300143059d1641a26b73c9c24adb5266e241aea23c090aa"
+      sha256: "0668f0667bbb0b5fcb2a1a588d389b4b93fb2115a1f18b45ed72d2036e38b688"
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.15"
+    version: "3.5.16"
   fixnum:
     dependency: transitive
     description:
@@ -528,10 +528,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview_android
-      sha256: "836f41de4ae6f4c7696d9de804d7d0b893b37549afe0deafb74768783a9ed7c9"
+      sha256: "297ef285b47529332dda074f3bca6dbe103f9e83534b7aca5f081be45da80610"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.6"
+    version: "1.0.7"
   flutter_inappwebview_internal_annotations:
     dependency: transitive
     description:
@@ -544,18 +544,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_inappwebview_ios
-      sha256: "670372d96c9249cbe8c0d4e2d4e2c9fe2ca2b097adcd824a99fc9470cf1d941a"
+      sha256: "6b1e3b4f46596700a2393aeb7023379e8a4cd609d2f4d05d358697bcffdcf010"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.7"
+    version: "1.0.8"
   flutter_inappwebview_macos:
     dependency: transitive
     description:
       name: flutter_inappwebview_macos
-      sha256: "814fcd7c363707b2ee0e45b44366a07f33a70deccaaed8b0c30778479a4c0a34"
+      sha256: f341d16cf471c072e5424eed748aac90b48a7ff1b4897a254ada189bb551145f
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.5"
+    version: "1.0.6"
   flutter_inappwebview_platform_interface:
     dependency: transitive
     description:
@@ -954,10 +954,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   io:
     dependency: transitive
     description:

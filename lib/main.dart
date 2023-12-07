@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:c_breez/background/background_task_handler.dart';
-import 'package:c_breez/background/breez_message_handler.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/backup/backup_bloc.dart';
@@ -60,7 +58,6 @@ void main() async {
       logger.registerBreezSdkLog(breezSDK);
     }
 
-    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     final appDir = await getApplicationDocumentsDirectory();
     final config = await cfg.Config.instance();
 
@@ -142,14 +139,4 @@ void main() async {
       _log.severe("FlutterError: $error", error, stackTrace);
     }
   });
-}
-
-@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
-Future<void> _onBackgroundMessage(RemoteMessage message) {
-  return BreezMessageHandler(message).handleBackgroundMessage();
-}
-
-@pragma('vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
-void callbackDispatcher() {
-  BackgroundTaskManager().handleBackgroundTask();
 }

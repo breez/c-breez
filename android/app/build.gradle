@@ -115,4 +115,5 @@ flutter {
 }
 
 dependencies {
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.3.1'
 }

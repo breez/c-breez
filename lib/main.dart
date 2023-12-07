@@ -25,7 +25,6 @@ import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

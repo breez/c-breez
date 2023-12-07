@@ -59,7 +59,7 @@ class FirebaseNotifications implements Notifications {
       criticalAlert: false,
       provisional: false,
     );
-    print('User granted permission: ${firebaseNotificationSettings.authorizationStatus}');
+    _log.config('User granted permission: ${firebaseNotificationSettings.authorizationStatus}');
     if (firebaseNotificationSettings.authorizationStatus == AuthorizationStatus.authorized) {
       _log.info("Authorized to get token");
       return _firebaseMessaging.getToken();

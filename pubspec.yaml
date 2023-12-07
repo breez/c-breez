@@ -93,9 +93,6 @@ dependencies:
   uni_links: ^0.5.1
   url_launcher: ^6.2.1
   vector_math: ^2.1.4
-  workmanager:
-    git:
-      url: https://github.com/breez/flutter_workmanager.git
 
 dev_dependencies:
   integration_test:

@@ -142,12 +142,32 @@
             android:value="false" />
 
         <!-- Plugin activities -->
-       <!-- image_cropper -->
-       <activity
-           android:name="com.yalantis.ucrop.UCropActivity"
-           android:screenOrientation="portrait"
-           android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-           android:exported="false"/>
+        <!-- image_cropper -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:exported="false"/>
+
+        <!-- Notifications -->
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
+             See README(https://goo.gl/l4GJaQ) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_stat_ic_notification" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set
+             for the incoming notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/breez_notification_color" />
+        <!-- Starting in Android 8.0 (API level 26), all notifications must be assigned to a channel
+             or they don't appear. This lets users disable specific notification channels for your app
+             instead of disabling all your notifications. Users can control the visual and auditory
+             options for each channel from the Android system settings, as shown in figure 11.
+             Users can also touch & hold a notification to change behaviors for the associated channel. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/offline_payments_notification_channel_id" />
 
         <!-- Compile-time Variables -->
         <meta-data

@@ -28,6 +28,12 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def envVariables = [
+        API_KEY: project.hasProperty('API_KEY')
+                ? API_KEY
+                : '',
+];
+
 android {
     namespace 'com.cBreez.client'
     compileSdkVersion 34
@@ -93,6 +99,7 @@ android {
             applicationIdSuffix '.debug'
             versionNameSuffix '-DEBUG'
             resValue "string", "app_name", "Breez Cloud - Debug"
+            resValue "string", "breezApiKey", envVariables.API_KEY
         }
         release {
             // TODO: Add your own signing config for the release build.

@@ -139,6 +139,10 @@
            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
            android:exported="false"/>
 
+        <!-- Compile-time Variables -->
+        <meta-data
+            android:name="com.breez.breez_sdk.API_KEY"
+            android:value="@string/breezApiKey" />
     </application>
 
     <!-- Android 11 has introduced package visibility changes,

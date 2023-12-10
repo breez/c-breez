@@ -18,13 +18,13 @@ class NotificationService: UNNotificationServiceExtension {
     private var logger: XCGLogger = {
         let logsDir = FileManager
             .default.containerURL(forSecurityApplicationGroupIdentifier: "group.F7R2LZH3W5.com.cBreez.client")!.appendingPathComponent("logs")
-        let extensionLogFile = logsDir.appendingPathComponent("extension.log")
+        let extensionLogFile = logsDir.appendingPathComponent("extension-\(Date().timeIntervalSince1970).log")
         let log = XCGLogger.default
         log.setup(level: .debug, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: extensionLogFile.path)
         return log
     }()
     
-    private var breezSDK: BlockingBreezServices?
+    private static var breezSDK: BlockingBreezServices?
     private var paymentReceivers: [PaymentReceiver] = []
     private var paymentHashPollerTimer: Timer?
     
@@ -46,11 +46,11 @@ class NotificationService: UNNotificationServiceExtension {
         
         DispatchQueue.main.async {
             self.paymentReceivers.append(paymentReciever)
-            if self.breezSDK == nil {
+            if NotificationService.breezSDK == nil {
                 do {
                     self.logger.info("Breez SDK is not connected, connecting....")
                     try setLogStream(logStream: SDKLogListener(logger: self.logger))
-                    self.breezSDK = try connectSDK(paymentListener: {[weak self](payment: Payment) in
+                    NotificationService.breezSDK = try connectSDK(paymentListener: {[weak self](payment: Payment) in
                         DispatchQueue.main.async {
                             self?.onPaymentReceived(payment: payment)
                         }
@@ -76,7 +76,7 @@ class NotificationService: UNNotificationServiceExtension {
             if let self = self {
                 self.logger.info("paymentHashPollerTimer.fire()")
                 for r in self.paymentReceivers {
-                    if let payment = try? self.breezSDK!.paymentByHash(hash: r.paymentHash) {
+                    if let payment = try? NotificationService.breezSDK!.paymentByHash(hash: r.paymentHash) {
                         if payment.status == PaymentStatus.complete {
                             self.onPaymentReceived(payment: payment)
                         }

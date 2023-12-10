@@ -15,7 +15,7 @@ final _log = Logger("Logger");
 final _sdkLog = Logger("BreezSdk");
 
 void shareLog() async {
-  var config = await Config.instance();  
+  var config = await Config.instance();
   final appDir = config.sdkConfig.workingDir;
   final encoder = ZipFileEncoder();
   final zipFilePath = "$appDir/c-breez.logs.zip";
@@ -38,7 +38,7 @@ class BreezLogger {
         }
       });
     }
-       
+
     Config.instance().then((config) {
       var appDir = Directory(config.sdkConfig.workingDir);
       _pruneLogs(appDir);

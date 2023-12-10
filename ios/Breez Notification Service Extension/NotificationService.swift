@@ -4,15 +4,6 @@ import Combine
 import os.log
 import notify
 
-#if DEBUG && true
-fileprivate var log = Logger(
-    subsystem: Bundle.main.bundleIdentifier!,
-    category: "NotificationService"
-)
-#else
-fileprivate var log = Logger(OSLog.disabled)
-#endif
-
 class NotificationService: UNNotificationServiceExtension {
         
     private var logger: XCGLogger = {

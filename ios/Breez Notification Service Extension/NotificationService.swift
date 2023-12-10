@@ -1,4 +1,5 @@
 import UserNotifications
+import XCGLogger
 import Combine
 import os.log
 import notify
@@ -13,15 +14,26 @@ fileprivate var log = Logger(OSLog.disabled)
 #endif
 
 class NotificationService: UNNotificationServiceExtension {
+        
+    private var logger: XCGLogger = {
+        let logsDir = FileManager
+            .default.containerURL(forSecurityApplicationGroupIdentifier: "group.F7R2LZH3W5.com.cBreez.client")!.appendingPathComponent("logs")
+        let extensionLogFile = logsDir.appendingPathComponent("extension.log")
+        let log = XCGLogger.default
+        log.setup(level: .debug, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: extensionLogFile.path)
+        return log
+    }()
     
     private var breezSDK: BlockingBreezServices?
     private var paymentReceivers: [PaymentReceiver] = []
     private var paymentHashPollerTimer: Timer?
-
+    
+    
     override func didReceive(
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
+        logger.info("Notification received")
         guard let bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent else {
             return
         }
@@ -30,18 +42,22 @@ class NotificationService: UNNotificationServiceExtension {
             return
         }
         
-        let paymentReciever = PaymentReceiver(contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, paymentHash: paymentHash)
+        let paymentReciever = PaymentReceiver(logger: self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, paymentHash: paymentHash)
         
         DispatchQueue.main.async {
             self.paymentReceivers.append(paymentReciever)
             if self.breezSDK == nil {
                 do {
+                    self.logger.info("Breez SDK is not connected, connecting....")
+                    try setLogStream(logStream: SDKLogListener(logger: self.logger))
                     self.breezSDK = try connectSDK(paymentListener: {[weak self](payment: Payment) in
                         DispatchQueue.main.async {
                             self?.onPaymentReceived(payment: payment)
                         }
                     })
+                    self.logger.info("Breez SDK connected successfully")
                 } catch {
+                    self.logger.info("Breez SDK connections failed \(error)")
                     self.shutdown()
                 }
             }
@@ -50,7 +66,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func startPaymentHashPollerTimer() {
-        log.trace("startPaymentHashPollerTimer()")
+        self.logger.info("startPaymentHashPollerTimer()")
 
         paymentHashPollerTimer = Timer.scheduledTimer(
             withTimeInterval : 1.0,
@@ -58,7 +74,7 @@ class NotificationService: UNNotificationServiceExtension {
         ) {[weak self](_: Timer) in
 
             if let self = self {
-                log.debug("paymentHashPollerTimer.fire()")
+                self.logger.info("paymentHashPollerTimer.fire()")
                 for r in self.paymentReceivers {
                     if let payment = try? self.breezSDK!.paymentByHash(hash: r.paymentHash) {
                         if payment.status == PaymentStatus.complete {
@@ -71,7 +87,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     override func serviceExtensionTimeWillExpire() {
-        log.trace("serviceExtensionTimeWillExpire()")
+        self.logger.info("serviceExtensionTimeWillExpire()")
         
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
@@ -80,6 +96,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func shutdown() -> Void {
+        self.logger.info("shutding down with \(self.paymentReceivers.count) tasks")
         for r in self.paymentReceivers {
             r.displayPushNotification(title: "Receive payment failed")
         }
@@ -88,7 +105,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func onPaymentReceived(payment: Payment) -> Void {
-        //let details = payment.details
+        self.logger.info("onPaymentReceived for \(payment.amountMsat) sats")
         guard case .ln(let data) = payment.details else {
             return
         }
@@ -104,16 +121,18 @@ class NotificationService: UNNotificationServiceExtension {
 class PaymentReceiver {
     private var contentHandler: ((UNNotificationContent) -> Void)?
     private var bestAttemptContent: UNMutableNotificationContent?
+    private var logger: XCGLogger
     public var paymentHash: String
     
-    init(contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil, paymentHash: String) {
+    init(logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil, paymentHash: String) {
         self.contentHandler = contentHandler
         self.bestAttemptContent = bestAttemptContent
         self.paymentHash = paymentHash
+        self.logger = logger
     }
     
     public func displayPushNotification(title: String) {
-        log.trace("displayPushNotification()")
+        self.logger.info("displayPushNotification \(title)")
         
         
         guard
@@ -125,5 +144,19 @@ class PaymentReceiver {
 
         bestAttemptContent.title = title
         contentHandler(bestAttemptContent)
+    }
+}
+
+class SDKLogListener : LogStream {
+    private var logger: XCGLogger
+    
+    init(logger: XCGLogger) {
+        self.logger = logger
+    }
+    
+    func log(l: LogEntry) {
+        if l.level != "TRACE" {            
+            logger.debug("greenlight: [\(l.level)] \(l.line)")
+        }
     }
 }

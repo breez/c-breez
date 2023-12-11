@@ -102,7 +102,9 @@ jobs:
 
       - name: 🔨 Build Breez SDK
         working-directory: breez-sdk/libs/sdk-flutter
-        run: make ios-dev
+        run: |
+          rm -rf ../target
+          make ios-dev
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         working-directory: cbreez

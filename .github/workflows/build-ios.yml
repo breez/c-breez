@@ -34,7 +34,7 @@ jobs:
         run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
-          
+
       - name: 🏗️ Setup Java
         uses: actions/setup-java@v4
         with:
@@ -104,6 +104,7 @@ jobs:
         working-directory: breez-sdk/libs/sdk-flutter
         run: |
           rm -rf ../target
+          cargo check
           make ios-dev
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.

@@ -79,7 +79,9 @@ jobs:
 
       - name: 🔨 Build Breez SDK
         working-directory: breez-sdk/libs/sdk-flutter
-        run: make android
+        run: |
+          rm -rf ../target
+          make android
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         working-directory: cbreez

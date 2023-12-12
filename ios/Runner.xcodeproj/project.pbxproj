@@ -10,6 +10,8 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		2B214792005A6D185AF0B44C /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACDE338D59177DD56404E3D /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		6F1E36C42B24C0E800480FB9 /* XCGLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 6F1E36C32B24C0E800480FB9 /* XCGLogger */; };
+		6F1E36C62B24C16700480FB9 /* XCGLogger in Frameworks */ = {isa = PBXBuildFile; productRef = 6F1E36C52B24C16700480FB9 /* XCGLogger */; };
 		6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -101,6 +103,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B214792005A6D185AF0B44C /* Pods_Runner.framework in Frameworks */,
+				6F1E36C42B24C0E800480FB9 /* XCGLogger in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +113,7 @@
 			files = (
 				E89C2CD72B0EA0CD0084A5BF /* KeychainAccess in Frameworks */,
 				E84F35832B19599500D8302B /* breez_sdkFFI.xcframework in Frameworks */,
+				6F1E36C62B24C16700480FB9 /* XCGLogger in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +243,9 @@
 				E87F5EC02B0E24D7007FB1DF /* PBXTargetDependency */,
 			);
 			name = Runner;
+			packageProductDependencies = (
+				6F1E36C32B24C0E800480FB9 /* XCGLogger */,
+			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
@@ -258,6 +265,7 @@
 			name = "Breez Notification Service Extension";
 			packageProductDependencies = (
 				E89C2CD62B0EA0CD0084A5BF /* KeychainAccess */,
+				6F1E36C52B24C16700480FB9 /* XCGLogger */,
 			);
 			productName = "Breez Notification Service Extension";
 			productReference = E87F5EBA2B0E24D7007FB1DF /* Breez Notification Service Extension.appex */;
@@ -301,7 +309,8 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */,
+				E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -877,7 +886,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */ = {
+		6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/DaveWoodCom/XCGLogger.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+		E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
 			requirement = {
@@ -888,9 +905,19 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		6F1E36C32B24C0E800480FB9 /* XCGLogger */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */;
+			productName = XCGLogger;
+		};
+		6F1E36C52B24C16700480FB9 /* XCGLogger */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */;
+			productName = XCGLogger;
+		};
 		E89C2CD62B0EA0CD0084A5BF /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */;
+			package = E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */

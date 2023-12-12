@@ -4,22 +4,23 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:c_breez/config.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:git_info/git_info.dart';
 import 'package:logging/logging.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 final _log = Logger("Logger");
 final _sdkLog = Logger("BreezSdk");
 
 void shareLog() async {
-  final appDir = await getApplicationDocumentsDirectory();
+  var config = await Config.instance();
+  final appDir = config.sdkConfig.workingDir;
   final encoder = ZipFileEncoder();
-  final zipFilePath = "${appDir.path}/c-breez.logs.zip";
+  final zipFilePath = "$appDir/c-breez.logs.zip";
   encoder.create(zipFilePath);
-  encoder.addDirectory(Directory("${appDir.path}/logs/"));
+  encoder.addDirectory(Directory("$appDir/logs/"));
   encoder.close();
   final zipFile = XFile(zipFilePath);
   Share.shareXFiles([zipFile]);
@@ -38,7 +39,8 @@ class BreezLogger {
       });
     }
 
-    getApplicationDocumentsDirectory().then((appDir) {
+    Config.instance().then((config) {
+      var appDir = Directory(config.sdkConfig.workingDir);
       _pruneLogs(appDir);
       final file = File("${_logDir(appDir)}/${DateTime.now().millisecondsSinceEpoch}.log");
       try {

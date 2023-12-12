@@ -1,75 +1,73 @@
 package com.cBreez.client
 
 import android.util.Log
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import androidx.work.WorkRequest.Companion.DEFAULT_BACKOFF_DELAY_MILLIS
+import androidx.work.workDataOf
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import java.util.concurrent.TimeUnit
 
-import breez_sdk.BreezEvent
-import breez_sdk.EnvironmentType
-import breez_sdk.EventListener
-import breez_sdk.GreenlightNodeConfig
-import breez_sdk.NodeConfig
-import breez_sdk.connect
-import breez_sdk.defaultConfig
-import breez_sdk.mnemonicToSeed
-
-// SDK events listener
-class SDKListener : EventListener {
-    override fun onEvent(e: BreezEvent) {
-        Log.v("SDKListener", "Received event $e")
-        if (e is BreezEvent.InvoicePaid) {
-            // TODO(_): Pass payments from InvoicePaid events to a PaymentListener to be processed
-        }
-    }
-}
-
-const val TAG = "BreezFCMService"
 
 class BreezFCMService : FirebaseMessagingService() {
+    val TAG = "BreezFCMService"
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: ${remoteMessage.from}")
 
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
 
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-                scheduleJob()
-            } else {
-                // Handle message within 10 seconds
-                handleNow()
+            if (remoteMessage.data["notification_type"] == "payment_received") {
+                val paymentHash = remoteMessage.data["payment_hash"];
+                paymentHash?.let { handleNow(it) }
             }
         }
-
-        // Check if message contains a notification payload.
-        remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
-        }
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
 
-    private fun scheduleJob() {
-        // TODO(_): Connect to Breez SDK
-        // Select your seed, invite code and enviroment
-        val seed = mnemonicToSeed("<mnemonic words>")
-        val apiKey = applicationContext.getString(R.string.breezApiKey)
+    private fun handleNow(paymentHash: String) {
+        // Set Constraints for notification to be handled at all times when device is connected to a network
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(false)
+            .setRequiresCharging(false)
+            .setRequiresDeviceIdle(false)
+            .setRequiresStorageNotLow(false)
+            .build()
 
-        // Create the default config
-        val greenlightNodeConfig = GreenlightNodeConfig(null, null)
-        val nodeConfig = NodeConfig.Greenlight(greenlightNodeConfig)
-        val config = defaultConfig(EnvironmentType.PRODUCTION, apiKey, nodeConfig)
-        // Connect to the Breez SDK make it ready for use
-        connect(config, seed, SDKListener())
-    }
+        // Create expedited work request
+        val paymentReceivedWorkRequest: OneTimeWorkRequest =
+            OneTimeWorkRequestBuilder<BreezSdkWorker>()
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .setConstraints(constraints)
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    DEFAULT_BACKOFF_DELAY_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .addTag("receivePayment")
+                .setInputData(
+                    workDataOf(
+                        "PAYMENT_HASH" to paymentHash
+                    )
+                )
+                .build()
 
-    private fun handleNow() {
-        // TODO
+        // Enqueue unique work
+        WorkManager
+            .getInstance(applicationContext)
+            .enqueueUniqueWork(
+                paymentHash,
+                ExistingWorkPolicy.KEEP,
+                paymentReceivedWorkRequest
+            )
     }
 }

@@ -4,8 +4,10 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -23,17 +25,20 @@ import breez_sdk.connect
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
 import com.cBreez.client.Constants.NOTIFICATION_ID_PAYMENT_RECEIVED
+import io.flutter.util.PathUtils
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Timer
+import java.util.TimerTask
 
 
 // SDK events listener
-class SDKListener(private val paymentListener: (payment: Payment) -> Void) : EventListener {
-    val TAG = "SDKListener"
-
+class SDKListener(private val paymentListener: (payment: Payment) -> Job) : EventListener {
     override fun onEvent(e: BreezEvent) {
         Log.v(TAG, "Received event $e")
         if (e is BreezEvent.InvoicePaid) {
@@ -46,10 +51,18 @@ class SDKListener(private val paymentListener: (payment: Payment) -> Void) : Eve
             }
         }
     }
+
+    companion object {
+        private const val TAG = "SDKListener"
+    }
 }
 
-class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
+open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
+    private var preferences: SharedPreferences? = null
+    private var breezSDK: BlockingBreezServices? = null
+    private var receivedPayments: ArrayList<String> = ArrayList()
+    private var paymentHashPollerTimer: Timer? = null
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(
@@ -63,38 +76,29 @@ class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override suspend fun doWork(): Result = coroutineScope {
-        // TODO(_): Improve error handling
-        val breezSDK = connectSDK(::paymentListener)
         val paymentHash =
             inputData.getString("PAYMENT_HASH") ?: return@coroutineScope Result.failure()
-        val payment = breezSDK?.paymentByHash(paymentHash)
-        if (payment != null && payment.status == PaymentStatus.COMPLETE) {
-            createNotification("Received ${payment.amountMsat / 1000u} sats")
-            return@coroutineScope Result.success()
-        } else {
-            createNotification("Receive payment failed")
-            return@coroutineScope Result.failure()
-        }
-    }
-
-    private fun paymentListener(payment: Payment): Void {
-        // TODO(_): Improve error handling
-        payment.details.let {
-            if (it is PaymentDetails.Ln) {
-                val paymentHash =
-                    inputData.getString("PAYMENT_HASH")
-                if (paymentHash != null) {
-                    if (it.data.paymentHash == paymentHash) {
-                        createNotification("Received ${payment.amountMsat / 1000u}) sats")
+        CoroutineScope(Dispatchers.Default).launch {
+            receivedPayments.add(paymentHash)
+            if (breezSDK == null) {
+                try {
+                    breezSDK = connectSDK { payment ->
+                        CoroutineScope(Dispatchers.Default).launch {
+                            onPaymentReceived(payment)
+                        }
                     }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failure during connecting to Breez SDK", e)
+                    shutdown()
                 }
             }
+            startPaymentHashPollerTimer()
         }
-        return TODO("Provide the return value")
+
+        return@coroutineScope Result.success()
     }
 
-    private fun connectSDK(paymentListener: (payment: Payment) -> Void): BlockingBreezServices? {
-        // TODO(_): Improve error handling
+    private fun connectSDK(paymentListener: (payment: Payment) -> Job): BlockingBreezServices {
         // Select your seed, invite code and environment
         // TODO(_): Read mnemonic from Keystore
         val mnemonic: String = "<your-mnemonic>"
@@ -105,10 +109,53 @@ class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
         val glNodeConf = GreenlightNodeConfig(null, null)
         val nodeConf = NodeConfig.Greenlight(glNodeConf)
         val config = defaultConfig(EnvironmentType.PRODUCTION, apiKey, nodeConf)
-        // TODO(_): Set workingDir programmatically
-        config.workingDir = "/data/user/0/com.cBreez.client.debug/app_flutter"
+        config.workingDir = PathUtils.getDataDirectory(applicationContext)
         // Connect to the Breez SDK make it ready for use
         return connect(config, seed, SDKListener(paymentListener))
+    }
+
+    private fun shutdown() {
+        // Display a notification for each remaining payment in list
+        for (paymentHash in this.receivedPayments) {
+            createNotification("Receive payment failed")
+        }
+        // Empty the received payments list and cancel payment hash poller timer
+        receivedPayments.clear()
+        paymentHashPollerTimer?.cancel()
+        paymentHashPollerTimer?.purge()
+    }
+
+    private fun startPaymentHashPollerTimer() {
+        // Poll payment hash every second in case it's BreezEvent is missed
+        paymentHashPollerTimer = Timer().apply {
+            schedule(object : TimerTask() {
+                override fun run() {
+                    receivedPayments.forEach { paymentHash ->
+                        try {
+                            val payment = breezSDK?.paymentByHash(paymentHash)
+                            if (payment?.status == PaymentStatus.COMPLETE) {
+                                onPaymentReceived(payment)
+                            }
+                        } catch (e: Exception) {
+                            // handle exception
+                        }
+                    }
+                }
+            }, 0, 1000)
+        }
+    }
+
+    private fun onPaymentReceived(payment: Payment) {
+        val paymentDetails = payment.details
+        if (paymentDetails is PaymentDetails.Ln) {
+            val data = paymentDetails.guard { return }
+            for (paymentHash in this.receivedPayments) {
+                if (paymentHash == data.data.paymentHash) {
+                    createNotification("Received ${payment.amountMsat / 1000u} sats")
+                }
+            }
+            this.receivedPayments.removeAll { it == data.data.paymentHash }
+        }
     }
 
     private fun createNotification(
@@ -156,5 +203,13 @@ class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
             }
         }
         return notification
+    }
+
+    private inline fun <T> T.guard(block: T.() -> Unit): T {
+        if (this == null) block(); return this
+    }
+
+    companion object {
+        private const val TAG = "BreezSdkWorker"
     }
 }

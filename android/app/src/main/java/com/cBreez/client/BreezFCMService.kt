@@ -17,9 +17,13 @@ import java.util.concurrent.TimeUnit
 
 
 class BreezFCMService : FirebaseMessagingService() {
-    val TAG = "BreezFCMService"
+
+    companion object {
+        private const val TAG = "BreezFCMService"
+    }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage);
         Log.d(TAG, "From: ${remoteMessage.from}")
 
         // Check if message contains a data payload.

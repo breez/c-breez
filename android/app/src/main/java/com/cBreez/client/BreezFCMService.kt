@@ -1,77 +1,77 @@
 package com.cBreez.client
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.app.KeyguardManager
+import android.os.Process
+import android.os.SystemClock
 import android.util.Log
-import androidx.work.BackoffPolicy
-import androidx.work.Constraints
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkManager
-import androidx.work.WorkRequest.Companion.DEFAULT_BACKOFF_DELAY_MILLIS
-import androidx.work.workDataOf
+import com.google.android.gms.common.util.PlatformVersion.isAtLeastLollipop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.util.concurrent.TimeUnit
 
 
-class BreezFCMService : FirebaseMessagingService() {
-
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
+class BreezFcmService : FirebaseMessagingService() {
     companion object {
-        private const val TAG = "BreezFCMService"
+        private const val TAG = "BreezFcmService"
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        super.onMessageReceived(remoteMessage);
-        Log.d(TAG, "From: ${remoteMessage.from}")
+        super.onMessageReceived(remoteMessage)
+        // Only handle remote messages if app is in the background
+        if (isAppForeground()) {
+            Log.i(TAG, "App is in the foreground..")
+            return
+        }
 
+        Log.d(TAG, "From: ${remoteMessage.from}")
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
-
-            if (remoteMessage.data["notification_type"] == "payment_received") {
-                val paymentHash = remoteMessage.data["payment_hash"];
-                paymentHash?.let { handleNow(it) }
-            }
+            handleNow(remoteMessage)
         }
     }
 
-    private fun handleNow(paymentHash: String) {
-        // Set Constraints for notification to be handled at all times when device is connected to a network
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(false)
-            .setRequiresCharging(false)
-            .setRequiresDeviceIdle(false)
-            .setRequiresStorageNotLow(false)
-            .build()
+    private fun handleNow(remoteMessage: RemoteMessage): Boolean {
+        return if (remoteMessage.data["notification_type"] == "payment_received") {
+            val paymentHash = remoteMessage.data["payment_hash"]
+            paymentHash?.let {
+                JobManager.instance.startPaymentReceivedJob(applicationContext, paymentHash)
+            }
+            true
+        } else {
+            false
+        }
+    }
 
-        // Create expedited work request
-        val paymentReceivedWorkRequest: OneTimeWorkRequest =
-            OneTimeWorkRequestBuilder<BreezSdkWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .setConstraints(constraints)
-                .setBackoffCriteria(
-                    BackoffPolicy.LINEAR,
-                    DEFAULT_BACKOFF_DELAY_MILLIS,
-                    TimeUnit.MILLISECONDS
-                )
-                .addTag("receivePayment")
-                .setInputData(
-                    workDataOf(
-                        "PAYMENT_HASH" to paymentHash
-                    )
-                )
-                .build()
-
-        // Enqueue unique work
-        WorkManager
-            .getInstance(applicationContext)
-            .enqueueUniqueWork(
-                paymentHash,
-                ExistingWorkPolicy.KEEP,
-                paymentReceivedWorkRequest
-            )
+    @SuppressLint("VisibleForTests")
+    private fun isAppForeground(): Boolean {
+        val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+        if (keyguardManager.isKeyguardLocked) {
+            return false // Screen is off or lock screen is showing
+        }
+        // Screen is on and unlocked, now check if the process is in the foreground
+        if (!isAtLeastLollipop()) {
+            // Before L the process has IMPORTANCE_FOREGROUND while it executes BroadcastReceivers.
+            // As soon as the service is started the BroadcastReceiver should stop.
+            // UNFORTUNATELY the system might not have had the time to downgrade the process
+            // (this is happening consistently in JellyBean).
+            // With SystemClock.sleep(10) we tell the system to give a little bit more of CPU
+            // to the main thread (this code is executing on a secondary thread) allowing the
+            // BroadcastReceiver to exit the onReceive() method and downgrade the process priority.
+            SystemClock.sleep(10)
+        }
+        val pid = Process.myPid()
+        val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = am.runningAppProcesses
+        if (appProcesses != null) {
+            for (process in appProcesses) {
+                if (process.pid == pid) {
+                    return process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                }
+            }
+        }
+        return false
     }
 }

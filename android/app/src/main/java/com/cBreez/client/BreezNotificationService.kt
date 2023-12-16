@@ -75,5 +75,4 @@ class BreezNotificationService {
             return notification
         }
     }
-
 }

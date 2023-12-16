@@ -18,8 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.Timer
-import java.util.TimerTask
 
 
 // SDK events listener
@@ -44,15 +42,14 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
         private const val TAG = "BreezSdkWorker"
 
         private var mutex = Mutex()
-        private var receivedPayments: ArrayList<String> = ArrayList()
-        private var timerList: ArrayList<Timer> = ArrayList()
         internal var breezSDK: BlockingBreezServices? = null
+        internal var receivedPayments: ArrayList<String> = ArrayList()
+        internal var timerList: ArrayList<PaymentHashPoller> = ArrayList()
     }
 
     override fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(
-            NOTIFICATION_ID_PAYMENT_RECEIVED,
-            createNotification(
+            NOTIFICATION_ID_PAYMENT_RECEIVED, createNotification(
                 applicationContext,
                 "Receiving payment...",
                 NOTIFICATION_ID_PAYMENT_RECEIVED,
@@ -98,7 +95,7 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
             }
         }
         // TODO: Add timeout to all payment has poller timers as they seem to run for a very long time, at least 1h+
-        startPaymentHashPollerTimer()
+        startPaymentHashPollerTimer(paymentHash)
     }
 
     private fun shutdown() {
@@ -118,59 +115,63 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
         receivedPayments.clear()
         timerList.forEach { timer ->
             timer.cancel()
-            timer.purge()
         }
     }
 
-    private fun startPaymentHashPollerTimer() {
-        // Poll payment hash every second in case it's BreezEvent is missed
-        val paymentHashPollerTimer = Timer().apply {
-            schedule(object : TimerTask() {
-                override fun run() {
-                    receivedPayments.forEach { paymentHash ->
-                        try {
-                            Log.v(TAG, "Polling for payment w/ paymentHash: $paymentHash")
-                            val payment = breezSDK?.paymentByHash(paymentHash)
-                            if (payment?.status == PaymentStatus.COMPLETE) {
-                                Log.v(
-                                    TAG, "Payment received w/ paymentHash: $paymentHash. \n" +
-                                            "$payment"
-                                )
-                                onPaymentReceived(payment)
-                                this.cancel()
-                            } else {
-                                Log.v(
-                                    TAG,
-                                    "Payment w/ paymentHash: $paymentHash not received yet.\n$payment"
-                                )
-                            }
-                        } catch (e: Exception) {
-                            // handle exception
-                        }
-                    }
+    private fun startPaymentHashPollerTimer(paymentHash: String) {
+        // Todo: Remove this condition as there shouldn't be an existing job for the same payment hash
+        if (!containsTimer(paymentHash)) {
+            // Create a separate timer for each notification
+            CoroutineScope(Dispatchers.Main).launch {
+                // Todo: No need to lock thread for the same reason above
+                mutex.withLock {
+                    // Poll payment hash every second for a minute in case it's BreezEvent is missed
+                    var paymentHashPollerTimer = PaymentHashPoller(paymentHash, { payment ->
+                        onPaymentReceived(payment)
+                    }, {
+                        stopPaymentHashPollerTimer(paymentHash)
+                    })
+                    paymentHashPollerTimer.start()
+                    timerList.add(paymentHashPollerTimer)
                 }
-            }, 0, 1000)
+            }
         }
-        timerList.add(paymentHashPollerTimer)
+    }
+
+    private fun stopPaymentHashPollerTimer(paymentHash: String) {
+        Log.v(TAG, "Cancel PaymentHashPoller for: $paymentHash.")
+        receivedPayments.remove(paymentHash)
+        receivedPayments.removeIf { it == paymentHash }
+        timerList.removeIf { it.paymentHash == paymentHash }
     }
 
     private fun onPaymentReceived(payment: Payment) {
         val paymentDetails = payment.details
         if (paymentDetails is PaymentDetails.Ln) {
             val data = paymentDetails.guard { return }
-            for (paymentHash in receivedPayments) {
-                if (paymentHash == data.data.paymentHash) {
-                    createNotification(
-                        applicationContext,
-                        "Received ${payment.amountMsat / 1000u} sats"
-                    )
-                }
+            if (receivedPayments.contains(data.data.paymentHash)) {
+                createNotification(
+                    applicationContext, "Received ${payment.amountMsat / 1000u} sats"
+                )
             }
-            receivedPayments.removeAll { it == data.data.paymentHash }
+            receivedPayments.removeIf { it == data.data.paymentHash }
         }
     }
 
     private inline fun <T> T.guard(block: T.() -> Unit): T {
         if (this == null) block(); return this
+    }
+
+    open fun containsTimer(paymentHash: String): Boolean {
+        for (timer in timerList) {
+            if (timer.paymentHash == paymentHash) {
+                Log.i(
+                    TAG,
+                    "There's already a running payment hash poller for this payment($paymentHash)."
+                )
+                return true
+            }
+        }
+        return false
     }
 }

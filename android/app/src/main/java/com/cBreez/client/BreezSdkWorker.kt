@@ -123,11 +123,13 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
 
     private fun shutdown() {
         // Display a notification for each remaining payment in list
-        for (paymentHash in receivedPayments) {
-            Log.v(TAG, "Couldn't handle payment $paymentHash in time")
+        if (receivedPayments.size != 0) {
+            val contentText = applicationContext.resources.getQuantityString(
+                R.plurals.failed_notification_message, receivedPayments.size
+            )
             createNotification(
                 applicationContext,
-                "Receive payment failed",
+                contentText,
                 NOTIFICATION_ID_PAYMENT_RECEIVED,
             )
         }

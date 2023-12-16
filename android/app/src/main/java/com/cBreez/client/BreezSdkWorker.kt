@@ -8,19 +8,11 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
-import breez_sdk.EnvironmentType
 import breez_sdk.EventListener
-import breez_sdk.GreenlightNodeConfig
-import breez_sdk.NodeConfig
 import breez_sdk.Payment
 import breez_sdk.PaymentDetails
-import breez_sdk.PaymentStatus
-import breez_sdk.connect
-import breez_sdk.defaultConfig
-import breez_sdk.mnemonicToSeed
 import com.cBreez.client.BreezNotificationService.Companion.createNotification
 import com.cBreez.client.Constants.NOTIFICATION_ID_PAYMENT_RECEIVED
-import io.flutter.util.PathUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,9 +44,9 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
         private const val TAG = "BreezSdkWorker"
 
         private var mutex = Mutex()
-        private var breezSDK: BlockingBreezServices? = null
         private var receivedPayments: ArrayList<String> = ArrayList()
         private var timerList: ArrayList<Timer> = ArrayList()
+        internal var breezSDK: BlockingBreezServices? = null
     }
 
     override fun getForegroundInfo(): ForegroundInfo {
@@ -89,13 +81,14 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
         receivedPayments.add(paymentHash)
         if (breezSDK == null) {
             try {
-                breezSDK = connectSDK { payment ->
+                val paymentListener: (payment: Payment) -> Unit = { payment ->
                     CoroutineScope(Dispatchers.Default).launch {
                         mutex.withLock {
                             onPaymentReceived(payment)
                         }
                     }
                 }
+                breezSDK = BreezSdkConnector(applicationContext, paymentListener).breezSDK
             } catch (e: Exception) {
                 Log.e(TAG, "Failure during connecting to Breez SDK. Shutting down.", e)
                 shutdown()
@@ -103,22 +96,6 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
         }
         // TODO: Add timeout to all payment has poller timers as they seem to run for a very long time, at least 1h+
         startPaymentHashPollerTimer()
-    }
-
-    private fun connectSDK(paymentListener: (payment: Payment) -> Unit): BlockingBreezServices {
-        // Select your seed, invite code and environment
-        // TODO(_): Read mnemonic from Keystore
-        val mnemonic = "<your-mnemonic>"
-        val seed = mnemonicToSeed(mnemonic)
-        val apiKey = applicationContext.getString(R.string.breezApiKey)
-
-        // Create the default config
-        val glNodeConf = GreenlightNodeConfig(null, null)
-        val nodeConf = NodeConfig.Greenlight(glNodeConf)
-        val config = defaultConfig(EnvironmentType.PRODUCTION, apiKey, nodeConf)
-        config.workingDir = PathUtils.getDataDirectory(applicationContext)
-        // Connect to the Breez SDK make it ready for use
-        return connect(config, seed, SDKListener(paymentListener))
     }
 
     private fun shutdown() {

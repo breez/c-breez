@@ -1,27 +1,27 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
-import 'package:c_breez/routes/withdraw/sweep/confirmation_page/widgets/sweep_button.dart';
+import 'package:c_breez/routes/withdraw/redeem_onchain_funds/confirmation_page/widgets/redeem_onchain_funds_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SweepConfirmationPage extends StatefulWidget {
+class RedeemOnchainConfirmationPage extends StatefulWidget {
   final String toAddress;
   final int amountSat;
 
-  const SweepConfirmationPage({
+  const RedeemOnchainConfirmationPage({
     super.key,
     required this.toAddress,
     required this.amountSat,
   });
 
   @override
-  State<SweepConfirmationPage> createState() => _SweepConfirmationPageState();
+  State<RedeemOnchainConfirmationPage> createState() => _RedeemOnchainConfirmationPageState();
 }
 
-class _SweepConfirmationPageState extends State<SweepConfirmationPage> {
+class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmationPage> {
   List<FeeOption> affordableFees = [];
   int selectedFeeIndex = -1;
 
@@ -83,7 +83,7 @@ class _SweepConfirmationPageState extends State<SweepConfirmationPage> {
       ),
       bottomNavigationBar:
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
-              ? SweepButton(
+              ? RedeemOnchainFundsButton(
                   toAddress: widget.toAddress,
                   satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
                 )

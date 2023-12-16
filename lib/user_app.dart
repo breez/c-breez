@@ -29,7 +29,7 @@ import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/get-refund/get_refund_page.dart';
 import 'package:c_breez/routes/subswap/swap/swap_page.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_page.dart';
-import 'package:c_breez/routes/withdraw/sweep/sweep_page.dart';
+import 'package:c_breez/routes/withdraw/redeem_onchain_funds/redeem_onchain_funds_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
@@ -183,7 +183,7 @@ class UserApp extends StatelessWidget {
                                   );
                                 case '/unexpected_funds':
                                   return FadeInRoute(
-                                    builder: (_) => SweepPage(
+                                    builder: (_) => RedeemFundsPage(
                                       walletBalance: settings.arguments as int,
                                     ),
                                     settings: settings,

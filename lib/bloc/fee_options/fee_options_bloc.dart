@@ -37,12 +37,12 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     }
   }
 
-  Future<int> prepareSweep(PrepareSweepRequest req) async {
-    _log.info("Sweep to ${req.toAddress} with fee ${req.satPerVbyte}");
+  Future<int> prepareRedeemOnchainFunds(PrepareRedeemOnchainFundsRequest req) async {
+    _log.info("Prepare redeem onchain funds to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
-      final resp = await _breezSDK.prepareSweep(req: req);
-      _log.info("Refund txId: ${resp.sweepTxFeeSat}, with tx weight ${resp.sweepTxWeight}");
-      return resp.sweepTxFeeSat;
+      final resp = await _breezSDK.prepareRedeemOnchainFunds(req: req);
+      _log.info("Refund txFee: ${resp.txFeeSat}, with tx weight ${resp.txWeight}");
+      return resp.txFeeSat;
     } catch (e) {
       _log.severe("Failed to refund swap", e);
       rethrow;
@@ -61,11 +61,11 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
     final feeOptions = await Future.wait(
       List.generate(3, (index) async {
         final recommendedFee = recommendedFeeList.elementAt(index);
-        final req = PrepareSweepRequest(
+        final req = PrepareRedeemOnchainFundsRequest(
           toAddress: toAddress,
           satPerVbyte: recommendedFee,
         );
-        final fee = await prepareSweep(req);
+        final fee = await prepareRedeemOnchainFunds(req);
 
         return FeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),

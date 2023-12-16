@@ -2,7 +2,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
-import 'package:c_breez/routes/withdraw/sweep/confirmation_page/sweep_confirmation_page.dart';
+import 'package:c_breez/routes/withdraw/redeem_onchain_funds/confirmation_page/redeem_onchain_funds_confirmation.dart';
 import 'package:c_breez/routes/withdraw/widgets/bitcoin_address_text_form_field.dart';
 import 'package:c_breez/routes/withdraw/widgets/withdraw_funds_amount_text_form_field.dart';
 import 'package:c_breez/routes/withdraw/widgets/withdraw_funds_available_btc.dart';
@@ -16,21 +16,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger("SweepPage");
+final _log = Logger("RedeemFundsPage");
 
-class SweepPage extends StatefulWidget {
+class RedeemFundsPage extends StatefulWidget {
   final int walletBalance;
 
-  const SweepPage({
+  const RedeemFundsPage({
     required this.walletBalance,
     super.key,
   });
 
   @override
-  State<SweepPage> createState() => _SweepPageState();
+  State<RedeemFundsPage> createState() => _RedeemFundsPageState();
 }
 
-class _SweepPageState extends State<SweepPage> {
+class _RedeemFundsPageState extends State<RedeemFundsPage> {
   final _addressController = TextEditingController();
   final _amountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -128,7 +128,7 @@ class _SweepPageState extends State<SweepPage> {
                 if (_formKey.currentState?.validate() ?? false) {
                   Navigator.of(context).push(
                     FadeInRoute(
-                      builder: (_) => SweepConfirmationPage(
+                      builder: (_) => RedeemOnchainConfirmationPage(
                         toAddress: _addressController.text,
                         amountSat: _getAmount(),
                       ),

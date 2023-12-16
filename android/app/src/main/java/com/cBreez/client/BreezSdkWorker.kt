@@ -65,6 +65,8 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
             }
 
         } catch (e: Exception) {
+            Log.e(TAG, "Exception: ${e.toString()}")
+            e.printStackTrace()
             onPaymentFailed()
             return Result.failure()
         }

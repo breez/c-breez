@@ -77,7 +77,10 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     private fun startPaymentReceivedJob() {
         val paymentHash =
             inputData.getString("PAYMENT_HASH") ?: throw Exception("Couldn't find payment hash")
-
+        if (receivedPayments.contains(paymentHash)) {
+            Log.i(TAG, "There's already a running job for this payment($paymentHash).")
+            return
+        }
         receivedPayments.add(paymentHash)
         if (breezSDK == null) {
             try {

@@ -53,11 +53,11 @@ jobs:
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
 
-      - name: 🏗️ Rust cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: breez-sdk/libs
-          cache-all-crates: true
+      # - name: 🏗️ Rust cache
+      #   uses: Swatinem/rust-cache@v2
+      #   with:
+      #     workspaces: breez-sdk/libs
+      #     cache-all-crates: true
 
       - name: 📦 Install Breez SDK dependencies
         run: |

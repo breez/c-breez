@@ -103,7 +103,7 @@ packages:
       path: "../breez-sdk/libs/sdk-flutter"
       relative: true
     source: path
-    version: "0.2.12"
+    version: "0.2.10"
   breez_translations:
     dependency: "direct main"
     description:

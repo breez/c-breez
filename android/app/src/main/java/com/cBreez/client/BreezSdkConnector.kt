@@ -19,8 +19,6 @@ class BreezSdkConnector() {
             synchronized(this) {
                 if (breezSDK == null) {
                     Log.i(TAG, "Connecting to Breez SDK")
-                    // Select your seed, invite code and environment
-                    // TODO(_): Read mnemonic from Keystore
                     val mnemonic = readSecuredValued(applicationContext, Constants.ACCOUNT_MNEMONIC)
                     val seed = mnemonicToSeed(mnemonic!!)
                     val apiKey = applicationContext.getString(R.string.breezApiKey)

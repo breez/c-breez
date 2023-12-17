@@ -107,6 +107,7 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
             resValue "string", "app_name", "Breez Cloud"
+            resValue "string", "breezApiKey", envVariables.API_KEY
         }
     }
 }

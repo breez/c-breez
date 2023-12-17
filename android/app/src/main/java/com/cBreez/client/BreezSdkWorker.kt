@@ -53,7 +53,9 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
             val paymentHash =
                 inputData.getString("PAYMENT_HASH") ?: throw Exception("Couldn't find payment hash")
             val breezSDK = BreezSdkConnector.connectSDK(applicationContext)
-            while (true) {
+
+            // Poll for 1 minute
+            for (i in 1..60) {
                 val payment = breezSDK.paymentByHash(paymentHash)
                 if (payment?.status == PaymentStatus.COMPLETE) {
                     this.onPaymentReceived(payment!!)
@@ -63,6 +65,9 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
                     Thread.sleep(1_000)
                 }
             }
+
+            // If we reach here then we didn't receive for more than 1 minute
+            throw Exception("Payment not found before timeout")
 
         } catch (e: Exception) {
             Log.e(TAG, "Exception: ${e.toString()}")

@@ -76,17 +76,10 @@ internal class RSACipher18Implementation(protected val context: Context) : KeyCi
 
     @get:Throws(Exception::class)
     protected val rSACipher: Cipher
-        protected get() = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            Cipher.getInstance(
-                "RSA/ECB/PKCS1Padding",
-                "AndroidOpenSSL"
-            ) // error in android 6: InvalidKeyException: Need RSA private or public key
-        } else {
-            Cipher.getInstance(
-                "RSA/ECB/PKCS1Padding",
-                "AndroidKeyStoreBCWorkaround"
-            ) // error in android 5: NoSuchProviderException: Provider not available: AndroidKeyStoreBCWorkaround
-        }
+        protected get() = Cipher.getInstance(
+            "RSA/ECB/PKCS1Padding",
+            "AndroidKeyStoreBCWorkaround"
+        ) // error in android 5: NoSuchProviderException: Provider not available: AndroidKeyStoreBCWorkaround
     protected val algorithmParameterSpec: AlgorithmParameterSpec?
         protected get() = null
 
@@ -120,32 +113,12 @@ internal class RSACipher18Implementation(protected val context: Context) : KeyCi
             end.add(Calendar.YEAR, 25)
             val kpGenerator = KeyPairGenerator.getInstance(TYPE_RSA, KEYSTORE_PROVIDER_ANDROID)
             val spec: AlgorithmParameterSpec
-            spec = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                makeAlgorithmParameterSpecLegacy(context, start, end)
-            } else {
-                makeAlgorithmParameterSpec(context, start, end)
-            }
+            spec = makeAlgorithmParameterSpec(context, start, end)
             kpGenerator.initialize(spec)
             kpGenerator.generateKeyPair()
         } finally {
             setLocale(localeBeforeFakingEnglishLocale)
         }
-    }
-
-    // Flutter gives deprecation warning without suppress
-    @Suppress("deprecation")
-    private fun makeAlgorithmParameterSpecLegacy(
-        context: Context,
-        start: Calendar,
-        end: Calendar
-    ): AlgorithmParameterSpec {
-        return KeyPairGeneratorSpec.Builder(context)
-            .setAlias(keyAlias)
-            .setSubject(X500Principal("CN=$keyAlias"))
-            .setSerialNumber(BigInteger.valueOf(1))
-            .setStartDate(start.time)
-            .setEndDate(end.time)
-            .build()
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

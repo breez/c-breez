@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="offline_payments_notification_channel_id">com.cbreez.client.offlinepayments</string>
+    <string name="offline_payments_notification_channel_name">Offline Payments</string>
+    <string name="offline_payments_notification_channel_description">Required to receive payments when the application is in the background.</string>
+
+    <plurals name="failed_notification_message">
+        <item quantity="one">Failed to receive payment</item>
+        <item quantity="other">Failed to receive payments</item>
+    </plurals>
 </resources>

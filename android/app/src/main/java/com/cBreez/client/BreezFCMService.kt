@@ -1,75 +1,77 @@
 package com.cBreez.client
 
+import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.app.KeyguardManager
+import android.os.Process
+import android.os.SystemClock
 import android.util.Log
+import com.google.android.gms.common.util.PlatformVersion.isAtLeastLollipop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-import breez_sdk.BreezEvent
-import breez_sdk.EnvironmentType
-import breez_sdk.EventListener
-import breez_sdk.GreenlightNodeConfig
-import breez_sdk.NodeConfig
-import breez_sdk.connect
-import breez_sdk.defaultConfig
-import breez_sdk.mnemonicToSeed
 
-// SDK events listener
-class SDKListener : EventListener {
-    override fun onEvent(e: BreezEvent) {
-        Log.v("SDKListener", "Received event $e")
-        if (e is BreezEvent.InvoicePaid) {
-            // TODO(_): Pass payments from InvoicePaid events to a PaymentListener to be processed
-        }
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
+class BreezFcmService : FirebaseMessagingService() {
+    companion object {
+        private const val TAG = "BreezFcmService"
     }
-}
-
-const val TAG = "BreezFCMService"
-
-class BreezFCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+        // Only handle remote messages if app is in the background
+        if (isAppForeground()) {
+            Log.i(TAG, "App is in the foreground..")
+            return
+        }
 
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: ${remoteMessage.from}")
-
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+            handleNow(remoteMessage)
+        }
+    }
 
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-                scheduleJob()
-            } else {
-                // Handle message within 10 seconds
-                handleNow()
+    private fun handleNow(remoteMessage: RemoteMessage): Boolean {
+        return if (remoteMessage.data["notification_type"] == "payment_received") {
+            val paymentHash = remoteMessage.data["payment_hash"]
+            paymentHash?.let {
+                JobManager.instance.startPaymentReceivedJob(applicationContext, paymentHash)
+            }
+            true
+        } else {
+            false
+        }
+    }
+
+    @SuppressLint("VisibleForTests")
+    private fun isAppForeground(): Boolean {
+        val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+        if (keyguardManager.isKeyguardLocked) {
+            return false // Screen is off or lock screen is showing
+        }
+        // Screen is on and unlocked, now check if the process is in the foreground
+        if (!isAtLeastLollipop()) {
+            // Before L the process has IMPORTANCE_FOREGROUND while it executes BroadcastReceivers.
+            // As soon as the service is started the BroadcastReceiver should stop.
+            // UNFORTUNATELY the system might not have had the time to downgrade the process
+            // (this is happening consistently in JellyBean).
+            // With SystemClock.sleep(10) we tell the system to give a little bit more of CPU
+            // to the main thread (this code is executing on a secondary thread) allowing the
+            // BroadcastReceiver to exit the onReceive() method and downgrade the process priority.
+            SystemClock.sleep(10)
+        }
+        val pid = Process.myPid()
+        val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = am.runningAppProcesses
+        if (appProcesses != null) {
+            for (process in appProcesses) {
+                if (process.pid == pid) {
+                    return process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                }
             }
         }
-
-        // Check if message contains a notification payload.
-        remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
-        }
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
-    }
-
-    private fun scheduleJob() {
-        // TODO(_): Connect to Breez SDK
-        // Select your seed, invite code and enviroment
-        val seed = mnemonicToSeed("<mnemonic words>")
-        val apiKey = applicationContext.getString(R.string.breezApiKey)
-
-        // Create the default config
-        val greenlightNodeConfig = GreenlightNodeConfig(null, null)
-        val nodeConfig = NodeConfig.Greenlight(greenlightNodeConfig)
-        val config = defaultConfig(EnvironmentType.PRODUCTION, apiKey, nodeConfig)
-        // Connect to the Breez SDK make it ready for use
-        connect(config, seed, SDKListener())
-    }
-
-    private fun handleNow() {
-        // TODO
+        return false
     }
 }

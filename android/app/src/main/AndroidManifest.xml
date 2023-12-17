@@ -13,7 +13,7 @@
         android:icon="@mipmap/ic_launcher">
 
         <service
-            android:name=".BreezFCMService"
+            android:name=".BreezFcmService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

@@ -55,6 +55,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'breez/breez-sdk'
+          ref: 'simplify-android-notifications'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
 

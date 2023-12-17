@@ -20,6 +20,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: 'cbreez'
+          
+      - name: Install rust
+        run: |
+          rustup set auto-self-update disable
+          rustup toolchain install stable --profile minimal
 
       - name: 🏗️ Setup Java
         uses: actions/setup-java@v4
@@ -53,11 +58,11 @@ jobs:
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
 
-      # - name: 🏗️ Rust cache
-      #   uses: Swatinem/rust-cache@v2
-      #   with:
-      #     workspaces: breez-sdk/libs
-      #     cache-all-crates: true
+      - name: 🏗️ Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: breez-sdk/libs
+          cache-all-crates: true
 
       - name: 📦 Install Breez SDK dependencies
         run: |
@@ -79,7 +84,10 @@ jobs:
 
       - name: 🔨 Build Breez SDK
         working-directory: breez-sdk/libs/sdk-flutter
-        run: make android
+        run: |
+          rm -rf ../target
+          make android
+
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         working-directory: cbreez

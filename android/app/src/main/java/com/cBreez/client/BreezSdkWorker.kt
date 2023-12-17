@@ -93,7 +93,7 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
 
     private fun onPaymentReceived(payment: Payment) {
         createNotification(
-            applicationContext, "Received ${payment.amountMsat / 1000u} sats"
+            applicationContext, "Received ${payment.amountMsat / 1000u} sats", NOTIFICATION_ID_PAYMENT_RECEIVED
         )
     }
 

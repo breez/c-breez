@@ -12,7 +12,7 @@ import 'package:c_breez/routes/initial_walkthrough/initial_walkthrough.dart';
 import 'package:c_breez/routes/settings/set_admin_password.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/spontaneous_payment/spontaneous_payment_page.dart';
-import 'package:c_breez/routes/withdraw/sweep/confirmation_page/sweep_confirmation_page.dart';
+import 'package:c_breez/routes/withdraw/redeem_onchain_funds/confirmation_page/redeem_onchain_funds_confirmation.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
@@ -209,11 +209,11 @@ class UITestPage extends StatelessWidget {
           ),
           Card(
             child: ListTile(
-              title: const Text("SweepConfirmationPage"),
+              title: const Text("RedeemOnchainConfirmationPage"),
               onTap: () {
                 Navigator.of(context).push(
                   FadeInRoute(
-                      builder: (_) => const SweepConfirmationPage(
+                      builder: (_) => const RedeemOnchainConfirmationPage(
                             amountSat: 200000,
                             toAddress: "3A2DSxJraw7e2vCR1xHy3oFctLQTHhecHF",
                           )),

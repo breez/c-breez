@@ -19,7 +19,7 @@ import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
-import 'package:c_breez/bloc/sweep/sweep_bloc.dart';
+import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
@@ -100,8 +100,8 @@ void main() async {
           BlocProvider<SecurityBloc>(
             create: (BuildContext context) => SecurityBloc(),
           ),
-          BlocProvider<SweepBloc>(
-            create: (BuildContext context) => SweepBloc(breezSDK),
+          BlocProvider<RedeemOnchainFundsBloc>(
+            create: (BuildContext context) => RedeemOnchainFundsBloc(breezSDK),
           ),
           BlocProvider<ReverseSwapBloc>(
             create: (BuildContext context) => ReverseSwapBloc(breezSDK),

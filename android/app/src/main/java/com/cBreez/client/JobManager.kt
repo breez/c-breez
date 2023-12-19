@@ -1,7 +1,6 @@
 package com.cBreez.client
 
 import android.content.Context
-import android.util.Log
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
@@ -12,18 +11,17 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.workDataOf
+import org.tinylog.Logger
 import java.util.concurrent.TimeUnit
 
 class JobManager private constructor() {
     companion object {
-        private const val TAG = "JobManager"
-
         var instance = JobManager()
     }
 
     fun startPaymentReceivedJob(applicationContext: Context, paymentHash: String) {
         try {
-            Log.i(TAG, "Enqueueing work request for $paymentHash")
+            Logger.info { "Enqueueing work request for $paymentHash" }
             // Set Constraints for notification to be handled at all times when device is connected to a network
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -59,9 +57,9 @@ class JobManager private constructor() {
                     ExistingWorkPolicy.KEEP,
                     paymentReceivedWorkRequest
                 )
-            Log.i(TAG, "work request for $paymentHash was enqueued successfully")
+            Logger.info { "Work request for $paymentHash was enqueued successfully" }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to enqueue job from notification " + e.message, e)
+            Logger.error { "Failed to enqueue job from notification " + e.message; e }
         }
     }
 }

@@ -5,18 +5,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.cBreez.client.Constants.NOTIFICATION_ID_PAYMENT_RECEIVED
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.tinylog.kotlin.Logger
 
 class BreezNotificationService {
     companion object {
-        private const val TAG = "BreezNotificationService"
-
         fun createNotification(
             applicationContext: Context,
             contentText: String?,
@@ -63,7 +61,7 @@ class BreezNotificationService {
                     // Dismiss generic information notification
                     if (notificationID != NOTIFICATION_ID_PAYMENT_RECEIVED) {
                         notificationManager.cancel(NOTIFICATION_ID_PAYMENT_RECEIVED)
-                        Log.i(TAG, "Dismissed status notification")
+                        Logger.debug { "Dismissed status notification" }
                     }
                     notificationManager.notify(
                         notificationID,

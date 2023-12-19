@@ -9,7 +9,7 @@ class NotificationService: UNNotificationServiceExtension {
     private var logger: XCGLogger = {
         let logsDir = FileManager
             .default.containerURL(forSecurityApplicationGroupIdentifier: "group.F7R2LZH3W5.com.cBreez.client")!.appendingPathComponent("logs")
-        let extensionLogFile = logsDir.appendingPathComponent("extension-\(Date().timeIntervalSince1970).log")
+        let extensionLogFile = logsDir.appendingPathComponent("ios-extension-\(Date().timeIntervalSince1970).log")
         let log = XCGLogger.default
         log.setup(level: .debug, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: extensionLogFile.path)
         return log

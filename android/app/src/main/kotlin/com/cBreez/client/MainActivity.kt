@@ -7,6 +7,10 @@ import org.tinylog.kotlin.Logger
 import java.io.File
 
 class MainActivity : FlutterActivity() {
+    companion object {
+        private const val TAG = "MainActivity";
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         configureLogger()
@@ -21,7 +25,7 @@ class MainActivity : FlutterActivity() {
         System.setProperty("tinylog.directory", loggingDir.absolutePath)
         System.setProperty("tinylog.timestamp", System.currentTimeMillis().toString())
 
-        Logger.info { "Starting ${BuildConfig.APPLICATION_ID}..." }
-        Logger.info { "Logs directory: '$loggingDir'" }
+        Logger.tag(TAG).info { "Starting ${BuildConfig.APPLICATION_ID}..." }
+        Logger.tag(TAG).info { "Logs directory: '$loggingDir'" }
     }
 }

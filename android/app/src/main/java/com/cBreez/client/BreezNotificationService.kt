@@ -15,6 +15,8 @@ import org.tinylog.kotlin.Logger
 
 class BreezNotificationService {
     companion object {
+        private const val TAG = "BreezNotificationService"
+
         fun createNotification(
             applicationContext: Context,
             contentText: String?,
@@ -61,7 +63,7 @@ class BreezNotificationService {
                     // Dismiss generic information notification
                     if (notificationID != NOTIFICATION_ID_PAYMENT_RECEIVED) {
                         notificationManager.cancel(NOTIFICATION_ID_PAYMENT_RECEIVED)
-                        Logger.debug { "Dismissed status notification" }
+                        Logger.tag(TAG).debug { "Dismissed status notification" }
                     }
                     notificationManager.notify(
                         notificationID,

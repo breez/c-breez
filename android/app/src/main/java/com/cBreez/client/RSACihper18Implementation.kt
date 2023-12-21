@@ -168,7 +168,7 @@ class StorageCipher18Implementation(context: Context, rsaCipher: KeyCipher) {
                 encrypted = Base64.decode(aesKey, Base64.DEFAULT)
                 return rsaCipher.unwrap(encrypted, KEY_ALGORITHM)
             } catch (e: java.lang.Exception) {
-                Logger.error { "Unwrap key failed" + e.message; e.toString() }
+                Logger.tag(TAG).error { "Unwrap key failed" + e.message; e.toString() }
                 throw e
             }
         }
@@ -204,6 +204,8 @@ class StorageCipher18Implementation(context: Context, rsaCipher: KeyCipher) {
     }
 
     companion object {
+        private const val TAG = "StorageCipher18Implementation"
+
         private const val keySize = 16
         private const val KEY_ALGORITHM = "AES"
         private const val SHARED_PREFERENCES_NAME = "FlutterSecureKeyStorage"

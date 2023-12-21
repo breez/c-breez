@@ -20,6 +20,7 @@ class BreezFcmService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+        configureLogger()
         // Only handle remote messages if app is in the background
         if (isAppForeground()) {
             Logger.tag(TAG).info { "App is in the foreground." }
@@ -79,5 +80,18 @@ class BreezFcmService : FirebaseMessagingService() {
             }
         }
         return false
+    }
+
+    private fun configureLogger() {
+        val loggingDir: File = File(
+            PathUtils.getDataDirectory(applicationContext),
+            "/logs/android-extension/",
+        ).also { it.mkdirs() }
+
+        System.setProperty("tinylog.directory", loggingDir.absolutePath)
+        System.setProperty("tinylog.timestamp", System.currentTimeMillis().toString())
+
+        Logger.tag(TAG).info { "Starting ${BuildConfig.APPLICATION_ID}..." }
+        Logger.tag(TAG).info { "Logs directory: '$loggingDir'" }
     }
 }

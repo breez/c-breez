@@ -9,6 +9,8 @@ import java.nio.charset.Charset
 
 class BreezSdkConnector {
     companion object {
+        private const val TAG = "BreezSdkConnector"
+
         private var breezSDK: BlockingBreezServices? = null
         private var ELEMENT_PREFERENCES_KEY_PREFIX =
             "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIHNlY3VyZSBzdG9yYWdlCg"
@@ -16,7 +18,7 @@ class BreezSdkConnector {
         internal fun connectSDK(applicationContext: Context): BlockingBreezServices {
             synchronized(this) {
                 if (breezSDK == null) {
-                    Logger.info { "Connecting to Breez SDK" }
+                    Logger.tag(TAG).info { "Connecting to Breez SDK" }
                     val mnemonic = readSecuredValued(applicationContext, Constants.ACCOUNT_MNEMONIC)
                     val seed = mnemonicToSeed(mnemonic!!)
                     val apiKey = applicationContext.getString(R.string.breezApiKey)
@@ -27,7 +29,7 @@ class BreezSdkConnector {
                     config.workingDir = PathUtils.getDataDirectory(applicationContext)
                     // Connect to the Breez SDK make it ready for use
                     breezSDK = connect(config, seed, SDKListener())
-                    Logger.info { "Connected to Breez SDK" }
+                    Logger.tag(TAG).info { "Connected to Breez SDK" }
                 }
                 return breezSDK!!
             }

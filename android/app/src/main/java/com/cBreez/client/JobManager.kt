@@ -16,12 +16,14 @@ import java.util.concurrent.TimeUnit
 
 class JobManager private constructor() {
     companion object {
+        private const val TAG = "JobManager"
+
         var instance = JobManager()
     }
 
     fun startPaymentReceivedJob(applicationContext: Context, paymentHash: String) {
         try {
-            Logger.info { "Enqueueing work request for $paymentHash" }
+            Logger.tag(TAG).info { "Enqueueing work request for $paymentHash" }
             // Set Constraints for notification to be handled at all times when device is connected to a network
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -57,9 +59,9 @@ class JobManager private constructor() {
                     ExistingWorkPolicy.KEEP,
                     paymentReceivedWorkRequest
                 )
-            Logger.info { "Work request for $paymentHash was enqueued successfully" }
+            Logger.tag(TAG).info { "Work request for $paymentHash was enqueued successfully" }
         } catch (e: Exception) {
-            Logger.error { "Failed to enqueue job from notification " + e.message; e }
+            Logger.tag(TAG).error { "Failed to enqueue job from notification " + e.message; e }
         }
     }
 }

@@ -12,18 +12,22 @@ import org.tinylog.kotlin.Logger
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class BreezFcmService : FirebaseMessagingService() {
+    companion object {
+        private const val TAG = "BreezFcmService"
+    }
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         // Only handle remote messages if app is in the background
         if (isAppForeground()) {
-            Logger.info { "App is in the foreground." }
+            Logger.tag(TAG).info { "App is in the foreground." }
             return
         }
 
-        Logger.debug { "From: ${remoteMessage.from}" }
+        Logger.tag(TAG).debug { "From: ${remoteMessage.from}" }
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
-            Logger.debug { "Message data payload: ${remoteMessage.data}" }
+            Logger.tag(TAG).debug { "Message data payload: ${remoteMessage.data}" }
             handleNow(remoteMessage)
         }
     }

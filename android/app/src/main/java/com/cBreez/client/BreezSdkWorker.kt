@@ -15,17 +15,24 @@ import org.tinylog.kotlin.Logger
 
 // SDK events listener
 class SDKListener : EventListener {
+    companion object {
+        private const val TAG = "SDKListener"
+    }
+
     override fun onEvent(e: BreezEvent) {
-        Logger.info("Received event $e")
+        Logger.tag(TAG).info("Received event $e")
         if (e is BreezEvent.InvoicePaid) {
             val pD = e.details
-            Logger.info { "Received payment. Bolt11:${pD.bolt11}\nPayment Hash:${pD.paymentHash}" }
+            Logger.tag(TAG)
+                .info { "Received payment. Bolt11:${pD.bolt11}\nPayment Hash:${pD.paymentHash}" }
         }
     }
 }
 
 open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
+    private val TAG = "BreezSdkWorker"
+
     override fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(
             NOTIFICATION_ID_PAYMENT_RECEIVED, createNotification(
@@ -51,7 +58,8 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
                     this.onPaymentReceived(payment)
                     return Result.success()
                 } else {
-                    Logger.debug { "Payment w/ paymentHash: $paymentHash not received yet." }
+                    Logger.tag(TAG)
+                        .info { "Payment w/ paymentHash: $paymentHash not received yet." }
                     Thread.sleep(1_000)
                 }
             }
@@ -60,7 +68,7 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
             throw Exception("Payment not found before timeout")
 
         } catch (e: Exception) {
-            Logger.error { "Exception: $e" }
+            Logger.tag(TAG).error { "Exception: $e" }
             e.printStackTrace()
             onPaymentFailed()
             return Result.failure()
@@ -68,7 +76,7 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun onStopped() {
-        Logger.debug { "Stopping BreezSdkWorker" }
+        Logger.tag(TAG).debug { "Stopping BreezSdkWorker" }
         this.onPaymentFailed()
     }
 

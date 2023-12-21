@@ -8,7 +8,9 @@ import android.os.SystemClock
 import com.google.android.gms.common.util.PlatformVersion.isAtLeastLollipop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import io.flutter.util.PathUtils
 import org.tinylog.kotlin.Logger
+import java.io.File
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class BreezFcmService : FirebaseMessagingService() {
@@ -35,8 +37,13 @@ class BreezFcmService : FirebaseMessagingService() {
     private fun handleNow(remoteMessage: RemoteMessage): Boolean {
         return if (remoteMessage.data["notification_type"] == "payment_received") {
             val paymentHash = remoteMessage.data["payment_hash"]
+            val clickAction = remoteMessage.data["click_action"]
             paymentHash?.let {
-                JobManager.instance.startPaymentReceivedJob(applicationContext, paymentHash)
+                JobManager.instance.startPaymentReceivedJob(
+                    applicationContext,
+                    paymentHash,
+                    clickAction
+                )
             }
             true
         } else {

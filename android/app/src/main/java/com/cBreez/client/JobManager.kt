@@ -21,7 +21,11 @@ class JobManager private constructor() {
         var instance = JobManager()
     }
 
-    fun startPaymentReceivedJob(applicationContext: Context, paymentHash: String) {
+    fun startPaymentReceivedJob(
+        applicationContext: Context,
+        paymentHash: String,
+        clickAction: String?,
+    ) {
         try {
             Logger.tag(TAG).info { "Enqueueing work request for $paymentHash" }
             // Set Constraints for notification to be handled at all times when device is connected to a network
@@ -46,7 +50,8 @@ class JobManager private constructor() {
                     .addTag("receivePayment")
                     .setInputData(
                         workDataOf(
-                            "PAYMENT_HASH" to paymentHash
+                            "PAYMENT_HASH" to paymentHash,
+                            "CLICK_ACTION" to clickAction
                         )
                     )
                     .build()

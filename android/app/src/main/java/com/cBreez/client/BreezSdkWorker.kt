@@ -91,10 +91,13 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private fun onPaymentReceived(payment: Payment) {
+        val clickAction =
+            inputData.getString("CLICK_ACTION")
         createNotification(
             applicationContext,
             "Received ${payment.amountMsat / 1000u} sats",
-            NOTIFICATION_ID_PAYMENT_RECEIVED
+            NOTIFICATION_ID_PAYMENT_RECEIVED,
+            clickAction = clickAction
         )
     }
 }

@@ -16,7 +16,7 @@ class BreezLogger {
                 if (isInit == null) {
                     val loggingDir: File = File(
                         PathUtils.getDataDirectory(applicationContext),
-                        "/logs/android-extension/",
+                        "/logs/",
                     ).also { it.mkdirs() }
 
                     System.setProperty("tinylog.directory", loggingDir.absolutePath)

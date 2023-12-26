@@ -42,7 +42,7 @@ class BreezLogger {
     Config.instance().then((config) {
       var appDir = Directory(config.sdkConfig.workingDir);
       _pruneLogs(appDir);
-      final file = File("${_logDir(appDir)}/app-logs/${DateTime.now().millisecondsSinceEpoch}.log");
+      final file = File("${_logDir(appDir)}/${DateTime.now().millisecondsSinceEpoch}.app.log");
 
       try {
         file.createSync(recursive: true);

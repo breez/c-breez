@@ -89,7 +89,6 @@ class _WalletDashboardState extends State<WalletDashboard> {
                                   child: BalanceText(
                                     userProfileState: userProfileState,
                                     currencyState: currencyState,
-                                    accountState: accountState,
                                     offsetFactor: widget.offsetFactor,
                                   ),
                                 )

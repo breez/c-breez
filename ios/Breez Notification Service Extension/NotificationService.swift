@@ -106,6 +106,7 @@ class NotificationService: UNNotificationServiceExtension {
             }
         }
         self.paymentReceivers.removeAll(where: {$0.paymentHash == data.paymentHash})
+        try? NotificationService.breezSDK!.sync()
     }
 }
 

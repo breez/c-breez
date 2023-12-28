@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.tinylog.kotlin.Logger
 
-class BreezNotificationService {
+class BreezNotificationHelper {
 
     companion object {
         private const val TAG = "BreezNotificationService"

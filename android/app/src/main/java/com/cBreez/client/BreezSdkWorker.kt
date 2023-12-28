@@ -8,9 +8,9 @@ import breez_sdk.BreezEvent
 import breez_sdk.EventListener
 import breez_sdk.Payment
 import breez_sdk.PaymentStatus
-import com.cBreez.client.BreezNotificationService.Companion.notifyForegroundService
-import com.cBreez.client.BreezNotificationService.Companion.notifyPaymentFailed
-import com.cBreez.client.BreezNotificationService.Companion.notifyPaymentReceived
+import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
+import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentFailed
+import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import org.tinylog.kotlin.Logger
 

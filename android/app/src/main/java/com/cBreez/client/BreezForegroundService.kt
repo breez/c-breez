@@ -9,9 +9,9 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
-import com.cBreez.client.BreezNotificationService.Companion.dismissForegroundServiceNotification
-import com.cBreez.client.BreezNotificationService.Companion.notifyForegroundService
-import com.cBreez.client.BreezNotificationService.Companion.registerNotificationChannels
+import com.cBreez.client.BreezNotificationHelper.Companion.dismissForegroundServiceNotification
+import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
+import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import com.google.firebase.messaging.RemoteMessage
 import org.tinylog.kotlin.Logger

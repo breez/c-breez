@@ -17,12 +17,6 @@ import org.tinylog.kotlin.Logger
 class MainActivity : FlutterActivity() {
     private val _service = MutableLiveData<BreezForegroundService?>(null)
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        registerNotificationChannels(applicationContext)
-    }
-
     override fun onStart() {
         super.onStart()
         Intent(this, BreezForegroundService::class.java).let { intent ->

@@ -3,8 +3,10 @@ package com.cBreez.client
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.KeyguardManager
+import android.content.Intent
 import android.os.Process
 import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import com.cBreez.client.BreezLogger.Companion.configureLogger
 import com.google.android.gms.common.util.PlatformVersion.isAtLeastLollipop
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -30,24 +32,17 @@ class BreezFcmService : FirebaseMessagingService() {
         // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Logger.tag(TAG).debug { "Message data payload: ${remoteMessage.data}" }
-            handleNow(remoteMessage)
-        }
-    }
-
-    private fun handleNow(remoteMessage: RemoteMessage): Boolean {
-        return if (remoteMessage.data["notification_type"] == "payment_received") {
-            val paymentHash = remoteMessage.data["payment_hash"]
-            val clickAction = remoteMessage.data["click_action"]
-            paymentHash?.let {
-                JobManager.instance.startPaymentReceivedJob(
-                    applicationContext,
-                    paymentHash,
-                    clickAction
-                )
+            // cannot start foreground service from low/normal priority message
+            if (remoteMessage.priority != RemoteMessage.PRIORITY_HIGH) {
+                Logger.tag(TAG).warn { "Ignoring FCM message with low/normal priority" }
+            } else {
+                Logger.tag(TAG)
+                    .debug { "Starting BreezForegroundService with remote message ${remoteMessage.data}" }
+                val serviceIntent =
+                    Intent(applicationContext, BreezForegroundService::class.java)
+                serviceIntent.putExtra("remote_message", remoteMessage)
+                ContextCompat.startForegroundService(applicationContext, serviceIntent)
             }
-            true
-        } else {
-            false
         }
     }
 

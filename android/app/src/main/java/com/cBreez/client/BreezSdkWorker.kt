@@ -1,6 +1,8 @@
 package com.cBreez.client
 
 import android.content.Context
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+import android.os.Build
 import androidx.work.ForegroundInfo
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -37,9 +39,17 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun getForegroundInfo(): ForegroundInfo {
-        return ForegroundInfo(
-            NOTIFICATION_ID_FOREGROUND_SERVICE, notifyForegroundService(applicationContext)
-        )
+        val notification = notifyForegroundService(applicationContext)
+        val foregroundInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            ForegroundInfo(
+                NOTIFICATION_ID_FOREGROUND_SERVICE,
+                notification,
+                FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+            )
+        } else {
+            ForegroundInfo(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
+        }
+        return foregroundInfo
     }
 
     override fun doWork(): Result {

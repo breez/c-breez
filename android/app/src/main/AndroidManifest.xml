@@ -24,6 +24,7 @@
 
         <service
             android:name=".BreezForegroundService"
+            android:foregroundServiceType="shortService"
             android:exported="false"
             android:stopWithTask="false">
         </service>

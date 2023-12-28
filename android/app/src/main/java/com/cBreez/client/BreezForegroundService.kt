@@ -88,10 +88,6 @@ class BreezForegroundService : Service() {
         super.onStartCommand(intent, flags, startId)
         Logger.tag(TAG)
             .debug("Start Breez node service from intent [ intent=$intent, flag=$flags, startId=$startId ]")
-        startForeground(
-            NOTIFICATION_ID_FOREGROUND_SERVICE,
-            notifyForegroundService(applicationContext)
-        )
         getParcelable(
             intent, "remote_message",
             RemoteMessage::class.java

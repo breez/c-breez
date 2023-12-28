@@ -37,7 +37,6 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun getForegroundInfo(): ForegroundInfo {
-
         return ForegroundInfo(
             NOTIFICATION_ID_FOREGROUND_SERVICE, notifyForegroundService(applicationContext)
         )

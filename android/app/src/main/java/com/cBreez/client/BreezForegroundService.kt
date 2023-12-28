@@ -16,7 +16,6 @@ import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import com.google.firebase.messaging.RemoteMessage
 import org.tinylog.kotlin.Logger
 
-
 class BreezForegroundService : Service() {
     companion object {
         private const val TAG = "BreezForegroundService"

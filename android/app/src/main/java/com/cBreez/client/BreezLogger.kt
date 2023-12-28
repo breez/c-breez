@@ -9,11 +9,11 @@ class BreezLogger {
     companion object {
         private const val TAG = "BreezLogger"
 
-        private var isInit: Boolean = false
+        private var isInit: Boolean? = null
 
-        internal fun configureLogger(applicationContext: Context): Boolean {
+        internal fun configureLogger(applicationContext: Context): Boolean? {
             synchronized(this) {
-                if (isInit == null) {
+                if (isInit == false) {
                     val loggingDir: File = File(
                         PathUtils.getDataDirectory(applicationContext),
                         "/logs/",

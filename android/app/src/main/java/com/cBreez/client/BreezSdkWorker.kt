@@ -32,7 +32,9 @@ class SDKListener : EventListener {
 
 open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
-    private val TAG = "BreezSdkWorker"
+    companion object {
+        private const val TAG = "BreezSdkWorker"
+    }
 
     override fun getForegroundInfo(): ForegroundInfo {
 

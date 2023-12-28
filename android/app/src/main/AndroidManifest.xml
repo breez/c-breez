@@ -3,10 +3,10 @@
     package="com.cBreez.client">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" /> <!-- Android 9+ -->
     <uses-permission android:name="android.permission.NFC"/>  <!-- Deep links -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Android 13+ -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- Android 9+ -->
 
     <application
         android:label="Breez Cloud"
@@ -16,8 +16,7 @@
 
         <service
             android:name=".BreezFcmService"
-            android:enabled="true"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -173,14 +172,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/breez_notification_color" />
-        <!-- Starting in Android 8.0 (API level 26), all notifications must be assigned to a channel
-             or they don't appear. This lets users disable specific notification channels for your app
-             instead of disabling all your notifications. Users can control the visual and auditory
-             options for each channel from the Android system settings, as shown in figure 11.
-             Users can also touch & hold a notification to change behaviors for the associated channel. -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/offline_payments_notification_channel_id" />
 
         <!-- Compile-time Variables -->
         <meta-data

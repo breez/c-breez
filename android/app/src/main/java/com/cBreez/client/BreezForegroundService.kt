@@ -1,6 +1,5 @@
 package com.cBreez.client
 
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
@@ -10,6 +9,9 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
+import com.cBreez.client.BreezNotificationService.Companion.dismissForegroundServiceNotification
+import com.cBreez.client.BreezNotificationService.Companion.notifyForegroundService
+import com.cBreez.client.BreezNotificationService.Companion.registerNotificationChannels
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import com.google.firebase.messaging.RemoteMessage
 import org.tinylog.kotlin.Logger
@@ -30,26 +32,16 @@ class BreezForegroundService : Service() {
     @Volatile
     private var isHeadless = true
 
-
     override fun onCreate() {
         super.onCreate()
         Logger.tag(TAG).debug("Creating Breez node service...")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            SystemNotificationHelper.registerNotificationChannels(applicationContext)
-            val notification = SystemNotificationHelper.notifyRunningHeadless(applicationContext)
-            startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
-        } else {
-            startForeground(
-                Constants.NOTIFICATION_ID_PAYMENT_RECEIVED,
-                BreezNotificationService.createNotification(
-                    applicationContext,
-                    "Receiving payment...",
-                    Constants.NOTIFICATION_ID_PAYMENT_RECEIVED,
-                    NotificationManager.IMPORTANCE_LOW,
-                    true
-                )
-            )
+            registerNotificationChannels(applicationContext)
         }
+        startForeground(
+            NOTIFICATION_ID_FOREGROUND_SERVICE,
+            notifyForegroundService(applicationContext)
+        )
         Logger.tag(TAG).debug("Breez node service created.")
     }
 
@@ -62,6 +54,7 @@ class BreezForegroundService : Service() {
         // UI is binding to the service. The service is not headless anymore and we can remove the notification.
         isHeadless = false
         stopForeground(STOP_FOREGROUND_REMOVE)
+        dismissForegroundServiceNotification(applicationContext)
         return binder
     }
 
@@ -96,8 +89,10 @@ class BreezForegroundService : Service() {
         super.onStartCommand(intent, flags, startId)
         Logger.tag(TAG)
             .debug("Start Breez node service from intent [ intent=$intent, flag=$flags, startId=$startId ]")
-        val notif = SystemNotificationHelper.notifyRunningHeadless(applicationContext)
-        startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notif)
+        startForeground(
+            NOTIFICATION_ID_FOREGROUND_SERVICE,
+            notifyForegroundService(applicationContext)
+        )
         getParcelable(
             intent, "remote_message",
             RemoteMessage::class.java
@@ -133,6 +128,7 @@ class BreezForegroundService : Service() {
         name: String,
         clazz: Class<T>,
     ): T? {
+        @Suppress("DEPRECATION")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             intent?.getParcelableExtra(name, clazz)
         else

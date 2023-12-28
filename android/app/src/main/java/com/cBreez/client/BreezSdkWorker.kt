@@ -1,6 +1,5 @@
 package com.cBreez.client
 
-import android.app.NotificationManager
 import android.content.Context
 import androidx.work.ForegroundInfo
 import androidx.work.Worker
@@ -9,8 +8,10 @@ import breez_sdk.BreezEvent
 import breez_sdk.EventListener
 import breez_sdk.Payment
 import breez_sdk.PaymentStatus
-import com.cBreez.client.BreezNotificationService.Companion.createNotification
-import com.cBreez.client.Constants.NOTIFICATION_ID_PAYMENT_RECEIVED
+import com.cBreez.client.BreezNotificationService.Companion.notifyForegroundService
+import com.cBreez.client.BreezNotificationService.Companion.notifyPaymentFailed
+import com.cBreez.client.BreezNotificationService.Companion.notifyPaymentReceived
+import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import org.tinylog.kotlin.Logger
 
 // SDK events listener
@@ -20,7 +21,7 @@ class SDKListener : EventListener {
     }
 
     override fun onEvent(e: BreezEvent) {
-        Logger.tag(TAG).info("Received event $e")
+        Logger.tag(TAG).info { "Received event $e" }
         if (e is BreezEvent.InvoicePaid) {
             val pD = e.details
             Logger.tag(TAG)
@@ -34,14 +35,9 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
     private val TAG = "BreezSdkWorker"
 
     override fun getForegroundInfo(): ForegroundInfo {
+
         return ForegroundInfo(
-            NOTIFICATION_ID_PAYMENT_RECEIVED, createNotification(
-                applicationContext,
-                "Receiving payment...",
-                NOTIFICATION_ID_PAYMENT_RECEIVED,
-                NotificationManager.IMPORTANCE_LOW,
-                true
-            )
+            NOTIFICATION_ID_FOREGROUND_SERVICE, notifyForegroundService(applicationContext)
         )
     }
 
@@ -77,27 +73,18 @@ open class BreezSdkWorker(appContext: Context, workerParams: WorkerParameters) :
 
     override fun onStopped() {
         Logger.tag(TAG).debug { "Stopping BreezSdkWorker" }
-        this.onPaymentFailed()
+        onPaymentFailed()
     }
 
     private fun onPaymentFailed() {
-        // Display a notification for each remaining payment in list
-        val contentText = "Failed to receive payment"
-        createNotification(
-            applicationContext,
-            contentText,
-            NOTIFICATION_ID_PAYMENT_RECEIVED,
-        )
+        notifyPaymentFailed(applicationContext)
     }
 
     private fun onPaymentReceived(payment: Payment) {
-        val clickAction =
-            inputData.getString("CLICK_ACTION")
-        createNotification(
+        notifyPaymentReceived(
             applicationContext,
-            "Received ${payment.amountMsat / 1000u} sats",
-            NOTIFICATION_ID_PAYMENT_RECEIVED,
-            clickAction = clickAction
+            inputData.getString("CLICK_ACTION"),
+            payment.amountMsat / 1000u
         )
     }
 }

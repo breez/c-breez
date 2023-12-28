@@ -10,7 +10,7 @@ import android.os.IBinder
 import android.os.PersistableBundle
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
-import com.cBreez.client.BreezNotificationService.Companion.registerNotificationChannels
+import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
 import io.flutter.embedding.android.FlutterActivity
 import org.tinylog.kotlin.Logger
 

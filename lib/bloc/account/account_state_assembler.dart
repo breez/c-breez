@@ -32,7 +32,7 @@ AccountState? assembleAccountState(
     connectedPeers: nodeState.connectedPeers,
     onChainFeeRate: 0,
     maxInboundLiquidity: nodeState.inboundLiquidityMsats ~/ 1000,
-    payments: payments.map((e) => PaymentMinutiae.fromPayment(e, texts)).toList(),
+    payments: payments.map((e) => PaymentMinutiae.fromPayment(e, texts, nodeState.blockHeight)).toList(),
     paymentFilters: paymentFilters,
     connectionStatus: ConnectionStatus.CONNECTED,
     verificationStatus: state.verificationStatus,

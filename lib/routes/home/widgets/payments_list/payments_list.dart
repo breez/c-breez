@@ -80,6 +80,7 @@ void main() async {
         ),
       ),
       getSystemAppLocalizations(),
+      800000,
     ),
     PaymentMinutiae.fromPayment(
       const Payment(
@@ -102,6 +103,7 @@ void main() async {
         ),
       ),
       getSystemAppLocalizations(),
+      800000,
     ),
     PaymentMinutiae.fromPayment(
       Payment(
@@ -124,6 +126,7 @@ void main() async {
         ),
       ),
       getSystemAppLocalizations(),
+      800000,
     ),
   ];
 

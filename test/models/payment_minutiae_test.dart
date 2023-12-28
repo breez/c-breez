@@ -1,6 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
+import 'package:c_breez/utils/date.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../mock/translations_mock.dart';
@@ -271,6 +272,17 @@ void main() {
       final isKeySend = make().isKeySend;
       expect(isKeySend, isFalse);
     });
+
+    test("expiry should have expiry field when pending payment", () {
+      final expiryTime = makePendingLnPayment().pendingExpirationTime;
+      final expected = BreezDateUtils.blockDiffToDate(blockHeight: 800000, expiryBlock: 800100);
+      expect(expiryTime!.millisecondsSinceEpoch ~/ 1000, expected!.millisecondsSinceEpoch ~/ 1000);
+    });
+  });
+
+  test("expiry should not have expiry field when pending complete", () {
+    final expiryTime = make().pendingExpirationTime;
+    expect(expiryTime, null);
   });
 }
 
@@ -300,6 +312,7 @@ PaymentMinutiae make({
         ),
       ),
       texts(),
+      800000,
     );
 
 PaymentMinutiae makeLnPayment({
@@ -334,6 +347,30 @@ PaymentMinutiae makeLnPayment({
         ),
       ),
       texts(),
+      800000,
+    );
+
+PaymentMinutiae makePendingLnPayment({int expiryBlock = 800100}) => PaymentMinutiae.fromPayment(
+      Payment(
+        id: "id",
+        paymentType: PaymentType.Sent,
+        paymentTime: 3,
+        amountMsat: 2,
+        feeMsat: 1,
+        status: PaymentStatus.Pending,
+        details: PaymentDetails.ln(
+          data: LnPaymentDetails(
+              bolt11: "a bolt 11",
+              paymentHash: "a payment hash",
+              label: "a label",
+              destinationPubkey: '',
+              paymentPreimage: '',
+              keysend: false,
+              pendingExpirationBlock: expiryBlock),
+        ),
+      ),
+      texts(),
+      800000,
     );
 
 const posDescription = '|\nJoão Linus | https://storage.googleapis.com/download/storage/v1/b/breez-technology'

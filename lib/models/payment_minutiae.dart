@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
+import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -32,6 +33,7 @@ class PaymentMinutiae {
   final PaymentStatus status;
   final String? fundingTxid;
   final String? closingTxid;
+  final DateTime? pendingExpirationTime;
 
   const PaymentMinutiae({
     required this.id,
@@ -54,9 +56,10 @@ class PaymentMinutiae {
     required this.status,
     required this.fundingTxid,
     required this.closingTxid,
+    required this.pendingExpirationTime,
   });
 
-  factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts) {
+  factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts, int currentBlockHeight) {
     final factory = _PaymentMinutiaeFactory(payment, texts);
     return PaymentMinutiae(
       id: payment.id,
@@ -79,6 +82,7 @@ class PaymentMinutiae {
       status: payment.status,
       fundingTxid: factory._fundingTx(),
       closingTxid: factory._closedTx(),
+      pendingExpirationTime: factory._pendingExpirationTime(currentBlockHeight),
     );
   }
 }
@@ -232,6 +236,15 @@ class _PaymentMinutiaeFactory {
       }
     }
     return "";
+  }
+
+  DateTime? _pendingExpirationTime(int blockHeight) {
+    final details = _payment.details.data;
+    if (_payment.status == PaymentStatus.Pending && details is LnPaymentDetails) {
+      return BreezDateUtils.blockDiffToDate(
+          blockHeight: blockHeight, expiryBlock: details.pendingExpirationBlock);
+    }
+    return null;
   }
 
   String? _successActionUrl() {

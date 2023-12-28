@@ -3,6 +3,7 @@ package com.cBreez.client
 import android.content.Context
 import android.util.Base64
 import breez_sdk.*
+import com.cBreez.client.Constants.ACCOUNT_MNEMONIC
 import io.flutter.util.PathUtils
 import org.tinylog.kotlin.Logger
 import java.nio.charset.Charset
@@ -19,7 +20,7 @@ class BreezSdkConnector {
             synchronized(this) {
                 if (breezSDK == null) {
                     Logger.tag(TAG).info { "Connecting to Breez SDK" }
-                    val mnemonic = readSecuredValued(applicationContext, Constants.ACCOUNT_MNEMONIC)
+                    val mnemonic = readSecuredValued(applicationContext, ACCOUNT_MNEMONIC)
                     val seed = mnemonicToSeed(mnemonic!!)
                     val apiKey = applicationContext.getString(R.string.breezApiKey)
                     // Create the default config

@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="offline_payments_notification_channel_id">com.cbreez.client.offlinepayments</string>
-    <string name="offline_payments_notification_channel_name">Offline Payments</string>
-    <string name="offline_payments_notification_channel_description">Required to receive payments when the application is in the background.</string>
-    <string name="notif_headless_title_default">Breez is running in the background</string>
+    <string name="offline_payments_work_group_id">offline_payments</string>
+    <string name="offline_payments_work_group_name">Offline Payments</string>
+    <string name="offline_payments_work_group_description">Required to receive payments when the application is in the background.</string>
 
-    <string name="notification_headless_title">Running in the background</string>
-    <string name="notification_headless_desc">Tells you when Breez is running in the background.</string>
+    <string name="foreground_service_notification_title">Breez is running in the background</string>
+    <string name="foreground_service_notification_channel_name">Foreground Service</string>
+    <string name="foreground_service_notification_channel_description">Shown when the application is in the background.</string>
+
+    <string name="payment_received_notification_title">Payment Received</string>
+    <string name="payment_received_notification_channel_name">Received Payments</string>
+    <string name="payment_received_notification_channel_description">Notifications for received payments when the application is in the background.</string>
+
+    <string name="payment_failed_notification_title">Payment Failed</string>
+    <string name="payment_failed_notification_message">Failed to receive payment</string>
+    <string name="payment_failed_notification_channel_name">Failed Payments</string>
+    <string name="payment_failed_notification_channel_description">Notifications for failed payments when the application is in the background.</string>
 
     <plurals name="failed_notification_message">
         <item quantity="one">Failed to receive payment</item>

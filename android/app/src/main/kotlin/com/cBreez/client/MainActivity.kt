@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.os.PersistableBundle
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
+import com.cBreez.client.BreezNotificationService.Companion.registerNotificationChannels
 import io.flutter.embedding.android.FlutterActivity
 import org.tinylog.kotlin.Logger
 
@@ -19,7 +20,7 @@ class MainActivity : FlutterActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
-        SystemNotificationHelper.registerNotificationChannels(applicationContext)
+        registerNotificationChannels(applicationContext)
     }
 
     override fun onStart() {

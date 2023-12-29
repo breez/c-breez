@@ -16,7 +16,10 @@ class BreezSdkConnector {
         private var ELEMENT_PREFERENCES_KEY_PREFIX =
             "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIHNlY3VyZSBzdG9yYWdlCg"
 
-        internal fun connectSDK(applicationContext: Context): BlockingBreezServices {
+        internal fun connectSDK(
+            applicationContext: Context,
+            sdkListener: EventListener,
+        ): BlockingBreezServices {
             synchronized(this) {
                 if (breezSDK == null) {
                     Logger.tag(TAG).info { "Connecting to Breez SDK" }
@@ -29,7 +32,7 @@ class BreezSdkConnector {
                     val config = defaultConfig(EnvironmentType.PRODUCTION, apiKey, nodeConf)
                     config.workingDir = PathUtils.getDataDirectory(applicationContext)
                     // Connect to the Breez SDK make it ready for use
-                    breezSDK = connect(config, seed, SDKListener())
+                    breezSDK = connect(config, seed, sdkListener)
                     Logger.tag(TAG).info { "Connected to Breez SDK" }
                 }
                 return breezSDK!!

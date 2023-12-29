@@ -50,7 +50,7 @@ class BreezNotificationHelper {
             val foregroundServiceNotificationChannel = NotificationChannel(
                 NOTIFICATION_CHANNEL_FOREGROUND_SERVICE,
                 context.getString(R.string.foreground_service_notification_channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description =
                     context.getString(R.string.foreground_service_notification_channel_description)
@@ -132,7 +132,7 @@ class BreezNotificationHelper {
 
         fun notifyPaymentReceived(
             context: Context,
-            clickAction: String? = null,
+            clickAction: String? = "FLUTTER_NOTIFICATION_CLICK",
             amountSat: ULong,
         ): Notification {
             val notificationID: Int = System.currentTimeMillis().toInt() / 1000

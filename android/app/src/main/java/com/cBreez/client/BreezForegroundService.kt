@@ -8,8 +8,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.EventListener
@@ -29,7 +27,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.tinylog.kotlin.Logger
-import java.util.concurrent.locks.ReentrantLock
 
 class BreezForegroundService : Service() {
     companion object {
@@ -63,19 +60,8 @@ class BreezForegroundService : Service() {
     }
 
     private var breezSDK: BlockingBreezServices? = null
-    private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+    private val pollerScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
     private val binder = BreezNodeBinder()
-
-    /**
-     * State of the wallet, provides access to the business when started. Private so that it's not
-     * mutated from the outside.
-     */
-    private val _state = MutableLiveData<NodeServiceState>(NodeServiceState.Off)
-    val state: LiveData<NodeServiceState>
-        get() = _state
-
-    /** Lock for state updates */
-    private val stateLock = ReentrantLock()
 
     /** List of payments received while the app is in the background */
     private val paymentReceivedInBackground = mutableListOf<String>()
@@ -120,7 +106,6 @@ class BreezForegroundService : Service() {
     private fun shutdown() {
         Logger.tag(TAG).info { "Shutting down Breez node service" }
         stopSelf()
-        _state.postValue(NodeServiceState.Off)
     }
 
     // =========================================================== //
@@ -139,7 +124,20 @@ class BreezForegroundService : Service() {
                 val paymentHash = it.data["payment_hash"]
                 val clickAction = it.data["click_action"]
                 paymentHash?.let {
-                    startBusiness(paymentHash, clickAction)
+                    val notification = notifyForegroundService(applicationContext)
+                    if (breezSDK == null) {
+                        startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
+                        breezSDK = connectSDK(applicationContext, SDKListener())
+                    }
+                    pollerScope.launch(
+                        Dispatchers.IO +
+                                CoroutineExceptionHandler { _, e ->
+                                    Logger.tag(TAG).error { "Error when polling payment: $e" }
+                                    notifyPaymentFailed(applicationContext)
+                                }
+                    ) {
+                        pollPaymentHash(paymentHash, clickAction)
+                    }
                 }
             }
         }
@@ -149,77 +147,26 @@ class BreezForegroundService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun startBusiness(
-        paymentHash: String,
-        clickAction: String?,
-    ) {
-        val notification = notifyForegroundService(applicationContext)
-        when {
-            breezSDK != null && _state.value is NodeServiceState.Running -> {
-                // NOTE: the notification will NOT be shown if the app is already running
-                startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
-                serviceScope.launch(
-                    Dispatchers.IO +
-                            CoroutineExceptionHandler { _, e ->
-                                Logger.tag(TAG).error { "Error when polling payment: $e" }
-                                notifyPaymentFailed(applicationContext)
-                            }
-                ) {
-                    Logger.tag(TAG)
-                        .info { "Using current running node service to poll payment" }
-                    pollPaymentHash(paymentHash, clickAction)
-                }
-            }
-
-            else -> {
-                startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
-                Logger.tag(TAG).debug { "Starting wallet..." }
-                stateLock.lock()
-                if (_state.value != NodeServiceState.Off) {
-                    Logger.tag(TAG).warn {
-                        "ignore attempt to start business in state=${_state.value}"
-                    }
-                    return
-                } else {
-                    _state.postValue(NodeServiceState.Init)
-                }
-                stateLock.unlock()
-                serviceScope.launch(
-                    Dispatchers.IO +
-                            CoroutineExceptionHandler { _, e ->
-                                Logger.tag(TAG).error { "Error when starting node: $e" }
-                                _state.postValue(NodeServiceState.Error(e))
-                                shutdown()
-                                stopForeground(STOP_FOREGROUND_REMOVE)
-                            }
-                ) {
-                    Logger.tag(TAG).info {
-                        "Starting node from service state=${_state.value?.name}"
-                    }
-                    breezSDK = connectSDK(applicationContext, SDKListener())
-                    pollPaymentHash(paymentHash, clickAction)
-                    _state.postValue(NodeServiceState.Running)
-                }
-            }
-        }
-    }
-
     private suspend fun pollPaymentHash(
         paymentHash: String,
         clickAction: String?,
     ) {
+        if (!paymentReceivedInBackground.contains(paymentHash)) {
+            paymentReceivedInBackground.add(paymentHash)
+        } else {
+            throw Exception("Payment w/ hash: $paymentHash is already being polled.")
+        }
+        Logger.tag(TAG).debug { "Polling for payment w/ hash: $paymentHash" }
         // Poll for 1 minute
         for (i in 1..60) {
             val payment = breezSDK!!.paymentByHash(paymentHash)
             if (payment?.status == PaymentStatus.COMPLETE) {
-                if (!paymentReceivedInBackground.contains(paymentHash)) {
-                    paymentReceivedInBackground.add(paymentHash)
-                    notifyPaymentReceived(
-                        applicationContext,
-                        clickAction,
-                        amountSat = payment.amountMsat / 1000u
-                    )
-                }
+                paymentReceivedInBackground.remove(paymentHash)
+                notifyPaymentReceived(
+                    applicationContext,
+                    clickAction,
+                    amountSat = payment.amountMsat / 1000u
+                )
                 return
             } else {
                 Logger.tag(TAG).info { "Payment w/ paymentHash: $paymentHash not received yet." }
@@ -228,6 +175,7 @@ class BreezForegroundService : Service() {
         }
 
         // If we reach here then we didn't receive for more than 1 minute
+        paymentReceivedInBackground.remove(paymentHash)
         throw Exception("Payment not found before timeout")
     }
 

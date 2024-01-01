@@ -11,30 +11,7 @@ fileprivate var log = Logger(
 fileprivate var log = Logger(OSLog.disabled)
 #endif
 
-// SDK events listener
-class SDKListener: EventListener {
-    
-    var paymentListener : PaymentListener
-    
-    init(paymentListener: @escaping PaymentListener) {
-        self.paymentListener = paymentListener
-    }
-    
-    func onEvent(e: BreezEvent) {
-        switch e {
-        case .invoicePaid(details: let details):
-            log.info("Received payment. Bolt11: \(details.bolt11)\nPayment Hash:\(details.paymentHash)")
-            if details.payment != nil {
-                paymentListener(details.payment!)
-            }
-            return
-        default:
-            break
-        }
-    }
-}
-
-func connectSDK(paymentListener: @escaping PaymentListener) throws -> BlockingBreezServices? {
+func connectSDK(eventListener: EventListener) throws -> BlockingBreezServices? {
     log.trace("connectSDK()")
     
     // Create the default config
@@ -57,7 +34,7 @@ func connectSDK(paymentListener: @escaping PaymentListener) throws -> BlockingBr
         throw SdkError.Generic(message: "seed not found")
     }
     log.trace("Connecting to Breez SDK")
-    let breezSDK = try connect(config: config, seed: seed!, listener: SDKListener(paymentListener: paymentListener))
+    let breezSDK = try connect(config: config, seed: seed!, listener: eventListener)
     log.trace("Connected to Breez SDK")
     return breezSDK
 }

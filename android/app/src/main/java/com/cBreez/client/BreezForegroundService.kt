@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.EventListener
+import breez_sdk.PaymentDetails
 import breez_sdk.PaymentStatus
 import com.cBreez.client.BreezNotificationHelper.Companion.dismissForegroundServiceNotification
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
@@ -31,6 +32,7 @@ import org.tinylog.kotlin.Logger
 class BreezForegroundService : Service() {
     companion object {
         private const val TAG = "BreezForegroundService"
+        private const val SHUTDOWN_DELAY_MS = 120 * 1000L // 120 seconds
     }
 
     inner class BreezNodeBinder : Binder() {
@@ -42,19 +44,8 @@ class BreezForegroundService : Service() {
         override fun onEvent(e: BreezEvent) {
             Logger.tag(TAG).info { "Received event $e" }
             if (e is BreezEvent.InvoicePaid) {
-                val pD = e.details
-                Logger.tag(TAG).info {
-                    "Received payment. Bolt11:${pD.bolt11}\nPayment Hash:${pD.paymentHash}"
-                }
-                val amountSat = (e.details.payment?.amountMsat ?: ULong.MIN_VALUE) / 1000u
-                if (!paymentReceivedInBackground.contains(e.details.paymentHash)) {
-                    paymentReceivedInBackground.add(e.details.paymentHash)
-                    notifyPaymentReceived(applicationContext, amountSat = amountSat)
-                }
-
-                // push back shutdown by 120s in case we'll receive more payments
-                shutdownHandler.removeCallbacksAndMessages(null)
-                shutdownHandler.postDelayed(shutdownRunnable, 120 * 1000L)
+                val pd = e.details
+                handleReceivedPayment(pd.bolt11, pd.paymentHash, pd.payment?.amountMsat)
             }
         }
     }
@@ -63,8 +54,8 @@ class BreezForegroundService : Service() {
     private val pollerScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
     private val binder = BreezNodeBinder()
 
-    /** List of payments received while the app is in the background */
-    private val paymentReceivedInBackground = mutableListOf<String>()
+    /** List of payment hashes that are being polled */
+    private val paymentHashPollerList = mutableListOf<String>()
 
     override fun onCreate() {
         super.onCreate()
@@ -81,7 +72,7 @@ class BreezForegroundService : Service() {
 
     override fun onBind(intent: Intent?): IBinder {
         Logger.tag(TAG).debug { "Binding Breez node service from intent=$intent" }
-        paymentReceivedInBackground.clear()
+        paymentHashPollerList.clear()
         stopForeground(STOP_FOREGROUND_REMOVE)
         dismissForegroundServiceNotification(applicationContext)
         return binder
@@ -94,7 +85,7 @@ class BreezForegroundService : Service() {
     private val shutdownHandler = Handler(Looper.getMainLooper())
     private val shutdownRunnable: Runnable = Runnable {
         Logger.tag(TAG).debug { "Reached scheduled shutdown..." }
-        if (paymentReceivedInBackground.isEmpty()) {
+        if (paymentHashPollerList.isEmpty()) {
             stopForeground(STOP_FOREGROUND_REMOVE)
         } else {
             stopForeground(STOP_FOREGROUND_DETACH)
@@ -141,9 +132,6 @@ class BreezForegroundService : Service() {
                 }
             }
         }
-
-        shutdownHandler.removeCallbacksAndMessages(null)
-        shutdownHandler.postDelayed(shutdownRunnable, 120 * 1000L) // push back shutdown by 120s
         return START_NOT_STICKY
     }
 
@@ -151,8 +139,8 @@ class BreezForegroundService : Service() {
         paymentHash: String,
         clickAction: String?,
     ) {
-        if (!paymentReceivedInBackground.contains(paymentHash)) {
-            paymentReceivedInBackground.add(paymentHash)
+        if (!paymentHashPollerList.contains(paymentHash)) {
+            paymentHashPollerList.add(paymentHash)
         } else {
             throw Exception("Payment w/ hash: $paymentHash is already being polled.")
         }
@@ -161,11 +149,14 @@ class BreezForegroundService : Service() {
         for (i in 1..60) {
             val payment = breezSDK!!.paymentByHash(paymentHash)
             if (payment?.status == PaymentStatus.COMPLETE) {
-                paymentReceivedInBackground.remove(paymentHash)
-                notifyPaymentReceived(
-                    applicationContext,
-                    clickAction,
-                    amountSat = payment.amountMsat / 1000u
+                paymentHashPollerList.remove(paymentHash)
+                val pd = payment.details as PaymentDetails.Ln
+                val lnPD = pd.data
+                handleReceivedPayment(
+                    lnPD.bolt11,
+                    lnPD.paymentHash,
+                    payment.amountMsat,
+                    clickAction
                 )
                 return
             } else {
@@ -175,8 +166,25 @@ class BreezForegroundService : Service() {
         }
 
         // If we reach here then we didn't receive for more than 1 minute
-        paymentReceivedInBackground.remove(paymentHash)
+        paymentHashPollerList.remove(paymentHash)
         throw Exception("Payment not found before timeout")
+    }
+
+    private fun handleReceivedPayment(
+        bolt11: String,
+        paymentHash: String,
+        amountMsat: ULong?,
+        clickAction: String? = null,
+    ) {
+        Logger.tag(TAG).info {
+            "Received payment. Bolt11:${bolt11}\nPayment Hash:${paymentHash}"
+        }
+        val amountSat = (amountMsat ?: ULong.MIN_VALUE) / 1000u
+        notifyPaymentReceived(applicationContext, clickAction = clickAction, amountSat = amountSat)
+
+        // Push back shutdown by SHUTDOWN_DELAY_MS in case we'll receive more payments
+        shutdownHandler.removeCallbacksAndMessages(null)
+        shutdownHandler.postDelayed(shutdownRunnable, SHUTDOWN_DELAY_MS)
     }
 
     private fun Intent?.getRemoteMessage(): RemoteMessage? {

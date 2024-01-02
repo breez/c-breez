@@ -51,7 +51,9 @@ class BreezForegroundService : Service() {
 
     inner class SDKLogListener : LogStream {
         override fun log(l: LogEntry) {
-            Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
+            if (l.level != "TRACE") {
+                Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
+            }
         }
     }
 

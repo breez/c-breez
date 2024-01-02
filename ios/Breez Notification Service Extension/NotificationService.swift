@@ -10,7 +10,7 @@ protocol SDKBackgroundTask : EventListener {
 
 class NotificationService: UNNotificationServiceExtension {
         
-    private var logger: XCGLogger = {
+    static var logger: XCGLogger = {
         let logsDir = FileManager
             .default.containerURL(forSecurityApplicationGroupIdentifier: "group.F7R2LZH3W5.com.cBreez.client")!.appendingPathComponent("logs")
         let extensionLogFile = logsDir.appendingPathComponent("\(Date().timeIntervalSince1970).ios-extension.log")
@@ -29,20 +29,20 @@ class NotificationService: UNNotificationServiceExtension {
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
-        logger.info("Notification received")
+        Self.logger.info("Notification received")
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
         if let currentTask = self.getTaskFromNotification() {
             self.currentTask = currentTask
+            
             DispatchQueue.main.async {
                 do {
-                    self.logger.info("Breez SDK is not connected, connecting....")
-                    try setLogStream(logStream: SDKLogListener(logger: self.logger))
-                    self.breezSDK = try connectSDK(eventListener: currentTask)
-                    self.logger.info("Breez SDK connected successfully")
+                    Self.logger.info("Breez SDK is not connected, connecting....")
+                    self.breezSDK = try BreezManager.register(listener: currentTask)
+                    Self.logger.info("Breez SDK connected successfully")
                 } catch {
-                    self.logger.info("Breez SDK connections failed \(error)")
+                    Self.logger.info("Breez SDK connections failed \(error)")
                     self.shutdown()
                 }
             }
@@ -58,15 +58,15 @@ class NotificationService: UNNotificationServiceExtension {
         }
         switch(notificationType) {
             case "payment_received":
-                self.logger.info("creating task for payment received")
-                return PaymentReceiver(logger: self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+            Self.logger.info("creating task for payment received")
+                return PaymentReceiver(logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
             default:
                 return nil
         }
     }
     
     override func serviceExtensionTimeWillExpire() {
-        self.logger.info("serviceExtensionTimeWillExpire()")
+        Self.logger.info("serviceExtensionTimeWillExpire()")
         
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
@@ -75,9 +75,9 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func shutdown() -> Void {
-        self.logger.info("shutting down...")
-        try? self.breezSDK?.disconnect()
-        self.logger.info("breez sdk disconnected")
+        Self.logger.info("shutting down...")
+        BreezManager.unregister()
+        Self.logger.info("task unregistered")
         self.currentTask?.onShutdown()
     }
 }

@@ -4,9 +4,13 @@ import Combine
 import os.log
 import notify
 
+protocol SDKBackgroundTask : EventListener {
+    func onShutdown()
+}
+
 class NotificationService: UNNotificationServiceExtension {
         
-    private var logger: XCGLogger = {
+    static var logger: XCGLogger = {
         let logsDir = FileManager
             .default.containerURL(forSecurityApplicationGroupIdentifier: "group.F7R2LZH3W5.com.cBreez.client")!.appendingPathComponent("logs")
         let extensionLogFile = logsDir.appendingPathComponent("\(Date().timeIntervalSince1970).ios-extension.log")
@@ -15,70 +19,54 @@ class NotificationService: UNNotificationServiceExtension {
         return log
     }()
     
-    private static var breezSDK: BlockingBreezServices?
-    private var paymentReceivers: [PaymentReceiver] = []
-    private var paymentHashPollerTimer: Timer?
+    private var breezSDK: BlockingBreezServices? = nil
     
+    private var contentHandler: ((UNNotificationContent) -> Void)? = nil
+    private var bestAttemptContent: UNMutableNotificationContent? = nil
+    private var currentTask: SDKBackgroundTask? = nil
     
     override func didReceive(
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
-        logger.info("Notification received")
-        guard let bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent else {
-            return
-        }
-        guard let paymentHash = bestAttemptContent.userInfo["payment_hash"] as? String else {
-            contentHandler(bestAttemptContent)
-            return
-        }
+        Self.logger.info("Notification received")
+        self.contentHandler = contentHandler
+        self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        let paymentReciever = PaymentReceiver(logger: self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, paymentHash: paymentHash)
-        
-        DispatchQueue.main.async {
-            self.paymentReceivers.append(paymentReciever)
-            if NotificationService.breezSDK == nil {
+        if let currentTask = self.getTaskFromNotification() {
+            self.currentTask = currentTask
+            
+            DispatchQueue.main.async {
                 do {
-                    self.logger.info("Breez SDK is not connected, connecting....")
-                    try setLogStream(logStream: SDKLogListener(logger: self.logger))
-                    NotificationService.breezSDK = try connectSDK(paymentListener: {[weak self](payment: Payment) in
-                        DispatchQueue.main.async {
-                            self?.onPaymentReceived(payment: payment)
-                        }
-                    })
-                    self.logger.info("Breez SDK connected successfully")
+                    Self.logger.info("Breez SDK is not connected, connecting....")
+                    self.breezSDK = try BreezManager.register(listener: currentTask)
+                    Self.logger.info("Breez SDK connected successfully")
                 } catch {
-                    self.logger.info("Breez SDK connections failed \(error)")
+                    Self.logger.error("Breez SDK connection failed \(error)")
                     self.shutdown()
                 }
             }
-            self.startPaymentHashPollerTimer()
         }
     }
     
-    private func startPaymentHashPollerTimer() {
-        self.logger.info("startPaymentHashPollerTimer()")
-
-        paymentHashPollerTimer = Timer.scheduledTimer(
-            withTimeInterval : 1.0,
-            repeats          : true
-        ) {[weak self](_: Timer) in
-
-            if let self = self {
-                self.logger.info("paymentHashPollerTimer.fire()")
-                for r in self.paymentReceivers {
-                    if let payment = try? NotificationService.breezSDK!.paymentByHash(hash: r.paymentHash) {
-                        if payment.status == PaymentStatus.complete {
-                            self.onPaymentReceived(payment: payment)
-                        }
-                    }
-                }
-            }
+    func getTaskFromNotification() -> SDKBackgroundTask? {
+        guard let content = bestAttemptContent else {
+            return nil
+        }
+        guard let notificationType = content.userInfo["notification_type"] as? String else {
+            return nil
+        }
+        switch(notificationType) {
+            case "payment_received":
+            Self.logger.info("creating task for payment received")
+                return PaymentReceiver(logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+            default:
+                return nil
         }
     }
     
     override func serviceExtensionTimeWillExpire() {
-        self.logger.info("serviceExtensionTimeWillExpire()")
+        Self.logger.info("serviceExtensionTimeWillExpire()")
         
         // iOS calls this function just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content,
@@ -87,40 +75,47 @@ class NotificationService: UNNotificationServiceExtension {
     }
     
     private func shutdown() -> Void {
-        self.logger.info("shutding down with \(self.paymentReceivers.count) tasks")
-        for r in self.paymentReceivers {
-            r.displayPushNotification(title: "Receive payment failed")
-        }
-        self.paymentReceivers = []
-        self.paymentHashPollerTimer?.invalidate()
-    }
-    
-    private func onPaymentReceived(payment: Payment) -> Void {
-        self.logger.info("onPaymentReceived for \(payment.amountMsat) sats")
-        guard case .ln(let data) = payment.details else {
-            return
-        }
-        for r in self.paymentReceivers {
-            if r.paymentHash == data.paymentHash {
-                r.displayPushNotification(title: "Received \(payment.amountMsat/1000) sats")
-            }
-        }
-        self.paymentReceivers.removeAll(where: {$0.paymentHash == data.paymentHash})
+        Self.logger.info("shutting down...")
+        BreezManager.unregister()
+        Self.logger.info("task unregistered")
+        self.currentTask?.onShutdown()
     }
 }
 
-class PaymentReceiver {
+class PaymentReceiver : SDKBackgroundTask {
     private var contentHandler: ((UNNotificationContent) -> Void)?
     private var bestAttemptContent: UNMutableNotificationContent?
     private var logger: XCGLogger
-    public var paymentHash: String
+    private var receivedPayment: Payment? = nil
     
-    init(logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil, paymentHash: String) {
+    init(logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
         self.contentHandler = contentHandler
         self.bestAttemptContent = bestAttemptContent
-        self.paymentHash = paymentHash
         self.logger = logger
     }
+    
+    func onShutdown() {
+        let title = self.receivedPayment != nil ? "Received \(self.receivedPayment!.amountMsat/1000) sats" :  "Receive payment failed"
+        self.displayPushNotification(title: title)
+    }
+    
+    func onEvent(e: BreezEvent) {
+        switch e {
+        case .invoicePaid(details: let details):
+            self.logger.info("Received payment. Bolt11: \(details.bolt11)\nPayment Hash:\(details.paymentHash)")
+            receivedPayment = details.payment
+            break
+        case .synced:
+            self.logger.info("got synced event")
+            if let p =  self.receivedPayment {
+                self.onShutdown()
+            }
+            break
+        default:
+            break
+        }
+    }
+    
     
     public func displayPushNotification(title: String) {
         self.logger.info("displayPushNotification \(title)")

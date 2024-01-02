@@ -13,15 +13,14 @@ class BreezLogger {
 
         internal fun configureLogger(applicationContext: Context): Boolean? {
             synchronized(this) {
+                val loggingDir: File = File(
+                    PathUtils.getDataDirectory(applicationContext),
+                    "/logs/",
+                ).also { it.mkdirs() }
+
+                System.setProperty("tinylog.directory", loggingDir.absolutePath)
+                System.setProperty("tinylog.timestamp", System.currentTimeMillis().toString())
                 if (isInit == false) {
-                    val loggingDir: File = File(
-                        PathUtils.getDataDirectory(applicationContext),
-                        "/logs/",
-                    ).also { it.mkdirs() }
-
-                    System.setProperty("tinylog.directory", loggingDir.absolutePath)
-                    System.setProperty("tinylog.timestamp", System.currentTimeMillis().toString())
-
                     Logger.tag(TAG).info { "Starting ${BuildConfig.APPLICATION_ID}..." }
                     Logger.tag(TAG).info { "Logs directory: '$loggingDir'" }
                     isInit = true

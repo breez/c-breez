@@ -11,14 +11,4 @@
     <string name="payment_received_notification_title">Payment Received</string>
     <string name="payment_received_notification_channel_name">Received Payments</string>
     <string name="payment_received_notification_channel_description">Notifications for received payments when the application is in the background.</string>
-
-    <string name="payment_failed_notification_title">Payment Failed</string>
-    <string name="payment_failed_notification_message">Failed to receive payment</string>
-    <string name="payment_failed_notification_channel_name">Failed Payments</string>
-    <string name="payment_failed_notification_channel_description">Notifications for failed payments when the application is in the background.</string>
-
-    <plurals name="failed_notification_message">
-        <item quantity="one">Failed to receive payment</item>
-        <item quantity="other">Failed to receive payments</item>
-    </plurals>
 </resources>

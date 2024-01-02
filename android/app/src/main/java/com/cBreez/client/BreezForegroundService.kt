@@ -11,11 +11,8 @@ import androidx.annotation.RequiresApi
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.EventListener
-import breez_sdk.PaymentDetails
-import breez_sdk.PaymentStatus
 import com.cBreez.client.BreezNotificationHelper.Companion.dismissForegroundServiceNotification
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
-import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentFailed
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
 import com.cBreez.client.BreezSdkConnector.Companion.connectSDK
@@ -26,7 +23,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.tinylog.kotlin.Logger
 
 class BreezForegroundService : Service() {
@@ -51,11 +47,8 @@ class BreezForegroundService : Service() {
     }
 
     private var breezSDK: BlockingBreezServices? = null
-    private val pollerScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+    private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
     private val binder = BreezNodeBinder()
-
-    /** List of payment hashes that are being polled */
-    private val paymentHashPollerList = mutableListOf<String>()
 
     override fun onCreate() {
         super.onCreate()
@@ -72,7 +65,6 @@ class BreezForegroundService : Service() {
 
     override fun onBind(intent: Intent?): IBinder {
         Logger.tag(TAG).debug { "Binding Breez node service from intent=$intent" }
-        paymentHashPollerList.clear()
         stopForeground(STOP_FOREGROUND_REMOVE)
         dismissForegroundServiceNotification(applicationContext)
         return binder
@@ -85,11 +77,7 @@ class BreezForegroundService : Service() {
     private val shutdownHandler = Handler(Looper.getMainLooper())
     private val shutdownRunnable: Runnable = Runnable {
         Logger.tag(TAG).debug { "Reached scheduled shutdown..." }
-        if (paymentHashPollerList.isEmpty()) {
-            stopForeground(STOP_FOREGROUND_REMOVE)
-        } else {
-            stopForeground(STOP_FOREGROUND_DETACH)
-        }
+        stopForeground(STOP_FOREGROUND_DETACH)
         shutdown()
     }
 
@@ -113,61 +101,31 @@ class BreezForegroundService : Service() {
         intent.getRemoteMessage()?.let {
             if (it.data["notification_type"] == "payment_received") {
                 val paymentHash = it.data["payment_hash"]
-                val clickAction = it.data["click_action"]
                 paymentHash?.let {
-                    val notification = notifyForegroundService(applicationContext)
-                    if (breezSDK == null) {
-                        startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
-                        breezSDK = connectSDK(applicationContext, SDKListener())
-                    }
-                    pollerScope.launch(
+                    serviceScope.launch(
                         Dispatchers.IO +
                                 CoroutineExceptionHandler { _, e ->
-                                    Logger.tag(TAG).error { "Error when polling payment: $e" }
-                                    notifyPaymentFailed(applicationContext)
+                                    Logger.tag(TAG).error { "Breez SDK connection failed $e" }
+                                    shutdown()
+                                    stopForeground(STOP_FOREGROUND_REMOVE)
                                 }
                     ) {
-                        pollPaymentHash(paymentHash, clickAction)
+                        if (breezSDK == null) {
+                            Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
+                            val notification = notifyForegroundService(applicationContext)
+                            startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
+                            breezSDK = connectSDK(applicationContext, SDKListener())
+                            Logger.tag(TAG).info { "Breez SDK connected successfully" }
+                        }
                     }
                 }
             }
         }
+
+        // Push back shutdown by SHUTDOWN_DELAY_MS after connecting to the SDK
+        shutdownHandler.removeCallbacksAndMessages(null)
+        shutdownHandler.postDelayed(shutdownRunnable, SHUTDOWN_DELAY_MS)
         return START_NOT_STICKY
-    }
-
-    private suspend fun pollPaymentHash(
-        paymentHash: String,
-        clickAction: String?,
-    ) {
-        if (!paymentHashPollerList.contains(paymentHash)) {
-            paymentHashPollerList.add(paymentHash)
-        } else {
-            throw Exception("Payment w/ hash: $paymentHash is already being polled.")
-        }
-        Logger.tag(TAG).debug { "Polling for payment w/ hash: $paymentHash" }
-        // Poll for 1 minute
-        for (i in 1..60) {
-            val payment = breezSDK!!.paymentByHash(paymentHash)
-            if (payment?.status == PaymentStatus.COMPLETE) {
-                paymentHashPollerList.remove(paymentHash)
-                val pd = payment.details as PaymentDetails.Ln
-                val lnPD = pd.data
-                handleReceivedPayment(
-                    lnPD.bolt11,
-                    lnPD.paymentHash,
-                    payment.amountMsat,
-                    clickAction
-                )
-                return
-            } else {
-                Logger.tag(TAG).info { "Payment w/ paymentHash: $paymentHash not received yet." }
-                withContext(Dispatchers.IO) { Thread.sleep(1_000) }
-            }
-        }
-
-        // If we reach here then we didn't receive for more than 1 minute
-        paymentHashPollerList.remove(paymentHash)
-        throw Exception("Payment not found before timeout")
     }
 
     private fun handleReceivedPayment(

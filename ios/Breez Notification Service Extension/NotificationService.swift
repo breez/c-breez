@@ -42,7 +42,7 @@ class NotificationService: UNNotificationServiceExtension {
                     self.breezSDK = try BreezManager.register(listener: currentTask)
                     Self.logger.info("Breez SDK connected successfully")
                 } catch {
-                    Self.logger.info("Breez SDK connections failed \(error)")
+                    Self.logger.error("Breez SDK connection failed \(error)")
                     self.shutdown()
                 }
             }

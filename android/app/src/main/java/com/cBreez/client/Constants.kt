@@ -12,4 +12,7 @@ object Constants {
 
     // Notification Ids
     const val NOTIFICATION_ID_FOREGROUND_SERVICE = 100
+
+    // Intent Extras
+    const val EXTRA_REMOTE_MESSAGE = "remote_message"
 }

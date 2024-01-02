@@ -95,11 +95,8 @@ class PaymentReceiver : SDKBackgroundTask {
     }
     
     func onShutdown() {
-        if let p =  self.receivedPayment {
-            self.displayPushNotification(title: "Received \(p.amountMsat/1000) sats")
-        } else {
-            self.displayPushNotification(title: "Receive payment failed")
-        }
+        let title = self.receivedPayment != nil ? "Received \(self.receivedPayment!.amountMsat/1000) sats" :  "Receive payment failed"
+        self.displayPushNotification(title: title)
     }
     
     func onEvent(e: BreezEvent) {

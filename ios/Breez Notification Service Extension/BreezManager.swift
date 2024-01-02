@@ -48,15 +48,15 @@ class BreezManager {
             .absoluteString
         
         // Construct the seed
-        let mnemonic = CredentialsManager.shared.restoreMnemonic() ?? ""
-        log.trace("mnemonic: .\(mnemonic)")
-        let seed = try? mnemonicToSeed(phrase: mnemonic)
-        // Connect to the Breez SDK make it ready for use
-        guard seed != nil else {
+        guard let mnemonic = CredentialsManager.shared.restoreMnemonic() else {
+            throw SdkError.Generic(message: "mnemonic not found")
+        }        
+        guard let seed = try? mnemonicToSeed(phrase: mnemonic) else {
             throw SdkError.Generic(message: "seed not found")
         }
+        // Connect to the Breez SDK make it ready for use
         log.trace("Connecting to Breez SDK")
-        let breezSDK = try connect(config: config, seed: seed!, listener: BreezManagerListener())
+        let breezSDK = try connect(config: config, seed: seed, listener: BreezManagerListener())
         log.trace("Connected to Breez SDK")
         return breezSDK
     }
@@ -66,9 +66,7 @@ class BreezManagerListener: EventListener {
     
     func onEvent(e: BreezEvent) {
         BreezManager.queue.async { [] in
-            if let l = BreezManager.sdkListener {
-                l.onEvent(e: e)
-            }
+            BreezManager.sdkListener?.onEvent(e: e)
         }
     }
     

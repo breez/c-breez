@@ -28,7 +28,7 @@ import org.tinylog.kotlin.Logger
 class BreezForegroundService : Service() {
     companion object {
         private const val TAG = "BreezForegroundService"
-        private const val SHUTDOWN_DELAY_MS = 120 * 1000L // 120 seconds
+        private const val SHUTDOWN_DELAY_MS = 60 * 1000L // 60 seconds
     }
 
     // SDK events listener

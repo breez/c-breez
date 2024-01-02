@@ -2,7 +2,6 @@ package com.cBreez.client
 
 import android.app.Service
 import android.content.Intent
-import android.os.Binder
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -13,8 +12,6 @@ import breez_sdk.BreezEvent
 import breez_sdk.EventListener
 import breez_sdk.LogEntry
 import breez_sdk.LogStream
-import breez_sdk.setLogStream
-import com.cBreez.client.BreezNotificationHelper.Companion.dismissForegroundServiceNotification
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
@@ -32,10 +29,6 @@ class BreezForegroundService : Service() {
     companion object {
         private const val TAG = "BreezForegroundService"
         private const val SHUTDOWN_DELAY_MS = 120 * 1000L // 120 seconds
-    }
-
-    inner class BreezNodeBinder : Binder() {
-        fun getService(): BreezForegroundService = this@BreezForegroundService
     }
 
     // SDK events listener
@@ -59,7 +52,6 @@ class BreezForegroundService : Service() {
 
     private var breezSDK: BlockingBreezServices? = null
     private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
-    private val binder = BreezNodeBinder()
 
     override fun onCreate() {
         super.onCreate()
@@ -74,11 +66,8 @@ class BreezForegroundService : Service() {
     //                      SERVICE LIFECYCLE                      //
     // =========================================================== //
 
-    override fun onBind(intent: Intent?): IBinder {
-        Logger.tag(TAG).debug { "Binding Breez node service from intent=$intent" }
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        dismissForegroundServiceNotification(applicationContext)
-        return binder
+    override fun onBind(intent: Intent): IBinder? {
+        return null
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

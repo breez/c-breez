@@ -1,11 +1,9 @@
 package com.cBreez.client
 
 import android.content.Context
-import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import androidx.annotation.RequiresApi
 import com.it_nomads.fluttersecurestorage.ciphers.KeyCipher
 import org.tinylog.kotlin.Logger
 import java.math.BigInteger
@@ -14,7 +12,6 @@ import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.PublicKey
-import java.security.SecureRandom
 import java.security.spec.AlgorithmParameterSpec
 import java.util.Calendar
 import java.util.Locale
@@ -23,15 +20,15 @@ import javax.crypto.spec.IvParameterSpec
 import javax.security.auth.x500.X500Principal
 
 
-internal class RSACipher18Implementation(protected val context: Context) : KeyCipher {
-    protected val keyAlias: String
+internal class RSACipher18Implementation(private val context: Context) : KeyCipher {
+    private val keyAlias: String
 
     init {
         keyAlias = createKeyAlias()
-        createRSAKeysIfNeeded(context)
+        createRSAKeysIfNeeded()
     }
 
-    protected fun createKeyAlias(): String {
+    private fun createKeyAlias(): String {
         return context.packageName + ".FlutterSecureStoragePluginKey"
     }
 
@@ -53,18 +50,17 @@ internal class RSACipher18Implementation(protected val context: Context) : KeyCi
 
     @get:Throws(Exception::class)
     private val privateKey: PrivateKey
-        private get() {
+        get() {
             val ks = KeyStore.getInstance(KEYSTORE_PROVIDER_ANDROID)
             ks.load(null)
-            val key = (ks.getKey(keyAlias, null)
+            return (ks.getKey(keyAlias, null)
                 ?: throw Exception("No key found under alias: $keyAlias")) as? PrivateKey
                 ?: throw Exception("Not an instance of a PrivateKey")
-            return key
         }
 
     @get:Throws(Exception::class)
     private val publicKey: PublicKey
-        private get() {
+        get() {
             val ks =
                 KeyStore.getInstance(KEYSTORE_PROVIDER_ANDROID)
             ks.load(null)
@@ -74,21 +70,21 @@ internal class RSACipher18Implementation(protected val context: Context) : KeyCi
         }
 
     @get:Throws(Exception::class)
-    protected val rSACipher: Cipher
-        protected get() = Cipher.getInstance(
+    private val rSACipher: Cipher
+        get() = Cipher.getInstance(
             "RSA/ECB/PKCS1Padding",
             "AndroidKeyStoreBCWorkaround"
         ) // error in android 5: NoSuchProviderException: Provider not available: AndroidKeyStoreBCWorkaround
-    protected val algorithmParameterSpec: AlgorithmParameterSpec?
-        protected get() = null
+    private val algorithmParameterSpec: AlgorithmParameterSpec?
+        get() = null
 
     @Throws(Exception::class)
-    private fun createRSAKeysIfNeeded(context: Context) {
+    private fun createRSAKeysIfNeeded() {
         val ks = KeyStore.getInstance(KEYSTORE_PROVIDER_ANDROID)
         ks.load(null)
         val privateKey = ks.getKey(keyAlias, null)
         if (privateKey == null) {
-            createKeys(context)
+            createKeys()
         }
     }
 
@@ -103,7 +99,7 @@ internal class RSACipher18Implementation(protected val context: Context) : KeyCi
     }
 
     @Throws(Exception::class)
-    private fun createKeys(context: Context) {
+    private fun createKeys() {
         val localeBeforeFakingEnglishLocale = Locale.getDefault()
         try {
             setLocale(Locale.ENGLISH)
@@ -111,8 +107,7 @@ internal class RSACipher18Implementation(protected val context: Context) : KeyCi
             val end = Calendar.getInstance()
             end.add(Calendar.YEAR, 25)
             val kpGenerator = KeyPairGenerator.getInstance(TYPE_RSA, KEYSTORE_PROVIDER_ANDROID)
-            val spec: AlgorithmParameterSpec
-            spec = makeAlgorithmParameterSpec(context, start, end)
+            val spec: AlgorithmParameterSpec = makeAlgorithmParameterSpec(start, end)
             kpGenerator.initialize(spec)
             kpGenerator.generateKeyPair()
         } finally {
@@ -120,9 +115,7 @@ internal class RSACipher18Implementation(protected val context: Context) : KeyCi
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    protected fun makeAlgorithmParameterSpec(
-        context: Context?,
+    private fun makeAlgorithmParameterSpec(
         start: Calendar,
         end: Calendar
     ): AlgorithmParameterSpec {
@@ -157,7 +150,6 @@ class StorageCipher18Implementation(context: Context, rsaCipher: KeyCipher) {
     }
 
     private fun getKey () : Key  {
-        val secureRandom = SecureRandom()
         val aesPreferencesKey = aESPreferencesKey
         val preferences =
             context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
@@ -175,11 +167,11 @@ class StorageCipher18Implementation(context: Context, rsaCipher: KeyCipher) {
         throw java.lang.Exception("key not found")
     }
 
-    protected val aESPreferencesKey: String
-        protected get() = "VGhpcyBpcyB0aGUga2V5IGZvciBhIHNlY3VyZSBzdG9yYWdlIEFFUyBLZXkK"
+    private val aESPreferencesKey: String
+        get() = "VGhpcyBpcyB0aGUga2V5IGZvciBhIHNlY3VyZSBzdG9yYWdlIEFFUyBLZXkK"
 
     @Throws(java.lang.Exception::class)
-    protected fun getCipher(): Cipher {
+    private fun getCipher(): Cipher {
         return Cipher.getInstance("AES/CBC/PKCS7Padding")
     }
 
@@ -196,10 +188,10 @@ class StorageCipher18Implementation(context: Context, rsaCipher: KeyCipher) {
         return cipher.doFinal(payload)
     }
 
-    protected val ivSize: Int
-        protected get() = 16
+    private val ivSize: Int
+        get() = keySize
 
-    protected fun getParameterSpec(iv: ByteArray?): AlgorithmParameterSpec {
+    private fun getParameterSpec(iv: ByteArray?): AlgorithmParameterSpec {
         return IvParameterSpec(iv)
     }
 

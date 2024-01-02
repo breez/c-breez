@@ -22,18 +22,27 @@ class BreezSdkConnector {
         ): BlockingBreezServices {
             synchronized(this) {
                 if (breezSDK == null) {
-                    Logger.tag(TAG).info { "Connecting to Breez SDK" }
-                    val mnemonic = readSecuredValued(applicationContext, ACCOUNT_MNEMONIC)
-                    val seed = mnemonicToSeed(mnemonic!!)
-                    val apiKey = applicationContext.getString(R.string.breezApiKey)
+                    Logger.tag(TAG).trace { "connectSDK()" }
+                    setLogStream(BreezForegroundService.SDKLogListener())
+
                     // Create the default config
+                    val apiKey = applicationContext.getString(R.string.breezApiKey)
+                    Logger.tag(TAG).trace() { "API_KEY: $apiKey" }
                     val glNodeConf = GreenlightNodeConfig(null, null)
                     val nodeConf = NodeConfig.Greenlight(glNodeConf)
                     val config = defaultConfig(EnvironmentType.PRODUCTION, apiKey, nodeConf)
+
                     config.workingDir = PathUtils.getDataDirectory(applicationContext)
+
+                    // Construct the seed
+                    // TODO: Add null & error handling for mnemonic & seed and escape early
+                    val mnemonic = readSecuredValued(applicationContext, ACCOUNT_MNEMONIC)
+                    val seed = mnemonicToSeed(mnemonic!!)
+
                     // Connect to the Breez SDK make it ready for use
+                    Logger.tag(TAG).trace { "Connecting to Breez SDK" }
                     breezSDK = connect(config, seed, sdkListener)
-                    Logger.tag(TAG).info { "Connected to Breez SDK" }
+                    Logger.tag(TAG).trace { "Connected to Breez SDK" }
                 }
                 return breezSDK!!
             }

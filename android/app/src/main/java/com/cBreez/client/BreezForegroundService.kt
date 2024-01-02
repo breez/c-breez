@@ -49,7 +49,7 @@ class BreezForegroundService : Service() {
         }
     }
 
-    inner class SDKLogListener : LogStream {
+    internal class SDKLogListener : LogStream {
         override fun log(l: LogEntry) {
             if (l.level != "TRACE") {
                 Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
@@ -122,10 +122,12 @@ class BreezForegroundService : Service() {
                                 }
                     ) {
                         if (breezSDK == null) {
-                            Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
+                            // Display foreground service notification when connecting for the first time
                             val notification = notifyForegroundService(applicationContext)
                             startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
-                            setLogStream(logStream = SDKLogListener())
+
+                            // Connect to the SDK
+                            Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
                             breezSDK = connectSDK(applicationContext, SDKListener())
                             Logger.tag(TAG).info { "Breez SDK connected successfully" }
                         }

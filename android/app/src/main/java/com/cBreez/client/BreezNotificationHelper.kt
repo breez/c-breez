@@ -28,14 +28,15 @@ class BreezNotificationHelper {
     companion object {
         private const val TAG = "BreezNotificationService"
 
-        @RequiresApi(Build.VERSION_CODES.O)
         fun registerNotificationChannels(context: Context) {
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE)
-                        as NotificationManager
-            if (notificationManager.areNotificationsEnabled()) {
-                createNotificationChannelGroup(context, notificationManager)
-                createNotificationChannels(context, notificationManager)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE)
+                            as NotificationManager
+                if (notificationManager.areNotificationsEnabled()) {
+                    createNotificationChannelGroup(context, notificationManager)
+                    createNotificationChannels(context, notificationManager)
+                }
             }
         }
 

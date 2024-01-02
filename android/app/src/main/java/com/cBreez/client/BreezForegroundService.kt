@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import androidx.annotation.RequiresApi
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.EventListener
@@ -16,6 +15,7 @@ import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundServi
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
 import com.cBreez.client.BreezSdkConnector.Companion.connectSDK
+import com.cBreez.client.Constants.EXTRA_REMOTE_MESSAGE
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -35,17 +35,29 @@ class BreezForegroundService : Service() {
     inner class SDKListener : EventListener {
         override fun onEvent(e: BreezEvent) {
             Logger.tag(TAG).info { "Received event $e" }
-            if (e is BreezEvent.InvoicePaid) {
-                val pd = e.details
-                handleReceivedPayment(pd.bolt11, pd.paymentHash, pd.payment?.amountMsat)
+            when (e) {
+                is BreezEvent.InvoicePaid -> {
+                    val pd = e.details
+                    handleReceivedPayment(pd.bolt11, pd.paymentHash, pd.payment?.amountMsat)
+
+                    // Push back shutdown by SHUTDOWN_DELAY_MS in case we'll receive more payments
+                    pushbackShutdown()
+                }
+
+                else -> {}
             }
         }
     }
 
+    // SDK log listener
     internal class SDKLogListener : LogStream {
         override fun log(l: LogEntry) {
-            if (l.level != "TRACE") {
-                Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
+            when (l.level) {
+                "TRACE" -> {}
+                // Only log non-trace level SDK logs
+                else -> {
+                    Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
+                }
             }
         }
     }
@@ -55,11 +67,9 @@ class BreezForegroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Logger.tag(TAG).debug { "Creating Breez node service..." }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            registerNotificationChannels(applicationContext)
-        }
-        Logger.tag(TAG).debug { "Breez node service created." }
+        Logger.tag(TAG).debug { "Creating Breez foreground service..." }
+        registerNotificationChannels(applicationContext)
+        Logger.tag(TAG).debug { "Breez foreground service created." }
     }
 
     // =========================================================== //
@@ -70,20 +80,16 @@ class BreezForegroundService : Service() {
         return null
     }
 
-    override fun onUnbind(intent: Intent?): Boolean {
-        return false
-    }
-
     private val shutdownHandler = Handler(Looper.getMainLooper())
     private val shutdownRunnable: Runnable = Runnable {
         Logger.tag(TAG).debug { "Reached scheduled shutdown..." }
-        stopForeground(STOP_FOREGROUND_DETACH)
         shutdown()
     }
 
-    /** Shutdown the node, close connections and stop the service */
+    /** Stop the service */
     private fun shutdown() {
-        Logger.tag(TAG).info { "Shutting down Breez node service" }
+        Logger.tag(TAG).info { "Shutting down Breez foreground service" }
+        stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
@@ -92,12 +98,20 @@ class BreezForegroundService : Service() {
     // =========================================================== //
 
     /** Called when an intent is called for this service. */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Logger.tag(TAG).debug {
-            "Start Breez node service from intent [ intent=$intent, flag=$flags, startId=$startId ]"
-        }
+        var intentDetails = "[ intent=$intent, flag=$flags, startId=$startId ]"
+        Logger.tag(TAG).debug { "Start Breez foreground service from intent $intentDetails" }
+
+        // Connect to SDK if source intent has data message with valid payload
+        connectSdkIfNeeded(intent)
+
+        // Push back shutdown by SHUTDOWN_DELAY_MS after connecting to the SDK
+        pushbackShutdown()
+        return START_NOT_STICKY
+    }
+
+    private fun connectSdkIfNeeded(intent: Intent?) {
         intent.getRemoteMessage()?.let {
             if (it.data["notification_type"] == "payment_received") {
                 val paymentHash = it.data["payment_hash"]
@@ -107,7 +121,6 @@ class BreezForegroundService : Service() {
                                 CoroutineExceptionHandler { _, e ->
                                     Logger.tag(TAG).error { "Breez SDK connection failed $e" }
                                     shutdown()
-                                    stopForeground(STOP_FOREGROUND_REMOVE)
                                 }
                     ) {
                         if (breezSDK == null) {
@@ -124,26 +137,19 @@ class BreezForegroundService : Service() {
                 }
             }
         }
-
-        // Push back shutdown by SHUTDOWN_DELAY_MS after connecting to the SDK
-        shutdownHandler.removeCallbacksAndMessages(null)
-        shutdownHandler.postDelayed(shutdownRunnable, SHUTDOWN_DELAY_MS)
-        return START_NOT_STICKY
     }
 
     private fun handleReceivedPayment(
         bolt11: String,
         paymentHash: String,
         amountMsat: ULong?,
-        clickAction: String? = null,
     ) {
-        Logger.tag(TAG).info {
-            "Received payment. Bolt11:${bolt11}\nPayment Hash:${paymentHash}"
-        }
+        Logger.tag(TAG).info { "Received payment. Bolt11:${bolt11}\nPayment Hash:${paymentHash}" }
         val amountSat = (amountMsat ?: ULong.MIN_VALUE) / 1000u
-        notifyPaymentReceived(applicationContext, clickAction = clickAction, amountSat = amountSat)
+        notifyPaymentReceived(applicationContext, amountSat = amountSat)
+    }
 
-        // Push back shutdown by SHUTDOWN_DELAY_MS in case we'll receive more payments
+    private fun pushbackShutdown() {
         shutdownHandler.removeCallbacksAndMessages(null)
         shutdownHandler.postDelayed(shutdownRunnable, SHUTDOWN_DELAY_MS)
     }
@@ -151,7 +157,7 @@ class BreezForegroundService : Service() {
     private fun Intent?.getRemoteMessage(): RemoteMessage? {
         @Suppress("DEPRECATION")
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            this?.getParcelableExtra("remote_message", RemoteMessage::class.java)
-        else this?.getParcelableExtra("remote_message")
+            this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE, RemoteMessage::class.java)
+        else this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE)
     }
 }

@@ -8,6 +8,7 @@ import android.os.Process
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
 import com.cBreez.client.BreezLogger.Companion.configureLogger
+import com.cBreez.client.Constants.EXTRA_REMOTE_MESSAGE
 import com.google.android.gms.common.util.PlatformVersion.isAtLeastLollipop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -22,26 +23,31 @@ class BreezFcmService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         configureLogger(applicationContext)
+        Logger.tag(TAG).info { "FCM notification received!" }
         // Only handle remote messages if app is in the background
         if (isAppForeground()) {
             Logger.tag(TAG).info { "App is in the foreground." }
             return
         }
 
+        // Start service if data message is received
+        startService(remoteMessage)
+    }
+
+    private fun startService(remoteMessage: RemoteMessage) {
         Logger.tag(TAG).debug { "From: ${remoteMessage.from}" }
         // Check if message contains a data payload.
-        if (remoteMessage.data.isNotEmpty()) {
-            Logger.tag(TAG).debug { "Message data payload: ${remoteMessage.data}" }
-            // cannot start foreground service from low/normal priority message
+        var payload = remoteMessage.data
+        if (payload.isNotEmpty()) {
+            Logger.tag(TAG).debug { "Message data payload: $payload" }
+            // Cannot start foreground service from low/normal priority message
             if (remoteMessage.priority != RemoteMessage.PRIORITY_HIGH) {
                 Logger.tag(TAG).warn { "Ignoring FCM message with low/normal priority" }
             } else {
-                Logger.tag(TAG)
-                    .debug { "Starting BreezForegroundService with remote message ${remoteMessage.data}" }
-                val serviceIntent =
-                    Intent(applicationContext, BreezForegroundService::class.java)
-                serviceIntent.putExtra("remote_message", remoteMessage)
-                ContextCompat.startForegroundService(applicationContext, serviceIntent)
+                Logger.tag(TAG).debug { "Start BreezForegroundService w/ remote message $payload" }
+                val intent = Intent(applicationContext, BreezForegroundService::class.java)
+                intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage)
+                ContextCompat.startForegroundService(applicationContext, intent)
             }
         }
     }

@@ -11,6 +11,9 @@ import androidx.annotation.RequiresApi
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.EventListener
+import breez_sdk.LogEntry
+import breez_sdk.LogStream
+import breez_sdk.setLogStream
 import com.cBreez.client.BreezNotificationHelper.Companion.dismissForegroundServiceNotification
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
@@ -43,6 +46,12 @@ class BreezForegroundService : Service() {
                 val pd = e.details
                 handleReceivedPayment(pd.bolt11, pd.paymentHash, pd.payment?.amountMsat)
             }
+        }
+    }
+
+    inner class SDKLogListener : LogStream {
+        override fun log(l: LogEntry) {
+            Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
         }
     }
 
@@ -114,6 +123,7 @@ class BreezForegroundService : Service() {
                             Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
                             val notification = notifyForegroundService(applicationContext)
                             startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
+                            setLogStream(logStream = SDKLogListener())
                             breezSDK = connectSDK(applicationContext, SDKListener())
                             Logger.tag(TAG).info { "Breez SDK connected successfully" }
                         }

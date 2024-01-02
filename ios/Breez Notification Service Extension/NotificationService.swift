@@ -86,6 +86,7 @@ class PaymentReceiver : SDKBackgroundTask {
     private var contentHandler: ((UNNotificationContent) -> Void)?
     private var bestAttemptContent: UNMutableNotificationContent?
     private var logger: XCGLogger
+    private var receivedPayment: Payment? = nil
     
     init(logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
         self.contentHandler = contentHandler
@@ -94,17 +95,25 @@ class PaymentReceiver : SDKBackgroundTask {
     }
     
     func onShutdown() {
-        self.displayPushNotification(title: "Receive payment failed")
+        if let p =  self.receivedPayment {
+            self.displayPushNotification(title: "Received \(p.amountMsat/1000) sats")
+        } else {
+            self.displayPushNotification(title: "Receive payment failed")
+        }
     }
     
     func onEvent(e: BreezEvent) {
         switch e {
         case .invoicePaid(details: let details):
             self.logger.info("Received payment. Bolt11: \(details.bolt11)\nPayment Hash:\(details.paymentHash)")
-            if details.payment != nil {
-                self.displayPushNotification(title: "Received \(details.payment!.amountMsat/1000) sats")
+            receivedPayment = details.payment
+            break
+        case .synced:
+            self.logger.info("got synced event")
+            if let p =  self.receivedPayment {
+                self.onShutdown()
             }
-            return
+            break
         default:
             break
         }

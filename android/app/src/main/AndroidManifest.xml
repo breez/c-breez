@@ -178,16 +178,6 @@
         <meta-data
             android:name="com.breez.breez_sdk.API_KEY"
             android:value="@string/breezApiKey" />
-
-        <!-- Compile-time Variables -->
-        <receiver
-            android:name=".DismissNotification"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="DISMISS_ACTION" />
-            </intent-filter>
-        </receiver>
     </application>
 
     <!-- Android 11 has introduced package visibility changes,

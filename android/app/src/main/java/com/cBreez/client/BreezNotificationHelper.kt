@@ -14,12 +14,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.cBreez.client.Constants.DISMISS_ACTION
 import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_FOREGROUND_SERVICE
-import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_PAYMENT_FAILED
 import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_PAYMENT_RECEIVED
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
-import com.cBreez.client.Constants.NOTIFICATION_ID_PAYMENT_FAILED
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -56,15 +53,6 @@ class BreezNotificationHelper {
                     context.getString(R.string.foreground_service_notification_channel_description)
             }
             val workGroupId = context.getString(R.string.offline_payments_work_group_id)
-            val failedPaymentsNotificationChannel = NotificationChannel(
-                NOTIFICATION_CHANNEL_PAYMENT_FAILED,
-                context.getString(R.string.payment_failed_notification_channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                description =
-                    context.getString(R.string.payment_failed_notification_channel_description)
-                group = workGroupId
-            }
             val receivedPaymentsNotificationChannel = NotificationChannel(
                 NOTIFICATION_CHANNEL_PAYMENT_RECEIVED,
                 context.getString(R.string.payment_received_notification_channel_name),
@@ -77,7 +65,6 @@ class BreezNotificationHelper {
             notificationManager.createNotificationChannels(
                 listOf(
                     foregroundServiceNotificationChannel,
-                    failedPaymentsNotificationChannel,
                     receivedPaymentsNotificationChannel
                 )
             )
@@ -189,49 +176,6 @@ class BreezNotificationHelper {
 
                         }
 
-                    }
-                }
-        }
-
-        fun notifyPaymentFailed(context: Context): Notification {
-            val message = context.getString(R.string.payment_failed_notification_message)
-
-            val notificationIntent = Intent(DISMISS_ACTION)
-            val flags =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_CANCEL_CURRENT
-            val dismissActionIntent = PendingIntent.getBroadcast(
-                context,
-                0,
-                notificationIntent,
-                flags
-            )
-
-            val buttonTitle = "Dismiss"
-            val notificationAction = NotificationCompat.Action.Builder(
-                android.R.drawable.ic_delete,
-                buttonTitle,
-                dismissActionIntent
-            ).build()
-
-            return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_PAYMENT_FAILED)
-                .apply {
-                    setContentTitle(context.getString(R.string.payment_failed_notification_title))
-                    setContentText(message)
-                    setSmallIcon(R.mipmap.ic_stat_ic_notification)
-                    setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                    // Dismiss on clicking action without closing notification panel
-                    addAction(notificationAction)
-                    setOngoing(false)
-                    setAutoCancel(true)
-                    // TODO: Dismiss on clicking notification without closing notification panel
-                }.build().also {
-                    if (ActivityCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.POST_NOTIFICATIONS
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        NotificationManagerCompat.from(context)
-                            .notify(NOTIFICATION_ID_PAYMENT_FAILED, it)
                     }
                 }
         }

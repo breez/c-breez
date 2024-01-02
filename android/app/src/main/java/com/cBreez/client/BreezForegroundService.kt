@@ -25,6 +25,10 @@ import kotlinx.coroutines.launch
 import org.tinylog.kotlin.Logger
 
 class BreezForegroundService : Service() {
+    private var breezSDK: BlockingBreezServices? = null
+    private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+    private var receivedPayment: Payment? = null
+
     companion object {
         private const val TAG = "BreezForegroundService"
         private const val SHUTDOWN_DELAY_MS = 60 * 1000L // 60 seconds
@@ -52,11 +56,18 @@ class BreezForegroundService : Service() {
                 else -> {}
             }
         }
-    }
 
-    private var breezSDK: BlockingBreezServices? = null
-    private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
-    private var receivedPayment: Payment? = null
+        private fun handleReceivedPayment(
+            bolt11: String,
+            paymentHash: String,
+            amountMsat: ULong?,
+        ) {
+            Logger.tag(TAG)
+                .info { "Received payment. Bolt11:${bolt11}\nPayment Hash:${paymentHash}" }
+            val amountSat = (amountMsat ?: ULong.MIN_VALUE) / 1000u
+            notifyPaymentReceived(applicationContext, amountSat = amountSat)
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -104,42 +115,30 @@ class BreezForegroundService : Service() {
         return START_NOT_STICKY
     }
 
+    /** Checks whether if the data payload is of type payment_received & has a payment hash */
     private fun connectSdkIfNeeded(intent: Intent?) {
-        intent.getRemoteMessage()?.let {
-            if (it.data["notification_type"] == "payment_received") {
-                val paymentHash = it.data["payment_hash"]
-                paymentHash?.let {
-                    serviceScope.launch(
-                        Dispatchers.IO +
-                                CoroutineExceptionHandler { _, e ->
-                                    Logger.tag(TAG).error { "Breez SDK connection failed $e" }
-                                    shutdown()
-                                }
-                    ) {
-                        if (breezSDK == null) {
-                            // Display foreground service notification when connecting for the first time
-                            val notification = notifyForegroundService(applicationContext)
-                            startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
-
-                            // Connect to the SDK
-                            Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
-                            breezSDK = connectSDK(applicationContext, SDKListener())
-                            Logger.tag(TAG).info { "Breez SDK connected successfully" }
-                        }
-                    }
-                }
+        intent?.remoteMessage?.run {
+            if (isPaymentReceived) {
+                paymentHash?.let { launchSdkConnection() }
             }
         }
     }
 
-    private fun handleReceivedPayment(
-        bolt11: String,
-        paymentHash: String,
-        amountMsat: ULong?,
-    ) {
-        Logger.tag(TAG).info { "Received payment. Bolt11:${bolt11}\nPayment Hash:${paymentHash}" }
-        val amountSat = (amountMsat ?: ULong.MIN_VALUE) / 1000u
-        notifyPaymentReceived(applicationContext, amountSat = amountSat)
+    private fun launchSdkConnection() {
+        serviceScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
+            Logger.tag(TAG).error { "Breez SDK connection failed $e" }
+            shutdown()
+        }) {
+            breezSDK ?: run {
+                // Display foreground service notification when connecting for the first time
+                val notification = notifyForegroundService(applicationContext)
+                startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
+
+                Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
+                breezSDK = connectSDK(applicationContext, SDKListener())
+                Logger.tag(TAG).info { "Breez SDK connected successfully" }
+            }
+        }
     }
 
     private fun pushbackShutdown() {
@@ -147,10 +146,22 @@ class BreezForegroundService : Service() {
         shutdownHandler.postDelayed(shutdownRunnable, SHUTDOWN_DELAY_MS)
     }
 
-    private fun Intent?.getRemoteMessage(): RemoteMessage? {
-        @Suppress("DEPRECATION")
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE, RemoteMessage::class.java)
-        else this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE)
-    }
+    /* Remote Message helper properties */
+    private val Intent?.remoteMessage: RemoteMessage?
+        get() {
+            @Suppress("DEPRECATION")
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE, RemoteMessage::class.java)
+            else this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE)
+        }
+
+    private val RemoteMessage.isPaymentReceived: Boolean
+        get() {
+            return data["notification_type"] == "payment_received"
+        }
+
+    private val RemoteMessage.paymentHash: String?
+        get() {
+            return data["payment_hash"]
+        }
 }

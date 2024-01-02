@@ -22,34 +22,30 @@ class BreezFcmService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
+
         configureLogger(applicationContext)
         Logger.tag(TAG).info { "FCM notification received!" }
-        // Only handle remote messages if app is in the background
-        if (isAppForeground()) {
-            Logger.tag(TAG).info { "App is in the foreground." }
-            return
-        }
 
-        // Start service if data message is received
-        startService(remoteMessage)
+        // Only handle remote messages if app is in the background
+        if (!isAppForeground()) startServiceIfNeeded(remoteMessage)
+        else Logger.tag(TAG).info { "App is in the foreground." }
     }
 
-    private fun startService(remoteMessage: RemoteMessage) {
-        Logger.tag(TAG).debug { "From: ${remoteMessage.from}" }
-        // Check if message contains a data payload.
-        val payload = remoteMessage.data
-        if (payload.isNotEmpty()) {
-            Logger.tag(TAG).debug { "Message data payload: $payload" }
-            // Cannot start foreground service from low/normal priority message
-            if (remoteMessage.priority != RemoteMessage.PRIORITY_HIGH) {
-                Logger.tag(TAG).warn { "Ignoring FCM message with low/normal priority" }
-            } else {
-                Logger.tag(TAG).debug { "Start BreezForegroundService w/ remote message $payload" }
-                val intent = Intent(applicationContext, BreezForegroundService::class.java)
-                intent.putExtra(EXTRA_REMOTE_MESSAGE, remoteMessage)
-                ContextCompat.startForegroundService(applicationContext, intent)
-            }
+    /** Check if message is a data payload w/ high priority
+     * as we cannot start foreground service from low/normal priority message */
+    private fun startServiceIfNeeded(remoteMessage: RemoteMessage) {
+        with(remoteMessage) {
+            Logger.tag(TAG).debug { "From: $from" }
+            if (data.isNotEmpty() && priority == RemoteMessage.PRIORITY_HIGH) startBreezForegroundService()
+            else Logger.tag(TAG).warn { "Ignoring FCM message with low/normal priority" }
         }
+    }
+
+    private fun RemoteMessage.startBreezForegroundService() {
+        Logger.tag(TAG).debug { "Starting BreezForegroundService w/ remote message $data" }
+        val intent = Intent(applicationContext, BreezForegroundService::class.java)
+        intent.putExtra(EXTRA_REMOTE_MESSAGE, this)
+        ContextCompat.startForegroundService(applicationContext, intent)
     }
 
     @SuppressLint("VisibleForTests")

@@ -8,6 +8,19 @@ import io.flutter.util.PathUtils
 import org.tinylog.kotlin.Logger
 import java.nio.charset.Charset
 
+// SDK log listener
+class SDKLogListener : LogStream {
+    override fun log(l: LogEntry) {
+        when (l.level) {
+            "TRACE" -> {}
+            // Only log non-trace level SDK logs
+            else -> {
+                Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
+            }
+        }
+    }
+}
+
 class BreezSdkConnector {
     companion object {
         private const val TAG = "BreezSdkConnector"
@@ -23,7 +36,6 @@ class BreezSdkConnector {
             synchronized(this) {
                 if (breezSDK == null) {
                     Logger.tag(TAG).trace { "connectSDK()" }
-                    setLogStream(BreezForegroundService.SDKLogListener())
 
                     // Create the default config
                     val apiKey = applicationContext.getString(R.string.breezApiKey)

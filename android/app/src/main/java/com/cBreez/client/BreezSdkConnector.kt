@@ -39,10 +39,11 @@ class BreezSdkConnector {
                     val seed = mnemonicToSeed(mnemonic!!)
 
                     // Connect to the Breez SDK make it ready for use
-                    Logger.tag(TAG).trace { "Connecting to Breez SDK" }
+                    Logger.tag(TAG).debug { "Connecting to Breez SDK" }
                     breezSDK = connect(config, seed, sdkListener)
-                    Logger.tag(TAG).trace { "Connected to Breez SDK" }
-                }
+                    Logger.tag(TAG).debug { "Connected to Breez SDK" }
+                } else Logger.tag(TAG).debug { "Already connected to Breez SDK" }
+
                 return breezSDK!!
             }
         }

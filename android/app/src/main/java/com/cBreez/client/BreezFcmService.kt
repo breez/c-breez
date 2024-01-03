@@ -24,11 +24,11 @@ class BreezFcmService : FirebaseMessagingService() {
         super.onMessageReceived(remoteMessage)
 
         configureLogger(applicationContext)
-        Logger.tag(TAG).info { "FCM notification received!" }
+        Logger.tag(TAG).debug { "FCM notification received!" }
 
         // Only handle remote messages if app is in the background
         if (!isAppForeground()) startServiceIfNeeded(remoteMessage)
-        else Logger.tag(TAG).info { "App is in the foreground." }
+        else Logger.tag(TAG).debug { "App is in the foreground." }
     }
 
     /** Check if message is a data payload w/ high priority

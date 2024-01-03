@@ -37,6 +37,7 @@ class BreezNotificationHelper {
                     createNotificationChannelGroup(context, notificationManager)
                     createNotificationChannels(context, notificationManager)
                 }
+                Logger.tag(TAG).debug { "Registered notification channels " }
             }
         }
 
@@ -112,12 +113,6 @@ class BreezNotificationHelper {
                 }
         }
 
-        fun dismissForegroundServiceNotification(context: Context) {
-            // Dismiss generic information notification
-            NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID_FOREGROUND_SERVICE)
-            Logger.tag(TAG).debug { "Dismissed status notification" }
-        }
-
         fun notifyPaymentReceived(
             context: Context,
             clickAction: String? = "FLUTTER_NOTIFICATION_CLICK",
@@ -174,9 +169,7 @@ class BreezNotificationHelper {
                                 NotificationManagerCompat.from(context)
                                     .notify(notificationID, it)
                             }
-
                         }
-
                     }
                 }
         }

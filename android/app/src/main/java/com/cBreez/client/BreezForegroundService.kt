@@ -85,7 +85,7 @@ class BreezForegroundService : Service() {
     /** Called when an intent is called for this service. */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        var intentDetails = "[ intent=$intent, flag=$flags, startId=$startId ]"
+        val intentDetails = "[ intent=$intent, flag=$flags, startId=$startId ]"
         Logger.tag(TAG).debug { "Start Breez foreground service from intent $intentDetails" }
 
         // Connect to SDK if source intent has data message with valid payload

@@ -37,7 +37,7 @@ class BreezFcmService : FirebaseMessagingService() {
     private fun startService(remoteMessage: RemoteMessage) {
         Logger.tag(TAG).debug { "From: ${remoteMessage.from}" }
         // Check if message contains a data payload.
-        var payload = remoteMessage.data
+        val payload = remoteMessage.data
         if (payload.isNotEmpty()) {
             Logger.tag(TAG).debug { "Message data payload: $payload" }
             // Cannot start foreground service from low/normal priority message

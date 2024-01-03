@@ -9,6 +9,7 @@ import android.os.Looper
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.EventListener
+import breez_sdk.Payment
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
@@ -37,9 +38,15 @@ class BreezForegroundService : Service() {
                 is BreezEvent.InvoicePaid -> {
                     val pd = e.details
                     handleReceivedPayment(pd.bolt11, pd.paymentHash, pd.payment?.amountMsat)
+                    receivedPayment = pd.payment
 
-                    // Push back shutdown by SHUTDOWN_DELAY_MS in case we'll receive more payments
+                    // Push back shutdown by SHUTDOWN_DELAY_MS for payments synced event
                     pushbackShutdown()
+                }
+
+                is BreezEvent.Synced -> {
+                    Logger.tag(TAG).info { "Got synced event" }
+                    receivedPayment?.let { shutdown() }
                 }
 
                 else -> {}
@@ -49,6 +56,7 @@ class BreezForegroundService : Service() {
 
     private var breezSDK: BlockingBreezServices? = null
     private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+    private var receivedPayment: Payment? = null
 
     override fun onCreate() {
         super.onCreate()

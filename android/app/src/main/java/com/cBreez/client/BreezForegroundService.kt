@@ -49,8 +49,10 @@ class BreezForegroundService : Service() {
                 }
 
                 is BreezEvent.Synced -> {
-                    Logger.tag(TAG).info { "Got synced event" }
-                    receivedPayment?.let { shutdown() }
+                    receivedPayment?.let {
+                        Logger.tag(TAG).info { "Got synced event for received payment" }
+                        shutdown()
+                    }
                 }
 
                 else -> {}
@@ -108,20 +110,16 @@ class BreezForegroundService : Service() {
         Logger.tag(TAG).debug { "Start Breez foreground service from intent $intentDetails" }
 
         // Connect to SDK if source intent has data message with valid payload
-        connectSdkIfNeeded(intent)
-
-        // Push back shutdown by SHUTDOWN_DELAY_MS after connecting to the SDK
-        pushbackShutdown()
-        return START_NOT_STICKY
-    }
-
-    /** Checks whether if the data payload is of type payment_received & has a payment hash */
-    private fun connectSdkIfNeeded(intent: Intent?) {
-        intent?.remoteMessage?.run {
-            if (isPaymentReceived) {
-                paymentHash?.let { launchSdkConnection() }
+        intent?.remoteMessage.run {
+            if (this != null && isPaymentReceived && !paymentHash.isNullOrBlank()) {
+                launchSdkConnection()
+            } else {
+                Logger.tag(TAG).debug { "Received invalid data message." }
+                shutdown()
             }
         }
+
+        return START_NOT_STICKY
     }
 
     private fun launchSdkConnection() {
@@ -137,6 +135,9 @@ class BreezForegroundService : Service() {
                 Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
                 breezSDK = connectSDK(applicationContext, SDKListener())
                 Logger.tag(TAG).info { "Breez SDK connected successfully" }
+
+                // Push back shutdown by SHUTDOWN_DELAY_MS
+                pushbackShutdown()
             }
         }
     }

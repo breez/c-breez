@@ -9,8 +9,6 @@ import android.os.Looper
 import breez_sdk.BlockingBreezServices
 import breez_sdk.BreezEvent
 import breez_sdk.EventListener
-import breez_sdk.LogEntry
-import breez_sdk.LogStream
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
@@ -45,19 +43,6 @@ class BreezForegroundService : Service() {
                 }
 
                 else -> {}
-            }
-        }
-    }
-
-    // SDK log listener
-    internal class SDKLogListener : LogStream {
-        override fun log(l: LogEntry) {
-            when (l.level) {
-                "TRACE" -> {}
-                // Only log non-trace level SDK logs
-                else -> {
-                    Logger.tag("Greenlight").debug { "[${l.level}] ${l.line}" }
-                }
             }
         }
     }

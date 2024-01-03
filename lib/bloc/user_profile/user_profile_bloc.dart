@@ -8,6 +8,7 @@ import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/notifications.dart';
+import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -45,9 +46,35 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
       );
     }
     emit(profile);
-    _breezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((_) {
-      registerForNotifications();
+    _breezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((_) async {
+      await registerForNotifications();
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        await requestBackgroundNotificationPermissions();
+      }
     });
+  }
+
+  Future<void> requestBackgroundNotificationPermissions() async {
+    // TODO: Show dialogs one after another with a delay
+    bool? isAutoStartEnabled = await DisableBatteryOptimization.isAutoStartEnabled;
+    if (isAutoStartEnabled == false) {
+      await DisableBatteryOptimization.showEnableAutoStartSettings(
+        "Enable Auto Start",
+        "Follow the steps and enable the auto start of this app",
+      );
+    }
+    bool? isBatteryOptimizationDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled;
+    if (isBatteryOptimizationDisabled == false) {
+      await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
+    }
+    bool? isManBatteryOptimizationDisabled =
+        await DisableBatteryOptimization.isManufacturerBatteryOptimizationDisabled;
+    if (isManBatteryOptimizationDisabled == false) {
+      await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings(
+        "Your device has additional battery optimization",
+        "Follow the steps and disable the optimizations to allow smooth functioning of this app",
+      );
+    }
   }
 
   Future registerForNotifications() async {

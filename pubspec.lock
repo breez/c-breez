@@ -45,10 +45,10 @@ packages:
     dependency: "direct main"
     description:
       name: archive
-      sha256: "7b875fd4a20b165a3084bd2d210439b22ebc653f21cea4842729c0c30c82596b"
+      sha256: "22600aa1e926be775fa5fe7e6894e7fb3df9efda8891c73f70fb3262399a432d"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.9"
+    version: "3.4.10"
   args:
     dependency: transitive
     description:
@@ -321,6 +321,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  disable_battery_optimization:
+    dependency: "direct main"
+    description:
+      name: disable_battery_optimization
+      sha256: "6b2ba802f984af141faf1b6b5fb956d5ef01f9cd555597c35b9cc335a03185ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   drag_and_drop_lists:
     dependency: "direct main"
     description:

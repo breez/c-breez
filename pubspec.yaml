@@ -30,6 +30,7 @@ dependencies:
   csv: ^5.1.1
   connectivity_plus: ^5.0.2
   device_info_plus: ^9.1.1
+  disable_battery_optimization: ^1.1.1
   drag_and_drop_lists: ^0.3.3
   duration: ^3.0.13
   email_validator: ^2.1.17

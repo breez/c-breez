@@ -37,7 +37,7 @@ class BreezForegroundService : Service() {
     // SDK events listener
     inner class SDKListener : EventListener {
         override fun onEvent(e: BreezEvent) {
-            Logger.tag(TAG).info { "Received event $e" }
+            Logger.tag(TAG).trace { "Received event $e" }
             when (e) {
                 is BreezEvent.InvoicePaid -> {
                     val pd = e.details
@@ -50,7 +50,7 @@ class BreezForegroundService : Service() {
 
                 is BreezEvent.Synced -> {
                     receivedPayment?.let {
-                        Logger.tag(TAG).info { "Got synced event for received payment" }
+                        Logger.tag(TAG).info { "Got synced event for received payment." }
                         shutdown()
                     }
                 }
@@ -94,7 +94,7 @@ class BreezForegroundService : Service() {
 
     /** Stop the service */
     private fun shutdown() {
-        Logger.tag(TAG).info { "Shutting down Breez foreground service" }
+        Logger.tag(TAG).debug { "Shutting down Breez foreground service" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -114,7 +114,7 @@ class BreezForegroundService : Service() {
             if (this != null && isPaymentReceived && !paymentHash.isNullOrBlank()) {
                 launchSdkConnection()
             } else {
-                Logger.tag(TAG).debug { "Received invalid data message." }
+                Logger.tag(TAG).warn { "Received invalid data message." }
                 shutdown()
             }
         }
@@ -132,9 +132,7 @@ class BreezForegroundService : Service() {
                 val notification = notifyForegroundService(applicationContext)
                 startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
 
-                Logger.tag(TAG).info { "Breez SDK is not connected, connecting...." }
                 breezSDK = connectSDK(applicationContext, SDKListener())
-                Logger.tag(TAG).info { "Breez SDK connected successfully" }
 
                 // Push back shutdown by SHUTDOWN_DELAY_MS
                 pushbackShutdown()

@@ -68,5 +68,15 @@ class BreezSdkConnector {
             val result: ByteArray = storageCipher.decrypt(data)
             return String(result, charset)
         }
+
+        internal fun disconnectSDK() {
+            if(breezSDK != null){
+                // Connect to the Breez SDK make it ready for use
+                Logger.tag(TAG).debug { "Disconnecting Breez SDK" }
+                breezSDK!!.disconnect()
+                Logger.tag(TAG).debug { "Disconnected from Breez SDK" }
+                breezSDK = null
+            }
+        }
     }
 }

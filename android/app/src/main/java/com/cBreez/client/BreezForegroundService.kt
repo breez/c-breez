@@ -14,6 +14,7 @@ import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundServi
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
 import com.cBreez.client.BreezSdkConnector.Companion.connectSDK
+import com.cBreez.client.BreezSdkConnector.Companion.disconnectSDK
 import com.cBreez.client.Constants.EXTRA_REMOTE_MESSAGE
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import com.google.firebase.messaging.RemoteMessage
@@ -96,6 +97,7 @@ class BreezForegroundService : Service() {
     private fun shutdown() {
         Logger.tag(TAG).debug { "Shutting down Breez foreground service" }
         stopForeground(STOP_FOREGROUND_REMOVE)
+        disconnectSDK()
         stopSelf()
     }
 

@@ -22,6 +22,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
     http.Client? httpClient,
   })  : _httpClient = httpClient ?? http.Client(),
         super(NetworkSettingsState.initial()) {
+    hydrate();
     _fetchMempoolSettings().then((_) => _log.info("Initial mempool settings read"));
   }
 

@@ -18,6 +18,7 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   Timer? _autoLock;
 
   SecurityBloc() : super(const SecurityState.initial()) {
+    hydrate();
     FGBGEvents.stream.listen((event) {
       final lockInterval = state.lockInterval;
       if (event == FGBGType.foreground) {

@@ -9,6 +9,7 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   final BreezSDK _breezSDK;
 
   CurrencyBloc(this._breezSDK) : super(CurrencyState.initial()) {
+    hydrate();
     _initializeCurrencyBloc();
   }
 

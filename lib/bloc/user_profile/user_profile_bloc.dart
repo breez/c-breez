@@ -27,6 +27,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     this._breezServer,
     this._notifications,
   ) : super(UserProfileState.initial()) {
+    hydrate();
     var profile = state;
     _log.info("State: ${profile.profileSettings.toJson()}");
     final settings = profile.profileSettings;

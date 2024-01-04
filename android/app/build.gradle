@@ -108,6 +108,11 @@ android {
             signingConfig signingConfigs.debug
             resValue "string", "app_name", "Breez Cloud"
             resValue "string", "breezApiKey", envVariables.API_KEY
+
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android.txt"),
+                    "proguard-rules.pro"
+            )
         }
     }
 }

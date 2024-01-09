@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 Flushbar showFlushbar(
   BuildContext context, {
   String? title,
-  Icon? icon,
+  Widget? icon,
   bool isDismissible = true,
   String? message,
   Widget? messageWidget,

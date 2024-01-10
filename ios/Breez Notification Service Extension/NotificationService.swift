@@ -4,7 +4,18 @@ import Combine
 import os.log
 import notify
 
+enum PayloadData: Codable {
+    case lnurlpay_info(callback_url: String)
+    case lnurlpay_invoice(amount: UInt64)
+}
+
+struct MessagePayload: Decodable {
+    let template: String
+    let data: PayloadData
+}
+
 protocol SDKBackgroundTask : EventListener {
+    func start(breezSDK: BlockingBreezServices)
     func onShutdown()
 }
 
@@ -29,7 +40,7 @@ class NotificationService: UNNotificationServiceExtension {
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
-        Self.logger.info("Notification received")
+        Self.logger.info("Notification received")        
         self.contentHandler = contentHandler
         self.bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
@@ -41,6 +52,7 @@ class NotificationService: UNNotificationServiceExtension {
                     Self.logger.info("Breez SDK is not connected, connecting....")
                     self.breezSDK = try BreezManager.register(listener: currentTask)
                     Self.logger.info("Breez SDK connected successfully")
+                    currentTask.start(breezSDK: self.breezSDK!)
                 } catch {
                     Self.logger.error("Breez SDK connection failed \(error)")
                     self.shutdown()
@@ -56,12 +68,41 @@ class NotificationService: UNNotificationServiceExtension {
         guard let notificationType = content.userInfo["notification_type"] as? String else {
             return nil
         }
+        Self.logger.info("Notification payload: \(content.userInfo)")
+        Self.logger.info("Notification type: \(notificationType)")
         switch(notificationType) {
             case "payment_received":
             Self.logger.info("creating task for payment received")
-                return PaymentReceiver(logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
-            default:
+            return PaymentReceiver(logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+        case "webhook_callback_message":
+            guard let callbackUrlString = content.userInfo["callback_url"] as? String else {
+                contentHandler!(content)
                 return nil
+            }
+            Self.logger.info("callback_url string: \(callbackUrlString)")
+            guard let callbackUrl = URL(string: callbackUrlString) else {
+                contentHandler!(content)
+                return nil
+            }
+            Self.logger.info("callback_url: \(callbackUrl)")
+            guard let payloadData = content.userInfo["message_payload"] as? String else {
+                contentHandler!(content)
+                return nil
+            }
+            Self.logger.info("message_payload: \(payloadData)")
+            
+            let jsonData = payloadData.data(using: .utf8)!
+            do {
+                let messagePayload: MessagePayload = try JSONDecoder().decode(MessagePayload.self, from: jsonData)
+                
+                Self.logger.info("creting lnurl pay task, payload: \(messagePayload), callbackUrl:\(callbackUrl)")
+                return LnurlPay(payload: messagePayload.data, serverReplyURL: callbackUrl, logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+            } catch let e {
+                Self.logger.info("Error in parsing request: \(e)")
+                return nil
+            }
+        default:
+            return nil
         }
     }
     
@@ -82,56 +123,6 @@ class NotificationService: UNNotificationServiceExtension {
     }
 }
 
-class PaymentReceiver : SDKBackgroundTask {
-    private var contentHandler: ((UNNotificationContent) -> Void)?
-    private var bestAttemptContent: UNMutableNotificationContent?
-    private var logger: XCGLogger
-    private var receivedPayment: Payment? = nil
-    
-    init(logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
-        self.contentHandler = contentHandler
-        self.bestAttemptContent = bestAttemptContent
-        self.logger = logger
-    }
-    
-    func onShutdown() {
-        let title = self.receivedPayment != nil ? "Received \(self.receivedPayment!.amountMsat/1000) sats" :  "Receive payment failed"
-        self.displayPushNotification(title: title)
-    }
-    
-    func onEvent(e: BreezEvent) {
-        switch e {
-        case .invoicePaid(details: let details):
-            self.logger.info("Received payment. Bolt11: \(details.bolt11)\nPayment Hash:\(details.paymentHash)")
-            receivedPayment = details.payment
-            break
-        case .synced:
-            self.logger.info("got synced event")
-            if let p =  self.receivedPayment {
-                self.onShutdown()
-            }
-            break
-        default:
-            break
-        }
-    }
-    
-    
-    public func displayPushNotification(title: String) {
-        self.logger.info("displayPushNotification \(title)")
-        
-        
-        guard
-            let contentHandler = contentHandler,
-            let bestAttemptContent = bestAttemptContent
-        else {
-            return
-        }
-
-        bestAttemptContent.title = title
-        contentHandler(bestAttemptContent)
-    }
-}
 
 class SDKLogListener : LogStream {
     private var logger: XCGLogger

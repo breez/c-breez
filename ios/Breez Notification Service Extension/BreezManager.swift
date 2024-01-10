@@ -37,7 +37,9 @@ class BreezManager {
         try setLogStream(logStream: SDKLogListener(logger: NotificationService.logger))
         
         // Create the default config
-        let apiKey = try Environment.glApiKey()
+        guard let apiKey = CredentialsManager.shared.restoreApiKey() else {
+            throw SdkError.Generic(message: "api key not found")
+        }
         log.trace("API_KEY: .\(apiKey)")
         var config = defaultConfig(envType: EnvironmentType.production, apiKey: apiKey,
                                    nodeConfig: NodeConfig.greenlight(

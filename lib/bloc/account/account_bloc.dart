@@ -112,6 +112,10 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future _startSdkOnce() async {
     _log.info("starting sdk once");
+    var config = await Config.instance();
+    if (config.sdkConfig.apiKey != null) {
+      await _credentialsManager.storeApiKey(apiKey: config.sdkConfig.apiKey!);
+    }    
     if (await _breezSDK.isInitialized()) {
       _log.info("sdk already initialized");
       await _breezSDK.fetchNodeData();
@@ -123,7 +127,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       final mnemonic = await _credentialsManager.restoreMnemonic();
       final seed = bip39.mnemonicToSeed(mnemonic);
       _log.info("connecting to breez lib");
-      await _breezSDK.connect(config: (await Config.instance()).sdkConfig, seed: seed);
+      await _breezSDK.connect(config: config.sdkConfig, seed: seed);
       _log.info("connected to breez lib");
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
     } catch (e) {

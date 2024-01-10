@@ -39,8 +39,7 @@ class BreezDateUtils {
     return isAfter && isBefore;
   }
 
-  static DateTime? blockDiffToDate({required int blockHeight, required int? expiryBlock}) {
-    if (expiryBlock == null || expiryBlock <= blockHeight) return null;
+  static DateTime blockDiffToDate({required int blockHeight, required int expiryBlock}) {
     final diffInSecs = (expiryBlock - blockHeight) * 600;
     final time = DateTime.now();
     return time.add(Duration(seconds: diffInSecs));

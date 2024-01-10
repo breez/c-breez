@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
-import 'package:c_breez/utils/date.dart';
 import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -33,7 +32,7 @@ class PaymentMinutiae {
   final PaymentStatus status;
   final String? fundingTxid;
   final String? closingTxid;
-  final DateTime? pendingExpirationTime;
+  final int? pendingExpirationBlock;
 
   const PaymentMinutiae({
     required this.id,
@@ -56,10 +55,10 @@ class PaymentMinutiae {
     required this.status,
     required this.fundingTxid,
     required this.closingTxid,
-    required this.pendingExpirationTime,
+    required this.pendingExpirationBlock,
   });
 
-  factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts, int currentBlockHeight) {
+  factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts) {
     final factory = _PaymentMinutiaeFactory(payment, texts);
     return PaymentMinutiae(
       id: payment.id,
@@ -82,7 +81,7 @@ class PaymentMinutiae {
       status: payment.status,
       fundingTxid: factory._fundingTx(),
       closingTxid: factory._closedTx(),
-      pendingExpirationTime: factory._pendingExpirationTime(currentBlockHeight),
+      pendingExpirationBlock: factory._pendingExpirationBlock(),
     );
   }
 }
@@ -238,15 +237,6 @@ class _PaymentMinutiaeFactory {
     return "";
   }
 
-  DateTime? _pendingExpirationTime(int blockHeight) {
-    final details = _payment.details.data;
-    if (_payment.status == PaymentStatus.Pending && details is LnPaymentDetails) {
-      return BreezDateUtils.blockDiffToDate(
-          blockHeight: blockHeight, expiryBlock: details.pendingExpirationBlock);
-    }
-    return null;
-  }
-
   String? _successActionUrl() {
     final details = _payment.details.data;
     if (details is LnPaymentDetails) {
@@ -323,6 +313,14 @@ class _PaymentMinutiaeFactory {
     final details = _payment.details.data;
     if (details is ClosedChannelPaymentDetails) {
       return details.closingTxid;
+    }
+    return null;
+  }
+
+  int? _pendingExpirationBlock() {
+    final details = _payment.details.data;
+    if (_payment.status == PaymentStatus.Pending && details is LnPaymentDetails) {
+      return details.pendingExpirationBlock;
     }
     return null;
   }

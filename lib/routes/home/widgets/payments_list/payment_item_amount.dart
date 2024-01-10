@@ -117,7 +117,6 @@ void main() async {
                   ),
                 ),
                 getSystemAppLocalizations(),
-                800000,
               ),
             ),
 
@@ -144,7 +143,6 @@ void main() async {
                   ),
                 ),
                 getSystemAppLocalizations(),
-                800000,
               ),
             ),
 
@@ -171,7 +169,6 @@ void main() async {
                   ),
                 ),
                 getSystemAppLocalizations(),
-                800000,
               ),
             ),
 
@@ -198,7 +195,6 @@ void main() async {
                   ),
                 ),
                 getSystemAppLocalizations(),
-                800000,
               ),
             ),
           ],

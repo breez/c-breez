@@ -274,14 +274,13 @@ void main() {
     });
 
     test("expiry should have expiry field when pending payment", () {
-      final expiryTime = makePendingLnPayment().pendingExpirationTime;
-      final expected = BreezDateUtils.blockDiffToDate(blockHeight: 800000, expiryBlock: 800100);
-      expect(expiryTime!.millisecondsSinceEpoch ~/ 1000, expected!.millisecondsSinceEpoch ~/ 1000);
+      final expiryBlock = makePendingLnPayment().pendingExpirationBlock;
+      expect(expiryBlock, 800000);
     });
   });
 
   test("expiry should not have expiry field when pending complete", () {
-    final expiryTime = make().pendingExpirationTime;
+    final expiryTime = make().pendingExpirationBlock;
     expect(expiryTime, null);
   });
 }
@@ -312,7 +311,6 @@ PaymentMinutiae make({
         ),
       ),
       texts(),
-      800000,
     );
 
 PaymentMinutiae makeLnPayment({
@@ -347,10 +345,9 @@ PaymentMinutiae makeLnPayment({
         ),
       ),
       texts(),
-      800000,
     );
 
-PaymentMinutiae makePendingLnPayment({int expiryBlock = 800100}) => PaymentMinutiae.fromPayment(
+PaymentMinutiae makePendingLnPayment({int expiryBlock = 800000}) => PaymentMinutiae.fromPayment(
       Payment(
         id: "id",
         paymentType: PaymentType.Sent,
@@ -370,7 +367,6 @@ PaymentMinutiae makePendingLnPayment({int expiryBlock = 800100}) => PaymentMinut
         ),
       ),
       texts(),
-      800000,
     );
 
 const posDescription = '|\nJoão Linus | https://storage.googleapis.com/download/storage/v1/b/breez-technology'

@@ -11,5 +11,5 @@ class TranslationsMock extends Mock implements BreezTranslations {
   String get payment_info_title_bitcoin_transfer => "A payment info title bitcoin transfer";
 
   @override
-  String get wallet_dashboard_payment_item_no_title => "A payment info title for peniding payment";
+  String get wallet_dashboard_payment_item_no_title => "A payment info title pending ln payment";
 }

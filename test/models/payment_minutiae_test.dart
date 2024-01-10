@@ -1,7 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
-import 'package:c_breez/utils/date.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../mock/translations_mock.dart';

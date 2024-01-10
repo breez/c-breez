@@ -271,6 +271,16 @@ void main() {
       final isKeySend = make().isKeySend;
       expect(isKeySend, isFalse);
     });
+
+    test("expiry should have expiry field when pending payment", () {
+      final expiryBlock = makePendingLnPayment().pendingExpirationBlock;
+      expect(expiryBlock, 800000);
+    });
+  });
+
+  test("expiry should not have expiry field when pending complete", () {
+    final expiryTime = make().pendingExpirationBlock;
+    expect(expiryTime, null);
   });
 }
 
@@ -331,6 +341,28 @@ PaymentMinutiae makeLnPayment({
             lnAddress: lnAddress,
             lnurlMetadata: metadata,
           ),
+        ),
+      ),
+      texts(),
+    );
+
+PaymentMinutiae makePendingLnPayment({int expiryBlock = 800000}) => PaymentMinutiae.fromPayment(
+      Payment(
+        id: "id",
+        paymentType: PaymentType.Sent,
+        paymentTime: 3,
+        amountMsat: 2,
+        feeMsat: 1,
+        status: PaymentStatus.Pending,
+        details: PaymentDetails.ln(
+          data: LnPaymentDetails(
+              bolt11: "a bolt 11",
+              paymentHash: "a payment hash",
+              label: "a label",
+              destinationPubkey: '',
+              paymentPreimage: '',
+              keysend: false,
+              pendingExpirationBlock: expiryBlock),
         ),
       ),
       texts(),

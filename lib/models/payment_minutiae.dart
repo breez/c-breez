@@ -32,6 +32,7 @@ class PaymentMinutiae {
   final PaymentStatus status;
   final String? fundingTxid;
   final String? closingTxid;
+  final int? pendingExpirationBlock;
 
   const PaymentMinutiae({
     required this.id,
@@ -54,6 +55,7 @@ class PaymentMinutiae {
     required this.status,
     required this.fundingTxid,
     required this.closingTxid,
+    required this.pendingExpirationBlock,
   });
 
   factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts) {
@@ -79,6 +81,7 @@ class PaymentMinutiae {
       status: payment.status,
       fundingTxid: factory._fundingTx(),
       closingTxid: factory._closedTx(),
+      pendingExpirationBlock: factory._pendingExpirationBlock(),
     );
   }
 }
@@ -310,6 +313,14 @@ class _PaymentMinutiaeFactory {
     final details = _payment.details.data;
     if (details is ClosedChannelPaymentDetails) {
       return details.closingTxid;
+    }
+    return null;
+  }
+
+  int? _pendingExpirationBlock() {
+    final details = _payment.details.data;
+    if (_payment.status == PaymentStatus.Pending && details is LnPaymentDetails) {
+      return details.pendingExpirationBlock;
     }
     return null;
   }

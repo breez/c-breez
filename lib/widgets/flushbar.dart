@@ -8,6 +8,7 @@ Flushbar showFlushbar(
   String? title,
   Widget? icon,
   bool isDismissible = true,
+  bool showMainButton = true,
   String? message,
   Widget? messageWidget,
   String? buttonText,
@@ -37,7 +38,7 @@ Flushbar showFlushbar(
           textAlign: TextAlign.left,
         ),
     backgroundColor: theme.snackBarBackgroundColor,
-    mainButton: !isDismissible
+    mainButton: !showMainButton
         ? null
         : TextButton(
             onPressed: () {

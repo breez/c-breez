@@ -75,6 +75,6 @@ class ServiceInjector {
   }
 
   Preferences get preferences {
-    return _preferences ??= Preferences();
+    return _preferences ??= const Preferences();
   }
 }

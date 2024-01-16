@@ -12,6 +12,7 @@ import os.log
 import notify
 import Foundation
 
+// Response for the first message of Lnurlpay.
 struct LnurlInfo: Decodable, Encodable {
     let callback: String
     let maxSendable: UInt64
@@ -28,6 +29,7 @@ struct LnurlInfo: Decodable, Encodable {
     }
 }
 
+// Response for the second message of Lnurlpay.
 struct LnurlInvoiceResponse: Decodable, Encodable {
     let pr: String
     let routes: [String]
@@ -38,6 +40,7 @@ struct LnurlInvoiceResponse: Decodable, Encodable {
     }
 }
 
+// Error Lnurl response.
 struct LnurlErrorResponse: Decodable, Encodable {
     let status: String
     let reason: String
@@ -48,56 +51,54 @@ struct LnurlErrorResponse: Decodable, Encodable {
     }
 }
 
-class LnurlPay : SDKBackgroundTask {
-    private var contentHandler: ((UNNotificationContent) -> Void)?
-    private var bestAttemptContent: UNMutableNotificationContent?
-    private var logger: XCGLogger
-    private var payload: PayloadData
-    private var serverReplyURL: URL
+// Base class for Lnurlpay protocol messages
+class LnurlPayTask {
+    var contentHandler: ((UNNotificationContent) -> Void)?
+    var bestAttemptContent: UNMutableNotificationContent?
+    var logger: XCGLogger
+    var successNotifiationTitle: String
+    var failNotificationTitle: String
     
-    init(payload: PayloadData, serverReplyURL: URL, logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
+    init(logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil, successNotificationTitle: String, failNotificationTitle: String) {
         self.contentHandler = contentHandler
         self.bestAttemptContent = bestAttemptContent
         self.logger = logger
-        self.payload = payload
-        self.serverReplyURL = serverReplyURL
+        self.successNotifiationTitle = successNotificationTitle;
+        self.failNotificationTitle = failNotificationTitle;
     }
     
-    func start(breezSDK: BlockingBreezServices){
-        do {
-            let metadata = "[[\"text/plain\",\"Pay to Breez\"]]"
-            switch self.payload {
-            case let .lnurlpay_info(callbackURL):
-                let nodeInfo = try breezSDK.nodeInfo()
-                self.replyServer(encodable: LnurlInfo(callback: callbackURL, maxSendable: nodeInfo.inboundLiquidityMsats, minSendable: UInt64(1000), metadata: metadata, tag: "payRequest"), successMessage: "Lnurl Information Requested")
-            case let .lnurlpay_invoice(amount):
-                let receiveResponse = try breezSDK.receivePayment(req: ReceivePaymentRequest(amountMsat: amount, description: metadata, useDescriptionHash: true))
-                self.replyServer(encodable: LnurlInvoiceResponse(pr: receiveResponse.lnInvoice.bolt11, routes: []), successMessage: "Lnurl Invoice Requested")
-            }
-        } catch let e {
-            self.logger.error("failed to process lnurl: \(e)")
-            self.fail(withError: e.localizedDescription, andTitle: "Lnurl processing failed")
+    func onEvent(e: BreezEvent) {}
+    
+    func onShutdown() {
+        displayPushNotification(title: self.failNotificationTitle)
+    }
+    
+    func replyServer(encodable: Encodable, replyURL: String) {
+        guard let serverReplyURL = URL(string: replyURL) else {
+            self.displayPushNotification(title: self.failNotificationTitle)
+            return
         }
-    }
-    
-    func replyServer(encodable: Encodable, successMessage: String) {
-        var request = URLRequest(url: self.serverReplyURL)
+        var request = URLRequest(url: serverReplyURL)
         request.httpMethod = "POST"
         request.httpBody = try! JSONEncoder().encode(encodable)
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             let statusCode = (response as! HTTPURLResponse).statusCode
 
             if statusCode == 200 {
-                self.displayPushNotification(title: successMessage)
+                self.displayPushNotification(title: self.successNotifiationTitle)
             } else {
-                self.displayPushNotification(title: "Lnurl processing failed")                
+                self.displayPushNotification(title: self.failNotificationTitle)
                 return
             }
         }
         task.resume()
     }
     
-    func fail(withError: String, andTitle: String) {
+    func fail(withError: String, replyURL: String) {
+        guard let serverReplyURL = URL(string: replyURL) else {
+            self.displayPushNotification(title: self.failNotificationTitle)
+            return
+        }
         var request = URLRequest(url: serverReplyURL)
         request.httpMethod = "POST"
         request.httpBody = try! JSONEncoder().encode(LnurlErrorResponse(status: "ERROR", reason: withError))
@@ -105,16 +106,10 @@ class LnurlPay : SDKBackgroundTask {
             let _ = (response as! HTTPURLResponse).statusCode
         }
         task.resume()
-        self.displayPushNotification(title: andTitle)
+        self.displayPushNotification(title: self.failNotificationTitle)
     }
     
-    func onShutdown() {
-        displayPushNotification(title: "Lnurl processing failed")
-    }
-    
-    func onEvent(e: BreezEvent) {}
-    
-    public func displayPushNotification(title: String) {
+    func displayPushNotification(title: String) {
         self.logger.info("displayPushNotification \(title)")
         
         
@@ -127,5 +122,48 @@ class LnurlPay : SDKBackgroundTask {
 
         bestAttemptContent.title = title
         contentHandler(bestAttemptContent)
+    }
+}
+
+// Class that handles the first message of lnurl pay.
+class LnurlPayInfo : LnurlPayTask, SDKBackgroundTask {
+    private var message: LnurlInfoMessage
+    
+    init(message: LnurlInfoMessage, logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
+        self.message = message
+        super.init(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, successNotificationTitle: "Lnurl Payment Started", failNotificationTitle: "Lnurl Info Failed")
+    }
+    
+    func start(breezSDK: BlockingBreezServices){
+        do {
+            let metadata = "[[\"text/plain\",\"Pay to Breez\"]]"
+            let nodeInfo = try breezSDK.nodeInfo()
+            replyServer(encodable: LnurlInfo(callback: message.callback_url, maxSendable: nodeInfo.inboundLiquidityMsats, minSendable: UInt64(1000), metadata: metadata, tag: "payRequest"),
+                replyURL: message.reply_url)
+        } catch let e {
+            self.logger.error("failed to process lnurl: \(e)")
+            fail(withError: e.localizedDescription, replyURL: message.reply_url)
+        }
+    }
+}
+
+// Class that handles the second message of lnurl pay.
+class LnurlPayInvoice : LnurlPayTask, SDKBackgroundTask {
+    private var message: LnurlInvoiceMessage
+    
+    init(message: LnurlInvoiceMessage, logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
+        self.message = message
+        super.init(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, successNotificationTitle: "Lnurl Payment Started", failNotificationTitle: "Lnurl Info Failed")
+    }
+    
+    func start(breezSDK: BlockingBreezServices){
+        do {
+            let metadata = "[[\"text/plain\",\"Pay to Breez\"]]"
+            let receiveResponse = try breezSDK.receivePayment(req: ReceivePaymentRequest(amountMsat: message.amount, description: metadata, useDescriptionHash: true))
+            self.replyServer(encodable: LnurlInvoiceResponse(pr: receiveResponse.lnInvoice.bolt11, routes: []), replyURL: message.reply_url)
+        } catch let e {
+            self.logger.error("failed to process lnurl: \(e)")
+            self.fail(withError: e.localizedDescription, replyURL: message.reply_url)
+        }
     }
 }

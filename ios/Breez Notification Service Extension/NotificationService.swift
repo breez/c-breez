@@ -4,14 +4,14 @@ import Combine
 import os.log
 import notify
 
-enum PayloadData: Codable {
-    case lnurlpay_info(callback_url: String)
-    case lnurlpay_invoice(amount: UInt64)
+struct LnurlInfoMessage: Codable {
+    let callback_url: String
+    let reply_url: String
 }
 
-struct MessagePayload: Decodable {
-    let template: String
-    let data: PayloadData
+struct LnurlInvoiceMessage: Codable {
+    let reply_url: String
+    let amount: UInt64
 }
 
 protocol SDKBackgroundTask : EventListener {
@@ -70,33 +70,39 @@ class NotificationService: UNNotificationServiceExtension {
         }
         Self.logger.info("Notification payload: \(content.userInfo)")
         Self.logger.info("Notification type: \(notificationType)")
+        
         switch(notificationType) {
             case "payment_received":
             Self.logger.info("creating task for payment received")
             return PaymentReceiver(logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
-        case "webhook_callback_message":
-            guard let callbackUrlString = content.userInfo["callback_url"] as? String else {
+        case "lnurlpay_info":
+            guard let messageData = content.userInfo["notification_payload"] as? String else {
                 contentHandler!(content)
                 return nil
             }
-            Self.logger.info("callback_url string: \(callbackUrlString)")
-            guard let callbackUrl = URL(string: callbackUrlString) else {
-                contentHandler!(content)
-                return nil
-            }
-            Self.logger.info("callback_url: \(callbackUrl)")
-            guard let payloadData = content.userInfo["message_payload"] as? String else {
-                contentHandler!(content)
-                return nil
-            }
-            Self.logger.info("message_payload: \(payloadData)")
-            
-            let jsonData = payloadData.data(using: .utf8)!
+            Self.logger.info("lnurlpay_info data string: \(messageData)")
+            let jsonData = messageData.data(using: .utf8)!
             do {
-                let messagePayload: MessagePayload = try JSONDecoder().decode(MessagePayload.self, from: jsonData)
+                let lnurlInfoMessage: LnurlInfoMessage = try JSONDecoder().decode(LnurlInfoMessage.self, from: jsonData)
                 
-                Self.logger.info("creting lnurl pay task, payload: \(messagePayload), callbackUrl:\(callbackUrl)")
-                return LnurlPay(payload: messagePayload.data, serverReplyURL: callbackUrl, logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+                Self.logger.info("creting lnurl pay task, payload: \(lnurlInfoMessage)")
+                return LnurlPayInfo(message: lnurlInfoMessage, logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+            } catch let e {
+                Self.logger.info("Error in parsing request: \(e)")
+                return nil
+            }
+        case "lnurlpay_invoice":
+            guard let messageData = content.userInfo["notification_payload"] as? String else {
+                contentHandler!(content)
+                return nil
+            }
+            Self.logger.info("lnurlpay_invoice data string: \(messageData)")
+            let jsonData = messageData.data(using: .utf8)!
+            do {
+                let lnurlInvoiceMessage: LnurlInvoiceMessage = try JSONDecoder().decode(LnurlInvoiceMessage.self, from: jsonData)
+                
+                Self.logger.info("creting lnurl pay task, payload: \(lnurlInvoiceMessage)")
+                return LnurlPayInvoice(message: lnurlInvoiceMessage, logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
             } catch let e {
                 Self.logger.info("Error in parsing request: \(e)")
                 return nil

@@ -69,10 +69,10 @@ class LnurlPay : SDKBackgroundTask {
             switch self.payload {
             case let .lnurlpay_info(callbackURL):
                 let nodeInfo = try breezSDK.nodeInfo()
-                self.replyServer(encodable: LnurlInfo(callback: callbackURL, maxSendable: nodeInfo.inboundLiquidityMsats, minSendable: UInt64(1000), metadata: metadata, tag: "payRequest"))
+                self.replyServer(encodable: LnurlInfo(callback: callbackURL, maxSendable: nodeInfo.inboundLiquidityMsats, minSendable: UInt64(1000), metadata: metadata, tag: "payRequest"), successMessage: "Lnurl Information Requested")
             case let .lnurlpay_invoice(amount):
                 let receiveResponse = try breezSDK.receivePayment(req: ReceivePaymentRequest(amountMsat: amount, description: metadata, useDescriptionHash: true))
-                self.replyServer(encodable: LnurlInvoiceResponse(pr: receiveResponse.lnInvoice.bolt11, routes: []))
+                self.replyServer(encodable: LnurlInvoiceResponse(pr: receiveResponse.lnInvoice.bolt11, routes: []), successMessage: "Lnurl Invoice Requested")
             }
         } catch let e {
             self.logger.error("failed to process lnurl: \(e)")
@@ -80,7 +80,7 @@ class LnurlPay : SDKBackgroundTask {
         }
     }
     
-    func replyServer(encodable: Encodable) {
+    func replyServer(encodable: Encodable, successMessage: String) {
         var request = URLRequest(url: self.serverReplyURL)
         request.httpMethod = "POST"
         request.httpBody = try! JSONEncoder().encode(encodable)
@@ -88,7 +88,7 @@ class LnurlPay : SDKBackgroundTask {
             let statusCode = (response as! HTTPURLResponse).statusCode
 
             if statusCode == 200 {
-                self.displayPushNotification(title: "success")
+                self.displayPushNotification(title: successMessage)
             } else {
                 self.displayPushNotification(title: "Lnurl processing failed")                
                 return

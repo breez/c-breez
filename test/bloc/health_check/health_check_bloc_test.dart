@@ -4,7 +4,6 @@ import 'package:c_breez/bloc/health_check/health_check_bloc.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../mock/injector_mock.dart';
 import '../../unit_logger.dart';

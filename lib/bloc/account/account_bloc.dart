@@ -115,7 +115,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     var config = await Config.instance();
     if (config.sdkConfig.apiKey != null) {
       await _credentialsManager.storeApiKey(apiKey: config.sdkConfig.apiKey!);
-    }    
+    }
     if (await _breezSDK.isInitialized()) {
       _log.info("sdk already initialized");
       await _breezSDK.fetchNodeData();

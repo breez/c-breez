@@ -28,6 +28,7 @@ jobs:
           repository: 'breez/breez-sdk'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
+          ref: 'ok300-bump-gl-vls-0.11.0rc1'
 
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2

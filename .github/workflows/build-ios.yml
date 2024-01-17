@@ -75,6 +75,7 @@ jobs:
           repository: 'breez/breez-sdk'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
+          ref: 'ok300-bump-gl-vls-0.11.0rc1'
 
       - name: 🏗️ Rust cache
         uses: Swatinem/rust-cache@v2

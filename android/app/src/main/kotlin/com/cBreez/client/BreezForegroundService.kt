@@ -82,6 +82,10 @@ class BreezForegroundService : ForegroundService, Service() {
         val intentDetails = "[ intent=$intent, flag=$flags, startId=$startId ]"
         Logger.tag(TAG).debug { "Start Breez foreground service from intent $intentDetails" }
 
+        // Display foreground service notification when connecting for the first time
+        val notification = notifyForegroundService(applicationContext)
+        startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
+
         // Connect to SDK if source intent has data message with valid payload
         getJobFromNotification(intent)?.also {
             launchSdkConnection(it)
@@ -112,10 +116,6 @@ class BreezForegroundService : ForegroundService, Service() {
             shutdown()
         }) {
             breezSDK ?: run {
-                // Display foreground service notification when connecting for the first time
-                val notification = notifyForegroundService(applicationContext)
-                startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
-
                 breezSDK = connectSDK(applicationContext, job)
             }
 

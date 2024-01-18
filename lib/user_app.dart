@@ -14,6 +14,7 @@ import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_page.dart';
 import 'package:c_breez/routes/create_invoice/create_invoice_page.dart';
 import 'package:c_breez/routes/dev/developers_view.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_settings.dart';
+import 'package:c_breez/routes/get-refund/get_refund_page.dart';
 import 'package:c_breez/routes/home/home_page.dart';
 import 'package:c_breez/routes/initial_walkthrough/initial_walkthrough.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonics_page.dart';
@@ -26,10 +27,9 @@ import 'package:c_breez/routes/security/lock_screen.dart';
 import 'package:c_breez/routes/security/secured_page.dart';
 import 'package:c_breez/routes/security/security_page.dart';
 import 'package:c_breez/routes/splash/splash_page.dart';
-import 'package:c_breez/routes/get-refund/get_refund_page.dart';
 import 'package:c_breez/routes/subswap/swap/swap_page.dart';
-import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_page.dart';
 import 'package:c_breez/routes/withdraw/redeem_onchain_funds/redeem_onchain_funds_page.dart';
+import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
@@ -129,7 +129,7 @@ class UserApp extends StatelessWidget {
                     case '/':
                       return FadeInRoute(
                         builder: (_) => NavigatorPopHandler(
-                          onPop: () => _homeNavigatorKey.currentState!.pop(),
+                          onPop: () => _homeNavigatorKey.currentState!.maybePop(),
                           child: Navigator(
                             initialRoute: "/",
                             key: _homeNavigatorKey,

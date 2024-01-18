@@ -159,6 +159,11 @@ class LnurlPayInvoice : LnurlPayTask, SDKBackgroundTask {
     func start(breezSDK: BlockingBreezServices){
         do {
             let metadata = "[[\"text/plain\",\"Pay to Breez\"]]"
+            let nodeInfo = try breezSDK.nodeInfo()
+            if message.amount < 1000 || message.amount > nodeInfo.inboundLiquidityMsats {
+                fail(withError: "Invalid amount requested \(message.amount)", replyURL: message.reply_url)
+                return
+            }
             let receiveResponse = try breezSDK.receivePayment(req: ReceivePaymentRequest(amountMsat: message.amount, description: metadata, useDescriptionHash: true))
             self.replyServer(encodable: LnurlInvoiceResponse(pr: receiveResponse.lnInvoice.bolt11, routes: []), replyURL: message.reply_url)
         } catch let e {

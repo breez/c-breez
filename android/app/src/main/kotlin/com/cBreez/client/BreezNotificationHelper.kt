@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -121,7 +122,7 @@ class BreezNotificationHelper {
             val notificationID: Int = System.currentTimeMillis().toInt() / 1000
             val notificationColor = context.getColor(R.color.breez_notification_color)
 
-            val notificationIntent = Intent(clickAction)
+            val notificationIntent = Intent(context, MainActivity::class.java)
             notificationIntent.putExtra("click_action", clickAction)
 
             val flags =
@@ -140,12 +141,17 @@ class BreezNotificationHelper {
                 approvePendingIntent
             ).build()
 
+            val contentIntent = TaskStackBuilder.create(context).run {
+                addNextIntentWithParentStack(notificationIntent)
+                approvePendingIntent
+            }
+
             return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_PAYMENT_RECEIVED)
                 .apply {
                     setContentTitle(context.getString(R.string.payment_received_notification_title))
                     setContentText("Received $amountSat sats")
                     setSmallIcon(R.mipmap.ic_stat_ic_notification)
-                    setContentIntent(approvePendingIntent)
+                    setContentIntent(contentIntent)
                     addAction(notificationAction)
                     setLights(notificationColor, 1000, 300)
                     // Dismiss on click

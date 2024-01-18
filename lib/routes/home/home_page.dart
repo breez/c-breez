@@ -76,7 +76,10 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
+      onPopInvoked: (bool didPop) async {
+        if (didPop) {
+          return;
+        }
         // Only close drawer if it's open
         final NavigatorState navigator = Navigator.of(context);
         if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {

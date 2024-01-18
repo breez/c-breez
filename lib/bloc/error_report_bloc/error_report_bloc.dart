@@ -14,14 +14,16 @@ class ErrorReportBloc extends Cubit<int> {
 
   void reportError(String paymentHash, String comment) {
     _log.info("Reporting error for paymentHash: $paymentHash, comment: $comment");
-    _breezSDK.reportIssue(
+    _breezSDK
+        .reportIssue(
       req: ReportIssueRequest.paymentFailure(
         data: ReportPaymentFailureDetails(
           paymentHash: paymentHash,
           comment: comment,
         ),
       ),
-    ).then((value) {
+    )
+        .then((value) {
       _log.info("Reported error for paymentHash: $paymentHash, comment: $comment");
       emit(state + 1);
     }, onError: (error) {

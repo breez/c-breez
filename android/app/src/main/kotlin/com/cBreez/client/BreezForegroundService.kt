@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.tinylog.kotlin.Logger
 
 class BreezForegroundService : Service() {
@@ -161,6 +162,6 @@ class BreezForegroundService : Service() {
 
     private val RemoteMessage.paymentHash: String?
         get() {
-            return data["payment_hash"]
+            return data["notification_payload"]?.let { JSONObject(it).getString("payment_hash") }
         }
 }

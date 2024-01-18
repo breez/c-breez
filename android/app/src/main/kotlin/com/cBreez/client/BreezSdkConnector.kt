@@ -13,8 +13,24 @@ class BreezSdkConnector {
         private const val TAG = "BreezSdkConnector"
 
         private var breezSDK: BlockingBreezServices? = null
+        private var nodeLogStream: LogStream? = null
         private var ELEMENT_PREFERENCES_KEY_PREFIX =
             "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIHNlY3VyZSBzdG9yYWdlCg"
+
+        internal fun setNodeLogStream(): LogStream? {
+            // Set Log Stream
+            if (nodeLogStream == null) {
+                try {
+                    Logger.tag(TAG).info { "Setting up node log stream" }
+                    nodeLogStream = SdkLogListener()
+                    setLogStream(nodeLogStream!!)
+                    Logger.tag(TAG).info { "Node log stream set" }
+                } catch (ex: Throwable) {
+                    Logger.tag(TAG).error { "Failed to set node log stream" }
+                }
+            }
+            return nodeLogStream!!
+        }
 
         internal fun connectSDK(
             applicationContext: Context,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/deep_links.dart';
 import 'package:c_breez/services/device.dart';
@@ -31,6 +32,7 @@ class ServiceInjector {
   KeyChain? _keychain;
   Client? _client;
   Preferences? _preferences;
+  BreezLogger? _breezLogger;
 
   factory ServiceInjector() {
     return _injector ?? _singleton;
@@ -76,5 +78,9 @@ class ServiceInjector {
 
   Preferences get preferences {
     return _preferences ??= const Preferences();
+  }
+
+  BreezLogger get breezLogger {
+    return _breezLogger ??= BreezLogger();
   }
 }

@@ -24,12 +24,12 @@ import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/webhooks/webhooks_bloc.dart';
 import 'package:c_breez/config.dart' as cfg;
-import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,7 +44,6 @@ void main() async {
   // runZonedGuarded wrapper is required to log Dart errors.
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    final logger = BreezLogger();
     SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
     );
@@ -52,11 +51,11 @@ void main() async {
     BreezDateUtils.setupLocales();
     await Firebase.initializeApp();
     final injector = ServiceInjector();
-
+    var breezLogger = injector.breezLogger;
     final breezSDK = injector.breezSDK;
     if (!await breezSDK.isInitialized()) {
-      breezSDK.initialize();
-      logger.registerBreezSdkLog(breezSDK);
+      breezSDK.initialize(usesNativeNodeLogs: true);
+      breezLogger.registerBreezSdkLog(breezSDK);
     }
 
     final appDir = await getApplicationDocumentsDirectory();

@@ -5,17 +5,22 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/logger.dart';
+import 'package:c_breez/models/bug_report_behavior.dart';
 import 'package:c_breez/routes/dev/command_line_interface.dart';
 import 'package:c_breez/routes/ui_test/ui_test_page.dart';
+import 'package:c_breez/utils/preferences.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+
+final _log = Logger("DevelopersView");
 
 bool allowRebroadcastRefunds = false;
 
@@ -31,10 +36,26 @@ class Choice {
   final Function(BuildContext context) function;
 }
 
-class DevelopersView extends StatelessWidget {
+class DevelopersView extends StatefulWidget {
   const DevelopersView({
     super.key,
   });
+
+  @override
+  State<DevelopersView> createState() => _DevelopersViewState();
+}
+
+class _DevelopersViewState extends State<DevelopersView> {
+  final _preferences = const Preferences();
+  var bugReportBehavior = BugReportBehavior.PROMPT;
+
+  @override
+  void initState() {
+    super.initState();
+    _preferences
+        .getBugReportBehavior()
+        .then((value) => bugReportBehavior = value, onError: (e) => _log.warning(e));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +97,22 @@ class DevelopersView extends StatelessWidget {
                 function: (_) => shareLog(),
               ),
               Choice(
-                  title: "Export static backup", icon: Icons.charging_station, function: _exportStaticBackup)
+                title: "Export static backup",
+                icon: Icons.charging_station,
+                function: _exportStaticBackup,
+              ),
+              if (bugReportBehavior != BugReportBehavior.PROMPT)
+                Choice(
+                  title: "Enable Failure Prompt",
+                  icon: Icons.bug_report,
+                  function: (_) {
+                    _preferences.setBugReportBehavior(BugReportBehavior.PROMPT).then(
+                        (value) => setState(() {
+                              bugReportBehavior = BugReportBehavior.PROMPT;
+                            }),
+                        onError: (e) => _log.warning(e));
+                  },
+                ),
             ]
                 .map((choice) => PopupMenuItem<Choice>(
                       value: choice,

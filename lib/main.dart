@@ -29,7 +29,6 @@ import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +53,7 @@ void main() async {
     var breezLogger = injector.breezLogger;
     final breezSDK = injector.breezSDK;
     if (!await breezSDK.isInitialized()) {
-      breezSDK.initialize(usesNativeNodeLogs: true);
+      breezSDK.initialize();
       breezLogger.registerBreezSdkLog(breezSDK);
     }
 

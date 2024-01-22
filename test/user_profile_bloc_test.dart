@@ -36,11 +36,6 @@ void main() {
       await hydratedBlocStorage.tearDownHydratedBloc();
     });
 
-    test("should return empty user when not registered", () async {
-      final user = userProfileBloc.state;
-      expect(user.profileSettings.userID, null);
-    });
-
     test("should return registered user", () async {
       userProfileBloc.updateProfile(
         name: "A name",

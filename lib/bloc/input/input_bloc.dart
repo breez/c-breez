@@ -41,12 +41,12 @@ class InputBloc extends Cubit<InputState> {
     _decodeInvoiceController.add(InputData(data: bolt11, source: source));
   }
 
-  Future trackPayment(String paymentHash) async {
+  Future trackPayment(String? paymentHash) async {
     _log.info("trackPayment: $paymentHash");
     await _breezSDK.invoicePaidStream.firstWhere((invoice) {
       _log.info("invoice paid: ${invoice.paymentHash} we are waiting for "
           "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
-      return invoice.paymentHash == paymentHash;
+      return paymentHash == null || invoice.paymentHash == paymentHash;
     });
   }
 

@@ -4,16 +4,16 @@ import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 
-import 'subswap_dialog.dart';
-
 class AddressQRWidget extends StatelessWidget {
   final String address;
-  final String backupJson;
+  final String? footer;
+  final void Function()? onLongPress;
 
   const AddressQRWidget({
     super.key,
     required this.address,
-    required this.backupJson,
+    this.footer,
+    this.onLongPress,
   });
 
   @override
@@ -24,6 +24,7 @@ class AddressQRWidget extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
+          onLongPress: onLongPress,
           child: Container(
             margin: const EdgeInsets.only(top: 32.0, bottom: 16.0),
             padding: const EdgeInsets.all(8.6),
@@ -32,28 +33,24 @@ class AddressQRWidget extends StatelessWidget {
               size: 180.0,
             ),
           ),
-          onLongPress: () => showDialog(
-            useRootNavigator: false,
-            context: context,
-            builder: (_) => SwapDialog(backupJson: backupJson),
-          ),
         ),
-        Container(
-          padding: const EdgeInsets.only(top: 16.0, left: 24, right: 24),
-          child: GestureDetector(
-            onTap: () {
-              ServiceInjector().device.setClipboardText(address);
-              showFlushbar(
-                context,
-                message: texts.invoice_btc_address_deposit_address_copied,
-              );
-            },
-            child: Text(
-              address,
-              style: themeData.primaryTextTheme.titleSmall,
+        if (footer != null)
+          Container(
+            padding: const EdgeInsets.only(top: 16.0, left: 24, right: 24),
+            child: GestureDetector(
+              onTap: () {
+                ServiceInjector().device.setClipboardText(address);
+                showFlushbar(
+                  context,
+                  message: texts.invoice_btc_address_deposit_address_copied,
+                );
+              },
+              child: Text(
+                footer!,
+                style: themeData.primaryTextTheme.titleSmall,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

@@ -4,11 +4,9 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/config.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:git_info/git_info.dart';
 import 'package:logging/logging.dart';
 import 'package:share_plus/share_plus.dart';
@@ -83,15 +81,7 @@ class BreezLogger {
 
   /// Log entries according to their severity
   void registerBreezSdkLog(BreezSDK breezSDK) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      const EventChannel nodeLogStream = EventChannel('breez_sdk_node_logs');
-      nodeLogStream
-          .receiveBroadcastStream()
-          .map((log) => sdk.LogEntry(line: log["line"], level: log["level"]))
-          .listen(_logSdkEntries);
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      breezSDK.logStream.listen(_logSdkEntries);
-    }
+    breezSDK.logStream.listen(_logSdkEntries);
   }
 
   void _logSdkEntries(log) {

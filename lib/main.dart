@@ -86,9 +86,7 @@ void main() async {
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) => UserProfileBloc(
-              breezSDK,
               injector.breezServer,
-              injector.notifications,
             ),
           ),
           BlocProvider<WebhooksBloc>(

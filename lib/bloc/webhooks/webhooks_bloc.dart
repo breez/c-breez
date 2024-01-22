@@ -4,13 +4,10 @@ import 'dart:math';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/services/keychain.dart';
-import 'package:c_breez/services/notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddWebhookRequest {
   final int time;

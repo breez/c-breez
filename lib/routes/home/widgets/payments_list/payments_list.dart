@@ -135,9 +135,7 @@ void main() async {
         ),
         BlocProvider<UserProfileBloc>(
           create: (BuildContext context) => UserProfileBloc(
-            injector.breezSDK,
             injector.breezServer,
-            injector.notifications,
           ),
         ),
       ],

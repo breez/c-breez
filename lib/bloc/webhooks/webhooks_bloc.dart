@@ -52,7 +52,7 @@ class WebhooksState {
 
 class WebhooksBloc extends Cubit<WebhooksState> {
   static const notifierServiceURL = "https://notifier.breez.technology";
-  static const lnurlServiceURL = "https://lnurl.breez.technology";
+  static const lnurlServiceURL = "https://breez.fun";
 
   final _log = Logger("WebhooksBloc");
   final ServiceInjector injector;

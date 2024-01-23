@@ -92,7 +92,6 @@ void main() async {
           BlocProvider<WebhooksBloc>(
             lazy: false,
             create: (BuildContext context) => WebhooksBloc(
-              breezSDK,
               injector,
             ),
           ),

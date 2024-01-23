@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter/foundation.dart';
@@ -56,12 +54,11 @@ class WebhooksBloc extends Cubit<WebhooksState> {
   static const notifierServiceURL = "https://notifier.breez.technology";
   static const lnurlServiceURL = "https://lnurl.breez.technology";
 
-  final _log = Logger("LnurlPayBloc");
-  final BreezSDK _breezSDK;
+  final _log = Logger("WebhooksBloc");
   final ServiceInjector injector;
 
-  WebhooksBloc(this._breezSDK, this.injector) : super(WebhooksState(loading: false)) {
-    _breezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((nodeState) {
+  WebhooksBloc(this.injector) : super(WebhooksState(loading: false)) {
+    injector.breezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null).then((nodeState) {
       _withLoadingState(_registerWebhooks(nodeState!));
     });
   }
@@ -69,7 +66,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
   Future refreshLnurlPay() async {
     _withLoadingState(() async {
       try {
-        final nodeState = await _breezSDK.nodeInfo();
+        final nodeState = await injector.breezSDK.nodeInfo();
         if (nodeState == null) {
           throw Exception("Node state is empty");
         }
@@ -84,7 +81,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
   Future _registerWebhooks(NodeState nodeState) async {
     try {
       String webhookUrl = await generateWebhookURL();
-      await _breezSDK.registerWebhook(webhookUrl: webhookUrl);
+      await injector.breezSDK.registerWebhook(webhookUrl: webhookUrl);
       _log.info("SDK webhook registered: $webhookUrl");
       final lnurl = await registerLnurlpay(nodeState, webhookUrl);
       emit(state.copyWith(lnurlpayUrl: lnurl));
@@ -102,7 +99,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     }
     final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final signature =
-        await _breezSDK.signMessage(req: SignMessageRequest(message: "$currentTime-$webhookUrl"));
+        await injector.breezSDK.signMessage(req: SignMessageRequest(message: "$currentTime-$webhookUrl"));
     String lnurlWebhookUrl = "$lnurlServiceURL/lnurlpay/${nodeState.id}";
     final uri = Uri.parse(lnurlWebhookUrl);
     final jsonResponse = await http.post(uri,
@@ -127,7 +124,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     String lnurlWebhookUrl = "$lnurlServiceURL/lnurlpay/${nodeState.id}";
     final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final signature =
-        await _breezSDK.signMessage(req: SignMessageRequest(message: "$currentTime-$toInvalidate"));
+        await injector.breezSDK.signMessage(req: SignMessageRequest(message: "$currentTime-$toInvalidate"));
     final uri = Uri.parse(lnurlWebhookUrl);
     final response = await http.delete(uri,
         body: jsonEncode(RemoveWebhookRequest(
@@ -154,23 +151,6 @@ class WebhooksBloc extends Cubit<WebhooksState> {
       throw Exception("Notifications for platform is not supported");
     }
     return "$notifierServiceURL/api/v1/notify?platform=$platform&token=$token";
-  }
-
-  String generateUser() {
-    String upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    String lower = 'abcdefghijklmnopqrstuvwxyz';
-    String numbers = '1234567890';
-    int userLength = 10;
-    String seed = upper + lower + numbers;
-    String user = '';
-    List<String> list = seed.split('').toList();
-    Random rand = Random();
-
-    for (int i = 0; i < userLength; i++) {
-      int index = rand.nextInt(list.length);
-      user += list[index];
-    }
-    return user;
   }
 
   Future _withLoadingState(Future action) {

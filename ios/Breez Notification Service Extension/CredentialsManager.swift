@@ -12,6 +12,7 @@ fileprivate var log = Logger(OSLog.disabled)
 #endif
 
 let accountMnemonic: String = "account_mnemonic"
+let accountApiKey: String = "account_api_key"
 
 class CredentialsManager {
     
@@ -26,6 +27,18 @@ class CredentialsManager {
             return try keychain.getString(accountMnemonic)
         } catch let error {
             log.error("Failed to restore mnemonic from keychain. Error: \(error)")
+        }
+        
+        return nil
+    }
+    
+    func restoreApiKey() -> String? {
+        log.trace("restoreApiKey")
+        let keychain = Keychain(service: "flutter_secure_storage_service", accessGroup: "group.F7R2LZH3W5.com.cBreez.client")
+        do {
+            return try keychain.getString(accountApiKey)
+        } catch let error {
+            log.error("Failed to restore api key from keychain. Error: \(error)")
         }
         
         return nil

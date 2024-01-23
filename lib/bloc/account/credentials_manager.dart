@@ -10,10 +10,22 @@ import 'package:path_provider/path_provider.dart';
 class CredentialsManager {
   final _log = Logger("CredentialsManager");
   static const String accountMnemonic = "account_mnemonic";
+  static const String accountApiKey = "account_api_key";
 
   final KeyChain keyChain;
 
   CredentialsManager({required this.keyChain});
+
+  Future storeApiKey({
+    required String apiKey,
+  }) async {
+    try {
+      await keyChain.write(accountApiKey, apiKey);
+      _log.info("Stored api key successfully");
+    } catch (err) {
+      throw Exception(err.toString());
+    }
+  }
 
   Future storeMnemonic({
     required String mnemonic,

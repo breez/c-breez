@@ -19,6 +19,7 @@ import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
+import 'package:c_breez/bloc/webhooks/webhooks_bloc.dart';
 import 'package:c_breez/config.dart' as cfg;
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/injector.dart';
@@ -85,9 +86,13 @@ void main() async {
           ),
           BlocProvider<UserProfileBloc>(
             create: (BuildContext context) => UserProfileBloc(
-              breezSDK,
               injector.breezServer,
-              injector.notifications,
+            ),
+          ),
+          BlocProvider<WebhooksBloc>(
+            lazy: false,
+            create: (BuildContext context) => WebhooksBloc(
+              injector,
             ),
           ),
           BlocProvider<CurrencyBloc>(

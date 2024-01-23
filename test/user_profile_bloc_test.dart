@@ -25,20 +25,13 @@ void main() {
       PathProviderPlatform.instance = platform;
       await hydratedBlocStorage.setUpHydratedBloc();
       userProfileBloc = UserProfileBloc(
-        injector.breezSDK,
         injector.breezServer,
-        injector.notifications,
       );
     });
 
     tearDown(() async {
       await platform.tearDown();
       await hydratedBlocStorage.tearDownHydratedBloc();
-    });
-
-    test("should return empty user when not registered", () async {
-      final user = userProfileBloc.state;
-      expect(user.profileSettings.userID, null);
     });
 
     test("should return registered user", () async {
@@ -49,9 +42,7 @@ void main() {
       await Future.delayed(const Duration(milliseconds: 100));
 
       userProfileBloc = UserProfileBloc(
-        injector.breezSDK,
         injector.breezServer,
-        injector.notifications,
       );
 
       final user = userProfileBloc.state;

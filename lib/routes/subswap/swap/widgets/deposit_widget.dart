@@ -4,12 +4,12 @@ import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/backup_script.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/subswap_dialog.dart';
+import 'package:c_breez/widgets/address_widget.dart';
 import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
-
-import 'address_widget.dart';
 
 class DepositWidget extends StatefulWidget {
   final SwapInfo swap;
@@ -45,13 +45,20 @@ class _DepositWidgetState extends State<DepositWidget> {
   Widget build(BuildContext context) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
     final openingFeeParams = widget.swap.channelOpeningFees;
+    final texts = context.texts();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         AddressWidget(
           widget.swap.bitcoinAddress,
-          backupJson: backupJson,
+          title: texts.invoice_btc_address_deposit_address,
+          footer: widget.swap.bitcoinAddress,
+          onLongPress: () => showDialog(
+            useRootNavigator: false,
+            context: context,
+            builder: (_) => SwapDialog(backupJson: backupJson),
+          ),
         ),
         lspInfo != null && openingFeeParams != null
             ? WarningBox(

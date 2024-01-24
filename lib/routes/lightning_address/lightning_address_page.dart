@@ -66,7 +66,11 @@ class LightningAddressPageState extends State<LightningAddressPage> {
                     )
                   : Column(
                       children: [
-                        AddressWidget(webhookState.lnurlpayUrl!, title: "Address Information", type: AddressWidgetType.lnurl,),
+                        AddressWidget(
+                          webhookState.lnurlpayUrl!,
+                          title: "Address Information",
+                          type: AddressWidgetType.lnurl,
+                        ),
                         const Padding(padding: EdgeInsets.only(top: 16.0)),
                       ],
                     ),

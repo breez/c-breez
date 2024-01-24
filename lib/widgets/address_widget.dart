@@ -6,7 +6,6 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-
 enum AddressWidgetType {
   bitcoin,
   lnurl,
@@ -19,7 +18,8 @@ class AddressWidget extends StatelessWidget {
   final void Function()? onLongPress;
   final AddressWidgetType type;
 
-  const AddressWidget(this.address, {this.footer, this.title, this.onLongPress, this.type = AddressWidgetType.bitcoin});
+  const AddressWidget(this.address,
+      {this.footer, this.title, this.onLongPress, this.type = AddressWidgetType.bitcoin});
 
   @override
   Widget build(BuildContext context) {

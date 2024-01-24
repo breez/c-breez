@@ -1,3 +1,4 @@
+import 'package:c_breez/models/bug_report_behavior.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,10 +9,13 @@ const kDefaultExemptFeeMsat = 20000;
 const _mempoolSpaceUrlKey = "mempool_space_url";
 const _kPaymentOptionProportionalFee = "payment_options_proportional_fee";
 const _kPaymentOptionExemptFee = "payment_options_exempt_fee";
+const _kReportPrefKey = "report_preference_key";
 
 final _log = Logger("Preferences");
 
 class Preferences {
+  const Preferences();
+
   Future<String?> getMempoolSpaceUrl() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_mempoolSpaceUrlKey);
@@ -48,5 +52,20 @@ class Preferences {
     _log.info("set payment options exempt fee : $exemptfeeMsat");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kPaymentOptionExemptFee, exemptfeeMsat);
+  }
+
+  Future<BugReportBehavior> getBugReportBehavior() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getInt(_kReportPrefKey);
+    if (value == null || value < 0 || value >= BugReportBehavior.values.length) {
+      return BugReportBehavior.PROMPT;
+    }
+    return BugReportBehavior.values[value];
+  }
+
+  Future<void> setBugReportBehavior(BugReportBehavior behavior) async {
+    _log.info("set bug report behavior: $behavior");
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_kReportPrefKey, behavior.index);
   }
 }

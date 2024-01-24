@@ -9,11 +9,13 @@ import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
+import 'package:c_breez/bloc/error_report_bloc/error_report_bloc.dart';
 import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
 import 'package:c_breez/bloc/health_check/health_check_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
+import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
@@ -35,8 +37,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-
-import 'bloc/network/network_settings_bloc.dart';
 
 final _log = Logger("Main");
 
@@ -138,6 +138,7 @@ void main() async {
           BlocProvider<HealthCheckBloc>(
             create: (BuildContext context) => HealthCheckBloc(breezSDK),
           ),
+          BlocProvider<ErrorReportBloc>(create: (BuildContext context) => ErrorReportBloc(breezSDK)),
         ],
         child: UserApp(),
       ),

@@ -31,15 +31,11 @@ class PaymentResult {
 
 class PaymentResultError {
   final String message;
-  final bool ignoreGlobalFeedback;
-  final bool validationError;
   final String paymentHash;
   final String comment;
 
   const PaymentResultError({
     required this.message,
-    this.ignoreGlobalFeedback = false,
-    this.validationError = false,
     required this.paymentHash,
     required this.comment,
   });
@@ -51,10 +47,6 @@ class PaymentResultError {
       message: displayMessage != null
           ? texts.payment_error_to_send(displayMessage)
           : texts.payment_error_to_send_unknown_reason,
-      ignoreGlobalFeedback: false,
-      validationError: error != null &&
-          error.toString().toLowerCase().contains("rpcerror") &&
-          !error.toString().toLowerCase().contains("payment is in transition"),
       paymentHash: paymentHash,
       comment: error?.toString() ?? "Unknown error",
     );
@@ -62,8 +54,7 @@ class PaymentResultError {
 
   @override
   String toString() {
-    return 'PaymentResultError{message: $message, ignoreGlobalFeedback: $ignoreGlobalFeedback, '
-        'validationError: $validationError, paymentHash: $paymentHash, comment: $comment}';
+    return 'PaymentResultError{message: $message, paymentHash: $paymentHash, comment: $comment}';
   }
 
   @override
@@ -72,16 +63,9 @@ class PaymentResultError {
       other is PaymentResultError &&
           runtimeType == other.runtimeType &&
           message == other.message &&
-          ignoreGlobalFeedback == other.ignoreGlobalFeedback &&
-          validationError == other.validationError &&
           paymentHash == other.paymentHash &&
           comment == other.comment;
 
   @override
-  int get hashCode =>
-      message.hashCode ^
-      ignoreGlobalFeedback.hashCode ^
-      validationError.hashCode ^
-      paymentHash.hashCode ^
-      comment.hashCode;
+  int get hashCode => message.hashCode ^ paymentHash.hashCode ^ comment.hashCode;
 }

@@ -69,16 +69,10 @@ class PaymentResultHandler extends Handler {
       );
     } else if (error != null) {
       _log.info("paymentResult error: $error");
-      if (error.ignoreGlobalFeedback) {
-        return;
-      }
       showFlushbar(
         context,
         message: error.message,
       );
-      if (!error.validationError) {
-        return;
-      }
       _reportFlow(error.paymentHash, error.comment);
     } else {
       _log.warning("paymentResult is null and error is null");

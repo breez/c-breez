@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -34,17 +35,20 @@ class SplashPageState extends State<SplashPage> {
     final themeData = Theme.of(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: themeData.appBarTheme.systemOverlayStyle!,
-      child: Scaffold(
-        body: (widget.isInitial)
-            ? Center(
-                child: Image.asset(
-                  'src/images/splash-animation.gif',
-                  fit: BoxFit.contain,
-                  gaplessPlayback: true,
-                  width: MediaQuery.of(context).size.width / 3,
-                ),
-              )
-            : const SizedBox(),
+      child: Theme(
+        data: breezLightTheme,
+        child: Scaffold(
+          body: (widget.isInitial)
+              ? Center(
+                  child: Image.asset(
+                    'src/images/splash-animation.gif',
+                    fit: BoxFit.contain,
+                    gaplessPlayback: true,
+                    width: MediaQuery.of(context).size.width / 3,
+                  ),
+                )
+              : const SizedBox(),
+        ),
       ),
     );
   }

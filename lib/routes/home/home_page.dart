@@ -5,6 +5,7 @@ import 'package:c_breez/handlers/check_version_handler.dart';
 import 'package:c_breez/handlers/connectivity_handler.dart';
 import 'package:c_breez/handlers/handler.dart';
 import 'package:c_breez/handlers/handler_context_provider.dart';
+import 'package:c_breez/handlers/health_check_handler.dart';
 import 'package:c_breez/handlers/input_handler.dart';
 import 'package:c_breez/handlers/payment_result_handler.dart';
 import 'package:c_breez/routes/home/account_page.dart';
@@ -50,6 +51,7 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
         ),
         ConnectivityHandler(),
         PaymentResultHandler(),
+        HealthCheckHandler(),
       ]);
       for (var handler in handlers) {
         handler.init(this);

@@ -142,4 +142,13 @@ class BreezSDKMock extends Mock implements BreezSDK {
 
   @override
   Future fetchNodeData() async {}
+
+  ServiceHealthCheckResponse serviceHealthCheckResponse = const ServiceHealthCheckResponse(
+    status: HealthCheckStatus.Operational,
+  );
+
+  @override
+  Future<ServiceHealthCheckResponse> serviceHealthCheck() async {
+    return serviceHealthCheckResponse;
+  }
 }

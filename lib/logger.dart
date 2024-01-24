@@ -57,25 +57,25 @@ class BreezLogger {
         sync.flush();
         sync.close();
       });
-    });
 
-    FlutterError.onError = (FlutterErrorDetails details) async {
-      FlutterError.presentError(details);
-      final name = details.context?.name ?? "FlutterError";
-      final exception = details.exceptionAsString();
-      _log.severe("$exception -- $name", details, details.stack);
-    };
+      FlutterError.onError = (FlutterErrorDetails details) async {
+        FlutterError.presentError(details);
+        final name = details.context?.name ?? "FlutterError";
+        final exception = details.exceptionAsString();
+        _log.severe("$exception -- $name", details, details.stack);
+      };
 
-    GitInfo.get().then((it) {
-      _log.info("Logging initialized, app build on ${it.branch} at commit ${it.hash}");
-      DeviceInfoPlugin().deviceInfo.then((deviceInfo) {
-        _log.info("Device info:");
-        deviceInfo.data.forEach((key, value) => _log.info("$key: $value"));
+      GitInfo.get().then((it) {
+        _log.info("Logging initialized, app build on ${it.branch} at commit ${it.hash}");
+        DeviceInfoPlugin().deviceInfo.then((deviceInfo) {
+          _log.info("Device info:");
+          deviceInfo.data.forEach((key, value) => _log.info("$key: $value"));
+        }, onError: (error) {
+          _log.severe("Failed to get device info", error);
+        });
       }, onError: (error) {
-        _log.severe("Failed to get device info", error);
+        _log.severe("Failed to get git info", error);
       });
-    }, onError: (error) {
-      _log.severe("Failed to get git info", error);
     });
   }
 

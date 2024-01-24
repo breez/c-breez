@@ -8,6 +8,7 @@ import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:theme_provider/theme_provider.dart';
@@ -51,88 +52,91 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     final texts = context.texts();
     final themeData = Theme.of(context);
 
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Padding(
-        padding: const EdgeInsets.only(top: 24.0),
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  flex: 200,
-                  child: Container(),
-                ),
-                Expanded(
-                  flex: 171,
-                  child: AnimatedBuilder(
-                    animation: _animation!,
-                    builder: (BuildContext context, Widget? child) {
-                      String frame = _animation!.value.toString().padLeft(2, '0');
-                      return Image.asset(
-                        'src/animations/welcome/frame_${frame}_delay-0.04s.png',
-                        gaplessPlayback: true,
-                        fit: BoxFit.cover,
-                      );
-                    },
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: themeData.appBarTheme.systemOverlayStyle!,
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: Padding(
+          padding: const EdgeInsets.only(top: 24.0),
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Expanded(
+                    flex: 200,
+                    child: Container(),
                   ),
-                ),
-                Expanded(
-                  flex: 200,
-                  child: Container(),
-                ),
-                Expanded(
-                  flex: 48,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 24, right: 24),
-                    child: AutoSizeText(
-                      texts.initial_walk_through_welcome_message,
-                      textAlign: TextAlign.center,
-                      style: theme.welcomeTextStyle,
+                  Expanded(
+                    flex: 171,
+                    child: AnimatedBuilder(
+                      animation: _animation!,
+                      builder: (BuildContext context, Widget? child) {
+                        String frame = _animation!.value.toString().padLeft(2, '0');
+                        return Image.asset(
+                          'src/animations/welcome/frame_${frame}_delay-0.04s.png',
+                          gaplessPlayback: true,
+                          fit: BoxFit.cover,
+                        );
+                      },
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 60,
-                  child: Container(),
-                ),
-                SizedBox(
-                  height: 48.0,
-                  width: 168.0,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                      backgroundColor: themeData.primaryColor,
-                      elevation: 0.0,
-                      shape: const StadiumBorder(),
-                    ),
-                    child: Text(
-                      texts.initial_walk_through_lets_breeze,
-                      style: themeData.textTheme.labelLarge,
-                    ),
-                    onPressed: () => _letsBreez(),
+                  Expanded(
+                    flex: 200,
+                    child: Container(),
                   ),
-                ),
-                Expanded(
-                  flex: 40,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: GestureDetector(
-                      onTap: () => _restoreNodeFromMnemonicSeed(),
-                      child: Text(
-                        texts.initial_walk_through_restore_from_backup,
-                        style: theme.restoreLinkStyle,
+                  Expanded(
+                    flex: 48,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24),
+                      child: AutoSizeText(
+                        texts.initial_walk_through_welcome_message,
+                        textAlign: TextAlign.center,
+                        style: theme.welcomeTextStyle,
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 120,
-                  child: Container(),
-                ),
-              ],
-            ),
-          ],
+                  Expanded(
+                    flex: 60,
+                    child: Container(),
+                  ),
+                  SizedBox(
+                    height: 48.0,
+                    width: 168.0,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                        backgroundColor: themeData.primaryColor,
+                        elevation: 0.0,
+                        shape: const StadiumBorder(),
+                      ),
+                      child: Text(
+                        texts.initial_walk_through_lets_breeze,
+                        style: themeData.textTheme.labelLarge,
+                      ),
+                      onPressed: () => _letsBreez(),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 40,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: GestureDetector(
+                        onTap: () => _restoreNodeFromMnemonicSeed(),
+                        child: Text(
+                          texts.initial_walk_through_restore_from_backup,
+                          style: theme.restoreLinkStyle,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 120,
+                    child: Container(),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

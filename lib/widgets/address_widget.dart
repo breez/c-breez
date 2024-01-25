@@ -6,13 +6,20 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
+enum AddressWidgetType {
+  bitcoin,
+  lnurl,
+}
+
 class AddressWidget extends StatelessWidget {
   final String address;
   final String? footer;
   final String? title;
   final void Function()? onLongPress;
+  final AddressWidgetType type;
 
-  const AddressWidget(this.address, {this.footer, this.title, this.onLongPress});
+  const AddressWidget(this.address,
+      {this.footer, this.title, this.onLongPress, this.type = AddressWidgetType.bitcoin});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +27,7 @@ class AddressWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         AddressHeaderWidget(address: address, title: title),
-        AddressQRWidget(address: address, footer: footer, onLongPress: onLongPress),
+        AddressQRWidget(address: address, footer: footer, onLongPress: onLongPress, type: type),
       ],
     );
   }

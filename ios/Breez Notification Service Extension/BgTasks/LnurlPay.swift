@@ -131,7 +131,7 @@ class LnurlPayInfo : LnurlPayTask, SDKBackgroundTask {
     
     init(message: LnurlInfoMessage, logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
         self.message = message
-        super.init(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, successNotificationTitle: "Lnurl Payment Started", failNotificationTitle: "Lnurl Info Failed")
+        super.init(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, successNotificationTitle: "Retrieving payment information", failNotificationTitle: "Receive Payment Failed")
     }
     
     func start(breezSDK: BlockingBreezServices){
@@ -153,7 +153,7 @@ class LnurlPayInvoice : LnurlPayTask, SDKBackgroundTask {
     
     init(message: LnurlInvoiceMessage, logger: XCGLogger, contentHandler: ((UNNotificationContent) -> Void)? = nil, bestAttemptContent: UNMutableNotificationContent? = nil) {
         self.message = message
-        super.init(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, successNotificationTitle: "Lnurl Invoice Requested", failNotificationTitle: "Lnurl Info Failed")
+        super.init(logger: logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent, successNotificationTitle: "Fetching invoice", failNotificationTitle: "Receive Payment Failed")
     }
     
     func start(breezSDK: BlockingBreezServices){

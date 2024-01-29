@@ -1,60 +1,18 @@
 import 'dart:async';
 
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/models/user_profile.dart';
-import 'package:c_breez/routes/home/widgets/drawer/breez_avatar_dialog.dart';
-import 'package:c_breez/routes/home/widgets/drawer/breez_drawer_header.dart';
+import 'package:c_breez/routes/home/widgets/drawer/drawer_group.dart';
+import 'package:c_breez/routes/home/widgets/drawer/drawer_header_container.dart';
+import 'package:c_breez/routes/home/widgets/drawer/drawer_header_content.dart';
+import 'package:c_breez/routes/home/widgets/drawer/drawer_item.dart';
+import 'package:c_breez/routes/home/widgets/drawer/navigation_drawer_footer.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:theme_provider/theme_provider.dart';
-
-const double _kBreezBottomSheetHeight = 60.0;
-
-class DrawerItemConfig {
-  final GlobalKey? key;
-  final String name;
-  final String title;
-  final String icon;
-  final bool disabled;
-  final void Function(String name)? onItemSelected;
-  final Widget? switchWidget;
-  final bool isSelected;
-
-  const DrawerItemConfig(
-    this.name,
-    this.title,
-    this.icon, {
-    this.key,
-    this.onItemSelected,
-    this.disabled = false,
-    this.switchWidget,
-    this.isSelected = false,
-  });
-}
-
-class DrawerItemConfigGroup {
-  final List<DrawerItemConfig> items;
-  final String? groupTitle;
-  final String? groupAssetImage;
-  final bool withDivider;
-  final bool isExpanded;
-
-  const DrawerItemConfigGroup(
-    this.items, {
-    this.groupTitle,
-    this.groupAssetImage,
-    this.withDivider = true,
-    this.isExpanded = true,
-  });
-}
 
 class BreezNavigationDrawer extends StatelessWidget {
-  final List<DrawerItemConfigGroup> _drawerGroupedItems;
+  final List<DrawerGroup> _drawerGroupedItems;
   final void Function(String screenName) _onItemSelected;
   final _scrollController = ScrollController();
 
@@ -67,21 +25,7 @@ class BreezNavigationDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-
     return BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userSettings) {
-      List<Widget> children = [
-        _breezDrawerHeader(context, userSettings.profileSettings),
-        const Padding(padding: EdgeInsets.only(top: 16)),
-      ];
-      for (var groupItems in _drawerGroupedItems) {
-        children.addAll(_createDrawerGroupWidgets(
-          groupItems,
-          context,
-          _drawerGroupedItems.indexOf(groupItems),
-          withDivider: children.isNotEmpty && groupItems.withDivider,
-        ));
-      }
-
       return Theme(
         data: themeData.copyWith(
           canvasColor: themeData.customData.navigationDrawerBgColor,
@@ -93,7 +37,24 @@ class BreezNavigationDrawer extends StatelessWidget {
                 child: ListView(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(0.0),
-                  children: children,
+                  children: [
+                    Container(
+                      color: Theme.of(context).customData.navigationDrawerHeaderBgColor,
+                      child: const DrawerHeaderContainer(
+                        padding: EdgeInsets.only(left: 16.0),
+                        child: DrawerHeaderContent(),
+                      ),
+                    ),
+                    const Padding(padding: EdgeInsets.only(top: 16)),
+                    ..._drawerGroupedItems
+                        .map((groupItems) => _createDrawerGroupWidgets(
+                              groupItems,
+                              context,
+                              _drawerGroupedItems.indexOf(groupItems),
+                              withDivider: groupItems.withDivider,
+                            ))
+                        .expand((element) => element),
+                  ],
                 ),
               ),
               const NavigationDrawerFooter(),
@@ -105,7 +66,7 @@ class BreezNavigationDrawer extends StatelessWidget {
   }
 
   List<Widget> _createDrawerGroupWidgets(
-    DrawerItemConfigGroup group,
+    DrawerGroup group,
     BuildContext context,
     int index, {
     bool withDivider = false,
@@ -142,72 +103,6 @@ class BreezNavigationDrawer extends StatelessWidget {
     }
     return groupItems;
   }
-
-  Widget _breezDrawerHeader(
-    BuildContext context,
-    UserProfileSettings user,
-  ) {
-    return Container(
-      color: Theme.of(context).customData.navigationDrawerHeaderBgColor,
-      child: BreezDrawerHeader(
-        padding: const EdgeInsets.only(left: 16.0),
-        child: _buildDrawerHeaderContent(user, context),
-      ),
-    );
-  }
-
-  Widget _buildDrawerHeaderContent(
-    UserProfileSettings user,
-    BuildContext context,
-  ) {
-    List<Widget> drawerHeaderContent = [];
-    drawerHeaderContent.add(_buildThemeSwitch(context, user));
-    drawerHeaderContent
-      ..add(_buildAvatarButton(user))
-      ..add(_buildBottomRow(user, context));
-    return GestureDetector(
-      onTap: () {
-        showDialog<bool>(
-          useRootNavigator: false,
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => BreezAvatarDialog(),
-        );
-      },
-      child: Column(children: drawerHeaderContent),
-    );
-  }
-}
-
-class NavigationDrawerFooter extends StatelessWidget {
-  const NavigationDrawerFooter({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      // Aligns footer with bottom actions bar
-      height: _kBreezBottomSheetHeight + 8.0 + MediaQuery.of(context).viewPadding.bottom,
-      child: Column(
-        children: [
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                "src/images/drawer_footer.png",
-                height: 39,
-                width: 183,
-                fit: BoxFit.fitHeight,
-              )
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _ListDivider extends StatelessWidget {
@@ -220,94 +115,8 @@ class _ListDivider extends StatelessWidget {
   }
 }
 
-GestureDetector _buildThemeSwitch(
-  BuildContext context,
-  UserProfileSettings user,
-) {
-  final themeData = Theme.of(context);
-  return GestureDetector(
-    onTap: () => ThemeProvider.controllerOf(context).nextTheme(),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 10,
-            right: 16.0,
-          ),
-          child: Container(
-            width: 64,
-            padding: const EdgeInsets.all(4),
-            decoration: const ShapeDecoration(
-              shape: StadiumBorder(),
-              color: theme.themeSwitchBgColor,
-            ),
-            child: Row(
-              children: [
-                Image.asset(
-                  "src/icon/ic_lightmode.png",
-                  height: 24,
-                  width: 24,
-                  color: themeData.lightThemeSwitchIconColor,
-                ),
-                const SizedBox(
-                  height: 20,
-                  width: 8,
-                  child: VerticalDivider(
-                    color: Colors.white30,
-                  ),
-                ),
-                ImageIcon(
-                  const AssetImage("src/icon/ic_darkmode.png"),
-                  color: themeData.darkThemeSwitchIconColor,
-                  size: 24.0,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Row _buildAvatarButton(UserProfileSettings user) {
-  return Row(
-    children: [
-      BreezAvatar(user.avatarURL, radius: 24.0),
-    ],
-  );
-}
-
-Row _buildBottomRow(
-  UserProfileSettings user,
-  BuildContext context,
-) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      _buildUsername(context, user),
-    ],
-  );
-}
-
-Padding _buildUsername(
-  BuildContext context,
-  UserProfileSettings user,
-) {
-  final texts = context.texts();
-
-  return Padding(
-    padding: const EdgeInsets.only(top: 8.0),
-    child: AutoSizeText(
-      user.name ?? texts.home_drawer_error_no_name,
-      style: theme.navigationDrawerHandleStyle,
-    ),
-  );
-}
-
 Widget _actionTile(
-  DrawerItemConfig action,
+  DrawerItem action,
   BuildContext context,
   Function onItemSelected, {
   bool? subTile,
@@ -365,7 +174,7 @@ Widget _actionTile(
             ? null
             : () {
                 Navigator.pop(context);
-                onItemSelected(action.name);
+                onItemSelected(action.route);
               },
       ),
     ),

@@ -52,6 +52,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
     maxChanReserveMsats: 0,
     connectedPeers: [],
     inboundLiquidityMsats: 0,
+    pendingOnchainBalanceMsat: 0,
   );
 
   @override

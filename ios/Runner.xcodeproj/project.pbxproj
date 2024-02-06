@@ -28,7 +28,6 @@
 		E89C2CCE2B0E978B0084A5BF /* NotificationContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89C2CCD2B0E978B0084A5BF /* NotificationContent.swift */; };
 		E89C2CD22B0E9A190084A5BF /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89C2CD12B0E9A190084A5BF /* CredentialsManager.swift */; };
 		E89C2CD72B0EA0CD0084A5BF /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = E89C2CD62B0EA0CD0084A5BF /* KeychainAccess */; };
-		E89C2CDB2B0EC0600084A5BF /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89C2CDA2B0EC0600084A5BF /* Environment.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,7 +94,6 @@
 		E89C2CC82B0E96960084A5BF /* BreezManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreezManager.swift; sourceTree = "<group>"; };
 		E89C2CCD2B0E978B0084A5BF /* NotificationContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationContent.swift; sourceTree = "<group>"; };
 		E89C2CD12B0E9A190084A5BF /* CredentialsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManager.swift; sourceTree = "<group>"; };
-		E89C2CDA2B0EC0600084A5BF /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		FACDE338D59177DD56404E3D /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -226,7 +224,6 @@
 				E89C2CC82B0E96960084A5BF /* BreezManager.swift */,
 				E89C2CCD2B0E978B0084A5BF /* NotificationContent.swift */,
 				E89C2CD12B0E9A190084A5BF /* CredentialsManager.swift */,
-				E89C2CDA2B0EC0600084A5BF /* Environment.swift */,
 			);
 			path = "Breez Notification Service Extension";
 			sourceTree = "<group>";
@@ -448,7 +445,6 @@
 				6F1E36C92B4595B000480FB9 /* ReceivePayment.swift in Sources */,
 				E863A0682B18C90E002FB6FD /* BreezSDK.swift in Sources */,
 				E89C2CD22B0E9A190084A5BF /* CredentialsManager.swift in Sources */,
-				E89C2CDB2B0EC0600084A5BF /* Environment.swift in Sources */,
 				E89C2CC92B0E96960084A5BF /* BreezManager.swift in Sources */,
 				6F1E36CB2B45961600480FB9 /* LnurlPay.swift in Sources */,
 				E89C2CCE2B0E978B0084A5BF /* NotificationContent.swift in Sources */,

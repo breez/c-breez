@@ -1,6 +1,8 @@
 package com.cBreez.client
 
 object Constants {
+    const val SHUTDOWN_DELAY_MS = 60 * 1000L
+
     // Keystore
     const val ACCOUNT_MNEMONIC = "account_mnemonic"
 

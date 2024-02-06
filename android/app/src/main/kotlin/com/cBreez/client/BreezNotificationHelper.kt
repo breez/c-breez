@@ -114,10 +114,13 @@ class BreezNotificationHelper {
                 }
         }
 
-        fun notifyPaymentReceived(
+
+        fun notifyChannel(
             context: Context,
+            channelId: String,
+            contentTitle: String,
+            contentText: String,
             clickAction: String? = "FLUTTER_NOTIFICATION_CLICK",
-            amountSat: ULong,
         ): Notification {
             val notificationID: Int = System.currentTimeMillis().toInt() / 1000
             val notificationColor = context.getColor(R.color.breez_notification_color)
@@ -146,10 +149,10 @@ class BreezNotificationHelper {
                 approvePendingIntent
             }
 
-            return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_PAYMENT_RECEIVED)
+            return NotificationCompat.Builder(context, channelId)
                 .apply {
-                    setContentTitle(context.getString(R.string.payment_received_notification_title))
-                    setContentText("Received $amountSat sats")
+                    setContentTitle(contentTitle)
+                    setContentText(contentText)
                     setSmallIcon(R.mipmap.ic_stat_ic_notification)
                     setContentIntent(contentIntent)
                     addAction(notificationAction)

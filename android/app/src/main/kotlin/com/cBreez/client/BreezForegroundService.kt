@@ -7,69 +7,33 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import breez_sdk.BlockingBreezServices
-import breez_sdk.BreezEvent
-import breez_sdk.EventListener
-import breez_sdk.Payment
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
-import com.cBreez.client.BreezNotificationHelper.Companion.notifyPaymentReceived
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
 import com.cBreez.client.BreezSdkConnector.Companion.connectSDK
 import com.cBreez.client.Constants.EXTRA_REMOTE_MESSAGE
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
+import com.cBreez.client.Constants.SHUTDOWN_DELAY_MS
+import com.cBreez.client.job.PaymentReceiverJob
+import com.cBreez.client.job.SDKJob
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import org.tinylog.kotlin.Logger
 
-class BreezForegroundService : Service() {
+interface ForegroundService {
+    fun pushbackShutdown()
+    fun shutdown()
+}
+
+class BreezForegroundService : ForegroundService, Service() {
     private var breezSDK: BlockingBreezServices? = null
     private val serviceScope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
-    private var receivedPayment: Payment? = null
 
     companion object {
         private const val TAG = "BreezForegroundService"
-        private const val SHUTDOWN_DELAY_MS = 60 * 1000L // 60 seconds
-    }
-
-    // SDK events listener
-    inner class SDKListener : EventListener {
-        override fun onEvent(e: BreezEvent) {
-            Logger.tag(TAG).trace { "Received event $e" }
-            when (e) {
-                is BreezEvent.InvoicePaid -> {
-                    val pd = e.details
-                    handleReceivedPayment(pd.bolt11, pd.paymentHash, pd.payment?.amountMsat)
-                    receivedPayment = pd.payment
-
-                    // Push back shutdown by SHUTDOWN_DELAY_MS for payments synced event
-                    pushbackShutdown()
-                }
-
-                is BreezEvent.Synced -> {
-                    receivedPayment?.let {
-                        Logger.tag(TAG).info { "Got synced event for received payment." }
-                        shutdown()
-                    }
-                }
-
-                else -> {}
-            }
-        }
-
-        private fun handleReceivedPayment(
-            bolt11: String,
-            paymentHash: String,
-            amountMsat: ULong?,
-        ) {
-            Logger.tag(TAG)
-                .info { "Received payment. Bolt11:${bolt11}\nPayment Hash:${paymentHash}" }
-            val amountSat = (amountMsat ?: ULong.MIN_VALUE) / 1000u
-            notifyPaymentReceived(applicationContext, amountSat = amountSat)
-        }
     }
 
     override fun onCreate() {
@@ -87,14 +51,19 @@ class BreezForegroundService : Service() {
         return null
     }
 
+    /** Stop the service */
     private val shutdownHandler = Handler(Looper.getMainLooper())
     private val shutdownRunnable: Runnable = Runnable {
         Logger.tag(TAG).debug { "Reached scheduled shutdown..." }
         shutdown()
     }
 
-    /** Stop the service */
-    private fun shutdown() {
+    override fun pushbackShutdown() {
+        shutdownHandler.removeCallbacksAndMessages(null)
+        shutdownHandler.postDelayed(shutdownRunnable, SHUTDOWN_DELAY_MS)
+    }
+
+    override fun shutdown() {
         Logger.tag(TAG).debug { "Shutting down Breez foreground service" }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
@@ -111,9 +80,9 @@ class BreezForegroundService : Service() {
         Logger.tag(TAG).debug { "Start Breez foreground service from intent $intentDetails" }
 
         // Connect to SDK if source intent has data message with valid payload
-        intent?.remoteMessage.run {
-            if (this != null && isPaymentReceived && !paymentHash.isNullOrBlank()) {
-                launchSdkConnection()
+        getJobFromNotification(intent).run {
+            if (this != null) {
+                launchSdkConnection(this)
             } else {
                 Logger.tag(TAG).warn { "Received invalid data message." }
                 shutdown()
@@ -123,7 +92,17 @@ class BreezForegroundService : Service() {
         return START_NOT_STICKY
     }
 
-    private fun launchSdkConnection() {
+    private fun getJobFromNotification(intent: Intent?): SDKJob? {
+        val fgService = this
+        return intent?.remoteMessage?.run {
+            when (this.notificationType) {
+                "payment_received" -> PaymentReceiverJob(applicationContext, fgService, this.data)
+                else -> null
+            }
+        }
+    }
+
+    private fun launchSdkConnection(bgTask: SDKJob) {
         serviceScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             Logger.tag(TAG).error { "Breez SDK connection failed $e" }
             shutdown()
@@ -133,17 +112,13 @@ class BreezForegroundService : Service() {
                 val notification = notifyForegroundService(applicationContext)
                 startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
 
-                breezSDK = connectSDK(applicationContext, SDKListener())
+                breezSDK = connectSDK(applicationContext, bgTask)
+                bgTask.start(breezSDK!!)
 
                 // Push back shutdown by SHUTDOWN_DELAY_MS
                 pushbackShutdown()
             }
         }
-    }
-
-    private fun pushbackShutdown() {
-        shutdownHandler.removeCallbacksAndMessages(null)
-        shutdownHandler.postDelayed(shutdownRunnable, SHUTDOWN_DELAY_MS)
     }
 
     /* Remote Message helper properties */
@@ -155,13 +130,13 @@ class BreezForegroundService : Service() {
             else this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE)
         }
 
-    private val RemoteMessage.isPaymentReceived: Boolean
+    private val RemoteMessage.notificationType: String?
         get() {
-            return data["notification_type"] == "payment_received"
+            return data["notification_type"]?.takeUnless { it.isEmpty() }
         }
 
-    private val RemoteMessage.paymentHash: String?
+    private val RemoteMessage.notificationPayload: String?
         get() {
-            return data["notification_payload"]?.let { JSONObject(it).getString("payment_hash") }
+            return data["notification_type"]?.takeUnless { it.isEmpty() }
         }
 }

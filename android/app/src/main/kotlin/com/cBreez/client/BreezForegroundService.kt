@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import androidx.core.content.IntentCompat
 import breez_sdk.BlockingBreezServices
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
@@ -128,9 +129,15 @@ class BreezForegroundService : ForegroundService, Service() {
     private val Intent?.remoteMessage: RemoteMessage?
         get() {
             @Suppress("DEPRECATION")
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE, RemoteMessage::class.java)
-            else this?.getParcelableExtra(EXTRA_REMOTE_MESSAGE)
+            return this?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    IntentCompat.getParcelableExtra(
+                        it,
+                        EXTRA_REMOTE_MESSAGE,
+                        RemoteMessage::class.java
+                    )
+                else it.getParcelableExtra(EXTRA_REMOTE_MESSAGE)
+            }
         }
 
     private val RemoteMessage.notificationType: String?

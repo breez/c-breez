@@ -26,6 +26,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 // END: FlutterFire Configuration
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlinx-serialization'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 def envVariables = [
@@ -131,4 +132,6 @@ dependencies {
     /* Logging */
     implementation 'org.tinylog:tinylog-api-kotlin:2.6.2'
     implementation 'org.tinylog:tinylog-impl:2.6.2'
+    /* JSON serialization */
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0'
 }

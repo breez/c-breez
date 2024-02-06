@@ -9,6 +9,8 @@ object Constants {
     // Notification Channels
     const val NOTIFICATION_CHANNEL_FOREGROUND_SERVICE =
         "${BuildConfig.APPLICATION_ID}.FOREGROUND_SERVICE"
+    const val NOTIFICATION_CHANNEL_LNURL_PAY =
+        "${BuildConfig.APPLICATION_ID}.LNURL_PAY"
     const val NOTIFICATION_CHANNEL_PAYMENT_RECEIVED =
         "${BuildConfig.APPLICATION_ID}.PAYMENT_RECEIVED"
 

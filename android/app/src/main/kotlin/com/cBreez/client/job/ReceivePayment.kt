@@ -10,15 +10,15 @@ import com.cBreez.client.ForegroundService
 import com.cBreez.client.R
 import org.tinylog.kotlin.Logger
 
-class PaymentReceiverJob(
+class ReceivePaymentJob(
     private val context: Context,
     private val fgService: ForegroundService,
-    private val data: JobData
+    private val payload: String,
 ) : SDKJob {
     private var receivedPayment: Payment? = null
 
     companion object {
-        private const val TAG = "PaymentReceiverJob"
+        private const val TAG = "ReceivePaymentJob"
     }
 
     override fun start(breezSDK: BlockingBreezServices) {}

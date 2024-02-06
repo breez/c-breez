@@ -13,7 +13,9 @@ import com.cBreez.client.BreezSdkConnector.Companion.connectSDK
 import com.cBreez.client.Constants.EXTRA_REMOTE_MESSAGE
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import com.cBreez.client.Constants.SHUTDOWN_DELAY_MS
-import com.cBreez.client.job.PaymentReceiverJob
+import com.cBreez.client.job.LnurlPayInfoJob
+import com.cBreez.client.job.LnurlPayInvoiceJob
+import com.cBreez.client.job.ReceivePaymentJob
 import com.cBreez.client.job.SDKJob
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -80,29 +82,30 @@ class BreezForegroundService : ForegroundService, Service() {
         Logger.tag(TAG).debug { "Start Breez foreground service from intent $intentDetails" }
 
         // Connect to SDK if source intent has data message with valid payload
-        getJobFromNotification(intent).run {
-            if (this != null) {
-                launchSdkConnection(this)
-            } else {
-                Logger.tag(TAG).warn { "Received invalid data message." }
-                shutdown()
-            }
+        getJobFromNotification(intent)?.also {
+            launchSdkConnection(it)
+        } ?: run {
+            Logger.tag(TAG).warn { "Received invalid data message." }
+            shutdown()
         }
 
         return START_NOT_STICKY
     }
 
     private fun getJobFromNotification(intent: Intent?): SDKJob? {
-        val fgService = this
-        return intent?.remoteMessage?.run {
-            when (this.notificationType) {
-                "payment_received" -> PaymentReceiverJob(applicationContext, fgService, this.data)
-                else -> null
+        return intent?.remoteMessage?.let { rm ->
+            rm.notificationPayload?.let { payload ->
+                when (rm.notificationType) {
+                    "payment_received" -> ReceivePaymentJob(applicationContext, this, payload)
+                    "lnurlpay_info" -> LnurlPayInfoJob(applicationContext, this, payload)
+                    "lnurlpay_invoice" -> LnurlPayInvoiceJob(applicationContext, this, payload)
+                    else -> null
+                }
             }
         }
     }
 
-    private fun launchSdkConnection(bgTask: SDKJob) {
+    private fun launchSdkConnection(job: SDKJob) {
         serviceScope.launch(Dispatchers.IO + CoroutineExceptionHandler { _, e ->
             Logger.tag(TAG).error { "Breez SDK connection failed $e" }
             shutdown()
@@ -112,8 +115,8 @@ class BreezForegroundService : ForegroundService, Service() {
                 val notification = notifyForegroundService(applicationContext)
                 startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
 
-                breezSDK = connectSDK(applicationContext, bgTask)
-                bgTask.start(breezSDK!!)
+                breezSDK = connectSDK(applicationContext, job)
+                job.start(breezSDK!!)
 
                 // Push back shutdown by SHUTDOWN_DELAY_MS
                 pushbackShutdown()
@@ -137,6 +140,6 @@ class BreezForegroundService : ForegroundService, Service() {
 
     private val RemoteMessage.notificationPayload: String?
         get() {
-            return data["notification_type"]?.takeUnless { it.isEmpty() }
+            return data["notification_payload"]
         }
 }

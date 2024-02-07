@@ -117,6 +117,9 @@ class BreezForegroundService : ForegroundService, Service() {
                 startForeground(NOTIFICATION_ID_FOREGROUND_SERVICE, notification)
 
                 breezSDK = connectSDK(applicationContext, job)
+            }
+
+            breezSDK?.let {
                 job.start(breezSDK!!)
 
                 // Push back shutdown by SHUTDOWN_DELAY_MS

@@ -10,7 +10,6 @@ import com.cBreez.client.R
 import com.cBreez.client.job.LnurlPayJob.Companion.METADATA
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.tinylog.kotlin.Logger
@@ -40,7 +39,7 @@ class LnurlPayInfoJob(
     }
 
     override fun start(breezSDK: BlockingBreezServices) {
-        val request = Json.decodeFromString<LnurlInfoRequest>(payload)
+        val request = Json.decodeFromString(LnurlInfoRequest.serializer(), payload)
         try {
             val nodeState = breezSDK.nodeInfo()
             val response =

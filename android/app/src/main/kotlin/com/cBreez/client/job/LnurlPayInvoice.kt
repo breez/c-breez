@@ -11,7 +11,6 @@ import com.cBreez.client.R
 import com.cBreez.client.job.LnurlPayJob.Companion.METADATA
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.tinylog.kotlin.Logger
@@ -38,7 +37,7 @@ class LnurlPayInvoiceJob(
     }
 
     override fun start(breezSDK: BlockingBreezServices) {
-        val request = Json.decodeFromString<LnurlInvoiceRequest>(payload)
+        val request = Json.decodeFromString(LnurlInvoiceRequest.serializer(), payload)
         try {
             val nodeState = breezSDK.nodeInfo()
             if (request.amount < 1000UL || request.amount > nodeState.inboundLiquidityMsats) {

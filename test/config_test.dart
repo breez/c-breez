@@ -125,6 +125,7 @@ void main() {
 sdk.Config _defaultConf() => const sdk.Config(
       maxfeePercent: 7.8,
       breezserver: "a breez server",
+      chainnotifierUrl: "a chain notifier url",
       mempoolspaceUrl: "a mempool space url",
       workingDir: "a working dir",
       network: sdk.Network.Bitcoin,

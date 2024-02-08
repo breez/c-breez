@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_FOREGROUND_SERVICE
+import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_LNURL_PAY
 import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_PAYMENT_RECEIVED
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import kotlinx.coroutines.CoroutineScope
@@ -55,7 +56,8 @@ class BreezNotificationHelper {
                 description =
                     context.getString(R.string.foreground_service_notification_channel_description)
             }
-            val workGroupId = context.getString(R.string.offline_payments_work_group_id)
+            val offlinePaymentsWorkGroupId =
+                context.getString(R.string.offline_payments_work_group_id)
             val receivedPaymentsNotificationChannel = NotificationChannel(
                 NOTIFICATION_CHANNEL_PAYMENT_RECEIVED,
                 context.getString(R.string.payment_received_notification_channel_name),
@@ -63,12 +65,23 @@ class BreezNotificationHelper {
             ).apply {
                 description =
                     context.getString(R.string.payment_received_notification_channel_description)
-                group = workGroupId
+                group = offlinePaymentsWorkGroupId
+            }
+            val lnurlPayWorkGroupId = context.getString(R.string.lnurl_pay_work_group_id)
+            val lnurlPayNotificationChannel = NotificationChannel(
+                NOTIFICATION_CHANNEL_LNURL_PAY,
+                context.getString(R.string.lnurl_pay_notification_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description =
+                    context.getString(R.string.lnurl_pay_notification_channel_description)
+                group = lnurlPayWorkGroupId
             }
             notificationManager.createNotificationChannels(
                 listOf(
                     foregroundServiceNotificationChannel,
-                    receivedPaymentsNotificationChannel
+                    receivedPaymentsNotificationChannel,
+                    lnurlPayNotificationChannel
                 )
             )
         }
@@ -82,13 +95,22 @@ class BreezNotificationHelper {
                 context.getString(R.string.offline_payments_work_group_id),
                 context.getString(R.string.offline_payments_work_group_name),
             )
+            val lnurlPayNotificationChannelGroup = NotificationChannelGroup(
+                context.getString(R.string.lnurl_pay_work_group_id),
+                context.getString(R.string.lnurl_pay_work_group_name),
+            )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 offlinePaymentsNotificationChannelGroup.description =
                     context.getString(R.string.offline_payments_work_group_description)
+                lnurlPayNotificationChannelGroup.description =
+                    context.getString(R.string.lnurl_pay_notification_channel_description)
             }
 
-            notificationManager.createNotificationChannelGroup(
-                offlinePaymentsNotificationChannelGroup
+            notificationManager.createNotificationChannelGroups(
+                listOf(
+                    offlinePaymentsNotificationChannelGroup,
+                    lnurlPayNotificationChannelGroup
+                )
             )
         }
 
@@ -114,10 +136,13 @@ class BreezNotificationHelper {
                 }
         }
 
-        fun notifyPaymentReceived(
+
+        fun notifyChannel(
             context: Context,
+            channelId: String,
+            contentTitle: String,
+            contentText: String? = null,
             clickAction: String? = "FLUTTER_NOTIFICATION_CLICK",
-            amountSat: ULong,
         ): Notification {
             val notificationID: Int = System.currentTimeMillis().toInt() / 1000
             val notificationColor = context.getColor(R.color.breez_notification_color)
@@ -146,10 +171,10 @@ class BreezNotificationHelper {
                 approvePendingIntent
             }
 
-            return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_PAYMENT_RECEIVED)
+            return NotificationCompat.Builder(context, channelId)
                 .apply {
-                    setContentTitle(context.getString(R.string.payment_received_notification_title))
-                    setContentText("Received $amountSat sats")
+                    setContentTitle(contentTitle)
+                    setContentText(contentText)
                     setSmallIcon(R.mipmap.ic_stat_ic_notification)
                     setContentIntent(contentIntent)
                     addAction(notificationAction)

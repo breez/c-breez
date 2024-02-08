@@ -26,9 +26,7 @@ class BreezFcmService : FirebaseMessagingService() {
         configureLogger(applicationContext)
         Logger.tag(TAG).debug { "FCM notification received!" }
 
-        // Only handle remote messages if app is in the background
-        if (!isAppForeground()) startServiceIfNeeded(remoteMessage)
-        else Logger.tag(TAG).debug { "App is in the foreground." }
+        startServiceIfNeeded(remoteMessage)
     }
 
     /** Check if message is a data payload w/ high priority
@@ -36,8 +34,12 @@ class BreezFcmService : FirebaseMessagingService() {
     private fun startServiceIfNeeded(remoteMessage: RemoteMessage) {
         with(remoteMessage) {
             Logger.tag(TAG).debug { "From: $from" }
-            if (data.isNotEmpty() && priority == RemoteMessage.PRIORITY_HIGH) startBreezForegroundService()
-            else Logger.tag(TAG).warn { "Ignoring FCM message with low/normal priority" }
+            val serviceNeededByNotificationType = when (data["notification_type"]) {
+                "payment_received" -> !isAppForeground()
+                else -> true
+            }
+            if (data.isNotEmpty() && serviceNeededByNotificationType && priority == RemoteMessage.PRIORITY_HIGH) startBreezForegroundService()
+            else Logger.tag(TAG).warn { "Ignoring FCM message $data" }
         }
     }
 

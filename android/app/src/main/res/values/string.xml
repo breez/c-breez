@@ -4,6 +4,10 @@
     <string name="offline_payments_work_group_name">Offline Payments</string>
     <string name="offline_payments_work_group_description">Required to receive payments when the application is in the background.</string>
 
+    <string name="lnurl_pay_work_group_id">lnurl_pay</string>
+    <string name="lnurl_pay_work_group_name">LNURL Payments</string>
+    <string name="lnurl_pay_work_group_description">Required to handle LNURL pay requests when the application is in the background.</string>
+
     <string name="foreground_service_notification_title">Breez is running in the background</string>
     <string name="foreground_service_notification_channel_name">Foreground Service</string>
     <string name="foreground_service_notification_channel_description">Shown when the application is in the background.</string>
@@ -11,4 +15,10 @@
     <string name="payment_received_notification_title">Payment Received</string>
     <string name="payment_received_notification_channel_name">Received Payments</string>
     <string name="payment_received_notification_channel_description">Notifications for received payments when the application is in the background.</string>
+
+    <string name="lnurl_pay_info_notification_title">Retrieving Payment Information</string>
+    <string name="lnurl_pay_invoice_notification_title">Fetching invoice</string>
+    <string name="lnurl_pay_notification_failure_title">Receive Payment Failed</string>
+    <string name="lnurl_pay_notification_channel_name">Receiving Payments</string>
+    <string name="lnurl_pay_notification_channel_description">Notifications for receiving payments when the application is in the background.</string>
 </resources>

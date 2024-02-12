@@ -68,8 +68,6 @@ class BreezSDKMock extends Mock implements BreezSDK {
     widgetUrl: "",
     pubkey: "",
     host: "",
-    channelCapacity: 0,
-    targetConf: 0,
     baseFeeMsat: 0,
     feeRate: 0,
     timeLockDelta: 0,

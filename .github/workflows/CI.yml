@@ -1,22 +1,20 @@
 name: Run CI
-
-# Controls when the workflow will run
 on:
   # Triggers the workflow on push events but only for the "main" branch
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'SDK commit/tag/branch reference'
+        required: false
+        type: string
 
 jobs:
-
   build:
-
     runs-on: macOS-13
-
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
@@ -28,6 +26,7 @@ jobs:
           repository: 'breez/breez-sdk'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk'
+          ref: ${{ inputs.ref }}
 
       # Setup the flutter environment.
       - uses: subosito/flutter-action@v2

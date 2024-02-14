@@ -128,7 +128,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       final mnemonic = await _credentialsManager.restoreMnemonic();
       final seed = bip39.mnemonicToSeed(mnemonic);
       _log.info("connecting to breez lib");
-      await _breezSDK.connect(config: config.sdkConfig, seed: seed);
+      final req = sdk.ConnectRequest(
+        config: config.sdkConfig,
+        seed: seed,
+      );
+      await _breezSDK.connect(req: req);
       _log.info("connected to breez lib");
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
     } catch (e) {

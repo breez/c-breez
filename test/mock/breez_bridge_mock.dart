@@ -14,8 +14,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
 
   @override
   Future connect({
-    required Config config,
-    required Uint8List seed,
+    required ConnectRequest req,
   }) async {
     await nodeInfo();
   }

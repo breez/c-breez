@@ -6,7 +6,6 @@ import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/fiat_conversion.dart';
 import 'package:c_breez/utils/min_font_size.dart';
-import 'package:c_breez/widgets/amount_form_field/breez_dropdown.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
@@ -153,7 +152,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             child: DropdownButtonHideUnderline(
               child: ButtonTheme(
                 alignedDropdown: true,
-                child: BreezDropdownButton(
+                child: DropdownButton(
                   onChanged: (value) => _selectFiatCurrency(value.toString()),
                   value: currencyState.fiatId,
                   iconEnabledColor: themeData.dialogTheme.titleTextStyle!.color!,

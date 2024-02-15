@@ -17,12 +17,10 @@ enum PaymentRequestState {
 class PaymentRequestDialog extends StatefulWidget {
   final Invoice invoice;
   final GlobalKey firstPaymentItemKey;
-  final ScrollController scrollController;
 
   const PaymentRequestDialog(
     this.invoice,
-    this.firstPaymentItemKey,
-    this.scrollController, {
+    this.firstPaymentItemKey, {
     super.key,
   });
 

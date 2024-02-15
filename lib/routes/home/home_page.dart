@@ -46,7 +46,6 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
       handlers.addAll([
         InputHandler(
           firstPaymentItemKey,
-          scrollController,
           _scaffoldKey,
         ),
         ConnectivityHandler(),

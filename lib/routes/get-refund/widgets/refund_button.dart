@@ -28,6 +28,7 @@ class RefundButton extends StatelessWidget {
 
   Future _refund(BuildContext context) async {
     final texts = context.texts();
+    final themeData = Theme.of(context);
     final refundBloc = context.read<RefundBloc>();
 
     final navigator = Navigator.of(context);
@@ -37,10 +38,8 @@ class RefundButton extends StatelessWidget {
       await refundBloc.refund(req: req);
       navigator.popUntil((route) => route.settings.name == "/");
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      final themeData = Theme.of(context);
       navigator.pop(loaderRoute);
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
       promptError(
         context,
         null,

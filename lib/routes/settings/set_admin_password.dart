@@ -123,7 +123,7 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
         onPressed: () async {
           if (_formKey.currentState?.validate() == true) {
             await context.read<UserProfileBloc>().setAdminPassword(_passwordController.text);
-            if (!mounted) return;
+            if (!context.mounted) return;
             Navigator.of(context).pop();
           }
         },

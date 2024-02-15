@@ -154,7 +154,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
         isUploading = false;
         pickedImage = null;
       });
-      // ignore: use_build_context_synchronously
+      if (!mounted) return;
       showFlushbar(
         context,
         message: texts.breez_avatar_dialog_error_upload,

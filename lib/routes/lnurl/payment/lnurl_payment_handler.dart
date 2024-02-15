@@ -35,11 +35,10 @@ Future<LNURLPageResult?> handlePayRequest(
       ),
     );
   }
-  if (paymentInfo == null) {
+  if (paymentInfo == null || !context.mounted) {
     return Future.value();
   }
   // Show Processing Payment Dialog
-  // ignore: use_build_context_synchronously
   return await showDialog(
     useRootNavigator: false,
     context: context,

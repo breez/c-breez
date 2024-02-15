@@ -4,7 +4,7 @@ publish_to: "none"
 version: 1.1.0
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.3.0-279.1.beta <4.0.0'
   flutter: ">=3.10.0"
 
 dependencies:
@@ -34,7 +34,7 @@ dependencies:
   duration: ^3.0.13
   email_validator: ^2.1.17
   extended_image: ^8.2.0
-  ffi: ^2.1.0
+  ffi: ^2.1.2
   # Doesn't support: Linux Windows
   firebase_core: ^2.25.4
   # Doesn't support: Linux Mac Windows
@@ -68,14 +68,14 @@ dependencies:
   intl: ^0.19.0 # local_auth & breez_translations depends on intl ^0.18.0
   # Doesn't support: Linux Mac
   local_auth: ^2.1.8
-  local_auth_android: ^1.0.36
+  local_auth_android: ^1.0.37
   local_auth_ios: ^1.1.7
   logging: ^1.2.0
   mockito: ^5.4.4
   # Doesn't support: Linux Windows
   mobile_scanner: ^4.0.0
   package_info_plus: ^5.0.1
-  path: <1.9.0 # Pinned to version 1.8.3 by flutter_test from the flutter SDK.
+  path: ^1.9.0
   path_provider: ^2.1.2
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8

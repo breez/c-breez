@@ -170,7 +170,7 @@ class _DevelopersViewState extends State<DevelopersView> {
       final storageFile = XFile(filePath);
       Share.shareXFiles([storageFile]);
     } else {
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
       showFlushbar(context, title: texts.backup_export_static_error_data_missing);
     }
   }

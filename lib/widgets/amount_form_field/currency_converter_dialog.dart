@@ -70,7 +70,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
           );
         });
       }
-      return {} as Map<String, Rate>;
+      return <String, Rate>{};
     });
   }
 

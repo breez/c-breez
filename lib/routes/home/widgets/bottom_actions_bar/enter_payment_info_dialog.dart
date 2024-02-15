@@ -190,7 +190,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
       return;
     }
     if (barcode.isEmpty) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       showFlushbar(
         context,
         message: texts.payment_info_dialog_error_qrcode,

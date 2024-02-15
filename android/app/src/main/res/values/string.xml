@@ -21,4 +21,12 @@
     <string name="lnurl_pay_notification_failure_title">Receive Payment Failed</string>
     <string name="lnurl_pay_notification_channel_name">Receiving Payments</string>
     <string name="lnurl_pay_notification_channel_description">Notifications for receiving payments when the application is in the background.</string>
+
+    <string name="swap_tx_notification_work_group_id">swap_tx</string>
+    <string name="swap_tx_notification_work_group_name">Swap Tx Confirmed</string>
+    <string name="swap_tx_notification_work_group_description">Required to handle swaps when the application is in the background.</string>
+    <string name="swap_tx_notification_title">Swap Tx Confirmed</string>
+    <string name="swap_tx_notification_failure_title">Redeem Swap Failed</string>
+    <string name="swap_tx_notification_channel_name">Received Swaps</string>
+    <string name="swap_tx_notification_channel_description">Notifications for received swaps when the application is in the background.</string>
 </resources>

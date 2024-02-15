@@ -19,6 +19,7 @@ import com.cBreez.client.Constants.SHUTDOWN_DELAY_MS
 import com.cBreez.client.job.LnurlPayInfoJob
 import com.cBreez.client.job.LnurlPayInvoiceJob
 import com.cBreez.client.job.ReceivePaymentJob
+import com.cBreez.client.job.RedeemSwapJob
 import com.cBreez.client.job.SDKJob
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -114,6 +115,7 @@ class BreezForegroundService : ForegroundService, Service() {
         return intent?.remoteMessage?.let { rm ->
             rm.notificationPayload?.let { payload ->
                 when (rm.notificationType) {
+                    "address_txs_confirmed" -> RedeemSwapJob(applicationContext, this, payload)
                     "payment_received" -> ReceivePaymentJob(applicationContext, this, payload)
                     "lnurlpay_info" -> LnurlPayInfoJob(applicationContext, this, payload)
                     "lnurlpay_invoice" -> LnurlPayInvoiceJob(applicationContext, this, payload)

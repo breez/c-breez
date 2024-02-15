@@ -26,7 +26,6 @@ final _log = Logger("InputHandler");
 
 class InputHandler extends Handler {
   final GlobalKey firstPaymentItemKey;
-  final ScrollController scrollController;
   final GlobalKey<ScaffoldState> scaffoldController;
 
   StreamSubscription<InputState>? _subscription;
@@ -35,7 +34,6 @@ class InputHandler extends Handler {
 
   InputHandler(
     this.firstPaymentItemKey,
-    this.scrollController,
     this.scaffoldController,
   );
 
@@ -135,7 +133,6 @@ class InputHandler extends Handler {
       builder: (_) => PaymentRequestDialog(
         invoice,
         firstPaymentItemKey,
-        scrollController,
       ),
     );
   }

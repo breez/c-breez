@@ -179,7 +179,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
       if (isRestore) {
         _restoreNodeFromMnemonicSeed(initialWords: mnemonic.split(" "));
       }
-      // ignore: use_build_context_synchronously
+      if (!mounted) return;
       showFlushbar(context, message: extractExceptionMessage(error, texts));
       return;
     } finally {

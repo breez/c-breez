@@ -89,7 +89,7 @@ class PaymentmentFilterExporter extends StatelessWidget {
           navigator.removeRoute(loaderRoute);
         }
         _log.severe("Received error: $error");
-        // ignore: use_build_context_synchronously
+        if (!context.mounted) return;
         showFlushbar(
           context,
           message: texts.payments_filter_action_export_failed,

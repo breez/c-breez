@@ -33,6 +33,7 @@ class ReverseSwapButton extends StatelessWidget {
 
   Future _sendOnchain(BuildContext context) async {
     final texts = context.texts();
+    final themeData = Theme.of(context);
     final reverseSwapBloc = context.read<ReverseSwapBloc>();
 
     final navigator = Navigator.of(context);
@@ -48,10 +49,8 @@ class ReverseSwapButton extends StatelessWidget {
 
       navigator.pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false);
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      final themeData = Theme.of(context);
       navigator.pop(loaderRoute);
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
       promptError(
         context,
         null,

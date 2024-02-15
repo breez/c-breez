@@ -29,6 +29,7 @@ class RedeemOnchainFundsButton extends StatelessWidget {
 
   Future _sweep(BuildContext context) async {
     final texts = context.texts();
+    final themeData = Theme.of(context);
     final redeemBloc = context.read<RedeemOnchainFundsBloc>();
 
     final navigator = Navigator.of(context);
@@ -41,10 +42,8 @@ class RedeemOnchainFundsButton extends StatelessWidget {
       );
       navigator.popUntil((route) => route.settings.name == "/");
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      final themeData = Theme.of(context);
       navigator.pop(loaderRoute);
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) return;
       promptError(
         context,
         null,

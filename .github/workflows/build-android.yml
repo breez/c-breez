@@ -6,6 +6,7 @@ on:
         description: 'SDK commit/tag/branch reference'
         required: false
         type: string
+        default: 'main'
 
 jobs:
   build-android:

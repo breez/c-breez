@@ -10,9 +10,7 @@ import org.tinylog.kotlin.Logger
 class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        val pluginRegistry = flutterEngine.plugins
-        val breezSdkPlugin = pluginRegistry.get(BreezSDKPlugin::class.java) as BreezSDKPlugin
-        val sdkLogListener = breezSdkPlugin.setNodeLogStream()
+        val sdkLogListener = BreezSDKPlugin.Companion.setNodeLogStream()
         sdkLogListener.subscribe(lifecycleScope) { l: LogEntry ->
             when (l.level) {
                 "ERROR" -> Logger.tag(TAG).error { l.line }

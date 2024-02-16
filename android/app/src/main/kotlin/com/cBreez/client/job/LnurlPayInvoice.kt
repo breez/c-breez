@@ -21,10 +21,12 @@ data class LnurlInvoiceRequest(
     @SerialName("reply_url") val replyURL: String,
 )
 
+// Serialize the response according to to LUD-06 payRequest base specification:
+// https://github.com/lnurl/luds/blob/luds/06.md
 @Serializable
 data class LnurlPayInvoiceResponse(
-    @SerialName("pr") val pr: String,
-    @SerialName("routes") val routes: List<String>,
+    val pr: String,
+    val routes: List<String>,
 )
 
 class LnurlPayInvoiceJob(

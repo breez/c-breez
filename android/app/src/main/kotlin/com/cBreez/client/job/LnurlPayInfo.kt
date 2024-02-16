@@ -20,13 +20,15 @@ data class LnurlInfoRequest(
     @SerialName("reply_url") val replyURL: String,
 )
 
+// Serialize the response according to to LUD-06 payRequest base specification:
+// https://github.com/lnurl/luds/blob/luds/06.md
 @Serializable
 data class LnurlPayInfoResponse(
-    @SerialName("callback") val callback: String,
-    @SerialName("max_sendable") val maxSendable: ULong,
-    @SerialName("min_sendable") val minSendable: ULong,
-    @SerialName("metadata") val metadata: String,
-    @SerialName("tag") val tag: String,
+    val callback: String,
+    val maxSendable: ULong,
+    val minSendable: ULong,
+    val metadata: String,
+    val tag: String,
 )
 
 class LnurlPayInfoJob(

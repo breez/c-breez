@@ -40,7 +40,8 @@ class BreezSdkConnector {
 
                     // Connect to the Breez SDK make it ready for use
                     Logger.tag(TAG).debug { "Connecting to Breez SDK" }
-                    breezSDK = connect(config, seed, sdkListener)
+                    val req = ConnectRequest(config, seed)
+                    breezSDK = connect(req, sdkListener)
                     Logger.tag(TAG).debug { "Connected to Breez SDK" }
                 } else Logger.tag(TAG).debug { "Already connected to Breez SDK" }
 

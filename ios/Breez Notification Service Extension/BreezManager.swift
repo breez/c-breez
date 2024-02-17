@@ -58,7 +58,8 @@ class BreezManager {
         }
         // Connect to the Breez SDK make it ready for use
         log.trace("Connecting to Breez SDK")
-        let breezSDK = try connect(config: config, seed: seed, listener: BreezManagerListener())
+        let req = ConnectRequest(config: config, seed: seed)
+        let breezSDK = try connect(req: req, listener: BreezManagerListener())
         log.trace("Connected to Breez SDK")
         return breezSDK
     }

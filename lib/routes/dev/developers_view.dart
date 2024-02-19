@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/bug_report_behavior.dart';
 import 'package:c_breez/routes/dev/command_line_interface.dart';
 import 'package:c_breez/routes/ui_test/ui_test_page.dart';
+import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
@@ -101,6 +103,11 @@ class _DevelopersViewState extends State<DevelopersView> {
                 icon: Icons.charging_station,
                 function: _exportStaticBackup,
               ),
+              Choice(
+                title: "Rescan Swaps",
+                icon: Icons.radar,
+                function: _rescanSwaps,
+              ),
               if (bugReportBehavior != BugReportBehavior.PROMPT)
                 Choice(
                   title: "Enable Failure Prompt",
@@ -172,6 +179,18 @@ class _DevelopersViewState extends State<DevelopersView> {
     } else {
       if (!context.mounted) return;
       showFlushbar(context, title: texts.backup_export_static_error_data_missing);
+    }
+  }
+
+  Future<void> _rescanSwaps(BuildContext context) async {
+    final texts = getSystemAppLocalizations();
+    final revSwapBloc = context.read<ReverseSwapBloc>();
+
+    try {
+      return await revSwapBloc.rescanSwaps();
+    } catch (error) {
+      if (!context.mounted) return;
+      showFlushbar(context, title: extractExceptionMessage(error, texts));
     }
   }
 }

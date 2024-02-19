@@ -27,10 +27,12 @@ String? _extractInnerErrorMessage(String content) {
   final messageRegex = RegExp(r'((?<=message: ")(.*)(?=.*"))');
   final causedByRegex = RegExp(r'((?<=Caused by: )(.*)(?=.*))');
   final reasonRegex = RegExp(r'((?<=FAILURE_REASON_)(.*)(?=.*))');
+  final anyhowRegex = RegExp(r'((?<=FrbAnyhowException.*: )(.*)(?=.*\)))');
   return innerMessageRegex.stringMatch(content) ??
       messageRegex.stringMatch(content) ??
       causedByRegex.stringMatch(content) ??
-      reasonRegex.stringMatch(content);
+      reasonRegex.stringMatch(content) ??
+      anyhowRegex.stringMatch(content);
 }
 
 String _localizedExceptionMessage(

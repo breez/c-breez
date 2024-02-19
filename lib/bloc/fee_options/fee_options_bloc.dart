@@ -18,7 +18,7 @@ class FeeOptionsBloc extends Cubit<FeeOptionsState> {
   FeeOptionsBloc(this._breezSDK) : super(FeeOptionsState.initial());
 
   /// Fetches the current recommended fees
-  Future<List<FeeOption>> fetchFeeOptions({required String toAddress, String? swapAddress}) async {
+  Future<List<FeeOption>> fetchFeeOptions({required String toAddress}) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();

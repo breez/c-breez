@@ -98,6 +98,9 @@ class BreezLogger {
       case "DEBUG":
         _sdkLog.config(log.line);
         break;
+      case "TRACE":
+        _sdkLog.finest(log.line);
+        break;
     }
   }
 

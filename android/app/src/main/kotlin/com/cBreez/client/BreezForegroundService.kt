@@ -8,6 +8,8 @@ import android.os.IBinder
 import android.os.Looper
 import androidx.core.content.IntentCompat
 import breez_sdk.BlockingBreezServices
+import breez_sdk.LogEntry
+import com.breez.breez_sdk.SdkLogInitializer
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyForegroundService
 import com.cBreez.client.BreezNotificationHelper.Companion.registerNotificationChannels
 import com.cBreez.client.BreezSdkConnector.Companion.connectSDK
@@ -43,6 +45,16 @@ class BreezForegroundService : ForegroundService, Service() {
         super.onCreate()
         Logger.tag(TAG).debug { "Creating Breez foreground service..." }
         registerNotificationChannels(applicationContext)
+        val sdkLogListener = SdkLogInitializer.initializeNodeLogStream()
+        sdkLogListener.subscribe(serviceScope) { l: LogEntry ->
+            when (l.level) {
+                "ERROR" -> Logger.tag(TAG).error { l.line }
+                "WARN" -> Logger.tag(TAG).warn { l.line }
+                "INFO" -> Logger.tag(TAG).info { l.line }
+                "DEBUG" -> Logger.tag(TAG).debug { l.line }
+                "TRACE" -> Logger.tag(TAG).trace { l.line }
+            }
+        }
         Logger.tag(TAG).debug { "Breez foreground service created." }
     }
 
@@ -68,6 +80,7 @@ class BreezForegroundService : ForegroundService, Service() {
 
     override fun shutdown() {
         Logger.tag(TAG).debug { "Shutting down Breez foreground service" }
+        SdkLogInitializer.unsubscribeNodeLogStream(serviceScope)
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }

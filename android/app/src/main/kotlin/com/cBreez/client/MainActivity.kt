@@ -17,7 +17,7 @@ class MainActivity : FlutterActivity() {
                 "WARN" -> Logger.tag(TAG).warn { l.line }
                 "INFO" -> Logger.tag(TAG).info { l.line }
                 "DEBUG" -> Logger.tag(TAG).debug { l.line }
-                //"TRACE" -> Logger.tag(TAG).trace { l.line }
+                "TRACE" -> Logger.tag(TAG).trace { l.line }
             }
         }
     }

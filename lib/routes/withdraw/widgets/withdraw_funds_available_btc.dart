@@ -11,7 +11,9 @@ import 'package:logging/logging.dart';
 final _log = Logger("WithdrawFundsAvailableBtc");
 
 class WithdrawFundsAvailableBtc extends StatelessWidget {
-  const WithdrawFundsAvailableBtc();
+  final int? maxSendableAmount;
+
+  const WithdrawFundsAvailableBtc({this.maxSendableAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -25,22 +27,18 @@ class WithdrawFundsAvailableBtc extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         children: [
-          Text(
-            texts.withdraw_funds_balance,
-            style: textStyle,
-          ),
+          Text(texts.withdraw_funds_balance, style: textStyle),
           Padding(
             padding: const EdgeInsets.only(left: 3.0),
             child: BlocBuilder<AccountBloc, AccountState>(
               builder: (context, account) {
                 _log.info(
-                    "Building with wallet balance: ${account.walletBalance} balance: ${account.balance}");
+                  "Building with wallet balance: ${account.walletBalance} balance: ${account.balance} maxSendableAmount: $maxSendableAmount",
+                );
                 return BlocBuilder<CurrencyBloc, CurrencyState>(
                   builder: (context, currencyState) {
                     return Text(
-                      currencyState.bitcoinCurrency.format(
-                        account.balance,
-                      ),
+                      currencyState.bitcoinCurrency.format(maxSendableAmount ?? account.balance),
                       style: textStyle,
                     );
                   },

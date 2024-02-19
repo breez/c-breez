@@ -177,7 +177,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                 ),
                               ),
                             ),
-                            const WithdrawFundsAvailableBtc(),
+                            WithdrawFundsAvailableBtc(maxSendableAmount: maxSendableAmount),
                             Expanded(child: Container()),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),

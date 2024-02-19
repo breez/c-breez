@@ -15,6 +15,7 @@ import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/amount_form_field/sat_amount_form_field_formatter.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -186,21 +187,46 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                 () async {
                                   final navigator = Navigator.of(context);
                                   if (_formKey.currentState?.validate() ?? false) {
-                                    final revSwapBloc = context.read<ReverseSwapBloc>();
-                                    int amount = _getAmount();
-                                    final revSwapOptions =
-                                        await revSwapBloc.fetchReverseSwapOptions(sendAmountSat: amount);
+                                    var loaderRoute = createLoaderRoute(context);
+                                    navigator.push(loaderRoute);
 
-                                    navigator.push(
-                                      FadeInRoute(
-                                        builder: (_) => ReverseSwapConfirmationPage(
-                                          amountSat: amount,
-                                          onchainRecipientAddress: _addressController.text,
-                                          feesHash: revSwapOptions.pairInfo.feesHash,
-                                          boltzFees: revSwapOptions.pairInfo.totalEstimatedFees,
+                                    try {
+                                      final revSwapBloc = context.read<ReverseSwapBloc>();
+                                      int amount = _getAmount();
+                                      final revSwapOptions =
+                                          await revSwapBloc.fetchReverseSwapOptions(sendAmountSat: amount);
+
+                                      if (loaderRoute.isActive) {
+                                        navigator.removeRoute(loaderRoute);
+                                      }
+
+                                      navigator.push(
+                                        FadeInRoute(
+                                          builder: (_) => ReverseSwapConfirmationPage(
+                                            amountSat: amount,
+                                            onchainRecipientAddress: _addressController.text,
+                                            feesHash: revSwapOptions.pairInfo.feesHash,
+                                            boltzFees: revSwapOptions.pairInfo.totalEstimatedFees,
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    } catch (error) {
+                                      if (loaderRoute.isActive) {
+                                        navigator.removeRoute(loaderRoute);
+                                      }
+                                      _log.severe("Received error: $error");
+                                      if (!context.mounted) return;
+                                      showFlushbar(
+                                        context,
+                                        message: texts.reverse_swap_upstream_generic_error_message(
+                                          extractExceptionMessage(error, texts),
+                                        ),
+                                      );
+                                    } finally {
+                                      if (loaderRoute.isActive) {
+                                        navigator.removeRoute(loaderRoute);
+                                      }
+                                    }
                                   }
                                 },
                               ),

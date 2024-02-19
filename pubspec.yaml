@@ -4,8 +4,8 @@ publish_to: "none"
 version: 1.1.0
 
 environment:
-  sdk: '>=3.2.0-0 <4.0.0'
-  flutter: ">=3.10.0"
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
@@ -34,13 +34,13 @@ dependencies:
   duration: ^3.0.13
   email_validator: ^2.1.17
   extended_image: ^8.2.0
-  ffi: ^2.1.2
+  ffi: ^2.1.2 # requires Dart >=3.3.0(Flutter 3.19)
   # Doesn't support: Linux Windows
   firebase_core: ^2.25.4
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.4.13
+  firebase_dynamic_links: ^5.4.14
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.7.15
+  firebase_messaging: ^14.7.16
   flutter_bloc: ^8.1.4
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
@@ -57,7 +57,7 @@ dependencies:
       ref: a16aa4deeff1c5e96c6da46da31cb0533f838d8d
   git_info: ^1.1.2
   hex: ^0.2.0
-  http: ^1.2.0
+  http: ^1.2.0 #  package_info_plus >=5.0.1 is incompatible with http >=1.2.1.
   hydrated_bloc: ^9.1.4
   image: ^4.1.7
   # Doesn't support: Linux Mac Windows

@@ -24,10 +24,21 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def dartDefines = [:];
+if (project.hasProperty('dart-defines')) {
+    // Decode dart-defines, which are comma-separated and encoded in Base64, and store them in a variable.
+    dartDefines = dartDefines + project.property('dart-defines')
+            .split(',')
+            .collectEntries { entry ->
+                def pair = new String(entry.decodeBase64(), 'UTF-8').split('=', 2)
+                [(pair.first()): pair.last()]
+            }
+}
+
 def envVariables = [
         API_KEY: project.hasProperty('API_KEY')
                 ? API_KEY
-                : '',
+                : "${dartDefines.API_KEY}",
 ];
 
 android {

@@ -130,11 +130,10 @@ flutter {
 
 dependencies {
     /* FCM */
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.4.0'
-    /* WorkManager */
     def work_version = "2.9.0"
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:$work_version"
+    implementation 'com.google.firebase:firebase-messaging:23.4.1'
     /* Logging */
     implementation 'org.tinylog:tinylog-api-kotlin:2.6.2'
     implementation 'org.tinylog:tinylog-impl:2.6.2'

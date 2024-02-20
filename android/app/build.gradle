@@ -3,7 +3,6 @@ plugins {
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
-    id "kotlinx-serialization"
 }
 
 def localProperties = new Properties()
@@ -134,6 +133,4 @@ dependencies {
     /* Logging */
     implementation 'org.tinylog:tinylog-api-kotlin:2.6.2'
     implementation 'org.tinylog:tinylog-impl:2.6.2'
-    /* JSON serialization */
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
 }

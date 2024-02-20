@@ -47,7 +47,7 @@ class _FeeChooserState extends State<FeeChooser> {
           FeeBreakdown(
             widget.amountSat,
             widget.feeOptions.elementAt(widget.selectedFeeIndex).txFeeSat,
-            boltzFees: widget.feeOptions.elementAt(widget.selectedFeeIndex).pairInfo?.totalEstimatedFees,
+            pairInfo: widget.feeOptions.elementAt(widget.selectedFeeIndex).pairInfo,
             isMaxValue: widget.isMaxValue,
           )
         ],

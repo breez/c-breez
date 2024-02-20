@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
@@ -10,14 +11,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class FeeBreakdown extends StatelessWidget {
   final int swapAmount;
   final int txFees;
-  final int? boltzFees;
+  final ReverseSwapPairInfo? pairInfo;
   final bool? isMaxValue;
 
   const FeeBreakdown(
     this.swapAmount,
     this.txFees, {
     super.key,
-    this.boltzFees,
+    this.pairInfo,
     this.isMaxValue,
   });
 
@@ -26,6 +27,13 @@ class FeeBreakdown extends StatelessWidget {
     final texts = context.texts();
     final themeData = Theme.of(context);
     final minFont = MinFontSize(context);
+    int? boltzFees;
+    if (pairInfo != null) {
+      var p = pairInfo!.feesPercentage / 100;
+      boltzFees = ((swapAmount + pairInfo!.feesClaim).toDouble() * p / (1 - p) +
+              pairInfo!.feesLockup.toDouble() / (1 - p))
+          .ceil();
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -47,15 +55,14 @@ class FeeBreakdown extends StatelessWidget {
               builder: (context, currency) {
                 final fiatConversion = currency.fiatConversion();
 
-                int sendAmount;
-                if (isMaxValue == true) {
-                  // For reverse swapping all funds we subtract the fees from swapAmount
-                  // txFees is added as boltzFees includes this
-                  sendAmount = swapAmount;
-                } else {
-                  sendAmount = swapAmount;
-                  if (boltzFees != null) {
-                    sendAmount += boltzFees!;
+                int sendAmount = swapAmount;
+                if (isMaxValue != true) {
+                  if (pairInfo != null) {
+                    var p = pairInfo!.feesPercentage / 100;
+                    var boltzFees = ((swapAmount + pairInfo!.feesClaim).toDouble() * p / (1 - p) +
+                            pairInfo!.feesLockup.toDouble() / (1 - p))
+                        .ceil();
+                    sendAmount += boltzFees + txFees;
                   }
                 }
 
@@ -87,7 +94,7 @@ class FeeBreakdown extends StatelessWidget {
               ),
               trailing: AutoSizeText(
                 texts.reverse_swap_confirmation_boltz_fee_value(
-                  BitcoinCurrency.SAT.format(boltzFees! - txFees),
+                  BitcoinCurrency.SAT.format(boltzFees),
                 ),
                 style: TextStyle(
                   color: themeData.colorScheme.error.withOpacity(0.4),
@@ -135,9 +142,9 @@ class FeeBreakdown extends StatelessWidget {
               if (isMaxValue == true) {
                 // For reverse swapping all funds we subtract the fees from swapAmount
                 // txFees is added as boltzFees includes this
-                receivedAmount = swapAmount;
+                receivedAmount -= txFees;
                 if (boltzFees != null) {
-                  receivedAmount -= boltzFees!;
+                  receivedAmount -= boltzFees;
                 }
               }
 

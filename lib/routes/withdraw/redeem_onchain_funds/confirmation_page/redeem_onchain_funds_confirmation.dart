@@ -1,6 +1,6 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/fee_options/fee_option.dart';
-import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
+import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_bloc.dart';
 import 'package:c_breez/routes/withdraw/redeem_onchain_funds/confirmation_page/widgets/redeem_onchain_funds_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -30,9 +30,8 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions(
-          toAddress: widget.toAddress,
-        );
+    final redeemOnchainFundsBloc = context.read<RedeemOnchainFundsBloc>();
+    _fetchFeeOptionsFuture = redeemOnchainFundsBloc.fetchRedeemOnchainFeeOptions(toAddress: widget.toAddress);
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
         affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();

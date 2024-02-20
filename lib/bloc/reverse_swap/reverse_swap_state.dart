@@ -1,18 +1,22 @@
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/bloc/fee_options/fee_option.dart';
 
 class ReverseSwapState {
+  final List<FeeOption> feeOptions;
   final ReverseSwapInfo? reverseSwapInfo;
   final String? error;
 
-  ReverseSwapState({this.reverseSwapInfo, this.error = ""});
+  ReverseSwapState({this.feeOptions = const [], this.reverseSwapInfo, this.error = ""});
 
   ReverseSwapState.initial() : this();
 
   ReverseSwapState copyWith({
+    List<FeeOption>? feeOptions,
     ReverseSwapInfo? reverseSwapInfo,
     String? error,
   }) =>
       ReverseSwapState(
+        feeOptions: feeOptions ?? this.feeOptions,
         reverseSwapInfo: reverseSwapInfo ?? this.reverseSwapInfo,
         error: error ?? this.error,
       );

@@ -49,8 +49,10 @@ class RefundBloc extends Cubit<RefundState> {
   }
 
   /// Fetches the current recommended fees for a refund transaction.
-  Future<List<FeeOption>> fetchRefundFeeOptions(
-      {required String toAddress, required String swapAddress}) async {
+  Future<List<RefundFeeOption>> fetchRefundFeeOptions({
+    required String toAddress,
+    required String swapAddress,
+  }) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();
@@ -70,7 +72,7 @@ class RefundBloc extends Cubit<RefundState> {
     }
   }
 
-  Future<List<FeeOption>> _constructFeeOptionList({
+  Future<List<RefundFeeOption>> _constructFeeOptionList({
     required String toAddress,
     required RecommendedFees recommendedFees,
     required String swapAddress,
@@ -90,11 +92,11 @@ class RefundBloc extends Cubit<RefundState> {
         );
         final fee = await prepareRefund(req);
 
-        return FeeOption(
+        return RefundFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
           waitingTime: Duration(minutes: waitingTime.elementAt(index)),
-          fee: fee,
-          feeVByte: recommendedFee,
+          txFeeSat: fee,
+          satPerVbyte: recommendedFee,
         );
       }),
     );

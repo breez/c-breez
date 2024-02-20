@@ -8,15 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FeeBreakdown extends StatelessWidget {
-  final int total;
-  final int fee;
+  final int swapAmount;
+  final int txFees;
   final int? boltzFees;
+  final bool? isMaxValue;
 
   const FeeBreakdown(
-    this.total,
-    this.fee, {
+    this.swapAmount,
+    this.txFees, {
     super.key,
     this.boltzFees,
+    this.isMaxValue,
   });
 
   @override
@@ -41,14 +43,35 @@ class FeeBreakdown extends StatelessWidget {
               minFontSize: minFont.minFontSize,
               stepGranularity: 0.1,
             ),
-            trailing: AutoSizeText(
-              BitcoinCurrency.SAT.format(total),
-              style: TextStyle(
-                color: themeData.colorScheme.error,
-              ),
-              maxLines: 1,
-              minFontSize: minFont.minFontSize,
-              stepGranularity: 0.1,
+            trailing: BlocBuilder<CurrencyBloc, CurrencyState>(
+              builder: (context, currency) {
+                final fiatConversion = currency.fiatConversion();
+
+                int sendAmount;
+                if (isMaxValue == true) {
+                  // For reverse swapping all funds we subtract the fees from swapAmount
+                  // txFees is added as boltzFees includes this
+                  sendAmount = swapAmount;
+                } else {
+                  sendAmount = swapAmount;
+                  if (boltzFees != null) {
+                    sendAmount += boltzFees!;
+                  }
+                }
+
+                return AutoSizeText(
+                  fiatConversion == null
+                      ? texts.sweep_all_coins_amount_no_fiat(
+                          BitcoinCurrency.SAT.format(sendAmount),
+                        )
+                      : texts.sweep_all_coins_amount_with_fiat(
+                          BitcoinCurrency.SAT.format(sendAmount), fiatConversion.format(sendAmount)),
+                  style: TextStyle(color: themeData.colorScheme.error),
+                  maxLines: 1,
+                  minFontSize: minFont.minFontSize,
+                  stepGranularity: 0.1,
+                );
+              },
             ),
           ),
           if (boltzFees != null) ...[
@@ -64,7 +87,7 @@ class FeeBreakdown extends StatelessWidget {
               ),
               trailing: AutoSizeText(
                 texts.reverse_swap_confirmation_boltz_fee_value(
-                  BitcoinCurrency.SAT.format(boltzFees!),
+                  BitcoinCurrency.SAT.format(boltzFees! - txFees),
                 ),
                 style: TextStyle(
                   color: themeData.colorScheme.error.withOpacity(0.4),
@@ -85,7 +108,7 @@ class FeeBreakdown extends StatelessWidget {
             ),
             trailing: AutoSizeText(
               texts.sweep_all_coins_fee(
-                BitcoinCurrency.SAT.format(fee),
+                BitcoinCurrency.SAT.format(txFees),
               ),
               style: TextStyle(
                 color: themeData.colorScheme.error.withOpacity(0.4),
@@ -105,31 +128,34 @@ class FeeBreakdown extends StatelessWidget {
               minFontSize: minFont.minFontSize,
               stepGranularity: 0.1,
             ),
-            trailing: BlocBuilder<CurrencyBloc, CurrencyState>(
-              builder: (context, currency) {
-                final fiatConversion = currency.fiatConversion();
-                int receive = total - fee;
+            trailing: BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currency) {
+              final fiatConversion = currency.fiatConversion();
+
+              int receivedAmount = swapAmount;
+              if (isMaxValue == true) {
+                // For reverse swapping all funds we subtract the fees from swapAmount
+                // txFees is added as boltzFees includes this
+                receivedAmount = swapAmount;
                 if (boltzFees != null) {
-                  receive -= boltzFees!;
+                  receivedAmount -= boltzFees!;
                 }
-                return AutoSizeText(
-                  fiatConversion == null
-                      ? texts.sweep_all_coins_amount_no_fiat(
-                          BitcoinCurrency.SAT.format(receive),
-                        )
-                      : texts.sweep_all_coins_amount_with_fiat(
-                          BitcoinCurrency.SAT.format(receive),
-                          fiatConversion.format(receive),
-                        ),
-                  style: TextStyle(
-                    color: themeData.colorScheme.error,
-                  ),
-                  maxLines: 1,
-                  minFontSize: minFont.minFontSize,
-                  stepGranularity: 0.1,
-                );
-              },
-            ),
+              }
+
+              return AutoSizeText(
+                fiatConversion == null
+                    ? texts.sweep_all_coins_amount_no_fiat(
+                        BitcoinCurrency.SAT.format(receivedAmount),
+                      )
+                    : texts.sweep_all_coins_amount_with_fiat(
+                        BitcoinCurrency.SAT.format(receivedAmount),
+                        fiatConversion.format(receivedAmount),
+                      ),
+                style: TextStyle(color: themeData.colorScheme.error),
+                maxLines: 1,
+                minFontSize: minFont.minFontSize,
+                stepGranularity: 0.1,
+              );
+            }),
           ),
         ],
       ),

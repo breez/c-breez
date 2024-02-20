@@ -191,10 +191,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                     navigator.push(loaderRoute);
 
                                     try {
-                                      final revSwapBloc = context.read<ReverseSwapBloc>();
                                       int amount = _getAmount();
-                                      final revSwapOptions =
-                                          await revSwapBloc.fetchReverseSwapOptions(sendAmountSat: amount);
 
                                       if (loaderRoute.isActive) {
                                         navigator.removeRoute(loaderRoute);
@@ -205,8 +202,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                           builder: (_) => ReverseSwapConfirmationPage(
                                             amountSat: amount,
                                             onchainRecipientAddress: _addressController.text,
-                                            feesHash: revSwapOptions.pairInfo.feesHash,
-                                            boltzFees: revSwapOptions.pairInfo.totalEstimatedFees,
+                                            isMaxValue: _withdrawMaxValue,
                                           ),
                                         ),
                                       );

@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 
 enum ProcessingSpeed {
@@ -6,20 +7,16 @@ enum ProcessingSpeed {
   priority,
 }
 
-class FeeOption {
+abstract class FeeOption {
   final ProcessingSpeed processingSpeed;
   final Duration waitingTime;
-  final int fee;
-  final int feeVByte;
+  final int satPerVbyte;
 
   FeeOption({
     required this.processingSpeed,
     required this.waitingTime,
-    required this.fee,
-    required this.feeVByte,
+    required this.satPerVbyte,
   });
-
-  bool isAffordable(int walletBalance) => (walletBalance - fee) > 0;
 
   String getDisplayName(BreezTranslations texts) {
     switch (processingSpeed) {
@@ -30,5 +27,61 @@ class FeeOption {
       case ProcessingSpeed.priority:
         return texts.fee_chooser_option_priority;
     }
+  }
+
+  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue});
+}
+
+class ReverseSwapFeeOption extends FeeOption {
+  final ReverseSwapPairInfo pairInfo;
+
+  ReverseSwapFeeOption({
+    required this.pairInfo,
+    required super.processingSpeed,
+    required super.waitingTime,
+    required super.satPerVbyte,
+  });
+
+  int get txFeeSat => pairInfo.feesClaim;
+
+  @override
+  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue}) {
+    if (isMaxValue == true) {
+      return (amountSat + pairInfo.totalEstimatedFees!) > 0;
+    } else {
+      return (amountSat + pairInfo.totalEstimatedFees!) < balance;
+    }
+  }
+}
+
+class RefundFeeOption extends FeeOption {
+  final int txFeeSat;
+
+  RefundFeeOption({
+    required this.txFeeSat,
+    required super.processingSpeed,
+    required super.waitingTime,
+    required super.satPerVbyte,
+  });
+
+  @override
+  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue}) {
+    return (amountSat + txFeeSat) < balance;
+  }
+}
+
+class RedeemOnchainFeeOption extends FeeOption {
+  final int txFeeSat;
+
+  RedeemOnchainFeeOption({
+    required this.txFeeSat,
+    required super.processingSpeed,
+    required super.waitingTime,
+    required super.satPerVbyte,
+  });
+
+  @override
+  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue}) {
+    return (amountSat + txFeeSat) < balance;
   }
 }

@@ -2,7 +2,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/fee_options/fee_option.dart';
 
 class ReverseSwapState {
-  final List<FeeOption> feeOptions;
+  final List<ReverseSwapFeeOption> feeOptions;
   final ReverseSwapInfo? reverseSwapInfo;
   final String? error;
 
@@ -11,7 +11,7 @@ class ReverseSwapState {
   ReverseSwapState.initial() : this();
 
   ReverseSwapState copyWith({
-    List<FeeOption>? feeOptions,
+    List<ReverseSwapFeeOption>? feeOptions,
     ReverseSwapInfo? reverseSwapInfo,
     String? error,
   }) =>

@@ -1,4 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_bloc.dart';
 import 'package:c_breez/routes/withdraw/redeem_onchain_funds/confirmation_page/widgets/redeem_onchain_funds_button.dart';
@@ -33,8 +34,11 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
     final redeemOnchainFundsBloc = context.read<RedeemOnchainFundsBloc>();
     _fetchFeeOptionsFuture = redeemOnchainFundsBloc.fetchRedeemOnchainFeeOptions(toAddress: widget.toAddress);
     _fetchFeeOptionsFuture.then((feeOptions) {
+      final account = context.read<AccountBloc>().state;
       setState(() {
-        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
+        affordableFees = feeOptions
+            .where((f) => f.isAffordable(balance: account.balance, amountSat: widget.amountSat))
+            .toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
       });
     });
@@ -66,7 +70,7 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
 
           if (affordableFees.isNotEmpty) {
             return FeeChooser(
-              walletBalance: widget.amountSat,
+              amountSat: widget.amountSat,
               feeOptions: snapshot.data!,
               selectedFeeIndex: selectedFeeIndex,
               onSelect: (index) => setState(() {
@@ -84,7 +88,7 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
               ? RedeemOnchainFundsButton(
                   toAddress: widget.toAddress,
-                  satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
+                  satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
                 )
               : null,
     );

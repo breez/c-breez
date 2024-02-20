@@ -1,20 +1,23 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_option_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FeeChooserHeader extends StatefulWidget {
-  final int walletBalance;
-  final List<FeeOption> feeOptions;
+  final int amountSat;
+  final List<dynamic> feeOptions;
   final int selectedFeeIndex;
   final Function(int) onSelect;
+  final bool? isMaxValue;
 
   const FeeChooserHeader({
-    required this.walletBalance,
+    required this.amountSat,
     required this.feeOptions,
     required this.selectedFeeIndex,
     required this.onSelect,
     super.key,
+    this.isMaxValue,
   });
 
   @override
@@ -26,6 +29,7 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final account = context.read<AccountBloc>().state;
     final texts = context.texts();
 
     return Column(
@@ -38,7 +42,11 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
             (index) => FeeOptionButton(
               index: index,
               text: widget.feeOptions.elementAt(index).getDisplayName(texts),
-              isAffordable: widget.feeOptions.elementAt(index).isAffordable(widget.walletBalance),
+              isAffordable: widget.feeOptions.elementAt(index).isAffordable(
+                    balance: account.balance,
+                    amountSat: widget.amountSat,
+                    isMaxValue: widget.isMaxValue,
+                  ),
               isSelected: widget.selectedFeeIndex == index,
               onSelect: () => widget.onSelect(index),
             ),

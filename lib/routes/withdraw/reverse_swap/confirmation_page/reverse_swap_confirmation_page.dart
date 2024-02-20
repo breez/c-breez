@@ -1,4 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/widgets/reverse_swap_button.dart';
@@ -10,15 +11,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ReverseSwapConfirmationPage extends StatefulWidget {
   final int amountSat;
   final String onchainRecipientAddress;
-  final String feesHash;
-  final int? boltzFees;
+  final bool isMaxValue;
 
   const ReverseSwapConfirmationPage({
     super.key,
     required this.amountSat,
     required this.onchainRecipientAddress,
-    required this.feesHash,
-    this.boltzFees,
+    required this.isMaxValue,
   });
 
   @override
@@ -26,10 +25,10 @@ class ReverseSwapConfirmationPage extends StatefulWidget {
 }
 
 class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPage> {
-  List<FeeOption> affordableFees = [];
+  List<ReverseSwapFeeOption> affordableFees = <ReverseSwapFeeOption>[];
   int selectedFeeIndex = -1;
 
-  late Future<List<FeeOption>> _fetchFeeOptionsFuture;
+  late Future<List<ReverseSwapFeeOption>> _fetchFeeOptionsFuture;
 
   @override
   void initState() {
@@ -37,8 +36,17 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
     final reverseSwapBloc = context.read<ReverseSwapBloc>();
     _fetchFeeOptionsFuture = reverseSwapBloc.fetchReverseSwapFeeOptions(sendAmountSat: widget.amountSat);
     _fetchFeeOptionsFuture.then((feeOptions) {
+      final account = context.read<AccountBloc>().state;
       setState(() {
-        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
+        affordableFees = feeOptions
+            .where(
+              (f) => f.isAffordable(
+                balance: account.balance,
+                amountSat: widget.amountSat,
+                isMaxValue: widget.isMaxValue,
+              ),
+            )
+            .toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
       });
     });
@@ -56,9 +64,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
         future: _fetchFeeOptionsFuture,
         builder: (context, snapshot) {
           if (snapshot.error != null) {
-            return _ErrorMessage(
-              message: texts.reverse_swap_confirmation_error_fetch_fee,
-            );
+            return _ErrorMessage(message: texts.reverse_swap_confirmation_error_fetch_fee);
           }
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: Loader());
@@ -66,18 +72,18 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
 
           if (affordableFees.isNotEmpty) {
             return FeeChooser(
-              walletBalance: widget.amountSat,
+              amountSat: widget.amountSat,
               feeOptions: snapshot.data!,
               selectedFeeIndex: selectedFeeIndex,
-              boltzFees: widget.boltzFees,
-              onSelect: (index) => setState(() {
-                selectedFeeIndex = index;
-              }),
+              onSelect: (index) => setState(
+                () {
+                  selectedFeeIndex = index;
+                },
+              ),
+              isMaxValue: widget.isMaxValue,
             );
           } else {
-            return _ErrorMessage(
-              message: texts.reverse_swap_confirmation_error_funds_fee,
-            );
+            return _ErrorMessage(message: texts.reverse_swap_confirmation_error_funds_fee);
           }
         },
       ),
@@ -87,8 +93,8 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
                   child: ReverseSwapButton(
                     amountSat: widget.amountSat,
                     onchainRecipientAddress: widget.onchainRecipientAddress,
-                    satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
-                    feesHash: widget.feesHash,
+                    satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
+                    feesHash: affordableFees[selectedFeeIndex].pairInfo.feesHash,
                   ),
                 )
               : null,

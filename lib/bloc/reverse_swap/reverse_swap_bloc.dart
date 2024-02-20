@@ -50,7 +50,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }
 
   /// Fetches the current recommended fees
-  Future<List<FeeOption>> fetchReverseSwapFeeOptions({required int sendAmountSat}) async {
+  Future<List<ReverseSwapFeeOption>> fetchReverseSwapFeeOptions({required int sendAmountSat}) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();
@@ -69,7 +69,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     }
   }
 
-  Future<List<FeeOption>> _constructFeeOptionList({
+  Future<List<ReverseSwapFeeOption>> _constructFeeOptionList({
     required int sendAmountSat,
     required RecommendedFees recommendedFees,
   }) async {
@@ -81,13 +81,13 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     final feeOptions = await Future.wait(
       List.generate(3, (index) async {
         final recommendedFee = recommendedFeeList.elementAt(index);
-        final fee = await fetchReverseSwapOptions(sendAmountSat: sendAmountSat, satPerVbyte: recommendedFee);
+        final fee = await fetchReverseSwapOptions(sendAmountSat: sendAmountSat, claimTxFeerate: recommendedFee);
 
-        return FeeOption(
+        return ReverseSwapFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
           waitingTime: Duration(minutes: waitingTime.elementAt(index)),
-          fee: fee.pairInfo.feesClaim,
-          feeVByte: recommendedFee,
+          satPerVbyte: recommendedFee,
+          pairInfo: fee.pairInfo,
         );
       }),
     );
@@ -97,10 +97,10 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }
 
   /// Lookup the most recent reverse swap pair info using the Boltz API
-  Future<ReverseSwapOptions> fetchReverseSwapOptions({int? sendAmountSat, int? satPerVbyte}) async {
+  Future<ReverseSwapOptions> fetchReverseSwapOptions({int? sendAmountSat, int? claimTxFeerate}) async {
     try {
       _log.info("Estimate reverse swap fees for: $sendAmountSat");
-      final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat, satPerVbyte: satPerVbyte);
+      final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat, claimTxFeerate: claimTxFeerate);
       ReverseSwapPairInfo reverseSwapPairInfo = await _breezSDK.fetchReverseSwapFees(req: req);
       _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
       final maxAmountResponse = await _breezSDK.maxReverseSwapAmount();

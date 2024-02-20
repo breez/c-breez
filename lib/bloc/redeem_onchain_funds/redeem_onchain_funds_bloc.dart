@@ -38,13 +38,13 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
   }
 
   /// Fetches the current recommended fees
-  Future<List<FeeOption>> fetchRedeemOnchainFeeOptions({required String toAddress}) async {
+  Future<List<RedeemOnchainFeeOption>> fetchRedeemOnchainFeeOptions({required String toAddress}) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();
       _log.info(
         "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
-            "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
+        "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
       return await _constructFeeOptionList(
         toAddress: toAddress,
@@ -57,7 +57,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
     }
   }
 
-  Future<List<FeeOption>> _constructFeeOptionList({
+  Future<List<RedeemOnchainFeeOption>> _constructFeeOptionList({
     required String toAddress,
     required RecommendedFees recommendedFees,
   }) async {
@@ -73,13 +73,13 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
           toAddress: toAddress,
           satPerVbyte: recommendedFee,
         );
-        final fee = await prepareRedeemOnchainFunds(req);
+        final txFeeSat = await prepareRedeemOnchainFunds(req);
 
-        return FeeOption(
+        return RedeemOnchainFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
           waitingTime: Duration(minutes: waitingTime.elementAt(index)),
-          fee: fee,
-          feeVByte: recommendedFee,
+          txFeeSat: txFeeSat,
+          satPerVbyte: recommendedFee,
         );
       }),
     );

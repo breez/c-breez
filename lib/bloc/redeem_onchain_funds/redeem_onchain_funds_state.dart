@@ -2,7 +2,7 @@ import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 class RedeemOnchainFundsState {
-  final List<FeeOption> feeOptions;
+  final List<RedeemOnchainFeeOption> feeOptions;
   final Uint8List? txId;
   final String? error;
 
@@ -11,7 +11,7 @@ class RedeemOnchainFundsState {
   RedeemOnchainFundsState.initial() : this();
 
   RedeemOnchainFundsState copyWith({
-    List<FeeOption>? feeOptions,
+    List<RedeemOnchainFeeOption>? feeOptions,
     Uint8List? txId,
     String? error,
   }) =>

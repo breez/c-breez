@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/routes/get-refund/widgets/refund_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -30,21 +32,15 @@ class RefundConfirmationPage extends StatefulWidget {
 }
 
 class RefundConfirmationState extends State<RefundConfirmationPage> {
-  List<FeeOption> affordableFees = [];
+  List<RefundFeeOption> affordableFees = [];
   int selectedFeeIndex = -1;
 
-  late Future<List<FeeOption>> _fetchFeeOptionsFuture;
+  late Future<List<RefundFeeOption>> _fetchFeeOptionsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = _fetchFeeOption();
-    _fetchFeeOptionsFuture.then((feeOptions) {
-      setState(() {
-        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
-        selectedFeeIndex = (affordableFees.length / 2).floor();
-      });
-    });
+    _fetchRefundFeeOptions();
   }
 
   @override
@@ -91,31 +87,34 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
               ? RefundButton(
                   req: RefundRequest(
-                      satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
-                      toAddress: widget.toAddress,
-                      swapAddress: widget.swapAddress),
+                    satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
+                    toAddress: widget.toAddress,
+                    swapAddress: widget.swapAddress,
+                  ),
                 )
               : SingleButtonBottomBar(
                   text: texts.sweep_all_coins_action_retry,
-                  onPressed: () async {
-                    _fetchFeeOptionsFuture = _fetchFeeOption();
-                    _fetchFeeOptionsFuture.then((feeOptions) {
-                      setState(() {
-                        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
-                        selectedFeeIndex = (affordableFees.length / 2).floor();
-                      });
-                    });
-                  },
+                  onPressed: () => _fetchRefundFeeOptions,
                   stickToBottom: true,
                 ),
     );
   }
 
-  Future<List<FeeOption>> _fetchFeeOption() async {
-    return context.read<RefundBloc>().fetchRefundFeeOptions(
-          toAddress: widget.toAddress,
-          swapAddress: widget.swapAddress,
-        );
+  void _fetchRefundFeeOptions() {
+    final refundBloc = context.read<RefundBloc>();
+    _fetchFeeOptionsFuture = refundBloc.fetchRefundFeeOptions(
+      toAddress: widget.toAddress,
+      swapAddress: widget.swapAddress,
+    );
+    _fetchFeeOptionsFuture.then((feeOptions) {
+      setState(() {
+        final account = context.read<AccountBloc>().state;
+        affordableFees = feeOptions
+            .where((f) => f.isAffordable(balance: account.balance, amountSat: widget.amountSat))
+            .toList();
+        selectedFeeIndex = (affordableFees.length / 2).floor();
+      });
+    });
   }
 }
 

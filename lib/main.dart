@@ -10,7 +10,6 @@ import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/error_report_bloc/error_report_bloc.dart';
-import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
 import 'package:c_breez/bloc/health_check/health_check_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_printer.dart';
@@ -105,9 +104,6 @@ void main() async {
           ),
           BlocProvider<ReverseSwapBloc>(
             create: (BuildContext context) => ReverseSwapBloc(breezSDK),
-          ),
-          BlocProvider<FeeOptionsBloc>(
-            create: (BuildContext context) => FeeOptionsBloc(breezSDK),
           ),
           BlocProvider<ConnectivityBloc>(
             create: (BuildContext context) => ConnectivityBloc(),

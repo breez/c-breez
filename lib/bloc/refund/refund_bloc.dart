@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
@@ -13,7 +13,7 @@ final _log = Logger("RefundBloc");
 
 class RefundBloc extends Cubit<RefundState> {
   final BreezSDK _breezSDK;
-  final waitingTime = [60, 30, 10];
+
   RefundBloc(this._breezSDK) : super(RefundState.initial()) {
     _initializeRefundBloc();
   }
@@ -49,8 +49,10 @@ class RefundBloc extends Cubit<RefundState> {
   }
 
   /// Fetches the current recommended fees for a refund transaction.
-  Future<List<FeeOption>> fetchRefundFeeOptions(
-      {required String toAddress, required String swapAddress}) async {
+  Future<List<RefundFeeOption>> fetchRefundFeeOptions({
+    required String toAddress,
+    required String swapAddress,
+  }) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();
@@ -70,7 +72,7 @@ class RefundBloc extends Cubit<RefundState> {
     }
   }
 
-  Future<List<FeeOption>> _constructFeeOptionList({
+  Future<List<RefundFeeOption>> _constructFeeOptionList({
     required String toAddress,
     required RecommendedFees recommendedFees,
     required String swapAddress,
@@ -90,11 +92,10 @@ class RefundBloc extends Cubit<RefundState> {
         );
         final fee = await prepareRefund(req);
 
-        return FeeOption(
+        return RefundFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
-          waitingTime: Duration(minutes: waitingTime.elementAt(index)),
-          fee: fee,
-          feeVByte: recommendedFee,
+          txFeeSat: fee,
+          satPerVbyte: recommendedFee,
         );
       }),
     );

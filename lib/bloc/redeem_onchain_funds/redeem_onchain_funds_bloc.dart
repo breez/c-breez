@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_state.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -13,7 +13,6 @@ final _log = Logger("RedeemOnchainFundsBloc");
 
 class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
   final BreezSDK _breezSDK;
-  final waitingTime = [60, 30, 10];
 
   RedeemOnchainFundsBloc(this._breezSDK) : super(RedeemOnchainFundsState.initial());
 
@@ -77,7 +76,6 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
 
         return RedeemOnchainFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
-          waitingTime: Duration(minutes: waitingTime.elementAt(index)),
           txFeeSat: txFeeSat,
           satPerVbyte: recommendedFee,
         );

@@ -1,5 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 
 class ReverseSwapState {
   final List<ReverseSwapFeeOption> feeOptions;

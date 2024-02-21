@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_state.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -13,7 +13,6 @@ final _log = Logger("ReverseSwapBloc");
 
 class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   final BreezSDK _breezSDK;
-  final waitingTime = [60, 30, 10];
 
   ReverseSwapBloc(this._breezSDK) : super(ReverseSwapState.initial());
 
@@ -81,13 +80,16 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     final feeOptions = await Future.wait(
       List.generate(3, (index) async {
         final recommendedFee = recommendedFeeList.elementAt(index);
-        final fee = await fetchReverseSwapOptions(sendAmountSat: sendAmountSat, claimTxFeerate: recommendedFee);
+        final swapOption = await fetchReverseSwapOptions(
+          sendAmountSat: sendAmountSat,
+          claimTxFeerate: recommendedFee,
+        );
 
         return ReverseSwapFeeOption(
+          txFeeSat: swapOption.pairInfo.feesClaim,
           processingSpeed: ProcessingSpeed.values.elementAt(index),
-          waitingTime: Duration(minutes: waitingTime.elementAt(index)),
           satPerVbyte: recommendedFee,
-          pairInfo: fee.pairInfo,
+          pairInfo: swapOption.pairInfo,
         );
       }),
     );
@@ -102,7 +104,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
       _log.info("Estimate reverse swap fees for: $sendAmountSat");
       final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat, claimTxFeerate: claimTxFeerate);
       ReverseSwapPairInfo reverseSwapPairInfo = await _breezSDK.fetchReverseSwapFees(req: req);
-      _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
+      _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalFees}");
       final maxAmountResponse = await _breezSDK.maxReverseSwapAmount();
       return ReverseSwapOptions(pairInfo: reverseSwapPairInfo, maxAmountSat: maxAmountResponse.totalSat);
     } catch (e) {

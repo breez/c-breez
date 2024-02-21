@@ -1,12 +1,13 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_option_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FeeChooserHeader extends StatefulWidget {
   final int amountSat;
-  final List<dynamic> feeOptions;
+  final List<FeeOption> feeOptions;
   final int selectedFeeIndex;
   final Function(int) onSelect;
   final bool? isMaxValue;
@@ -16,8 +17,8 @@ class FeeChooserHeader extends StatefulWidget {
     required this.feeOptions,
     required this.selectedFeeIndex,
     required this.onSelect,
-    super.key,
     this.isMaxValue,
+    super.key,
   });
 
   @override

@@ -1,7 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/widgets/reverse_swap_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -91,7 +91,11 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
               ? SafeArea(
                   child: ReverseSwapButton(
-                    amountSat: widget.amountSat,
+                    amountSat: (widget.isMaxValue == true)
+                        ? widget.amountSat
+                        : widget.amountSat +
+                            affordableFees[selectedFeeIndex].txFeeSat +
+                            affordableFees[selectedFeeIndex].boltzServiceFee(widget.amountSat),
                     onchainRecipientAddress: widget.onchainRecipientAddress,
                     satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
                     feesHash: affordableFees[selectedFeeIndex].pairInfo.feesHash,

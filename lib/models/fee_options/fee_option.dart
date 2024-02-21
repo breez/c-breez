@@ -2,19 +2,22 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 
 enum ProcessingSpeed {
-  economy,
-  regular,
-  priority,
+  economy(Duration(minutes: 60)),
+  regular(Duration(minutes: 30)),
+  priority(Duration(minutes: 10));
+
+  const ProcessingSpeed(this.waitingTime);
+  final Duration waitingTime;
 }
 
 abstract class FeeOption {
+  final int txFeeSat;
   final ProcessingSpeed processingSpeed;
-  final Duration waitingTime;
   final int satPerVbyte;
 
   FeeOption({
+    required this.txFeeSat,
     required this.processingSpeed,
-    required this.waitingTime,
     required this.satPerVbyte,
   });
 
@@ -37,30 +40,32 @@ class ReverseSwapFeeOption extends FeeOption {
 
   ReverseSwapFeeOption({
     required this.pairInfo,
+    required super.txFeeSat,
     required super.processingSpeed,
-    required super.waitingTime,
     required super.satPerVbyte,
   });
-
-  int get txFeeSat => pairInfo.feesClaim;
 
   @override
   bool isAffordable({required int balance, required int amountSat, bool? isMaxValue}) {
     if (isMaxValue == true) {
-      return (amountSat + pairInfo.totalEstimatedFees!) > 0;
+      return (amountSat + boltzServiceFee(amountSat) + pairInfo.feesClaim) > 0;
     } else {
-      return (amountSat + pairInfo.totalEstimatedFees!) < balance;
+      return (amountSat + boltzServiceFee(amountSat) + pairInfo.feesClaim) < balance;
     }
+  }
+
+  int boltzServiceFee(int amountSat) {
+    var p = pairInfo.feesPercentage / 100;
+    return ((amountSat + pairInfo.feesClaim).toDouble() * p / (1 - p) +
+            pairInfo.feesLockup.toDouble() / (1 - p))
+        .ceil();
   }
 }
 
 class RefundFeeOption extends FeeOption {
-  final int txFeeSat;
-
   RefundFeeOption({
-    required this.txFeeSat,
+    required super.txFeeSat,
     required super.processingSpeed,
-    required super.waitingTime,
     required super.satPerVbyte,
   });
 
@@ -71,12 +76,9 @@ class RefundFeeOption extends FeeOption {
 }
 
 class RedeemOnchainFeeOption extends FeeOption {
-  final int txFeeSat;
-
   RedeemOnchainFeeOption({
-    required this.txFeeSat,
+    required super.txFeeSat,
     required super.processingSpeed,
-    required super.waitingTime,
     required super.satPerVbyte,
   });
 

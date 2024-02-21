@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
@@ -13,7 +13,7 @@ final _log = Logger("RefundBloc");
 
 class RefundBloc extends Cubit<RefundState> {
   final BreezSDK _breezSDK;
-  final waitingTime = [60, 30, 10];
+
   RefundBloc(this._breezSDK) : super(RefundState.initial()) {
     _initializeRefundBloc();
   }
@@ -94,7 +94,6 @@ class RefundBloc extends Cubit<RefundState> {
 
         return RefundFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
-          waitingTime: Duration(minutes: waitingTime.elementAt(index)),
           txFeeSat: fee,
           satPerVbyte: recommendedFee,
         );

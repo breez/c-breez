@@ -56,9 +56,11 @@ class ReverseSwapFeeOption extends FeeOption {
 
   int boltzServiceFee(int amountSat) {
     var p = pairInfo.feesPercentage / 100;
-    return ((amountSat + pairInfo.feesClaim).toDouble() * p / (1 - p) +
-            pairInfo.feesLockup.toDouble() / (1 - p))
-        .ceil();
+    // swap amount + claim tx fee
+    var totalAmount = (amountSat + pairInfo.feesClaim).toDouble();
+    var percentageFee = totalAmount * p / (1 - p);
+    var minerFee = pairInfo.feesLockup.toDouble() / (1 - p);
+    return (percentageFee + minerFee).ceil();
   }
 }
 

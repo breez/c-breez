@@ -23,16 +23,17 @@ String extractExceptionMessage(
 
 String? _extractInnerErrorMessage(String content) {
   _log.info("extractInnerErrorMessage: $content");
+  final anyhowRegex = RegExp(r'((?<=FrbAnyhowException.*: )(.*)(?=.*\)))');
   final innerMessageRegex = RegExp(r'((?<=message: \\")(.*)(?=.*\\"))');
   final messageRegex = RegExp(r'((?<=message: ")(.*)(?=.*"))');
   final causedByRegex = RegExp(r'((?<=Caused by: )(.*)(?=.*))');
   final reasonRegex = RegExp(r'((?<=FAILURE_REASON_)(.*)(?=.*))');
-  final anyhowRegex = RegExp(r'((?<=FrbAnyhowException.*: )(.*)(?=.*\)))');
-  return innerMessageRegex.stringMatch(content) ??
+
+  return anyhowRegex.stringMatch(content) ??
+      innerMessageRegex.stringMatch(content) ??
       messageRegex.stringMatch(content) ??
       causedByRegex.stringMatch(content) ??
-      reasonRegex.stringMatch(content) ??
-      anyhowRegex.stringMatch(content);
+      reasonRegex.stringMatch(content);
 }
 
 String _localizedExceptionMessage(

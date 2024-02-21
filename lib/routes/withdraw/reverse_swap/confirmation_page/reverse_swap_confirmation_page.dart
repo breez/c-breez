@@ -57,13 +57,15 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
 
           if (affordableFees.isNotEmpty) {
             return FeeChooser(
-              walletBalance: widget.amountSat,
+              amountSat: widget.amountSat,
               feeOptions: snapshot.data!,
               selectedFeeIndex: selectedFeeIndex,
-              boltzFees: widget.boltzFees,
-              onSelect: (index) => setState(() {
-                selectedFeeIndex = index;
-              }),
+              onSelect: (index) => setState(
+                () {
+                  selectedFeeIndex = index;
+                },
+              ),
+              isMaxValue: widget.isMaxValue,
             );
           } else {
             return _ErrorMessage(message: texts.reverse_swap_confirmation_error_funds_fee);

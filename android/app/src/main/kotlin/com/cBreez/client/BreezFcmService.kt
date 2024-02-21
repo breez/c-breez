@@ -25,16 +25,19 @@ class BreezFcmService : MessagingService, FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-
         configureLogger(applicationContext)
-        Logger.tag(TAG).debug { "FCM notification received!" }
-        remoteMessage.asMessage()?.also { message -> startServiceIfNeeded(applicationContext, message) }
+        Logger.tag(TAG).debug { "FCM message received!" }
+
+        if (remoteMessage.priority == RemoteMessage.PRIORITY_HIGH) {
+            remoteMessage.asMessage()?.also { message -> startServiceIfNeeded(applicationContext, message) }
+        } else {
+            Logger.tag(TAG).debug { "Ignoring FCM message" }
+        }
     }
 
     private fun RemoteMessage.asMessage(): Message? {
         return data[Constants.MESSAGE_DATA_TYPE]?.let {
             Message(
-                priority,
                 data[Constants.MESSAGE_DATA_TYPE],
                 data[Constants.MESSAGE_DATA_PAYLOAD]
             )

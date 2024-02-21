@@ -60,11 +60,9 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
               amountSat: widget.amountSat,
               feeOptions: snapshot.data!,
               selectedFeeIndex: selectedFeeIndex,
-              onSelect: (index) => setState(
-                () {
-                  selectedFeeIndex = index;
-                },
-              ),
+              onSelect: (index) => setState(() {
+                selectedFeeIndex = index;
+              }),
               isMaxValue: widget.isMaxValue,
             );
           } else {

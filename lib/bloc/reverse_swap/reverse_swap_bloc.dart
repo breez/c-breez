@@ -4,6 +4,7 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_state.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -47,11 +48,61 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     }
   }
 
+  /// Fetches the current recommended fees
+  Future<List<ReverseSwapFeeOption>> fetchReverseSwapFeeOptions({required int sendAmountSat}) async {
+    RecommendedFees recommendedFees;
+    try {
+      recommendedFees = await _breezSDK.recommendedFees();
+      _log.info(
+        "fetchReverseSwapFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
+        "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
+      );
+      return await _constructFeeOptionList(
+        sendAmountSat: sendAmountSat,
+        recommendedFees: recommendedFees,
+      );
+    } catch (e) {
+      _log.severe("fetchFeeOptions error", e);
+      emit(ReverseSwapState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      rethrow;
+    }
+  }
+
+  Future<List<ReverseSwapFeeOption>> _constructFeeOptionList({
+    required int sendAmountSat,
+    required RecommendedFees recommendedFees,
+  }) async {
+    final recommendedFeeList = [
+      recommendedFees.hourFee,
+      recommendedFees.halfHourFee,
+      recommendedFees.fastestFee,
+    ];
+    final feeOptions = await Future.wait(
+      List.generate(3, (index) async {
+        final recommendedFee = recommendedFeeList.elementAt(index);
+        final swapOption = await fetchReverseSwapOptions(
+          sendAmountSat: sendAmountSat,
+          claimTxFeerate: recommendedFee,
+        );
+
+        return ReverseSwapFeeOption(
+          txFeeSat: swapOption.pairInfo.feesClaim,
+          processingSpeed: ProcessingSpeed.values.elementAt(index),
+          satPerVbyte: recommendedFee,
+          pairInfo: swapOption.pairInfo,
+        );
+      }),
+    );
+
+    emit(state.copyWith(feeOptions: feeOptions));
+    return feeOptions;
+  }
+
   /// Lookup the most recent reverse swap pair info using the Boltz API
-  Future<ReverseSwapOptions> fetchReverseSwapOptions({int? sendAmountSat}) async {
+  Future<ReverseSwapOptions> fetchReverseSwapOptions({int? sendAmountSat, int? claimTxFeerate}) async {
     try {
       _log.info("Estimate reverse swap fees for: $sendAmountSat");
-      final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat);
+      final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat, claimTxFeerate: claimTxFeerate);
       ReverseSwapPairInfo reverseSwapPairInfo = await _breezSDK.fetchReverseSwapFees(req: req);
       _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalFees}");
       final maxAmountResponse = await _breezSDK.maxReverseSwapAmount();

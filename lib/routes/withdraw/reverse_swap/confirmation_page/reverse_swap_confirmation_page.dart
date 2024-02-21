@@ -1,6 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
-import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/widgets/reverse_swap_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -10,15 +11,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ReverseSwapConfirmationPage extends StatefulWidget {
   final int amountSat;
   final String onchainRecipientAddress;
-  final String feesHash;
-  final int? boltzFees;
+  final bool isMaxValue;
 
   const ReverseSwapConfirmationPage({
     super.key,
     required this.amountSat,
     required this.onchainRecipientAddress,
-    required this.feesHash,
-    this.boltzFees,
+    required this.isMaxValue,
   });
 
   @override
@@ -26,28 +25,21 @@ class ReverseSwapConfirmationPage extends StatefulWidget {
 }
 
 class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPage> {
-  List<FeeOption> affordableFees = [];
+  List<ReverseSwapFeeOption> affordableFees = <ReverseSwapFeeOption>[];
   int selectedFeeIndex = -1;
 
-  late Future<List<FeeOption>> _fetchFeeOptionsFuture;
+  late Future<List<ReverseSwapFeeOption>> _fetchFeeOptionsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions(
-          toAddress: widget.onchainRecipientAddress,
-        );
-    _fetchFeeOptionsFuture.then((feeOptions) {
-      setState(() {
-        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
-        selectedFeeIndex = (affordableFees.length / 2).floor();
-      });
-    });
+    _fetchReverseSwapFeeOptions();
   }
 
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
+    var selectedFeeOption = affordableFees[selectedFeeIndex];
 
     return Scaffold(
       appBar: AppBar(
@@ -57,9 +49,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
         future: _fetchFeeOptionsFuture,
         builder: (context, snapshot) {
           if (snapshot.error != null) {
-            return _ErrorMessage(
-              message: texts.reverse_swap_confirmation_error_fetch_fee,
-            );
+            return _ErrorMessage(message: texts.reverse_swap_confirmation_error_fetch_fee);
           }
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: Loader());
@@ -76,9 +66,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
               }),
             );
           } else {
-            return _ErrorMessage(
-              message: texts.reverse_swap_confirmation_error_funds_fee,
-            );
+            return _ErrorMessage(message: texts.reverse_swap_confirmation_error_funds_fee);
           }
         },
       ),
@@ -86,14 +74,38 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
               ? SafeArea(
                   child: ReverseSwapButton(
-                    amountSat: widget.amountSat,
+                    amountSat: (widget.isMaxValue == true)
+                        ? widget.amountSat
+                        : widget.amountSat +
+                            selectedFeeOption.txFeeSat +
+                            selectedFeeOption.boltzServiceFee(widget.amountSat),
                     onchainRecipientAddress: widget.onchainRecipientAddress,
-                    satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
-                    feesHash: widget.feesHash,
+                    satPerVbyte: selectedFeeOption.satPerVbyte,
+                    feesHash: selectedFeeOption.pairInfo.feesHash,
                   ),
                 )
               : null,
     );
+  }
+
+  void _fetchReverseSwapFeeOptions() {
+    final reverseSwapBloc = context.read<ReverseSwapBloc>();
+    _fetchFeeOptionsFuture = reverseSwapBloc.fetchReverseSwapFeeOptions(sendAmountSat: widget.amountSat);
+    _fetchFeeOptionsFuture.then((feeOptions) {
+      final account = context.read<AccountBloc>().state;
+      setState(() {
+        affordableFees = feeOptions
+            .where(
+              (f) => f.isAffordable(
+                balance: account.balance,
+                amountSat: widget.amountSat,
+                isMaxValue: widget.isMaxValue,
+              ),
+            )
+            .toList();
+        selectedFeeIndex = (affordableFees.length / 2).floor();
+      });
+    });
   }
 }
 

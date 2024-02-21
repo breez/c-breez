@@ -1,6 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/fee_options/fee_option.dart';
-import 'package:c_breez/bloc/fee_options/fee_options_bloc.dart';
+import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_bloc.dart';
+import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/routes/withdraw/redeem_onchain_funds/confirmation_page/widgets/redeem_onchain_funds_button.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/fee_chooser.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -22,23 +23,15 @@ class RedeemOnchainConfirmationPage extends StatefulWidget {
 }
 
 class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmationPage> {
-  List<FeeOption> affordableFees = [];
+  List<RedeemOnchainFeeOption> affordableFees = [];
   int selectedFeeIndex = -1;
 
-  late Future<List<FeeOption>> _fetchFeeOptionsFuture;
+  late Future<List<RedeemOnchainFeeOption>> _fetchFeeOptionsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchFeeOptionsFuture = context.read<FeeOptionsBloc>().fetchFeeOptions(
-          toAddress: widget.toAddress,
-        );
-    _fetchFeeOptionsFuture.then((feeOptions) {
-      setState(() {
-        affordableFees = feeOptions.where((f) => f.isAffordable(widget.amountSat)).toList();
-        selectedFeeIndex = (affordableFees.length / 2).floor();
-      });
-    });
+    _fetchRedeemOnchainFeeOptions();
   }
 
   @override
@@ -85,10 +78,24 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
               ? RedeemOnchainFundsButton(
                   toAddress: widget.toAddress,
-                  satPerVbyte: affordableFees[selectedFeeIndex].feeVByte,
+                  satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
                 )
               : null,
     );
+  }
+
+  void _fetchRedeemOnchainFeeOptions() {
+    final redeemOnchainFundsBloc = context.read<RedeemOnchainFundsBloc>();
+    _fetchFeeOptionsFuture = redeemOnchainFundsBloc.fetchRedeemOnchainFeeOptions(toAddress: widget.toAddress);
+    _fetchFeeOptionsFuture.then((feeOptions) {
+      final account = context.read<AccountBloc>().state;
+      setState(() {
+        affordableFees = feeOptions
+            .where((f) => f.isAffordable(balance: account.walletBalance, amountSat: widget.amountSat))
+            .toList();
+        selectedFeeIndex = (affordableFees.length / 2).floor();
+      });
+    });
   }
 }
 

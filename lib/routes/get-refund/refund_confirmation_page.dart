@@ -69,7 +69,7 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
 
           if (affordableFees.isNotEmpty) {
             return FeeChooser(
-              walletBalance: widget.amountSat,
+              amountSat: widget.amountSat,
               feeOptions: snapshot.data!,
               selectedFeeIndex: selectedFeeIndex,
               onSelect: (index) => setState(() {

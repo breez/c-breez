@@ -1,8 +1,5 @@
 package com.cBreez.client
 
-import android.content.Intent
-import android.os.Build
-import androidx.core.content.IntentCompat
 import breez_sdk.ConnectRequest
 import breez_sdk.EnvironmentType
 import breez_sdk.GreenlightNodeConfig
@@ -10,12 +7,9 @@ import breez_sdk.LogEntry
 import breez_sdk.NodeConfig
 import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
-import breez_sdk_notification.Constants
 import breez_sdk_notification.ForegroundService
-import breez_sdk_notification.Notification
 import breez_sdk_notification.NotificationHelper.Companion.registerNotificationChannels
 import com.breez.breez_sdk.SdkLogInitializer
-import com.google.firebase.messaging.RemoteMessage
 import flutter_secured_storage.FlutterSecuredStorageHelper.Companion.readSecuredValue
 import io.flutter.util.PathUtils
 import org.tinylog.kotlin.Logger
@@ -68,25 +62,5 @@ class BreezForegroundService : ForegroundService() {
             ?.let { mnemonic ->
                 ConnectRequest(config, mnemonicToSeed(mnemonic))
             }
-    }
-
-    override fun getNotification(intent: Intent?): Notification? {
-        return intent?.let {
-            @Suppress("DEPRECATION")
-            val remoteMessage =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                    IntentCompat.getParcelableExtra(
-                        it,
-                        Constants.EXTRA_REMOTE_MESSAGE,
-                        RemoteMessage::class.java
-                    )
-                else it.getParcelableExtra(Constants.EXTRA_REMOTE_MESSAGE)
-            return remoteMessage?.data?.let { data ->
-                return Notification(
-                    data[Constants.NOTIFICATION_DATA_TYPE]?.takeUnless { data.isEmpty() },
-                    data[Constants.NOTIFICATION_DATA_PAYLOAD]
-                )
-            }
-        }
     }
 }

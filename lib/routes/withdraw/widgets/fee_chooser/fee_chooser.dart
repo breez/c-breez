@@ -43,8 +43,7 @@ class _FeeChooserState extends State<FeeChooser> {
           ),
           const SizedBox(height: 12.0),
           ProcessingSpeedWaitTime(
-            context,
-            widget.feeOptions.elementAt(widget.selectedFeeIndex).waitingTime,
+            selectedFeeOption.processingSpeed.waitingTime,
           ),
           const SizedBox(height: 36.0),
           FeeBreakdown(

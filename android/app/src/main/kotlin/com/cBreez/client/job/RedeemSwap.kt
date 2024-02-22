@@ -10,7 +10,6 @@ import com.cBreez.client.ForegroundService
 import com.cBreez.client.R
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.tinylog.kotlin.Logger
 
@@ -32,8 +31,8 @@ class RedeemSwapJob(
         val request = Json.decodeFromString(AddressTxsConfirmedRequest.serializer(), payload)
 
         try {
-            val pendingSwap = breezSDK.inProgressSwap()
-            Logger.tag(TAG).info { "Found pendingSwap: ${pendingSwap}" }
+            breezSDK.redeemSwap(request.address)
+            Logger.tag(TAG).info { "Found swap for ${request.address}" }
             notifyChannel(
                 context,
                 Constants.NOTIFICATION_CHANNEL_SWAP_TX_CONFIRMED,

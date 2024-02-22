@@ -67,7 +67,7 @@ dependencies:
   ini: ^2.1.0
   intl: ^0.19.0 # local_auth & breez_translations depends on intl ^0.18.0
   # Doesn't support: Linux Mac
-  local_auth: ^2.1.8
+  local_auth: ^2.2.0
   local_auth_android: ^1.0.37
   local_auth_ios: ^1.1.7
   logging: ^1.2.0

@@ -29,6 +29,7 @@ class BreezFcmService : MessagingService, FirebaseMessagingService() {
         Logger.tag(TAG).debug { "FCM message received!" }
 
         if (remoteMessage.priority == RemoteMessage.PRIORITY_HIGH) {
+            Logger.tag(TAG).debug { "From: ${remoteMessage.from}" }
             remoteMessage.asMessage()?.also { message -> startServiceIfNeeded(applicationContext, message) }
         } else {
             Logger.tag(TAG).debug { "Ignoring FCM message" }

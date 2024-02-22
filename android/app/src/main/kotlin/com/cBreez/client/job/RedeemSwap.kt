@@ -8,14 +8,13 @@ import com.cBreez.client.BreezNotificationHelper.Companion.notifyChannel
 import com.cBreez.client.Constants
 import com.cBreez.client.ForegroundService
 import com.cBreez.client.R
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.tinylog.kotlin.Logger
 
 @Serializable
 data class AddressTxsConfirmedRequest(
-    @SerialName("address") val address: String,
+    val address: String,
 )
 
 class RedeemSwapJob(

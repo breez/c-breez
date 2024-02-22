@@ -53,7 +53,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
       _log.info("Estimate reverse swap fees for: $sendAmountSat");
       final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat);
       ReverseSwapPairInfo reverseSwapPairInfo = await _breezSDK.fetchReverseSwapFees(req: req);
-      _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalEstimatedFees}");
+      _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalFees}");
       final maxAmountResponse = await _breezSDK.maxReverseSwapAmount();
       return ReverseSwapOptions(pairInfo: reverseSwapPairInfo, maxAmountSat: maxAmountResponse.totalSat);
     } catch (e) {

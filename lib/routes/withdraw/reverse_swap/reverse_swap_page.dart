@@ -206,7 +206,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                             amountSat: amount,
                                             onchainRecipientAddress: _addressController.text,
                                             feesHash: revSwapOptions.pairInfo.feesHash,
-                                            boltzFees: revSwapOptions.pairInfo.totalEstimatedFees,
+                                            boltzFees: revSwapOptions.pairInfo.totalFees,
                                           ),
                                         ),
                                       );

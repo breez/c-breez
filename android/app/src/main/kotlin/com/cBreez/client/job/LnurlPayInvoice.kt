@@ -3,7 +3,6 @@ package com.cBreez.client.job
 import android.content.Context
 import breez_sdk.BlockingBreezServices
 import breez_sdk.ReceivePaymentRequest
-import breez_sdk.SdkException
 import com.cBreez.client.BreezNotificationHelper.Companion.notifyChannel
 import com.cBreez.client.Constants
 import com.cBreez.client.ForegroundService
@@ -39,10 +38,12 @@ class LnurlPayInvoiceJob(
     }
 
     override fun start(breezSDK: BlockingBreezServices) {
-        val request = Json.decodeFromString(LnurlInvoiceRequest.serializer(), payload)
+        var request: LnurlInvoiceRequest? = null
+
         try {
+            request = Json.decodeFromString(LnurlInvoiceRequest.serializer(), payload)
             val nodeState = breezSDK.nodeInfo()
-            if (request.amount < 1000UL || request.amount > nodeState.inboundLiquidityMsats) {
+            if (request!!.amount < 1000UL || request.amount > nodeState.inboundLiquidityMsats) {
                 fail("Invalid amount requested ${request.amount}", request.replyURL)
                 notifyChannel(
                     context,
@@ -69,9 +70,11 @@ class LnurlPayInvoiceJob(
                 Constants.NOTIFICATION_CHANNEL_LNURL_PAY,
                 context.getString(if (success) R.string.lnurl_pay_invoice_notification_title else R.string.lnurl_pay_notification_failure_title),
             )
-        } catch (e: SdkException) {
+        } catch (e: Exception) {
             Logger.tag(TAG).warn { "Failed to process lnurl: ${e.message}" }
-            fail(e.message, request.replyURL)
+            if (request != null) {
+                fail(e.message, request.replyURL)
+            }
             notifyChannel(
                 context,
                 Constants.NOTIFICATION_CHANNEL_LNURL_PAY,

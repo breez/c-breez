@@ -22,7 +22,7 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
         const SizedBox(height: 8.0),
         ListTile(
           leading: const BottomActionItemImage(
-            iconAssetPath: "src/icon/paste.png",
+            iconAssetPath: "src/icon/ln_address.png",
           ),
           title: const Text(
             "Receive via Lightning Address",

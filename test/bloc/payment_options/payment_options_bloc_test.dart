@@ -77,6 +77,23 @@ void main() {
     expect(injector.preferencesMock.setPaymentOptionsExemptFeeCalled, 1);
   });
 
+  test('should emit new state when exempt fee changed', () async {
+    final bloc = make();
+    expectLater(
+      bloc.stream,
+      emitsInOrder([
+        const PaymentOptionsState.initial(),
+        const PaymentOptionsState(autoChannelSetupFeeLimitMsat: 5000 * 1000, saveEnabled: true),
+        const PaymentOptionsState(autoChannelSetupFeeLimitMsat: 5000 * 1000),
+      ]),
+    );
+    // Delay to allow the bloc to initialize
+    await Future.delayed(const Duration(milliseconds: 1));
+    await bloc.setAutoChannelSetupFeeLimitMsat(5000 * 1000);
+    await bloc.saveFees();
+    expect(injector.preferencesMock.setPaymentOptionsAutoChannelSetupFeeLimit(5000 * 1000), 1);
+  });
+
   test('should emit new state when reset fees', () async {
     final bloc = make();
     expectLater(
@@ -99,10 +116,12 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 1));
     await bloc.setProportionalFee(0.01);
     await bloc.setExemptfeeMsat(20000);
+    await bloc.setAutoChannelSetupFeeLimitMsat(5000000);
     await bloc.saveFees();
     await bloc.resetFees();
     expect(injector.preferencesMock.setPaymentOptionsProportionalFeeCalled, 2);
     expect(injector.preferencesMock.setPaymentOptionsExemptFeeCalled, 2);
+    expect(injector.preferencesMock.setPaymentOptionsAutoChannelSetupFeeLimitCalled, 2);
   });
 
   test('cancel editing should clear the unsaved state', () async {
@@ -123,10 +142,12 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 1));
     await bloc.setProportionalFee(0.01);
     await bloc.setExemptfeeMsat(20000);
+    await bloc.setAutoChannelSetupFeeLimitMsat(5000000);
     await bloc.cancelEditing();
     // Delay to allow the fetch to complete
     await Future.delayed(const Duration(milliseconds: 1));
     expect(injector.preferencesMock.setPaymentOptionsProportionalFeeCalled, 0);
     expect(injector.preferencesMock.setPaymentOptionsExemptFeeCalled, 0);
+    expect(injector.preferencesMock.setPaymentOptionsAutoChannelSetupFeeLimitCalled, 0);
   });
 }

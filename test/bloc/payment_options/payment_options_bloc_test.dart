@@ -77,7 +77,7 @@ void main() {
     expect(injector.preferencesMock.setPaymentOptionsExemptFeeCalled, 1);
   });
 
-  test('should emit new state when exempt fee changed', () async {
+  test('should emit new state when automatic channel setup fee limit changed', () async {
     final bloc = make();
     expectLater(
       bloc.stream,
@@ -91,7 +91,7 @@ void main() {
     await Future.delayed(const Duration(milliseconds: 1));
     await bloc.setAutoChannelSetupFeeLimitMsat(5000 * 1000);
     await bloc.saveFees();
-    expect(injector.preferencesMock.setPaymentOptionsAutoChannelSetupFeeLimit(5000 * 1000), 1);
+    expect(injector.preferencesMock.setPaymentOptionsAutoChannelSetupFeeLimitCalled, 1);
   });
 
   test('should emit new state when reset fees', () async {

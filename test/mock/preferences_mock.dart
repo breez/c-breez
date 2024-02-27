@@ -48,4 +48,18 @@ class PreferencesMock extends Mock implements Preferences {
 
   @override
   Future<int> getPaymentOptionsExemptFee() => Future<int>.value(paymentOptionsExemptfee);
+
+  int setPaymentOptionsChannelSetupFeeLimitCalled = 0;
+
+  @override
+  Future<void> setPaymentOptionsChannelSetupFeeLimit(int channelFeeLimitMsat) {
+    setPaymentOptionsChannelSetupFeeLimitCalled++;
+    return Future<void>.value();
+  }
+
+  int paymentOptionsChannelSetupFeeLimit = kDefaultChannelSetupFeeLimitMsat;
+
+  @override
+  Future<int> getPaymentOptionsChannelSetupFeeLimitMsat() =>
+      Future<int>.value(paymentOptionsChannelSetupFeeLimit);
 }

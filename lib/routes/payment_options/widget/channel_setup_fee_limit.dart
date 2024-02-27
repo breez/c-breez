@@ -10,19 +10,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
-final _log = Logger("ExemptfeeMsatWidget");
+final _log = Logger("ChannelCreationFeeLimit");
 
-class ExemptFeeMsatWidget extends StatefulWidget {
-  const ExemptFeeMsatWidget({
+class ChannelSetupFeeLimit extends StatefulWidget {
+  const ChannelSetupFeeLimit({
     super.key,
   });
 
   @override
-  State<ExemptFeeMsatWidget> createState() => _ExemptfeeMsatState();
+  State<ChannelSetupFeeLimit> createState() => _ChannelSetupFeeLimitState();
 }
 
-class _ExemptfeeMsatState extends State<ExemptFeeMsatWidget> {
-  final _exemptFeeController = TextEditingController();
+class _ChannelSetupFeeLimitState extends State<ChannelSetupFeeLimit> {
+  final _channelSetupFeeLimitController = TextEditingController();
 
   StreamSubscription<PaymentOptionsState>? _subscription;
 
@@ -52,22 +52,23 @@ class _ExemptfeeMsatState extends State<ExemptFeeMsatWidget> {
                 builder: (context, state) {
                   return TextFormField(
                     keyboardType: const TextInputType.numberWithOptions(),
-                    controller: _exemptFeeController,
+                    controller: _channelSetupFeeLimitController,
                     decoration: InputDecoration(
-                      labelText: texts.payment_options_exemptfee_label,
+                      labelText: texts.payment_options_auto_channel_setup_fee_limit_label,
                       border: const UnderlineInputBorder(),
                     ),
-                    validator: exemptFeeValidator,
+                    validator: channelSetupFeeLimitValidator,
                     onChanged: (value) {
                       _log.info("onChanged: $value");
-                      int exemptFeeSat;
+                      int channelCreationFeeLimitSat;
                       try {
-                        exemptFeeSat = int.parse(value);
+                        channelCreationFeeLimitSat = int.parse(value);
                       } catch (_) {
                         _log.info("Failed to parse $value as int");
                         return;
                       }
-                      context.read<PaymentOptionsBloc>().setExemptfeeMsat(exemptFeeSat * 1000);
+                      final bloc = context.read<PaymentOptionsBloc>();
+                      bloc.setChannelSetupFeeLimitMsat(channelCreationFeeLimitSat * 1000);
                     },
                   );
                 },
@@ -83,12 +84,12 @@ class _ExemptfeeMsatState extends State<ExemptFeeMsatWidget> {
     final bloc = context.read<PaymentOptionsBloc>();
     _subscription = bloc.stream.startWith(bloc.state).distinct().listen((state) {
       if (!state.saveEnabled) {
-        final exemptFeeSat = (state.exemptFeeMsat ~/ 1000).toString();
+        final channelFeeLimitMsat = (state.channelFeeLimitMsat ~/ 1000).toString();
 
-        if (_exemptFeeController.text != exemptFeeSat) {
-          _log.info("Setting exemptFee to $exemptFeeSat");
+        if (_channelSetupFeeLimitController.text != channelFeeLimitMsat) {
+          _log.info("Setting channelFeeLimitMsat to $channelFeeLimitMsat");
           setState(() {
-            _exemptFeeController.text = exemptFeeSat;
+            _channelSetupFeeLimitController.text = channelFeeLimitMsat;
           });
         }
       }

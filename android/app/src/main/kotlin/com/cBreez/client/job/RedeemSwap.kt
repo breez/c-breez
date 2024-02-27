@@ -30,6 +30,7 @@ class RedeemSwapJob(
         val request = Json.decodeFromString(AddressTxsConfirmedRequest.serializer(), payload)
 
         try {
+            breezSDK.rescanSwaps()
             breezSDK.redeemSwap(request.address)
             Logger.tag(TAG).info { "Found swap for ${request.address}" }
             notifyChannel(

@@ -5,10 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 const kDefaultOverrideFee = false;
 const kDefaultProportionalFee = 1.0;
 const kDefaultExemptFeeMsat = 20000;
+const kDefaultAutoChannelSetupFeeLimitMsat = 5000000;
 
 const _mempoolSpaceUrlKey = "mempool_space_url";
 const _kPaymentOptionProportionalFee = "payment_options_proportional_fee";
 const _kPaymentOptionExemptFee = "payment_options_exempt_fee";
+const _kPaymentOptionAutoChannelSetupFeeLimit = "payment_options_auto_channel_setup_fee_limit";
 const _kReportPrefKey = "report_preference_key";
 
 final _log = Logger("Preferences");
@@ -52,6 +54,17 @@ class Preferences {
     _log.info("set payment options exempt fee : $exemptfeeMsat");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kPaymentOptionExemptFee, exemptfeeMsat);
+  }
+
+  Future<int> getPaymentOptionsAutoChannelSetupFeeLimitMsat() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_kPaymentOptionAutoChannelSetupFeeLimit) ?? kDefaultAutoChannelSetupFeeLimitMsat;
+  }
+
+  Future<void> setPaymentOptionsAutoChannelSetupFeeLimit(int autoChannelSetupFeeLimitMsat) async {
+    _log.info("set payment options channel creation limit fee : $autoChannelSetupFeeLimitMsat");
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_kPaymentOptionAutoChannelSetupFeeLimit, autoChannelSetupFeeLimitMsat);
   }
 
   Future<BugReportBehavior> getBugReportBehavior() async {

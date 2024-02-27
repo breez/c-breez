@@ -41,3 +41,24 @@ String? proportionalFeeValidator(
   }
   return null;
 }
+
+String? autoChannelSetupFeeLimitValidator(
+  String? value,
+) {
+  final texts = getSystemAppLocalizations();
+  if (value == null) {
+    return texts.payment_options_auto_channel_setup_fee_limit_label;
+  }
+  if (value.isEmpty) {
+    return texts.payment_options_auto_channel_setup_fee_limit_label;
+  }
+  try {
+    final newChannelFee = int.parse(value);
+    if (newChannelFee < 0) {
+      return texts.payment_options_auto_channel_setup_fee_limit_label;
+    }
+  } catch (e) {
+    return texts.payment_options_auto_channel_setup_fee_limit_label;
+  }
+  return null;
+}

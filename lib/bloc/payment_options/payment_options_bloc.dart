@@ -15,24 +15,15 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   }
 
   Future<void> setProportionalFee(double proportionalFee) async {
-    emit(state.copyWith(
-      proportionalFee: proportionalFee,
-      saveEnabled: true,
-    ));
+    emit(state.copyWith(proportionalFee: proportionalFee, saveEnabled: true));
   }
 
-  Future<void> setExemptfeeMsat(int exemptfeeMsat) async {
-    emit(state.copyWith(
-      exemptFeeMsat: exemptfeeMsat,
-      saveEnabled: true,
-    ));
+  Future<void> setExemptfeeMsat(int exemptFeeMsat) async {
+    emit(state.copyWith(exemptFeeMsat: exemptFeeMsat, saveEnabled: true));
   }
 
   Future<void> setAutoChannelSetupFeeLimitMsat(int autoChannelSetupFeeLimitMsat) async {
-    emit(state.copyWith(
-      autoChannelSetupFeeLimitMsat: autoChannelSetupFeeLimitMsat,
-      saveEnabled: true,
-    ));
+    emit(state.copyWith(autoChannelSetupFeeLimitMsat: autoChannelSetupFeeLimitMsat, saveEnabled: true));
   }
 
   Future<void> resetFees() async {
@@ -47,11 +38,10 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   Future<void> saveFees() async {
     final state = this.state;
     _log.info(
-      "Saving payments override settings: enabled:"
-      "proportional: ${state.proportionalFee}"
-      "Exemptfee: ${state.exemptFeeMsat}"
-      "autoChannelSetupFeeLimitMsat: ${state.autoChannelSetupFeeLimitMsat}"
-      "saved enabled. ${state.saveEnabled}",
+      "Saving payments override settings: proportionalFee: ${state.proportionalFee} "
+      "exemptFeeMsat: ${state.exemptFeeMsat} "
+      "autoChannelSetupFeeLimitMsat: ${state.autoChannelSetupFeeLimitMsat} "
+      "saveEnabled: ${state.saveEnabled}",
     );
     await _preferences.setPaymentOptionsProportionalFee(state.proportionalFee);
     await _preferences.setPaymentOptionsExemptFee(state.exemptFeeMsat);
@@ -68,19 +58,21 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
 
   Future<void> _fetchPaymentsOverrideSettings() async {
     _log.info("Fetching payments override settings");
-    final proportional = await _preferences.getPaymentOptionsProportionalFee();
+    final proportionalFee = await _preferences.getPaymentOptionsProportionalFee();
     final exemptFeeMsat = await _preferences.getPaymentOptionsExemptFee();
     final autoChannelSetupFeeLimitMsat = await _preferences.getPaymentOptionsAutoChannelSetupFeeLimitMsat();
     _log.info(
-      "Payments override fetched: proportional: $proportional"
-      "exemptFeeMsat: $exemptFeeMsat"
+      "Payments override fetched: proportionalFee: $proportionalFee "
+      "exemptFeeMsat: $exemptFeeMsat "
       "autoChannelSetupFeeLimitMsat: $autoChannelSetupFeeLimitMsat",
     );
-    emit(PaymentOptionsState(
-      proportionalFee: proportional,
-      exemptFeeMsat: exemptFeeMsat,
-      autoChannelSetupFeeLimitMsat: autoChannelSetupFeeLimitMsat,
-      saveEnabled: false,
-    ));
+    emit(
+      PaymentOptionsState(
+        proportionalFee: proportionalFee,
+        exemptFeeMsat: exemptFeeMsat,
+        autoChannelSetupFeeLimitMsat: autoChannelSetupFeeLimitMsat,
+        saveEnabled: false,
+      ),
+    );
   }
 }

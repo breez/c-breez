@@ -50,10 +50,10 @@ class Preferences {
     return prefs.getInt(_kPaymentOptionExemptFee) ?? kDefaultExemptFeeMsat;
   }
 
-  Future<void> setPaymentOptionsExemptFee(int exemptfeeMsat) async {
-    _log.info("set payment options exempt fee : $exemptfeeMsat");
+  Future<void> setPaymentOptionsExemptFee(int exemptFeeMsat) async {
+    _log.info("set payment options exempt fee : $exemptFeeMsat");
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_kPaymentOptionExemptFee, exemptfeeMsat);
+    await prefs.setInt(_kPaymentOptionExemptFee, exemptFeeMsat);
   }
 
   Future<int> getPaymentOptionsAutoChannelSetupFeeLimitMsat() async {

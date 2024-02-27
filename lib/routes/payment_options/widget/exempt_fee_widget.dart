@@ -12,16 +12,16 @@ import 'package:rxdart/rxdart.dart';
 
 final _log = Logger("ExemptfeeMsatWidget");
 
-class ExemptfeeMsatWidget extends StatefulWidget {
-  const ExemptfeeMsatWidget({
+class ExemptFeeMsatWidget extends StatefulWidget {
+  const ExemptFeeMsatWidget({
     super.key,
   });
 
   @override
-  State<ExemptfeeMsatWidget> createState() => _ExemptfeeMsatState();
+  State<ExemptFeeMsatWidget> createState() => _ExemptfeeMsatState();
 }
 
-class _ExemptfeeMsatState extends State<ExemptfeeMsatWidget> {
+class _ExemptfeeMsatState extends State<ExemptFeeMsatWidget> {
   final _exemptFeeController = TextEditingController();
 
   StreamSubscription<PaymentOptionsState>? _subscription;

@@ -39,7 +39,7 @@ class PaymentOptionsPage extends StatelessWidget {
         body: ListView(
           children: const [
             HeaderFee(),
-            ExemptfeeMsatWidget(),
+            ExemptFeeMsatWidget(),
             ProportionalFeeWidget(),
             AutoChannelSetupFeeLimit(),
             ActionsFee(),

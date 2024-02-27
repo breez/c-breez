@@ -1,5 +1,6 @@
 package com.cBreez.client
 
+import android.content.SharedPreferences
 import breez_sdk.ConnectRequest
 import breez_sdk.EnvironmentType
 import breez_sdk.GreenlightNodeConfig
@@ -9,6 +10,7 @@ import breez_sdk.defaultConfig
 import breez_sdk.mnemonicToSeed
 import breez_sdk_notification.ForegroundService
 import breez_sdk_notification.NotificationHelper.Companion.registerNotificationChannels
+import breez_sdk_notification.ServiceConfig
 import com.breez.breez_sdk.SdkLogInitializer
 import com.cBreez.client.utils.FlutterSecuredStorageHelper.Companion.readSecuredValue
 import io.flutter.util.PathUtils
@@ -18,9 +20,12 @@ class BreezForegroundService : ForegroundService() {
     companion object {
         private const val TAG = "BreezForegroundService"
 
-        private var ACCOUNT_MNEMONIC = "account_mnemonic"
-        private var DEFAULT_CLICK_ACTION = "FLUTTER_NOTIFICATION_CLICK"
-        private var ELEMENT_PREFERENCES_KEY_PREFIX =
+        private const val SHARED_PREFERENCES_NAME = "FlutterSharedPreferences"
+        private const val kChannelSetupFeeLimit =
+            "payment_options_channel_setup_fee_limit"
+        private const val ACCOUNT_MNEMONIC = "account_mnemonic"
+        private const val DEFAULT_CLICK_ACTION = "FLUTTER_NOTIFICATION_CLICK"
+        private const val ELEMENT_PREFERENCES_KEY_PREFIX =
             "VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIHNlY3VyZSBzdG9yYWdlCg"
     }
 
@@ -63,5 +68,24 @@ class BreezForegroundService : ForegroundService() {
             ?.let { mnemonic ->
                 ConnectRequest(config, mnemonicToSeed(mnemonic))
             }
+    }
+
+    override fun getServiceConfig(): ServiceConfig? {
+        return try {
+            val sharedPreferences: SharedPreferences = applicationContext.getSharedPreferences(
+                SHARED_PREFERENCES_NAME,
+                MODE_PRIVATE
+            )
+            val channelFeeLimitMsat =
+                sharedPreferences.getInt(kChannelSetupFeeLimit, 0).toULong()
+            val serviceConfig =
+                ServiceConfig(channelFeeLimitMsat = channelFeeLimitMsat)
+            Logger.tag(TAG).debug { "Setting service config to $serviceConfig" }
+            serviceConfig
+        } catch (e: Exception) {
+            Logger.tag(TAG).error { "Failed to get extension settings: ${e.message}" }
+            Logger.tag(TAG).debug { "Using default extension settings." }
+            ServiceConfig.default()
+        }
     }
 }

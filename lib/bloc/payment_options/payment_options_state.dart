@@ -3,11 +3,13 @@ import 'package:c_breez/utils/preferences.dart';
 class PaymentOptionsState {
   final double proportionalFee;
   final int exemptFeeMsat;
+  final int channelFeeLimitMsat;
   final bool saveEnabled;
 
   const PaymentOptionsState({
     this.proportionalFee = kDefaultProportionalFee,
     this.exemptFeeMsat = kDefaultExemptFeeMsat,
+    this.channelFeeLimitMsat = kDefaultChannelSetupFeeLimitMsat,
     this.saveEnabled = false,
   });
 
@@ -16,11 +18,13 @@ class PaymentOptionsState {
   PaymentOptionsState copyWith({
     double? proportionalFee,
     int? exemptFeeMsat,
+    int? channelFeeLimitMsat,
     bool? saveEnabled,
   }) {
     return PaymentOptionsState(
       proportionalFee: proportionalFee ?? this.proportionalFee,
       exemptFeeMsat: exemptFeeMsat ?? this.exemptFeeMsat,
+      channelFeeLimitMsat: channelFeeLimitMsat ?? this.channelFeeLimitMsat,
       saveEnabled: saveEnabled ?? this.saveEnabled,
     );
   }

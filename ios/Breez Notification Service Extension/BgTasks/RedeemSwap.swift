@@ -20,7 +20,7 @@ class RedeemSwap : SDKBackgroundTask {
     
     func start(breezSDK: BlockingBreezServices) {
         do {
-            try breezSDK.redeemSwap(message.address)
+            try breezSDK.redeemSwap(swapAddress: message.address)
             self.logger.debug("Found swap for \(message.address)")
             self.displayPushNotification(title: "Swap Confirmed")
         } catch let e {

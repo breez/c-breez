@@ -33,8 +33,10 @@ class BreezFcmService : FirebaseMessagingService() {
      * as we cannot start foreground service from low/normal priority message */
     private fun startServiceIfNeeded(remoteMessage: RemoteMessage) {
         with(remoteMessage) {
-            Logger.tag(TAG).debug { "From: $from" }
+            Logger.tag(TAG).debug { "startServiceIfNeeded from: $from" }
+            Logger.tag(TAG).debug { "startServiceIfNeeded data: $data" }
             val serviceNeededByNotificationType = when (data["notification_type"]) {
+                "address_txs_confirmed" -> !isAppForeground()
                 "payment_received" -> !isAppForeground()
                 else -> true
             }

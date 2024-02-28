@@ -18,6 +18,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_FOREGROUND_SERVICE
 import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_LNURL_PAY
 import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_PAYMENT_RECEIVED
+import com.cBreez.client.Constants.NOTIFICATION_CHANNEL_SWAP_TX_CONFIRMED
 import com.cBreez.client.Constants.NOTIFICATION_ID_FOREGROUND_SERVICE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +57,7 @@ class BreezNotificationHelper {
                 description =
                     context.getString(R.string.foreground_service_notification_channel_description)
             }
+
             val offlinePaymentsWorkGroupId =
                 context.getString(R.string.offline_payments_work_group_id)
             val receivedPaymentsNotificationChannel = NotificationChannel(
@@ -67,6 +69,7 @@ class BreezNotificationHelper {
                     context.getString(R.string.payment_received_notification_channel_description)
                 group = offlinePaymentsWorkGroupId
             }
+
             val lnurlPayWorkGroupId = context.getString(R.string.lnurl_pay_work_group_id)
             val lnurlPayNotificationChannel = NotificationChannel(
                 NOTIFICATION_CHANNEL_LNURL_PAY,
@@ -77,11 +80,24 @@ class BreezNotificationHelper {
                     context.getString(R.string.lnurl_pay_notification_channel_description)
                 group = lnurlPayWorkGroupId
             }
+
+            val swapTxConfirmedWorkGroupId = context.getString(R.string.swap_tx_notification_work_group_id)
+            val swapTxConfirmedNotificationChannel = NotificationChannel(
+                NOTIFICATION_CHANNEL_SWAP_TX_CONFIRMED,
+                context.getString(R.string.swap_tx_notification_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description =
+                    context.getString(R.string.swap_tx_notification_channel_description)
+                group = swapTxConfirmedWorkGroupId
+            }
+
             notificationManager.createNotificationChannels(
                 listOf(
                     foregroundServiceNotificationChannel,
                     receivedPaymentsNotificationChannel,
-                    lnurlPayNotificationChannel
+                    lnurlPayNotificationChannel,
+                    swapTxConfirmedNotificationChannel
                 )
             )
         }
@@ -99,17 +115,24 @@ class BreezNotificationHelper {
                 context.getString(R.string.lnurl_pay_work_group_id),
                 context.getString(R.string.lnurl_pay_work_group_name),
             )
+            val swapTxConfirmedNotificationChannelGroup = NotificationChannelGroup(
+                context.getString(R.string.swap_tx_notification_work_group_id),
+                context.getString(R.string.swap_tx_notification_work_group_name),
+            )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 offlinePaymentsNotificationChannelGroup.description =
                     context.getString(R.string.offline_payments_work_group_description)
                 lnurlPayNotificationChannelGroup.description =
-                    context.getString(R.string.lnurl_pay_notification_channel_description)
+                    context.getString(R.string.lnurl_pay_work_group_description)
+                swapTxConfirmedNotificationChannelGroup.description =
+                    context.getString(R.string.swap_tx_notification_work_group_description)
             }
 
             notificationManager.createNotificationChannelGroups(
                 listOf(
                     offlinePaymentsNotificationChannelGroup,
-                    lnurlPayNotificationChannelGroup
+                    lnurlPayNotificationChannelGroup,
+                    swapTxConfirmedNotificationChannelGroup
                 )
             )
         }

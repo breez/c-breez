@@ -13,6 +13,8 @@ object Constants {
         "${BuildConfig.APPLICATION_ID}.LNURL_PAY"
     const val NOTIFICATION_CHANNEL_PAYMENT_RECEIVED =
         "${BuildConfig.APPLICATION_ID}.PAYMENT_RECEIVED"
+    const val NOTIFICATION_CHANNEL_SWAP_TX_CONFIRMED =
+        "${BuildConfig.APPLICATION_ID}.SWAP_TX_CONFIRMED"
 
     // Notification Ids
     const val NOTIFICATION_ID_FOREGROUND_SERVICE = 100

@@ -35,7 +35,17 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
       if (swapInProgress != null) {
         swapUnused = null;
       } else {
-        swapUnused = (await _breezSDK.receiveOnchain(req: const ReceiveOnchainRequest()));
+        // Save the first swap address we receive, when the state is empty.
+        // Any subsequent calls due to the timer will re-use this value, until
+        // either this swap becomes inProgress, or the user navigates away from this UI.
+        //
+        // This is especially useful when this UI is first opened. Possibly due
+        // to timer bugs, there are often bursts of calls to sdk.receiveOnchain()
+        // in the first 2-3 seconds after opening this UI. Since these calls might
+        // not return immediately, they will likely be run in parallel.
+        // Such parallel calls lead can lead to more than one unused swap address being created.
+        swapUnused =
+            currentState.unused ?? (await _breezSDK.receiveOnchain(req: const ReceiveOnchainRequest()));
       }
       _log.info("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
       if (!isClosed) {

@@ -4,6 +4,10 @@ import Combine
 import os.log
 import notify
 
+struct AddressTxsConfirmedMessage: Codable {
+    let address: String
+}
+
 struct LnurlInfoMessage: Codable {
     let callback_url: String
     let reply_url: String
@@ -72,7 +76,23 @@ class NotificationService: UNNotificationServiceExtension {
         Self.logger.info("Notification type: \(notificationType)")
         
         switch(notificationType) {
-            case "payment_received":
+        case "address_txs_confirmed":
+            guard let messageData = content.userInfo["notification_payload"] as? String else {
+                contentHandler!(content)
+                return nil
+            }
+            Self.logger.info("address_txs_confirmed data string: \(messageData)")
+            let jsonData = messageData.data(using: .utf8)!
+            do {
+                let addressTxsConfirmedMessage: AddressTxsConfirmedMessage = try JSONDecoder().decode(AddressTxsConfirmedMessage.self, from: jsonData)
+                
+                Self.logger.info("creating redeem swap task, payload: \(addressTxsConfirmedMessage)")
+                return RedeemSwap(message: addressTxsConfirmedMessage, logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
+            } catch let e {
+                Self.logger.info("Error in parsing request: \(e)")
+                return nil
+            }
+        case "payment_received":
             Self.logger.info("creating task for payment received")
             return PaymentReceiver(logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
         case "lnurlpay_info":
@@ -85,7 +105,7 @@ class NotificationService: UNNotificationServiceExtension {
             do {
                 let lnurlInfoMessage: LnurlInfoMessage = try JSONDecoder().decode(LnurlInfoMessage.self, from: jsonData)
                 
-                Self.logger.info("creting lnurl pay task, payload: \(lnurlInfoMessage)")
+                Self.logger.info("creating lnurl pay task, payload: \(lnurlInfoMessage)")
                 return LnurlPayInfo(message: lnurlInfoMessage, logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
             } catch let e {
                 Self.logger.info("Error in parsing request: \(e)")
@@ -101,7 +121,7 @@ class NotificationService: UNNotificationServiceExtension {
             do {
                 let lnurlInvoiceMessage: LnurlInvoiceMessage = try JSONDecoder().decode(LnurlInvoiceMessage.self, from: jsonData)
                 
-                Self.logger.info("creting lnurl pay task, payload: \(lnurlInvoiceMessage)")
+                Self.logger.info("creating lnurl pay task, payload: \(lnurlInvoiceMessage)")
                 return LnurlPayInvoice(message: lnurlInvoiceMessage, logger: Self.logger, contentHandler: contentHandler, bestAttemptContent: bestAttemptContent)
             } catch let e {
                 Self.logger.info("Error in parsing request: \(e)")

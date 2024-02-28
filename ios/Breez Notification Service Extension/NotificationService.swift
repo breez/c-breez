@@ -3,25 +3,20 @@ import XCGLogger
 
 let accessGroup = "group.F7R2LZH3W5.com.cBreez.client"
 
-class NotificationService: UNNotificationServiceExtension, NotificationServiceProtocol {
-    var breezSDK: BlockingBreezServices?
-    var contentHandler: ((UNNotificationContent) -> Void)?
-    var bestAttemptContent: UNMutableNotificationContent?
-    var currentTask: TaskProtocol?
-
+class NotificationService: SDKNotificationService {
     private let accountMnemonic: String = "account_mnemonic"
     private let accountApiKey: String = "account_api_key"
-
-    var logger: XCGLogger = {
+    
+    override init() {
         let logsDir = FileManager
             .default.containerURL(forSecurityApplicationGroupIdentifier: accessGroup)!.appendingPathComponent("logs")
         let extensionLogFile = logsDir.appendingPathComponent("\(Date().timeIntervalSince1970).ios-extension.log")
-        let log = XCGLogger.default
-        log.setup(level: .debug, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: extensionLogFile.path)
-        return log
-    }()
+        
+        super.init()
+        self.logger.setup(level: .debug, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: extensionLogFile.path)
+    }
     
-    func getConnectRequest() -> ConnectRequest? {
+    override func getConnectRequest() -> ConnectRequest? {
         guard let apiKey = KeychainHelper.shared.getFlutterString(accessGroup: accessGroup, key: accountApiKey) else {
             logger.error("API key not found")
             return nil

@@ -4,6 +4,7 @@ import XCGLogger
 let accessGroup = "group.F7R2LZH3W5.com.cBreez.client"
 
 class NotificationService: SDKNotificationService {
+    private let kAutoChannelSetupFeeLimit: String =  "payment_options_auto_channel_setup_fee_limit"
     private let accountMnemonic: String = "account_mnemonic"
     private let accountApiKey: String = "account_api_key"
     
@@ -39,5 +40,11 @@ class NotificationService: SDKNotificationService {
             return nil
         }
         return ConnectRequest(config: config, seed: seed)
+    }
+    
+    override func getServiceConfig() -> ServiceConfig? {
+        let autoChannelSetupFeeLimitMsats = UserDefaults.standard.integer(forKey: kAutoChannelSetupFeeLimit)
+        logger.debug("Setting autoChannelSetupFeeLimitMsats to \(UInt64(autoChannelSetupFeeLimitMsats))")
+        return ServiceConfig.init(autoChannelSetupFeeLimitMsats: UInt64(autoChannelSetupFeeLimitMsats))
     }
 }

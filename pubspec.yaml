@@ -27,7 +27,7 @@ dependencies:
       url: https://github.com/breez/Breez-Translations
       ref: d8dc461d6aeb272fd1e5ac0d5189133b0152b5e9
   clipboard_watcher: ^0.2.1
-  csv: ^5.1.1
+  csv: ^6.0.0
   connectivity_plus: ^5.0.2
   device_info_plus: ^9.1.2
   drag_and_drop_lists: ^0.3.3
@@ -36,11 +36,11 @@ dependencies:
   extended_image: ^8.2.0
   ffi: ^2.1.2 # requires Dart >=3.3.0(Flutter 3.19)
   # Doesn't support: Linux Windows
-  firebase_core: ^2.25.4
+  firebase_core: ^2.25.5
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.4.14
+  firebase_dynamic_links: ^5.4.15
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.7.16
+  firebase_messaging: ^14.7.17
   flutter_bloc: ^8.1.4
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
@@ -73,7 +73,7 @@ dependencies:
   logging: ^1.2.0
   mockito: ^5.4.4
   # Doesn't support: Linux Windows
-  mobile_scanner: ^4.0.0
+  mobile_scanner: ^4.0.1
   package_info_plus: ^5.0.1
   path: ^1.9.0
   path_provider: ^2.1.2

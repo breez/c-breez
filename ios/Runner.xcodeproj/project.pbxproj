@@ -36,6 +36,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9C28B440138DC03104607F0B /* BreezSDKConnector.swift in Resources */ = {isa = PBXBuildFile; fileRef = 327E83DCA57D3FB9B310D3D9 /* BreezSDKConnector.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		A21B6D127CCE6FDADC0E00C7 /* ServiceConfig.swift in Resources */ = {isa = PBXBuildFile; fileRef = 447F6A282009E32ED21C865B /* ServiceConfig.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		C73D74D360F1AE9E33FE8A6F /* RedeemSwap.swift in Resources */ = {isa = PBXBuildFile; fileRef = FA873D936BB4E274E6D14408 /* RedeemSwap.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		C7942C1E6FFC28C740299EFC /* SDKNotificationService.swift in Resources */ = {isa = PBXBuildFile; fileRef = E9B1223F5463B93557BEA18D /* SDKNotificationService.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		D4F2C5660D694F9CF8CA84D9 /* ReceivePayment.swift in Resources */ = {isa = PBXBuildFile; fileRef = 45C71E0301BF4B6EA0E8DD4A /* ReceivePayment.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
@@ -89,6 +90,7 @@
 		327E83DCA57D3FB9B310D3D9 /* BreezSDKConnector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BreezSDKConnector.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDKNotification/BreezSDKConnector.swift"; sourceTree = "<group>"; };
 		3B2EF0C3DC3C11AC7A6C3451 /* KeychainHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeychainHelper.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDKNotification/KeychainHelper.swift"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
+		447F6A282009E32ED21C865B /* ServiceConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServiceConfig.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDKNotification/ServiceConfig.swift"; sourceTree = "<group>"; };
 		45C71E0301BF4B6EA0E8DD4A /* ReceivePayment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReceivePayment.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDKNotification/Task/ReceivePayment.swift"; sourceTree = "<group>"; };
 		46C66EEE58202D5FACC2CE1E /* TaskProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TaskProtocol.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDKNotification/TaskProtocol.swift"; sourceTree = "<group>"; };
 		5FA04B52B131437219FBC6F7 /* BreezSDK.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BreezSDK.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/BreezSDK.swift"; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				E9B1223F5463B93557BEA18D /* SDKNotificationService.swift */,
 				46C66EEE58202D5FACC2CE1E /* TaskProtocol.swift */,
 				FA873D936BB4E274E6D14408 /* RedeemSwap.swift */,
+				447F6A282009E32ED21C865B /* ServiceConfig.swift */,
 			);
 			name = BreezSDK;
 			sourceTree = "<group>";
@@ -339,8 +342,8 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */,
-				6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */,
+				E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */,
+				6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger.git" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -374,6 +377,7 @@
 				C7942C1E6FFC28C740299EFC /* SDKNotificationService.swift in Resources */,
 				499642AE5994CBB267F6BD66 /* TaskProtocol.swift in Resources */,
 				C73D74D360F1AE9E33FE8A6F /* RedeemSwap.swift in Resources */,
+				A21B6D127CCE6FDADC0E00C7 /* ServiceConfig.swift in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -933,7 +937,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */ = {
+		6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/DaveWoodCom/XCGLogger.git";
 			requirement = {
@@ -941,7 +945,7 @@
 				minimumVersion = 7.0.0;
 			};
 		};
-		E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+		E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
 			requirement = {
@@ -954,17 +958,17 @@
 /* Begin XCSwiftPackageProductDependency section */
 		6F1E36C32B24C0E800480FB9 /* XCGLogger */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */;
+			package = 6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger.git" */;
 			productName = XCGLogger;
 		};
 		6F1E36C52B24C16700480FB9 /* XCGLogger */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger" */;
+			package = 6F1E36C22B24C0E800480FB9 /* XCRemoteSwiftPackageReference "XCGLogger.git" */;
 			productName = XCGLogger;
 		};
 		E89C2CD62B0EA0CD0084A5BF /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			package = E89C2CD52B0EA0CD0084A5BF /* XCRemoteSwiftPackageReference "KeychainAccess.git" */;
 			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */

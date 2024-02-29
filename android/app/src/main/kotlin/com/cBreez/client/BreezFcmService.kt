@@ -8,14 +8,16 @@ import android.content.Intent
 import android.os.Process
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
-import breez_sdk_notification.LogHelper.Companion.configureLogger
 import breez_sdk_notification.Constants
-import breez_sdk_notification.MessagingService
+import breez_sdk_notification.LogHelper.Companion.configureLogger
 import breez_sdk_notification.Message
+import breez_sdk_notification.MessagingService
 import com.google.android.gms.common.util.PlatformVersion.isAtLeastLollipop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import io.flutter.util.PathUtils
 import org.tinylog.kotlin.Logger
+import java.io.File
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class BreezFcmService : MessagingService, FirebaseMessagingService() {
@@ -25,23 +27,32 @@ class BreezFcmService : MessagingService, FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-        configureLogger(applicationContext)
+        configureLogger(getLoggingDir())
         Logger.tag(TAG).debug { "FCM message received!" }
 
         if (remoteMessage.priority == RemoteMessage.PRIORITY_HIGH) {
             Logger.tag(TAG).debug { "onMessageReceived from: ${remoteMessage.from}" }
             Logger.tag(TAG).debug { "onMessageReceived data: ${remoteMessage.data}" }
-            remoteMessage.asMessage()?.also { message -> startServiceIfNeeded(applicationContext, message) }
+            remoteMessage.asMessage()
+                ?.also { message -> startServiceIfNeeded(applicationContext, message) }
         } else {
             Logger.tag(TAG).debug { "Ignoring FCM message" }
+        }
+    }
+
+    private fun getLoggingDir(): File {
+        /** Get `/logs` folder from Flutter app data directory */
+        return File(PathUtils.getDataDirectory(applicationContext), "/logs").apply {
+            /** Create a new directory denoted by the pathname and also
+             *  all the non existent parent directories of the pathname */
+            mkdirs()
         }
     }
 
     private fun RemoteMessage.asMessage(): Message? {
         return data[Constants.MESSAGE_DATA_TYPE]?.let {
             Message(
-                data[Constants.MESSAGE_DATA_TYPE],
-                data[Constants.MESSAGE_DATA_PAYLOAD]
+                data[Constants.MESSAGE_DATA_TYPE], data[Constants.MESSAGE_DATA_PAYLOAD]
             )
         }
     }

@@ -16,31 +16,30 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
 
   ReverseSwapBloc(this._breezSDK) : super(ReverseSwapState.initial());
 
-  Future<ReverseSwapInfo> sendOnchain({
-    required int amountSat,
-    required String onchainRecipientAddress,
-    required String pairHash,
-    required int satPerVbyte,
+  Future<ReverseSwapInfo> payOnchain({
+    required String recipientAddress,
+    required PrepareOnchainPaymentResponse prepareRes,
   }) async {
     try {
       _log.info(
-        "Reverse Swap of $amountSat sats to address $onchainRecipientAddress using $satPerVbyte sats/vByte as"
-        " fee rate w/ pairHash: $pairHash",
+        "Creating a reverse swap of ${prepareRes.senderAmountSat} sats "
+        "expected to be received ${prepareRes.recipientAmountSat} on address $recipientAddress"
+        "w/ pairHash: ${prepareRes.feesHash}",
       );
-      final req = SendOnchainRequest(
-        amountSat: amountSat,
-        onchainRecipientAddress: onchainRecipientAddress,
-        pairHash: pairHash,
-        satPerVbyte: satPerVbyte,
+
+      final req = PayOnchainRequest(
+        recipientAddress: recipientAddress,
+        prepareRes: prepareRes,
       );
-      final reverseSwapReponse = await _breezSDK.sendOnchain(req: req);
-      final reverseSwapInfo = reverseSwapReponse.reverseSwapInfo;
+
+      final revSwapResp = await _breezSDK.payOnchain(req: req);
+      final revSwapInfo = revSwapResp.reverseSwapInfo;
       _log.info(
-        "Reverse Swap Info for id: ${reverseSwapInfo.id}, ${reverseSwapInfo.onchainAmountSat} sats to address"
-        " ${reverseSwapInfo.claimPubkey} w/ status: ${reverseSwapInfo.status}",
+        "Reverse Swap Info for id: ${revSwapInfo.id}, ${revSwapInfo.onchainAmountSat} sats to address "
+        "${revSwapInfo.claimPubkey} w/ status: ${revSwapInfo.status}",
       );
-      emit(ReverseSwapState(reverseSwapInfo: reverseSwapInfo));
-      return reverseSwapInfo;
+      emit(ReverseSwapState(reverseSwapInfo: revSwapInfo));
+      return revSwapInfo;
     } catch (e) {
       _log.severe("sendOnchain error", e);
       emit(ReverseSwapState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
@@ -49,7 +48,10 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }
 
   /// Fetches the current recommended fees
-  Future<List<ReverseSwapFeeOption>> fetchReverseSwapFeeOptions({required int sendAmountSat}) async {
+  Future<List<ReverseSwapFeeOption>> fetchReverseSwapFeeOptions({
+    required int amountSat,
+    required SwapAmountType amountType,
+  }) async {
     RecommendedFees recommendedFees;
     try {
       recommendedFees = await _breezSDK.recommendedFees();
@@ -58,7 +60,8 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
       return await _constructFeeOptionList(
-        sendAmountSat: sendAmountSat,
+        amountSat: amountSat,
+        amountType: amountType,
         recommendedFees: recommendedFees,
       );
     } catch (e) {
@@ -69,7 +72,8 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }
 
   Future<List<ReverseSwapFeeOption>> _constructFeeOptionList({
-    required int sendAmountSat,
+    required int amountSat,
+    required SwapAmountType amountType,
     required RecommendedFees recommendedFees,
   }) async {
     final recommendedFeeList = [
@@ -80,16 +84,17 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     final feeOptions = await Future.wait(
       List.generate(3, (index) async {
         final recommendedFee = recommendedFeeList.elementAt(index);
-        final swapOption = await fetchReverseSwapOptions(
-          sendAmountSat: sendAmountSat,
+        final swapOption = await prepareOnchainPayment(
+          amountSat: amountSat,
+          amountType: amountType,
           claimTxFeerate: recommendedFee,
         );
 
         return ReverseSwapFeeOption(
-          txFeeSat: swapOption.pairInfo.feesClaim,
+          txFeeSat: swapOption.feesClaim,
           processingSpeed: ProcessingSpeed.values.elementAt(index),
           satPerVbyte: recommendedFee,
-          pairInfo: swapOption.pairInfo,
+          pairInfo: swapOption,
         );
       }),
     );
@@ -99,16 +104,40 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }
 
   /// Lookup the most recent reverse swap pair info using the Boltz API
-  Future<ReverseSwapOptions> fetchReverseSwapOptions({int? sendAmountSat, int? claimTxFeerate}) async {
+  Future<PrepareOnchainPaymentResponse> prepareOnchainPayment({
+    required int amountSat,
+    required SwapAmountType amountType,
+    required int claimTxFeerate,
+  }) async {
     try {
-      _log.info("Estimate reverse swap fees for: $sendAmountSat");
-      final req = ReverseSwapFeesRequest(sendAmountSat: sendAmountSat, claimTxFeerate: claimTxFeerate);
-      ReverseSwapPairInfo reverseSwapPairInfo = await _breezSDK.fetchReverseSwapFees(req: req);
-      _log.info("Total estimated fees for reverse swap: ${reverseSwapPairInfo.totalFees}");
-      final maxAmountResponse = await _breezSDK.maxReverseSwapAmount();
-      return ReverseSwapOptions(pairInfo: reverseSwapPairInfo, maxAmountSat: maxAmountResponse.totalSat);
+      _log.info(
+        "Estimate reverse swap fees for ${amountType == SwapAmountType.Receive ? "receiving" : "sending"} $amountSat",
+      );
+      final req = PrepareOnchainPaymentRequest(
+        amountSat: amountSat,
+        amountType: amountType,
+        claimTxFeerate: claimTxFeerate,
+      );
+      PrepareOnchainPaymentResponse revSwapPairInfo = await _breezSDK.prepareOnchainPayment(req: req);
+      _log.info("Total estimated fees for reverse swap: ${revSwapPairInfo.totalFees}");
+      return revSwapPairInfo;
     } catch (e) {
-      _log.severe("fetchReverseSwapOptions error", e);
+      _log.severe("prepareOnchainPayment error", e);
+      rethrow;
+    }
+  }
+
+  Future<ReverseSwapPolicy> onchainPaymentLimits() async {
+    try {
+      OnchainPaymentLimitsResponse paymentLimits = await _breezSDK.onchainPaymentLimits();
+      _log.info(
+        "Current maximum ${paymentLimits.maxSat} and "
+        "minimum ${paymentLimits.minSat} payment limits for onchain payments",
+      );
+      final maxAmountResponse = await _breezSDK.maxReverseSwapAmount();
+      return ReverseSwapPolicy(paymentLimits: paymentLimits, maxAmountSat: maxAmountResponse.totalSat);
+    } catch (e) {
+      _log.severe("fetchOnchainPaymentLimits error", e);
       rethrow;
     }
   }

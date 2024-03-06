@@ -22,9 +22,9 @@ class ReverseSwapState {
       );
 }
 
-class ReverseSwapOptions {
-  final ReverseSwapPairInfo pairInfo;
+class ReverseSwapPolicy {
+  final OnchainPaymentLimitsResponse paymentLimits;
   final int maxAmountSat;
 
-  ReverseSwapOptions({required this.pairInfo, required this.maxAmountSat});
+  ReverseSwapPolicy({required this.paymentLimits, required this.maxAmountSat});
 }

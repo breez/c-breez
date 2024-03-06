@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
@@ -10,12 +11,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReverseSwapConfirmationPage extends StatefulWidget {
   final int amountSat;
+  final SwapAmountType amountType;
   final String onchainRecipientAddress;
   final bool isMaxValue;
 
   const ReverseSwapConfirmationPage({
     super.key,
     required this.amountSat,
+    required this.amountType,
     required this.onchainRecipientAddress,
     required this.isMaxValue,
   });
@@ -74,14 +77,8 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
               ? SafeArea(
                   child: ReverseSwapButton(
-                    amountSat: (widget.isMaxValue == true)
-                        ? widget.amountSat
-                        : widget.amountSat +
-                            selectedFeeOption.txFeeSat +
-                            selectedFeeOption.boltzServiceFee(widget.amountSat),
-                    onchainRecipientAddress: widget.onchainRecipientAddress,
-                    satPerVbyte: selectedFeeOption.satPerVbyte,
-                    feesHash: selectedFeeOption.pairInfo.feesHash,
+                    recipientAddress: widget.onchainRecipientAddress,
+                    prepareOnchainPaymentResponse: selectedFeeOption.pairInfo,
                   ),
                 )
               : null,
@@ -90,7 +87,10 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
 
   void _fetchReverseSwapFeeOptions() {
     final reverseSwapBloc = context.read<ReverseSwapBloc>();
-    _fetchFeeOptionsFuture = reverseSwapBloc.fetchReverseSwapFeeOptions(sendAmountSat: widget.amountSat);
+    _fetchFeeOptionsFuture = reverseSwapBloc.fetchReverseSwapFeeOptions(
+      amountSat: widget.amountSat,
+      amountType: widget.isMaxValue ? SwapAmountType.Receive : SwapAmountType.Send,
+    );
     _fetchFeeOptionsFuture.then((feeOptions) {
       final account = context.read<AccountBloc>().state;
       setState(() {

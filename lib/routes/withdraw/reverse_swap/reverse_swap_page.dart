@@ -40,7 +40,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   final _validatorHolder = ValidatorHolder();
 
   bool _withdrawMaxValue = false;
-  Future<ReverseSwapOptions>? _revSwapOptionsFuture;
+  Future<ReverseSwapPolicy>? _revSwapOptionsFuture;
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   Future _fetchReverseSwapPairInfo() async {
     final revSwapBloc = context.read<ReverseSwapBloc>();
     setState(() {
-      _revSwapOptionsFuture = revSwapBloc.fetchReverseSwapOptions();
+      _revSwapOptionsFuture = revSwapBloc.onchainPaymentLimits();
     });
   }
 
@@ -83,9 +83,9 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
         leading: const back_button.BackButton(),
         title: Text(texts.reverse_swap_title),
       ),
-      body: FutureBuilder<ReverseSwapOptions>(
+      body: FutureBuilder<ReverseSwapPolicy>(
           future: _revSwapOptionsFuture,
-          builder: (BuildContext context, AsyncSnapshot<ReverseSwapOptions> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<ReverseSwapPolicy> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
               case ConnectionState.waiting:
@@ -148,8 +148,8 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                       balance: maxSendableAmount,
                                       policy: WithdrawFundsPolicy(
                                         WithdrawKind.withdraw_funds,
-                                        snapshot.data!.pairInfo.min,
-                                        snapshot.data!.pairInfo.max,
+                                        snapshot.data!.paymentLimits.minSat,
+                                        snapshot.data!.paymentLimits.maxSat,
                                       ),
                                     ),
                                     ListTile(
@@ -201,6 +201,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                         FadeInRoute(
                                           builder: (_) => ReverseSwapConfirmationPage(
                                             amountSat: amount,
+                                            amountType: SwapAmountType.Receive,
                                             onchainRecipientAddress: _addressController.text,
                                             isMaxValue: _withdrawMaxValue,
                                           ),

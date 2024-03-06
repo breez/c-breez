@@ -36,7 +36,7 @@ abstract class FeeOption {
 }
 
 class ReverseSwapFeeOption extends FeeOption {
-  final ReverseSwapPairInfo pairInfo;
+  final PrepareOnchainPaymentResponse pairInfo;
 
   ReverseSwapFeeOption({
     required this.pairInfo,

@@ -1,3 +1,4 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/utils/exceptions.dart';
@@ -8,17 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReverseSwapButton extends StatelessWidget {
-  final int amountSat;
-  final String onchainRecipientAddress;
-  final String feesHash;
-  final int satPerVbyte;
+  final String recipientAddress;
+  final PrepareOnchainPaymentResponse prepareOnchainPaymentResponse;
 
   const ReverseSwapButton({
     super.key,
-    required this.amountSat,
-    required this.onchainRecipientAddress,
-    required this.feesHash,
-    required this.satPerVbyte,
+    required this.recipientAddress,
+    required this.prepareOnchainPaymentResponse,
   });
 
   @override
@@ -40,13 +37,10 @@ class ReverseSwapButton extends StatelessWidget {
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
     try {
-      await reverseSwapBloc.sendOnchain(
-        amountSat: amountSat,
-        pairHash: feesHash,
-        onchainRecipientAddress: onchainRecipientAddress,
-        satPerVbyte: satPerVbyte,
+      await reverseSwapBloc.payOnchain(
+        recipientAddress: recipientAddress,
+        prepareRes: prepareOnchainPaymentResponse,
       );
-
       navigator.pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false);
     } catch (e) {
       navigator.pop(loaderRoute);

@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def dartDefines = [:];
+def dartDefines = [:]
 if (project.hasProperty('dart-defines')) {
     // Decode dart-defines, which are comma-separated and encoded in Base64, and store them in a variable.
     dartDefines = dartDefines + project.property('dart-defines')
@@ -38,7 +38,7 @@ def envVariables = [
         API_KEY: project.hasProperty('API_KEY')
                 ? API_KEY
                 : "${dartDefines.API_KEY}",
-];
+]
 
 android {
     namespace 'com.cBreez.client'

@@ -10,7 +10,7 @@ import breez_sdk.mnemonicToSeed
 import breez_sdk_notification.ForegroundService
 import breez_sdk_notification.NotificationHelper.Companion.registerNotificationChannels
 import com.breez.breez_sdk.SdkLogInitializer
-import flutter_secured_storage.FlutterSecuredStorageHelper.Companion.readSecuredValue
+import com.cBreez.client.utils.FlutterSecuredStorageHelper.Companion.readSecuredValue
 import io.flutter.util.PathUtils
 import org.tinylog.kotlin.Logger
 

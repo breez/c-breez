@@ -22,7 +22,7 @@ class NotificationService: SDKNotificationService {
             
         }()
         let serviceLogger = ServiceLogger(logStream: SdkLogListener(logger: xcgLogger))
-        self.logger = serviceLogger
+        super.init(logger: serviceLogger)
     }
     
     override func getConnectRequest() -> ConnectRequest? {

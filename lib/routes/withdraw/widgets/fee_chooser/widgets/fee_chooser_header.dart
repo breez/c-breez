@@ -48,7 +48,6 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
                 isAffordable: feeOption.isAffordable(
                   balance: (feeOption is RedeemOnchainFeeOption) ? account.walletBalance : account.balance,
                   amountSat: widget.amountSat,
-                  isMaxValue: widget.isMaxValue,
                 ),
                 isSelected: widget.selectedFeeIndex == index,
                 onSelect: () => widget.onSelect(index),

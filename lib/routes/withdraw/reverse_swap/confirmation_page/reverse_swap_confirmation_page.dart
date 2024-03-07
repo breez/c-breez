@@ -42,7 +42,6 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
-    var selectedFeeOption = affordableFees[selectedFeeIndex];
 
     return Scaffold(
       appBar: AppBar(
@@ -78,7 +77,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
               ? SafeArea(
                   child: ReverseSwapButton(
                     recipientAddress: widget.onchainRecipientAddress,
-                    prepareOnchainPaymentResponse: selectedFeeOption.pairInfo,
+                    prepareOnchainPaymentResponse: affordableFees[selectedFeeIndex].pairInfo,
                   ),
                 )
               : null,
@@ -95,13 +94,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
       final account = context.read<AccountBloc>().state;
       setState(() {
         affordableFees = feeOptions
-            .where(
-              (f) => f.isAffordable(
-                balance: account.balance,
-                amountSat: widget.amountSat,
-                isMaxValue: widget.isMaxValue,
-              ),
-            )
+            .where((f) => f.isAffordable(balance: account.balance, amountSat: widget.amountSat))
             .toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
       });

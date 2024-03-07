@@ -32,7 +32,7 @@ abstract class FeeOption {
     }
   }
 
-  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue});
+  bool isAffordable({required int balance, required int amountSat});
 }
 
 class ReverseSwapFeeOption extends FeeOption {
@@ -46,21 +46,8 @@ class ReverseSwapFeeOption extends FeeOption {
   });
 
   @override
-  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue}) {
-    if (isMaxValue == true) {
-      return (amountSat + boltzServiceFee(amountSat) + pairInfo.feesClaim) > 0;
-    } else {
-      return (amountSat + boltzServiceFee(amountSat) + pairInfo.feesClaim) < balance;
-    }
-  }
-
-  int boltzServiceFee(int amountSat) {
-    var p = pairInfo.feesPercentage / 100;
-    // swap amount + claim tx fee
-    var totalAmount = (amountSat + pairInfo.feesClaim).toDouble();
-    var percentageFee = totalAmount * p / (1 - p);
-    var minerFee = pairInfo.feesLockup.toDouble() / (1 - p);
-    return (percentageFee + minerFee).ceil();
+  bool isAffordable({required int balance, required int amountSat}) {
+    return balance >= pairInfo.senderAmountSat;
   }
 }
 
@@ -72,7 +59,7 @@ class RefundFeeOption extends FeeOption {
   });
 
   @override
-  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue}) {
+  bool isAffordable({required int balance, required int amountSat}) {
     return (amountSat + txFeeSat) < balance;
   }
 }
@@ -85,7 +72,7 @@ class RedeemOnchainFeeOption extends FeeOption {
   });
 
   @override
-  bool isAffordable({required int balance, required int amountSat, bool? isMaxValue}) {
+  bool isAffordable({required int balance, required int amountSat}) {
     return (amountSat + txFeeSat) < balance;
   }
 }

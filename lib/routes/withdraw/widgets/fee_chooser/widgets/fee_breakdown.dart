@@ -27,7 +27,7 @@ class FeeBreakdown extends StatelessWidget {
     var feeOption = this.feeOption;
     int? boltzServiceFee;
     if (feeOption is ReverseSwapFeeOption) {
-      boltzServiceFee = feeOption.boltzServiceFee(amountSat);
+      boltzServiceFee = feeOption.pairInfo.totalFees - feeOption.txFeeSat;
     }
 
     return Container(

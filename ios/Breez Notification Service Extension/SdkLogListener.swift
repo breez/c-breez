@@ -10,23 +10,23 @@ class SdkLogListener : LogStream {
     
     func log(l: LogEntry) {
         switch(l.level) {
-            case "ERROR":
-                logger.error { l.line }
-                break
-            case "WARN":
-                logger.warning { l.line }
-                break
-            case "INFO":
-                logger.info { l.line }
-                break
-            case "DEBUG":
-                logger.debug { l.line }
-                break
-            case "TRACE":
-                logger.verbose { l.line }
-                break
-            default:
-                return
+        case "ERROR":
+            logger.error { l.line }
+            break
+        case "WARN":
+            logger.warning { l.line }
+            break
+        case "INFO":
+            logger.info { l.line }
+            break
+        case "DEBUG":
+            logger.debug { l.line }
+            break
+        case "TRACE":
+            logger.verbose { l.line }
+            break
+        default:
+            return
         }
     }
 }

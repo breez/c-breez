@@ -10,7 +10,8 @@ class NotificationService: SDKNotificationService {
     
     private let xcgLogger: XCGLogger
     
-    init() {
+    override init() {
+        // Initialize XCGLogger
         let logsDir = FileManager
             .default.containerURL(forSecurityApplicationGroupIdentifier: accessGroup)!.appendingPathComponent("logs")
         let extensionLogFile = logsDir.appendingPathComponent("\(Date().timeIntervalSince1970).ios-extension.log")
@@ -21,8 +22,11 @@ class NotificationService: SDKNotificationService {
             return log
             
         }()
-        let serviceLogger = ServiceLogger(logStream: SdkLogListener(logger: xcgLogger))
-        super.init(logger: serviceLogger)
+        
+        super.init()
+        // Set Notification Service Logger to SdkLogListener(:LogStream) that utilizes XCGLogger library
+        let logger = SdkLogListener(logger: xcgLogger)
+        setLogger(logger: logger)
     }
     
     override func getConnectRequest() -> ConnectRequest? {

@@ -28,7 +28,9 @@ class MoonPayBloc extends Cubit<MoonPayState> {
       if (swapInProgress != null) {
         _log.info("fetchMoonpayUrl swapInfo: $swapInProgress");
         emit(MoonPayState.swapInProgress(
-            swapInProgress.bitcoinAddress, swapInProgress.status == sdk.SwapStatus.Expired));
+          swapInProgress.bitcoinAddress,
+          swapInProgress.status == sdk.SwapStatus.Refundable,
+        ));
         return;
       }
 

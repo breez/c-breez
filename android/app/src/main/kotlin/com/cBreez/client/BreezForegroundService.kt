@@ -26,7 +26,7 @@ class BreezForegroundService : ForegroundService() {
 
     override fun onCreate() {
         super.onCreate()
-        Logger.tag(TAG).debug { "Creating breez foreground service..." }
+        Logger.tag(TAG).debug { "Creating Breez foreground service..." }
         registerNotificationChannels(applicationContext, DEFAULT_CLICK_ACTION)
         val sdkLogListener = SdkLogInitializer.initializeNodeLogStream()
         sdkLogListener.subscribe(serviceScope) { l: LogEntry ->
@@ -39,7 +39,7 @@ class BreezForegroundService : ForegroundService() {
             }
         }
         setServiceLogger(sdkLogListener)
-        Logger.tag(TAG).debug { "Foreground breez service created." }
+        Logger.tag(TAG).debug { "Breez foreground service created." }
     }
 
     override fun shutdown() {

@@ -38,7 +38,7 @@ class BreezForegroundService : ForegroundService() {
                 "TRACE" -> Logger.tag(TAG).trace { l.line }
             }
         }
-        setServiceLogger(sdkLogListener)
+        setLogger(sdkLogListener)
         Logger.tag(TAG).debug { "Breez foreground service created." }
     }
 

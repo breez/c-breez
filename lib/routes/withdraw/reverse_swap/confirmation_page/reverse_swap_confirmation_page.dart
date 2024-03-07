@@ -89,7 +89,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
     final reverseSwapBloc = context.read<ReverseSwapBloc>();
     _fetchFeeOptionsFuture = reverseSwapBloc.fetchReverseSwapFeeOptions(
       amountSat: widget.amountSat,
-      amountType: widget.isMaxValue ? SwapAmountType.Receive : SwapAmountType.Send,
+      amountType: widget.isMaxValue ? SwapAmountType.Send : SwapAmountType.Receive,
     );
     _fetchFeeOptionsFuture.then((feeOptions) {
       final account = context.read<AccountBloc>().state;

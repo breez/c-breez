@@ -111,7 +111,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }) async {
     try {
       _log.info(
-        "Estimate reverse swap fees for ${amountType == SwapAmountType.Receive ? "receiving" : "sending"} $amountSat",
+        "Estimate reverse swap fees for $amountSat sats to be ${amountType == SwapAmountType.Receive ? "received on the" : "sent to the"} destination address",
       );
       final req = PrepareOnchainPaymentRequest(
         amountSat: amountSat,

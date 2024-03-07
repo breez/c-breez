@@ -32,6 +32,9 @@
 /build/
 untranslated_messages.txt
 
+# SPM Related
+ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
 # fenv related
 .flutter-version
 

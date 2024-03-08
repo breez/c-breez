@@ -1,7 +1,7 @@
 PODS:
   - app_group_directory (1.0.0):
     - Flutter
-  - breez_sdk (0.3.1):
+  - breez_sdk (0.3.2):
     - Flutter
   - clipboard_watcher (0.0.1):
     - Flutter
@@ -18,14 +18,14 @@ PODS:
   - Firebase/Messaging (10.22.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 10.22.0)
-  - firebase_core (2.26.0):
+  - firebase_core (2.27.0):
     - Firebase/CoreOnly (= 10.22.0)
     - Flutter
-  - firebase_dynamic_links (5.4.16):
+  - firebase_dynamic_links (5.4.17):
     - Firebase/DynamicLinks (= 10.22.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (14.7.18):
+  - firebase_messaging (14.7.19):
     - Firebase/Messaging (= 10.22.0)
     - firebase_core
     - Flutter
@@ -307,14 +307,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
-  breez_sdk: 2d56a296cc9f9091d9dfd4fcb6fd3af049698a18
+  breez_sdk: a2d21873e72931e27edff0f42038311464b154b9
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: bf0076dd84a130856aa636df1c71ccaff908fa1d
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   Firebase: 797fd7297b7e1be954432743a0b3f90038e45a71
-  firebase_core: 8e100adc478919c6f3224f854ce8fa0bd98e36fd
-  firebase_dynamic_links: bd6f03814f08c7e4226f1c274432e71dc2e215d8
-  firebase_messaging: e41899318940eb03dd3d97f1c04de128019f92d6
+  firebase_core: 100945864b4aedce3cfef0c62ab864858bf013cf
+  firebase_dynamic_links: 6149c6fc3790997eb8a392074e5ee4974840942b
+  firebase_messaging: e65050bf9b187511d80ea3a4de7cf5573d2c7543
   FirebaseCore: 0326ec9b05fbed8f8716cddbf0e36894a13837f7
   FirebaseCoreInternal: bca337352024b18424a61e478460547d46c4c753
   FirebaseDynamicLinks: 25ed0e87b0afb4769cc0ec8e942a532219abac28

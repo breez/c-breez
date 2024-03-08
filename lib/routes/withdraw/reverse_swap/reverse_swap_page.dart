@@ -4,7 +4,6 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_bloc.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
-import 'package:c_breez/bloc/reverse_swap/reverse_swap_state.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/reverse_swap_confirmation_page.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/in_progress/reverse_swaps_in_progress_page.dart';
@@ -40,7 +39,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
   final _validatorHolder = ValidatorHolder();
 
   bool _withdrawMaxValue = false;
-  Future<ReverseSwapPolicy>? _revSwapOptionsFuture;
+  Future<OnchainPaymentLimitsResponse>? _revSwapOptionsFuture;
 
   @override
   void initState() {
@@ -83,9 +82,9 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
         leading: const back_button.BackButton(),
         title: Text(texts.reverse_swap_title),
       ),
-      body: FutureBuilder<ReverseSwapPolicy>(
+      body: FutureBuilder<OnchainPaymentLimitsResponse>(
           future: _revSwapOptionsFuture,
-          builder: (BuildContext context, AsyncSnapshot<ReverseSwapPolicy> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<OnchainPaymentLimitsResponse> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
               case ConnectionState.waiting:
@@ -109,7 +108,6 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                     ),
                   );
                 } else {
-                  final maxSendableAmount = snapshot.data!.maxAmountSat;
                   return SafeArea(
                     child: BlocBuilder<RevSwapsInProgressBloc, RevSwapsInProgressState>(
                       builder: (context, inProgressSwapState) {
@@ -127,6 +125,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                           );
                         }
 
+                        final maxSendableAmount = snapshot.data!.maxSat;
                         return Column(
                           children: [
                             Padding(
@@ -148,8 +147,8 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                       balance: maxSendableAmount,
                                       policy: WithdrawFundsPolicy(
                                         WithdrawKind.withdraw_funds,
-                                        snapshot.data!.paymentLimits.minSat,
-                                        snapshot.data!.paymentLimits.maxSat,
+                                        snapshot.data!.minSat,
+                                        maxSendableAmount,
                                       ),
                                     ),
                                     ListTile(
@@ -189,14 +188,11 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                                   if (_formKey.currentState?.validate() ?? false) {
                                     var loaderRoute = createLoaderRoute(context);
                                     navigator.push(loaderRoute);
-
                                     try {
                                       int amount = _getAmount();
-
                                       if (loaderRoute.isActive) {
                                         navigator.removeRoute(loaderRoute);
                                       }
-
                                       navigator.push(
                                         FadeInRoute(
                                           builder: (_) => ReverseSwapConfirmationPage(

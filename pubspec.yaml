@@ -36,11 +36,11 @@ dependencies:
   extended_image: ^8.2.0
   ffi: ^2.1.2 # requires Dart >=3.3.0(Flutter 3.19)
   # Doesn't support: Linux Windows
-  firebase_core: ^2.25.5
+  firebase_core: ^2.27.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.4.15
+  firebase_dynamic_links: ^5.4.17
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.7.17
+  firebase_messaging: ^14.7.19
   flutter_bloc: ^8.1.4
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:

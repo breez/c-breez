@@ -21,10 +21,3 @@ class ReverseSwapState {
         error: error ?? this.error,
       );
 }
-
-class ReverseSwapPolicy {
-  final OnchainPaymentLimitsResponse paymentLimits;
-  final int maxAmountSat;
-
-  ReverseSwapPolicy({required this.paymentLimits, required this.maxAmountSat});
-}

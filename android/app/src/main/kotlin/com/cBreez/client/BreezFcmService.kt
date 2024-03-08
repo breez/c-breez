@@ -3,57 +3,58 @@ package com.cBreez.client
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.KeyguardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.os.SystemClock
 import androidx.core.content.ContextCompat
+import breez_sdk_notification.Constants
+import breez_sdk_notification.Message
+import breez_sdk_notification.MessagingService
 import com.cBreez.client.BreezLogger.Companion.configureLogger
-import com.cBreez.client.Constants.EXTRA_REMOTE_MESSAGE
 import com.google.android.gms.common.util.PlatformVersion.isAtLeastLollipop
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.tinylog.kotlin.Logger
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
-class BreezFcmService : FirebaseMessagingService() {
+class BreezFcmService : MessagingService, FirebaseMessagingService() {
     companion object {
         private const val TAG = "BreezFcmService"
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
-
         configureLogger(applicationContext)
-        Logger.tag(TAG).debug { "FCM notification received!" }
+        Logger.tag(TAG).debug { "FCM message received!" }
 
-        startServiceIfNeeded(remoteMessage)
-    }
-
-    /** Check if message is a data payload w/ high priority
-     * as we cannot start foreground service from low/normal priority message */
-    private fun startServiceIfNeeded(remoteMessage: RemoteMessage) {
-        with(remoteMessage) {
-            Logger.tag(TAG).debug { "startServiceIfNeeded from: $from" }
-            Logger.tag(TAG).debug { "startServiceIfNeeded data: $data" }
-            val serviceNeededByNotificationType = when (data["notification_type"]) {
-                "address_txs_confirmed" -> !isAppForeground()
-                "payment_received" -> !isAppForeground()
-                else -> true
-            }
-            if (data.isNotEmpty() && serviceNeededByNotificationType && priority == RemoteMessage.PRIORITY_HIGH) startBreezForegroundService()
-            else Logger.tag(TAG).warn { "Ignoring FCM message $data" }
+        if (remoteMessage.priority == RemoteMessage.PRIORITY_HIGH) {
+            Logger.tag(TAG).debug { "onMessageReceived from: ${remoteMessage.from}" }
+            Logger.tag(TAG).debug { "onMessageReceived data: ${remoteMessage.data}" }
+            remoteMessage.asMessage()
+                ?.also { message -> startServiceIfNeeded(applicationContext, message) }
+        } else {
+            Logger.tag(TAG).debug { "Ignoring FCM message" }
         }
     }
 
-    private fun RemoteMessage.startBreezForegroundService() {
-        Logger.tag(TAG).debug { "Starting BreezForegroundService w/ remote message $data" }
+    private fun RemoteMessage.asMessage(): Message? {
+        return data[Constants.MESSAGE_DATA_TYPE]?.let {
+            Message(
+                data[Constants.MESSAGE_DATA_TYPE], data[Constants.MESSAGE_DATA_PAYLOAD]
+            )
+        }
+    }
+
+    override fun startForegroundService(message: Message) {
+        Logger.tag(TAG).debug { "Starting BreezForegroundService w/ message ${message.type}: ${message.payload}" }
         val intent = Intent(applicationContext, BreezForegroundService::class.java)
-        intent.putExtra(EXTRA_REMOTE_MESSAGE, this)
+        intent.putExtra(Constants.EXTRA_REMOTE_MESSAGE, message)
         ContextCompat.startForegroundService(applicationContext, intent)
     }
 
     @SuppressLint("VisibleForTests")
-    private fun isAppForeground(): Boolean {
+    override fun isAppForeground(context: Context): Boolean {
         val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
         if (keyguardManager.isKeyguardLocked) {
             return false // Screen is off or lock screen is showing

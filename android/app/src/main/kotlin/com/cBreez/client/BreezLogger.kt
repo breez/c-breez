@@ -13,8 +13,11 @@ class BreezLogger {
 
         internal fun configureLogger(applicationContext: Context): Boolean? {
             synchronized(this) {
+                /** Get `/logs` folder from Flutter app data directory */
                 val loggingDir =
-                    File(PathUtils.getDataDirectory(applicationContext), "/logs/").apply {
+                    File(PathUtils.getDataDirectory(applicationContext), "/logs").apply {
+                        /** Create a new directory denoted by the pathname and also
+                         *  all the non existent parent directories of the pathname */
                         mkdirs()
                     }
 

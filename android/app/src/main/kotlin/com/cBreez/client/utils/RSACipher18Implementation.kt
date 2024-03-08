@@ -1,4 +1,4 @@
-package com.cBreez.client
+package com.cBreez.client.utils
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
@@ -160,7 +160,7 @@ class StorageCipher18Implementation(context: Context, rsaCipher: KeyCipher) {
                 encrypted = Base64.decode(aesKey, Base64.DEFAULT)
                 return rsaCipher.unwrap(encrypted, KEY_ALGORITHM)
             } catch (e: java.lang.Exception) {
-                Logger.tag(TAG).error { "Unwrap key failed" + e.message; e.toString() }
+                Logger.tag(TAG).error(e, "Unwrap key failed" + e.message)
                 throw e
             }
         }

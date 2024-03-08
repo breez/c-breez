@@ -3,7 +3,6 @@ plugins {
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
     id "com.google.gms.google-services"
-    id "kotlinx-serialization"
 }
 
 def localProperties = new Properties()
@@ -24,7 +23,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def dartDefines = [:];
+def dartDefines = [:]
 if (project.hasProperty('dart-defines')) {
     // Decode dart-defines, which are comma-separated and encoded in Base64, and store them in a variable.
     dartDefines = dartDefines + project.property('dart-defines')
@@ -39,7 +38,7 @@ def envVariables = [
         API_KEY: project.hasProperty('API_KEY')
                 ? API_KEY
                 : "${dartDefines.API_KEY}",
-];
+]
 
 android {
     namespace 'com.cBreez.client'
@@ -134,6 +133,4 @@ dependencies {
     /* Logging */
     implementation 'org.tinylog:tinylog-api-kotlin:2.6.2'
     implementation 'org.tinylog:tinylog-impl:2.6.2'
-    /* JSON serialization */
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
 }

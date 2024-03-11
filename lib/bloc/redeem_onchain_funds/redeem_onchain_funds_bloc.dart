@@ -42,7 +42,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
     try {
       recommendedFees = await _breezSDK.recommendedFees();
       _log.info(
-        "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
+        "fetchRedeemOnchainFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
       return await _constructFeeOptionList(
@@ -50,7 +50,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
         recommendedFees: recommendedFees,
       );
     } catch (e) {
-      _log.severe("fetchFeeOptions error", e);
+      _log.severe("fetchRedeemOnchainFeeOptions error", e);
       emit(RedeemOnchainFundsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
@@ -90,10 +90,10 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
     _log.info("Prepare redeem onchain funds to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
       final resp = await _breezSDK.prepareRedeemOnchainFunds(req: req);
-      _log.info("Refund txFee: ${resp.txFeeSat}, with tx weight ${resp.txWeight}");
+      _log.info("Redeem onchain funds txFee: ${resp.txFeeSat}, with tx weight ${resp.txWeight}");
       return resp.txFeeSat;
     } catch (e) {
-      _log.severe("Failed to refund swap", e);
+      _log.severe("Failed to redeem onchain funds", e);
       rethrow;
     }
   }

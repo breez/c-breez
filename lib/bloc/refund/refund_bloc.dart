@@ -57,7 +57,7 @@ class RefundBloc extends Cubit<RefundState> {
     try {
       recommendedFees = await _breezSDK.recommendedFees();
       _log.info(
-        "fetchFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
+        "fetchRefundFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
       );
       return await _constructFeeOptionList(
@@ -66,7 +66,7 @@ class RefundBloc extends Cubit<RefundState> {
         recommendedFees: recommendedFees,
       );
     } catch (e) {
-      _log.severe("fetchFeeOptions error", e);
+      _log.severe("fetchRefundFeeOptions error", e);
 
       rethrow;
     }

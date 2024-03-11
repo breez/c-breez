@@ -11,12 +11,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class FeeBreakdown extends StatelessWidget {
   final int amountSat;
   final FeeOption feeOption;
-  final bool? isMaxValue;
 
   const FeeBreakdown(
     this.amountSat,
     this.feeOption, {
-    this.isMaxValue,
     super.key,
   });
 
@@ -40,11 +38,9 @@ class FeeBreakdown extends StatelessWidget {
       child: Column(
         children: [
           TotalCost(
-            amountSat: (isMaxValue == true)
-                ? amountSat
-                : (boltzServiceFee != null)
-                    ? amountSat + boltzServiceFee + feeOption.txFeeSat
-                    : amountSat + feeOption.txFeeSat,
+            amountSat: (feeOption is ReverseSwapFeeOption)
+                ? feeOption.pairInfo.senderAmountSat
+                : amountSat + feeOption.txFeeSat,
           ),
           if (boltzServiceFee != null) ...[
             BoltzServiceFee(boltzServiceFee: boltzServiceFee),
@@ -52,10 +48,10 @@ class FeeBreakdown extends StatelessWidget {
           TransactionFee(txFeeSat: feeOption.txFeeSat),
           // For reverse swapping all funds we subtract the fees from swap amount
           ReceivedAmount(
-            amountSat: (isMaxValue == true && boltzServiceFee != null)
-                ? amountSat - (boltzServiceFee + feeOption.txFeeSat)
-                : amountSat,
-          ),
+            amountSat: (feeOption is ReverseSwapFeeOption)
+                ? feeOption.pairInfo.recipientAmountSat
+                : amountSat - feeOption.txFeeSat,
+          )
         ],
       ),
     );

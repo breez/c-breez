@@ -24,11 +24,11 @@ class ReverseSwapButton extends StatelessWidget {
 
     return SingleButtonBottomBar(
       text: texts.sweep_all_coins_action_confirm,
-      onPressed: () => _sendOnchain(context),
+      onPressed: () => _payOnchain(context),
     );
   }
 
-  Future _sendOnchain(BuildContext context) async {
+  Future _payOnchain(BuildContext context) async {
     final texts = context.texts();
     final themeData = Theme.of(context);
     final reverseSwapBloc = context.read<ReverseSwapBloc>();

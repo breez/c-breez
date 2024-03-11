@@ -41,7 +41,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
       emit(ReverseSwapState(reverseSwapInfo: revSwapInfo));
       return revSwapInfo;
     } catch (e) {
-      _log.severe("sendOnchain error", e);
+      _log.severe("payOnchain error", e);
       emit(ReverseSwapState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
@@ -65,7 +65,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         recommendedFees: recommendedFees,
       );
     } catch (e) {
-      _log.severe("fetchFeeOptions error", e);
+      _log.severe("fetchReverseSwapFeeOptions error", e);
       emit(ReverseSwapState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }

@@ -61,4 +61,9 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
       rethrow;
     }
   }
+
+  Future<void> rescanSwaps() async {
+    _log.info("Rescanning swaps");
+    return await _breezSDK.rescanSwaps();
+  }
 }

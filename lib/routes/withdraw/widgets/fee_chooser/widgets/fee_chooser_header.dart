@@ -10,14 +10,12 @@ class FeeChooserHeader extends StatefulWidget {
   final List<FeeOption> feeOptions;
   final int selectedFeeIndex;
   final Function(int) onSelect;
-  final bool? isMaxValue;
 
   const FeeChooserHeader({
     required this.amountSat,
     required this.feeOptions,
     required this.selectedFeeIndex,
     required this.onSelect,
-    this.isMaxValue,
     super.key,
   });
 

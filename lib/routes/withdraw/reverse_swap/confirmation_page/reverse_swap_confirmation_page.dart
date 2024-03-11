@@ -65,7 +65,6 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
               onSelect: (index) => setState(() {
                 selectedFeeIndex = index;
               }),
-              isMaxValue: widget.isMaxValue,
             );
           } else {
             return _ErrorMessage(message: texts.reverse_swap_confirmation_error_funds_fee);

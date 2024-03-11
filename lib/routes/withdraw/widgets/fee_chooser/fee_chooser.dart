@@ -9,14 +9,12 @@ class FeeChooser extends StatefulWidget {
   final List<FeeOption> feeOptions;
   final int selectedFeeIndex;
   final Function(int) onSelect;
-  final bool? isMaxValue;
 
   const FeeChooser({
     required this.amountSat,
     required this.feeOptions,
     required this.selectedFeeIndex,
     required this.onSelect,
-    this.isMaxValue,
     super.key,
   });
 
@@ -39,7 +37,6 @@ class _FeeChooserState extends State<FeeChooser> {
             feeOptions: widget.feeOptions,
             selectedFeeIndex: widget.selectedFeeIndex,
             onSelect: (index) => widget.onSelect(index),
-            isMaxValue: widget.isMaxValue,
           ),
           const SizedBox(height: 12.0),
           ProcessingSpeedWaitTime(
@@ -49,7 +46,6 @@ class _FeeChooserState extends State<FeeChooser> {
           FeeBreakdown(
             widget.amountSat,
             selectedFeeOption,
-            isMaxValue: widget.isMaxValue,
           )
         ],
       ),

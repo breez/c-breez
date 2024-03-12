@@ -34,6 +34,10 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
       SwapInfo? swapUnused = currentState.unused;
       if (swapInProgress != null) {
         swapUnused = null;
+        if (swapInProgress.status == SwapStatus.WaitingConfirmation) {
+          _log.info("Swap in progress is waiting for confirmation. Cancelling timer.");
+          timer.cancel();
+        }
       } else {
         // Save the first swap address we receive, when the state is empty.
         // Any subsequent calls due to the timer will re-use this value, until

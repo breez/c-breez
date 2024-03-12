@@ -22,7 +22,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
   pollSwapAddress() {
     _log.info("swap in address polling started");
     emit(SwapInProgressState(null, null, isLoading: true));
-    timer = Timer.periodic(const Duration(seconds: 5), _refreshAddresses);
+    timer = Timer.periodic(const Duration(seconds: 30), _refreshAddresses);
     _refreshAddresses(timer);
   }
 

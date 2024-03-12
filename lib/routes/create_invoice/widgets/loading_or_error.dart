@@ -1,3 +1,4 @@
+import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class LoadingOrError extends StatelessWidget {
@@ -24,10 +25,12 @@ class LoadingOrError extends StatelessWidget {
             height: 80.0,
             width: 80.0,
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                themeData.primaryTextTheme.labelLarge!.color!,
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Colors.white,
               ),
-              backgroundColor: themeData.colorScheme.background,
+              backgroundColor: themeData.isLightTheme
+                  ? themeData.colorScheme.onSecondary
+                  : themeData.colorScheme.background,
             ),
           ),
         ),

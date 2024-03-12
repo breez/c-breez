@@ -332,10 +332,10 @@ class AvatarSpinner extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1,
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(
-            themeData.primaryTextTheme.labelLarge!.color!,
+          valueColor: const AlwaysStoppedAnimation<Color>(
+            Colors.white,
           ),
-          backgroundColor: themeData.colorScheme.background,
+          backgroundColor: themeData.isLightTheme ? themeData.primaryColorDark : themeData.canvasColor,
         ),
       ),
     );

@@ -28,7 +28,11 @@ class NotificationService: SDKNotificationService {
         let logger = SdkLogListener(logger: xcgLogger)
         setLogger(logger: logger)
         // Use the same SdkLogListener(:LogStream) to listen in on BreezSDK node logs
-        try setLogStream(logStream: logger)
+        do {
+            try setLogStream(logStream: logger)
+        } catch let e {
+            self.logger.log(tag: TAG, line:"Failed to set log stream: \(e)", level: "ERROR")
+        }
     }
     
     override func getConnectRequest() -> ConnectRequest? {

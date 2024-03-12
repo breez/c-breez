@@ -18,6 +18,7 @@ class PaymentMinutiae {
   final String description;
   final String destinationPubkey;
   final String lnAddress;
+  final String lnurlPayDomain;
   final String paymentPreimage;
   final String successActionMessage;
   final String? successActionUrl;
@@ -41,6 +42,7 @@ class PaymentMinutiae {
     required this.description,
     required this.destinationPubkey,
     required this.lnAddress,
+    required this.lnurlPayDomain,
     required this.paymentPreimage,
     required this.successActionMessage,
     required this.successActionUrl,
@@ -67,6 +69,7 @@ class PaymentMinutiae {
       description: factory._description(),
       destinationPubkey: factory._destinationPubkey(),
       lnAddress: factory._lnAddress(),
+      lnurlPayDomain: factory._lnurlPayDomain(),
       paymentPreimage: factory._paymentPreimage(),
       successActionMessage: factory._successActionMessage(),
       successActionUrl: factory._successActionUrl(),
@@ -207,6 +210,14 @@ class _PaymentMinutiaeFactory {
     final details = _payment.details.data;
     if (details is LnPaymentDetails) {
       return details.lnAddress ?? "";
+    }
+    return "";
+  }
+
+  String _lnurlPayDomain() {
+    final details = _payment.details.data;
+    if (details is LnPaymentDetails) {
+      return details.lnurlPayDomain ?? "";
     }
     return "";
   }

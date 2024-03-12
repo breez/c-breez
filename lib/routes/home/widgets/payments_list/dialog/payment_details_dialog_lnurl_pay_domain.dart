@@ -22,7 +22,7 @@ class PaymentDetailsDialogLnurlPayDomain extends StatelessWidget {
     final lnurlPayDomain = paymentMinutiae.lnurlPayDomain;
     if (lnurlPayDomain.isNotEmpty) {
       return ShareablePaymentRow(
-        title: texts.payment_details_dialog_share_lightning_address,
+        title: texts.payment_details_dialog_share_lnurl_pay_domain,
         sharedValue: lnurlPayDomain,
         labelAutoSizeGroup: labelAutoSizeGroup,
         valueAutoSizeGroup: valueAutoSizeGroup,

@@ -24,8 +24,8 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
           leading: const BottomActionItemImage(
             iconAssetPath: "src/icon/ln_address.png",
           ),
-          title: const Text(
-            "Receive via Lightning Address",
+          title: Text(
+            texts.bottom_action_bar_ln_address,
             style: theme.bottomSheetTextStyle,
           ),
           onTap: () => _push(context, "/lnurl_pay"),

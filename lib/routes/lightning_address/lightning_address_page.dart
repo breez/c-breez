@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/webhooks/webhooks_bloc.dart';
 import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
@@ -47,13 +48,15 @@ class LightningAddressPageState extends State<LightningAddressPage> {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.texts();
+
     return BlocBuilder<WebhooksBloc, WebhooksState>(
       builder: (context, webhookState) {
         return Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
               leading: const back_button.BackButton(),
-              title: const Text("Receive via Lightning Address"),
+              title: Text(texts.invoice_ln_address_title),
             ),
             body: AnimatedCrossFade(
               firstChild: const LoadingOrError(
@@ -68,7 +71,7 @@ class LightningAddressPageState extends State<LightningAddressPage> {
                       children: [
                         AddressWidget(
                           webhookState.lnurlpayUrl!,
-                          title: "Address Information",
+                          title: texts.invoice_ln_address_address_information,
                           type: AddressWidgetType.lnurl,
                         ),
                         const Padding(padding: EdgeInsets.only(top: 16.0)),

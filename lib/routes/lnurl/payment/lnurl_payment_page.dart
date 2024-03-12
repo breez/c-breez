@@ -266,6 +266,6 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       channelCreationPossible: lspState?.isChannelOpeningAvailable ?? false,
       channelMinimumFee: channelMinimumFee,
       texts: context.texts(),
-    ).validateIncoming(amount);
+    ).validateOutgoing(amount);
   }
 }

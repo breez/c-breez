@@ -147,7 +147,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
   );
 
   @override
-  Future<ServiceHealthCheckResponse> serviceHealthCheck() async {
+  Future<ServiceHealthCheckResponse> serviceHealthCheck({required String apiKey}) async {
     return serviceHealthCheckResponse;
   }
 }

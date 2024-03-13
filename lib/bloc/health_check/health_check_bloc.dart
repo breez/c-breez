@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
-import 'package:c_breez/config.dart';
+import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/app_config.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger("HealthCheckBloc");
 
-class HealthCheckBloc extends Cubit<sdk.HealthCheckStatus?> {
+class HealthCheckBloc extends Cubit<HealthCheckStatus?> {
   final BreezSDK _breezSDK;
   Timer? _retryTimer;
 
@@ -26,11 +26,11 @@ class HealthCheckBloc extends Cubit<sdk.HealthCheckStatus?> {
     await _waitForNodeState();
 
     try {
-      final breezConfig = await Config.getBundledConfig();
-      final response = await _breezSDK.serviceHealthCheck(apiKey: breezConfig.apiKey);
+      final apiKey = AppConfig().apiKey;
+      final response = await _breezSDK.serviceHealthCheck(apiKey: apiKey);
       final status = response.status;
       _onNewHealthCheckStatus(status);
-      if (status != sdk.HealthCheckStatus.Operational) {
+      if (status != HealthCheckStatus.Operational) {
         _log.info("Health check reported $status, retrying in $retryInterval");
         _scheduleRetry(retryInterval);
       }
@@ -40,7 +40,7 @@ class HealthCheckBloc extends Cubit<sdk.HealthCheckStatus?> {
     }
   }
 
-  void _onNewHealthCheckStatus(sdk.HealthCheckStatus? status) {
+  void _onNewHealthCheckStatus(HealthCheckStatus? status) {
     _log.info("New health check status: $status previous status: $state");
     emit(status);
   }

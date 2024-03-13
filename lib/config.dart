@@ -31,7 +31,7 @@ class Config {
       _log.info("Creating Config instance");
       final injector = serviceInjector ?? ServiceInjector();
       final breezSDK = injector.breezSDK;
-      final breezConfig = await getBundledConfig();
+      final breezConfig = await _getBundledConfig();
       final defaultConf = await _getDefaultConf(breezSDK, breezConfig.apiKey, breezConfig.nodeConfig);
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
@@ -45,7 +45,7 @@ class Config {
     return _instance!;
   }
 
-  static Future<AppConfig> getBundledConfig() async {
+  static Future<AppConfig> _getBundledConfig() async {
     _log.info("Getting bundled config");
     return AppConfig();
   }

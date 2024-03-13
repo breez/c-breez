@@ -28,7 +28,7 @@ void shareLog() async {
 
 class BreezLogger {
   BreezLogger() {
-    Logger.root.level = Level.CONFIG;
+    Logger.root.level = Level.INFO;
 
     if (kDebugMode) {
       Logger.root.onRecord.listen((record) {

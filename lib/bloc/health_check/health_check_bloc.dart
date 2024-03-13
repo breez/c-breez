@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
+import 'package:c_breez/app_config.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -25,7 +26,8 @@ class HealthCheckBloc extends Cubit<HealthCheckStatus?> {
     await _waitForNodeState();
 
     try {
-      final response = await _breezSDK.serviceHealthCheck();
+      final apiKey = AppConfig().apiKey;
+      final response = await _breezSDK.serviceHealthCheck(apiKey: apiKey);
       final status = response.status;
       _onNewHealthCheckStatus(status);
       if (status != HealthCheckStatus.Operational) {

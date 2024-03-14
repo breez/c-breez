@@ -4,7 +4,6 @@ import 'package:logging/logging.dart';
 import 'package:shared_preference_app_group/shared_preference_app_group.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const kDefaultOverrideFee = false;
 const kDefaultProportionalFee = 1.0;
 const kDefaultExemptFeeMsat = 20000;
 const kDefaultChannelSetupFeeLimitMsat = 5000000;

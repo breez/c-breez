@@ -332,7 +332,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   image_cropper: a3291c624a953049bc6a02e1f8c8ceb162a24b25
-  image_picker_ios: 99dfe1854b4fa34d0364e74a78448a0151025425
+  image_picker_ios: b545a5f16c0fa88e3ecbbce3ed4de45567a8ec18
   integration_test: 13825b8a9334a850581300559b8839134b124670
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   local_auth_darwin: c7e464000a6a89e952235699e32b329457608d98

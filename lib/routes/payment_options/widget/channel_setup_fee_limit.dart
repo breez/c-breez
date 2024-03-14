@@ -54,7 +54,7 @@ class _ChannelSetupFeeLimitState extends State<ChannelSetupFeeLimit> {
                     keyboardType: const TextInputType.numberWithOptions(),
                     controller: _channelSetupFeeLimitController,
                     decoration: InputDecoration(
-                      labelText: texts.payment_options_auto_channel_setup_fee_limit_label,
+                      labelText: texts.payment_options_auto_setup_fee_label,
                       border: const UnderlineInputBorder(),
                     ),
                     validator: channelSetupFeeLimitValidator,

@@ -25,7 +25,7 @@ dependencies:
   breez_translations:
     git:
       url: https://github.com/breez/Breez-Translations
-      ref: 0b69a4f429228e8eb1fa36e05dbb2de0c1242dcc
+      ref: a034e2cc191940d2c3149f320d9980516240288b
   clipboard_watcher: ^0.2.1
   csv: ^6.0.0
   connectivity_plus: ^5.0.2

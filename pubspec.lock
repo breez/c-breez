@@ -108,8 +108,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0b69a4f429228e8eb1fa36e05dbb2de0c1242dcc"
-      resolved-ref: "0b69a4f429228e8eb1fa36e05dbb2de0c1242dcc"
+      ref: a034e2cc191940d2c3149f320d9980516240288b
+      resolved-ref: a034e2cc191940d2c3149f320d9980516240288b
       url: "https://github.com/breez/Breez-Translations"
     source: git
     version: "1.0.0"
@@ -893,10 +893,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_ios
-      sha256: fadafce49e8569257a0cad56d24438a6fa1f0cbd7ee0af9b631f7492818a4ca3
+      sha256: "917a5cadd67d052554cfb258595e54217de53fac5b52939426e26319a02e6297"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.9+1"
+    version: "0.8.9+2"
   image_picker_linux:
     dependency: transitive
     description:

@@ -35,6 +35,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preference_app_group/shared_preference_app_group.dart';
 
 final _log = Logger("Main");
 
@@ -58,6 +59,9 @@ void main() async {
 
     final appDir = await getApplicationDocumentsDirectory();
     final config = await cfg.Config.instance();
+    SharedPreferenceAppGroup.setAppGroup(
+      "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client",
+    );
 
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: Directory(p.join(appDir.path, "bloc_storage")),

@@ -6,7 +6,7 @@ let accessGroup = "group.F7R2LZH3W5.com.cBreez.client"
 class NotificationService: SDKNotificationService {
     fileprivate let TAG = "NotificationService"
     
-    private let kChannelSetupFeeLimit: String =  "payment_options_channel_setup_fee_limit"
+    private let kChannelSetupFeeLimit: String =  "flutter.payment_options_channel_setup_fee_limit"
     private let accountMnemonic: String = "account_mnemonic"
     private let accountApiKey: String = "account_api_key"
     

@@ -77,14 +77,14 @@ class BreezForegroundService : ForegroundService() {
                 MODE_PRIVATE
             )
             val channelFeeLimitMsat =
-                sharedPreferences.getInt(kChannelSetupFeeLimit, 0).toULong()
+                sharedPreferences.getLong(kChannelSetupFeeLimit, 0).toULong()
             val serviceConfig =
                 ServiceConfig(channelFeeLimitMsat = channelFeeLimitMsat)
             Logger.tag(TAG).debug { "Setting service config to $serviceConfig" }
             serviceConfig
         } catch (e: Exception) {
-            Logger.tag(TAG).error { "Failed to get extension settings: ${e.message}" }
-            Logger.tag(TAG).debug { "Using default extension settings." }
+            Logger.tag(TAG).error { "Failed to get service config: ${e.message}" }
+            Logger.tag(TAG).debug { "Using default service config." }
             ServiceConfig.default()
         }
     }

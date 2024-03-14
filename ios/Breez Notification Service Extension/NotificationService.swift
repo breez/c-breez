@@ -20,7 +20,7 @@ class NotificationService: SDKNotificationService {
         
         xcgLogger = {
             let log = XCGLogger.default
-            log.setup(level: .debug, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: extensionLogFile.path)
+            log.setup(level: .info, showThreadName: true, showLevel: true, showFileNames: true, showLineNumbers: true, writeToFile: extensionLogFile.path)
             return log
             
         }()

@@ -51,7 +51,7 @@ class SwapPageState extends State<SwapPage> {
                           SwapInprogress(swap: swapState.inProgress!)
                       ],
                       if (swapState.error != null) ...[
-                        SwapErrorMessage(errorMessage: extractExceptionMessage(swapState.error!, texts)),
+                        DepositErrorMessage(errorMessage: extractExceptionMessage(swapState.error!, texts)),
                       ]
                     ],
                   ),

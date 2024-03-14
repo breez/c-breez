@@ -4,10 +4,10 @@ import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/min_font_size.dart';
 import 'package:flutter/material.dart';
 
-class SwapErrorMessage extends StatelessWidget {
+class DepositErrorMessage extends StatelessWidget {
   final String errorMessage;
 
-  const SwapErrorMessage({
+  const DepositErrorMessage({
     super.key,
     required this.errorMessage,
   });

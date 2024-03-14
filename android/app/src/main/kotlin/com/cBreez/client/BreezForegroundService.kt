@@ -22,7 +22,7 @@ class BreezForegroundService : ForegroundService() {
 
         private const val SHARED_PREFERENCES_NAME = "FlutterSharedPreferences"
         private const val kChannelSetupFeeLimit =
-            "payment_options_channel_setup_fee_limit"
+            "flutter.payment_options_channel_setup_fee_limit"
         private const val ACCOUNT_MNEMONIC = "account_mnemonic"
         private const val DEFAULT_CLICK_ACTION = "FLUTTER_NOTIFICATION_CLICK"
         private const val ELEMENT_PREFERENCES_KEY_PREFIX =

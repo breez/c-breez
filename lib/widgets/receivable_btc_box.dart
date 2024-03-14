@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
@@ -12,11 +14,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceivableBTCBox extends StatefulWidget {
   final String? receiveLabel;
+  final int? channelFeeLimitSat;
   final void Function()? onTap;
 
   const ReceivableBTCBox({
     super.key,
     this.receiveLabel,
+    this.channelFeeLimitSat,
     this.onTap,
   });
 
@@ -34,6 +38,7 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
     final accountState = context.read<AccountBloc>().state;
     final lspState = context.watch<LSPBloc>().state;
     final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
+    final openingFeeParams = lspState?.lspInfo?.openingFeeParamsList.values.first;
 
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -56,21 +61,37 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
                 : AutoSizeText(
                     widget.receiveLabel ??
                         texts.invoice_receive_label(
-                          currencyState.bitcoinCurrency.format((isChannelOpeningAvailable)
-                              ? accountState.maxAllowedToReceive
-                              : accountState.maxInboundLiquidity),
+                          currencyState.bitcoinCurrency.format(
+                            (isChannelOpeningAvailable)
+                                ? widget.channelFeeLimitSat != null
+                                    ? maxReceivableSat(
+                                        openingFeeParams!,
+                                        accountState.maxAllowedToReceive,
+                                        accountState.maxInboundLiquidity,
+                                      )
+                                    : accountState.maxAllowedToReceive
+                                : accountState.maxInboundLiquidity,
+                          ),
                         ),
                     style: theme.textStyle,
                     maxLines: 1,
                     minFontSize: MinFontSize(context).minFontSize,
                   ),
             isChannelOpeningAvailable && accountState.isFeesApplicable
-                ? FeeMessage(lspState!.lspInfo!.openingFeeParamsList.values.first)
+                ? FeeMessage(openingFeeParams!)
                 : const SizedBox(),
           ],
         ),
       ),
     );
+  }
+
+  int maxReceivableSat(OpeningFeeParams ofp, int maxAllowedToReceiveSat, int maxInboundLiquidity) {
+    final proportionalPercent = ofp.proportional / 1000000;
+    final maxReceivableSatFeeLimit = (proportionalPercent != 0.0 && widget.channelFeeLimitSat != 0)
+        ? min(maxAllowedToReceiveSat, widget.channelFeeLimitSat!.toDouble() ~/ proportionalPercent).toInt()
+        : maxAllowedToReceiveSat;
+    return max(maxInboundLiquidity, maxReceivableSatFeeLimit);
   }
 }
 

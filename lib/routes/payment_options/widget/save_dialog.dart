@@ -1,13 +1,12 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
+import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
-
-final _log = Logger("SaveDialog");
 
 class SaveDialog extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+
   const SaveDialog({
+    required this.formKey,
     super.key,
   });
 
@@ -39,10 +38,14 @@ class SaveDialog extends StatelessWidget {
             style: themeData.primaryTextTheme.labelLarge,
           ),
           onPressed: () {
-            _log.info("onPressed: save");
-            context.read<PaymentOptionsBloc>().saveFees();
-            Navigator.pop(context);
-            FocusManager.instance.primaryFocus?.unfocus();
+            try {
+              formKey.currentState!.save();
+              Navigator.pop(context);
+              FocusManager.instance.primaryFocus?.unfocus();
+              showFlushbar(context, message: "Saved fee settings successfully.");
+            } catch (_) {
+              showFlushbar(context, message: "Failed to save fee settings.");
+            }
           },
         ),
       ],

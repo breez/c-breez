@@ -11,68 +11,57 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   PaymentOptionsBloc(
     this._preferences,
   ) : super(const PaymentOptionsState.initial()) {
-    _fetchPaymentsOverrideSettings().then((_) => _log.info("Initial settings read"));
+    getPaymentOptions();
   }
 
   Future<void> setProportionalFee(double proportionalFee) async {
-    emit(state.copyWith(proportionalFee: proportionalFee, saveEnabled: true));
+    await _preferences.setPaymentOptionsProportionalFee(state.proportionalFee);
+    emit(state.copyWith(proportionalFee: proportionalFee));
   }
 
   Future<void> setExemptfeeMsat(int exemptFeeMsat) async {
-    emit(state.copyWith(exemptFeeMsat: exemptFeeMsat, saveEnabled: true));
+    await _preferences.setPaymentOptionsExemptFee(state.exemptFeeMsat);
+    emit(state.copyWith(exemptFeeMsat: exemptFeeMsat));
   }
 
   Future<void> setChannelSetupFeeLimitMsat(int channelFeeLimitMsat) async {
-    emit(state.copyWith(channelFeeLimitMsat: channelFeeLimitMsat, saveEnabled: true));
-  }
-
-  Future<void> resetFees() async {
-    _log.info("Resetting payments override settings to default: enabled: $kDefaultOverrideFee, "
-        "proportional: $kDefaultProportionalFee");
-    await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
-    await _preferences.setPaymentOptionsExemptFee(kDefaultExemptFeeMsat);
-    await _preferences.setPaymentOptionsChannelSetupFeeLimit(kDefaultChannelSetupFeeLimitMsat);
-    emit(const PaymentOptionsState.initial());
-  }
-
-  Future<void> saveFees() async {
-    final state = this.state;
-    _log.info(
-      "Saving payments override settings: proportionalFee: ${state.proportionalFee} "
-      "exemptFeeMsat: ${state.exemptFeeMsat} "
-      "channelFeeLimitMsat: ${state.channelFeeLimitMsat} "
-      "saveEnabled: ${state.saveEnabled}",
-    );
-    await _preferences.setPaymentOptionsProportionalFee(state.proportionalFee);
-    await _preferences.setPaymentOptionsExemptFee(state.exemptFeeMsat);
     await _preferences.setPaymentOptionsChannelSetupFeeLimit(state.channelFeeLimitMsat);
-    emit(state.copyWith(saveEnabled: false));
+    emit(state.copyWith(channelFeeLimitMsat: channelFeeLimitMsat));
   }
 
-  Future<void> cancelEditing() async {
-    _log.info("Canceling editing");
-    if (state.saveEnabled) {
-      await _fetchPaymentsOverrideSettings();
+  Future<void> resetPaymentOptions() async {
+    try {
+      await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
+      await _preferences.setPaymentOptionsExemptFee(kDefaultExemptFeeMsat);
+      await _preferences.setPaymentOptionsChannelSetupFeeLimit(kDefaultChannelSetupFeeLimitMsat);
+      emit(const PaymentOptionsState.initial());
+      _log.info(
+        "Reverted payment options to default values: "
+        "proportionalFee: $kDefaultProportionalFee "
+        "exemptFeeMsat: $kDefaultExemptFeeMsat "
+        "channelFeeLimitMsat: $kDefaultChannelSetupFeeLimitMsat",
+      );
+    } catch (e) {
+      _log.severe("Failed to reset payment options.");
+      rethrow;
     }
   }
 
-  Future<void> _fetchPaymentsOverrideSettings() async {
-    _log.info("Fetching payments override settings");
+  Future<void> getPaymentOptions() async {
     final proportionalFee = await _preferences.getPaymentOptionsProportionalFee();
     final exemptFeeMsat = await _preferences.getPaymentOptionsExemptFee();
     final channelFeeLimitMsat = await _preferences.getPaymentOptionsChannelSetupFeeLimitMsat();
-    _log.info(
-      "Payments override fetched: proportionalFee: $proportionalFee "
-      "exemptFeeMsat: $exemptFeeMsat "
-      "channelFeeLimitMsat: $channelFeeLimitMsat",
-    );
     emit(
-      PaymentOptionsState(
+      state.copyWith(
         proportionalFee: proportionalFee,
         exemptFeeMsat: exemptFeeMsat,
         channelFeeLimitMsat: channelFeeLimitMsat,
-        saveEnabled: false,
       ),
+    );
+    _log.info(
+      "Read payment options: proportionalFee: $proportionalFee "
+      "exemptFeeMsat: $exemptFeeMsat "
+      "channelFeeLimitMsat: $channelFeeLimitMsat",
     );
   }
 }

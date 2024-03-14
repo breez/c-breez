@@ -28,6 +28,7 @@ import 'package:c_breez/user_app.dart';
 import 'package:c_breez/utils/date.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,9 +60,13 @@ void main() async {
 
     final appDir = await getApplicationDocumentsDirectory();
     final config = await cfg.Config.instance();
-    SharedPreferenceAppGroup.setAppGroup(
-      "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client",
-    );
+
+    // iOS Extension requirement
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      SharedPreferenceAppGroup.setAppGroup(
+        "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client",
+      );
+    }
 
     HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: Directory(p.join(appDir.path, "bloc_storage")),

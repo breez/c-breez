@@ -1,18 +1,23 @@
 import 'dart:async';
 
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/webhooks/webhooks_bloc.dart';
-import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
+import 'package:c_breez/bloc/webhooks/webhooks_state.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
-import 'package:c_breez/widgets/address_widget.dart';
+import 'package:c_breez/routes/lightning_address/ln_address_widget.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/address_widget_placeholder.dart';
+import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
+import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/widgets/back_button.dart' as back_button;
+import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
-import 'package:c_breez/widgets/back_button.dart' as back_button;
 
-final _log = Logger("LnurlpayPageState");
+final _log = Logger("LightningAddressPage");
 
 class LightningAddressPage extends StatefulWidget {
   const LightningAddressPage();
@@ -24,15 +29,28 @@ class LightningAddressPage extends StatefulWidget {
 }
 
 class LightningAddressPageState extends State<LightningAddressPage> {
+  SwapInfo? swapInProgress;
+  SwapInfo? swapUnused;
+  String? bitcoinAddress;
+  String? errorMessage;
+
   @override
   void initState() {
     super.initState();
+    _refreshLnurlPay();
+    _trackPayment();
+  }
+
+  void _refreshLnurlPay() {
     final webhookBloc = context.read<WebhooksBloc>();
     webhookBloc.refreshLnurlPay();
+  }
+
+  void _trackPayment() {
     context.read<InputBloc>().trackPayment(null).then((value) {
       Timer(const Duration(milliseconds: 1000), () {
         if (mounted) {
-          onPaymentFinished();
+          _onPaymentFinished();
         }
       });
     }).catchError((e) {
@@ -40,7 +58,7 @@ class LightningAddressPageState extends State<LightningAddressPage> {
     });
   }
 
-  void onPaymentFinished() {
+  void _onPaymentFinished() {
     final navigator = Navigator.of(context);
     navigator.pop();
     navigator.push(TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()));
@@ -53,33 +71,32 @@ class LightningAddressPageState extends State<LightningAddressPage> {
     return BlocBuilder<WebhooksBloc, WebhooksState>(
       builder: (context, webhookState) {
         return Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              leading: const back_button.BackButton(),
-              title: Text(texts.invoice_ln_address_title),
-            ),
-            body: AnimatedCrossFade(
-              firstChild: const LoadingOrError(
-                error: null,
-                displayErrorMessage: "",
-              ),
-              secondChild: webhookState.lnurlpayUrl == null
-                  ? LoadingOrError(
-                      displayErrorMessage: webhookState.lnurlPayError ?? "",
-                    )
-                  : Column(
-                      children: [
-                        AddressWidget(
-                          webhookState.lnurlpayUrl!,
-                          title: texts.invoice_ln_address_address_information,
-                          type: AddressWidgetType.lnurl,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            leading: const back_button.BackButton(),
+            title: Text(texts.invoice_ln_address_title),
+          ),
+          body: webhookState.isLoading
+              ? const AddressWidgetPlaceholder()
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (webhookState.lnurlPayUrl != null) LnAddressWidget(webhookState.lnurlPayUrl!),
+                      if (webhookState.lnurlPayError != null) ...[
+                        DepositErrorMessage(
+                          errorMessage: extractExceptionMessage(webhookState.lnurlPayError!, texts),
                         ),
-                        const Padding(padding: EdgeInsets.only(top: 16.0)),
-                      ],
-                    ),
-              duration: const Duration(seconds: 1),
-              crossFadeState: webhookState.loading ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-            ));
+                      ]
+                    ],
+                  ),
+                ),
+          bottomNavigationBar: webhookState.lnurlPayError != null
+              ? SingleButtonBottomBar(
+                  text: texts.invoice_btc_address_action_retry,
+                  onPressed: () => _refreshLnurlPay,
+                )
+              : const SizedBox(),
+        );
       },
     );
   }

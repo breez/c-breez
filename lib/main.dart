@@ -99,7 +99,9 @@ void main() async {
           BlocProvider<WebhooksBloc>(
             lazy: false,
             create: (BuildContext context) => WebhooksBloc(
-              injector,
+              breezSDK,
+              injector.preferences,
+              injector.notifications,
             ),
           ),
           BlocProvider<CurrencyBloc>(

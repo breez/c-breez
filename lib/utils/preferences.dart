@@ -13,6 +13,7 @@ const _kPaymentOptionProportionalFee = "payment_options_proportional_fee";
 const _kPaymentOptionExemptFee = "payment_options_exempt_fee";
 const _kPaymentOptionChannelSetupFeeLimit = "payment_options_channel_setup_fee_limit";
 const _kReportPrefKey = "report_preference_key";
+const _kLnUrlPayKey = "lnurlpay_key";
 
 final _log = Logger("Preferences");
 
@@ -85,5 +86,21 @@ class Preferences {
     _log.info("set bug report behavior: $behavior");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kReportPrefKey, behavior.index);
+  }
+
+  Future<String?> getLnUrlPayKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_kLnUrlPayKey);
+  }
+
+  Future<void> setLnUrlPayKey(String webhookUrl) async {
+    _log.info("set lnurl pay key: $webhookUrl");
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kLnUrlPayKey, webhookUrl);
+  }
+
+  Future<void> resetLnUrlPayKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kLnUrlPayKey);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:c_breez/models/bug_report_behavior.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preference_app_group/shared_preference_app_group.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const kDefaultOverrideFee = false;
@@ -65,6 +66,8 @@ class Preferences {
     _log.info("set payment options channel setup limit fee : $channelFeeLimitMsat");
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kPaymentOptionChannelSetupFeeLimit, channelFeeLimitMsat);
+    // iOS Extension requirement
+    await SharedPreferenceAppGroup.setInt(_kPaymentOptionChannelSetupFeeLimit, channelFeeLimitMsat);
   }
 
   Future<BugReportBehavior> getBugReportBehavior() async {

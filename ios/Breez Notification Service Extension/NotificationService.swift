@@ -6,7 +6,7 @@ let accessGroup = "group.F7R2LZH3W5.com.cBreez.client"
 class NotificationService: SDKNotificationService {
     fileprivate let TAG = "NotificationService"
     
-    private let kChannelSetupFeeLimit: String =  "flutter.payment_options_channel_setup_fee_limit"
+    private let kChannelSetupFeeLimit: String =  "payment_options_channel_setup_fee_limit"
     private let accountMnemonic: String = "account_mnemonic"
     private let accountApiKey: String = "account_api_key"
     
@@ -63,8 +63,8 @@ class NotificationService: SDKNotificationService {
     }
     
     override func getServiceConfig() -> ServiceConfig? {
-        let channelFeeLimitMsat = UserDefaults.standard.integer(forKey: kChannelSetupFeeLimit)
-        logger.log(tag: TAG, line: "Setting channelFeeLimitMsat to \(UInt64(channelFeeLimitMsat))", level: "DEBUG")
+        let channelFeeLimitMsat = UInt64(UserDefaults(suiteName: accessGroup)!.integer(forKey: kChannelSetupFeeLimit))
+        logger.log(tag: TAG, line: "Setting channelFeeLimitMsat to \(channelFeeLimitMsat))", level: "DEBUG")
         return ServiceConfig.init(channelFeeLimitMsat: UInt64(channelFeeLimitMsat))
     }
 }

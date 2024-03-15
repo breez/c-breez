@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
@@ -7,6 +7,7 @@ import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
+import '../../mock/breez_bridge_mock.dart';
 import '../../mock/injector_mock.dart';
 import '../../unit_logger.dart';
 import '../../utils/fake_path_provider_platform.dart';
@@ -34,15 +35,13 @@ void main() {
     });
 
     test('lnurl', () async {
-      var breezSDK = injector.breezSDK;
-
       const input = "LNURL1DP68GURN8GHJ7MRFVA58GUMPW3EJUCM0D5HKZURF9ASH2ARG9AKXUATJDSHKGMEDD3HKW6TW"
           "8A4NZ0F4VFJRZVMRX5MXGWTYVYMNJDTR8PJRYEFEVD3NSVMXXSCXVVECVYER2ENRVFJKXVEKVYUNVCE4XUUX2E3H"
           "VCEKGEFCVG6KXDFJV9JRYFN5V9NN6MR0VA5KUZPFUCA";
-      final parsedInput = await breezSDK.parseInput(input: input) as InputType_LnUrlPay;
+      final parsedInput = await BreezSDKMock.parseInput(input: input) as InputType_LnUrlPay;
 
-      final bloc = InputBloc(breezSDK, injector.lightningLinks, injector.device, const InputPrinter());
-      breezSDK.nodeInfo();
+      final bloc = InputBloc(injector.lightningLinks, injector.device, const InputPrinter());
+      BreezSDKMock.nodeInfo();
 
       expectLater(
         bloc.stream,

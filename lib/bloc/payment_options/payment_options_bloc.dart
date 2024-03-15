@@ -11,7 +11,7 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   PaymentOptionsBloc(
     this._preferences,
   ) : super(const PaymentOptionsState.initial()) {
-    getPaymentOptions();
+    resetPaymentOptions(true);
   }
 
   Future<void> setProportionalFee(double proportionalFee) async {
@@ -29,22 +29,26 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
     emit(state.copyWith(channelFeeLimitMsat: channelFeeLimitMsat));
   }
 
-  Future<void> resetPaymentOptions() async {
-    try {
-      await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
-      await _preferences.setPaymentOptionsExemptFee(kDefaultExemptFeeMsat);
-      await _preferences.setPaymentOptionsChannelSetupFeeLimit(kDefaultChannelSetupFeeLimitMsat);
-      emit(const PaymentOptionsState.initial());
-      _log.info(
-        "Reverted payment options to default values: "
-        "proportionalFee: $kDefaultProportionalFee "
-        "exemptFeeMsat: $kDefaultExemptFeeMsat "
-        "channelFeeLimitMsat: $kDefaultChannelSetupFeeLimitMsat",
-      );
-    } catch (e) {
-      _log.severe("Failed to reset payment options.");
-      rethrow;
+  Future<void> resetPaymentOptions([bool checkPaymentOptions = false]) async {
+    final hasPaymentOptions = await _preferences.hasPaymentOptions();
+    if (!checkPaymentOptions || !hasPaymentOptions) {
+      try {
+        await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
+        await _preferences.setPaymentOptionsExemptFee(kDefaultExemptFeeMsat);
+        await _preferences.setPaymentOptionsChannelSetupFeeLimit(kDefaultChannelSetupFeeLimitMsat);
+        _log.info(
+          "Reverted payment options to default values: "
+          "proportionalFee: $kDefaultProportionalFee "
+          "exemptFeeMsat: $kDefaultExemptFeeMsat "
+          "channelFeeLimitMsat: $kDefaultChannelSetupFeeLimitMsat",
+        );
+      } catch (e) {
+        _log.severe("Failed to reset payment options.");
+        rethrow;
+      }
     }
+
+    await getPaymentOptions();
   }
 
   Future<void> getPaymentOptions() async {

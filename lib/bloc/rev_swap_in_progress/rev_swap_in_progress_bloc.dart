@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_sdk.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
@@ -10,9 +10,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("RevSwapsInProgressBloc");
 
 class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
-  final BreezSDK _breezSDK;
-
-  RevSwapsInProgressBloc(this._breezSDK) : super(RevSwapsInProgressState(isLoading: true)) {
+  RevSwapsInProgressBloc() : super(RevSwapsInProgressState(isLoading: true)) {
     pollReverseSwapsInProgress();
   }
 
@@ -28,7 +26,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
   void _refreshInProgressReverseSwaps(Timer timer) async {
     final texts = getSystemAppLocalizations();
     try {
-      final reverseSwapsInProgress = await _breezSDK.inProgressReverseSwaps();
+      final reverseSwapsInProgress = await BreezSDK.inProgressReverseSwaps();
       for (var revSwapInfo in reverseSwapsInProgress) {
         _log.info(
           "Reverse Swap ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats status:${revSwapInfo.status.name}",

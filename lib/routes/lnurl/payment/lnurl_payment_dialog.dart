@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
@@ -13,7 +13,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("LNURLPaymentDialog");
 
 class LNURLPaymentDialog extends StatefulWidget {
-  final sdk.LnUrlPayRequestData data;
+  final LnUrlPayRequestData data;
 
   const LNURLPaymentDialog({
     required this.data,

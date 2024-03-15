@@ -1,9 +1,8 @@
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:app_group_directory/app_group_directory.dart';
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:app_group_directory/app_group_directory.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'app_config.dart';
@@ -30,9 +29,8 @@ class Config {
     if (_instance == null) {
       _log.info("Creating Config instance");
       final injector = serviceInjector ?? ServiceInjector();
-      final breezSDK = injector.breezSDK;
       final breezConfig = await _getBundledConfig();
-      final defaultConf = await _getDefaultConf(breezSDK, breezConfig.apiKey, breezConfig.nodeConfig);
+      final defaultConf = await _getDefaultConf(breezConfig.apiKey, breezConfig.nodeConfig);
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
 
@@ -51,13 +49,12 @@ class Config {
   }
 
   static Future<sdk.Config> _getDefaultConf(
-    BreezSDK breezSDK,
     String apiKey,
     sdk.NodeConfig nodeConfig, {
     sdk.EnvironmentType environmentType = sdk.EnvironmentType.Production,
   }) async {
     _log.info("Getting default SDK config for environment: $environmentType");
-    return await breezSDK.defaultConfig(
+    return await sdk.BreezSDK.defaultConfig(
       envType: environmentType,
       apiKey: apiKey,
       nodeConfig: nodeConfig,

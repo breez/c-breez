@@ -1,8 +1,7 @@
 import 'dart:io';
 
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
-import 'package:c_breez/config.dart';
-import 'package:c_breez/services/injector.dart';
+import 'package:breez_sdk/sdk.dart';
+import 'package:c_breez/config.dart' as app;
 import 'package:c_breez/services/keychain.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -66,11 +65,10 @@ class CredentialsManager {
     }
   }
 
-  Future<sdk.StaticBackupResponse> exportStaticChannelBackup() async {
-    final breezSDK = ServiceInjector().breezSDK;
-    Config config = await Config.instance();
+  Future<StaticBackupResponse> exportStaticChannelBackup() async {
+    app.Config config = await app.Config.instance();
     String workingDir = config.sdkConfig.workingDir;
-    final req = sdk.StaticBackupRequest(workingDir: workingDir);
-    return await breezSDK.staticBackup(req: req);
+    final req = StaticBackupRequest(workingDir: workingDir);
+    return await BreezSDK.staticBackup(req: req);
   }
 }

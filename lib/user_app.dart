@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
@@ -31,7 +31,6 @@ import 'package:c_breez/routes/splash/splash_page.dart';
 import 'package:c_breez/routes/subswap/swap/swap_page.dart';
 import 'package:c_breez/routes/withdraw/redeem_onchain_funds/redeem_onchain_funds_page.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_page.dart';
-import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/breez_dark_theme.dart';
 import 'package:c_breez/theme/breez_light_theme.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -168,9 +167,7 @@ class UserApp extends StatelessWidget {
                                 case '/swap':
                                   return FadeInRoute(
                                     builder: (_) => BlocProvider(
-                                      create: (BuildContext context) => SwapInProgressBloc(
-                                        ServiceInjector().breezSDK,
-                                      ),
+                                      create: (BuildContext context) => SwapInProgressBloc(),
                                       child: const SwapPage(),
                                     ),
                                     settings: settings,
@@ -178,9 +175,7 @@ class UserApp extends StatelessWidget {
                                 case '/reverse_swap':
                                   return FadeInRoute(
                                     builder: (_) => BlocProvider(
-                                      create: (BuildContext context) => RevSwapsInProgressBloc(
-                                        ServiceInjector().breezSDK,
-                                      ),
+                                      create: (BuildContext context) => RevSwapsInProgressBloc(),
                                       child: ReverseSwapPage(
                                         btcAddressData: settings.arguments as BitcoinAddressData?,
                                       ),

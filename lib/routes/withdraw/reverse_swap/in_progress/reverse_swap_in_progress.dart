@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/services/injector.dart';
@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReverseSwapInprogress extends StatelessWidget {
-  final sdk.ReverseSwapInfo reverseSwap;
+  final ReverseSwapInfo reverseSwap;
 
   const ReverseSwapInprogress({
     required this.reverseSwap,
@@ -19,7 +19,7 @@ class ReverseSwapInprogress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
-    final lockTxID = context.watch<sdk.ReverseSwapInfo>().lockupTxid;
+    final lockTxID = context.watch<ReverseSwapInfo>().lockupTxid;
 
     return Column(
       mainAxisSize: MainAxisSize.max,

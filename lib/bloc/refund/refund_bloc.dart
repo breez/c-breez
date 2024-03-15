@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
 import 'package:c_breez/models/fee_options/fee_option.dart';
@@ -12,14 +11,12 @@ import 'package:logging/logging.dart';
 final _log = Logger("RefundBloc");
 
 class RefundBloc extends Cubit<RefundState> {
-  final BreezSDK _breezSDK;
-
-  RefundBloc(this._breezSDK) : super(RefundState.initial()) {
+  RefundBloc() : super(RefundState.initial()) {
     _initializeRefundBloc();
   }
 
   void _initializeRefundBloc() {
-    _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
+    BreezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
       (nodeState) async {
         listRefundables();
       },
@@ -28,7 +25,7 @@ class RefundBloc extends Cubit<RefundState> {
 
   // Fetch the refundable swaps list from the sdk.
   void listRefundables() async {
-    emit(state.copyWith(refundables: await _breezSDK.listRefundables()));
+    emit(state.copyWith(refundables: await BreezSDK.listRefundables()));
   }
 
   /// Broadcast a refund transaction for a failed/expired swap.
@@ -37,7 +34,7 @@ class RefundBloc extends Cubit<RefundState> {
   }) async {
     _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
-      final refundResponse = await _breezSDK.refund(req: req);
+      final refundResponse = await BreezSDK.refund(req: req);
       _log.info("Refund txId: ${refundResponse.refundTxId}");
       emit(RefundState(refundTxId: refundResponse.refundTxId));
       return refundResponse.refundTxId;
@@ -55,7 +52,7 @@ class RefundBloc extends Cubit<RefundState> {
   }) async {
     RecommendedFees recommendedFees;
     try {
-      recommendedFees = await _breezSDK.recommendedFees();
+      recommendedFees = await BreezSDK.recommendedFees();
       _log.info(
         "fetchRefundFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
@@ -106,7 +103,7 @@ class RefundBloc extends Cubit<RefundState> {
   Future<int> prepareRefund(PrepareRefundRequest req) async {
     _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
-      final resp = await _breezSDK.prepareRefund(req: req);
+      final resp = await BreezSDK.prepareRefund(req: req);
       _log.info("Refund txId: ${resp.refundTxWeight}, ${resp.refundTxFeeSat}");
       return resp.refundTxFeeSat;
     } catch (e) {

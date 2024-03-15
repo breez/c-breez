@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/swap_in_progress/swap_in_progress_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
@@ -11,9 +10,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("SwapInProgressBloc");
 
 class SwapInProgressBloc extends Cubit<SwapInProgressState> {
-  final BreezSDK _breezSDK;
-
-  SwapInProgressBloc(this._breezSDK) : super(SwapInProgressState(null, null, isLoading: true)) {
+  SwapInProgressBloc() : super(SwapInProgressState(null, null, isLoading: true)) {
     pollSwapAddress();
   }
 
@@ -30,7 +27,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
     final currentState = state;
     final texts = getSystemAppLocalizations();
     try {
-      final swapInProgress = (await _breezSDK.inProgressSwap());
+      final swapInProgress = (await BreezSDK.inProgressSwap());
       SwapInfo? swapUnused = currentState.unused;
       if (swapInProgress != null) {
         swapUnused = null;
@@ -49,7 +46,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
         // not return immediately, they will likely be run in parallel.
         // Such parallel calls lead can lead to more than one unused swap address being created.
         swapUnused =
-            currentState.unused ?? (await _breezSDK.receiveOnchain(req: const ReceiveOnchainRequest()));
+            currentState.unused ?? (await BreezSDK.receiveOnchain(req: const ReceiveOnchainRequest()));
       }
       _log.info("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
       if (!isClosed) {

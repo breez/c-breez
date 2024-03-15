@@ -1,21 +1,18 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
-  final BreezSDK _breezSDK;
-
-  CurrencyBloc(this._breezSDK) : super(CurrencyState.initial()) {
+  CurrencyBloc() : super(CurrencyState.initial()) {
     hydrate();
     _initializeCurrencyBloc();
   }
 
   void _initializeCurrencyBloc() {
     late final StreamSubscription streamSubscription;
-    streamSubscription = _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
+    streamSubscription = BreezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
       (nodeState) {
         listFiatCurrencies();
         fetchExchangeRates();
@@ -25,7 +22,7 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   }
 
   void listFiatCurrencies() {
-    _breezSDK.listFiatCurrencies().then((fiatCurrencies) {
+    BreezSDK.listFiatCurrencies().then((fiatCurrencies) {
       emit(state.copyWith(
           fiatCurrenciesData: _sortedFiatCurrenciesList(
         fiatCurrencies,
@@ -56,7 +53,7 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
   }
 
   Future<Map<String, Rate>> fetchExchangeRates() async {
-    var exchangeRates = await _breezSDK.fetchFiatRates();
+    var exchangeRates = await BreezSDK.fetchFiatRates();
     emit(state.copyWith(exchangeRates: exchangeRates));
     return exchangeRates;
   }

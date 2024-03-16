@@ -11,7 +11,11 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   PaymentOptionsBloc(
     this._preferences,
   ) : super(const PaymentOptionsState.initial()) {
-    resetPaymentOptions(true);
+    _initializePaymentOptions();
+  }
+
+  void _initializePaymentOptions() async {
+    await _preferences.hasPaymentOptions() ? await _getPaymentOptions() : await setDefaultPaymentOptions();
   }
 
   Future<void> setProportionalFee(double proportionalFee) async {
@@ -29,29 +33,25 @@ class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
     emit(state.copyWith(channelFeeLimitMsat: channelFeeLimitMsat));
   }
 
-  Future<void> resetPaymentOptions([bool checkPaymentOptions = false]) async {
-    final hasPaymentOptions = await _preferences.hasPaymentOptions();
-    if (!checkPaymentOptions || !hasPaymentOptions) {
-      try {
-        await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
-        await _preferences.setPaymentOptionsExemptFee(kDefaultExemptFeeMsat);
-        await _preferences.setPaymentOptionsChannelSetupFeeLimit(kDefaultChannelSetupFeeLimitMsat);
-        _log.info(
-          "Reverted payment options to default values: "
-          "proportionalFee: $kDefaultProportionalFee "
-          "exemptFeeMsat: $kDefaultExemptFeeMsat "
-          "channelFeeLimitMsat: $kDefaultChannelSetupFeeLimitMsat",
-        );
-      } catch (e) {
-        _log.severe("Failed to reset payment options.");
-        rethrow;
-      }
+  Future<void> setDefaultPaymentOptions() async {
+    try {
+      await _preferences.setPaymentOptionsProportionalFee(kDefaultProportionalFee);
+      await _preferences.setPaymentOptionsExemptFee(kDefaultExemptFeeMsat);
+      await _preferences.setPaymentOptionsChannelSetupFeeLimit(kDefaultChannelSetupFeeLimitMsat);
+      emit(const PaymentOptionsState.initial());
+      _log.info(
+        "Set payment options to default values: "
+        "proportionalFee: $kDefaultProportionalFee "
+        "exemptFeeMsat: $kDefaultExemptFeeMsat "
+        "channelFeeLimitMsat: $kDefaultChannelSetupFeeLimitMsat",
+      );
+    } catch (e) {
+      _log.severe("Failed to set default payment options.");
+      rethrow;
     }
-
-    await getPaymentOptions();
   }
 
-  Future<void> getPaymentOptions() async {
+  Future<void> _getPaymentOptions() async {
     final proportionalFee = await _preferences.getPaymentOptionsProportionalFee();
     final exemptFeeMsat = await _preferences.getPaymentOptionsExemptFee();
     final channelFeeLimitMsat = await _preferences.getPaymentOptionsChannelSetupFeeLimitMsat();

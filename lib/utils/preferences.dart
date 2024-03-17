@@ -20,6 +20,15 @@ final _log = Logger("Preferences");
 class Preferences {
   const Preferences();
 
+  Future<bool> hasPaymentOptions() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getKeys().containsAll([
+      _kPaymentOptionProportionalFee,
+      _kPaymentOptionExemptFee,
+      _kPaymentOptionChannelSetupFeeLimit,
+    ]);
+  }
+
   Future<String?> getMempoolSpaceUrl() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_mempoolSpaceUrlKey);

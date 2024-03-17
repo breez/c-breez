@@ -33,7 +33,7 @@ class ActionsFee extends StatelessWidget {
                 child: Text(texts.payment_options_fee_action_reset),
                 onPressed: () async {
                   try {
-                    await context.read<PaymentOptionsBloc>().resetPaymentOptions();
+                    await context.read<PaymentOptionsBloc>().setDefaultPaymentOptions();
                     formKey.currentState!.reset();
                     if (!context.mounted) return;
                     showFlushbar(context, message: "Reverted fee settings to default values.");

@@ -1,20 +1,18 @@
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:c_breez/bloc/backup/backup_state.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 
 class BackupBloc extends Cubit<BackupState?> {
   final _log = Logger("BackupBloc");
-  final BreezSDK _breezSDK;
 
-  BackupBloc(this._breezSDK) : super(null) {
+  BackupBloc() : super(null) {
     _listenBackupEvents();
   }
 
   _listenBackupEvents() {
     _log.info("_listenBackupEvents");
-    _breezSDK.backupStream.listen((event) {
+    sdk.BreezSDK.backupStream.listen((event) {
       _log.info('got state: $event');
       if (event is sdk.BreezEvent_BackupStarted) {
         emit(BackupState(status: BackupStatus.INPROGRESS));
@@ -33,5 +31,5 @@ class BackupBloc extends Cubit<BackupState?> {
   }
 
   /// Start the backup process
-  Future<void> backup() async => await _breezSDK.backup();
+  Future<void> backup() async => await sdk.BreezSDK.backup();
 }

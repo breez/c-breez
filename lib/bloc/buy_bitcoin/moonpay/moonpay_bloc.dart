@@ -1,8 +1,7 @@
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
-import 'package:c_breez/config.dart';
+import 'package:c_breez/config.dart' as app;
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,31 +10,27 @@ import 'package:logging/logging.dart';
 final _log = Logger("MoonPayBloc");
 
 class MoonPayBloc extends Cubit<MoonPayState> {
-  final BreezSDK _breezSDK;
   final Preferences _preferences;
 
-  MoonPayBloc(
-    this._breezSDK,
-    this._preferences,
-  ) : super(MoonPayState.initial());
+  MoonPayBloc(this._preferences) : super(MoonPayState.initial());
 
   Future<void> fetchMoonpayUrl() async {
     try {
       _log.info("fetchMoonpayUrl");
       emit(MoonPayState.loading());
-      final swapInProgress = (await _breezSDK.inProgressSwap());
+      final swapInProgress = (await BreezSDK.inProgressSwap());
 
       if (swapInProgress != null) {
         _log.info("fetchMoonpayUrl swapInfo: $swapInProgress");
         emit(MoonPayState.swapInProgress(
           swapInProgress.bitcoinAddress,
-          swapInProgress.status == sdk.SwapStatus.Refundable,
+          swapInProgress.status == SwapStatus.Refundable,
         ));
         return;
       }
 
-      sdk.BuyBitcoinRequest req = const sdk.BuyBitcoinRequest(provider: sdk.BuyBitcoinProvider.Moonpay);
-      final buyBitcoinResponse = await _breezSDK.buyBitcoin(req: req);
+      BuyBitcoinRequest req = const BuyBitcoinRequest(provider: BuyBitcoinProvider.Moonpay);
+      final buyBitcoinResponse = await BreezSDK.buyBitcoin(req: req);
       _log.info("fetchMoonpayUrl url: ${buyBitcoinResponse.url}");
       if (buyBitcoinResponse.openingFeeParams != null) {
         emit(MoonPayState.urlReady(buyBitcoinResponse));
@@ -61,7 +56,8 @@ class MoonPayBloc extends Cubit<MoonPayState> {
 
   Future<String> makeExplorerUrl(String address) async {
     _log.info("openExplorer address: $address");
-    final mempoolUrl = await _preferences.getMempoolSpaceUrl() ?? (await Config.instance()).defaultMempoolUrl;
+    final mempoolUrl =
+        await _preferences.getMempoolSpaceUrl() ?? (await app.Config.instance()).defaultMempoolUrl;
     final url = "$mempoolUrl/address/$address";
     _log.info("openExplorer url: $url");
     return url;

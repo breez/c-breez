@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -22,7 +22,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("LNURLPaymentPage");
 
 class LNURLPaymentPage extends StatefulWidget {
-  final sdk.LnUrlPayRequestData data;
+  final LnUrlPayRequestData data;
   /*TODO: Add domain information to parse results #118(https://github.com/breez/breez-sdk/issues/118)
   final String domain;
   TODO: Add support for LUD-18: Payer identity in payRequest protocol(https://github.com/breez/breez-sdk/issues/117)

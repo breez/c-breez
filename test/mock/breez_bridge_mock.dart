@@ -1,25 +1,38 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
-class BreezSDKMock extends Mock implements BreezSDK {
-  GreenlightCredentials credentials = GreenlightCredentials(
+class BreezSDKMock extends Mock {
+  BreezSDKMock._();
+
+  static BreezSDKMock? _instance;
+
+  static BreezSDKMock get instance {
+    _instance ??= BreezSDKMock._();
+    return _instance!;
+  }
+
+  static BreezSDKMock? delegatePackingProperty;
+
+  static BreezSDKMock get _delegate {
+    return delegatePackingProperty ??= BreezSDKMock.instance;
+  }
+
+  static GreenlightCredentials credentials = GreenlightCredentials(
     deviceKey: Uint8List(2),
     deviceCert: Uint8List(2),
   );
 
-  @override
-  Future connect({
+  static Future connect({
     required ConnectRequest req,
   }) async {
     await nodeInfo();
   }
 
-  Config config = const Config(
+  static Config config = const Config(
     breezserver: '',
     chainnotifierUrl: '',
     mempoolspaceUrl: '',
@@ -31,8 +44,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
     nodeConfig: NodeConfig_Greenlight(config: GreenlightNodeConfig()),
   );
 
-  @override
-  Future<Config> defaultConfig({
+  static Future<Config> defaultConfig({
     required EnvironmentType envType,
     required String apiKey,
     required NodeConfig nodeConfig,
@@ -40,7 +52,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
     return config;
   }
 
-  NodeState? nodeState = const NodeState(
+  static NodeState? nodeState = const NodeState(
     id: '123456789012345678901234567890123456789012345678901234567890123456',
     blockHeight: 2,
     channelsBalanceMsat: 0,
@@ -55,13 +67,12 @@ class BreezSDKMock extends Mock implements BreezSDK {
     pendingOnchainBalanceMsat: 0,
   );
 
-  @override
-  Future<NodeState?> nodeInfo() async {
+  static Future<NodeState?> nodeInfo() async {
     nodeStateController.add(nodeState);
     return nodeState;
   }
 
-  LspInformation lspInformation = LspInformation(
+  static LspInformation lspInformation = LspInformation(
     id: "",
     name: "",
     widgetUrl: "",
@@ -86,15 +97,13 @@ class BreezSDKMock extends Mock implements BreezSDK {
     ),
   );
 
-  @override
-  Future<LspInformation?> fetchLspInfo(String lspId) async {
+  static Future<LspInformation?> fetchLspInfo(String lspId) async {
     return lspInformation;
   }
 
-  @override
-  Future connectLSP(String lspId) async {}
+  static Future connectLSP(String lspId) async {}
 
-  InputType parsedInput = const InputType_LnUrlPay(
+  static InputType parsedInput = const InputType_LnUrlPay(
     data: LnUrlPayRequestData(
       callback: "",
       minSendable: 0,
@@ -105,49 +114,54 @@ class BreezSDKMock extends Mock implements BreezSDK {
     ),
   );
 
-  @override
-  Future<InputType> parseInput({required String input}) async {
+  static Future<InputType> parseInput({required String input}) async {
     return parsedInput;
   }
 
-  final invoicePaidController = StreamController<InvoicePaidDetails>.broadcast();
+  static final invoicePaidController = StreamController<InvoicePaidDetails>.broadcast();
 
-  @override
-  Stream<InvoicePaidDetails> get invoicePaidStream => invoicePaidController.stream;
+  static Stream<InvoicePaidDetails> get invoicePaidStream => invoicePaidController.stream;
 
-  @override
-  final nodeStateController = BehaviorSubject<NodeState?>();
+  static final nodeStateController = BehaviorSubject<NodeState?>();
 
-  @override
-  Stream<NodeState?> get nodeStateStream => nodeStateController.stream;
+  static Stream<NodeState?> get nodeStateStream => nodeStateController.stream;
 
-  @override
-  final paymentsController = BehaviorSubject<List<Payment>>.seeded([]);
+  static final paymentsController = BehaviorSubject<List<Payment>>.seeded([]);
 
-  @override
-  Stream<List<Payment>> get paymentsStream => paymentsController.stream;
+  static Stream<List<Payment>> get paymentsStream => paymentsController.stream;
 
-  final paymentResultController = StreamController<Payment>.broadcast();
+  static final paymentResultController = StreamController<Payment>.broadcast();
 
-  @override
-  Stream<Payment> get paymentResultStream => paymentResultController.stream;
+  static Stream<Payment> get paymentResultStream => paymentResultController.stream;
 
-  bool isInitializesController = false;
+  static bool isInitializesController = false;
 
-  @override
-  Future<bool> isInitialized() async {
+  static Future<bool> isInitialized() async {
     return isInitializesController;
   }
 
-  @override
-  Future fetchNodeData() async {}
+  static Future fetchNodeData() async {}
 
-  ServiceHealthCheckResponse serviceHealthCheckResponse = const ServiceHealthCheckResponse(
+  static ServiceHealthCheckResponse serviceHealthCheckResponse = const ServiceHealthCheckResponse(
     status: HealthCheckStatus.Operational,
   );
 
-  @override
-  Future<ServiceHealthCheckResponse> serviceHealthCheck({required String apiKey}) async {
+  static Future<ServiceHealthCheckResponse> serviceHealthCheck({
+    required String apiKey,
+  }) async {
     return serviceHealthCheckResponse;
   }
+
+  /* _ */
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is BreezSDK && other.hashCode == hashCode;
+  }
+
+  @override
+  int get hashCode => _delegate.hashCode;
+
+  @override
+  String toString() => 'BreezSDK';
 }

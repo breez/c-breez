@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_state.dart';
 import 'package:c_breez/models/fee_options/fee_option.dart';
@@ -12,9 +11,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("ReverseSwapBloc");
 
 class ReverseSwapBloc extends Cubit<ReverseSwapState> {
-  final BreezSDK _breezSDK;
-
-  ReverseSwapBloc(this._breezSDK) : super(ReverseSwapState.initial());
+  ReverseSwapBloc() : super(ReverseSwapState.initial());
 
   Future<ReverseSwapInfo> payOnchain({
     required String recipientAddress,
@@ -32,7 +29,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         prepareRes: prepareRes,
       );
 
-      final revSwapResp = await _breezSDK.payOnchain(req: req);
+      final revSwapResp = await BreezSDK.payOnchain(req: req);
       final revSwapInfo = revSwapResp.reverseSwapInfo;
       _log.info(
         "Reverse Swap Info for id: ${revSwapInfo.id}, ${revSwapInfo.onchainAmountSat} sats to address "
@@ -54,7 +51,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }) async {
     RecommendedFees recommendedFees;
     try {
-      recommendedFees = await _breezSDK.recommendedFees();
+      recommendedFees = await BreezSDK.recommendedFees();
       _log.info(
         "fetchReverseSwapFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
@@ -118,7 +115,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         amountType: amountType,
         claimTxFeerate: claimTxFeerate,
       );
-      PrepareOnchainPaymentResponse revSwapPairInfo = await _breezSDK.prepareOnchainPayment(req: req);
+      PrepareOnchainPaymentResponse revSwapPairInfo = await BreezSDK.prepareOnchainPayment(req: req);
       _log.info("Total estimated fees for reverse swap: ${revSwapPairInfo.totalFees}");
       return revSwapPairInfo;
     } catch (e) {
@@ -129,7 +126,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
 
   Future<OnchainPaymentLimitsResponse> onchainPaymentLimits() async {
     try {
-      OnchainPaymentLimitsResponse paymentLimits = await _breezSDK.onchainPaymentLimits();
+      OnchainPaymentLimitsResponse paymentLimits = await BreezSDK.onchainPaymentLimits();
       _log.info(
         "Current maximum ${paymentLimits.maxSat} and "
         "minimum ${paymentLimits.minSat} payment limits for onchain payments",
@@ -143,6 +140,6 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
 
   Future<void> rescanSwaps() async {
     _log.info("Rescanning swaps");
-    return await _breezSDK.rescanSwaps();
+    return await BreezSDK.rescanSwaps();
   }
 }

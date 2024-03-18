@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_state.dart';
 import 'package:c_breez/models/fee_options/fee_option.dart';
@@ -12,9 +11,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("RedeemOnchainFundsBloc");
 
 class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
-  final BreezSDK _breezSDK;
-
-  RedeemOnchainFundsBloc(this._breezSDK) : super(RedeemOnchainFundsState.initial());
+  RedeemOnchainFundsBloc() : super(RedeemOnchainFundsState.initial());
 
   Future<RedeemOnchainFundsResponse> redeemOnchainFunds({
     required String toAddress,
@@ -26,7 +23,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
         toAddress: toAddress,
         satPerVbyte: satPerVbyte,
       );
-      final redeemOnchainRes = await _breezSDK.redeemOnchainFunds(req: req);
+      final redeemOnchainRes = await BreezSDK.redeemOnchainFunds(req: req);
       emit(RedeemOnchainFundsState(txId: redeemOnchainRes.txid));
       return redeemOnchainRes;
     } catch (e) {
@@ -40,7 +37,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
   Future<List<RedeemOnchainFeeOption>> fetchRedeemOnchainFeeOptions({required String toAddress}) async {
     RecommendedFees recommendedFees;
     try {
-      recommendedFees = await _breezSDK.recommendedFees();
+      recommendedFees = await BreezSDK.recommendedFees();
       _log.info(
         "fetchRedeemOnchainFeeOptions recommendedFees:\nfastestFee: ${recommendedFees.fastestFee},"
         "\nhalfHourFee: ${recommendedFees.halfHourFee},\nhourFee: ${recommendedFees.hourFee}.",
@@ -89,7 +86,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
   Future<int> prepareRedeemOnchainFunds(PrepareRedeemOnchainFundsRequest req) async {
     _log.info("Prepare redeem onchain funds to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
-      final resp = await _breezSDK.prepareRedeemOnchainFunds(req: req);
+      final resp = await BreezSDK.prepareRedeemOnchainFunds(req: req);
       _log.info("Redeem onchain funds txFee: ${resp.txFeeSat}, with tx weight ${resp.txWeight}");
       return resp.txFeeSat;
     } catch (e) {

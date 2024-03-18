@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
@@ -30,7 +30,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
         }
 
         final mempoolInstance = snapshot.data!;
-        if (paymentMinutiae.status == sdk.PaymentStatus.Complete) {
+        if (paymentMinutiae.status == PaymentStatus.Complete) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -40,7 +40,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
                   text: texts.payment_details_dialog_closed_channel_local_wallet,
                 ),
               ),
-              if (paymentMinutiae.paymentType == sdk.PaymentType.ClosedChannel &&
+              if (paymentMinutiae.paymentType == PaymentType.ClosedChannel &&
                   paymentMinutiae.closingTxid != null) ...[
                 TxWidget(
                   txURL: BlockChainExplorerUtils().formatTransactionUrl(

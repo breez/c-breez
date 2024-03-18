@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_data.dart';
 import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
@@ -15,7 +14,7 @@ import 'package:rxdart/rxdart.dart';
 
 class InputBloc extends Cubit<InputState> {
   final _log = Logger("InputBloc");
-  final BreezSDK _breezSDK;
+
   final LightningLinksService _lightningLinks;
   final Device _device;
   final InputPrinter _printer;
@@ -23,7 +22,6 @@ class InputBloc extends Cubit<InputState> {
   final _decodeInvoiceController = StreamController<InputData>();
 
   InputBloc(
-    this._breezSDK,
     this._lightningLinks,
     this._device,
     this._printer,
@@ -43,7 +41,7 @@ class InputBloc extends Cubit<InputState> {
 
   Future trackPayment(String? paymentHash) async {
     _log.info("trackPayment: $paymentHash");
-    await _breezSDK.invoicePaidStream.firstWhere((invoice) {
+    await BreezSDK.invoicePaidStream.firstWhere((invoice) {
       _log.info("invoice paid: ${invoice.paymentHash} we are waiting for "
           "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
       return paymentHash == null || invoice.paymentHash == paymentHash;
@@ -82,7 +80,7 @@ class InputBloc extends Cubit<InputState> {
     _log.info("handlePaymentRequest: $inputData source: $source");
     final LNInvoice lnInvoice = inputData.invoice;
 
-    NodeState? nodeState = await _breezSDK.nodeInfo();
+    NodeState? nodeState = await BreezSDK.nodeInfo();
     if (nodeState == null || nodeState.id == lnInvoice.payeePubkey) {
       return const InputState.empty();
     }
@@ -124,12 +122,12 @@ class InputBloc extends Cubit<InputState> {
 
   Future<InputType> parseInput({required String input}) async {
     _log.info("parseInput: $input");
-    return await _breezSDK.parseInput(input: input);
+    return await BreezSDK.parseInput(input: input);
   }
 
   Future<void> _waitForNodeState() async {
     _log.info("waitForNodeState");
-    await _breezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null);
+    await BreezSDK.nodeStateStream.firstWhere((nodeState) => nodeState != null);
     _log.info("waitForNodeState: done");
   }
 }

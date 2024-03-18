@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/routes/dev/widget/command_list.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -21,8 +22,6 @@ class CommandLineInterface extends StatefulWidget {
 }
 
 class _CommandLineInterfaceState extends State<CommandLineInterface> {
-  final _breezSDK = ServiceInjector().breezSDK;
-
   final _cliInputController = TextEditingController();
   final FocusNode _cliEntryFocusNode = FocusNode();
 
@@ -181,7 +180,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
           case 'stop':
             final command = commandArgs[0].toLowerCase();
             _log.info("executing command: $command");
-            final answer = await _breezSDK.executeCommand(command: command);
+            final answer = await BreezSDK.executeCommand(command: command);
             _log.info("Received answer: $answer");
             reply = encoder.convert(answer);
             _log.info("Reply: $reply");

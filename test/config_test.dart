@@ -1,6 +1,6 @@
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/app_config.dart';
-import 'package:c_breez/config.dart';
+import 'package:c_breez/config.dart' as app;
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,18 +30,18 @@ void main() {
     });
 
     test('instance should create a new instance', () async {
-      final config = await Config.instance();
+      final config = await app.Config.instance();
       expect(config, isNotNull);
     });
 
     test('instance should return the same instance', () async {
-      final config1 = await Config.instance();
-      final config2 = await Config.instance();
+      final config1 = await app.Config.instance();
+      final config2 = await app.Config.instance();
       expect(config1, config2);
     });
 
     test('service injector should be optional', () async {
-      final config = await Config.instance(serviceInjector: injector);
+      final config = await app.Config.instance(serviceInjector: injector);
       expect(config, isNotNull);
     });
   });
@@ -63,7 +63,7 @@ void main() {
       final defaultConf = _defaultConf();
       const maxFee = 3.4;
       injector.preferencesMock.paymentOptionsProportionalFee = maxFee;
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.maxfeePercent, maxFee);
     });
 
@@ -71,7 +71,7 @@ void main() {
       final defaultConf = _defaultConf();
       const exemptfee = 2000;
       injector.preferencesMock.paymentOptionsExemptfee = exemptfee;
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.exemptfeeMsat, exemptfee);
     });
 
@@ -79,62 +79,62 @@ void main() {
       final defaultConf = _defaultConf();
       const mempoolSpaceUrl = "a different mempool space url";
       injector.preferencesMock.mempoolSpaceUrl = mempoolSpaceUrl;
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.mempoolspaceUrl, mempoolSpaceUrl);
     });
 
     test('mempool space url not set in preferences with no default should use the sdk default', () async {
       final defaultConf = _defaultConf();
       injector.preferencesMock.mempoolSpaceUrl = null;
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.mempoolspaceUrl, defaultConf.mempoolspaceUrl);
     });
 
     test('working dir should use application documents directory', () async {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       final defaultConf = _defaultConf();
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.workingDir, await platform.getApplicationDocumentsPath());
     });
 
     test('no network configured in app config should use the default', () async {
       final defaultConf = _defaultConf();
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.network, defaultConf.network);
     });
 
     test('no payment timeout configured in app config should use the default', () async {
       final defaultConf = _defaultConf();
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.paymentTimeoutSec, defaultConf.paymentTimeoutSec);
     });
 
     test('no default lsp id configured in app config should use the default', () async {
       final defaultConf = _defaultConf();
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.defaultLspId, defaultConf.defaultLspId);
     });
     test('valid api key configured in app config should use the configured value', () async {
       final defaultConf = _defaultConf();
-      final config = await Config.getSDKConfig(injector, defaultConf, breezConfig);
+      final config = await app.Config.getSDKConfig(injector, defaultConf, breezConfig);
       expect(config.apiKey, "");
     });
   });
 }
 
-sdk.Config _defaultConf() => const sdk.Config(
+Config _defaultConf() => const Config(
       maxfeePercent: 7.8,
       breezserver: "a breez server",
       chainnotifierUrl: "a chain notifier url",
       mempoolspaceUrl: "a mempool space url",
       workingDir: "a working dir",
-      network: sdk.Network.Bitcoin,
+      network: Network.Bitcoin,
       paymentTimeoutSec: 123,
       defaultLspId: "a default lsp id",
       apiKey: "an api key",
       exemptfeeMsat: 20000,
-      nodeConfig: sdk.NodeConfig_Greenlight(
-        config: sdk.GreenlightNodeConfig(
+      nodeConfig: NodeConfig_Greenlight(
+        config: GreenlightNodeConfig(
           partnerCredentials: null,
         ),
       ),

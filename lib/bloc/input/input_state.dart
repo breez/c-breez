@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/models/invoice.dart';
 

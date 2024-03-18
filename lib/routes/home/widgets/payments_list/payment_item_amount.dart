@@ -1,13 +1,12 @@
 import 'dart:io';
 
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
-import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +87,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) => CurrencyBloc(ServiceInjector().breezSDK),
+          create: (BuildContext context) => CurrencyBloc(),
         ),
       ],
       child: MaterialApp(

@@ -1,4 +1,3 @@
-import 'package:breez_sdk/breez_sdk.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/device.dart';
 import 'package:c_breez/services/injector.dart';
@@ -12,7 +11,6 @@ import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'breez_bridge_mock.dart';
 import 'breez_server_mock.dart';
 import 'device_mock.dart';
 import 'firebase_notifications_mock.dart';
@@ -54,11 +52,6 @@ class InjectorMock extends Mock implements ServiceInjector {
 
   @override
   BreezServer get breezServer => breezServerMock;
-
-  final breezSDKMock = BreezSDKMock();
-
-  @override
-  BreezSDK get breezSDK => breezSDKMock;
 
   final preferencesMock = PreferencesMock();
 

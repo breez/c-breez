@@ -3,8 +3,8 @@ library breez.logger;
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:c_breez/config.dart';
+import 'package:breez_sdk/sdk.dart';
+import 'package:c_breez/config.dart' as app;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:git_info/git_info.dart';
@@ -15,7 +15,7 @@ final _log = Logger("Logger");
 final _sdkLog = Logger("BreezSdk");
 
 void shareLog() async {
-  var config = await Config.instance();
+  var config = await app.Config.instance();
   final appDir = config.sdkConfig.workingDir;
   final encoder = ZipFileEncoder();
   final zipFilePath = "$appDir/c-breez.logs.zip";
@@ -39,7 +39,7 @@ class BreezLogger {
       });
     }
 
-    Config.instance().then((config) {
+    app.Config.instance().then((config) {
       var appDir = Directory(config.sdkConfig.workingDir);
       _pruneLogs(appDir);
       final file = File("${_logDir(appDir)}/${DateTime.now().millisecondsSinceEpoch}.app.log");
@@ -80,8 +80,8 @@ class BreezLogger {
   }
 
   /// Log entries according to their severity
-  void registerBreezSdkLog(BreezSDK breezSDK) {
-    breezSDK.logStream.listen(_logSdkEntries);
+  void registerBreezSdkLog() {
+    BreezSDK.logStream.listen(_logSdkEntries);
   }
 
   void _logSdkEntries(log) {

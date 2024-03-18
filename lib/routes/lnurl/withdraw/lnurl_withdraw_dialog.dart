@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
@@ -13,7 +13,7 @@ final _log = Logger("LNURLWithdrawDialog");
 
 class LNURLWithdrawDialog extends StatefulWidget {
   final Function(LNURLPageResult? result) onFinish;
-  final sdk.LnUrlWithdrawRequestData requestData;
+  final LnUrlWithdrawRequestData requestData;
   final int amountSats;
 
   const LNURLWithdrawDialog({
@@ -143,17 +143,17 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       _log.info("LNURL withdraw of ${widget.amountSats} sats where "
           "min is ${widget.requestData.minWithdrawable} msats "
           "and max is ${widget.requestData.maxWithdrawable} msats.");
-      final req = sdk.LnUrlWithdrawRequest(
+      final req = LnUrlWithdrawRequest(
         amountMsat: widget.amountSats * 1000,
         data: widget.requestData,
         description: description,
       );
       final resp = await accountBloc.lnurlWithdraw(req: req);
-      if (resp is sdk.LnUrlWithdrawResult_Ok) {
+      if (resp is LnUrlWithdrawResult_Ok) {
         final paymentHash = resp.data.invoice.paymentHash;
         _log.info("LNURL withdraw success for $paymentHash");
         return const LNURLPageResult(protocol: LnUrlProtocol.Withdraw);
-      } else if (resp is sdk.LnUrlWithdrawResult_ErrorStatus) {
+      } else if (resp is LnUrlWithdrawResult_ErrorStatus) {
         final reason = resp.data.reason;
         _log.info("LNURL withdraw failed: $reason");
         return LNURLPageResult(

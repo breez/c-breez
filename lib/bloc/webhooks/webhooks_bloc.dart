@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/webhooks/webhooks_state.dart';
 import 'package:c_breez/services/notifications.dart';
 import 'package:c_breez/utils/preferences.dart';
@@ -16,16 +15,14 @@ class WebhooksBloc extends Cubit<WebhooksState> {
 
   final _log = Logger("WebhooksBloc");
 
-  final BreezSDK _breezSDK;
   final Preferences _preferences;
   final Notifications _notifications;
 
   WebhooksBloc(
-    this._breezSDK,
     this._preferences,
     this._notifications,
   ) : super(WebhooksState()) {
-    _breezSDK.nodeStateStream
+    BreezSDK.nodeStateStream
         .firstWhere((nodeState) => nodeState != null)
         .then((nodeState) => refreshLnurlPay(nodeState: nodeState!));
   }
@@ -33,7 +30,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
   Future refreshLnurlPay({NodeState? nodeState}) async {
     emit(state.copyWith(isLoading: true));
     try {
-      final nodeInfo = nodeState ?? await _breezSDK.nodeInfo();
+      final nodeInfo = nodeState ?? await BreezSDK.nodeInfo();
       if (nodeInfo != null) {
         await _registerWebhooks(nodeInfo);
       } else {
@@ -50,7 +47,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
   Future _registerWebhooks(NodeState nodeState) async {
     try {
       String webhookUrl = await _generateWebhookURL();
-      await _breezSDK.registerWebhook(webhookUrl: webhookUrl);
+      await BreezSDK.registerWebhook(webhookUrl: webhookUrl);
       _log.info("SDK webhook registered: $webhookUrl");
       final lnurl = await _registerLnurlpay(nodeState, webhookUrl);
       emit(state.copyWith(lnurlPayUrl: lnurl));
@@ -71,7 +68,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     }
     final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final req = SignMessageRequest(message: "$currentTime-$webhookUrl");
-    final signature = await _breezSDK.signMessage(req: req);
+    final signature = await BreezSDK.signMessage(req: req);
     final lnurlWebhookUrl = "$lnurlServiceURL/lnurlpay/${nodeState.id}";
     final uri = Uri.parse(lnurlWebhookUrl);
     final jsonResponse = await http.post(
@@ -102,7 +99,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     final lnurlWebhookUrl = "$lnurlServiceURL/lnurlpay/${nodeState.id}";
     final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final req = SignMessageRequest(message: "$currentTime-$toInvalidate");
-    final signature = await _breezSDK.signMessage(req: req);
+    final signature = await BreezSDK.signMessage(req: req);
     final uri = Uri.parse(lnurlWebhookUrl);
     final response = await http.delete(
       uri,

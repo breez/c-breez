@@ -28,7 +28,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
   void _refreshInProgressReverseSwaps(Timer timer) async {
     final texts = getSystemAppLocalizations();
     try {
-      final reverseSwapsInProgress = await _breezSDK.inProgressReverseSwaps();
+      final reverseSwapsInProgress = await _breezSDK.inProgressOnchainPayments();
       for (var revSwapInfo in reverseSwapsInProgress) {
         _log.info(
           "Reverse Swap ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats status:${revSwapInfo.status.name}",

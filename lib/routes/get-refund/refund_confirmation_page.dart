@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/routes/get-refund/widgets/refund_button.dart';
@@ -108,10 +107,7 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
     );
     _fetchFeeOptionsFuture.then((feeOptions) {
       setState(() {
-        final account = context.read<AccountBloc>().state;
-        affordableFees = feeOptions
-            .where((f) => f.isAffordable(balance: account.balance, amountSat: widget.amountSat))
-            .toList();
+        affordableFees = feeOptions.where((f) => f.isAffordable(amountSat: widget.amountSat)).toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
       });
     });

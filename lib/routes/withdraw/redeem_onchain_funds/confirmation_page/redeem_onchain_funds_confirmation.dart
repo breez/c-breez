@@ -91,7 +91,7 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
       final account = context.read<AccountBloc>().state;
       setState(() {
         affordableFees = feeOptions
-            .where((f) => f.isAffordable(balance: account.walletBalance, amountSat: widget.amountSat))
+            .where((f) => f.isAffordable(walletBalance: account.walletBalance, amountSat: widget.amountSat))
             .toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
       });

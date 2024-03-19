@@ -98,6 +98,28 @@ android {
                 println("No storeFile provided, debug builds are using your local debug keystore")
             }
         }
+
+        release {
+            String filePath = keystoreProperties['storeFile']            
+            if (filePath != null) {
+                keyAlias keystoreProperties['alias']
+                keyPassword keystoreProperties['password']
+                storeFile file(filePath)
+                storePassword keystoreProperties['password']
+            } else {
+                String storeFilePath = System.getenv("STORE_FILE")
+                println("storeFilePath: " + storeFilePath)
+                if (storeFilePath != null) {
+                    println("using key properties from environment")
+                    keyAlias System.getenv("KEY_ALIAS")
+                    keyPassword System.getenv("KEY_PASSWORD")
+                    storeFile file(storeFilePath)
+                    storePassword System.getenv("STORE_PASSWORD")
+                } else {
+                    println("No storeFile provided, release builds are using your local debug keystore")
+                }
+            }
+        }
     }
 
     buildTypes {
@@ -111,7 +133,7 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             resValue "string", "app_name", "Breez Cloud"
             resValue "string", "breezApiKey", envVariables.API_KEY
 

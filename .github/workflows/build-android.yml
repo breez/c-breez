@@ -24,7 +24,7 @@ jobs:
         run: |
             TMP_KEYSTORE_FILE_PATH=$RUNNER_TEMP/keystore
             mkdir -p $TMP_KEYSTORE_FILE_PATH
-            echo $STORE_FILE_BASE64 | base64 -di $TMP_KEYSTORE_FILE_PATH/cbreez-release.keystore
+            echo $STORE_FILE_BASE64 | base64 -do $TMP_KEYSTORE_FILE_PATH/cbreez-release.keystore
 
       - name: Install rust
         run: |

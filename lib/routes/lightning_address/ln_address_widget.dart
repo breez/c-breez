@@ -25,7 +25,7 @@ class _LnAddressWidgetState extends State<LnAddressWidget> {
           title: texts.invoice_ln_address_address_information,
           type: AddressWidgetType.lnurl,
         ),
-        const LnFeeMessage(),
+        const LnAddressFeeMessage(),
       ],
     );
   }

@@ -11,8 +11,8 @@ import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LnFeeMessage extends StatelessWidget {
-  const LnFeeMessage();
+class LnAddressFeeMessage extends StatelessWidget {
+  const LnAddressFeeMessage();
 
   @override
   Widget build(BuildContext context) {

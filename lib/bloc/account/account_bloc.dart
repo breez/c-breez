@@ -79,6 +79,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     bool restored = false,
   }) async {
     _log.info("connect new mnemonic: ${mnemonic != null}, restored: $restored");
+    emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
     if (mnemonic != null) {
       await _credentialsManager.storeMnemonic(mnemonic: mnemonic);
       emit(state.copyWith(

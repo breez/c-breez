@@ -16,12 +16,15 @@ class RefundBloc extends Cubit<RefundState> {
 
   RefundBloc(this._breezSDK) : super(RefundState.initial()) {
     _initializeRefundBloc();
+    _listenSwapEvents();
   }
 
   void _initializeRefundBloc() {
-    _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
+    late final StreamSubscription streamSubscription;
+    streamSubscription = _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
       (nodeState) async {
         listRefundables();
+        streamSubscription.cancel();
       },
     );
   }
@@ -29,6 +32,21 @@ class RefundBloc extends Cubit<RefundState> {
   // Fetch the refundable swaps list from the sdk.
   void listRefundables() async {
     emit(state.copyWith(refundables: await _breezSDK.listRefundables()));
+  }
+
+  _listenSwapEvents() {
+    _log.info("_listenSwapEvents");
+    _breezSDK.swapEventsStream.listen((event) {
+      _log.info('got state: $event');
+      if (event is BreezEvent_SwapUpdated) {
+        var swapInfo = event.details;
+        if (swapInfo.status == SwapStatus.Refundable || swapInfo.status == SwapStatus.Completed) {
+          listRefundables();
+        }
+      }
+    }, onError: (error) {
+      //
+    });
   }
 
   /// Broadcast a refund transaction for a failed/expired swap.

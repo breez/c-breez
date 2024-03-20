@@ -3,7 +3,6 @@ import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/widgets/address_widget.dart';
 import 'package:c_breez/widgets/ln_fee_message.dart';
-import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,7 +32,6 @@ class _LnAddressWidgetState extends State<LnAddressWidget> {
           widget.lnurlPayUrl,
           title: texts.invoice_ln_address_address_information,
           type: AddressWidgetType.lnurl,
-          footer: widget.lnurlPayUrl,
         ),
         isChannelOpeningAvailable
             ? LnFeeMessage(

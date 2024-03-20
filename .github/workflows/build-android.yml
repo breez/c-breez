@@ -18,6 +18,18 @@ jobs:
         with:
           path: 'cbreez'
 
+      - name: Decode Keystore
+        env:
+            STORE_FILE_BASE64: ${{ secrets.STORE_FILE_BASE64 }}
+            STORE_FILE: ${RUNNER_TEMP}/keystore/cbreez-release.keystore
+        run: |
+            echo "STORE_FILE=${RUNNER_TEMP}/keystore/cbreez-release.keystore" >> $GITHUB_ENV
+            echo "STORE_FILE=${RUNNER_TEMP}/keystore/cbreez-release.keystore"
+            TMP_KEYSTORE_FILE_PATH=${RUNNER_TEMP}/keystore
+            mkdir -p ${TMP_KEYSTORE_FILE_PATH}
+            echo $STORE_FILE_BASE64 | base64 -do ${TMP_KEYSTORE_FILE_PATH}/cbreez-release.keystore
+            echo "${TMP_KEYSTORE_FILE_PATH}/cbreez-release.keystore"
+
       - name: Install rust
         run: |
           rustup set auto-self-update disable
@@ -110,6 +122,10 @@ jobs:
         run: echo "$CONFIG_FILE" > ./cbreez/config.json
 
       - name: 🚀 Build Release apk
+        env:          
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         working-directory: cbreez
         run: flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --no-pub --split-per-abi --dart-define-from-file=config.json
 

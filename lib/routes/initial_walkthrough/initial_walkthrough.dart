@@ -174,8 +174,10 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
         mnemonic: mnemonic ?? bip39.generateMnemonic(strength: 128),
         restored: isRestore,
       );
+      themeProvider.setTheme('dark');
+      navigator.pushReplacementNamed('/');
     } catch (error) {
-      _log.info("Failed to ${isRestore ? "restore" : "registe"} node", error);
+      _log.info("Failed to ${isRestore ? "restore" : "register"} node", error);
       if (isRestore) {
         _restoreNodeFromMnemonicSeed(initialWords: mnemonic.split(" "));
       }
@@ -185,9 +187,6 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     } finally {
       navigator.removeRoute(loaderRoute);
     }
-
-    themeProvider.setTheme('dark');
-    navigator.pushReplacementNamed('/');
   }
 
   void _restoreNodeFromMnemonicSeed({

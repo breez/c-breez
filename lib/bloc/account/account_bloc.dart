@@ -139,6 +139,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     } catch (e) {
       _log.warning("failed to connect to breez lib", e);
       emit(state.copyWith(connectionStatus: ConnectionStatus.DISCONNECTED));
+      rethrow;
     }
   }
 

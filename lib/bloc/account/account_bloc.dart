@@ -95,10 +95,11 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
     // in case we failed to start (lack of inet connection probably)
     if (state.connectionStatus == ConnectionStatus.DISCONNECTED) {
-      StreamSubscription<ConnectivityResult>? subscription;
+      StreamSubscription<List<ConnectivityResult>>? subscription;
       subscription = Connectivity().onConnectivityChanged.listen((event) async {
         // we should try fetch the selected lsp information when internet is back.
-        if (event != ConnectivityResult.none && state.connectionStatus == ConnectionStatus.DISCONNECTED) {
+        if (event.contains(ConnectivityResult.none) &&
+            state.connectionStatus == ConnectionStatus.DISCONNECTED) {
           await _startSdkOnce();
           if (state.connectionStatus == ConnectionStatus.CONNECTED) {
             subscription!.cancel();

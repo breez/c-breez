@@ -23,7 +23,7 @@ class LSPBloc extends Cubit<LspState?> {
 
     Connectivity().onConnectivityChanged.listen((event) {
       // we should try fetch the selected lsp information when internet is back.
-      if (event != ConnectivityResult.none && state?.lspInfo == null && state?.selectedLspId != null) {
+      if (event.contains(ConnectivityResult.none) && state?.lspInfo == null && state?.selectedLspId != null) {
         _refreshLspInfo();
       }
     });

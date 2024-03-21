@@ -18,13 +18,13 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
     _watchConnectivityChanges().listen((status) => emit(ConnectivityState(lastStatus: status)));
   }
 
-  Stream<ConnectivityResult> _watchConnectivityChanges() {
+  Stream<List<ConnectivityResult>> _watchConnectivityChanges() {
     return _connectivity.onConnectivityChanged
         .asyncMap((status) async => await _updateConnectionStatus(status));
   }
 
   Future<ConnectivityState> checkConnectivity() async {
-    late ConnectivityResult result;
+    late List<ConnectivityResult> result;
     try {
       result = await _updateConnectionStatus(await _connectivity.checkConnectivity());
     } on PlatformException catch (e) {
@@ -36,15 +36,15 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
     return connectivityState;
   }
 
-  Future<ConnectivityResult> _updateConnectionStatus(ConnectivityResult connectionStatus) async {
-    _log.info("Connection status changed to: ${connectionStatus.name}");
-    if (connectionStatus != ConnectivityResult.none) {
+  Future<List<ConnectivityResult>> _updateConnectionStatus(List<ConnectivityResult> connectionResult) async {
+    _log.info("Connection status changed to: $connectionResult");
+    if (!connectionResult.contains(ConnectivityResult.none)) {
       bool isDeviceConnected = await _isConnected();
       if (!isDeviceConnected) {
-        return connectionStatus;
+        return connectionResult;
       }
     }
-    return connectionStatus;
+    return connectionResult;
   }
 
   Future<bool> _isConnected() async {

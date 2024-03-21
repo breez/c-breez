@@ -117,7 +117,7 @@ class RefundBloc extends Cubit<RefundState> {
           toAddress: toAddress,
           satPerVbyte: recommendedFee,
         );
-        final fee = await prepareRefund(req);
+        final fee = await _prepareRefund(req);
 
         return RefundFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
@@ -130,7 +130,7 @@ class RefundBloc extends Cubit<RefundState> {
     return feeOptions;
   }
 
-  Future<int> prepareRefund(PrepareRefundRequest req) async {
+  Future<int> _prepareRefund(PrepareRefundRequest req) async {
     _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
       final resp = await _breezSDK.prepareRefund(req: req);

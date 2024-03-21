@@ -8,7 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_ios/types/auth_messages_ios.dart';
+import 'package:local_auth_darwin/types/auth_messages_ios.dart';
 import 'package:logging/logging.dart';
 
 class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {

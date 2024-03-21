@@ -39,7 +39,8 @@ class ConnectivityHandler extends Handler {
 
   void _listen(ConnectivityState connectivityState) async {
     _log.info("Received connectivityState $connectivityState");
-    if (connectivityState.lastStatus == ConnectivityResult.none) {
+    if (connectivityState.lastStatus != null &&
+        connectivityState.lastStatus!.contains(ConnectivityResult.none)) {
       showNoInternetConnectionFlushbar();
     } else {
       dismissFlushbarIfNeed();

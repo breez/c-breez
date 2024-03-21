@@ -59,20 +59,22 @@ class LnAddressFeeMessage extends StatelessWidget {
     final minSendableSats = (liquidityAboveMin) ? 1 : openingFeeParams.minMsat ~/ 1000;
     final minSendableAboveMin = minSendableSats > 1;
     final minSendableFormatted = currencyState.bitcoinCurrency.format(minSendableSats);
+    if (!minSendableAboveMin) {
+      return "Minimum sendable amount can't be less than ${currencyState.bitcoinCurrency.format(1)}.";
+    }
     if (minSendableSats > maxSendableSats) {
       return "Minimum sendable amount can't be greater than maximum sendable amount.";
     }
 
-    final isFeeApplicable = maxSendableSats > liquiditySats;
+    final isFeeApplicable = maxSendableSats < liquiditySats;
     if (!isFeeApplicable) {
       // Send more than {minSendableSats} and up to {maxSendableSats} to this address.
       return texts.invoice_ln_address_channel_not_needed(
         minSendableFormatted,
         maxSendableFormatted,
       );
-    }
-    if (minSendableAboveMin && liquidityAboveMin) {
-      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% with a minimum of {minFee}
+    } else if (liquidityAboveMin) {
+      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% with a minimum of {minSendableSats}
       // will be applied for sending more than {liquiditySats}.
       return texts.invoice_ln_address_warning_with_min_fee_account_connected(
         minSendableFormatted,
@@ -81,31 +83,14 @@ class LnAddressFeeMessage extends StatelessWidget {
         minSendableFormatted,
         liquidityFormatted,
       );
-    } else if (minSendableAboveMin && !liquidityAboveMin) {
-      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% with a minimum of {minFee}
+    } else {
+      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% with a minimum of {minSendableSats}
       // will be applied on the received amount.
       return texts.invoice_ln_address_warning_with_min_fee_account_not_connected(
         minSendableFormatted,
         maxSendableFormatted,
         proportionalPercent,
         minSendableFormatted,
-      );
-    } else if (!minSendableAboveMin && liquidityAboveMin) {
-      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% will be applied
-      // for sending more than {liquiditySats}.
-      return texts.invoice_ln_address_warning_without_min_fee_account_connected(
-        minSendableFormatted,
-        maxSendableFormatted,
-        proportionalPercent,
-        liquidityFormatted,
-      );
-    } else {
-      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% will be applied
-      // on the received amount.
-      return texts.invoice_ln_address_warning_without_min_fee_account_not_connected(
-        minSendableFormatted,
-        maxSendableFormatted,
-        proportionalPercent,
       );
     }
   }

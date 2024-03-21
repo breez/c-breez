@@ -92,7 +92,7 @@ class LightningAddressPageState extends State<LightningAddressPage> {
                 ),
           bottomNavigationBar: webhookState.lnurlPayError != null
               ? SingleButtonBottomBar(
-                  text: texts.invoice_btc_address_action_retry,
+                  text: texts.invoice_ln_address_action_retry,
                   onPressed: () => _refreshLnurlPay,
                 )
               : const SizedBox(),

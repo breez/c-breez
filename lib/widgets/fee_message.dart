@@ -46,26 +46,26 @@ class FeeMessage extends StatelessWidget {
 
     if (minFeeAboveZero && liquidityAboveZero) {
       // A setup fee of {setUpFee}% with a minimum of {minFee} will be applied for receiving more than {liquidity}
-      return texts.invoice_ln_address_warning_with_min_fee_account_connected(
+      return texts.invoice_lightning_warning_with_min_fee_account_connected(
         setUpFee,
         minFeeFormatted,
         liquidity,
       );
     } else if (!minFeeAboveZero && liquidityAboveZero) {
       // A setup fee of {setUpFee}% will be applied for receiving more than {liquidity}.
-      return texts.invoice_ln_address_warning_without_min_fee_account_connected(
+      return texts.invoice_lightning_warning_without_min_fee_account_connected(
         setUpFee,
         liquidity,
       );
     } else if (minFeeAboveZero && !liquidityAboveZero) {
       // A setup fee of {setUpFee}% with a minimum of {minFee} will be applied on the received amount.
-      return texts.invoice_ln_address_warning_with_min_fee_account_not_connected(
+      return texts.invoice_lightning_warning_with_min_fee_account_not_connected(
         setUpFee,
         minFeeFormatted,
       );
     } else {
       // A setup fee of {setUpFee}% will be applied on the received amount.
-      return texts.invoice_ln_address_warning_without_min_fee_account_not_connected(
+      return texts.invoice_lightning_warning_without_min_fee_account_not_connected(
         setUpFee,
       );
     }

@@ -60,11 +60,11 @@ class LnAddressFeeMessage extends StatelessWidget {
 
     if (!isFeesApplicable) {
       // Send more than {minSats} and up to {maxSats} to this address. This address can be used only once.
-      return texts.invoice_btc_address_channel_not_needed(minFeeFormatted, maxFeeFormatted);
+      return texts.invoice_ln_address_channel_not_needed(minFeeFormatted, maxFeeFormatted);
     } else if (minFeeAboveZero && liquidityAboveZero) {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
       // will be applied for sending more than {liquidity}. This address can be used only once.
-      return texts.invoice_btc_address_warning_with_min_fee_account_connected(
+      return texts.invoice_ln_address_warning_with_min_fee_account_connected(
         minFeeFormatted,
         maxFeeFormatted,
         setUpFee,
@@ -74,7 +74,7 @@ class LnAddressFeeMessage extends StatelessWidget {
     } else if (minFeeAboveZero && !liquidityAboveZero) {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
       // will be applied on the received amount.
-      return texts.invoice_btc_address_warning_with_min_fee_account_not_connected(
+      return texts.invoice_ln_address_warning_with_min_fee_account_not_connected(
         minFeeFormatted,
         maxFeeFormatted,
         setUpFee,
@@ -83,7 +83,7 @@ class LnAddressFeeMessage extends StatelessWidget {
     } else if (!minFeeAboveZero && liquidityAboveZero) {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
       // for sending more than {liquidity}.
-      return texts.invoice_btc_address_warning_without_min_fee_account_connected(
+      return texts.invoice_ln_address_warning_without_min_fee_account_connected(
         minFeeFormatted,
         maxFeeFormatted,
         setUpFee,
@@ -92,7 +92,7 @@ class LnAddressFeeMessage extends StatelessWidget {
     } else {
       // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
       // on the received amount.
-      return texts.invoice_btc_address_warning_without_min_fee_account_not_connected(
+      return texts.invoice_ln_address_warning_without_min_fee_account_not_connected(
         minFeeFormatted,
         maxFeeFormatted,
         setUpFee,

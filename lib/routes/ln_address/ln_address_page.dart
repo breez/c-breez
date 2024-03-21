@@ -6,7 +6,7 @@ import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/webhooks/webhooks_bloc.dart';
 import 'package:c_breez/bloc/webhooks/webhooks_state.dart';
 import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
-import 'package:c_breez/routes/lightning_address/ln_address_widget.dart';
+import 'package:c_breez/routes/ln_address/ln_address_widget.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/address_widget_placeholder.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
 import 'package:c_breez/utils/exceptions.dart';
@@ -17,18 +17,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger("LightningAddressPage");
+final _log = Logger("LnAddressPage");
 
-class LightningAddressPage extends StatefulWidget {
-  const LightningAddressPage();
+class LnAddressPage extends StatefulWidget {
+  const LnAddressPage();
 
   @override
   State<StatefulWidget> createState() {
-    return LightningAddressPageState();
+    return LnAddressPageState();
   }
 }
 
-class LightningAddressPageState extends State<LightningAddressPage> {
+class LnAddressPageState extends State<LnAddressPage> {
   SwapInfo? swapInProgress;
   SwapInfo? swapUnused;
   String? bitcoinAddress;

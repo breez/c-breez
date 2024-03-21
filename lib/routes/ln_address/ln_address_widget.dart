@@ -1,6 +1,6 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:c_breez/routes/ln_address/ln_address_fee_message.dart';
 import 'package:c_breez/widgets/address_widget.dart';
-import 'package:c_breez/widgets/ln_fee_message.dart';
 import 'package:flutter/material.dart';
 
 class LnAddressWidget extends StatefulWidget {

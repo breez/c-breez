@@ -57,7 +57,7 @@ class LnAddressFeeMessage extends StatelessWidget {
 
     // Get the minimum sendable amount (in sats), can not be less than 1 or more than maxSendable
     final minSendableSats = (liquidityAboveMin) ? 1 : openingFeeParams.minMsat ~/ 1000;
-    final minSendableAboveMin = minSendableSats > 1;
+    final minSendableAboveMin = minSendableSats >= 1;
     final minSendableFormatted = currencyState.bitcoinCurrency.format(minSendableSats);
     if (!minSendableAboveMin) {
       return "Minimum sendable amount can't be less than ${currencyState.bitcoinCurrency.format(1)}.";
@@ -65,8 +65,9 @@ class LnAddressFeeMessage extends StatelessWidget {
     if (minSendableSats > maxSendableSats) {
       return "Minimum sendable amount can't be greater than maximum sendable amount.";
     }
+    final minFeeFormatted = currencyState.bitcoinCurrency.format(openingFeeParams.minMsat ~/ 1000);
 
-    final isFeeApplicable = maxSendableSats < liquiditySats;
+    final isFeeApplicable = maxSendableSats > liquiditySats;
     if (!isFeeApplicable) {
       // Send more than {minSendableSats} and up to {maxSendableSats} to this address.
       return texts.invoice_ln_address_channel_not_needed(
@@ -74,13 +75,13 @@ class LnAddressFeeMessage extends StatelessWidget {
         maxSendableFormatted,
       );
     } else if (liquidityAboveMin) {
-      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% with a minimum of {minSendableSats}
+      // Send more than {minSendableSats} and up to {maxSendableSats} to this address. A setup fee of {proportionalPercent}% with a minimum of {minFeeFormatted}
       // will be applied for sending more than {liquiditySats}.
       return texts.invoice_ln_address_warning_with_min_fee_account_connected(
         minSendableFormatted,
         maxSendableFormatted,
         proportionalPercent,
-        minSendableFormatted,
+        minFeeFormatted,
         liquidityFormatted,
       );
     } else {

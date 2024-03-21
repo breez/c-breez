@@ -31,21 +31,30 @@ class RefundBloc extends Cubit<RefundState> {
 
   // Fetch the refundable swaps list from the sdk.
   void listRefundables() async {
-    emit(state.copyWith(refundables: await _breezSDK.listRefundables()));
+    try {
+      _log.info('Refreshing refundables');
+      var refundables = await _breezSDK.listRefundables();
+      _log.info('Refundables: $refundables');
+      emit(state.copyWith(refundables: refundables));
+    } catch (e) {
+      _log.severe('Failed to list refundables: $e');
+      emit(state.copyWith(refundables: null, error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      rethrow;
+    }
   }
 
   _listenSwapEvents() {
-    _log.info("_listenSwapEvents");
     _breezSDK.swapEventsStream.listen((event) {
-      _log.info('got state: $event');
       if (event is BreezEvent_SwapUpdated) {
+        _log.info('Got SwapUpdate event: $event');
         var swapInfo = event.details;
         if (swapInfo.status == SwapStatus.Refundable || swapInfo.status == SwapStatus.Completed) {
           listRefundables();
         }
       }
-    }, onError: (error) {
-      //
+    }, onError: (e) {
+      _log.severe('Failed to listen swapEventsStream: $e');
+      emit(state.copyWith(error: extractExceptionMessage(e, getSystemAppLocalizations())));
     });
   }
 
@@ -61,7 +70,7 @@ class RefundBloc extends Cubit<RefundState> {
       return refundResponse.refundTxId;
     } catch (e) {
       _log.severe("Failed to refund swap", e);
-      emit(RefundState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(state.copyWith(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }
@@ -85,7 +94,7 @@ class RefundBloc extends Cubit<RefundState> {
       );
     } catch (e) {
       _log.severe("fetchRefundFeeOptions error", e);
-
+      emit(state.copyWith(error: extractExceptionMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }

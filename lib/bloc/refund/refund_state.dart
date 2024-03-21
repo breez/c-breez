@@ -15,8 +15,9 @@ class RefundState {
     String? error,
   }) {
     return RefundState(
-        refundables: refundables ?? this.refundables,
-        refundTxId: refundTxId ?? this.refundTxId,
-        error: error ?? this.error);
+      refundables: refundables ?? this.refundables,
+      refundTxId: refundTxId ?? this.refundTxId,
+      error: error ?? this.error,
+    );
   }
 }

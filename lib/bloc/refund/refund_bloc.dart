@@ -66,7 +66,7 @@ class RefundBloc extends Cubit<RefundState> {
     try {
       final refundResponse = await _breezSDK.refund(req: req);
       _log.info("Refund txId: ${refundResponse.refundTxId}");
-      emit(RefundState(refundTxId: refundResponse.refundTxId));
+      emit(state.copyWith(refundTxId: refundResponse.refundTxId));
       return refundResponse.refundTxId;
     } catch (e) {
       _log.severe("Failed to refund swap", e);

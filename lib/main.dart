@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/backup/backup_bloc.dart';
@@ -53,7 +54,7 @@ void main() async {
     var breezLogger = injector.breezLogger;
     final breezSDK = injector.breezSDK;
     if (!await breezSDK.isInitialized()) {
-      breezSDK.initialize();
+      breezSDK.initialize(filterLevel: LevelFilter.Debug);
       breezLogger.registerBreezSdkLog(breezSDK);
     }
 

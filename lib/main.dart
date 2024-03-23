@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/onboarding_preferences.dart';
 import 'package:c_breez/bloc/backup/backup_bloc.dart';
@@ -52,7 +53,7 @@ void main() async {
       var breezLogger = injector.breezLogger;
       final breezSDK = injector.breezSDK;
       if (!await breezSDK.isInitialized()) {
-        breezSDK.initialize();
+        breezSDK.initialize(filterLevel: LevelFilter.Debug);
         breezLogger.registerBreezSdkLog(breezSDK);
       }
 

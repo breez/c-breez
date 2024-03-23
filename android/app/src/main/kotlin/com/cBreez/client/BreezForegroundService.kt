@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import breez_sdk.ConnectRequest
 import breez_sdk.EnvironmentType
 import breez_sdk.GreenlightNodeConfig
+import breez_sdk.LevelFilter
 import breez_sdk.LogEntry
 import breez_sdk.NodeConfig
 import breez_sdk.defaultConfig
@@ -33,7 +34,7 @@ class BreezForegroundService : ForegroundService() {
         super.onCreate()
         Logger.tag(TAG).debug { "Creating Breez foreground service..." }
         registerNotificationChannels(applicationContext, DEFAULT_CLICK_ACTION)
-        val sdkLogListener = SdkLogInitializer.initializeNodeLogStream()
+        val sdkLogListener = SdkLogInitializer.initializeNodeLogStream(LevelFilter.DEBUG)
         sdkLogListener.subscribe(serviceScope) { l: LogEntry ->
             when (l.level) {
                 "ERROR" -> Logger.tag(TAG).error { l.line }

@@ -35,9 +35,7 @@ class _GetRefundPageState extends State<GetRefundPage> {
         builder: (context, refundState) {
           final refundables = refundState.refundables;
           if (refundables == null || refundables.isEmpty) {
-            return Center(
-              child: Text(texts.get_refund_no_refundable_items),
-            );
+            return Center(child: Text(texts.get_refund_no_refundable_items));
           }
 
           return ListView.builder(
@@ -48,9 +46,7 @@ class _GetRefundPageState extends State<GetRefundPage> {
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
                   children: [
-                    RefundItem(
-                      refundables.elementAt(index),
-                    ),
+                    RefundItem(refundables.elementAt(index)),
                     const Divider(
                       height: 0.0,
                       color: Color.fromRGBO(255, 255, 255, 0.52),

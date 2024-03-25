@@ -3,14 +3,12 @@ import 'package:breez_sdk/bridge_generated.dart';
 class RefundState {
   final List<SwapInfo>? refundables;
   final String? refundTxId;
-  final String? refundablesError;
-  final String? refundError;
+  final String? error;
 
   RefundState({
     this.refundables,
     this.refundTxId,
-    this.refundablesError = "",
-    this.refundError = "",
+    this.error = "",
   });
 
   RefundState.initial() : this();
@@ -18,14 +16,12 @@ class RefundState {
   RefundState copyWith({
     List<SwapInfo>? refundables,
     String? refundTxId,
-    String? refundablesError,
-    String? refundError,
+    String? error,
   }) {
     return RefundState(
       refundables: refundables ?? this.refundables,
       refundTxId: refundTxId ?? this.refundTxId,
-      refundablesError: refundablesError ?? this.refundablesError,
-      refundError: refundError ?? this.refundError,
+      error: error ?? this.error,
     );
   }
 }

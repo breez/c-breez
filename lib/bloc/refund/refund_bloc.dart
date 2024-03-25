@@ -23,6 +23,7 @@ class RefundBloc extends Cubit<RefundState> {
     late final StreamSubscription streamSubscription;
     streamSubscription = _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
       (nodeState) async {
+        _log.info('Initialize RefundBloc');
         listRefundables();
         streamSubscription.cancel();
       },
@@ -45,13 +46,8 @@ class RefundBloc extends Cubit<RefundState> {
 
   _listenSwapEvents() {
     _breezSDK.swapEventsStream.listen((event) {
-      if (event is BreezEvent_SwapUpdated) {
-        _log.info('Got SwapUpdate event: $event');
-        var swapInfo = event.details;
-        if (swapInfo.status == SwapStatus.Refundable || swapInfo.status == SwapStatus.Completed) {
-          listRefundables();
-        }
-      }
+      _log.info('Got SwapUpdate event: $event');
+      listRefundables();
     }, onError: (e) {
       _log.severe('Failed to listen swapEventsStream: $e');
     });

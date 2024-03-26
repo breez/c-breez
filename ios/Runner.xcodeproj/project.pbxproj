@@ -14,6 +14,8 @@
 		54AE10A26ED5F6BFE2132EED /* BreezSDK.swift in Resources */ = {isa = PBXBuildFile; fileRef = 5FA04B52B131437219FBC6F7 /* BreezSDK.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		64856A6CFD043906C9297779 /* TaskProtocol.swift in Resources */ = {isa = PBXBuildFile; fileRef = B9313686B0681E5B408932F1 /* TaskProtocol.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */; };
+		736E5FB82BB2CA240036C720 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 736E5FB72BB2CA240036C720 /* PrivacyInfo.xcprivacy */; };
+		736E5FB92BB2CA2E0036C720 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 736E5FB62BB2C8DC0036C720 /* PrivacyInfo.xcprivacy */; };
 		7390B36A2BA4E735008C8C2A /* ServiceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E03BDED83E932CCF7CABB0 /* ServiceConfig.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		79E2E4831EE7835EDE5BA587 /* LnurlPayInfo.swift in Resources */ = {isa = PBXBuildFile; fileRef = F244930C02A323D2895417C7 /* LnurlPayInfo.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
@@ -99,6 +101,8 @@
 		6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6F2FC2C729783D6900DC3B60 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		72A0A889CF602B6CE0830EE7 /* Pods-Breez Notification Service Extension.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.profile.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.profile.xcconfig"; sourceTree = "<group>"; };
+		736E5FB62BB2C8DC0036C720 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		736E5FB72BB2CA240036C720 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -237,6 +241,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				736E5FB72BB2CA240036C720 /* PrivacyInfo.xcprivacy */,
 				6F2FC2C729783D6900DC3B60 /* Runner.entitlements */,
 				6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
@@ -257,6 +262,7 @@
 				E84A6BFC2B98E2A700C58F51 /* SdkLogListener.swift */,
 				E87F5EC62B0E2510007FB1DF /* Breez Notification Service Extension.entitlements */,
 				E87F5EBC2B0E24D7007FB1DF /* NotificationService.swift */,
+				736E5FB62BB2C8DC0036C720 /* PrivacyInfo.xcprivacy */,
 				E87F5EBE2B0E24D7007FB1DF /* Info.plist */,
 				E84C89A52B98D96700347527 /* KeychainHelper.swift */,
 			);
@@ -383,6 +389,7 @@
 				FAD5AED09BBC79CB53D18356 /* ReceivePayment.swift in Resources */,
 				B35490FF878372F502E52A83 /* RedeemSwap.swift in Resources */,
 				DA4F992DA2A2464B0BA60A52 /* ServiceConfig.swift in Resources */,
+				736E5FB82BB2CA240036C720 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,6 +397,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				736E5FB92BB2CA2E0036C720 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

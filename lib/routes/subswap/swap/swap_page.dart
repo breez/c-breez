@@ -45,10 +45,11 @@ class SwapPageState extends State<SwapPage> {
                   child: Column(
                     children: [
                       ...[
-                        if (swapState.unused != null)
-                          DepositWidget(swapState.unused!)
-                        else if (swapState.inProgress != null)
+                        // Always show swap in progress first
+                        if (swapState.inProgress != null)
                           SwapInprogress(swap: swapState.inProgress!)
+                        else if (swapState.unused != null)
+                          DepositWidget(swapState.unused!)
                       ],
                       if (swapState.error != null) ...[
                         DepositErrorMessage(errorMessage: extractExceptionMessage(swapState.error!, texts)),

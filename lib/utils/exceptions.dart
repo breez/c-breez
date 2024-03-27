@@ -17,20 +17,25 @@ String extractExceptionMessage(
       message = _localizedExceptionMessage(texts, message);
       return message;
     }
+  } else if (exception is FrbAnyhowException) {
+    if (exception.anyhow.isNotEmpty) {
+      var message = exception.anyhow.replaceAll("\n", " ").trim();
+      message = _extractInnerErrorMessage(message)?.trim() ?? message;
+      message = _localizedExceptionMessage(texts, message);
+      return message;
+    }
   }
   return _extractInnerErrorMessage(exception.toString()) ?? defaultErrorMsg ?? exception.toString();
 }
 
 String? _extractInnerErrorMessage(String content) {
   _log.info("extractInnerErrorMessage: $content");
-  final anyhowRegex = RegExp(r'((?<=FrbAnyhowException.*: )(.*)(?=.*\)))');
   final innerMessageRegex = RegExp(r'((?<=message: \\")(.*)(?=.*\\"))');
   final messageRegex = RegExp(r'((?<=message: ")(.*)(?=.*"))');
   final causedByRegex = RegExp(r'((?<=Caused by: )(.*)(?=.*))');
   final reasonRegex = RegExp(r'((?<=FAILURE_REASON_)(.*)(?=.*))');
 
-  return anyhowRegex.stringMatch(content) ??
-      innerMessageRegex.stringMatch(content) ??
+  return innerMessageRegex.stringMatch(content) ??
       messageRegex.stringMatch(content) ??
       causedByRegex.stringMatch(content) ??
       reasonRegex.stringMatch(content);
@@ -42,11 +47,11 @@ String _localizedExceptionMessage(
 ) {
   _log.info("localizedExceptionMessage: $originalMessage");
   final messageToLower = originalMessage.toLowerCase();
-  if (messageToLower == "transport error") {
+  if (messageToLower.contains("transport error")) {
     return texts.generic_network_error;
-  } else if (messageToLower == "insufficient_balance") {
+  } else if (messageToLower.contains("insufficient_balance")) {
     return texts.payment_error_insufficient_balance;
-  } else if (messageToLower == "incorrect_payment_details") {
+  } else if (messageToLower.contains("incorrect_payment_details")) {
     return texts.payment_error_incorrect_payment_details;
   } else if (messageToLower == "error") {
     return texts.payment_error_unexpected_error;

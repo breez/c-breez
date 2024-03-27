@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
 import 'package:c_breez/utils/exceptions.dart';
@@ -12,46 +13,68 @@ final _log = Logger("RevSwapsInProgressBloc");
 class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
   final BreezSDK _breezSDK;
 
-  RevSwapsInProgressBloc(this._breezSDK) : super(RevSwapsInProgressState(isLoading: true)) {
+  RevSwapsInProgressBloc(this._breezSDK) : super(RevSwapsInProgressState.initial()) {
+    _log.info("Initializing RevSwapsInProgressBloc");
     pollReverseSwapsInProgress();
+  }
+
+  pollReverseSwapsInProgress() async {
+    _log.info("Started polling for reverse swaps in progress.");
+    await _refreshInProgressReverseSwaps().whenComplete(() => _startPolling());
   }
 
   late Timer timer;
 
-  pollReverseSwapsInProgress() {
-    _log.info("reverse swaps in progress polling started");
-    emit(RevSwapsInProgressState(isLoading: true));
-    timer = Timer.periodic(const Duration(seconds: 5), _refreshInProgressReverseSwaps);
-    _refreshInProgressReverseSwaps(timer);
+  void _startPolling() {
+    timer = Timer.periodic(const Duration(seconds: 30), (_) async => _refreshInProgressReverseSwaps);
   }
 
-  void _refreshInProgressReverseSwaps(Timer timer) async {
-    final texts = getSystemAppLocalizations();
+  Future<void> _refreshInProgressReverseSwaps() async {
     try {
+      _log.info("Refreshing reverse swaps in progress.");
+      _emitState(state.copyWith(isLoading: true));
       final reverseSwapsInProgress = await _breezSDK.inProgressOnchainPayments();
-      for (var revSwapInfo in reverseSwapsInProgress) {
-        _log.info(
-          "Reverse Swap ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats status:${revSwapInfo.status.name}",
-        );
-      }
-      if (!isClosed) {
-        emit(RevSwapsInProgressState(reverseSwapsInProgress: reverseSwapsInProgress));
-      }
+      _logReverseSwapsInProgress(reverseSwapsInProgress);
+      _emitState(state.copyWith(
+        reverseSwapsInProgress: reverseSwapsInProgress,
+        error: null,
+      ));
     } catch (e) {
+      final texts = getSystemAppLocalizations();
       final errorMessage = extractExceptionMessage(e, texts);
-      if (!isClosed) {
-        emit(RevSwapsInProgressState(error: errorMessage));
-      }
+      _log.info("Failed to fetch reverse swaps in progress. $errorMessage");
+      _stopPolling();
+      _emitState(state.copyWith(error: errorMessage));
+    } finally {
+      _emitState(state.copyWith(isLoading: false));
+    }
+  }
 
+  void _logReverseSwapsInProgress(List<ReverseSwapInfo> reverseSwapsInProgress) {
+    for (var revSwapInfo in reverseSwapsInProgress) {
+      _log.info(
+        "Reverse Swap of id: ${revSwapInfo.id} to ${revSwapInfo.claimPubkey} for ${revSwapInfo.onchainAmountSat} sats. Current status:${revSwapInfo.status.name}",
+      );
+    }
+  }
+
+  void _stopPolling() {
+    if (timer.isActive) {
+      _log.info("Stop polling for reverse swaps in progress.");
       timer.cancel();
-      _log.info("reverse swaps in progress polling finished due to error");
+    }
+  }
+
+  void _emitState(RevSwapsInProgressState state) {
+    if (!isClosed) {
+      emit(state);
     }
   }
 
   @override
   Future<void> close() {
-    timer.cancel();
-    _log.info("reverse swaps in progress polling finished");
+    _stopPolling();
+    _log.info("Finished polling for reverse swaps in progress.");
     return super.close();
   }
 }

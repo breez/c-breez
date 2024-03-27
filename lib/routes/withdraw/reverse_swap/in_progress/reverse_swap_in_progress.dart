@@ -56,8 +56,10 @@ class _TxLink extends StatelessWidget {
           return const Loader();
         }
 
-        final transactionUrl =
-            BlockChainExplorerUtils().formatTransactionUrl(mempoolInstance: snapshot.data!, txid: txid);
+        final transactionUrl = BlockChainExplorerUtils().formatTransactionUrl(
+          mempoolInstance: snapshot.data!,
+          txid: lockupTxid,
+        );
 
         return LinkLauncher(
           linkName: txid,

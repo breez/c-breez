@@ -111,7 +111,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
   }) async {
     try {
       _log.info(
-        "Estimate reverse swap fees for $amountSat sats to be ${amountType == SwapAmountType.Receive ? "received on the" : "sent to the"} destination address",
+        "Estimate reverse swap fees for $amountSat sats to be ${amountType == SwapAmountType.Receive ? "received on the" : "sent to the"} destination address w/ $claimTxFeerate sat/Vbyte fee rate.",
       );
       final req = PrepareOnchainPaymentRequest(
         amountSat: amountSat,
@@ -119,7 +119,9 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         claimTxFeerate: claimTxFeerate,
       );
       PrepareOnchainPaymentResponse revSwapPairInfo = await _breezSDK.prepareOnchainPayment(req: req);
-      _log.info("Total estimated fees for reverse swap: ${revSwapPairInfo.totalFees}");
+      _log.info(
+        "Total estimated fees for reverse swap: ${revSwapPairInfo.totalFees} w/ $claimTxFeerate sat/Vbyte fee rate.",
+      );
       return revSwapPairInfo;
     } catch (e) {
       _log.severe("prepareOnchainPayment error", e);

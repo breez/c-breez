@@ -9,40 +9,10 @@ import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ReverseSwapInprogress extends StatelessWidget {
-  final sdk.ReverseSwapInfo reverseSwap;
+class ReverseSwapInProgress extends StatelessWidget {
+  final String lockupTxid;
 
-  const ReverseSwapInprogress({
-    required this.reverseSwap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final texts = context.texts();
-    final lockTxID = context.watch<sdk.ReverseSwapInfo>().lockupTxid;
-
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _ContentWrapper(
-          content: Text(texts.swap_in_progress_message_waiting_confirmation, textAlign: TextAlign.center),
-          top: 50.0,
-        ),
-        if (lockTxID != null) ...[
-          _ContentWrapper(
-            content: _TxLink(txid: lockTxID),
-          ),
-        ]
-      ],
-    );
-  }
-}
-
-class _TxLink extends StatelessWidget {
-  final String txid;
-
-  const _TxLink({required this.txid});
+  const ReverseSwapInProgress({required this.lockupTxid});
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +32,10 @@ class _TxLink extends StatelessWidget {
         );
 
         return LinkLauncher(
-          linkName: txid,
+          linkName: lockupTxid,
           linkAddress: transactionUrl,
           onCopy: () {
-            ServiceInjector().device.setClipboardText(txid);
+            ServiceInjector().device.setClipboardText(lockupTxid);
             showFlushbar(
               context,
               message: text.add_funds_transaction_id_copied,
@@ -74,25 +44,6 @@ class _TxLink extends StatelessWidget {
           },
         );
       },
-    );
-  }
-}
-
-class _ContentWrapper extends StatelessWidget {
-  final Widget content;
-  final double top;
-
-  const _ContentWrapper({required this.content, this.top = 30.0});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: top,
-        left: 30.0,
-        right: 30.0,
-      ),
-      child: content,
     );
   }
 }

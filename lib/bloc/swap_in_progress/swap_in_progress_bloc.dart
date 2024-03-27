@@ -34,7 +34,8 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
       _log.info("Refreshing swap in address.");
       _emitState(state.copyWith(isLoading: true));
       SwapInfo? inProgress = (await _breezSDK.inProgressSwap());
-      _emitState(state.copyWith(inProgress: inProgress));
+      // Reset unused if there's a swap in progress
+      _emitState(state.copyWith(inProgress: inProgress, unused: inProgress != null ? null : state.unused));
       if (state.inProgress == null && state.unused == null) {
         _emitState(
           state.copyWith(

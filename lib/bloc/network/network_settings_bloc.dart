@@ -89,7 +89,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
     ));
   }
 
-  Future<String> get mempoolInstance async {
+  Future<String?> get mempoolInstance async {
     String? mempoolInstance = await ServiceInjector().preferences.getMempoolSpaceUrl();
     if (mempoolInstance == null) {
       final config = await Config.instance();

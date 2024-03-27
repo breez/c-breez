@@ -6,7 +6,6 @@ import 'package:c_breez/routes/subswap/swap/widgets/address_widget_placeholder.d
 import 'package:c_breez/routes/subswap/swap/widgets/deposit_widget.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/inprogress_swap.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
-import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +51,7 @@ class SwapPageState extends State<SwapPage> {
                           DepositWidget(swapState.unused!)
                       ],
                       if (swapState.error != null) ...[
-                        DepositErrorMessage(errorMessage: extractExceptionMessage(swapState.error!, texts)),
+                        DepositErrorMessage(errorMessage: texts.invoice_btc_address_network_error),
                       ]
                     ],
                   ),

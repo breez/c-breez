@@ -59,7 +59,7 @@ class SwapPageState extends State<SwapPage> {
           bottomNavigationBar: swapState.error != null
               ? SingleButtonBottomBar(
                   text: texts.invoice_btc_address_action_retry,
-                  onPressed: () => context.read<SwapInProgressBloc>().pollSwapAddress(),
+                  onPressed: () => context.read<SwapInProgressBloc>().pollSwapInAddress(),
                 )
               : const SizedBox(),
         );

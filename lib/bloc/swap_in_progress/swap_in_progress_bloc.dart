@@ -13,63 +13,64 @@ final _log = Logger("SwapInProgressBloc");
 class SwapInProgressBloc extends Cubit<SwapInProgressState> {
   final BreezSDK _breezSDK;
 
-  SwapInProgressBloc(this._breezSDK) : super(SwapInProgressState(null, null, isLoading: true)) {
-    pollSwapAddress();
+  SwapInProgressBloc(this._breezSDK) : super(SwapInProgressState.initial()) {
+    _log.info("Initializing SwapInProgressBloc");
+    pollSwapInAddress();
+  }
+
+  pollSwapInAddress() async {
+    _log.info("Started polling for swap in address.");
+    await _refreshAddresses().whenComplete(() => _startPolling());
   }
 
   late Timer timer;
 
-  pollSwapAddress() {
-    _log.info("swap in address polling started");
-    emit(SwapInProgressState(null, null, isLoading: true));
-    timer = Timer.periodic(const Duration(seconds: 30), _refreshAddresses);
-    _refreshAddresses(timer);
+  void _startPolling() {
+    timer = Timer.periodic(const Duration(seconds: 30), (_) async => _refreshAddresses);
   }
 
-  void _refreshAddresses(Timer timer) async {
-    final currentState = state;
-    final texts = getSystemAppLocalizations();
+  Future<void> _refreshAddresses() async {
     try {
-      final swapInProgress = (await _breezSDK.inProgressSwap());
-      SwapInfo? swapUnused = currentState.unused;
-      if (swapInProgress != null) {
-        swapUnused = null;
-        if (swapInProgress.status == SwapStatus.WaitingConfirmation) {
-          _log.info("Swap in progress is waiting for confirmation. Cancelling timer.");
-          timer.cancel();
-        }
-      } else {
-        // Save the first swap address we receive, when the state is empty.
-        // Any subsequent calls due to the timer will re-use this value, until
-        // either this swap becomes inProgress, or the user navigates away from this UI.
-        //
-        // This is especially useful when this UI is first opened. Possibly due
-        // to timer bugs, there are often bursts of calls to sdk.receiveOnchain()
-        // in the first 2-3 seconds after opening this UI. Since these calls might
-        // not return immediately, they will likely be run in parallel.
-        // Such parallel calls lead can lead to more than one unused swap address being created.
-        swapUnused =
-            currentState.unused ?? (await _breezSDK.receiveOnchain(req: const ReceiveOnchainRequest()));
-      }
-      _log.info("swapInProgress: $swapInProgress, swapUnused: $swapUnused");
-      if (!isClosed) {
-        emit(SwapInProgressState(swapInProgress, swapUnused));
+      _log.info("Refreshing swap in address.");
+      _emitState(state.copyWith(isLoading: true));
+      SwapInfo? inProgress = (await _breezSDK.inProgressSwap());
+      _emitState(state.copyWith(inProgress: inProgress));
+      if (state.inProgress == null && state.unused == null) {
+        _emitState(
+          state.copyWith(
+            unused: await _breezSDK.receiveOnchain(req: const ReceiveOnchainRequest()),
+            error: null,
+          ),
+        );
       }
     } catch (e) {
+      final texts = getSystemAppLocalizations();
       final errorMessage = extractExceptionMessage(e, texts);
+      _log.info("Failed to refresh addresses. $errorMessage");
+      _stopPolling();
+      _emitState(state.copyWith(error: errorMessage));
+    } finally {
+      _emitState(state.copyWith(isLoading: false));
+    }
+  }
+
+  void _stopPolling() {
+    if (timer.isActive) {
+      _log.info("Stop polling for swaps in address.");
       timer.cancel();
-      if (!isClosed) {
-        emit(SwapInProgressState(null, null, error: errorMessage));
-      }
-      _log.info("swap in address polling finished due to error");
-      rethrow;
+    }
+  }
+
+  void _emitState(SwapInProgressState state) {
+    if (!isClosed) {
+      emit(state);
     }
   }
 
   @override
   Future<void> close() {
-    timer.cancel();
-    _log.info("swap in address polling finished");
+    _stopPolling();
+    _log.info("Finished polling for swap in address.");
     return super.close();
   }
 }

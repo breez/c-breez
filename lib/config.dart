@@ -15,12 +15,12 @@ class Config {
 
   final sdk.Config sdkConfig;
   final sdk.NodeConfig nodeConfig;
-  final String defaultMempoolUrl;
+  final String? defaultMempoolUrl;
 
   Config._({
     required this.sdkConfig,
     required this.nodeConfig,
-    required this.defaultMempoolUrl,
+    this.defaultMempoolUrl,
   });
 
   static Future<Config> instance({
@@ -33,7 +33,7 @@ class Config {
       final breezSDK = injector.breezSDK;
       final breezConfig = await _getBundledConfig();
       final defaultConf = await _getDefaultConf(breezSDK, breezConfig.apiKey, breezConfig.nodeConfig);
-      final defaultMempoolUrl = defaultConf.mempoolspaceUrl;
+      final defaultMempoolUrl = defaultConf.mempoolspaceUrl ?? "https://mempool.space/";
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
 
       _instance = Config._(
@@ -99,7 +99,7 @@ class Config {
     return configuredExemptFee;
   }
 
-  static Future<String> _mempoolSpaceUrl(
+  static Future<String?> _mempoolSpaceUrl(
     ServiceInjector serviceInjector,
     sdk.Config defaultConf,
   ) async {

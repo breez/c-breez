@@ -34,7 +34,7 @@ class _RefundItemActionState extends State<RefundItemAction> {
 
     return FutureBuilder(
       future: networkSettingsBloc.mempoolInstance,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Loader();
         }

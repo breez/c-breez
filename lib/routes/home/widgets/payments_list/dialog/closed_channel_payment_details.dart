@@ -22,9 +22,9 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
     final texts = context.texts();
     final networkSettingsBloc = context.read<NetworkSettingsBloc>();
 
-    return FutureBuilder<String>(
+    return FutureBuilder<String?>(
       future: networkSettingsBloc.mempoolInstance,
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Loader();
         }
@@ -44,7 +44,9 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
                   paymentMinutiae.closingTxid != null) ...[
                 TxWidget(
                   txURL: BlockChainExplorerUtils().formatTransactionUrl(
-                      txid: paymentMinutiae.closingTxid!, mempoolInstance: mempoolInstance),
+                    txid: paymentMinutiae.closingTxid!,
+                    mempoolInstance: mempoolInstance,
+                  ),
                   txID: paymentMinutiae.closingTxid!,
                 ),
               ],
@@ -67,14 +69,18 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
             if (paymentMinutiae.fundingTxid != null) ...[
               TxWidget(
                 txURL: BlockChainExplorerUtils().formatTransactionUrl(
-                    txid: paymentMinutiae.fundingTxid!, mempoolInstance: mempoolInstance),
+                  txid: paymentMinutiae.fundingTxid!,
+                  mempoolInstance: mempoolInstance,
+                ),
                 txID: paymentMinutiae.fundingTxid!,
               ),
             ],
             if (paymentMinutiae.closingTxid != null) ...[
               TxWidget(
                 txURL: BlockChainExplorerUtils().formatTransactionUrl(
-                    txid: paymentMinutiae.closingTxid!, mempoolInstance: mempoolInstance),
+                  txid: paymentMinutiae.closingTxid!,
+                  mempoolInstance: mempoolInstance,
+                ),
                 txID: paymentMinutiae.closingTxid!,
               ),
             ]

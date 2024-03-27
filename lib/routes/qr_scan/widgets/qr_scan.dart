@@ -45,7 +45,7 @@ class QRScanState extends State<QRScan> {
                     onDetect: (capture) {
                       final List<Barcode> barcodes = capture.barcodes;
                       for (final barcode in barcodes) {
-                        _log.info("Barcode detected: $barcode");
+                        _log.info("Barcode detected. ${barcode.displayValue}");
                         if (popped) {
                           _log.info("Skipping, already popped");
                           return;
@@ -59,7 +59,7 @@ class QRScanState extends State<QRScan> {
                           _log.warning("Failed to scan QR code.");
                         } else {
                           popped = true;
-                          _log.info("Popping read QR code $code");
+                          _log.info("Popping read QR code: $code");
                           Navigator.of(context).pop(code);
                         }
                       }

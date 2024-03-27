@@ -12,7 +12,6 @@ import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/error_report_bloc/error_report_bloc.dart';
 import 'package:c_breez/bloc/health_check/health_check_bloc.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
-import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
@@ -88,7 +87,6 @@ void main() async {
               breezSDK,
               injector.lightningLinks,
               injector.device,
-              const InputPrinter(),
             ),
           ),
           BlocProvider<UserProfileBloc>(

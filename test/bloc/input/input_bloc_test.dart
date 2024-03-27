@@ -1,6 +1,5 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
-import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/services/injector.dart';
@@ -41,7 +40,7 @@ void main() {
           "VCEKGEFCVG6KXDFJV9JRYFN5V9NN6MR0VA5KUZPFUCA";
       final parsedInput = await breezSDK.parseInput(input: input) as InputType_LnUrlPay;
 
-      final bloc = InputBloc(breezSDK, injector.lightningLinks, injector.device, const InputPrinter());
+      final bloc = InputBloc(breezSDK, injector.lightningLinks, injector.device);
       breezSDK.nodeInfo();
 
       expectLater(

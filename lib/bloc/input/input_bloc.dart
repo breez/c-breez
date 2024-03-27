@@ -18,7 +18,6 @@ class InputBloc extends Cubit<InputState> {
   final BreezSDK _breezSDK;
   final LightningLinksService _lightningLinks;
   final Device _device;
-  final InputPrinter _printer;
 
   final _decodeInvoiceController = StreamController<InputData>();
 
@@ -26,7 +25,6 @@ class InputBloc extends Cubit<InputState> {
     this._breezSDK,
     this._lightningLinks,
     this._device,
-    this._printer,
   ) : super(const InputState.empty()) {
     _initializeInputBloc();
   }
@@ -97,7 +95,7 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future<InputState> _handleParsedInput(InputType parsedInput, InputSource source) async {
-    _log.info("handleParsedInput: $source => ${_printer.inputTypeToString(parsedInput)}");
+    _log.info("handleParsedInput: $source => ${inputTypeToString(parsedInput)}");
     InputState result;
     if (parsedInput is InputType_Bolt11) {
       result = await handlePaymentRequest(parsedInput, source);

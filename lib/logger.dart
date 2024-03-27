@@ -26,6 +26,11 @@ void shareLog() async {
   Share.shareXFiles([zipFile]);
 }
 
+void printWrapped(Logger log, String text) {
+  final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
+  pattern.allMatches(text).forEach((match) => log.info(match.group(0)));
+}
+
 class BreezLogger {
   BreezLogger() {
     Logger.root.level = Level.INFO;

@@ -103,7 +103,7 @@ class NodeConnectivityHandler extends Handler {
                 final accountBloc = context.read<AccountBloc>();
                 Future.delayed(const Duration(milliseconds: 500), () async {
                   try {
-                    await accountBloc.connect(restored: true);
+                    await accountBloc.connect();
                   } catch (error) {
                     _log.severe("Failed to reconnect");
                     rethrow;

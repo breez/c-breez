@@ -39,7 +39,7 @@ void main() {
       injector.keychain.write(CredentialsManager.accountMnemonic, "a3eed");
       AccountBloc accBloc = AccountBloc(breezSDK, CredentialsManager(keyChain: injector.keychain));
 
-      await accBloc.connect(mnemonic: testMnemonic, restored: true);
+      await accBloc.connect(mnemonic: testMnemonic, isRestore: true);
       var accountState = accBloc.state;
       expect(accountState.blockheight, greaterThan(1));
       expect(accountState.id?.length, equals(66));

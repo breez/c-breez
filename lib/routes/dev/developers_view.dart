@@ -62,12 +62,16 @@ class _DevelopersViewState extends State<DevelopersView> {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+    final texts = getSystemAppLocalizations();
     final themeData = Theme.of(context);
 
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         leading: const back_button.BackButton(),
+        title: Text(texts.home_drawer_item_title_developers),
         actions: [
           PopupMenuButton<Choice>(
             onSelected: (c) => c.function(context),
@@ -131,7 +135,6 @@ class _DevelopersViewState extends State<DevelopersView> {
                 .toList(),
           ),
         ],
-        title: const Text("Developers"),
       ),
       body: CommandLineInterface(scaffoldKey: scaffoldKey),
     );

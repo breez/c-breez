@@ -76,23 +76,23 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   Future connect({
     String? mnemonic,
-    bool restored = false,
+    bool isRestore = true,
   }) async {
-    _log.info("connect new mnemonic: ${mnemonic != null}, restored: $restored");
+    _log.info("connect new mnemonic: ${mnemonic != null}, restored: $isRestore");
     emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
     if (mnemonic != null) {
       await _credentialsManager.storeMnemonic(mnemonic: mnemonic);
       emit(state.copyWith(
         initial: false,
-        verificationStatus: restored ? VerificationStatus.VERIFIED : null,
+        verificationStatus: isRestore ? VerificationStatus.VERIFIED : null,
       ));
     }
-    await _startSdkForever();
+    await _startSdkForever(isRestore: isRestore);
   }
 
-  Future _startSdkForever() async {
+  Future _startSdkForever({bool isRestore = true}) async {
     _log.info("starting sdk forever");
-    await _startSdkOnce();
+    await _startSdkOnce(isRestore: isRestore);
 
     // in case we failed to start (lack of inet connection probably)
     if (state.connectionStatus == ConnectionStatus.DISCONNECTED) {
@@ -113,7 +113,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  Future _startSdkOnce() async {
+  Future _startSdkOnce({bool isRestore = true}) async {
     _log.info("starting sdk once");
     var config = await Config.instance();
     if (config.sdkConfig.apiKey != null) {
@@ -133,6 +133,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       final req = sdk.ConnectRequest(
         config: config.sdkConfig,
         seed: seed,
+        restoreOnly: isRestore,
       );
       await _breezSDK.connect(req: req);
       _log.info("connected to breez lib");

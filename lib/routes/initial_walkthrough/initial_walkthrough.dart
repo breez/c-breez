@@ -172,7 +172,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     try {
       await accountBloc.connect(
         mnemonic: mnemonic ?? bip39.generateMnemonic(strength: 128),
-        restored: isRestore,
+        isRestore: isRestore,
       );
       themeProvider.setTheme('dark');
       navigator.pushReplacementNamed('/');

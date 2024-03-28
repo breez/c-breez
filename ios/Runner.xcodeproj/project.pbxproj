@@ -45,6 +45,7 @@
 		E881B7F72BA07BA3005B2820 /* LnurlPayInvoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 590A05D747C4C91AE3779479 /* LnurlPayInvoice.swift */; };
 		E881B7F82BA07BA3005B2820 /* ReceivePayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD053F37E74B37E059191A04 /* ReceivePayment.swift */; };
 		E881B7F92BA07BA3005B2820 /* RedeemSwap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312F74EDBC0577C24D566174 /* RedeemSwap.swift */; };
+		E88B374C2BB548EE00882BF4 /* PrivacyInfo.xcprivacy in Sources */ = {isa = PBXBuildFile; fileRef = 736E5FB62BB2C8DC0036C720 /* PrivacyInfo.xcprivacy */; };
 		E89C62AB2B7F6A84009E5086 /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA04B52B131437219FBC6F7 /* BreezSDK.swift */; };
 		E91BB176DEFB5F209B49CF03 /* ServiceLogger.swift in Resources */ = {isa = PBXBuildFile; fileRef = 97C7F084A4F0FFE7A5159471 /* ServiceLogger.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		EEBEBCF6ABA4C78C45CC3246 /* Constants.swift in Resources */ = {isa = PBXBuildFile; fileRef = DFD3934DE72A50CD9C7285B7 /* Constants.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
@@ -514,6 +515,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E88B374C2BB548EE00882BF4 /* PrivacyInfo.xcprivacy in Sources */,
 				7390B36A2BA4E735008C8C2A /* ServiceConfig.swift in Sources */,
 				E881B7EE2BA07BA3005B2820 /* BreezSDKConnector.swift in Sources */,
 				E881B7EF2BA07BA3005B2820 /* Constants.swift in Sources */,

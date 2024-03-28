@@ -76,20 +76,20 @@ class AccountPage extends StatelessWidget {
 
     final bool showSliver =
         nonFilteredPayments.isNotEmpty || paymentFilters.filters != PaymentTypeFilter.values;
-
+    int? startDate = paymentFilters.fromTimestamp;
+    int? endDate = paymentFilters.toTimestamp;
+    bool hasDateFilter = startDate != null && endDate != null;
     if (showSliver) {
       slivers.add(
         PaymentsFilterSliver(
           maxSize: _kFilterMaxSize,
           scrollController: scrollController,
-          hasFilter: paymentFilters.filters != PaymentTypeFilter.values,
+          hasFilter: paymentFilters.filters != PaymentTypeFilter.values || hasDateFilter,
         ),
       );
     }
 
-    int? startDate = paymentFilters.fromTimestamp;
-    int? endDate = paymentFilters.toTimestamp;
-    if (startDate != null && endDate != null) {
+    if (hasDateFilter) {
       slivers.add(
         HeaderFilterChip(
           _kFilterMaxSize,

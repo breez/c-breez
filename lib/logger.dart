@@ -33,7 +33,7 @@ void printWrapped(Logger log, String text) {
 
 class BreezLogger {
   BreezLogger() {
-    Logger.root.level = Level.INFO;
+    Logger.root.level = Level.CONFIG;
 
     if (kDebugMode) {
       Logger.root.onRecord.listen((record) {

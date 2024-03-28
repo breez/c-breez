@@ -23,6 +23,7 @@ final ThemeData breezLightTheme = ThemeData(
   canvasColor: BreezColors.blue[500],
   bottomAppBarTheme: const BottomAppBarTheme(elevation: 0, color: Color(0xFF0085fb)),
   appBarTheme: AppBarTheme(
+    centerTitle: false,
     backgroundColor: BreezColors.blue[500],
     iconTheme: const IconThemeData(
       color: Colors.white,

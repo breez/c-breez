@@ -18,6 +18,8 @@ class MoonPayPage extends StatefulWidget {
 }
 
 class _MoonPayPageState extends State<MoonPayPage> {
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -34,17 +36,19 @@ class _MoonPayPageState extends State<MoonPayPage> {
     return Material(
       type: MaterialType.transparency,
       child: Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.8),
+        backgroundColor: isLoading ? Colors.black.withOpacity(0.8) : Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              color: themeData.iconTheme.color,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
+          actions: isLoading
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    color: themeData.iconTheme.color,
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ]
+              : [],
         ),
         body: BlocListener<MoonPayBloc, MoonPayState>(
           listener: (context, state) async {
@@ -54,6 +58,9 @@ class _MoonPayPageState extends State<MoonPayPage> {
               if (state.webViewStatus == WebViewStatus.error) {
                 _closeOnError();
               } else {
+                setState(() {
+                  isLoading = false;
+                });
                 await promptLSPFeeAndNavigate(context, state.buyBitcoinResponse.openingFeeParams!).then(
                   (isApproved) {
                     _launchMoonPayUrl(state.buyBitcoinResponse.url, isApproved);

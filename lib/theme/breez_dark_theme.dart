@@ -102,23 +102,78 @@ final ThemeData breezDarkTheme = ThemeData(
     }),
   ),
   chipTheme: const ChipThemeData(backgroundColor: Color(0xFF0085fb)),
+  datePickerTheme: calendarDarkTheme,
 );
 
-final ThemeData calendarDarkTheme = ThemeData.dark().copyWith(
-  colorScheme: const ColorScheme.light(
-    primary: Color(0xFF0085fb), // header bg color
-    onPrimary: Colors.white, // header text color
-    onSurface: Colors.white, // body text color
+final DatePickerThemeData calendarDarkTheme = DatePickerThemeData(
+  yearBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return const Color(0xFF0085fb);
+    }
+    return Colors.transparent;
+  }),
+  yearForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.disabled)) {
+      return Colors.white38;
+    }
+    return Colors.white;
+  }),
+  dayBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return const Color(0xFF0085fb);
+    }
+    return Colors.transparent;
+  }),
+  dayForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.disabled)) {
+      return Colors.white38;
+    }
+    return Colors.white;
+  }),
+  todayBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return const Color(0xFF0085fb);
+    }
+    return Colors.transparent;
+  }),
+  todayForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return Colors.white;
+    }
+    if (states.contains(MaterialState.disabled)) {
+      return Colors.white38;
+    }
+    return const Color(0xFF0085fb);
+  }),
+  todayBorder: const BorderSide(color: Color(0xFF0085fb)),
+  headerBackgroundColor: const Color(0xFF0085fb),
+  headerForegroundColor: Colors.white,
+  backgroundColor: const Color(0xFF152a3d),
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(
+      Radius.circular(12.0),
+    ),
   ),
-  textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(foregroundColor: const Color(0xFF0085fb)),
+  cancelButtonStyle: ButtonStyle(
+    foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+      (states) {
+        if (states.contains(MaterialState.disabled)) {
+          return Colors.white38;
+        }
+
+        return const Color(0xFF0085fb);
+      },
+    ),
   ),
-  dialogTheme: const DialogTheme(
-    backgroundColor: Color(0xFF152a3d),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(12.0),
-      ),
+  confirmButtonStyle: ButtonStyle(
+    foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+      (states) {
+        if (states.contains(MaterialState.disabled)) {
+          return Colors.white38;
+        }
+
+        return const Color(0xFF0085fb);
+      },
     ),
   ),
 );

@@ -109,22 +109,85 @@ final ThemeData breezLightTheme = ThemeData(
     ),
   ),
   chipTheme: const ChipThemeData(backgroundColor: Color(0xFF0085fb)),
+  datePickerTheme: calendarLightTheme,
 );
 
-final ThemeData calendarLightTheme = ThemeData.light().copyWith(
-  colorScheme: const ColorScheme.light(
-    primary: Color.fromRGBO(5, 93, 235, 1.0),
-  ),
-  textButtonTheme: TextButtonThemeData(
-    style: TextButton.styleFrom(
-      foregroundColor: BreezColors.blue[500],
+final DatePickerThemeData calendarLightTheme = DatePickerThemeData(
+  weekdayStyle: TextStyle(color: Colors.black.withOpacity(0.6)),
+  yearBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return const Color.fromRGBO(5, 93, 235, 1.0);
+    }
+    return Colors.transparent;
+  }),
+  yearForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return Colors.white;
+    }
+    if (states.contains(MaterialState.disabled)) {
+      return Colors.black38;
+    }
+    return Colors.black;
+  }),
+  dayBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return const Color.fromRGBO(5, 93, 235, 1.0);
+    }
+    return Colors.transparent;
+  }),
+  dayForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return Colors.white;
+    }
+    if (states.contains(MaterialState.disabled)) {
+      return Colors.black38;
+    }
+    return Colors.black;
+  }),
+  todayBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return const Color.fromRGBO(5, 93, 235, 1.0);
+    }
+    return Colors.transparent;
+  }),
+  todayForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+    if (states.contains(MaterialState.selected)) {
+      return Colors.white;
+    }
+    if (states.contains(MaterialState.disabled)) {
+      return Colors.black38;
+    }
+    return const Color.fromRGBO(5, 93, 235, 1.0);
+  }),
+  todayBorder: const BorderSide(color: Color.fromRGBO(5, 93, 235, 1.0)),
+  headerBackgroundColor: const Color.fromRGBO(5, 93, 235, 1.0),
+  headerForegroundColor: Colors.white,
+  backgroundColor: Colors.white,
+  shape: const RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(
+      Radius.circular(12.0),
     ),
   ),
-  dialogTheme: const DialogTheme(
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(
-        Radius.circular(12.0),
-      ),
+  cancelButtonStyle: ButtonStyle(
+    foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+      (states) {
+        if (states.contains(MaterialState.disabled)) {
+          return Colors.black38;
+        }
+
+        return const Color.fromRGBO(5, 93, 235, 1.0);
+      },
+    ),
+  ),
+  confirmButtonStyle: ButtonStyle(
+    foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+      (states) {
+        if (states.contains(MaterialState.disabled)) {
+          return Colors.black38;
+        }
+
+        return const Color.fromRGBO(5, 93, 235, 1.0);
+      },
     ),
   ),
 );

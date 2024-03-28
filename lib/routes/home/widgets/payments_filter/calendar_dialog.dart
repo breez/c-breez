@@ -135,9 +135,12 @@ class CalendarDialogState extends State<CalendarDialog> {
       firstDate: widget.firstDate,
       lastDate: DateTime.now(),
       builder: (context, child) {
+        final themeData = Theme.of(context);
         return Theme(
-          data: Theme.of(context).calendarTheme,
-          child: child!,
+          data: themeData.isLightTheme
+              ? themeData.copyWith(colorScheme: themeData.colorScheme.copyWith(onSurface: Colors.black))
+              : themeData,
+          child: DatePickerTheme(data: Theme.of(context).calendarTheme, child: child!),
         );
       },
     );

@@ -103,7 +103,7 @@ const TextStyle warningStyle = TextStyle(
 extension ThemeExtensions on ThemeData {
   bool get isLightTheme => primaryColor == breezLightTheme.primaryColor;
 
-  ThemeData get calendarTheme => isLightTheme ? calendarLightTheme : calendarDarkTheme;
+  DatePickerThemeData get calendarTheme => isLightTheme ? calendarLightTheme : calendarDarkTheme;
 
   CustomData get customData => isLightTheme ? blueThemeCustomData : darkThemeCustomData;
 

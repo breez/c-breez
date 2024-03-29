@@ -58,12 +58,17 @@ class ConnectivityHandler extends Handler {
     _flushbar?.show(context);
   }
 
-  void dismissFlushbarIfNeed() {
+  void dismissFlushbarIfNeed() async {
     final flushbar = _flushbar;
     if (flushbar == null) return;
 
-    if (flushbar.isShowing() || flushbar.isAppearing()) {
-      flushbar.dismiss(true);
+    if (flushbar.flushbarRoute != null && flushbar.flushbarRoute!.isActive) {
+      final context = contextProvider?.getBuildContext();
+      if (context == null) {
+        _log.info("Skipping dismissing connection flushbar as context is null");
+        return;
+      }
+      Navigator.of(context).removeRoute(flushbar.flushbarRoute!);
     }
     _flushbar = null;
   }

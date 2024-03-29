@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/input/input_data.dart';
-import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
 import 'package:c_breez/models/invoice.dart';
@@ -95,7 +94,7 @@ class InputBloc extends Cubit<InputState> {
   }
 
   Future<InputState> _handleParsedInput(InputType parsedInput, InputSource source) async {
-    _log.info("handleParsedInput: $source => ${inputTypeToString(parsedInput)}");
+    _log.info("handleParsedInput: $source => $parsedInput");
     InputState result;
     if (parsedInput is InputType_Bolt11) {
       result = await handlePaymentRequest(parsedInput, source);

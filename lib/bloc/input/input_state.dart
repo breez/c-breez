@@ -1,5 +1,4 @@
 import 'package:breez_sdk/bridge_generated.dart';
-import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/models/invoice.dart';
 
@@ -120,7 +119,7 @@ class LnUrlPayInputState extends InputState {
 
   @override
   String toString() {
-    return 'LnUrlPayInputState{data: ${inputDataToString(data)}, source: $source}';
+    return 'LnUrlPayInputState{data: $data, source: $source}';
   }
 
   @override
@@ -146,7 +145,7 @@ class LnUrlWithdrawInputState extends InputState {
 
   @override
   String toString() {
-    return 'LnUrlWithdrawInputState{data: ${inputDataToString(data)}, source: $source}';
+    return 'LnUrlWithdrawInputState{data: $data, source: $source}';
   }
 
   @override
@@ -172,7 +171,7 @@ class LnUrlAuthInputState extends InputState {
 
   @override
   String toString() {
-    return 'LnUrlAuthInputState{data: ${inputDataToString(data)}, source: $source}';
+    return 'LnUrlAuthInputState{data: $data, source: $source}';
   }
 
   @override
@@ -198,7 +197,7 @@ class LnUrlErrorInputState extends InputState {
 
   @override
   String toString() {
-    return 'LnUrlErrorInputState{data: ${inputDataToString(data)}, source: $source}';
+    return 'LnUrlErrorInputState{data: $data, source: $source}';
   }
 
   @override
@@ -250,7 +249,7 @@ class BitcoinAddressInputState extends InputState {
 
   @override
   String toString() {
-    return 'BitcoinAddressInputState{data: ${inputDataToString(data)}, source: $source}';
+    return 'BitcoinAddressInputState{data: $data, source: $source}';
   }
 
   @override

@@ -4,10 +4,8 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
-import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/fee_options/fee_option.dart';
 import 'package:c_breez/utils/exceptions.dart';
-import 'package:c_breez/utils/sdk_fields/serializer_helper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -48,7 +46,7 @@ class RefundBloc extends Cubit<RefundState> {
 
   _listenSwapEvents() {
     _breezSDK.swapEventsStream.listen((event) {
-      printWrapped(_log, 'Got SwapUpdate event: ${swapInfoToString(event.details)}');
+      _log.info('Got SwapUpdate event: ${event.details}');
       listRefundables();
     }, onError: (e) {
       _log.severe('Failed to listen swapEventsStream: $e');

@@ -67,7 +67,7 @@ class InputHandler extends Handler {
     _handlingRequest = isLoading;
     _setLoading(isLoading);
 
-    handleInputData(inputState)
+    _handleInputState(inputState)
         .then((result) {
           handleResult(result);
         })
@@ -99,8 +99,8 @@ class InputHandler extends Handler {
     }
   }
 
-  Future handleInputData(InputState inputState) async {
-    _log.info("handle input $inputState");
+  Future _handleInputState(InputState inputState) async {
+    _log.info("Handle InputState: $inputState");
     final context = contextProvider?.getBuildContext();
     if (context == null) {
       _log.info("Not handling input $inputState because context is null");
@@ -125,7 +125,7 @@ class InputHandler extends Handler {
   }
 
   Future handleInvoice(BuildContext context, Invoice invoice) async {
-    _log.info("handle invoice $invoice");
+    _log.info("Handle Invoice: $invoice");
     return await showDialog(
       useRootNavigator: false,
       context: context,
@@ -138,7 +138,7 @@ class InputHandler extends Handler {
   }
 
   Future handleNodeID(BuildContext context, String nodeID) async {
-    _log.info("handle node id $nodeID");
+    _log.info("Handle Node ID: $nodeID");
     return await Navigator.of(context).push(
       FadeInRoute(
         builder: (_) => SpontaneousPaymentPage(
@@ -150,7 +150,7 @@ class InputHandler extends Handler {
   }
 
   Future handleBitcoinAddress(BuildContext context, BitcoinAddressInputState inputState) async {
-    _log.fine("handle bitcoin address $inputState");
+    _log.fine("Handle Bitcoin Address: $inputState");
     if (inputState.source == InputSource.qrcode_reader) {
       return await Navigator.of(context).pushNamed("/reverse_swap", arguments: inputState.data);
     }

@@ -4,5 +4,13 @@ class ConnectivityState {
   final List<ConnectivityResult>? lastStatus;
   final bool isConnecting;
 
-  ConnectivityState({this.lastStatus, this.isConnecting = false});
+  ConnectivityState({
+    this.lastStatus,
+    this.isConnecting = false,
+  });
+
+  @override
+  String toString() {
+    return 'ConnectivityState{lastStatus: $lastStatus, isConnecting: $isConnecting}';
+  }
 }

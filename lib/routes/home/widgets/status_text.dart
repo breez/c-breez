@@ -26,18 +26,22 @@ class StatusText extends StatelessWidget {
         final texts = context.texts();
         final themeData = Theme.of(context);
 
-        final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
-        return AutoSizeText(
-          (isChannelOpeningAvailable && accountState.maxInboundLiquidity >= 0)
-              ? texts.status_text_ready
-              : texts.lsp_error_cannot_open_channel,
-          style: themeData.textTheme.bodyMedium?.copyWith(
-            color: themeData.isLightTheme ? BreezColors.grey[600] : themeData.colorScheme.onSecondary,
-          ),
-          textAlign: TextAlign.center,
-          minFontSize: MinFontSize(context).minFontSize,
-          stepGranularity: 0.1,
-        );
+        if (lspState == null) {
+          return const LoadingAnimatedText();
+        } else {
+          final isChannelOpeningAvailable = lspState!.isChannelOpeningAvailable;
+          return AutoSizeText(
+            (isChannelOpeningAvailable && accountState.maxInboundLiquidity >= 0)
+                ? texts.status_text_ready
+                : texts.lsp_error_cannot_open_channel,
+            style: themeData.textTheme.bodyMedium?.copyWith(
+              color: themeData.isLightTheme ? BreezColors.grey[600] : themeData.colorScheme.onSecondary,
+            ),
+            textAlign: TextAlign.center,
+            minFontSize: MinFontSize(context).minFontSize,
+            stepGranularity: 0.1,
+          );
+        }
       default:
         return const SizedBox();
     }

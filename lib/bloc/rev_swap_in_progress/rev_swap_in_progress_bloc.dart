@@ -20,19 +20,19 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
 
   pollReverseSwapsInProgress() async {
     _log.info("Started polling for reverse swaps in progress.");
-    await _refreshInProgressReverseSwaps().whenComplete(() => _startPolling());
+    await _refreshInProgressReverseSwaps(showLoader: true).whenComplete(() => _startPolling());
   }
 
   late Timer timer;
 
   void _startPolling() {
-    timer = Timer.periodic(const Duration(seconds: 30), (_) async => _refreshInProgressReverseSwaps);
+    timer = Timer.periodic(const Duration(seconds: 30), (_) => _refreshInProgressReverseSwaps());
   }
 
-  Future<void> _refreshInProgressReverseSwaps() async {
+  Future<void> _refreshInProgressReverseSwaps({bool showLoader = false}) async {
     try {
       _log.info("Refreshing reverse swaps in progress.");
-      _emitState(state.copyWith(isLoading: true));
+      _emitState(state.copyWith(isLoading: showLoader));
       final reverseSwapsInProgress = await _breezSDK.inProgressOnchainPayments();
       _logReverseSwapsInProgress(reverseSwapsInProgress);
       _emitState(state.copyWith(

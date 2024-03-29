@@ -20,19 +20,19 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
 
   pollSwapInAddress() async {
     _log.info("Started polling for swap in address.");
-    await _refreshAddresses().whenComplete(() => _startPolling());
+    await _refreshAddresses(showLoader: true).whenComplete(() => _startPolling());
   }
 
   late Timer timer;
 
   void _startPolling() {
-    timer = Timer.periodic(const Duration(seconds: 30), (_) async => _refreshAddresses);
+    timer = Timer.periodic(const Duration(seconds: 30), (_) => _refreshAddresses());
   }
 
-  Future<void> _refreshAddresses() async {
+  Future<void> _refreshAddresses({bool showLoader = false}) async {
     try {
       _log.info("Refreshing swap in address.");
-      _emitState(state.copyWith(isLoading: true));
+      _emitState(state.copyWith(isLoading: showLoader));
       SwapInfo? inProgress = (await _breezSDK.inProgressSwap());
       // Reset unused if there's a swap in progress
       _emitState(state.copyWith(inProgress: inProgress, unused: inProgress != null ? null : state.unused));

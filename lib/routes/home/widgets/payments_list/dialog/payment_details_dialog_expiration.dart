@@ -29,23 +29,23 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
     final pendingExpirationBlock = paymentMinutiae.pendingExpirationBlock;
     final currentBlockHeight = context.select<AccountBloc, int>((value) => value.state.blockheight);
 
-    return Container(
-      height: 36.0,
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: AutoSizeText(
-              texts.payment_details_dialog_expiration,
-              style: themeData.primaryTextTheme.headlineMedium,
-              textAlign: TextAlign.left,
-              maxLines: 1,
-              group: labelAutoSizeGroup,
+    if (pendingExpirationBlock != null && pendingExpirationBlock > currentBlockHeight) {
+      return Container(
+        height: 36.0,
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: AutoSizeText(
+                texts.payment_details_dialog_expiration,
+                style: themeData.primaryTextTheme.headlineMedium,
+                textAlign: TextAlign.left,
+                maxLines: 1,
+                group: labelAutoSizeGroup,
+              ),
             ),
-          ),
-          if (pendingExpirationBlock != null && pendingExpirationBlock > currentBlockHeight) ...[
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -54,7 +54,9 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
                 child: AutoSizeText(
                   BreezDateUtils.formatYearMonthDayHourMinute(
                     BreezDateUtils.blockDiffToDate(
-                        blockHeight: currentBlockHeight, expiryBlock: pendingExpirationBlock),
+                      blockHeight: currentBlockHeight,
+                      expiryBlock: pendingExpirationBlock,
+                    ),
                   ),
                   style: themeData.primaryTextTheme.displaySmall,
                   textAlign: TextAlign.right,
@@ -63,8 +65,10 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
               ),
             ),
           ],
-        ],
-      ),
-    );
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 }

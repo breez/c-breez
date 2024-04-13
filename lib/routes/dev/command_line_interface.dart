@@ -171,6 +171,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
         }
         late String reply;
         switch (commandArgs[0]) {
+          case 'generateDiagnosticData':
           case 'getInfo':
           case 'listPeers':
           case 'listPeerChannels':

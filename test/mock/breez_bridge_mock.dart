@@ -102,6 +102,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
       metadataStr: "",
       commentAllowed: 0,
       domain: "",
+      allowsNostr: false,
     ),
   );
 

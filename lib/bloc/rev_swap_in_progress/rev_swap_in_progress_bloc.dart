@@ -23,7 +23,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
     await _refreshInProgressReverseSwaps(showLoader: true).whenComplete(() => _startPolling());
   }
 
-  late Timer timer;
+  Timer? timer;
 
   void _startPolling() {
     timer = Timer.periodic(const Duration(seconds: 30), (_) => _refreshInProgressReverseSwaps());
@@ -59,9 +59,9 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
   }
 
   void _stopPolling() {
-    if (timer.isActive) {
+    if (timer != null && timer!.isActive) {
       _log.info("Stop polling for reverse swaps in progress.");
-      timer.cancel();
+      timer!.cancel();
     }
   }
 

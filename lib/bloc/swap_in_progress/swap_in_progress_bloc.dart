@@ -23,7 +23,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
     await _refreshAddresses(showLoader: true).whenComplete(() => _startPolling());
   }
 
-  late Timer timer;
+  Timer? timer;
 
   void _startPolling() {
     timer = Timer.periodic(const Duration(seconds: 30), (_) => _refreshAddresses());
@@ -56,9 +56,9 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
   }
 
   void _stopPolling() {
-    if (timer.isActive) {
+    if (timer != null && timer!.isActive) {
       _log.info("Stop polling for swaps in address.");
-      timer.cancel();
+      timer!.cancel();
     }
   }
 

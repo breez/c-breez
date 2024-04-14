@@ -16,10 +16,28 @@ class LnAddressFeeMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texts = context.texts();
     final themeData = Theme.of(context);
+    final accountState = context.read<AccountBloc>().state;
     final lspState = context.watch<LSPBloc>().state;
     final isChannelOpeningAvailable = lspState?.isChannelOpeningAvailable ?? false;
     final openingFeeParams = lspState?.lspInfo?.openingFeeParamsList.values.first;
+
+    if (!isChannelOpeningAvailable && accountState.maxInboundLiquidity <= 0) {
+      return WarningBox(
+        boxPadding: const EdgeInsets.fromLTRB(16, 30, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              texts.lsp_error_cannot_open_channel,
+              style: themeData.textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
 
     return isChannelOpeningAvailable
         ? WarningBox(

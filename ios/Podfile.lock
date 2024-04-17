@@ -308,7 +308,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
-  breez_sdk: 7db178e91142798ad861ecbbd0ccad8201d2fb85
+  breez_sdk: 3fe2b6ffff9f776e983a4dc6ba250d18d2ec8008
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: e2dad488011aeb593e219360e804c43cc1af5770
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d

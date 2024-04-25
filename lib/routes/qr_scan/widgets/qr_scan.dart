@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/qr_scan/scan_overlay.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +27,43 @@ class QRScanState extends State<QRScan> {
     torchEnabled: false,
   );
 
+  late StreamSubscription<BarcodeCapture> _barcodeSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _barcodeSubscription = cameraController.barcodes.listen(onDetect);
+  }
+
+  void onDetect(capture) {
+    final List<Barcode> barcodes = capture.barcodes;
+    for (final barcode in barcodes) {
+      _log.info("Barcode detected. ${barcode.displayValue}");
+      if (popped) {
+        _log.info("Skipping, already popped");
+        return;
+      }
+      if (!mounted) {
+        _log.info("Skipping, not mounted");
+        return;
+      }
+      final code = barcode.rawValue;
+      if (code == null) {
+        _log.warning("Failed to scan QR code.");
+      } else {
+        popped = true;
+        _log.info("Popping read QR code: $code");
+        Navigator.of(context).pop(code);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _barcodeSubscription.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,28 +81,6 @@ class QRScanState extends State<QRScan> {
                   child: MobileScanner(
                     key: qrKey,
                     controller: cameraController,
-                    onDetect: (capture) {
-                      final List<Barcode> barcodes = capture.barcodes;
-                      for (final barcode in barcodes) {
-                        _log.info("Barcode detected. ${barcode.displayValue}");
-                        if (popped) {
-                          _log.info("Skipping, already popped");
-                          return;
-                        }
-                        if (!mounted) {
-                          _log.info("Skipping, not mounted");
-                          return;
-                        }
-                        final code = barcode.rawValue;
-                        if (code == null) {
-                          _log.warning("Failed to scan QR code.");
-                        } else {
-                          popped = true;
-                          _log.info("Popping read QR code: $code");
-                          Navigator.of(context).pop(code);
-                        }
-                      }
-                    },
                   ),
                 )
               ],

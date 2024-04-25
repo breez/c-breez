@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_dialog.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';

@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/get-refund/refund_confirmation_page.dart';
 import 'package:c_breez/routes/spontaneous_payment/widgets/collapsible_list_item.dart';

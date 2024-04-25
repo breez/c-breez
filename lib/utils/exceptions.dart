@@ -10,16 +10,9 @@ String extractExceptionMessage(
   String? defaultErrorMsg,
 }) {
   _log.info("extractExceptionMessage: $exception");
-  if (exception is FfiException) {
+  if (exception is AnyhowException) {
     if (exception.message.isNotEmpty) {
       var message = exception.message.replaceAll("\n", " ").trim();
-      message = _extractInnerErrorMessage(message)?.trim() ?? message;
-      message = _localizedExceptionMessage(texts, message);
-      return message;
-    }
-  } else if (exception is FrbAnyhowException) {
-    if (exception.anyhow.isNotEmpty) {
-      var message = exception.anyhow.replaceAll("\n", " ").trim();
       message = _extractInnerErrorMessage(message)?.trim() ?? message;
       message = _localizedExceptionMessage(texts, message);
       return message;

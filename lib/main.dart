@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:breez_sdk/native_toolkit.dart';
-import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/backup/backup_bloc.dart';

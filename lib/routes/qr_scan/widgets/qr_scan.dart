@@ -120,27 +120,37 @@ class ImagePickerButton extends StatelessWidget {
         height: 32,
       ),
       onPressed: () async {
-        final picker = ImagePicker();
-        // ignore: body_might_complete_normally_catch_error
-        final pickedFile = await picker.pickImage(source: ImageSource.gallery).catchError((err) {
+        final ImagePicker picker = ImagePicker();
+
+        final XFile? image = await picker.pickImage(source: ImageSource.gallery).catchError((err) {
           _log.warning("Failed to pick image", err);
+          return null;
         });
-        final filePath = pickedFile?.path;
+
+        if (image == null) {
+          return;
+        }
+        var filePath = image.path;
         _log.info("Picked image: $filePath");
-        try {
-          final found = filePath != null && await cameraController.analyzeImage(filePath);
-          if (!found) {
-            _log.info("No QR code found in image");
-            scaffoldMessenger.showSnackBar(
-              SnackBar(
-                content: Text(texts.qr_scan_gallery_failed),
-              ),
-            );
-          } else {
-            _log.info("QR code found in image");
-          }
-        } catch (err) {
+
+        final BarcodeCapture? barcodes = await cameraController.analyzeImage(filePath).catchError((err) {
           _log.warning("Failed to analyze image", err);
+          return null;
+        });
+
+        if (barcodes == null) {
+          _log.info("QR code found in image");
+        } else {
+          if (!context.mounted) {
+            return;
+          }
+
+          _log.info("No QR code found in image");
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(texts.qr_scan_gallery_failed),
+            ),
+          );
         }
       },
     );

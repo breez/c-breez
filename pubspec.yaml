@@ -83,7 +83,7 @@ dependencies:
   rxdart: ^0.27.7
   share_plus: ^9.0.0
   shared_preferences: ^2.2.3
-  shared_preference_app_group: ^1.1.0 # iOS Notification Service extension requirement to access shared preferences
+  shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
   simple_animations: ^5.0.2
   sqflite_common_ffi: 2.3.2+1 # Reverted to debug an issue on iOS
   sqlite3_flutter_libs: 0.5.20 # Reverted to debug an issue on iOS

@@ -7,12 +7,13 @@ class ScanOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var dimension = MediaQuery.of(context).size.width - 72;
     return Center(
       child: CustomPaint(
         painter: BorderPainter(),
         child: SizedBox(
-          width: MediaQuery.of(context).size.width - 72,
-          height: MediaQuery.of(context).size.width - 72,
+          width: dimension,
+          height: dimension,
         ),
       ),
     );

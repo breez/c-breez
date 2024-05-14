@@ -44,12 +44,13 @@ class LoadingAnimatedTextState extends State<LoadingAnimatedText> {
   @override
   Widget build(BuildContext context) {
     var textElements = widget.textElements.toList();
+    var themeData = Theme.of(context);
     return RichText(
         text: TextSpan(
           style: widget.textStyle ??
-              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
+              themeData.textTheme.bodyMedium?.copyWith(
+                color: themeData.colorScheme.onSecondary,
+              ),
           text: widget.loadingMessage,
           children: textElements
             ..addAll(

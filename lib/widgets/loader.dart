@@ -54,6 +54,7 @@ class FullScreenLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var mediaQuerySize = MediaQuery.of(context).size;
     return Material(
       type: MaterialType.transparency,
       child: Stack(
@@ -65,8 +66,8 @@ class FullScreenLoader extends StatelessWidget {
             right: 0.0,
             child: Container(
               color: bgColor.withOpacity(opacity),
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
+              height: mediaQuerySize.height,
+              width: mediaQuerySize.width,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

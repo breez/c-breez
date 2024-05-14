@@ -113,7 +113,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
               return Colors.transparent;
             }
             // Defer to the widget's default.
-            return Theme.of(context).textTheme.labelLarge!.color!;
+            return themeData.textTheme.labelLarge!.color!;
           }),
         ),
         child: Text(

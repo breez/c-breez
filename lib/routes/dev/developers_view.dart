@@ -75,7 +75,7 @@ class _DevelopersViewState extends State<DevelopersView> {
         actions: [
           PopupMenuButton<Choice>(
             onSelected: (c) => c.function(context),
-            color: themeData.colorScheme.background,
+            color: themeData.colorScheme.surface,
             icon: Icon(
               Icons.more_vert,
               color: themeData.iconTheme.color,

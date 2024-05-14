@@ -71,10 +71,12 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    var themeData = Theme.of(context);
+
     _currentRoute ??= ModalRoute.of(context);
     colorAnimation = ColorTween(
-      begin: Theme.of(context).canvasColor,
-      end: Theme.of(context).colorScheme.background,
+      begin: themeData.canvasColor,
+      end: themeData.colorScheme.surface,
     ).animate(controller!)
       ..addListener(() {
         setState(() {});

@@ -11,7 +11,7 @@ final ThemeData breezLightTheme = ThemeData(
     secondary: Colors.white,
     onSecondary: const Color.fromRGBO(0, 133, 251, 1.0),
     error: const Color(0xffffe685),
-    background: Colors.white,
+    surface: Colors.white,
   ),
   primaryColor: const Color.fromRGBO(255, 255, 255, 1.0),
   primaryColorDark: BreezColors.blue[900],

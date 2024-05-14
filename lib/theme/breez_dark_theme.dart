@@ -12,7 +12,7 @@ final ThemeData breezDarkTheme = ThemeData(
     secondary: Colors.white,
     onSecondary: Colors.white,
     error: const Color(0xFFeddc97),
-    background: const Color(0xFF152a3d),
+    surface: const Color(0xFF152a3d),
   ),
   primaryColor: const Color(0xFF0085fb),
   primaryColorDark: const Color(0xFF00081C),

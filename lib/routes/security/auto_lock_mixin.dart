@@ -1,5 +1,5 @@
 import 'package:c_breez/bloc/security/security_bloc.dart';
-import 'package:c_breez/bloc/security/security_state.dart';
+import 'package:c_breez/bloc/security/security_state.dart' as security;
 import 'package:c_breez/routes/security/lock_screen.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,7 +10,7 @@ mixin AutoLockMixin<T extends StatefulWidget> on State<T> {
   void initState() {
     super.initState();
     final securityBloc = context.read<SecurityBloc>();
-    securityBloc.stream.distinct().where((state) => state.lockState == LockState.locked).listen((_) {
+    securityBloc.stream.distinct().where((state) => state.lockState == security.LockState.locked).listen((_) {
       Navigator.of(context, rootNavigator: true).push(FadeInRoute(
         builder: (_) => const LockScreen(
           authorizedAction: AuthorizedAction.popPage,

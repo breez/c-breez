@@ -8,12 +8,10 @@ import 'package:c_breez/config.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/bug_report_behavior.dart';
 import 'package:c_breez/routes/dev/command_line_interface.dart';
-import 'package:c_breez/routes/ui_test/ui_test_page.dart';
 import 'package:c_breez/utils/exceptions.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
-import 'package:c_breez/widgets/route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -87,16 +85,6 @@ class _DevelopersViewState extends State<DevelopersView> {
                   icon: Icons.phone_android,
                   function: _exportKeys,
                 ),
-              Choice(
-                title: "Test UI Widgets",
-                icon: Icons.phone_android,
-                function: (_) => Navigator.push(
-                  context,
-                  FadeInRoute(
-                    builder: (_) => const UITestPage(),
-                  ),
-                ),
-              ),
               Choice(
                 title: "Share Logs",
                 icon: Icons.share,

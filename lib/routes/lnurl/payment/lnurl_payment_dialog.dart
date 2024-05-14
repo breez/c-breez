@@ -119,8 +119,8 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
       actions: [
         TextButton(
           style: ButtonStyle(
-            overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.pressed)) {
+            overlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.pressed)) {
                 return Colors.transparent;
               }
               // Defer to the widget's default.
@@ -137,8 +137,8 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
         ),
         TextButton(
           style: ButtonStyle(
-            overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.pressed)) {
+            overlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.pressed)) {
                 return Colors.transparent;
               }
               // Defer to the widget's default.

@@ -98,7 +98,7 @@ final ThemeData breezDarkTheme = ThemeData(
   outlinedButtonTheme: const OutlinedButtonThemeData(),
   elevatedButtonTheme: const ElevatedButtonThemeData(),
   radioTheme: RadioThemeData(
-    fillColor: MaterialStateProperty.resolveWith((states) {
+    fillColor: WidgetStateProperty.resolveWith((states) {
       return Colors.white;
     }),
   ),
@@ -107,41 +107,41 @@ final ThemeData breezDarkTheme = ThemeData(
 );
 
 final DatePickerThemeData calendarDarkTheme = DatePickerThemeData(
-  yearBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-    if (states.contains(MaterialState.selected)) {
+  yearBackgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.selected)) {
       return const Color(0xFF0085fb);
     }
     return Colors.transparent;
   }),
-  yearForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-    if (states.contains(MaterialState.disabled)) {
+  yearForegroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.disabled)) {
       return Colors.white38;
     }
     return Colors.white;
   }),
-  dayBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-    if (states.contains(MaterialState.selected)) {
+  dayBackgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.selected)) {
       return const Color(0xFF0085fb);
     }
     return Colors.transparent;
   }),
-  dayForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-    if (states.contains(MaterialState.disabled)) {
+  dayForegroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.disabled)) {
       return Colors.white38;
     }
     return Colors.white;
   }),
-  todayBackgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-    if (states.contains(MaterialState.selected)) {
+  todayBackgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.selected)) {
       return const Color(0xFF0085fb);
     }
     return Colors.transparent;
   }),
-  todayForegroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-    if (states.contains(MaterialState.selected)) {
+  todayForegroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+    if (states.contains(WidgetState.selected)) {
       return Colors.white;
     }
-    if (states.contains(MaterialState.disabled)) {
+    if (states.contains(WidgetState.disabled)) {
       return Colors.white38;
     }
     return const Color(0xFF0085fb);
@@ -156,9 +156,9 @@ final DatePickerThemeData calendarDarkTheme = DatePickerThemeData(
     ),
   ),
   cancelButtonStyle: ButtonStyle(
-    foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+    foregroundColor: WidgetStateProperty.resolveWith<Color?>(
       (states) {
-        if (states.contains(MaterialState.disabled)) {
+        if (states.contains(WidgetState.disabled)) {
           return Colors.white38;
         }
 
@@ -167,9 +167,9 @@ final DatePickerThemeData calendarDarkTheme = DatePickerThemeData(
     ),
   ),
   confirmButtonStyle: ButtonStyle(
-    foregroundColor: MaterialStateProperty.resolveWith<Color?>(
+    foregroundColor: WidgetStateProperty.resolveWith<Color?>(
       (states) {
-        if (states.contains(MaterialState.disabled)) {
+        if (states.contains(WidgetState.disabled)) {
           return Colors.white38;
         }
 

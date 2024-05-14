@@ -715,8 +715,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: a16aa4deeff1c5e96c6da46da31cb0533f838d8d
-      resolved-ref: a16aa4deeff1c5e96c6da46da31cb0533f838d8d
+      ref: "4a494322762af9f30820f3c63aba784d46b86b69"
+      resolved-ref: "4a494322762af9f30820f3c63aba784d46b86b69"
       url: "https://github.com/breez/flutter_typeahead.git"
     source: git
     version: "4.0.0"

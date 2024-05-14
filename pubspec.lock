@@ -324,10 +324,11 @@ packages:
   drag_and_drop_lists:
     dependency: "direct main"
     description:
-      name: drag_and_drop_lists
-      sha256: "9a14595f9880be7953f23578aef88c15cc9b367eeb39dbc1f1bd6af52f70872b"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "38cc3155a6161730b4ec476d781873afb7ec4846"
+      resolved-ref: "38cc3155a6161730b4ec476d781873afb7ec4846"
+      url: "https://github.com/breez/DragAndDropLists"
+    source: git
     version: "0.3.3"
   duration:
     dependency: "direct main"

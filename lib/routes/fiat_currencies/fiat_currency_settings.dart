@@ -27,6 +27,8 @@ class FiatCurrencySettings extends StatefulWidget {
 class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   final _scrollController = ScrollController();
 
+  bool isInit = false;
+
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
@@ -49,7 +51,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
             return FutureBuilder(
               future: artificialWait(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.done) {
+                if (isInit == false && snapshot.connectionState != ConnectionState.done) {
                   return const Center(
                     child: Loader(
                       color: Colors.white,
@@ -207,9 +209,12 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   /// and blocks the UI thread. Since data retrieval is not the bottleneck, it
   /// blocks the UI thread almost immediately on the screen navigating to this page.
   /// Before the underlying performance issues are fixed on the library.
-  /// We've added an artificial wait to display the page route animation and spinnig
+  /// We've added an artificial wait to display the page route animation and spinning
   /// loader before UI thread is blocked to convey a better UX as a workaround.
   Future artificialWait() async {
+    setState(() {
+      isInit = true;
+    });
     return await Future.delayed(const Duration(milliseconds: 800));
   }
 }

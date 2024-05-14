@@ -30,7 +30,10 @@ dependencies:
   csv: ^6.0.0
   connectivity_plus: ^6.0.3
   device_info_plus: ^10.1.0
-  drag_and_drop_lists: ^0.3.3
+  drag_and_drop_lists:
+    git:
+      url: https://github.com/breez/DragAndDropLists
+      ref: 38cc3155a6161730b4ec476d781873afb7ec4846
   duration: ^3.0.13
   email_validator: ^2.1.17
   extended_image: ^8.2.0

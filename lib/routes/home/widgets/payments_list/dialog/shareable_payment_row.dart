@@ -42,7 +42,7 @@ class ShareablePaymentRow extends StatelessWidget {
 
     return Theme(
       data: themeData.copyWith(
-        dividerColor: themeData.colorScheme.background,
+        dividerColor: themeData.colorScheme.surface,
       ),
       child: ExpansionTile(
         iconColor: isExpanded ? Colors.transparent : color,

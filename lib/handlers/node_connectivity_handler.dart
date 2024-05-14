@@ -92,13 +92,14 @@ class NodeConnectivityHandler extends Handler {
         child: StreamBuilder<AccountState>(
           stream: context.read<AccountBloc>().stream,
           builder: (context, snapshot) {
+            var themeData = Theme.of(context);
             if (snapshot.hasData && snapshot.data?.connectionStatus == ConnectionStatus.CONNECTING) {
               return Center(
                 child: SizedBox(
                   height: 24.0,
                   width: 24.0,
                   child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.error,
+                    color: themeData.colorScheme.error,
                   ),
                 ),
               );
@@ -118,7 +119,7 @@ class NodeConnectivityHandler extends Handler {
               child: Text(
                 context.texts().no_connection_flushbar_action_retry,
                 style: theme.snackBarStyle.copyWith(
-                  color: Theme.of(context).colorScheme.error,
+                  color: themeData.colorScheme.error,
                 ),
               ),
             );

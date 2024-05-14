@@ -100,7 +100,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         highlightColor: Colors.transparent,
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 2.0, left: 14.0),
                         icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
-                        color: Theme.of(context).primaryTextTheme.labelLarge!.color!,
+                        color: themeData.primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
                           Share.share("lightning:${widget.receivePaymentResponse!.lnInvoice.bolt11}");
                         },
@@ -113,7 +113,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         highlightColor: Colors.transparent,
                         padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 14.0, left: 2.0),
                         icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
-                        color: Theme.of(context).primaryTextTheme.labelLarge!.color!,
+                        color: themeData.primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
                           ServiceInjector()
                               .device

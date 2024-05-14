@@ -74,13 +74,14 @@ class ConnectivityHandler extends Handler {
   }
 
   Flushbar? _getNoConnectionFlushbar(BuildContext context) {
+    var themeData = Theme.of(context);
     return Flushbar(
       isDismissible: false,
       flushbarPosition: FlushbarPosition.TOP,
       icon: Icon(
         Icons.warning_amber_outlined,
         size: 28.0,
-        color: Theme.of(context).colorScheme.error,
+        color: themeData.colorScheme.error,
       ),
       messageText: Text(
         context.texts().no_connection_flushbar_title,
@@ -98,7 +99,7 @@ class ConnectivityHandler extends Handler {
                   height: 24.0,
                   width: 24.0,
                   child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.error,
+                    color: themeData.colorScheme.error,
                   ),
                 ),
               );
@@ -121,7 +122,7 @@ class ConnectivityHandler extends Handler {
               child: Text(
                 context.texts().no_connection_flushbar_action_retry,
                 style: theme.snackBarStyle.copyWith(
-                  color: Theme.of(context).colorScheme.error,
+                  color: themeData.colorScheme.error,
                 ),
               ),
             );

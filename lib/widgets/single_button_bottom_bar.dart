@@ -50,6 +50,7 @@ class SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var themeData = Theme.of(context);
     return ConstrainedBox(
       constraints: const BoxConstraints(
         minHeight: 48.0,
@@ -57,7 +58,7 @@ class SubmitButton extends StatelessWidget {
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: enabled ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
+          backgroundColor: enabled ? themeData.primaryColor : themeData.disabledColor,
           elevation: 0.0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
@@ -67,7 +68,7 @@ class SubmitButton extends StatelessWidget {
         child: AutoSizeText(
           text,
           maxLines: 1,
-          style: Theme.of(context).textTheme.labelLarge,
+          style: themeData.textTheme.labelLarge,
         ),
       ),
     );

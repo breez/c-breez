@@ -31,11 +31,11 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
 
     return TextButton(
       style: ButtonStyle(
-        overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
-          if (states.contains(MaterialState.focused)) {
+        overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+          if (states.contains(WidgetState.focused)) {
             return themeData.customData.paymentListBgColor;
           }
-          if (states.contains(MaterialState.hovered)) {
+          if (states.contains(WidgetState.hovered)) {
             return themeData.customData.paymentListBgColor;
           }
           return null;

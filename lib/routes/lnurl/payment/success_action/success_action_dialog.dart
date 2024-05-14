@@ -54,8 +54,8 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
       actions: [
         TextButton(
           style: ButtonStyle(
-            overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.pressed)) {
+            overlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.pressed)) {
                 return Colors.transparent;
               }
               // Defer to the widget's default.

@@ -108,8 +108,8 @@ class PaymentConfirmationDialog extends StatelessWidget {
     List<Widget> children = [
       TextButton(
         style: ButtonStyle(
-          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed)) {
+          overlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed)) {
               return Colors.transparent;
             }
             // Defer to the widget's default.
@@ -124,8 +124,8 @@ class PaymentConfirmationDialog extends StatelessWidget {
       ),
       TextButton(
         style: ButtonStyle(
-          overlayColor: MaterialStateProperty.resolveWith<Color>((states) {
-            if (states.contains(MaterialState.pressed)) {
+          overlayColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.pressed)) {
               return Colors.transparent;
             }
             // Defer to the widget's default.

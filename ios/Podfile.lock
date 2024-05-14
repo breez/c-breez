@@ -323,7 +323,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 8000756fc1c19d2e5697b90311f7832d2e33f6cd
   image_cropper: a3291c624a953049bc6a02e1f8c8ceb162a24b25
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  integration_test: 13825b8a9334a850581300559b8839134b124670
+  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   local_auth_darwin: 4d56c90c2683319835a61274b57620df9c4520ab
   MLImage: 1824212150da33ef225fbd3dc49f184cf611046c

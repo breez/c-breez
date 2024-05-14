@@ -49,10 +49,13 @@ class RestoreFormPageState extends State<RestoreForm> {
             final itemIndex = index + (6 * (widget.currentPage - 1));
             return TypeAheadFormField(
               textFieldConfiguration: TextFieldConfiguration(
+                autocorrect: false,
                 controller: widget.textEditingControllers[itemIndex],
                 textInputAction: TextInputAction.next,
-                onSubmitted: (text) {
-                  widget.textEditingControllers[itemIndex].text = text;
+                onSubmitted: (text) async {
+                  final suggestions = await _getSuggestions(text);
+                  widget.textEditingControllers[itemIndex].text =
+                      suggestions.length == 1 ? suggestions.first : text;
                   if (itemIndex + 1 < focusNodes.length) {
                     focusNodes[itemIndex + 1].requestFocus();
                   }

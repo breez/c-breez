@@ -13,8 +13,8 @@ class AppConfig {
   GreenlightCredentials? get partnerCredentials {
     try {
       return GreenlightCredentials(
-        deviceCert: base64.decode(glCertificate),
-        deviceKey: base64.decode(glKey),
+        developerCert: base64.decode(glCertificate),
+        developerKey: base64.decode(glKey),
       );
     } catch (e) {
       _log.warning("Failed to parse partner credentials: $e");

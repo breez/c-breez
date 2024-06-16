@@ -15,7 +15,7 @@ dependencies:
 
   another_flushbar: ^1.12.30
   app_group_directory: ^2.0.0
-  archive: ^3.5.1
+  archive: ^3.6.1
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
   breez_sdk:
@@ -36,15 +36,15 @@ dependencies:
       ref: 38cc3155a6161730b4ec476d781873afb7ec4846
   duration: ^3.0.13
   email_validator: ^2.1.17
-  extended_image: ^8.2.0
+  extended_image: ^8.2.1
   ffi: ^2.1.2
   # Doesn't support: Linux Windows
-  firebase_core: ^2.31.0
+  firebase_core: ^3.1.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^5.5.5
+  firebase_dynamic_links: ^6.0.1
   # Doesn't support: Linux Windows
-  firebase_messaging: ^14.9.2
-  flutter_bloc: ^8.1.5
+  firebase_messaging: ^15.0.1
+  flutter_bloc: ^8.1.6
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
     git:
@@ -52,7 +52,7 @@ dependencies:
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
   flutter_inappwebview: ^6.0.0
   flutter_rust_bridge: ^1.82.6
-  flutter_secure_storage: ^9.1.1
+  flutter_secure_storage: ^9.2.2
   flutter_svg: ^2.0.10+1
   flutter_typeahead:
     git:
@@ -62,28 +62,28 @@ dependencies:
   hex: ^0.2.0
   http: ^1.2.1
   hydrated_bloc: ^9.1.5
-  image: ^4.1.7
+  image: ^4.2.0
   # Doesn't support: Linux Mac Windows
   image_cropper: <6.0.0 # flutter_rust_bridge 1.82.6 depends on js ^0.6.4 and no versions of flutter_rust_bridge match >1.82.6 <2.0.0
   # Doesn't support: Linux Mac Windows
-  image_picker: ^1.1.1
+  image_picker: ^1.1.2
   ini: ^2.1.0
   intl: ^0.19.0
   # Doesn't support: Linux Mac
   local_auth: ^2.2.0
-  local_auth_android: ^1.0.38
-  local_auth_darwin: ^1.3.0
+  local_auth_android: ^1.0.39
+  local_auth_darwin: ^1.3.1
   logging: ^1.2.0
   mockito: ^5.4.4
   # Doesn't support: Linux Windows
-  mobile_scanner: ^5.1.0
+  mobile_scanner: ^5.1.1
   package_info_plus: ^8.0.0
   path: ^1.9.0
   path_provider: ^2.1.3
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
   qr_flutter: ^4.1.0
-  rxdart: ^0.27.7
+  rxdart: ^0.28.0
   share_plus: ^9.0.0
   shared_preferences: ^2.2.3
   shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
@@ -95,7 +95,7 @@ dependencies:
   timeago: ^3.6.1
   # Doesn't support: Linux Mac Windows
   uni_links: ^0.5.1
-  url_launcher: ^6.2.6
+  url_launcher: ^6.3.0
   vector_math: ^2.1.4
 
 dev_dependencies:
@@ -103,13 +103,12 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.9
+  build_runner: ^2.4.11
   flutter_lints: ^4.0.0
-  test: ^1.25.5
+  test: ^1.25.7
 
 dependency_overrides:
   test_api: <0.7.1 # test_api >=0.7.1 is incompatible with flutter_test from the flutter SDK
-  intl: ^0.19.0 # intl is pinned to version 0.18.1 by flutter_localizations from the flutter SDK.
   # Comment-out to work with breez-sdk from git repository
   breez_sdk:
     path: ../breez-sdk/libs/sdk-flutter

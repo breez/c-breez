@@ -8,8 +8,8 @@ import 'package:rxdart/rxdart.dart';
 
 class BreezSDKMock extends Mock implements BreezSDK {
   GreenlightCredentials credentials = GreenlightCredentials(
-    deviceKey: Uint8List(2),
-    deviceCert: Uint8List(2),
+    developerKey: Uint8List(2),
+    developerCert: Uint8List(2),
   );
 
   @override

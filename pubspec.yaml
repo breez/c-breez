@@ -35,7 +35,7 @@ dependencies:
       url: https://github.com/breez/DragAndDropLists
       ref: 38cc3155a6161730b4ec476d781873afb7ec4846
   duration: ^3.0.13
-  email_validator: ^2.1.17
+  #email_validator: ^3.0.0
   extended_image: ^8.2.1
   ffi: ^2.1.2
   # Doesn't support: Linux Windows
@@ -71,7 +71,7 @@ dependencies:
   intl: ^0.19.0
   # Doesn't support: Linux Mac
   local_auth: ^2.2.0
-  local_auth_android: ^1.0.39
+  local_auth_android: ^1.0.40
   local_auth_darwin: ^1.3.1
   logging: ^1.2.0
   mockito: ^5.4.4
@@ -88,8 +88,8 @@ dependencies:
   shared_preferences: ^2.2.3
   shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
   simple_animations: ^5.0.2
-  sqflite_common_ffi: 2.3.2+1 # Reverted to debug an issue on iOS
-  sqlite3_flutter_libs: 0.5.20 # Reverted to debug an issue on iOS
+  sqflite_common_ffi: ^2.3.3
+  sqlite3_flutter_libs: ^0.5.24
   synchronized: ^3.1.0+1
   theme_provider: ^0.6.0
   timeago: ^3.6.1

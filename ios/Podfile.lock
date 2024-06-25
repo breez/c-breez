@@ -1,7 +1,7 @@
 PODS:
   - app_group_directory (1.0.0):
     - Flutter
-  - breez_sdk (0.4.2-rc3):
+  - breez_sdk (0.4.3-rc1):
     - Flutter
   - clipboard_watcher (0.0.1):
     - Flutter
@@ -300,7 +300,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
-  breez_sdk: c715e8e0e4d47cc24869bae750958862aeafb0eb
+  breez_sdk: a9b71ecf97a74267aa1d69d22fad2aa8bbc057e6
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d

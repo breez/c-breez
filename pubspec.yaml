@@ -88,8 +88,8 @@ dependencies:
   shared_preferences: ^2.2.3
   shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
   simple_animations: ^5.0.2
-  sqflite_common_ffi: ^2.3.3
-  sqlite3_flutter_libs: ^0.5.24
+  sqflite_common_ffi: 2.3.2+1 # Reverted due to a crash on iOS
+  sqlite3_flutter_libs: 0.5.20 # Reverted due to a crash on iOS
   synchronized: ^3.1.0+1
   theme_provider: ^0.6.0
   timeago: ^3.6.1

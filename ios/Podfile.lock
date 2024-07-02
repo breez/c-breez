@@ -1,7 +1,7 @@
 PODS:
   - app_group_directory (1.0.0):
     - Flutter
-  - breez_sdk (0.4.3-rc1):
+  - breez_sdk (0.5.0):
     - Flutter
   - clipboard_watcher (0.0.1):
     - Flutter
@@ -18,14 +18,14 @@ PODS:
   - Firebase/Messaging (10.27.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 10.27.0)
-  - firebase_core (3.1.0):
+  - firebase_core (3.1.1):
     - Firebase/CoreOnly (= 10.27.0)
     - Flutter
-  - firebase_dynamic_links (6.0.1):
+  - firebase_dynamic_links (6.0.2):
     - Firebase/DynamicLinks (= 10.27.0)
     - firebase_core
     - Flutter
-  - firebase_messaging (15.0.1):
+  - firebase_messaging (15.0.2):
     - Firebase/Messaging (= 10.27.0)
     - firebase_core
     - Flutter
@@ -106,7 +106,7 @@ PODS:
     - GoogleUtilities/Privacy
   - GoogleUtilitiesComponents (1.1.0):
     - GoogleUtilities/Logger
-  - GTMSessionFetcher/Core (3.4.1)
+  - GTMSessionFetcher/Core (3.5.0)
   - image_cropper (0.0.4):
     - Flutter
     - TOCropViewController (~> 2.6.1)
@@ -300,14 +300,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
-  breez_sdk: a9b71ecf97a74267aa1d69d22fad2aa8bbc057e6
+  breez_sdk: 72a997c86cf275ee3b1e60207e56ca0a7a7855e2
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
   Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
-  firebase_core: 483cfad66d24d8f3c233f31db4263830c625c909
-  firebase_dynamic_links: c5c0d70b03dc18aaf582e1616dce715abea91370
-  firebase_messaging: e60c0694699d8a2e56a319e043709583f6544123
+  firebase_core: f8d0424c45e0f1e596811085fc12c638d628457c
+  firebase_dynamic_links: 8a142e279cd3d683bbb8d501d0ff5521d72a8616
+  firebase_messaging: 8b29edaf5adfd3b52b5bfa5af8128c44164670c6
   FirebaseCore: a2b95ae4ce7c83ceecfbbbe3b6f1cddc7415a808
   FirebaseCoreInternal: 58d07f1362fddeb0feb6a857d1d1d1c5e558e698
   FirebaseDynamicLinks: 087bf18ffabe8b6abe0c80301fd16ba2225ce373
@@ -323,7 +323,7 @@ SPEC CHECKSUMS:
   GoogleToolboxForMac: d1a2cbf009c453f4d6ded37c105e2f67a32206d8
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
-  GTMSessionFetcher: 8000756fc1c19d2e5697b90311f7832d2e33f6cd
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   image_cropper: a3291c624a953049bc6a02e1f8c8ceb162a24b25
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4

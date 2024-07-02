@@ -26,6 +26,7 @@ class AccountState {
   final PaymentFilters paymentFilters;
   final ConnectionStatus? connectionStatus;
   final VerificationStatus? verificationStatus;
+  final bool hydrated;
 
   const AccountState({
     required this.id,
@@ -44,6 +45,7 @@ class AccountState {
     required this.paymentFilters,
     required this.connectionStatus,
     this.verificationStatus = VerificationStatus.UNVERIFIED,
+    required this.hydrated,
   });
 
   AccountState.initial()
@@ -64,6 +66,7 @@ class AccountState {
           paymentFilters: PaymentFilters.initial(),
           connectionStatus: null,
           verificationStatus: VerificationStatus.UNVERIFIED,
+          hydrated: false,
         );
 
   AccountState copyWith({
@@ -101,6 +104,7 @@ class AccountState {
       paymentFilters: paymentFilters ?? this.paymentFilters,
       connectionStatus: connectionStatus ?? this.connectionStatus,
       verificationStatus: verificationStatus ?? this.verificationStatus,
+      hydrated: hydrated,
     );
   }
 
@@ -151,6 +155,7 @@ class AccountState {
       verificationStatus: json["verificationStatus"] != null
           ? VerificationStatus.values[json["verificationStatus"]]
           : VerificationStatus.UNVERIFIED,
+      hydrated: true,
     );
   }
 

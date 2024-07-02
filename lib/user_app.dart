@@ -2,7 +2,6 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
-import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_bloc.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
@@ -85,173 +84,177 @@ class UserApp extends StatelessWidget {
             SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
             ));
-            return BlocBuilder2<AccountBloc, AccountState, SecurityBloc, SecurityState>(
-                builder: (context, accState, securityState) {
-              return MaterialApp(
-                key: _appKey,
-                title: "${getSystemAppLocalizations().app_name} Cloud",
-                theme: ThemeProvider.themeOf(context).data,
-                localizationsDelegates: localizationsDelegates(),
-                supportedLocales: supportedLocales(),
-                builder: (BuildContext context, Widget? child) {
-                  return MediaQuery.withClampedTextScaling(
-                    maxScaleFactor: _kMaxTitleTextScaleFactor,
-                    child: child!,
+            return BlocBuilder<AccountBloc, AccountState>(
+              buildWhen: (prev, cur) => cur.hydrated,
+              builder: (context, accState) {
+                return BlocBuilder<SecurityBloc, SecurityState>(builder: (context, securityState) {
+                  return MaterialApp(
+                    key: _appKey,
+                    title: "${getSystemAppLocalizations().app_name} Cloud",
+                    theme: ThemeProvider.themeOf(context).data,
+                    localizationsDelegates: localizationsDelegates(),
+                    supportedLocales: supportedLocales(),
+                    builder: (BuildContext context, Widget? child) {
+                      return MediaQuery.withClampedTextScaling(
+                        maxScaleFactor: _kMaxTitleTextScaleFactor,
+                        child: child!,
+                      );
+                    },
+                    initialRoute: securityState.pinStatus == PinStatus.enabled ? "lockscreen" : "splash",
+                    onGenerateRoute: (RouteSettings settings) {
+                      _log.info("New route: ${settings.name}");
+                      switch (settings.name) {
+                        case 'lockscreen':
+                          return NoTransitionRoute(
+                            builder: (_) => const LockScreen(
+                              authorizedAction: AuthorizedAction.launchHome,
+                            ),
+                            settings: settings,
+                          );
+                        case 'splash':
+                          return FadeInRoute(
+                            builder: (_) => SplashPage(isInitial: accState.initial),
+                            settings: settings,
+                          );
+                        case '/intro':
+                          return FadeInRoute(
+                            builder: (_) => InitialWalkthroughPage(),
+                            settings: settings,
+                          );
+                        case '/enter_mnemonics':
+                          return FadeInRoute<String>(
+                            builder: (_) => EnterMnemonicsPage(
+                              initialWords: settings.arguments as List<String>? ?? [],
+                            ),
+                            settings: settings,
+                          );
+                        case '/':
+                          return FadeInRoute(
+                            builder: (_) => NavigatorPopHandler(
+                              onPop: () => _homeNavigatorKey.currentState!.maybePop(),
+                              child: Navigator(
+                                initialRoute: "/",
+                                key: _homeNavigatorKey,
+                                onGenerateRoute: (RouteSettings settings) {
+                                  _log.info("New inner route: ${settings.name}");
+                                  switch (settings.name) {
+                                    case '/':
+                                      return FadeInRoute(
+                                        builder: (_) => const Home(),
+                                        settings: settings,
+                                      );
+                                    case '/select_lsp':
+                                      return MaterialPageRoute(
+                                        fullscreenDialog: true,
+                                        builder: (_) => SelectLSPPage(),
+                                        settings: settings,
+                                      );
+                                    case '/create_invoice':
+                                      return FadeInRoute(
+                                        builder: (_) => const CreateInvoicePage(),
+                                        settings: settings,
+                                      );
+                                    case '/lnurl_pay':
+                                      return FadeInRoute(
+                                        builder: (_) => const LnAddressPage(),
+                                        settings: settings,
+                                      );
+                                    case '/get_refund':
+                                      return FadeInRoute(
+                                        builder: (_) => GetRefundPage(
+                                          refundBloc: refundBloc,
+                                        ),
+                                        settings: settings,
+                                      );
+                                    case '/swap':
+                                      return FadeInRoute(
+                                        builder: (_) => BlocProvider(
+                                          create: (BuildContext context) => SwapInProgressBloc(
+                                            ServiceInjector().breezSDK,
+                                          ),
+                                          child: const SwapPage(),
+                                        ),
+                                        settings: settings,
+                                      );
+                                    case '/reverse_swap':
+                                      return FadeInRoute(
+                                        builder: (_) => BlocProvider(
+                                          create: (BuildContext context) => RevSwapsInProgressBloc(
+                                            ServiceInjector().breezSDK,
+                                          ),
+                                          child: ReverseSwapPage(
+                                            btcAddressData: settings.arguments as BitcoinAddressData?,
+                                          ),
+                                        ),
+                                        settings: settings,
+                                      );
+                                    case '/unexpected_funds':
+                                      return FadeInRoute(
+                                        builder: (_) => RedeemFundsPage(
+                                          walletBalance: settings.arguments as int,
+                                        ),
+                                        settings: settings,
+                                      );
+                                    case '/fiat_currency':
+                                      return FadeInRoute(
+                                        builder: (_) => const FiatCurrencySettings(),
+                                        settings: settings,
+                                      );
+                                    case '/security':
+                                      return FadeInRoute(
+                                        builder: (_) => const SecuredPage(
+                                          securedWidget: SecurityPage(),
+                                        ),
+                                        settings: settings,
+                                      );
+                                    case '/mnemonics':
+                                      return FadeInRoute(
+                                        builder: (_) => MnemonicsConfirmationPage(
+                                          mnemonics: settings.arguments as String,
+                                        ),
+                                        settings: settings,
+                                      );
+                                    case '/network':
+                                      return FadeInRoute(
+                                        builder: (_) => const NetworkPage(),
+                                        settings: settings,
+                                      );
+                                    case '/developers':
+                                      return FadeInRoute(
+                                        builder: (_) => const DevelopersView(),
+                                        settings: settings,
+                                      );
+                                    case '/qr_scan':
+                                      return MaterialPageRoute<String>(
+                                        fullscreenDialog: true,
+                                        builder: (_) => QRScan(),
+                                        settings: settings,
+                                      );
+                                    case '/payment_options':
+                                      return FadeInRoute(
+                                        builder: (_) => const PaymentOptionsPage(),
+                                        settings: settings,
+                                      );
+                                    case '/buy_bitcoin':
+                                      return TransparentPageRoute(
+                                        (_) => const MoonPayPage(),
+                                      );
+                                  }
+                                  assert(false);
+                                  return null;
+                                },
+                              ),
+                            ),
+                            settings: settings,
+                          );
+                      }
+                      assert(false);
+                      return null;
+                    },
                   );
-                },
-                initialRoute: securityState.pinStatus == PinStatus.enabled ? "lockscreen" : "splash",
-                onGenerateRoute: (RouteSettings settings) {
-                  _log.info("New route: ${settings.name}");
-                  switch (settings.name) {
-                    case '/intro':
-                      return FadeInRoute(
-                        builder: (_) => InitialWalkthroughPage(),
-                        settings: settings,
-                      );
-                    case 'splash':
-                      return FadeInRoute(
-                        builder: (_) => SplashPage(isInitial: accState.initial),
-                        settings: settings,
-                      );
-                    case 'lockscreen':
-                      return NoTransitionRoute(
-                        builder: (_) => const LockScreen(
-                          authorizedAction: AuthorizedAction.launchHome,
-                        ),
-                        settings: settings,
-                      );
-                    case '/enter_mnemonics':
-                      return FadeInRoute<String>(
-                        builder: (_) => EnterMnemonicsPage(
-                          initialWords: settings.arguments as List<String>? ?? [],
-                        ),
-                        settings: settings,
-                      );
-                    case '/':
-                      return FadeInRoute(
-                        builder: (_) => NavigatorPopHandler(
-                          onPop: () => _homeNavigatorKey.currentState!.maybePop(),
-                          child: Navigator(
-                            initialRoute: "/",
-                            key: _homeNavigatorKey,
-                            onGenerateRoute: (RouteSettings settings) {
-                              _log.info("New inner route: ${settings.name}");
-                              switch (settings.name) {
-                                case '/':
-                                  return FadeInRoute(
-                                    builder: (_) => const Home(),
-                                    settings: settings,
-                                  );
-                                case '/select_lsp':
-                                  return MaterialPageRoute(
-                                    fullscreenDialog: true,
-                                    builder: (_) => SelectLSPPage(),
-                                    settings: settings,
-                                  );
-                                case '/create_invoice':
-                                  return FadeInRoute(
-                                    builder: (_) => const CreateInvoicePage(),
-                                    settings: settings,
-                                  );
-                                case '/lnurl_pay':
-                                  return FadeInRoute(
-                                    builder: (_) => const LnAddressPage(),
-                                    settings: settings,
-                                  );
-                                case '/get_refund':
-                                  return FadeInRoute(
-                                    builder: (_) => GetRefundPage(
-                                      refundBloc: refundBloc,
-                                    ),
-                                    settings: settings,
-                                  );
-                                case '/swap':
-                                  return FadeInRoute(
-                                    builder: (_) => BlocProvider(
-                                      create: (BuildContext context) => SwapInProgressBloc(
-                                        ServiceInjector().breezSDK,
-                                      ),
-                                      child: const SwapPage(),
-                                    ),
-                                    settings: settings,
-                                  );
-                                case '/reverse_swap':
-                                  return FadeInRoute(
-                                    builder: (_) => BlocProvider(
-                                      create: (BuildContext context) => RevSwapsInProgressBloc(
-                                        ServiceInjector().breezSDK,
-                                      ),
-                                      child: ReverseSwapPage(
-                                        btcAddressData: settings.arguments as BitcoinAddressData?,
-                                      ),
-                                    ),
-                                    settings: settings,
-                                  );
-                                case '/unexpected_funds':
-                                  return FadeInRoute(
-                                    builder: (_) => RedeemFundsPage(
-                                      walletBalance: settings.arguments as int,
-                                    ),
-                                    settings: settings,
-                                  );
-                                case '/fiat_currency':
-                                  return FadeInRoute(
-                                    builder: (_) => const FiatCurrencySettings(),
-                                    settings: settings,
-                                  );
-                                case '/security':
-                                  return FadeInRoute(
-                                    builder: (_) => const SecuredPage(
-                                      securedWidget: SecurityPage(),
-                                    ),
-                                    settings: settings,
-                                  );
-                                case '/mnemonics':
-                                  return FadeInRoute(
-                                    builder: (_) => MnemonicsConfirmationPage(
-                                      mnemonics: settings.arguments as String,
-                                    ),
-                                    settings: settings,
-                                  );
-                                case '/network':
-                                  return FadeInRoute(
-                                    builder: (_) => const NetworkPage(),
-                                    settings: settings,
-                                  );
-                                case '/developers':
-                                  return FadeInRoute(
-                                    builder: (_) => const DevelopersView(),
-                                    settings: settings,
-                                  );
-                                case '/qr_scan':
-                                  return MaterialPageRoute<String>(
-                                    fullscreenDialog: true,
-                                    builder: (_) => QRScan(),
-                                    settings: settings,
-                                  );
-                                case '/payment_options':
-                                  return FadeInRoute(
-                                    builder: (_) => const PaymentOptionsPage(),
-                                    settings: settings,
-                                  );
-                                case '/buy_bitcoin':
-                                  return TransparentPageRoute(
-                                    (_) => const MoonPayPage(),
-                                  );
-                              }
-                              assert(false);
-                              return null;
-                            },
-                          ),
-                        ),
-                        settings: settings,
-                      );
-                  }
-                  assert(false);
-                  return null;
-                },
-              );
-            });
+                });
+              },
+            );
           },
         ),
       ),

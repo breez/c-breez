@@ -93,7 +93,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
       final account = context.read<AccountBloc>().state;
       setState(() {
         affordableFees = feeOptions
-            .where((f) => f.isAffordable(balance: account.balance, amountSat: widget.amountSat))
+            .where((f) => f.isAffordable(balanceSat: account.balanceSat, amountSat: widget.amountSat))
             .toList();
         selectedFeeIndex = (affordableFees.length / 2).floor();
       });

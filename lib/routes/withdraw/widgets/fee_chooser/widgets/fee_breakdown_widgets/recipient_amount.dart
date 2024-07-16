@@ -39,7 +39,7 @@ class RecipientAmount extends StatelessWidget {
                 )
               : texts.sweep_all_coins_amount_with_fiat(
                   BitcoinCurrency.SAT.format(amountSat),
-                  fiatConversion.format(amountSat),
+                  fiatConversion.formatSat(amountSat),
                 ),
           style: TextStyle(color: themeData.colorScheme.error),
           maxLines: 1,

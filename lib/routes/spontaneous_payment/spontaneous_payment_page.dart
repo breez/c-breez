@@ -155,14 +155,14 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     return GestureDetector(
       child: AutoSizeText(
         texts.spontaneous_payment_max_amount(
-          currencyState.bitcoinCurrency.format(acc.maxAllowedToPay),
+          currencyState.bitcoinCurrency.format(acc.maxAllowedToPaySat),
         ),
         style: theme.textStyle,
         maxLines: 1,
         minFontSize: MinFontSize(context).minFontSize,
       ),
       onTap: () => _amountController.text = currencyState.bitcoinCurrency.format(
-        acc.maxAllowedToPay,
+        acc.maxAllowedToPaySat,
         includeDisplayName: false,
         userInput: true,
       ),
@@ -183,14 +183,14 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
 
     String tipMessage = _descriptionController.text;
     var bitcoinCurrency = currencyBloc.state.bitcoinCurrency;
-    var amount = bitcoinCurrency.parse(_amountController.text);
+    var amountSat = bitcoinCurrency.parse(_amountController.text);
     _amountFocusNode.unfocus();
     await promptAreYouSure(
       context,
       texts.spontaneous_payment_send_payment_title,
       Text(
         texts.spontaneous_payment_send_payment_message(
-          bitcoinCurrency.format(amount),
+          bitcoinCurrency.format(amountSat),
           widget.nodeID!,
         ),
       ),
@@ -214,7 +214,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                     sendFuture = accBloc.sendSpontaneousPayment(
                       nodeId: widget.nodeID!,
                       description: tipMessage,
-                      amountMsat: amount * 1000,
+                      amountMsat: amountSat * 1000,
                     );
                     return sendFuture;
                   },

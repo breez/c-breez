@@ -190,7 +190,7 @@ class UserApp extends StatelessWidget {
                                 case '/unexpected_funds':
                                   return FadeInRoute(
                                     builder: (_) => RedeemFundsPage(
-                                      walletBalance: settings.arguments as int,
+                                      walletBalanceSat: settings.arguments as int,
                                     ),
                                     settings: settings,
                                   );

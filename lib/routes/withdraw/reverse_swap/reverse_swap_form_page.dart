@@ -94,14 +94,14 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
     );
   }
 
-  int _getAmount() {
-    int amount = 0;
+  int _getAmountSat() {
+    int amountSat = 0;
     try {
-      amount = widget.bitcoinCurrency.parse(_amountController.text);
+      amountSat = widget.bitcoinCurrency.parse(_amountController.text);
     } catch (e) {
-      _log.warning("Failed to parse the input amount", e);
+      _log.warning("Failed to parse the input amountSat", e);
     }
-    return amount;
+    return amountSat;
   }
 
   void _prepareReverseSwap() async {
@@ -111,14 +111,14 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
       var loaderRoute = createLoaderRoute(context);
       navigator.push(loaderRoute);
       try {
-        int amount = _getAmount();
+        int amountSat = _getAmountSat();
         if (loaderRoute.isActive) {
           navigator.removeRoute(loaderRoute);
         }
         navigator.push(
           FadeInRoute(
             builder: (_) => ReverseSwapConfirmationPage(
-              amountSat: amount,
+              amountSat: amountSat,
               amountType: SwapAmountType.Receive,
               onchainRecipientAddress: _addressController.text,
               isMaxValue: _withdrawMaxValue,

@@ -62,15 +62,15 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   final _emailController = TextEditingController();
   final _identifierController = TextEditingController();
    */
-  late final bool fixedAmount;
+  late final bool isFixedAmount;
 
   @override
   void initState() {
     super.initState();
-    fixedAmount = widget.data.minSendable == widget.data.maxSendable;
+    isFixedAmount = widget.data.minSendable == widget.data.maxSendable;
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        if (fixedAmount) {
+        if (isFixedAmount) {
           final currencyState = context.read<CurrencyBloc>().state;
           _amountController.text = currencyState.bitcoinCurrency.format(
             (widget.data.maxSendable ~/ 1000),
@@ -124,10 +124,10 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                 bitcoinCurrency: currencyState.bitcoinCurrency,
                 controller: _amountController,
                 validatorFn: validatePayment,
-                enabled: !fixedAmount,
-                readOnly: fixedAmount,
+                enabled: !isFixedAmount,
+                readOnly: isFixedAmount,
               ),
-              if (!fixedAmount) ...[
+              if (!isFixedAmount) ...[
                 Padding(
                     padding: const EdgeInsets.only(
                       top: 8,
@@ -226,46 +226,54 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             final currencyBloc = context.read<CurrencyBloc>();
-            final amount = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
+            final amountSat = currencyBloc.state.bitcoinCurrency.parse(_amountController.text);
             final comment = _commentController.text;
-            _log.info("LNURL payment of $amount sats where "
-                "min is ${widget.data.minSendable} msats "
-                "and max is ${widget.data.maxSendable} msats."
-                "with comment $comment");
-            Navigator.pop(context, LNURLPaymentInfo(amount: amount, comment: comment));
+            _log.info(
+              "LNURL payment of $amountSat sats where "
+              "min is ${widget.data.minSendable} msats "
+              "and max is ${widget.data.maxSendable} msats."
+              "with comment $comment",
+            );
+            Navigator.pop(
+              context,
+              LNURLPaymentInfo(
+                amountSat: amountSat,
+                comment: comment,
+              ),
+            );
           }
         },
       ),
     );
   }
 
-  String? validatePayment(int amount) {
+  String? validatePayment(int amountSat) {
     final texts = context.texts();
     final accBloc = context.read<AccountBloc>();
     final lspState = context.read<LSPBloc>().state;
     final currencyState = context.read<CurrencyBloc>().state;
 
-    final maxSendable = widget.data.maxSendable ~/ 1000;
-    if (amount > maxSendable) {
-      return texts.lnurl_payment_page_error_exceeds_limit(maxSendable);
+    final maxSendableSat = widget.data.maxSendable ~/ 1000;
+    if (amountSat > maxSendableSat) {
+      return texts.lnurl_payment_page_error_exceeds_limit(maxSendableSat);
     }
 
-    final minSendable = widget.data.minSendable ~/ 1000;
-    if (amount < minSendable) {
-      return texts.lnurl_payment_page_error_below_limit(minSendable);
+    final minSendableSat = widget.data.minSendable ~/ 1000;
+    if (amountSat < minSendableSat) {
+      return texts.lnurl_payment_page_error_below_limit(minSendableSat);
     }
 
-    int? channelMinimumFee;
+    int? channelMinimumFeeSat;
     if (lspState != null && lspState.lspInfo != null) {
-      channelMinimumFee = lspState.lspInfo!.openingFeeParamsList.values.first.minMsat ~/ 1000;
+      channelMinimumFeeSat = lspState.lspInfo!.openingFeeParamsList.values.first.minMsat ~/ 1000;
     }
 
     return PaymentValidator(
       validatePayment: accBloc.validatePayment,
       currency: currencyState.bitcoinCurrency,
       channelCreationPossible: lspState?.isChannelOpeningAvailable ?? false,
-      channelMinimumFee: channelMinimumFee,
+      channelMinimumFeeSat: channelMinimumFeeSat,
       texts: context.texts(),
-    ).validateOutgoing(amount);
+    ).validateOutgoing(amountSat);
   }
 }

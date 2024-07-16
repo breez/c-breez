@@ -17,17 +17,20 @@ class BitcoinCurrency extends Object {
   }
 
   String format(
-    int sat, {
+    int amountSat, {
     includeCurrencySymbol = false,
     includeDisplayName = true,
     removeTrailingZeros = false,
     userInput = false,
   }) =>
-      BitcoinCurrencyFormatter().format(sat, this,
-          addCurrencySymbol: includeCurrencySymbol,
-          addCurrencySuffix: includeDisplayName,
-          removeTrailingZeros: removeTrailingZeros,
-          userInput: userInput);
+      BitcoinCurrencyFormatter().format(
+        amountSat,
+        this,
+        addCurrencySymbol: includeCurrencySymbol,
+        addCurrencySuffix: includeDisplayName,
+        removeTrailingZeros: removeTrailingZeros,
+        userInput: userInput,
+      );
 
   int parse(String amountStr) => BitcoinCurrencyFormatter().parse(amountStr, this);
 

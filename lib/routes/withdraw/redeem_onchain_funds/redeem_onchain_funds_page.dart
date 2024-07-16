@@ -19,10 +19,10 @@ import 'package:logging/logging.dart';
 final _log = Logger("RedeemFundsPage");
 
 class RedeemFundsPage extends StatefulWidget {
-  final int walletBalance;
+  final int walletBalanceSat;
 
   const RedeemFundsPage({
-    required this.walletBalance,
+    required this.walletBalanceSat,
     super.key,
   });
 
@@ -41,7 +41,7 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
   void initState() {
     super.initState();
     if (_withdrawMaxValue) {
-      _setAmount(widget.walletBalance);
+      _setAmount(widget.walletBalanceSat);
     }
   }
 
@@ -85,10 +85,10 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
                         withdrawMaxValue: _withdrawMaxValue,
                         policy: WithdrawFundsPolicy(
                           WithdrawKind.unexpected_funds,
-                          widget.walletBalance,
-                          widget.walletBalance,
+                          widget.walletBalanceSat,
+                          widget.walletBalanceSat,
                         ),
-                        balance: widget.walletBalance,
+                        balanceSat: widget.walletBalanceSat,
                       );
                     },
                   ),
@@ -106,7 +106,7 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
                         setState(() {
                           _withdrawMaxValue = value;
                           if (_withdrawMaxValue) {
-                            _setAmount(widget.walletBalance);
+                            _setAmount(widget.walletBalanceSat);
                           } else {
                             _amountController.text = "";
                           }
@@ -130,7 +130,7 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
                     FadeInRoute(
                       builder: (_) => RedeemOnchainConfirmationPage(
                         toAddress: _addressController.text,
-                        amountSat: _getAmount(),
+                        amountSat: _getAmountSat(),
                       ),
                     ),
                   );
@@ -143,24 +143,24 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
     );
   }
 
-  int _getAmount() {
+  int _getAmountSat() {
     final bitcoinCurrency = context.read<CurrencyBloc>().state.bitcoinCurrency;
 
-    int amount = 0;
+    int amountSat = 0;
     try {
-      amount = bitcoinCurrency.parse(_amountController.text);
+      amountSat = bitcoinCurrency.parse(_amountController.text);
     } catch (e) {
-      _log.warning("Failed to parse the input amount", e);
+      _log.warning("Failed to parse the input amountSat", e);
     }
-    return amount;
+    return amountSat;
   }
 
-  void _setAmount(int amountSats) {
+  void _setAmount(int amountSat) {
     final bitcoinCurrency = context.read<CurrencyBloc>().state.bitcoinCurrency;
 
     setState(() {
       _amountController.text = bitcoinCurrency
-          .format(amountSats, includeDisplayName: false, userInput: true)
+          .format(amountSat, includeDisplayName: false, userInput: true)
           .formatBySatAmountFormFieldFormatter();
     });
   }

@@ -13,15 +13,14 @@ class AccountState {
   final String? id;
   final bool initial;
   final int blockheight;
-  final int balance;
-  final int walletBalance;
-  final int maxAllowedToPay;
-  final int maxAllowedToReceive;
-  final int maxPaymentAmount;
-  final int maxChanReserve;
+  final int balanceSat;
+  final int walletBalanceSat;
+  final int maxAllowedToPaySat;
+  final int maxAllowedToReceiveSat;
+  final int maxPaymentAmountSat;
+  final int maxChanReserveSat;
   final List<String> connectedPeers;
-  final int maxInboundLiquidity;
-  final int onChainFeeRate;
+  final int maxInboundLiquiditySat;
   final List<PaymentMinutiae> payments;
   final PaymentFilters paymentFilters;
   final ConnectionStatus? connectionStatus;
@@ -31,15 +30,14 @@ class AccountState {
     required this.id,
     required this.initial,
     required this.blockheight,
-    required this.balance,
-    required this.walletBalance,
-    required this.maxAllowedToPay,
-    required this.maxAllowedToReceive,
-    required this.maxPaymentAmount,
-    required this.maxChanReserve,
+    required this.balanceSat,
+    required this.walletBalanceSat,
+    required this.maxAllowedToPaySat,
+    required this.maxAllowedToReceiveSat,
+    required this.maxPaymentAmountSat,
+    required this.maxChanReserveSat,
     required this.connectedPeers,
-    required this.maxInboundLiquidity,
-    required this.onChainFeeRate,
+    required this.maxInboundLiquiditySat,
     required this.payments,
     required this.paymentFilters,
     required this.connectionStatus,
@@ -51,15 +49,14 @@ class AccountState {
           id: null,
           initial: true,
           blockheight: 0,
-          maxAllowedToPay: 0,
-          maxAllowedToReceive: 0,
-          maxPaymentAmount: 0,
-          maxChanReserve: 0,
+          maxAllowedToPaySat: 0,
+          maxAllowedToReceiveSat: 0,
+          maxPaymentAmountSat: 0,
+          maxChanReserveSat: 0,
           connectedPeers: List.empty(),
-          maxInboundLiquidity: 0,
-          onChainFeeRate: 0,
-          balance: 0,
-          walletBalance: 0,
+          maxInboundLiquiditySat: 0,
+          balanceSat: 0,
+          walletBalanceSat: 0,
           payments: [],
           paymentFilters: PaymentFilters.initial(),
           connectionStatus: null,
@@ -70,15 +67,14 @@ class AccountState {
     String? id,
     bool? initial,
     int? blockheight,
-    int? balance,
-    int? walletBalance,
-    int? maxAllowedToPay,
-    int? maxAllowedToReceive,
-    int? maxPaymentAmount,
-    int? maxChanReserve,
+    int? balanceSat,
+    int? walletBalanceSat,
+    int? maxAllowedToPaySat,
+    int? maxAllowedToReceiveSat,
+    int? maxPaymentAmountSat,
+    int? maxChanReserveSat,
     List<String>? connectedPeers,
-    int? maxInboundLiquidity,
-    int? onChainFeeRate,
+    int? maxInboundLiquiditySat,
     List<PaymentMinutiae>? payments,
     PaymentFilters? paymentFilters,
     ConnectionStatus? connectionStatus,
@@ -87,16 +83,15 @@ class AccountState {
     return AccountState(
       id: id ?? this.id,
       initial: initial ?? this.initial,
-      balance: balance ?? this.balance,
-      walletBalance: walletBalance ?? this.walletBalance,
-      maxAllowedToPay: maxAllowedToPay ?? this.maxAllowedToPay,
-      maxAllowedToReceive: maxAllowedToReceive ?? this.maxAllowedToReceive,
-      maxPaymentAmount: maxPaymentAmount ?? this.maxPaymentAmount,
+      balanceSat: balanceSat ?? this.balanceSat,
+      walletBalanceSat: walletBalanceSat ?? this.walletBalanceSat,
+      maxAllowedToPaySat: maxAllowedToPaySat ?? this.maxAllowedToPaySat,
+      maxAllowedToReceiveSat: maxAllowedToReceiveSat ?? this.maxAllowedToReceiveSat,
+      maxPaymentAmountSat: maxPaymentAmountSat ?? this.maxPaymentAmountSat,
       blockheight: blockheight ?? this.blockheight,
-      maxChanReserve: maxChanReserve ?? this.maxChanReserve,
+      maxChanReserveSat: maxChanReserveSat ?? this.maxChanReserveSat,
       connectedPeers: connectedPeers ?? this.connectedPeers,
-      maxInboundLiquidity: maxInboundLiquidity ?? this.maxInboundLiquidity,
-      onChainFeeRate: onChainFeeRate ?? this.onChainFeeRate,
+      maxInboundLiquiditySat: maxInboundLiquiditySat ?? this.maxInboundLiquiditySat,
       payments: payments ?? this.payments,
       paymentFilters: paymentFilters ?? this.paymentFilters,
       connectionStatus: connectionStatus ?? this.connectionStatus,
@@ -104,9 +99,9 @@ class AccountState {
     );
   }
 
-  int get reserveAmount => balance - maxAllowedToPay;
+  int get reserveAmountSat => balanceSat - maxAllowedToPaySat;
 
-  bool get isFeesApplicable => maxAllowedToReceive > maxInboundLiquidity;
+  bool get isFeesApplicable => maxAllowedToReceiveSat > maxInboundLiquiditySat;
 
   // TODO: Add payments toJson
   Map<String, dynamic>? toJson() {
@@ -114,14 +109,13 @@ class AccountState {
       "id": id,
       "initial": initial,
       "blockheight": blockheight,
-      "balance": balance,
-      "walletBalance": walletBalance,
-      "maxAllowedToPay": maxAllowedToPay,
-      "maxAllowedToReceive": maxAllowedToReceive,
-      "maxPaymentAmount": maxPaymentAmount,
-      "maxChanReserve": maxChanReserve,
-      "maxInboundLiquidity": maxInboundLiquidity,
-      "onChainFeeRate": onChainFeeRate,
+      "balanceSat": balanceSat,
+      "walletBalanceSat": walletBalanceSat,
+      "maxAllowedToPaySat": maxAllowedToPaySat,
+      "maxAllowedToReceiveSat": maxAllowedToReceiveSat,
+      "maxPaymentAmountSat": maxPaymentAmountSat,
+      "maxChanReserveSat": maxChanReserveSat,
+      "maxInboundLiquiditySat": maxInboundLiquiditySat,
       "paymentFilters": paymentFilters.toJson(),
       "connectionStatus": connectionStatus?.index,
       "verificationStatus": verificationStatus?.index,
@@ -134,15 +128,14 @@ class AccountState {
       id: json["id"],
       initial: json["initial"],
       blockheight: json["blockheight"],
-      balance: json["balance"],
-      walletBalance: json["walletBalance"],
-      maxAllowedToPay: json["maxAllowedToPay"],
-      maxAllowedToReceive: json["maxAllowedToReceive"],
-      maxPaymentAmount: json["maxPaymentAmount"],
-      maxChanReserve: json["maxChanReserve"],
+      balanceSat: json["balanceSat"],
+      walletBalanceSat: json["walletBalanceSat"],
+      maxAllowedToPaySat: json["maxAllowedToPaySat"],
+      maxAllowedToReceiveSat: json["maxAllowedToReceiveSat"],
+      maxPaymentAmountSat: json["maxPaymentAmountSat"],
+      maxChanReserveSat: json["maxChanReserveSat"],
       connectedPeers: <String>[],
-      maxInboundLiquidity: json["maxInboundLiquidity"] ?? 0,
-      onChainFeeRate: (json["onChainFeeRate"]),
+      maxInboundLiquiditySat: json["maxInboundLiquiditySat"] ?? 0,
       payments: [],
       paymentFilters: PaymentFilters.fromJson(json["paymentFilters"]),
       connectionStatus: json["connectionStatus"] != null

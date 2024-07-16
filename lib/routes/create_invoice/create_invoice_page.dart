@@ -134,17 +134,17 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     builder: (context, accountState, currencyState, lspState) {
                       return ReceivableBTCBox(
                         onTap: () {
-                          if (!isChannelOpeningAvailable && accountState.maxInboundLiquidity > 0) {
+                          if (!isChannelOpeningAvailable && accountState.maxInboundLiquiditySat > 0) {
                             _amountController.text = currencyState.bitcoinCurrency.format(
-                              accountState.maxInboundLiquidity,
+                              accountState.maxInboundLiquiditySat,
                               includeDisplayName: false,
                               userInput: true,
                             );
-                          } else if (!isChannelOpeningAvailable && accountState.maxInboundLiquidity == 0) {
+                          } else if (!isChannelOpeningAvailable && accountState.maxInboundLiquiditySat == 0) {
                             // do nothing
                           } else {
                             _amountController.text = currencyState.bitcoinCurrency.format(
-                              accountState.maxAllowedToReceive,
+                              accountState.maxAllowedToReceiveSat,
                               includeDisplayName: false,
                               userInput: true,
                             );
@@ -192,7 +192,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       barrierDismissible: false,
       builder: (_) => LNURLWithdrawDialog(
         requestData: data,
-        amountSats: currencyBloc.state.bitcoinCurrency.parse(
+        amountSat: currencyBloc.state.bitcoinCurrency.parse(
           _amountController.text,
         ),
         onFinish: widget.onFinish!,
@@ -253,9 +253,9 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     }
   }
 
-  String? validatePayment(int amount) {
+  String? validatePayment(int amountSat) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
-    int? channelMinimumFee = lspInfo != null && lspInfo.openingFeeParamsList.values.isNotEmpty
+    int? channelMinimumFeeSat = lspInfo != null && lspInfo.openingFeeParamsList.values.isNotEmpty
         ? lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000
         : null;
 
@@ -263,31 +263,31 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       validatePayment: _validatePayment,
       currency: context.read<CurrencyBloc>().state.bitcoinCurrency,
       channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
-      channelMinimumFee: channelMinimumFee,
+      channelMinimumFeeSat: channelMinimumFeeSat,
       texts: context.texts(),
-    ).validateIncoming(amount);
+    ).validateIncoming(amountSat);
   }
 
   void _validatePayment(
-    int amount,
+    int amountSat,
     bool outgoing,
     bool channelCreationPossible, {
-    int? channelMinimumFee,
+    int? channelMinimumFeeSat,
   }) {
     final data = widget.requestData;
     if (data != null) {
-      if (amount > data.maxWithdrawable ~/ 1000) {
+      if (amountSat > data.maxWithdrawable ~/ 1000) {
         throw PaymentExceededLimitError(data.maxWithdrawable ~/ 1000);
       }
-      if (amount < data.minWithdrawable ~/ 1000) {
+      if (amountSat < data.minWithdrawable ~/ 1000) {
         throw PaymentBelowLimitError(data.minWithdrawable ~/ 1000);
       }
     }
     return context.read<AccountBloc>().validatePayment(
-          amount,
+          amountSat,
           outgoing,
           channelCreationPossible,
-          channelMinimumFee: channelMinimumFee,
+          channelMinimumFeeSat: channelMinimumFeeSat,
         );
   }
 }

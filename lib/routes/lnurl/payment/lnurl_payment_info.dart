@@ -1,9 +1,9 @@
 class LNURLPaymentInfo {
-  final int amount;
+  final int amountSat;
   final String? comment;
 
   const LNURLPaymentInfo({
-    required this.amount,
+    required this.amountSat,
     this.comment,
   });
 }

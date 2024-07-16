@@ -7,10 +7,10 @@ import 'package:c_breez/bloc/ext/block_builder_extensions.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
+import 'package:c_breez/routes/get-refund/get_refund_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/warning_action.dart';
 import 'package:c_breez/routes/home/widgets/enable_backup_dialog.dart';
 import 'package:c_breez/routes/home/widgets/rotator.dart';
-import 'package:c_breez/routes/get-refund/get_refund_page.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/widgets/backup_in_progress_dialog.dart';
 import 'package:flutter/material.dart';
@@ -35,14 +35,14 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
         final refundState = refundBloc.state;
 
         List<Widget> warnings = [];
-        int walletBalance = accState.walletBalance;
+        int walletBalanceSat = accState.walletBalanceSat;
 
-        if (walletBalance > 0) {
+        if (walletBalanceSat > 0) {
           warnings.add(
             WarningAction(
               () => navigatorState.pushNamed(
                 "/unexpected_funds",
-                arguments: walletBalance,
+                arguments: walletBalanceSat,
               ),
             ),
           );

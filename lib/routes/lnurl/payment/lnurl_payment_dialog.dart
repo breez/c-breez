@@ -84,7 +84,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               ),
               child: Text(
                 _showFiatCurrency && fiatConversion != null
-                    ? fiatConversion.format(widget.data.maxSendable ~/ 1000)
+                    ? fiatConversion.formatSat(widget.data.maxSendable ~/ 1000)
                     : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
                         .format(widget.data.maxSendable ~/ 1000),
                 style: themeData.primaryTextTheme.headlineSmall,
@@ -146,11 +146,16 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             }),
           ),
           onPressed: () {
-            final amount = widget.data.maxSendable ~/ 1000;
-            _log.info("LNURL payment of $amount sats where "
-                "min is ${widget.data.minSendable} msats "
-                "and max is ${widget.data.maxSendable} msats.");
-            Navigator.pop(context, LNURLPaymentInfo(amount: amount));
+            final amountSat = widget.data.maxSendable ~/ 1000;
+            _log.info(
+              "LNURL payment of $amountSat sats where "
+              "min is ${widget.data.minSendable} msats "
+              "and max is ${widget.data.maxSendable} msats.",
+            );
+            Navigator.pop(
+              context,
+              LNURLPaymentInfo(amountSat: amountSat),
+            );
           },
           child: Text(
             texts.spontaneous_payment_action_pay,

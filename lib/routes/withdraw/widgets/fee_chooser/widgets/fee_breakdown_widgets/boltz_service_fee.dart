@@ -5,10 +5,10 @@ import 'package:c_breez/utils/min_font_size.dart';
 import 'package:flutter/material.dart';
 
 class BoltzServiceFee extends StatelessWidget {
-  final int boltzServiceFee;
+  final int boltzServiceFeeSat;
 
   const BoltzServiceFee({
-    required this.boltzServiceFee,
+    required this.boltzServiceFeeSat,
     super.key,
   });
 
@@ -28,7 +28,7 @@ class BoltzServiceFee extends StatelessWidget {
       ),
       trailing: AutoSizeText(
         texts.reverse_swap_confirmation_boltz_fee_value(
-          BitcoinCurrency.SAT.format(boltzServiceFee),
+          BitcoinCurrency.SAT.format(boltzServiceFeeSat),
         ),
         style: TextStyle(color: themeData.colorScheme.error.withOpacity(0.4)),
         maxLines: 1,

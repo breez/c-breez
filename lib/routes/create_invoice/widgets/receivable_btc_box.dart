@@ -46,7 +46,7 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            (!isChannelOpeningAvailable && accountState.maxInboundLiquidity <= 0)
+            (!isChannelOpeningAvailable && accountState.maxInboundLiquiditySat <= 0)
                 ? WarningBox(
                     boxPadding: const EdgeInsets.only(top: 8),
                     child: AutoSizeText(
@@ -58,8 +58,8 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
                     widget.receiveLabel ??
                         texts.invoice_receive_label(
                           currencyState.bitcoinCurrency.format((isChannelOpeningAvailable)
-                              ? accountState.maxAllowedToReceive
-                              : accountState.maxInboundLiquidity),
+                              ? accountState.maxAllowedToReceiveSat
+                              : accountState.maxInboundLiquiditySat),
                         ),
                     style: theme.textStyle,
                     maxLines: 1,

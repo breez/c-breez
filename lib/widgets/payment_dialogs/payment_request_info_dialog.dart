@@ -20,7 +20,7 @@ class PaymentRequestInfoDialog extends StatefulWidget {
   final Invoice invoice;
   final Function() _onCancel;
   final Function() _onWaitingConfirmation;
-  final Function(String bot11, int amount) _onPaymentApproved;
+  final Function(String bot11, int amountSat) _onPaymentApproved;
   final Function(Map<String, dynamic> map) _setAmountToPay;
   final double minHeight;
 
@@ -214,7 +214,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         ),
         child: Text(
           _showFiatCurrency && fiatConversion != null
-              ? fiatConversion.format(widget.invoice.amountMsat ~/ 1000)
+              ? fiatConversion.formatSat(widget.invoice.amountMsat ~/ 1000)
               : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
                   .format(widget.invoice.amountMsat ~/ 1000),
           style: themeData.primaryTextTheme.headlineSmall,
@@ -259,7 +259,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
       texts: context.texts(),
     ).validateOutgoing(
-      amountToPay(currencyState),
+      _amountToPaySat(currencyState),
     );
     if (widget.invoice.amountMsat == 0 || validationError == null || validationError.isEmpty) {
       return null;
@@ -295,30 +295,32 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       )
     ];
 
-    int toPay = amountToPay(currency);
-    if (toPay > 0 && accState.maxAllowedToPay >= toPay) {
-      actions.add(SimpleDialogOption(
-        onPressed: (() async {
-          if (widget.invoice.amountMsat > 0 || _formKey.currentState!.validate()) {
-            if (widget.invoice.amountMsat == 0) {
-              _amountToPayMap["_amountToPay"] = toPay;
-              _amountToPayMap["_amountToPayStr"] =
-                  BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker).format(amountToPay(currency));
-              widget._setAmountToPay(_amountToPayMap);
-              widget._onWaitingConfirmation();
-            } else {
-              widget._onPaymentApproved(
-                widget.invoice.bolt11,
-                amountToPay(currency),
-              );
+    int toPaySat = _amountToPaySat(currency);
+    if (toPaySat > 0 && accState.maxAllowedToPaySat >= toPaySat) {
+      actions.add(
+        SimpleDialogOption(
+          onPressed: (() async {
+            if (widget.invoice.amountMsat > 0 || _formKey.currentState!.validate()) {
+              if (widget.invoice.amountMsat == 0) {
+                _amountToPayMap["_amountToPaySat"] = toPaySat;
+                _amountToPayMap["_amountToPayStr"] = BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker)
+                    .format(_amountToPaySat(currency));
+                widget._setAmountToPay(_amountToPayMap);
+                widget._onWaitingConfirmation();
+              } else {
+                widget._onPaymentApproved(
+                  widget.invoice.bolt11,
+                  _amountToPaySat(currency),
+                );
+              }
             }
-          }
-        }),
-        child: Text(
-          texts.payment_request_dialog_action_approve,
-          style: themeData.primaryTextTheme.labelLarge,
+          }),
+          child: Text(
+            texts.payment_request_dialog_action_approve,
+            style: themeData.primaryTextTheme.labelLarge,
+          ),
         ),
-      ));
+      );
     }
     return Theme(
       data: themeData.copyWith(
@@ -336,13 +338,13 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     );
   }
 
-  int amountToPay(CurrencyState acc) {
-    int amount = widget.invoice.amountMsat ~/ 1000;
-    if (amount == 0) {
+  int _amountToPaySat(CurrencyState acc) {
+    int amountSat = widget.invoice.amountMsat ~/ 1000;
+    if (amountSat == 0) {
       try {
-        amount = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker).parse(_invoiceAmountController.text);
+        amountSat = BitcoinCurrency.fromTickerSymbol(acc.bitcoinTicker).parse(_invoiceAmountController.text);
       } catch (_) {}
     }
-    return amount;
+    return amountSat;
   }
 }

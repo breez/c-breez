@@ -13,7 +13,7 @@ import 'sat_amount_form_field_formatter.dart';
 class AmountFormField extends TextFormField {
   final FiatConversion? fiatConversion;
   final BitcoinCurrency bitcoinCurrency;
-  final String? Function(int amount) validatorFn;
+  final String? Function(int amountSat) validatorFn;
   final BreezTranslations texts;
 
   AmountFormField({
@@ -23,7 +23,7 @@ class AmountFormField extends TextFormField {
     required this.texts,
     required BuildContext context,
     Color? iconColor,
-    Function(String amount)? returnFN,
+    Function(String amountSat)? returnFN,
     super.controller,
     Key? key,
     String? initialValue,

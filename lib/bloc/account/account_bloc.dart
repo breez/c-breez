@@ -20,7 +20,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
 
-const maxPaymentAmount = 4294967;
+const maxPaymentAmountSat = 4294967;
 const nodeSyncInterval = 60;
 
 final _log = Logger("AccountBloc");
@@ -160,7 +160,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<sdk.LnUrlWithdrawResult> lnurlWithdraw({
     required sdk.LnUrlWithdrawRequest req,
   }) async {
-    _log.info("lnurlWithdraw amount: req: $req");
+    _log.info("lnurlWithdraw req: $req");
     try {
       return await _breezSDK.lnurlWithdraw(req: req);
     } catch (e) {
@@ -170,7 +170,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }
 
   Future<sdk.LnUrlPayResult> lnurlPay({required req}) async {
-    _log.info("lnurlPay amount: req: $req");
+    _log.info("lnurlPay req: $req");
     try {
       return await _breezSDK.lnurlPay(req: req);
     } catch (e) {
@@ -182,7 +182,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future<sdk.LnUrlCallbackStatus> lnurlAuth({
     required sdk.LnUrlAuthRequestData reqData,
   }) async {
-    _log.info("lnurlAuth amount: reqData: $reqData");
+    _log.info("lnurlAuth reqData: $reqData");
     try {
       return await _breezSDK.lnurlAuth(reqData: reqData);
     } catch (e) {
@@ -238,38 +238,38 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   // validatePayment is used to validate that outgoing/incoming payments meet the liquidity
   // constraints.
   void validatePayment(
-    int amount,
+    int amountSat,
     bool outgoing,
     bool channelCreationPossible, {
-    int? channelMinimumFee,
+    int? channelMinimumFeeSat,
   }) {
-    _log.info("validatePayment: $amount, $outgoing, $channelMinimumFee");
+    _log.info("validatePayment: $amountSat, $outgoing, $channelMinimumFeeSat");
     var accState = state;
-    if (amount > accState.maxPaymentAmount) {
-      _log.info("Amount $amount is bigger than maxPaymentAmount ${accState.maxPaymentAmount}");
-      throw PaymentExceededLimitError(accState.maxPaymentAmount);
+    if (amountSat > accState.maxPaymentAmountSat) {
+      _log.info("Amount $amountSat is bigger than maxPaymentAmount ${accState.maxPaymentAmountSat}");
+      throw PaymentExceededLimitError(accState.maxPaymentAmountSat);
     }
 
     if (!outgoing) {
-      if (!channelCreationPossible && accState.maxInboundLiquidity == 0) {
-        throw NoChannelCreationZeroLiqudityError();
-      } else if (!channelCreationPossible && accState.maxInboundLiquidity < amount) {
-        throw PaymentExcededLiqudityChannelCreationNotPossibleError(accState.maxInboundLiquidity);
-      } else if (channelMinimumFee != null &&
-          (amount > accState.maxInboundLiquidity && amount <= channelMinimumFee)) {
-        throw PaymentBelowSetupFeesError(channelMinimumFee);
-      } else if (channelMinimumFee == null && amount > accState.maxInboundLiquidity) {
-        throw PaymentExceedLiquidityError(accState.maxInboundLiquidity);
-      } else if (amount > accState.maxAllowedToReceive) {
-        throw PaymentExceededLimitError(accState.maxAllowedToReceive);
+      if (!channelCreationPossible && accState.maxInboundLiquiditySat == 0) {
+        throw NoChannelCreationZeroLiquidityError();
+      } else if (!channelCreationPossible && accState.maxInboundLiquiditySat < amountSat) {
+        throw PaymentExceededLiquidityChannelCreationNotPossibleError(accState.maxInboundLiquiditySat);
+      } else if (channelMinimumFeeSat != null &&
+          (amountSat > accState.maxInboundLiquiditySat && amountSat <= channelMinimumFeeSat)) {
+        throw PaymentBelowSetupFeesError(channelMinimumFeeSat);
+      } else if (channelMinimumFeeSat == null && amountSat > accState.maxInboundLiquiditySat) {
+        throw PaymentExceededLiquidityError(accState.maxInboundLiquiditySat);
+      } else if (amountSat > accState.maxAllowedToReceiveSat) {
+        throw PaymentExceededLimitError(accState.maxAllowedToReceiveSat);
       }
     }
 
-    if (outgoing && amount > accState.maxAllowedToPay) {
-      _log.info("Outgoing but amount $amount is bigger than ${accState.maxAllowedToPay}");
-      if (accState.reserveAmount > 0) {
-        _log.info("Reserve amount ${accState.reserveAmount}");
-        throw PaymentBelowReserveError(accState.reserveAmount);
+    if (outgoing && amountSat > accState.maxAllowedToPaySat) {
+      _log.info("Outgoing but amount $amountSat is bigger than ${accState.maxAllowedToPaySat}");
+      if (accState.reserveAmountSat > 0) {
+        _log.info("Reserve amount ${accState.reserveAmountSat}");
+        throw PaymentBelowReserveError(accState.reserveAmountSat);
       }
       throw const InsufficientLocalBalanceError();
     }

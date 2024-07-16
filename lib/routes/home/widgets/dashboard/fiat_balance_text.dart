@@ -52,9 +52,9 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
               );
         }
       },
-      child: widget.accountState.balance > 0
+      child: widget.accountState.balanceSat > 0
           ? Text(
-              widget.currencyState.fiatConversion()?.format(widget.accountState.balance) ?? "",
+              widget.currencyState.fiatConversion()?.formatSat(widget.accountState.balanceSat) ?? "",
               style: theme.balanceFiatConversionTextStyle.copyWith(
                 color: themeData.colorScheme.onSecondary.withOpacity(
                   pow(1.00 - widget.offsetFactor, 2).toDouble(),
@@ -91,7 +91,7 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
     final fiatConversion = currencyState.fiatConversion();
     if (fiatConversion == null) return false;
 
-    double fiatValue = fiatConversion.satToFiat(accountState.balance);
+    double fiatValue = fiatConversion.satToFiat(accountState.balanceSat);
     int fractionSize = fiatConversion.currencyData.info.fractionSize;
     double minimumAmount = 1 / (pow(10, fractionSize));
 

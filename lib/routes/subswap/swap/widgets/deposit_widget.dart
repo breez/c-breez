@@ -90,59 +90,59 @@ class _DepositWidgetState extends State<DepositWidget> {
     final minFees = openingFeeParams.minMsat ~/ 1000;
     final minFeeAboveZero = minFees > 0;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFees);
-    final minSats = currencyState.bitcoinCurrency.format(
+    final minSat = currencyState.bitcoinCurrency.format(
       _minAllowedDeposit(
         lspInfo,
         minAllowedDeposit,
       ),
       includeDisplayName: true,
     );
-    final maxSats = currencyState.bitcoinCurrency.format(
+    final maxSat = currencyState.bitcoinCurrency.format(
       maxAllowedDeposit,
       includeDisplayName: true,
     );
     final setUpFee = (openingFeeParams.proportional / 10000).toString();
-    final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquidity);
-    final liquidityAboveZero = accountState.maxInboundLiquidity > 0;
+    final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquiditySat);
+    final liquidityAboveZero = accountState.maxInboundLiquiditySat > 0;
     final showFeeMessage = accountState.isFeesApplicable;
 
     if (!showFeeMessage) {
-      // Send more than {minSats} and up to {maxSats} to this address. This address can be used only once.
-      return texts.invoice_btc_address_channel_not_needed(minFeeFormatted, maxSats);
+      // Send more than {minSat} and up to {maxSat} to this address. This address can be used only once.
+      return texts.invoice_btc_address_channel_not_needed(minFeeFormatted, maxSat);
     } else if (minFeeAboveZero && liquidityAboveZero) {
-      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
+      // Send more than {minSat} and up to {maxSat} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
       // will be applied for sending more than {liquidity}. This address can be used only once.
       return texts.invoice_btc_address_warning_with_min_fee_account_connected(
-        minSats,
-        maxSats,
+        minSat,
+        maxSat,
         setUpFee,
         minFeeFormatted,
         liquidity,
       );
     } else if (minFeeAboveZero && !liquidityAboveZero) {
-      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
+      // Send more than {minSat} and up to {maxSat} to this address. A setup fee of {setUpFee}% with a minimum of {minFee}
       // will be applied on the received amount.
       return texts.invoice_btc_address_warning_with_min_fee_account_not_connected(
-        minSats,
-        maxSats,
+        minSat,
+        maxSat,
         setUpFee,
         minFeeFormatted,
       );
     } else if (!minFeeAboveZero && liquidityAboveZero) {
-      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
+      // Send more than {minSat} and up to {maxSat} to this address. A setup fee of {setUpFee}% will be applied
       // for sending more than {liquidity}.
       return texts.invoice_btc_address_warning_without_min_fee_account_connected(
-        minSats,
-        maxSats,
+        minSat,
+        maxSat,
         setUpFee,
         liquidity,
       );
     } else {
-      // Send more than {minSats} and up to {maxSats} to this address. A setup fee of {setUpFee}% will be applied
+      // Send more than {minSat} and up to {maxSat} to this address. A setup fee of {setUpFee}% will be applied
       // on the received amount.
       return texts.invoice_btc_address_warning_without_min_fee_account_not_connected(
-        minSats,
-        maxSats,
+        minSat,
+        maxSat,
         setUpFee,
       );
     }

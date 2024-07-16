@@ -47,7 +47,7 @@ class _BalanceTextState extends State<BalanceText> {
                 fontSize: startSize - (startSize - endSize) * widget.offsetFactor,
               ),
               text: widget.currencyState.bitcoinCurrency.format(
-                widget.accountState.balance,
+                widget.accountState.balanceSat,
                 removeTrailingZeros: true,
                 includeDisplayName: false,
               ),

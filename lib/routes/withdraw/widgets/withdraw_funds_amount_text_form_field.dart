@@ -18,29 +18,29 @@ class WithdrawFundsAmountTextFormField extends AmountFormField {
     required TextEditingController super.controller,
     required bool withdrawMaxValue,
     required WithdrawFundsPolicy policy,
-    required int balance,
+    required int balanceSat,
   }) : super(
           texts: context.texts(),
           readOnly: policy.withdrawKind == WithdrawKind.unexpected_funds || withdrawMaxValue,
-          validatorFn: (amount) {
-            _log.info("Validator called for $amount");
+          validatorFn: (paymentAmountSat) {
+            _log.info("Validator called for $paymentAmountSat");
             return PaymentValidator(
               currency: bitcoinCurrency,
               texts: context.texts(),
               channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
-              validatePayment: (amount, outgoing, channelCreationPossible, {channelMinimumFee}) {
-                _log.info("Validating $amount $policy");
-                if (amount < policy.minValue) {
+              validatePayment: (amountSat, outgoing, channelCreationPossible, {channelMinimumFeeSat}) {
+                _log.info("Validating $amountSat $policy");
+                if (amountSat < policy.minValue) {
                   throw PaymentBelowLimitError(policy.minValue);
                 }
-                if (amount > policy.maxValue) {
+                if (amountSat > policy.maxValue) {
                   throw PaymentExceededLimitError(policy.maxValue);
                 }
-                if (amount > balance) {
+                if (amountSat > balanceSat) {
                   throw const InsufficientLocalBalanceError();
                 }
               },
-            ).validateOutgoing(amount);
+            ).validateOutgoing(paymentAmountSat);
           },
         );
 }

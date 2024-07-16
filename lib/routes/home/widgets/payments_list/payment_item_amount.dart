@@ -35,13 +35,13 @@ class PaymentItemAmount extends StatelessWidget {
         final bool hideBalance = userModel.profileSettings.hideBalance;
         return BlocBuilder<CurrencyBloc, CurrencyState>(
           builder: (context, currencyState) {
-            final fee = _paymentMinutiae.feeSat;
-            final amount = currencyState.bitcoinCurrency.format(
+            final feeSat = _paymentMinutiae.feeSat;
+            final amountSat = currencyState.bitcoinCurrency.format(
               _paymentMinutiae.amountSat,
               includeDisplayName: false,
             );
             final feeFormatted = currencyState.bitcoinCurrency.format(
-              fee,
+              feeSat,
               includeDisplayName: false,
             );
 
@@ -56,11 +56,11 @@ class PaymentItemAmount extends StatelessWidget {
                   hideBalance
                       ? texts.wallet_dashboard_payment_item_balance_hide
                       : _paymentMinutiae.paymentType == PaymentType.Received
-                          ? texts.wallet_dashboard_payment_item_balance_positive(amount)
-                          : texts.wallet_dashboard_payment_item_balance_negative(amount),
+                          ? texts.wallet_dashboard_payment_item_balance_positive(amountSat)
+                          : texts.wallet_dashboard_payment_item_balance_negative(amountSat),
                   style: themeData.paymentItemAmountTextStyle,
                 ),
-                (fee == 0 || _paymentMinutiae.status == PaymentStatus.Pending)
+                (feeSat == 0 || _paymentMinutiae.status == PaymentStatus.Pending)
                     ? const SizedBox()
                     : Text(
                         hideBalance

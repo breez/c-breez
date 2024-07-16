@@ -19,8 +19,8 @@ Future<LNURLPageResult?> handlePayRequest(
   LnUrlPayRequestData data,
 ) async {
   LNURLPaymentInfo? paymentInfo;
-  bool fixedAmount = data.minSendable == data.maxSendable;
-  if (fixedAmount && !(data.commentAllowed > 0)) {
+  bool isFixedAmount = data.minSendable == data.maxSendable;
+  if (isFixedAmount && !(data.commentAllowed > 0)) {
     // Show dialog if payment is of fixed amount with no payer comment allowed
     paymentInfo = await showDialog<LNURLPaymentInfo>(
       useRootNavigator: false,
@@ -49,7 +49,7 @@ Future<LNURLPageResult?> handlePayRequest(
       paymentFunc: () {
         final accBloc = context.read<AccountBloc>();
         final req = LnUrlPayRequest(
-          amountMsat: paymentInfo!.amount * 1000,
+          amountMsat: paymentInfo!.amountSat * 1000,
           comment: paymentInfo.comment,
           data: data,
         );

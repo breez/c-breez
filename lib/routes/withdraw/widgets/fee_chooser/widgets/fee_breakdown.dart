@@ -20,9 +20,9 @@ class FeeBreakdown extends StatelessWidget {
     final themeData = Theme.of(context);
 
     var feeOption = this.feeOption;
-    int? boltzServiceFee;
+    int? boltzServiceFeeSat;
     if (feeOption is ReverseSwapFeeOption) {
-      boltzServiceFee = feeOption.pairInfo.totalFees - feeOption.txFeeSat;
+      boltzServiceFeeSat = feeOption.pairInfo.totalFees - feeOption.txFeeSat;
     }
 
     return Container(
@@ -39,8 +39,8 @@ class FeeBreakdown extends StatelessWidget {
                 ? feeOption.pairInfo.senderAmountSat
                 : amountSat + feeOption.txFeeSat,
           ),
-          if (boltzServiceFee != null) ...[
-            BoltzServiceFee(boltzServiceFee: boltzServiceFee),
+          if (boltzServiceFeeSat != null) ...[
+            BoltzServiceFee(boltzServiceFeeSat: boltzServiceFeeSat),
           ],
           TransactionFee(txFeeSat: feeOption.txFeeSat),
           RecipientAmount(

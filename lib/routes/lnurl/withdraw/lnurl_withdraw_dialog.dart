@@ -14,12 +14,12 @@ final _log = Logger("LNURLWithdrawDialog");
 class LNURLWithdrawDialog extends StatefulWidget {
   final Function(LNURLPageResult? result) onFinish;
   final sdk.LnUrlWithdrawRequestData requestData;
-  final int amountSats;
+  final int amountSat;
 
   const LNURLWithdrawDialog({
     super.key,
     required this.requestData,
-    required this.amountSats,
+    required this.amountSat,
     required this.onFinish,
   });
 
@@ -134,17 +134,17 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
   }
 
   Future<LNURLPageResult> _withdraw(BuildContext context) async {
-    _log.info("Withdraw ${widget.amountSats} sats");
+    _log.info("Withdraw ${widget.amountSat} sats");
     final texts = context.texts();
     final accountBloc = context.read<AccountBloc>();
     final description = widget.requestData.defaultDescription;
 
     try {
-      _log.info("LNURL withdraw of ${widget.amountSats} sats where "
+      _log.info("LNURL withdraw of ${widget.amountSat} sats where "
           "min is ${widget.requestData.minWithdrawable} msats "
           "and max is ${widget.requestData.maxWithdrawable} msats.");
       final req = sdk.LnUrlWithdrawRequest(
-        amountMsat: widget.amountSats * 1000,
+        amountMsat: widget.amountSat * 1000,
         data: widget.requestData,
         description: description,
       );

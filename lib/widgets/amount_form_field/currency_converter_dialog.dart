@@ -14,7 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CurrencyConverterDialog extends StatefulWidget {
   final Function(String string) _onConvert;
-  final String? Function(int amount) validatorFn;
+  final String? Function(int amountSat) validatorFn;
   final CurrencyBloc _currencyBloc;
 
   const CurrencyConverterDialog(
@@ -290,14 +290,14 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   }
 
   String _contentMessage(CurrencyState currencyState) {
-    final amount = _fiatAmountController.text.isNotEmpty
+    final btcAmount = _fiatAmountController.text.isNotEmpty
         ? currencyState.bitcoinCurrency.format(
             _convertedSatoshies(currencyState),
             includeDisplayName: false,
           )
         : 0;
     final symbol = currencyState.bitcoinCurrency.tickerSymbol;
-    return "$amount $symbol";
+    return "$btcAmount $symbol";
   }
 
   void _updateExchangeLabel(double exchangeRate) {

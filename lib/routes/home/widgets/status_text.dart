@@ -31,7 +31,7 @@ class StatusText extends StatelessWidget {
         } else {
           final isChannelOpeningAvailable = lspState!.isChannelOpeningAvailable;
           return AutoSizeText(
-            (isChannelOpeningAvailable && accountState.maxInboundLiquidity >= 0)
+            (isChannelOpeningAvailable && accountState.maxInboundLiquiditySat >= 0)
                 ? texts.status_text_ready
                 : texts.lsp_error_cannot_open_channel,
             style: themeData.textTheme.bodyMedium?.copyWith(

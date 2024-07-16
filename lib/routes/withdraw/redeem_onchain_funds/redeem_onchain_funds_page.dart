@@ -88,7 +88,7 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
                           widget.walletBalanceSat,
                           widget.walletBalanceSat,
                         ),
-                        balanceSat: widget.walletBalanceSat,
+                        maxPayableSat: widget.walletBalanceSat,
                       );
                     },
                   ),

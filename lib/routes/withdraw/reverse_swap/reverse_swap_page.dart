@@ -14,6 +14,7 @@ final _log = Logger("ReverseSwapPage");
 
 class ReverseSwapPage extends StatefulWidget {
   final BitcoinAddressData? btcAddressData;
+
   const ReverseSwapPage({super.key, required this.btcAddressData});
 
   @override
@@ -21,25 +22,25 @@ class ReverseSwapPage extends StatefulWidget {
 }
 
 class _ReverseSwapPageState extends State<ReverseSwapPage> {
-  Future<OnchainPaymentLimitsResponse>? _revSwapOptionsFuture;
+  Future<OnchainPaymentLimitsResponse>? _onchainPaymentLimitsFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchReverseSwapPairInfo();
+    _fetchOnchainPaymentLimits();
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _fetchReverseSwapPairInfo();
+      _fetchOnchainPaymentLimits();
     }
   }
 
-  Future _fetchReverseSwapPairInfo() async {
-    _log.info("Fetching reverse swap pair info");
+  Future _fetchOnchainPaymentLimits() async {
+    _log.info("Fetching onchain payment limits");
     final revSwapBloc = context.read<ReverseSwapBloc>();
     setState(() {
-      _revSwapOptionsFuture = revSwapBloc.onchainPaymentLimits();
+      _onchainPaymentLimitsFuture = revSwapBloc.onchainPaymentLimits();
     });
   }
 
@@ -54,7 +55,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
         title: Text(texts.reverse_swap_title),
       ),
       body: FutureBuilder<OnchainPaymentLimitsResponse>(
-        future: _revSwapOptionsFuture,
+        future: _onchainPaymentLimitsFuture,
         builder: (BuildContext context, AsyncSnapshot<OnchainPaymentLimitsResponse> snapshot) {
           if (snapshot.hasError) {
             return Center(

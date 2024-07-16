@@ -52,6 +52,7 @@ Future<LNURLPageResult?> handlePayRequest(
           amountMsat: paymentInfo!.amount * 1000,
           comment: paymentInfo.comment,
           data: data,
+          validateSuccessActionUrl: false,
         );
         return accBloc.lnurlPay(req: req);
       },

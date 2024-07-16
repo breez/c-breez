@@ -37,8 +37,8 @@ class FiatConversion {
     return satoshies.toDouble() / 100000000 * exchangeRate;
   }
 
-  String format(int amount) {
-    double fiatValue = satToFiat(amount);
+  String formatSat(int amountSat) {
+    double fiatValue = satToFiat(amountSat);
     return formatFiat(fiatValue);
   }
 

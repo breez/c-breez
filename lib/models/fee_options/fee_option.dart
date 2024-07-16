@@ -32,7 +32,7 @@ abstract class FeeOption {
     }
   }
 
-  bool isAffordable({int? balance, int? walletBalance, required int amountSat});
+  bool isAffordable({int? balanceSat, int? walletBalanceSat, required int amountSat});
 }
 
 class ReverseSwapFeeOption extends FeeOption {
@@ -46,10 +46,10 @@ class ReverseSwapFeeOption extends FeeOption {
   });
 
   @override
-  bool isAffordable({int? balance, int? walletBalance, required int amountSat}) {
-    assert(balance != null);
+  bool isAffordable({int? balanceSat, int? walletBalanceSat, required int amountSat}) {
+    assert(balanceSat != null);
 
-    return balance! >= pairInfo.senderAmountSat;
+    return balanceSat! >= pairInfo.senderAmountSat;
   }
 }
 
@@ -61,7 +61,7 @@ class RefundFeeOption extends FeeOption {
   });
 
   @override
-  bool isAffordable({int? balance, int? walletBalance, required int amountSat}) {
+  bool isAffordable({int? balanceSat, int? walletBalanceSat, required int amountSat}) {
     return (amountSat >= txFeeSat);
   }
 }
@@ -74,9 +74,9 @@ class RedeemOnchainFeeOption extends FeeOption {
   });
 
   @override
-  bool isAffordable({int? balance, int? walletBalance, required int amountSat}) {
-    assert(walletBalance != null);
+  bool isAffordable({int? balanceSat, int? walletBalanceSat, required int amountSat}) {
+    assert(walletBalanceSat != null);
 
-    return (walletBalance! >= amountSat);
+    return (walletBalanceSat! >= amountSat);
   }
 }

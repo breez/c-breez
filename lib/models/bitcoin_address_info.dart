@@ -16,9 +16,9 @@ class BitcoinAddressInfo {
       final uri = Uri.tryParse(scannedString);
       if (uri != null) {
         address = uri.path;
-        final amount = uri.queryParameters["amount"];
-        if (amount != null) {
-          final btcAmount = double.tryParse(amount);
+        final amountSat = uri.queryParameters["amount"];
+        if (amountSat != null) {
+          final btcAmount = double.tryParse(amountSat);
           if (btcAmount != null) {
             satAmount = BitcoinCurrency.BTC.toSats(btcAmount);
           }

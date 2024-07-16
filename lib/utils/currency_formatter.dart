@@ -33,15 +33,18 @@ class CurrencyFormatter {
 class BitcoinCurrencyFormatter {
   static final formatter = CurrencyFormatter().formatter;
 
-  String format(satoshies, BitcoinCurrency currency,
-      {bool addCurrencySuffix = true,
-      bool addCurrencySymbol = false,
-      removeTrailingZeros = false,
-      userInput = false}) {
-    String formattedAmount = formatter.format(satoshies);
+  String format(
+    amountSat,
+    BitcoinCurrency currency, {
+    bool addCurrencySuffix = true,
+    bool addCurrencySymbol = false,
+    removeTrailingZeros = false,
+    userInput = false,
+  }) {
+    String formattedAmount = formatter.format(amountSat);
     switch (currency) {
       case BitcoinCurrency.BTC:
-        double amountInBTC = (satoshies.toInt() / 100000000);
+        double amountInBTC = (amountSat.toInt() / 100000000);
         formattedAmount = amountInBTC.toStringAsFixed(8);
         if (removeTrailingZeros) {
           if (amountInBTC.truncateToDouble() == amountInBTC) {
@@ -53,7 +56,7 @@ class BitcoinCurrencyFormatter {
         }
         break;
       case BitcoinCurrency.SAT:
-        formattedAmount = formatter.format(satoshies);
+        formattedAmount = formatter.format(amountSat);
         break;
     }
     if (addCurrencySymbol) {

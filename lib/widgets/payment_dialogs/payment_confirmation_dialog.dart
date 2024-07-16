@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 
 class PaymentConfirmationDialog extends StatelessWidget {
   final String bolt11;
-  final int _amountToPay;
+  final int _amountToPaySat;
   final String _amountToPayStr;
   final Function() _onCancel;
-  final Function(String bolt11, int amount) _onPaymentApproved;
+  final Function(String bolt11, int amountSat) _onPaymentApproved;
   final double minHeight;
 
   const PaymentConfirmationDialog(
     this.bolt11,
-    this._amountToPay,
+    this._amountToPaySat,
     this._amountToPayStr,
     this._onCancel,
     this._onPaymentApproved,
@@ -139,7 +139,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
         onPressed: () {
           _onPaymentApproved(
             bolt11,
-            _amountToPay,
+            _amountToPaySat,
           );
         },
       ),

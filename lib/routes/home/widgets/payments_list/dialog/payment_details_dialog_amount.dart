@@ -46,13 +46,13 @@ class PaymentDetailsDialogAmount extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               reverse: true,
               child: BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, state) {
-                final amountSats = BitcoinCurrency.fromTickerSymbol(
+                final amountSat = BitcoinCurrency.fromTickerSymbol(
                   state.bitcoinTicker,
                 ).format(paymentMinutiae.amountSat);
                 return AutoSizeText(
                   paymentMinutiae.paymentType == PaymentType.Received
-                      ? texts.payment_details_dialog_amount_positive(amountSats)
-                      : texts.payment_details_dialog_amount_negative(amountSats),
+                      ? texts.payment_details_dialog_amount_positive(amountSat)
+                      : texts.payment_details_dialog_amount_negative(amountSat),
                   style: themeData.primaryTextTheme.displaySmall,
                   textAlign: TextAlign.right,
                   maxLines: 1,

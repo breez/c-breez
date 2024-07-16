@@ -7,37 +7,42 @@ import 'package:logging/logging.dart';
 final _log = Logger("PaymentValidator");
 
 class PaymentValidator {
+  final BreezTranslations texts;
   final BitcoinCurrency currency;
   final void Function(
-    int amount,
+    int amountSat,
     bool outgoing,
     bool channelCreationPossible, {
-    int? channelMinimumFee,
+    int? channelMinimumFeeSat,
   }) validatePayment;
   final bool channelCreationPossible;
-  final int? channelMinimumFee;
-  final BreezTranslations texts;
+  final int? channelMinimumFeeSat;
 
   const PaymentValidator({
-    required this.validatePayment,
-    required this.currency,
-    required this.channelCreationPossible,
-    this.channelMinimumFee,
     required this.texts,
+    required this.currency,
+    required this.validatePayment,
+    required this.channelCreationPossible,
+    this.channelMinimumFeeSat,
   });
 
-  String? validateIncoming(int amount) {
-    return _validate(amount, false);
+  String? validateIncoming(int amountSat) {
+    return _validate(amountSat, false);
   }
 
-  String? validateOutgoing(int amount) {
-    return _validate(amount, true);
+  String? validateOutgoing(int amountSat) {
+    return _validate(amountSat, true);
   }
 
-  String? _validate(int amount, bool outgoing) {
-    _log.info("Validating for $amount and $outgoing");
+  String? _validate(int amountSat, bool outgoing) {
+    _log.info("Validating for $amountSat and $outgoing");
     try {
-      validatePayment(amount, outgoing, channelCreationPossible, channelMinimumFee: channelMinimumFee);
+      validatePayment(
+        amountSat,
+        outgoing,
+        channelCreationPossible,
+        channelMinimumFeeSat: channelMinimumFeeSat,
+      );
     } on PaymentExceededLimitError catch (e) {
       _log.info("Got PaymentExceededLimitError", e);
       return texts.invoice_payment_validator_error_payment_exceeded_limit(
@@ -51,20 +56,20 @@ class PaymentValidator {
     } on PaymentBelowReserveError catch (e) {
       _log.info("Got PaymentBelowReserveError", e);
       return texts.invoice_payment_validator_error_payment_below_limit(
-        currency.format(e.reserveAmount),
+        currency.format(e.reserveAmountSat),
       );
-    } on PaymentExceedLiquidityError catch (e) {
+    } on PaymentExceededLiquidityError catch (e) {
       return "Insufficient inbound liquidity (${currency.format(e.limitSat)})";
     } on InsufficientLocalBalanceError {
       return texts.invoice_payment_validator_error_insufficient_local_balance;
     } on PaymentBelowSetupFeesError catch (e) {
       _log.info("Got PaymentBelowSetupFeesError", e);
       return texts.invoice_payment_validator_error_payment_below_setup_fees_error(
-        currency.format(e.setupFees),
+        currency.format(e.setupFeesSat),
       );
-    } on PaymentExcededLiqudityChannelCreationNotPossibleError catch (e) {
+    } on PaymentExceededLiquidityChannelCreationNotPossibleError catch (e) {
       return texts.lnurl_fetch_invoice_error_max(currency.format(e.limitSat));
-    } on NoChannelCreationZeroLiqudityError {
+    } on NoChannelCreationZeroLiquidityError {
       return texts.lsp_error_cannot_open_channel;
     } catch (e) {
       _log.info("Got Generic error", e);

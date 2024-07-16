@@ -114,11 +114,11 @@ class RefundBloc extends Cubit<RefundState> {
           toAddress: toAddress,
           satPerVbyte: recommendedFee,
         );
-        final fee = await _prepareRefund(req);
+        final refundTxFeeSat = await _prepareRefund(req);
 
         return RefundFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
-          txFeeSat: fee,
+          txFeeSat: refundTxFeeSat,
           satPerVbyte: recommendedFee,
         );
       }),

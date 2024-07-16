@@ -35,17 +35,17 @@ class FeeMessage extends StatelessWidget {
     final currencyState = context.read<CurrencyBloc>().state;
     final accountState = context.read<AccountBloc>().state;
 
-    final minFee = openingFeeParams.minMsat ~/ 1000;
-    final minFeeFormatted = currencyState.bitcoinCurrency.format(minFee);
-    final minFeeAboveZero = minFee > 0;
+    final minFeeSat = openingFeeParams.minMsat ~/ 1000;
+    final minFeeFormatted = currencyState.bitcoinCurrency.format(minFeeSat);
+    final minFeeAboveZero = minFeeSat > 0;
     final setUpFee = (openingFeeParams.proportional / 10000).toString();
     final liquidity = currencyState.bitcoinCurrency.format(
-      accountState.maxInboundLiquidity,
+      accountState.maxInboundLiquiditySat,
     );
-    final liquidityAboveZero = accountState.maxInboundLiquidity > 0;
+    final liquidityAboveZero = accountState.maxInboundLiquiditySat > 0;
 
     if (minFeeAboveZero && liquidityAboveZero) {
-      // A setup fee of {setUpFee}% with a minimum of {minFee} will be applied for receiving more than {liquidity}
+      // A setup fee of {setUpFee}% with a minimum of {minFeeSat} will be applied for receiving more than {liquidity}
       return texts.invoice_lightning_warning_with_min_fee_account_connected(
         setUpFee,
         minFeeFormatted,
@@ -58,7 +58,7 @@ class FeeMessage extends StatelessWidget {
         liquidity,
       );
     } else if (minFeeAboveZero && !liquidityAboveZero) {
-      // A setup fee of {setUpFee}% with a minimum of {minFee} will be applied on the received amount.
+      // A setup fee of {setUpFee}% with a minimum of {minFeeSat} will be applied on the received amount.
       return texts.invoice_lightning_warning_with_min_fee_account_not_connected(
         setUpFee,
         minFeeFormatted,

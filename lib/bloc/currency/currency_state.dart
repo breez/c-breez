@@ -9,12 +9,13 @@ class CurrencyState {
   final Map<String, Rate> exchangeRates;
   final List<FiatCurrency> fiatCurrenciesData;
 
-  CurrencyState(
-      {this.fiatCurrenciesData = const [],
-      this.exchangeRates = const {},
-      this.preferredCurrencies = const ["USD", "EUR", "GBP", "JPY"],
-      this.fiatId = "USD",
-      this.bitcoinTicker = "SAT"});
+  CurrencyState({
+    this.fiatCurrenciesData = const [],
+    this.exchangeRates = const {},
+    this.preferredCurrencies = const ["USD", "EUR", "GBP", "JPY"],
+    this.fiatId = "USD",
+    this.bitcoinTicker = "SAT",
+  });
 
   CurrencyState.initial() : this();
 

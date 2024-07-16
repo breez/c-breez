@@ -56,10 +56,10 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
     }
   }
 
-  void _setAmount(int amountSats) {
+  void _setAmount(int amountSat) {
     setState(() {
       widget.amountController.text = widget.bitcoinCurrency
-          .format(amountSats, includeDisplayName: false, userInput: true)
+          .format(amountSat, includeDisplayName: false, userInput: true)
           .formatBySatAmountFormFieldFormatter();
     });
   }
@@ -84,7 +84,7 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
               bitcoinCurrency: widget.bitcoinCurrency,
               controller: widget.amountController,
               withdrawMaxValue: widget.withdrawMaxValue,
-              balance: widget.paymentLimits.maxSat,
+              balanceSat: widget.paymentLimits.maxSat,
               policy: WithdrawFundsPolicy(
                 WithdrawKind.withdraw_funds,
                 widget.paymentLimits.minSat,

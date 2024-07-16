@@ -34,7 +34,7 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
   late AccountBloc accountBloc;
   PaymentRequestState? _state;
   String? _amountToPayStr;
-  int? _amountToPay;
+  int? _amountToPaySat;
 
   ModalRoute? _currentRoute;
 
@@ -80,18 +80,18 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
         minHeight: minHeight,
         paymentFunc: () => accountBloc.sendPayment(
           widget.invoice.bolt11,
-          widget.invoice.amountMsat == 0 ? _amountToPay! * 1000 : null,
+          widget.invoice.amountMsat == 0 ? _amountToPaySat! * 1000 : null,
         ),
         onStateChange: (state) => _onStateChange(state),
       );
     } else if (_state == PaymentRequestState.WAITING_FOR_CONFIRMATION) {
       return PaymentConfirmationDialog(
         widget.invoice.bolt11,
-        _amountToPay!,
+        _amountToPaySat!,
         _amountToPayStr!,
         () => _onStateChange(PaymentRequestState.USER_CANCELLED),
-        (bolt11, amount) => setState(() {
-          _amountToPay = amount;
+        (bolt11, amountSat) => setState(() {
+          _amountToPaySat = amountSat;
           _onStateChange(PaymentRequestState.PROCESSING_PAYMENT);
         }),
         minHeight,
@@ -101,11 +101,11 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
         widget.invoice,
         () => _onStateChange(PaymentRequestState.USER_CANCELLED),
         () => _onStateChange(PaymentRequestState.WAITING_FOR_CONFIRMATION),
-        (bolt11, amount) {
-          _amountToPay = amount;
+        (bolt11, amountSat) {
+          _amountToPaySat = amountSat;
           _onStateChange(PaymentRequestState.PROCESSING_PAYMENT);
         },
-        (map) => _setAmountToPay(map),
+        (map) => _setAmountToPaySat(map),
         minHeight,
       );
     }
@@ -126,8 +126,8 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
     });
   }
 
-  void _setAmountToPay(Map<String, dynamic> map) {
-    _amountToPay = map["_amountToPay"];
+  void _setAmountToPaySat(Map<String, dynamic> map) {
+    _amountToPaySat = map["_amountToPaySat"];
     _amountToPayStr = map["_amountToPayStr"];
   }
 }

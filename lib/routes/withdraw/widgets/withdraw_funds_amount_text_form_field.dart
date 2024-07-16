@@ -18,7 +18,7 @@ class WithdrawFundsAmountTextFormField extends AmountFormField {
     required TextEditingController super.controller,
     required bool withdrawMaxValue,
     required WithdrawFundsPolicy policy,
-    required int balanceSat,
+    required int maxPayableSat,
   }) : super(
           texts: context.texts(),
           readOnly: policy.withdrawKind == WithdrawKind.unexpected_funds || withdrawMaxValue,
@@ -36,7 +36,7 @@ class WithdrawFundsAmountTextFormField extends AmountFormField {
                 if (amountSat > policy.maxValue) {
                   throw PaymentExceededLimitError(policy.maxValue);
                 }
-                if (amountSat > balanceSat) {
+                if (amountSat > maxPayableSat) {
                   throw const InsufficientLocalBalanceError();
                 }
               },

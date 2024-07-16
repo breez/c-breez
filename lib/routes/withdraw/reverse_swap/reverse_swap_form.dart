@@ -84,7 +84,7 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
               bitcoinCurrency: widget.bitcoinCurrency,
               controller: widget.amountController,
               withdrawMaxValue: widget.withdrawMaxValue,
-              balanceSat: widget.paymentLimits.maxSat,
+              maxPayableSat: widget.paymentLimits.maxPayableSat,
               policy: WithdrawFundsPolicy(
                 WithdrawKind.withdraw_funds,
                 widget.paymentLimits.minSat,
@@ -105,7 +105,7 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
                   setState(() {
                     widget.onChanged(value);
                     if (widget.withdrawMaxValue) {
-                      _setAmount(widget.paymentLimits.maxSat);
+                      _setAmount(widget.paymentLimits.maxPayableSat);
                     } else {
                       widget.amountController.text = "";
                     }

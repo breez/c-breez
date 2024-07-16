@@ -133,12 +133,13 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
     try {
       OnchainPaymentLimitsResponse paymentLimits = await _breezSDK.onchainPaymentLimits();
       _log.info(
-        "Current maximum ${paymentLimits.maxSat} and "
-        "minimum ${paymentLimits.minSat} payment limits for onchain payments",
+        "Current minimum ${paymentLimits.minSat} and "
+        "maximum ${paymentLimits.maxSat} payment limits, in sats, for onchain payments."
+        "\nMaximum amount this node can send with the current channels and the current local balance: ${paymentLimits.maxPayableSat} (sats).",
       );
       return paymentLimits;
     } catch (e) {
-      _log.severe("fetchOnchainPaymentLimits error", e);
+      _log.severe("onchainPaymentLimits error", e);
       rethrow;
     }
   }

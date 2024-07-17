@@ -22,12 +22,12 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		A70897541765DD30DE27B706 /* RedeemSwap.swift in Resources */ = {isa = PBXBuildFile; fileRef = 6602FDDB36C64D88AA3C97D9 /* RedeemSwap.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		B2DFA34B321E27273B30E4A5 /* BreezSDK.swift in Resources */ = {isa = PBXBuildFile; fileRef = CFF3BB511629832C49326BF8 /* BreezSDK.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		B3848FCBA9A844CFFD79D6AC /* ServiceConfig.swift in Resources */ = {isa = PBXBuildFile; fileRef = 1B0410CE4CB4C68244AF9A7A /* ServiceConfig.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		D68FFAA139CA926F89388E99 /* ServiceLogger.swift in Resources */ = {isa = PBXBuildFile; fileRef = D6858CAD12D81D9420322F59 /* ServiceLogger.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		D7516952B1670DF4F4B2F7E0 /* Pods_Breez_Notification_Service_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FADA87C19A61025FCA15775A /* Pods_Breez_Notification_Service_Extension.framework */; };
 		D82DD0417A54EAF3F70F2093 /* SDKNotificationService.swift in Resources */ = {isa = PBXBuildFile; fileRef = 13387022C1EFE9D542051361 /* SDKNotificationService.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		E77BE2D1DDF58F576F7E6DDA /* ConfirmTransaction.swift in Resources */ = {isa = PBXBuildFile; fileRef = 9A600B7E9909E19E6E9CDB0A /* ConfirmTransaction.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		E84A6BFD2B98E2A700C58F51 /* SdkLogListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84A6BFC2B98E2A700C58F51 /* SdkLogListener.swift */; };
 		E84C89A62B98D96700347527 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84C89A52B98D96700347527 /* KeychainHelper.swift */; };
 		E84F35832B19599500D8302B /* breez_sdkFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84F35822B19599500D8302B /* breez_sdkFFI.xcframework */; };
@@ -45,7 +45,6 @@
 		E89362222BF224C0009FADDB /* LnurlPayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EB6FD9D42FE2AF82BAA4E57 /* LnurlPayInfo.swift */; };
 		E89362232BF224C0009FADDB /* LnurlPayInvoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B57B40988B5B2F90F5A6B8E /* LnurlPayInvoice.swift */; };
 		E89362242BF224C0009FADDB /* ReceivePayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06255D81601708E854DDCAB8 /* ReceivePayment.swift */; };
-		E89362252BF224C0009FADDB /* RedeemSwap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6602FDDB36C64D88AA3C97D9 /* RedeemSwap.swift */; };
 		E89362262BF22745009FADDB /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 736E5FB72BB2CA240036C720 /* PrivacyInfo.xcprivacy */; };
 		F00A746C221242CEEFEB7F77 /* BreezSDKConnector.swift in Resources */ = {isa = PBXBuildFile; fileRef = 812E2719A3DCE0226A3A715D /* BreezSDKConnector.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		F0AE6A90DA1DDCF709F53C33 /* LnurlPayInfo.swift in Resources */ = {isa = PBXBuildFile; fileRef = 5EB6FD9D42FE2AF82BAA4E57 /* LnurlPayInfo.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
@@ -97,7 +96,6 @@
 		37A5D1F8169E946EEDD6C727 /* LnurlPay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPay.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPay.swift"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		5EB6FD9D42FE2AF82BAA4E57 /* LnurlPayInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPayInfo.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPayInfo.swift"; sourceTree = "<group>"; };
-		6602FDDB36C64D88AA3C97D9 /* RedeemSwap.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RedeemSwap.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/RedeemSwap.swift"; sourceTree = "<group>"; };
 		6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6F2FC2C729783D6900DC3B60 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		72A0A889CF602B6CE0830EE7 /* Pods-Breez Notification Service Extension.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.profile.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.profile.xcconfig"; sourceTree = "<group>"; };
@@ -114,6 +112,7 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9A600B7E9909E19E6E9CDB0A /* ConfirmTransaction.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConfirmTransaction.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/ConfirmTransaction.swift"; sourceTree = "<group>"; };
 		9B57B40988B5B2F90F5A6B8E /* LnurlPayInvoice.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPayInvoice.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPayInvoice.swift"; sourceTree = "<group>"; };
 		AE8DDD6AC0AB009397AE1B29 /* Pods-Breez Notification Service Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.release.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.release.xcconfig"; sourceTree = "<group>"; };
 		CFF3BB511629832C49326BF8 /* BreezSDK.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BreezSDK.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/BreezSDK.swift"; sourceTree = "<group>"; };
@@ -190,7 +189,7 @@
 				5EB6FD9D42FE2AF82BAA4E57 /* LnurlPayInfo.swift */,
 				9B57B40988B5B2F90F5A6B8E /* LnurlPayInvoice.swift */,
 				06255D81601708E854DDCAB8 /* ReceivePayment.swift */,
-				6602FDDB36C64D88AA3C97D9 /* RedeemSwap.swift */,
+				9A600B7E9909E19E6E9CDB0A /* ConfirmTransaction.swift */,
 			);
 			name = BreezSDK;
 			sourceTree = "<group>";
@@ -388,7 +387,7 @@
 				F0AE6A90DA1DDCF709F53C33 /* LnurlPayInfo.swift in Resources */,
 				69173884F60F957DDD1ABEC3 /* LnurlPayInvoice.swift in Resources */,
 				22256136FE291140B8E68B20 /* ReceivePayment.swift in Resources */,
-				A70897541765DD30DE27B706 /* RedeemSwap.swift in Resources */,
+				E77BE2D1DDF58F576F7E6DDA /* ConfirmTransaction.swift in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -542,7 +541,6 @@
 				E89362222BF224C0009FADDB /* LnurlPayInfo.swift in Sources */,
 				E89362232BF224C0009FADDB /* LnurlPayInvoice.swift in Sources */,
 				E89362242BF224C0009FADDB /* ReceivePayment.swift in Sources */,
-				E89362252BF224C0009FADDB /* RedeemSwap.swift in Sources */,
 				E84A6BFD2B98E2A700C58F51 /* SdkLogListener.swift in Sources */,
 				E84C89A62B98D96700347527 /* KeychainHelper.swift in Sources */,
 				E87F5EBD2B0E24D7007FB1DF /* NotificationService.swift in Sources */,

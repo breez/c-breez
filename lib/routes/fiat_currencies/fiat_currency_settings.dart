@@ -1,8 +1,7 @@
-import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
+import 'package:c_breez/routes/fiat_currencies/fiat_currency_list_tile.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
@@ -10,8 +9,6 @@ import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-const double ITEM_HEIGHT = 72.0;
 
 class FiatCurrencySettings extends StatefulWidget {
   const FiatCurrencySettings({
@@ -27,8 +24,6 @@ class FiatCurrencySettings extends StatefulWidget {
 class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   final _scrollController = ScrollController();
 
-  bool isInit = false;
-
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
@@ -41,147 +36,66 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
       body: BlocBuilder<CurrencyBloc, CurrencyState>(
         buildWhen: (s1, s2) => !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
         builder: (context, currencyState) {
-          if (currencyState.fiatCurrenciesData.isEmpty || currencyState.fiatCurrency == null) {
-            return const Center(
-              child: Loader(
-                color: Colors.white,
-              ),
-            );
-          } else {
-            return FutureBuilder(
-              future: artificialWait(),
-              builder: (context, snapshot) {
-                if (isInit == false && snapshot.connectionState != ConnectionState.done) {
-                  return const Center(
-                    child: Loader(
-                      color: Colors.white,
-                    ),
-                  );
-                }
+          return FutureBuilder(
+            future: artificialWait(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(child: Loader(color: Colors.white));
+              }
 
-                return DragAndDropLists(
-                  listPadding: EdgeInsets.zero,
-                  children: [
-                    _buildList(context, currencyState),
-                  ],
-                  lastListTargetSize: 0,
-                  lastItemTargetHeight: 8,
-                  scrollController: _scrollController,
-                  onListReorder: (oldListIndex, newListIndex) => {},
-                  onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(
-                    context,
-                    currencyState,
-                    from,
-                    to,
-                  ),
-                  itemDragHandle: DragHandle(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Icon(
-                        Icons.drag_handle,
-                        color: theme.BreezColors.white[200],
-                      ),
+              return DragAndDropLists(
+                listPadding: EdgeInsets.zero,
+                children: [
+                  DragAndDropList(
+                    header: const SizedBox(),
+                    canDrag: false,
+                    children: List.generate(
+                      currencyState.fiatCurrenciesData.length,
+                      (index) {
+                        return DragAndDropItem(
+                          child: FiatCurrencyListTile(
+                            index: index,
+                            currencyState: currencyState,
+                            scrollController: _scrollController,
+                            onChanged: (preferredFiatCurrencies) {
+                              _updatePreferredCurrencies(preferredFiatCurrencies);
+                            },
+                          ),
+                          canDrag: currencyState.preferredCurrencies.contains(
+                            currencyState.fiatCurrenciesData[index].id,
+                          ),
+                        );
+                      },
                     ),
                   ),
-                );
-              },
-            );
-          }
+                ],
+                lastListTargetSize: 0,
+                lastItemTargetHeight: 8,
+                scrollController: _scrollController,
+                onListReorder: (oldListIndex, newListIndex) => {},
+                onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(
+                  currencyState,
+                  from,
+                  to,
+                ),
+                itemDragHandle: DragHandle(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Icon(
+                      Icons.drag_handle,
+                      color: theme.BreezColors.white[200],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
         },
       ),
     );
   }
 
-  DragAndDropList _buildList(
-    BuildContext context,
-    CurrencyState currencyState,
-  ) {
-    return DragAndDropList(
-      header: const SizedBox(),
-      canDrag: false,
-      children: List.generate(currencyState.fiatCurrenciesData.length, (index) {
-        return DragAndDropItem(
-          child: _buildFiatCurrencyTile(context, currencyState, index),
-          canDrag: currencyState.preferredCurrencies.contains(
-            currencyState.fiatCurrenciesData[index].id,
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildFiatCurrencyTile(
-    BuildContext context,
-    CurrencyState currencyState,
-    int index,
-  ) {
-    final texts = context.texts();
-    final themeData = Theme.of(context);
-
-    final currencyData = currencyState.fiatCurrenciesData[index];
-    final prefCurrencies = currencyState.preferredCurrencies.toList();
-
-    return CheckboxListTile(
-      key: Key("tile-index-$index"),
-      controlAffinity: ListTileControlAffinity.leading,
-      activeColor: Colors.white,
-      checkColor: themeData.canvasColor,
-      value: prefCurrencies.contains(currencyData.id),
-      onChanged: (bool? checked) {
-        setState(() {
-          if (checked == true) {
-            prefCurrencies.add(currencyData.id);
-            // center item in viewport
-            if (_scrollController.offset >= (ITEM_HEIGHT * (prefCurrencies.length - 1))) {
-              _scrollController.animateTo(
-                ((2 * prefCurrencies.length - 1) * ITEM_HEIGHT -
-                        _scrollController.position.viewportDimension) /
-                    2,
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 400),
-              );
-            }
-          } else if (currencyState.preferredCurrencies.length != 1) {
-            prefCurrencies.remove(
-              currencyData.id,
-            );
-          }
-          _updatePreferredCurrencies(context, currencyState, prefCurrencies);
-        });
-      },
-      subtitle: Text(
-        _subtitle(texts, currencyData),
-        style: theme.fiatConversionDescriptionStyle,
-      ),
-      title: RichText(
-        text: TextSpan(
-          text: currencyData.id,
-          style: theme.fiatConversionTitleStyle,
-          children: [
-            TextSpan(
-              text: " (${currencyData.info.symbol?.grapheme ?? ""})",
-              style: theme.fiatConversionDescriptionStyle,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _subtitle(BreezTranslations texts, FiatCurrency currencyData) {
-    final localizedName = currencyData.info.localizedName;
-    if (localizedName.isNotEmpty) {
-      for (var localizedName in localizedName) {
-        if (localizedName.locale == texts.locale) {
-          return localizedName.name;
-        }
-      }
-    }
-    return currencyData.info.name;
-  }
-
   void _onReorder(
-    BuildContext context,
     CurrencyState currencyState,
     int oldIndex,
     int newIndex,
@@ -194,12 +108,10 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     }
     String item = preferredFiatCurrencies.removeAt(oldIndex);
     preferredFiatCurrencies.insert(newIndex, item);
-    _updatePreferredCurrencies(context, currencyState, preferredFiatCurrencies);
+    _updatePreferredCurrencies(preferredFiatCurrencies);
   }
 
   void _updatePreferredCurrencies(
-    BuildContext context,
-    CurrencyState currencyState,
     List<String> preferredFiatCurrencies,
   ) {
     context.read<CurrencyBloc>().setPreferredCurrencies(preferredFiatCurrencies);
@@ -212,9 +124,6 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   /// We've added an artificial wait to display the page route animation and spinning
   /// loader before UI thread is blocked to convey a better UX as a workaround.
   Future artificialWait() async {
-    setState(() {
-      isInit = true;
-    });
-    return await Future.delayed(const Duration(milliseconds: 800));
+    return await Future.delayed(const Duration(milliseconds: 450));
   }
 }

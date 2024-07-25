@@ -14,8 +14,9 @@ class PaymentDetailsDialogDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
 
-    final description = paymentMinutiae.description;
-    if (description.isEmpty) {
+    final title = paymentMinutiae.title.replaceAll("\n", " ");
+    final description = paymentMinutiae.description.trim();
+    if (description.isEmpty || title == description) {
       return Container();
     }
 

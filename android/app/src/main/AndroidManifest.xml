@@ -12,7 +12,8 @@
         android:label="Breez Cloud"
         android:name="${applicationName}"
         android:roundIcon="@mipmap/ic_launcher"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false">
 
         <service
             android:name=".BreezFcmService"

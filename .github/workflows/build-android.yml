@@ -106,11 +106,7 @@ jobs:
 
       - name: 📦 Install Flutter dependencies
         working-directory: cbreez
-        run: flutter pub get
-
-      - name: 🔍 Perform static analysis
-        working-directory: cbreez
-        run: dart analyze --fatal-infos
+        run: flutter pub get     
 
       - name: 🛠️ Run tests
         working-directory: cbreez

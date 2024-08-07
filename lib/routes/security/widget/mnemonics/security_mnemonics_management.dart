@@ -40,22 +40,24 @@ class SecurityMnemonicsManagement extends StatelessWidget {
           onTap: () async {
             await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then(
               (accountMnemonic) {
-                if (account.verificationStatus == VerificationStatus.UNVERIFIED) {
-                  Navigator.pushNamed(
-                    context,
-                    '/mnemonics',
-                    arguments: accountMnemonic,
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    FadeInRoute(
-                      builder: (context) => MnemonicsPage(
-                        mnemonics: accountMnemonic!,
-                        viewMode: true,
+                if (context.mounted) {
+                  if (account.verificationStatus == VerificationStatus.UNVERIFIED) {
+                    Navigator.pushNamed(
+                      context,
+                      '/mnemonics',
+                      arguments: accountMnemonic,
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      FadeInRoute(
+                        builder: (context) => MnemonicsPage(
+                          mnemonics: accountMnemonic!,
+                          viewMode: true,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 }
               },
             );

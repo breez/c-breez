@@ -14,7 +14,7 @@ void checkVersionDialog(
   final texts = context.texts();
 
   userProfileBloc.checkVersion().catchError((err) {
-    if (err.toString().contains('bad version')) {
+    if (err.toString().contains('bad version') && context.mounted) {
       showFlushbar(
         context,
         buttonText: texts.handler_check_version_action_update,

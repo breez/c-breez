@@ -47,13 +47,15 @@ class PaymentsFilterCalendar extends StatelessWidget {
                     context: context,
                     builder: (_) => CalendarDialog(firstDate!),
                   ).then((result) {
-                    final accountBloc = context.read<AccountBloc>();
-                    if (result != null) {
-                      accountBloc.changePaymentFilter(
-                        filters: filter,
-                        fromTimestamp: result[0].millisecondsSinceEpoch,
-                        toTimestamp: result[1].millisecondsSinceEpoch,
-                      );
+                    if (context.mounted) {
+                      final accountBloc = context.read<AccountBloc>();
+                      if (result != null) {
+                        accountBloc.changePaymentFilter(
+                          filters: filter,
+                          fromTimestamp: result[0].millisecondsSinceEpoch,
+                          toTimestamp: result[1].millisecondsSinceEpoch,
+                        );
+                      }
                     }
                   })
                 : ScaffoldMessenger.of(context).showSnackBar(

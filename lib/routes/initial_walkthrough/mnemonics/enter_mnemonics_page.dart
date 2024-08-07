@@ -26,7 +26,7 @@ class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
 
     return PopScope(
       canPop: _currentPage == 1,
-      onPopInvoked: (_) async {
+      onPopInvokedWithResult: (_, __) async {
         if (_currentPage > 1) {
           FocusScope.of(context).requestFocus(FocusNode());
           setState(() {

@@ -36,7 +36,7 @@ class BitcoinAddressTextFormField extends TextFormField {
                     final address = BitcoinAddressInfo.fromScannedString(barcode).address;
                     _log.info("BitcoinAddressInfoFromScannedString: '$address'");
                     if (address == null) return;
-                    if (address.isEmpty) {
+                    if (address.isEmpty && context.mounted) {
                       showFlushbar(
                         context,
                         message: context.texts().withdraw_funds_error_qr_code_not_detected,
@@ -44,7 +44,9 @@ class BitcoinAddressTextFormField extends TextFormField {
                       return;
                     }
                     controller.text = address;
-                    _onAddressChanged(context, validatorHolder, address);
+                    if (context.mounted) {
+                      _onAddressChanged(context, validatorHolder, address);
+                    }
                   },
                 );
               },

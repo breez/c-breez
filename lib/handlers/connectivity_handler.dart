@@ -109,14 +109,20 @@ class ConnectivityHandler extends Handler {
                 context.read<ConnectivityBloc>().setIsConnecting(true);
                 Future.delayed(
                   const Duration(seconds: 1),
-                  () => context
-                      .read<ConnectivityBloc>()
-                      .checkConnectivity()
-                      .whenComplete(() => context.read<ConnectivityBloc>().setIsConnecting(false))
-                      .onError((error, stackTrace) {
-                    context.read<ConnectivityBloc>().setIsConnecting(false);
-                    throw error.toString();
-                  }),
+                  () {
+                    if (context.mounted) {
+                      context.read<ConnectivityBloc>().checkConnectivity().whenComplete(() {
+                        if (context.mounted) {
+                          context.read<ConnectivityBloc>().setIsConnecting(false);
+                        }
+                      }).onError((error, stackTrace) {
+                        if (context.mounted) {
+                          context.read<ConnectivityBloc>().setIsConnecting(false);
+                        }
+                        throw error.toString();
+                      });
+                    }
+                  },
                 );
               },
               child: Text(

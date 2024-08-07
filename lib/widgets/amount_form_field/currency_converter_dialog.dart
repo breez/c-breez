@@ -58,19 +58,21 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
       }
     });
 
-    widget._currencyBloc.fetchExchangeRates().catchError((value) {
-      final texts = context.texts();
-      if (mounted) {
-        setState(() {
-          Navigator.pop(context);
-          showFlushbar(
-            context,
-            message: texts.currency_converter_dialog_error_exchange_rate,
-          );
-        });
-      }
-      return <String, Rate>{};
-    });
+    widget._currencyBloc.fetchExchangeRates().catchError(
+      (value) {
+        if (mounted) {
+          final texts = context.texts();
+          setState(() {
+            Navigator.pop(context);
+            showFlushbar(
+              context,
+              message: texts.currency_converter_dialog_error_exchange_rate,
+            );
+          });
+        }
+        return <String, Rate>{};
+      },
+    );
   }
 
   @override

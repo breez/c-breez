@@ -87,16 +87,20 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
   void _fetchRedeemOnchainFeeOptions() {
     final redeemOnchainFundsBloc = context.read<RedeemOnchainFundsBloc>();
     _fetchFeeOptionsFuture = redeemOnchainFundsBloc.fetchRedeemOnchainFeeOptions(toAddress: widget.toAddress);
-    _fetchFeeOptionsFuture.then((feeOptions) {
-      final account = context.read<AccountBloc>().state;
-      setState(() {
-        affordableFees = feeOptions
-            .where((f) =>
-                f.isAffordable(walletBalanceSat: account.walletBalanceSat, amountSat: widget.amountSat))
-            .toList();
-        selectedFeeIndex = (affordableFees.length / 2).floor();
-      });
-    });
+    _fetchFeeOptionsFuture.then(
+      (feeOptions) {
+        if (mounted) {
+          final account = context.read<AccountBloc>().state;
+          setState(() {
+            affordableFees = feeOptions
+                .where((f) =>
+                    f.isAffordable(walletBalanceSat: account.walletBalanceSat, amountSat: widget.amountSat))
+                .toList();
+            selectedFeeIndex = (affordableFees.length / 2).floor();
+          });
+        }
+      },
+    );
   }
 }
 

@@ -55,7 +55,7 @@ class PaymentRequestDialogState extends State<PaymentRequestDialog> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (_) async {
+      onPopInvokedWithResult: (_, __) async {
         if (_state == PaymentRequestState.PROCESSING_PAYMENT) {
           return;
         } else {

@@ -4,8 +4,8 @@ publish_to: "none"
 version: 1.1.0
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-  flutter: ">=3.24.0"
+  sdk: '>=3.4.4 <4.0.0'
+  flutter: ">=3.22.0"
 
 dependencies:
   flutter:
@@ -103,12 +103,12 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.12
+  build_runner: ^2.4.11
   flutter_lints: ^4.0.0
   test: ^1.25.8
 
 dependency_overrides:
-  test_api: ^0.7.3
+  test_api: <=0.7.1
   # Comment-out to work with breez-sdk from git repository
   breez_sdk:
     path: ../breez-sdk/libs/sdk-flutter

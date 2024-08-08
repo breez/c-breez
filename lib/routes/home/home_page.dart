@@ -77,7 +77,7 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
 
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (bool didPop, _) async {
+      onPopInvoked: (bool didPop) async {
         if (didPop) {
           return;
         }

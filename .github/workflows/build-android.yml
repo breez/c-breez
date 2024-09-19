@@ -45,6 +45,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          flutter-version: 3.22.3 # Pinned until resource linking issues on Android is resolved with 3.24
           cache: true
 
       - name: 🏗️ Android cache
@@ -98,7 +99,6 @@ jobs:
           rm -rf ../target
           cargo check
           make android
-
 
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         working-directory: cbreez

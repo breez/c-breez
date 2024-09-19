@@ -12,3 +12,4 @@ analyzer:
     - lib/generated_plugin_registrant.dart
   errors:
     asset_directory_does_not_exist: ignore
+    deprecated_member_use: ignore

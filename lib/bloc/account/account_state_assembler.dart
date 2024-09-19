@@ -30,7 +30,7 @@ AccountState? assembleAccountState(
     maxPaymentAmountSat: maxPaymentAmountSat,
     maxChanReserveSat: (nodeState.channelsBalanceMsat.toInt() - nodeState.maxPayableMsat.toInt()) ~/ 1000,
     connectedPeers: nodeState.connectedPeers,
-    maxInboundLiquiditySat: nodeState.inboundLiquidityMsats ~/ 1000,
+    maxInboundLiquiditySat: nodeState.totalInboundLiquidityMsats ~/ 1000,
     payments: payments.map((e) => PaymentMinutiae.fromPayment(e, texts)).toList(),
     paymentFilters: paymentFilters,
     connectionStatus: ConnectionStatus.CONNECTED,

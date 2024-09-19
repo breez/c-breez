@@ -51,7 +51,8 @@ class BreezSDKMock extends Mock implements BreezSDK {
     maxSinglePaymentAmountMsat: 0,
     maxChanReserveMsats: 0,
     connectedPeers: [],
-    inboundLiquidityMsats: 0,
+    totalInboundLiquidityMsats: 0,
+    maxReceivableSinglePaymentAmountMsat: 0,
     pendingOnchainBalanceMsat: 0,
   );
 

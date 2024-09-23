@@ -53,6 +53,7 @@ Future<LNURLPageResult?> handlePayRequest(
           comment: paymentInfo.comment,
           data: data,
           validateSuccessActionUrl: false,
+          useTrampoline: false,
         );
         return accBloc.lnurlPay(req: req);
       },

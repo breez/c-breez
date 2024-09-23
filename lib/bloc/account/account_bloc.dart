@@ -197,6 +197,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       final req = sdk.SendPaymentRequest(
         bolt11: bolt11,
         amountMsat: amountMsat,
+        useTrampoline: false,
       );
       await _breezSDK.sendPayment(req: req);
     } catch (e) {

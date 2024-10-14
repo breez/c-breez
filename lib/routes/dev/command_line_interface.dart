@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:c_breez/routes/dev/widget/command_list.dart';
@@ -158,8 +157,6 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
         _lastCommand = command;
         isLoading = true;
       });
-      // TODO: Style the response output from SDK
-      const JsonEncoder encoder = JsonEncoder.withIndent('    ');
       try {
         var commandArgs = command.split(RegExp(r"\s"));
         if (commandArgs.isEmpty) {
@@ -182,9 +179,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
           case 'stop':
             final command = commandArgs[0].toLowerCase();
             _log.info("executing command: $command");
-            final answer = await _breezSDK.executeCommand(command: command);
-            _log.info("Received answer: $answer");
-            reply = encoder.convert(answer);
+            reply = await _breezSDK.executeCommand(command: command);
             _log.info("Reply: $reply");
             break;
           default:

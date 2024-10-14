@@ -31,7 +31,7 @@ class NotificationService: SDKNotificationService {
         setLogger(logger: logger)
         // Use the same SdkLogListener(:LogStream) to listen in on BreezSDK node logs
         do {
-            try setLogStream(logStream: logger)
+            try setLogStream(logStream: logger, filterLevel: LevelFilter.debug)
         } catch let e {
             self.logger.log(tag: TAG, line:"Failed to set log stream: \(e)", level: "ERROR")
         }

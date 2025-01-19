@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/models/currency.dart';
@@ -84,9 +84,9 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               ),
               child: Text(
                 _showFiatCurrency && fiatConversion != null
-                    ? fiatConversion.formatSat(widget.data.maxSendable ~/ 1000)
+                    ? fiatConversion.formatSat(widget.data.maxSendable.toInt() ~/ 1000)
                     : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                        .format(widget.data.maxSendable ~/ 1000),
+                        .format(widget.data.maxSendable.toInt() ~/ 1000),
                 style: themeData.primaryTextTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
@@ -146,7 +146,7 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
             }),
           ),
           onPressed: () {
-            final amountSat = widget.data.maxSendable ~/ 1000;
+            final amountSat = widget.data.maxSendable.toInt() ~/ 1000;
             _log.info(
               "LNURL payment of $amountSat sats where "
               "min is ${widget.data.minSendable} msats "

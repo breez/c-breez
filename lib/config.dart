@@ -1,9 +1,9 @@
+import 'package:app_group_directory/app_group_directory.dart';
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:app_group_directory/app_group_directory.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'app_config.dart';
@@ -74,7 +74,7 @@ class Config {
       maxfeePercent: await _configuredMaxFeePercent(serviceInjector, defaultConf),
       workingDir: await _workingDir(),
       mempoolspaceUrl: await _mempoolSpaceUrl(serviceInjector, defaultConf),
-      exemptfeeMsat: await _configuredExempMsatFee(serviceInjector, defaultConf),
+      exemptfeeMsat: BigInt.from(await _configuredExempMsatFee(serviceInjector, defaultConf)),
       apiKey: breezConfig.apiKey,
     );
   }

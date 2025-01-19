@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/utils/extensions/breez_pos_message_extractor.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +77,7 @@ class PaymentMinutiae {
       paymentTime: factory._paymentTime(),
       image: factory._image(),
       feeSat: factory._feeSat(),
-      feeMilliSat: payment.feeMsat,
+      feeMilliSat: payment.feeMsat.toInt(),
       amountSat: factory._amountSat(),
       hasMetadata: factory._hasMetadata(),
       isKeySend: factory._isKeySend(),
@@ -291,11 +291,11 @@ class _PaymentMinutiaeFactory {
   }
 
   int _feeSat() {
-    return _payment.feeMsat ~/ 1000;
+    return _payment.feeMsat.toInt() ~/ 1000;
   }
 
   int _amountSat() {
-    return _payment.amountMsat ~/ 1000;
+    return _payment.amountMsat.toInt() ~/ 1000;
   }
 
   bool _hasDescription() {

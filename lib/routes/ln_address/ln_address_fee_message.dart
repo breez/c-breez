@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
@@ -74,7 +74,7 @@ class LnAddressFeeMessage extends StatelessWidget {
     final maxSendableFormatted = currencyState.bitcoinCurrency.format(maxSendableSat);
 
     // Get the minimum sendable amount (in sats), can not be less than 1 or more than maxSendable
-    final minSendableSat = (liquidityAboveMin) ? 1 : openingFeeParams.minMsat ~/ 1000;
+    final minSendableSat = (liquidityAboveMin) ? 1 : openingFeeParams.minMsat.toInt() ~/ 1000;
     final minSendableAboveMin = minSendableSat >= 1;
     final minSendableFormatted = currencyState.bitcoinCurrency.format(minSendableSat);
     if (!minSendableAboveMin) {
@@ -83,7 +83,7 @@ class LnAddressFeeMessage extends StatelessWidget {
     if (minSendableSat > maxSendableSat) {
       return "Minimum sendable amount can't be greater than maximum sendable amount.";
     }
-    final minFeeFormatted = currencyState.bitcoinCurrency.format(openingFeeParams.minMsat ~/ 1000);
+    final minFeeFormatted = currencyState.bitcoinCurrency.format(openingFeeParams.minMsat.toInt() ~/ 1000);
 
     final isFeeApplicable = maxSendableSat > liquiditySat;
     if (!isFeeApplicable) {

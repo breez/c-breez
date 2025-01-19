@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:c_breez/app_config.dart';
 import 'package:c_breez/config.dart';
 import 'package:c_breez/services/injector.dart';
@@ -122,7 +122,7 @@ void main() {
   });
 }
 
-sdk.Config _defaultConf() => const sdk.Config(
+sdk.Config _defaultConf() => sdk.Config(
       maxfeePercent: 7.8,
       breezserver: "a breez server",
       chainnotifierUrl: "a chain notifier url",
@@ -132,8 +132,8 @@ sdk.Config _defaultConf() => const sdk.Config(
       paymentTimeoutSec: 123,
       defaultLspId: "a default lsp id",
       apiKey: "an api key",
-      exemptfeeMsat: 20000,
-      nodeConfig: sdk.NodeConfig_Greenlight(
+      exemptfeeMsat: BigInt.from(20000),
+      nodeConfig: const sdk.NodeConfig_Greenlight(
         config: sdk.GreenlightNodeConfig(
           partnerCredentials: null,
         ),

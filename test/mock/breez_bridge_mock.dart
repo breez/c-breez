@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -19,7 +19,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
     await nodeInfo();
   }
 
-  Config config = const Config(
+  Config config = Config(
     breezserver: '',
     chainnotifierUrl: '',
     mempoolspaceUrl: '',
@@ -27,8 +27,8 @@ class BreezSDKMock extends Mock implements BreezSDK {
     paymentTimeoutSec: 10,
     workingDir: '.',
     maxfeePercent: 0.5,
-    exemptfeeMsat: 20000,
-    nodeConfig: NodeConfig_Greenlight(config: GreenlightNodeConfig()),
+    exemptfeeMsat: BigInt.from(20000),
+    nodeConfig: const NodeConfig_Greenlight(config: GreenlightNodeConfig()),
   );
 
   @override
@@ -40,20 +40,20 @@ class BreezSDKMock extends Mock implements BreezSDK {
     return config;
   }
 
-  NodeState? nodeState = const NodeState(
+  NodeState? nodeState = NodeState(
     id: '123456789012345678901234567890123456789012345678901234567890123456',
     blockHeight: 2,
-    channelsBalanceMsat: 0,
-    onchainBalanceMsat: 0,
+    channelsBalanceMsat: BigInt.zero,
+    onchainBalanceMsat: BigInt.zero,
     utxos: [],
-    maxPayableMsat: 0,
-    maxReceivableMsat: 0,
-    maxSinglePaymentAmountMsat: 0,
-    maxChanReserveMsats: 0,
+    maxPayableMsat: BigInt.zero,
+    maxReceivableMsat: BigInt.zero,
+    maxSinglePaymentAmountMsat: BigInt.zero,
+    maxChanReserveMsats: BigInt.zero,
     connectedPeers: [],
-    totalInboundLiquidityMsats: 0,
-    maxReceivableSinglePaymentAmountMsat: 0,
-    pendingOnchainBalanceMsat: 0,
+    totalInboundLiquidityMsats: BigInt.zero,
+    maxReceivableSinglePaymentAmountMsat: BigInt.zero,
+    pendingOnchainBalanceMsat: BigInt.zero,
   );
 
   @override
@@ -76,7 +76,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
     openingFeeParamsList: OpeningFeeParamsMenu(
       values: [
         OpeningFeeParams(
-          minMsat: 2000,
+          minMsat: BigInt.from(2000),
           proportional: 7,
           validUntil: DateTime.now().add(const Duration(days: 1)).toUtc().toIso8601String(),
           maxIdleTime: 1,
@@ -95,11 +95,11 @@ class BreezSDKMock extends Mock implements BreezSDK {
   @override
   Future connectLSP(String lspId) async {}
 
-  InputType parsedInput = const InputType_LnUrlPay(
+  InputType parsedInput = InputType_LnUrlPay(
     data: LnUrlPayRequestData(
       callback: "",
-      minSendable: 0,
-      maxSendable: 0,
+      minSendable: BigInt.zero,
+      maxSendable: BigInt.zero,
       metadataStr: "",
       commentAllowed: 0,
       domain: "",

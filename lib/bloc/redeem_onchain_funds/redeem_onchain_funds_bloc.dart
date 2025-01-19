@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_state.dart';
 import 'package:c_breez/models/fee_options/fee_option.dart';
@@ -70,14 +70,14 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
         final recommendedFee = recommendedFeeList.elementAt(index);
         final req = PrepareRedeemOnchainFundsRequest(
           toAddress: toAddress,
-          satPerVbyte: recommendedFee,
+          satPerVbyte: recommendedFee.toInt(),
         );
         final txFeeSat = await prepareRedeemOnchainFunds(req);
 
         return RedeemOnchainFeeOption(
           processingSpeed: ProcessingSpeed.values.elementAt(index),
           txFeeSat: txFeeSat,
-          satPerVbyte: recommendedFee,
+          satPerVbyte: recommendedFee.toInt(),
         );
       }),
     );
@@ -91,7 +91,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
     try {
       final resp = await _breezSDK.prepareRedeemOnchainFunds(req: req);
       _log.info("Redeem onchain funds txFee: ${resp.txFeeSat}, with tx weight ${resp.txWeight}");
-      return resp.txFeeSat;
+      return resp.txFeeSat.toInt();
     } catch (e) {
       _log.severe("Failed to redeem onchain funds", e);
       rethrow;

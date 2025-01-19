@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
@@ -97,15 +97,15 @@ void main() async {
           children: [
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                const Payment(
+                Payment(
                   paymentType: PaymentType.Received,
                   id: "",
-                  feeMsat: 0,
+                  feeMsat: BigInt.zero,
                   paymentTime: 1661791810,
-                  amountMsat: 4321000,
+                  amountMsat: BigInt.from(4321000),
                   status: PaymentStatus.Complete,
                   description: "",
-                  details: PaymentDetails.ln(
+                  details: const PaymentDetails.ln(
                     data: LnPaymentDetails(
                       paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                       label: "",
@@ -123,15 +123,15 @@ void main() async {
             // Pending
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                const Payment(
+                Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                  feeMsat: 1234,
+                  feeMsat: BigInt.from(1234),
                   paymentTime: 1661791810,
-                  amountMsat: 4321000,
+                  amountMsat: BigInt.from(4321000),
                   status: PaymentStatus.Pending,
                   description: "",
-                  details: PaymentDetails.ln(
+                  details: const PaymentDetails.ln(
                     data: LnPaymentDetails(
                       paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                       label: "",
@@ -149,15 +149,15 @@ void main() async {
             // Show all
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                const Payment(
+                Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                  feeMsat: 1234,
+                  feeMsat: BigInt.from(1234),
                   paymentTime: 1661791810,
-                  amountMsat: 4321000,
+                  amountMsat: BigInt.from(4321000),
                   status: PaymentStatus.Complete,
                   description: "",
-                  details: PaymentDetails.ln(
+                  details: const PaymentDetails.ln(
                     data: LnPaymentDetails(
                       paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                       label: "",
@@ -175,15 +175,15 @@ void main() async {
             // Hide all
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                const Payment(
+                Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                  feeMsat: 1234,
+                  feeMsat: BigInt.from(1234),
                   paymentTime: 1661791810,
-                  amountMsat: 4321000,
+                  amountMsat: BigInt.from(4321000),
                   status: PaymentStatus.Complete,
                   description: "",
-                  details: PaymentDetails.ln(
+                  details: const PaymentDetails.ln(
                     data: LnPaymentDetails(
                       paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                       label: "",

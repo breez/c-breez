@@ -52,7 +52,7 @@ dependencies:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
   flutter_inappwebview: <6.1.0
-  flutter_rust_bridge: ^1.82.6
+  flutter_rust_bridge: ^2.0.0
   flutter_secure_storage: ^9.2.2
   flutter_svg: ^2.0.10+1
   flutter_typeahead:

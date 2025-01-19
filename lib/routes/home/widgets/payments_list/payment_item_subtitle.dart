@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -49,15 +49,15 @@ void main() {
         // Not pending
         PaymentItemSubtitle(
           PaymentMinutiae.fromPayment(
-            const Payment(
+            Payment(
               paymentType: PaymentType.Received,
               id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-              feeMsat: 1234,
+              feeMsat: BigInt.from(1234),
               paymentTime: 1661791810,
-              amountMsat: 4321000,
+              amountMsat: BigInt.from(4321000),
               status: PaymentStatus.Complete,
               description: "",
-              details: PaymentDetails.ln(
+              details: const PaymentDetails.ln(
                 data: LnPaymentDetails(
                   paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                   label: "",
@@ -75,15 +75,15 @@ void main() {
         // Pending
         PaymentItemSubtitle(
           PaymentMinutiae.fromPayment(
-            const Payment(
+            Payment(
               paymentType: PaymentType.Received,
               id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-              feeMsat: 1234,
+              feeMsat: BigInt.from(1234),
               paymentTime: 1661791810,
-              amountMsat: 4321000,
+              amountMsat: BigInt.from(4321000),
               status: PaymentStatus.Pending,
               description: "",
-              details: PaymentDetails.ln(
+              details: const PaymentDetails.ln(
                 data: LnPaymentDetails(
                   paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
                   label: "",

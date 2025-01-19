@@ -1,5 +1,5 @@
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/bloc/health_check/health_check_bloc.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter_test/flutter_test.dart';

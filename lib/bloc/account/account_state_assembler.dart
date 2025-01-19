@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
@@ -24,13 +24,13 @@ AccountState? assembleAccountState(
     initial: false,
     blockheight: nodeState.blockHeight,
     balanceSat: nodeState.channelsBalanceMsat.toInt() ~/ 1000,
-    walletBalanceSat: nodeState.onchainBalanceMsat ~/ 1000,
-    maxAllowedToPaySat: nodeState.maxPayableMsat ~/ 1000,
-    maxAllowedToReceiveSat: nodeState.maxReceivableMsat ~/ 1000,
+    walletBalanceSat: nodeState.onchainBalanceMsat.toInt() ~/ 1000,
+    maxAllowedToPaySat: nodeState.maxPayableMsat.toInt() ~/ 1000,
+    maxAllowedToReceiveSat: nodeState.maxReceivableMsat.toInt() ~/ 1000,
     maxPaymentAmountSat: maxPaymentAmountSat,
     maxChanReserveSat: (nodeState.channelsBalanceMsat.toInt() - nodeState.maxPayableMsat.toInt()) ~/ 1000,
     connectedPeers: nodeState.connectedPeers,
-    maxInboundLiquiditySat: nodeState.totalInboundLiquidityMsats ~/ 1000,
+    maxInboundLiquiditySat: nodeState.totalInboundLiquidityMsats.toInt() ~/ 1000,
     payments: payments.map((e) => PaymentMinutiae.fromPayment(e, texts)).toList(),
     paymentFilters: paymentFilters,
     connectionStatus: ConnectionStatus.CONNECTED,

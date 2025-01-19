@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 
 enum ProcessingSpeed {
@@ -49,7 +49,7 @@ class ReverseSwapFeeOption extends FeeOption {
   bool isAffordable({int? balanceSat, int? walletBalanceSat, required int amountSat}) {
     assert(balanceSat != null);
 
-    return balanceSat! >= pairInfo.senderAmountSat;
+    return balanceSat! >= pairInfo.senderAmountSat.toInt();
   }
 }
 

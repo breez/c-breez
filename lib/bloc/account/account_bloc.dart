@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_sdk/exceptions.dart';
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
@@ -196,7 +196,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     try {
       final req = sdk.SendPaymentRequest(
         bolt11: bolt11,
-        amountMsat: amountMsat,
+        amountMsat: amountMsat != null ? BigInt.from(amountMsat) : null,
         useTrampoline: true,
       );
       await _breezSDK.sendPayment(req: req);
@@ -221,7 +221,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     try {
       final req = sdk.SendSpontaneousPaymentRequest(
         nodeId: nodeId,
-        amountMsat: amountMsat,
+        amountMsat: BigInt.from(amountMsat),
       );
       await _breezSDK.sendSpontaneousPayment(req: req);
     } catch (e) {
@@ -299,7 +299,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.info("addInvoice: $description, $amountMsat");
 
     final req = sdk.ReceivePaymentRequest(
-      amountMsat: amountMsat,
+      amountMsat: BigInt.from(amountMsat),
       description: description,
       openingFeeParams: chosenFeeParams,
     );

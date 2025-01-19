@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 
 String inputTypeToString(InputType inputType) {
   if (inputType is InputType_BitcoinAddress) {

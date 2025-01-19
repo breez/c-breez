@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -132,6 +132,7 @@ void main() {
           data: UrlSuccessActionData(
             description: successActionDescription,
             url: "",
+            matchesCallbackDomain: false,
           ),
         ),
       ).successActionMessage;
@@ -145,6 +146,7 @@ void main() {
           data: UrlSuccessActionData(
             description: "",
             url: successActionUrl,
+            matchesCallbackDomain: false,
           ),
         ),
       ).successActionUrl;
@@ -297,8 +299,8 @@ PaymentMinutiae make({
         id: "id",
         paymentType: PaymentType.Received,
         paymentTime: paymentTime,
-        amountMsat: amountMilliSat,
-        feeMsat: feeMilliSat,
+        amountMsat: BigInt.from(amountMilliSat),
+        feeMsat: BigInt.from(feeMilliSat),
         status: PaymentStatus.Complete,
         description: description,
         details: const PaymentDetails.closedChannel(
@@ -325,8 +327,8 @@ PaymentMinutiae makeLnPayment({
         id: "id",
         paymentType: PaymentType.Received,
         paymentTime: 3,
-        amountMsat: 2,
-        feeMsat: 1,
+        amountMsat: BigInt.from(2),
+        feeMsat: BigInt.from(1),
         status: PaymentStatus.Complete,
         description: "description",
         details: PaymentDetails.ln(
@@ -351,8 +353,8 @@ PaymentMinutiae makePendingLnPayment({int expiryBlock = 800000}) => PaymentMinut
         id: "id",
         paymentType: PaymentType.Sent,
         paymentTime: 3,
-        amountMsat: 2,
-        feeMsat: 1,
+        amountMsat: BigInt.from(2),
+        feeMsat: BigInt.from(1),
         status: PaymentStatus.Pending,
         details: PaymentDetails.ln(
           data: LnPaymentDetails(

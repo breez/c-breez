@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -35,7 +35,7 @@ class FeeMessage extends StatelessWidget {
     final currencyState = context.read<CurrencyBloc>().state;
     final accountState = context.read<AccountBloc>().state;
 
-    final minFeeSat = openingFeeParams.minMsat ~/ 1000;
+    final minFeeSat = openingFeeParams.minMsat.toInt() ~/ 1000;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFeeSat);
     final minFeeAboveZero = minFeeSat > 0;
     final setUpFee = (openingFeeParams.proportional / 10000).toString();

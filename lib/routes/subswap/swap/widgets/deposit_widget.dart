@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -87,7 +87,7 @@ class _DepositWidgetState extends State<DepositWidget> {
 
     final texts = context.texts();
 
-    final minFees = openingFeeParams.minMsat ~/ 1000;
+    final minFees = openingFeeParams.minMsat.toInt() ~/ 1000;
     final minFeeAboveZero = minFees > 0;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFees);
     final minSat = currencyState.bitcoinCurrency.format(
@@ -152,7 +152,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     LspInformation? lspInfo,
     int? minAllowedDeposit,
   ) {
-    final minFees = (lspInfo != null) ? lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000 : 0;
+    final minFees = (lspInfo != null) ? lspInfo.openingFeeParamsList.values.first.minMsat.toInt() ~/ 1000 : 0;
     if (minAllowedDeposit == null) return minFees;
     if (minFees > minAllowedDeposit) return minFees;
     return minAllowedDeposit;

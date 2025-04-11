@@ -55,7 +55,7 @@ class _PaymentItemState extends State<PaymentItem> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               offset: const Offset(0.5, 0.5),
                               blurRadius: 5.0,
                             ),

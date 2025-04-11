@@ -61,12 +61,16 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
             WarningAction(
               () async {
                 await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then(
-                      (accountMnemonic) => Navigator.pushNamed(
+                  (accountMnemonic) {
+                    if (context.mounted) {
+                      return Navigator.pushNamed(
                         context,
                         '/mnemonics',
                         arguments: accountMnemonic,
-                      ),
-                    );
+                      );
+                    }
+                  },
+                );
               },
             ),
           );

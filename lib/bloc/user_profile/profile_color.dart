@@ -115,8 +115,6 @@ extension ProfileColorExtension on ProfileColor {
         return texts.app_color_jade;
       case ProfileColor.CORAL:
         return texts.app_color_coral;
-      default:
-        return "";
     }
   }
 
@@ -172,8 +170,6 @@ extension ProfileColorExtension on ProfileColor {
         return const Color(0xFF00B27A);
       case ProfileColor.CORAL:
         return const Color(0xFFFF7F50);
-      default:
-        return Colors.white;
     }
   }
 }

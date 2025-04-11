@@ -2,21 +2,22 @@ import 'dart:async';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
-import 'package:c_breez/bloc/connectivity/connectivity_state.dart';
-import 'package:c_breez/handlers/handler.dart';
-import 'package:c_breez/handlers/handler_context_provider.dart';
-import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
-final _log = Logger("ConnectivityHandler");
+import '../bloc/connectivity/connectivity_bloc.dart';
+import '../bloc/connectivity/connectivity_state.dart';
+import '../theme/theme_extensions.dart';
+import 'handler.dart';
+import 'handler_context_provider.dart';
+
+final Logger _logger = Logger('NetworkConnectivityHandler');
 
 class ConnectivityHandler extends Handler {
   StreamSubscription<ConnectivityState>? _subscription;
-  Flushbar? _flushbar;
+  Flushbar<dynamic>? _flushbar;
 
   @override
   void init(HandlerContextProvider<StatefulWidget> contextProvider) {
@@ -25,7 +26,9 @@ class ConnectivityHandler extends Handler {
         .getBuildContext()!
         .read<ConnectivityBloc>()
         .stream
-        .distinct((previous, next) => previous.lastStatus == next.lastStatus)
+        .distinct(
+          (ConnectivityState previous, ConnectivityState next) => previous.lastStatus == next.lastStatus,
+        )
         .listen(_listen);
   }
 
@@ -38,7 +41,7 @@ class ConnectivityHandler extends Handler {
   }
 
   void _listen(ConnectivityState connectivityState) async {
-    _log.info("Received connectivityState $connectivityState");
+    _logger.info("Received connectivityState $connectivityState");
     if (connectivityState.lastStatus != null &&
         connectivityState.lastStatus!.contains(ConnectivityResult.none)) {
       showNoInternetConnectionFlushbar();
@@ -49,9 +52,9 @@ class ConnectivityHandler extends Handler {
 
   void showNoInternetConnectionFlushbar() {
     dismissFlushbarIfNeed();
-    final context = contextProvider?.getBuildContext();
+    final BuildContext? context = contextProvider?.getBuildContext();
     if (context == null) {
-      _log.info("Skipping connection flushbar as context is null");
+      _logger.info('Skipping connection flushbar as context is null');
       return;
     }
     _flushbar = _getNoConnectionFlushbar(context);
@@ -59,13 +62,15 @@ class ConnectivityHandler extends Handler {
   }
 
   void dismissFlushbarIfNeed() async {
-    final flushbar = _flushbar;
-    if (flushbar == null) return;
+    final Flushbar<dynamic>? flushbar = _flushbar;
+    if (flushbar == null) {
+      return;
+    }
 
     if (flushbar.flushbarRoute != null && flushbar.flushbarRoute!.isActive) {
-      final context = contextProvider?.getBuildContext();
+      final BuildContext? context = contextProvider?.getBuildContext();
       if (context == null) {
-        _log.info("Skipping dismissing connection flushbar as context is null");
+        _logger.info('Skipping dismissing connection flushbar as context is null');
         return;
       }
       Navigator.of(context).removeRoute(flushbar.flushbarRoute!);
@@ -73,9 +78,10 @@ class ConnectivityHandler extends Handler {
     _flushbar = null;
   }
 
-  Flushbar? _getNoConnectionFlushbar(BuildContext context) {
-    var themeData = Theme.of(context);
-    return Flushbar(
+  Flushbar<dynamic>? _getNoConnectionFlushbar(BuildContext context) {
+    final ThemeData themeData = Theme.of(context);
+
+    return Flushbar<dynamic>(
       isDismissible: false,
       flushbarPosition: FlushbarPosition.TOP,
       icon: Icon(
@@ -85,7 +91,7 @@ class ConnectivityHandler extends Handler {
       ),
       messageText: Text(
         context.texts().no_connection_flushbar_title,
-        style: theme.snackBarStyle,
+        style: snackBarStyle,
         textAlign: TextAlign.center,
       ),
       mainButton: SizedBox(
@@ -106,22 +112,22 @@ class ConnectivityHandler extends Handler {
             }
             return TextButton(
               onPressed: () {
-                context.read<ConnectivityBloc>().setIsConnecting(true);
+                final connectivityBloc = context.read<ConnectivityBloc>();
+                connectivityBloc.setIsConnecting(true);
                 Future.delayed(
                   const Duration(seconds: 1),
-                  () => context
-                      .read<ConnectivityBloc>()
+                  () => connectivityBloc
                       .checkConnectivity()
-                      .whenComplete(() => context.read<ConnectivityBloc>().setIsConnecting(false))
+                      .whenComplete(() => connectivityBloc.setIsConnecting(false))
                       .onError((error, stackTrace) {
-                    context.read<ConnectivityBloc>().setIsConnecting(false);
+                    connectivityBloc.setIsConnecting(false);
                     throw error.toString();
                   }),
                 );
               },
               child: Text(
                 context.texts().no_connection_flushbar_action_retry,
-                style: theme.snackBarStyle.copyWith(
+                style: snackBarStyle.copyWith(
                   color: themeData.colorScheme.error,
                 ),
               ),
@@ -129,7 +135,7 @@ class ConnectivityHandler extends Handler {
           },
         ),
       ),
-      backgroundColor: theme.snackBarBackgroundColor,
+      backgroundColor: snackBarBackgroundColor,
     );
   }
 }

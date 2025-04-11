@@ -73,7 +73,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
           if (snapshot.connectionState != ConnectionState.done && !snapshot.hasData) {
             return Center(
               child: Loader(
-                color: themeData.primaryColor.withOpacity(0.5),
+                color: themeData.primaryColor.withValues(alpha: 0.5),
               ),
             );
           }

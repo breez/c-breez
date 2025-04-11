@@ -40,29 +40,31 @@ class HealthCheckHandler extends Handler {
           return;
         }
         _log.info("Showing flushbar for: $event");
-        _flushbar = showFlushbar(
-          context,
-          isDismissible: false,
-          showMainButton: true,
-          position: FlushbarPosition.TOP,
-          duration: Duration.zero,
-          message: event == HealthCheckStatus.Maintenance
-              ? texts.handler_check_version_error_upgrading_servers
-              : texts.handler_health_check_service_disruption,
-          buttonText: texts.handler_health_check_action_retry,
-          onDismiss: () {
-            _flushbar = null;
-            bloc.checkStatus();
-            return true;
-          },
-          icon: SvgPicture.asset(
-            "src/icon/warning.svg",
-            colorFilter: ColorFilter.mode(
-              themeData.colorScheme.error,
-              BlendMode.srcATop,
+        if (context.mounted) {
+          _flushbar = showFlushbar(
+            context,
+            isDismissible: false,
+            showMainButton: true,
+            position: FlushbarPosition.TOP,
+            duration: Duration.zero,
+            message: event == HealthCheckStatus.Maintenance
+                ? texts.handler_check_version_error_upgrading_servers
+                : texts.handler_health_check_service_disruption,
+            buttonText: texts.handler_health_check_action_retry,
+            onDismiss: () {
+              _flushbar = null;
+              bloc.checkStatus();
+              return true;
+            },
+            icon: SvgPicture.asset(
+              "src/icon/warning.svg",
+              colorFilter: ColorFilter.mode(
+                themeData.colorScheme.error,
+                BlendMode.srcATop,
+              ),
             ),
-          ),
-        );
+          );
+        }
       } else {
         _flushbar?.dismiss();
         _flushbar = null;

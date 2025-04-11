@@ -29,7 +29,7 @@ class FeeBreakdown extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5.0)),
         border: Border.all(
-          color: themeData.colorScheme.onSurface.withOpacity(0.4),
+          color: themeData.colorScheme.onSurface.withValues(alpha: 0.4),
         ),
       ),
       child: Column(

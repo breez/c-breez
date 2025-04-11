@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -52,7 +50,7 @@ void main() async {
   initializeDateFormatting();
   final injector = ServiceInjector();
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: Directory(
+    storageDirectory: HydratedStorageDirectory(
       join((await getApplicationDocumentsDirectory()).path, "preview_storage"),
     ),
   );

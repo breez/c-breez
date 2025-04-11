@@ -65,7 +65,7 @@ class FullScreenLoader extends StatelessWidget {
             left: 0.0,
             right: 0.0,
             child: Container(
-              color: bgColor.withOpacity(opacity),
+              color: bgColor.withValues(alpha: opacity),
               height: mediaQuerySize.height,
               width: mediaQuerySize.width,
               child: Column(

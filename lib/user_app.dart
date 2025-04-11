@@ -130,7 +130,7 @@ class UserApp extends StatelessWidget {
                     case '/':
                       return FadeInRoute(
                         builder: (_) => NavigatorPopHandler(
-                          onPop: () => _homeNavigatorKey.currentState!.maybePop(),
+                          onPopWithResult: (Object? result) => _homeNavigatorKey.currentState!.maybePop(),
                           child: Navigator(
                             initialRoute: "/",
                             key: _homeNavigatorKey,

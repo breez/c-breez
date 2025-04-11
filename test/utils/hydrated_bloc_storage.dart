@@ -9,7 +9,7 @@ class HydratedBlocStorage {
   Future<void> setUpHydratedBloc() async {
     WidgetsFlutterBinding.ensureInitialized();
     HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: Directory(basePath),
+      storageDirectory: HydratedStorageDirectory(basePath),
     );
   }
 

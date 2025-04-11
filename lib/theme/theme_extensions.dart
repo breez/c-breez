@@ -62,7 +62,7 @@ final TextStyle fiatConversionDescriptionStyle = TextStyle(color: BreezColors.wh
 final Color snackBarBackgroundColor = BreezColors.blue[300]!;
 final Color sessionAvatarBackgroundColor = BreezColors.white[500]!;
 const Color themeSwitchBgColor = Color.fromRGBO(229, 238, 251, 0.09);
-final Color circularLoaderColor = BreezColors.blue[200]!.withOpacity(0.7);
+final Color circularLoaderColor = BreezColors.blue[200]!.withValues(alpha: 0.7);
 const Color warningBoxColor = Color.fromRGBO(251, 233, 148, 0.1);
 final BorderSide greyBorderSide = BorderSide(color: BreezColors.grey[500]!);
 final TextStyle mnemonicSeedTextStyle = TextStyle(
@@ -110,8 +110,9 @@ extension ThemeExtensions on ThemeData {
   Color get warningBoxBorderColor =>
       isLightTheme ? const Color.fromRGBO(250, 239, 188, 0.6) : const Color.fromRGBO(227, 180, 47, 0.6);
 
-  Color get bubblePaintColor =>
-      isLightTheme ? const Color(0xFF0085fb).withOpacity(0.1) : const Color(0xff4D88EC).withOpacity(0.1);
+  Color get bubblePaintColor => isLightTheme
+      ? const Color(0xFF0085fb).withValues(alpha: 0.1)
+      : const Color(0xff4D88EC).withValues(alpha: 0.1);
 
   Color get lightThemeSwitchIconColor => isLightTheme ? Colors.white : Colors.white30;
 
@@ -158,7 +159,7 @@ extension ThemeExtensions on ThemeData {
           letterSpacing: 0.39,
         )
       : TextStyle(
-          color: Colors.white.withOpacity(0.7),
+          color: Colors.white.withValues(alpha: 0.7),
           fontSize: 10.5,
           fontWeight: FontWeight.w400,
           height: 1.16,
@@ -174,7 +175,7 @@ extension ThemeExtensions on ThemeData {
           letterSpacing: 0.39,
         )
       : TextStyle(
-          color: Colors.white.withOpacity(0.7),
+          color: Colors.white.withValues(alpha: 0.7),
           fontSize: 10.5,
           fontWeight: FontWeight.w400,
           height: 1.16,

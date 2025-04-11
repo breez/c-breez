@@ -94,7 +94,7 @@ class HomeDrawerState extends State<HomeDrawer> {
           });
         } else {
           Navigator.of(context).pushNamed(screenName).then((message) {
-            if (message != null && message is String) {
+            if (message != null && message is String && context.mounted) {
               showFlushbar(context, message: message);
             }
           });

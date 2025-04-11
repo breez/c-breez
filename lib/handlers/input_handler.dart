@@ -78,7 +78,7 @@ class InputHandler extends Handler {
           _setLoading(false);
           if (error != null) {
             final context = contextProvider?.getBuildContext();
-            if (context != null) {
+            if (context != null && context.mounted) {
               showFlushbar(context, message: extractExceptionMessage(error, context.texts()));
             } else {
               _log.info("Skipping handling of error: $error because context is null");

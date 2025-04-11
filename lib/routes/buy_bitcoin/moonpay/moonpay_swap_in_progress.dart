@@ -41,7 +41,9 @@ class MoonpaySwapInProgress extends StatelessWidget {
                 Navigator.of(context).pop();
               } else {
                 context.read<MoonPayBloc>().makeExplorerUrl(state.address).then((url) {
-                  launchLinkOnExternalBrowser(context, linkAddress: url);
+                  if (context.mounted) {
+                    launchLinkOnExternalBrowser(context, linkAddress: url);
+                  }
                 });
               }
             },

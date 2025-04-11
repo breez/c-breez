@@ -15,7 +15,7 @@ dependencies:
 
   another_flushbar: ^1.12.30
   app_group_directory: ^2.0.0
-  archive: ^3.6.1
+  archive: ^4.0.5
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
   breez_sdk:
@@ -26,72 +26,72 @@ dependencies:
     git:
       url: https://github.com/breez/Breez-Translations
       ref: a564088448149e9c28b4a2eb82fa0a3536698d24
-  clipboard_watcher: ^0.2.1
+  clipboard_watcher: ^0.3.0
   csv: ^6.0.0
-  connectivity_plus: ^6.0.5
-  device_info_plus: ^11.0.0
+  connectivity_plus: ^6.1.3
+  device_info_plus: ^11.3.3
   drag_and_drop_lists:
     git:
       url: https://github.com/breez/DragAndDropLists
       ref: 38cc3155a6161730b4ec476d781873afb7ec4846
   duration: ^4.0.3
   #email_validator: ^3.0.0
-  extended_image: ^8.3.1
-  ffi: ^2.1.3
+  extended_image: ^10.0.0
+  ffi: ^2.1.4
   # Downgraded firebase plugins to a version compatible with mobile_scanner <6.0.0 to avoid bumping minimum deployment target to 15.5 on iOS
   # Doesn't support: Linux Windows
-  firebase_core: <3.5.0
+  firebase_core: ^3.13.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: <6.0.0
+  firebase_dynamic_links: ^6.1.5
   # Doesn't support: Linux Windows
-  firebase_messaging: <15.0.0
-  flutter_bloc: ^8.1.6
+  firebase_messaging: ^15.2.5
+  flutter_bloc: ^9.1.0
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
     git:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
-  flutter_inappwebview: <6.1.0
+  flutter_inappwebview: ^6.1.5
   flutter_rust_bridge: ^1.82.6
-  flutter_secure_storage: ^9.2.2
-  flutter_svg: ^2.0.10+1
+  flutter_secure_storage: ^9.2.4
+  flutter_svg: ^2.0.17
   flutter_typeahead:
     git:
       url: https://github.com/breez/flutter_typeahead.git
       ref: 4a494322762af9f30820f3c63aba784d46b86b69
   git_info: ^1.1.2
   hex: ^0.2.0
-  http: ^1.2.2
-  hydrated_bloc: ^9.1.5
-  image: ^4.2.0
+  http: ^1.3.0
+  hydrated_bloc: ^10.0.0
+  image: ^4.5.4
   # Doesn't support: Linux Mac Windows
   image_cropper: ^8.0.2 # flutter_rust_bridge 1.82.6 depends on js ^0.6.4 and no versions of flutter_rust_bridge match >1.82.6 <2.0.0
   # Doesn't support: Linux Mac Windows
   image_picker: ^1.1.2
   ini: ^2.1.0
-  intl: ^0.19.0
+  intl: <0.20.0 # timeago ^3.7.0 requires intl >=0.18.0 <0.20.0.
   # Doesn't support: Linux Mac
   local_auth: ^2.3.0
-  local_auth_android: <1.0.44
-  local_auth_darwin: ^1.4.1
-  logging: ^1.2.0
-  mockito: ^5.4.4
+  local_auth_android: ^1.0.48
+  local_auth_darwin: ^1.4.3
+  logging: ^1.3.0
+  mockito: ^5.4.5
   # Doesn't support: Linux Windows
-  mobile_scanner: ^5.2.3 # iOS 15.5.0 is the minimum supported iOS version on >5.2.3
-  package_info_plus: ^8.0.3
-  path: ^1.9.0
-  path_provider: ^2.1.4
+  mobile_scanner: ^6.0.7
+  package_info_plus: ^8.3.0
+  path: ^1.9.1
+  path_provider: ^2.1.5
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
   qr_flutter: ^4.1.0
   rxdart: ^0.28.0
-  share_plus: ^10.0.3
-  shared_preferences: ^2.3.2
+  share_plus: ^10.1.4
+  shared_preferences: ^2.5.3
   shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
-  simple_animations: ^5.0.2
-  sqflite_common_ffi: ^2.3.3
-  sqlite3_flutter_libs: ^0.5.24
-  synchronized: <3.2.0
+  simple_animations: ^5.1.0
+  sqflite_common_ffi: ^2.3.5
+  sqlite3_flutter_libs: ^0.5.32
+  synchronized: ^3.3.1
   theme_provider: ^0.6.0
   timeago: ^3.7.0
   # Doesn't support: Linux Mac Windows
@@ -104,9 +104,9 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.11
-  flutter_lints: ^4.0.0
-  test: ^1.25.8
+  build_runner: ^2.4.15
+  flutter_lints: ^5.0.0
+  test: ^1.25.15
 
 dependency_overrides:
   test_api: <0.7.1 # test_api >=0.7.1 is incompatible with flutter_test from the flutter SDK

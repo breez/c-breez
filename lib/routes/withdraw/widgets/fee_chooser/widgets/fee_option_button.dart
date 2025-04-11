@@ -19,7 +19,7 @@ class FeeOptionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final borderColor = themeData.colorScheme.onSurface.withOpacity(0.4);
+    final borderColor = themeData.colorScheme.onSurface.withValues(alpha: 0.4);
     Border border = Border.all(color: borderColor);
     BorderRadius borderRadius = BorderRadius.only(
       topLeft: index == 2 ? Radius.zero : Radius.circular((index == 0) ? 5.0 : 0.0),
@@ -41,7 +41,7 @@ class FeeOptionButton extends StatelessWidget {
             text,
             style: themeData.textTheme.labelLarge!.copyWith(
               color: !isAffordable
-                  ? themeData.primaryColor.withOpacity(0.4)
+                  ? themeData.primaryColor.withValues(alpha: 0.4)
                   : isSelected
                       ? themeData.canvasColor
                       : themeData.colorScheme.onSurface,

@@ -56,8 +56,8 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
           ? Text(
               widget.currencyState.fiatConversion()?.formatSat(widget.accountState.balanceSat) ?? "",
               style: theme.balanceFiatConversionTextStyle.copyWith(
-                color: themeData.colorScheme.onSecondary.withOpacity(
-                  pow(1.00 - widget.offsetFactor, 2).toDouble(),
+                color: themeData.colorScheme.onSecondary.withValues(
+                  alpha: pow(1.00 - widget.offsetFactor, 2).toDouble(),
                 ),
               ),
             )

@@ -30,7 +30,9 @@ class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute> with Wid
           builder: (context) => SuccessfulPaymentDialog(
             onPrint: widget.onPrint,
           ),
-        ).whenComplete(() => Navigator.of(context).pop());
+        ).whenComplete(() {
+          if (mounted) Navigator.of(context).pop();
+        });
       });
     }
   }

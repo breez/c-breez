@@ -36,7 +36,7 @@ class ProcessingSpeedWaitTime extends StatelessWidget {
     return Text(
       message,
       style: themeData.textTheme.labelLarge!.copyWith(
-        color: themeData.colorScheme.onSurface.withOpacity(0.4),
+        color: themeData.colorScheme.onSurface.withValues(alpha: 0.4),
       ),
     );
   }

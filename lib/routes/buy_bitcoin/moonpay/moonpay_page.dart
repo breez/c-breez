@@ -36,7 +36,7 @@ class _MoonPayPageState extends State<MoonPayPage> {
     return Material(
       type: MaterialType.transparency,
       child: Scaffold(
-        backgroundColor: isLoading ? Colors.black.withOpacity(0.8) : Colors.transparent,
+        backgroundColor: isLoading ? Colors.black.withValues(alpha: 0.8) : Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           automaticallyImplyLeading: false,

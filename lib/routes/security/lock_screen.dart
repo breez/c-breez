@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/security/security_state.dart';
@@ -94,7 +92,7 @@ enum AuthorizedAction {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: Directory(
+    storageDirectory: HydratedStorageDirectory(
       join((await getApplicationDocumentsDirectory()).path, "preview_storage"),
     ),
   );

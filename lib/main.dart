@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
@@ -68,7 +67,7 @@ void main() async {
     }
 
     HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: Directory(p.join(appDir.path, "bloc_storage")),
+      storageDirectory: HydratedStorageDirectory(p.join(appDir.path, "bloc_storage")),
     );
     runApp(
       MultiBlocProvider(

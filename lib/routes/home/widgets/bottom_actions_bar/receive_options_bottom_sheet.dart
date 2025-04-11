@@ -32,7 +32,7 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
         ),
         Divider(
           height: 0.0,
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           indent: 72.0,
         ),
         ListTile(
@@ -47,7 +47,7 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
         ),
         Divider(
           height: 0.0,
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           indent: 72.0,
         ),
         ListTile(
@@ -62,7 +62,7 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
         ),
         Divider(
           height: 0.0,
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           indent: 72.0,
         ),
         ListTile(

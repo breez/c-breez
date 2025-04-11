@@ -90,13 +90,15 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
       amountType: widget.isMaxValue ? SwapAmountType.Send : SwapAmountType.Receive,
     );
     _fetchFeeOptionsFuture.then((feeOptions) {
-      final account = context.read<AccountBloc>().state;
-      setState(() {
-        affordableFees = feeOptions
-            .where((f) => f.isAffordable(balanceSat: account.balanceSat, amountSat: widget.amountSat))
-            .toList();
-        selectedFeeIndex = (affordableFees.length / 2).floor();
-      });
+      if (mounted) {
+        final account = context.read<AccountBloc>().state;
+        setState(() {
+          affordableFees = feeOptions
+              .where((f) => f.isAffordable(balanceSat: account.balanceSat, amountSat: widget.amountSat))
+              .toList();
+          selectedFeeIndex = (affordableFees.length / 2).floor();
+        });
+      }
     });
   }
 }

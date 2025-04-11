@@ -21,7 +21,7 @@ class TransactionFee extends StatelessWidget {
     return ListTile(
       title: AutoSizeText(
         texts.sweep_all_coins_label_transaction_fee,
-        style: TextStyle(color: Colors.white.withOpacity(0.4)),
+        style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
         maxLines: 1,
         minFontSize: minFont.minFontSize,
         stepGranularity: 0.1,
@@ -30,7 +30,7 @@ class TransactionFee extends StatelessWidget {
         texts.sweep_all_coins_fee(
           BitcoinCurrency.SAT.format(txFeeSat),
         ),
-        style: TextStyle(color: themeData.colorScheme.error.withOpacity(0.4)),
+        style: TextStyle(color: themeData.colorScheme.error.withValues(alpha: 0.4)),
         maxLines: 1,
         minFontSize: minFont.minFontSize,
         stepGranularity: 0.1,

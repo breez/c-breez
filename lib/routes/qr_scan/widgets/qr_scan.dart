@@ -173,7 +173,7 @@ class QRScanCancelButton extends StatelessWidget {
             Radius.circular(12.0),
           ),
           border: Border.all(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
           ),
         ),
         child: TextButton(

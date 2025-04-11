@@ -1,4 +1,4 @@
-library breez.logger;
+library;
 
 import 'dart:io';
 

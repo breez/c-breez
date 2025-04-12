@@ -99,6 +99,9 @@ jobs:
           sudo chmod 600 ~/.ssh/id_rsa
           ssh-add ~/.ssh/id_rsa
 
+      - name: Set IPHONEOS_DEPLOYMENT_TARGET
+        run: echo "IPHONEOS_DEPLOYMENT_TARGET=12.0" >> $GITHUB_ENV
+
       - name: 🔨 Build Breez SDK
         working-directory: breez-sdk/libs/sdk-flutter
         run: |

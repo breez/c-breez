@@ -1,9 +1,9 @@
+import 'package:app_group_directory/app_group_directory.dart';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
-import 'package:app_group_directory/app_group_directory.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'app_config.dart';
@@ -122,7 +122,7 @@ class Config {
       final workingDir = await getApplicationDocumentsDirectory();
       path = workingDir.path;
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final sharedDirectory = await AppGroupDirectory.getAppGroupDirectory(
+      final sharedDirectory = await AppGroupDirectory().getAppGroupDirectory(
         "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client",
       );
       if (sharedDirectory == null) {

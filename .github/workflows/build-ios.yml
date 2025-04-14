@@ -109,6 +109,9 @@ jobs:
           cargo check
           make ios
 
+      - name: Set IPHONEOS_DEPLOYMENT_TARGET
+        run: echo "IPHONEOS_DEPLOYMENT_TARGET=15.6" >> $GITHUB_ENV
+
       - name: 🗂️ Populate Flutter tool's cache of binary artifacts.
         working-directory: cbreez
         run: flutter precache

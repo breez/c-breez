@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: 'SDK commit/tag/branch reference'
+        description: 'Breez SDK - Native (Greenlight Implementation) commit/tag/branch reference when not using a published plugin. Default = "main"'
         required: false
         type: string
         default: 'main'
@@ -67,25 +67,26 @@ jobs:
         working-directory: cbreez
         run: echo "$GOOGLE_SERVICES_IOS" > ios/Runner/GoogleService-Info.plist
 
-      - name: 🏗️ Setup breez-sdk repository
+      - name: 🏗️ Setup breez-sdk-greenlight repository
         uses: actions/checkout@v4
         with:
-          repository: 'breez/breez-sdk'
+          repository: 'breez/breez-sdk-greenlight'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
-          path: 'breez-sdk'
           ref: ${{ inputs.ref }}
+          path: 'breez-sdk-greenlight'
 
       - name: 🏗️ Rust cache
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: breez-sdk/libs
+          workspaces: breez-sdk-greenlight/libs
           cache-all-crates: true
 
-      - name: 📦 Install Breez SDK dependencies
+      - name: 📦 Install Breez SDK - Native (Greenlight Implementation) dependencies
+        working-directory: breez-sdk-greenlight/libs/
         run: |
           cargo install cargo-ndk
           brew install protobuf
-          cd breez-sdk/libs/sdk-flutter
+          cd sdk-flutter
           make init
           cd ../sdk-core
           make init
@@ -99,8 +100,8 @@ jobs:
           sudo chmod 600 ~/.ssh/id_rsa
           ssh-add ~/.ssh/id_rsa
 
-      - name: 🔨 Build Breez SDK
-        working-directory: breez-sdk/libs/sdk-flutter
+      - name: 🔨 Build Breez SDK - Native (Greenlight Implementation)
+        working-directory: breez-sdk-greenlight/libs/sdk-flutter
         run: |
           rm -rf ../target
           cargo check

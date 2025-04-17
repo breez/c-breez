@@ -223,6 +223,19 @@ jobs:
           CONFIG_FILE: ${{secrets.CONFIG_FILE}}
         run: echo "$CONFIG_FILE" > ./cbreez/config.json
 
+      - name: Get Version from pubspec.yaml
+        working-directory: cbreez
+        run: |
+          VERSION=$(awk -F ': ' '/^version:/ {print $2}' pubspec.yaml)
+          VERSION_BASE=${VERSION%%+*}          
+          BUILD_NUMBER=$(date -u +%s)
+          
+          echo "VERSION_BASE=$VERSION_BASE"
+          echo "BUILD_NUMBER=$BUILD_NUMBER"
+          
+          echo "VERSION_BASE=$VERSION_BASE" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+
       - name: 🚀 Build Release apk
         env:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
@@ -231,6 +244,8 @@ jobs:
         working-directory: cbreez
         run: |
           flutter build apk \
+          --build-name="$VERSION_BASE" \
+          --build-number="$BUILD_NUMBER" \
           --release \
           --split-debug-info=./obsfucated/debug \
           --obfuscate \
@@ -246,6 +261,7 @@ jobs:
         working-directory: cbreez
         run: |
           flutter build appbundle \
+          --build-number="$BUILD_NUMBER" \
           --release \
           --no-pub \
           --dart-define-from-file="config.json"

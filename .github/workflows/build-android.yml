@@ -122,12 +122,19 @@ jobs:
         run: echo "$CONFIG_FILE" > ./cbreez/config.json
 
       - name: 🚀 Build Release apk
-        env:          
+        env:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         working-directory: cbreez
-        run: flutter build apk --release --split-debug-info=./obsfucated/debug --obfuscate --no-pub --split-per-abi --dart-define-from-file=config.json
+        run: |
+          flutter build apk \
+          --release \
+          --split-debug-info=./obsfucated/debug \
+          --obfuscate \
+          --no-pub \
+          --split-per-abi \
+          --dart-define-from-file=config.json
 
       - name: 🗃️ Compress build folder (APK)
         if: github.event_name == 'release'

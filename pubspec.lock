@@ -1321,10 +1321,10 @@ packages:
     dependency: transitive
     description:
       name: puppeteer
-      sha256: b2a7a69218f8285a992741995839d603abd2e6617bd350444979909b9cae4de1
+      sha256: ac8cf90a3202b4658b7a7ba6fb17f1e255905773cd0741108334a93c034ffe76
       url: "https://pub.dev"
     source: hosted
-    version: "3.17.0"
+    version: "3.18.0"
   qr:
     dependency: transitive
     description:

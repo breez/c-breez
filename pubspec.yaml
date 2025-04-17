@@ -1,11 +1,11 @@
 name: c_breez
-description: A new Flutter project.
+description: Flutter app showcasing Breez SDK - Native (Greenlight Implementation).
 publish_to: "none"
 version: 1.1.0
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
-  flutter: ">=3.19.0"
+  sdk: '>=3.6.0 <4.0.0'
+  flutter: ">=3.27.0"
 
 dependencies:
   flutter:

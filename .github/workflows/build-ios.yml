@@ -145,11 +145,24 @@ jobs:
 
       - name: 🚀 Build app
         working-directory: cbreez
-        run: flutter build ios --release --split-debug-info=./obsfucated/debug --obfuscate --config-only --no-pub --no-codesign --dart-define-from-file=config.json
+        run: | 
+          flutter build ios \
+          --release \
+          --split-debug-info=./obsfucated/debug \
+          --obfuscate \
+          --no-config-only \
+          --no-pub \
+          --no-codesign \
+          --dart-define-from-file=config.json
 
       - name: 📦 Resolve Swift package dependencies
         working-directory: cbreez
-        run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme ${{ env.SCHEME }} -configuration ${{ env.BUILD_CONFIGURATION }}
+        run: |
+          xcodebuild \
+          -resolvePackageDependencies \
+          -workspace ios/Runner.xcworkspace \
+          -scheme ${{ env.SCHEME }} \
+          -configuration ${{ env.BUILD_CONFIGURATION }}
 
       - name: 🔨 Build application and generate xcarchive file
         working-directory: cbreez
@@ -157,11 +170,23 @@ jobs:
           buildNumber=$(($GITHUB_RUN_NUMBER + 6000)).1
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $buildNumber" ios/Runner/Info.plist
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ env.IOS_VERSION_STRING }}" ios/Runner/Info.plist
-          xcodebuild -workspace ios/Runner.xcworkspace -scheme ${{ env.SCHEME }} -configuration ${{ env.BUILD_CONFIGURATION }} -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive clean archive
+          xcodebuild \
+          -workspace ios/Runner.xcworkspace \
+          -scheme ${{ env.SCHEME }} \
+          -configuration ${{ env.BUILD_CONFIGURATION }} \
+          -sdk 'iphoneos' \
+          -destination 'generic/platform=iOS' \
+          -archivePath build-output/app.xcarchive \
+          clean \
+          archive
 
       - name: 📤 Export the archive to an ipa file
         working-directory: cbreez
-        run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/ExportOptions.plist
+        run: |
+          xcodebuild \
+          -exportArchive -archivePath build-output/app.xcarchive \
+          -exportPath build-output/ios \
+          -exportOptionsPlist ios/ExportOptions.plist
 
       - name: 🗃️ Compress build folder
         if: github.event_name == 'release'

@@ -39,8 +39,8 @@ class HealthCheckHandler extends Handler {
           _log.info("Flushbar already shown");
           return;
         }
-        _log.info("Showing flushbar for: $event");
         if (context.mounted) {
+          _log.info("Showing flushbar for: $event");
           _flushbar = showFlushbar(
             context,
             isDismissible: false,

@@ -19,7 +19,7 @@ the [Greenlight](https://blockstream.com/lightning/greenlight/) infrastructure.
 
 ## Build
 
-### Build the lightning_tookit plugin
+### Build the lightning_toolkit plugin
 
 c-Breez depends on Breez [sdk-flutter](https://github.com/breez/breez-sdk-greenlight/tree/main/libs/sdk-flutter) plugin,
 so be sure to follow those instructions first.

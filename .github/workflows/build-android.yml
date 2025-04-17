@@ -2,14 +2,86 @@ name: Build Android
 on:
   workflow_dispatch:
     inputs:
-      ref:
+      use-published-plugins:
+        description: 'Boolean indicating whether to use a published plugin for the Breez SDK - Native (Greenlight Implementation). Default = false.'
+        required: false
+        type: boolean
+        default: false
+      greenlight-sdk-plugin-version:
+        description: 'Version for the published Breez SDK - Native (Greenlight Implementation) plugin "v(MAJOR.MINOR.BUILD)". Defaults to latest published version on "breez/breez-sdk-flutter"'
+        required: false
+        type: string
+        default: ''
+      greenlight-sdk-ref:
         description: 'Breez SDK - Native (Greenlight Implementation) commit/tag/branch reference when not using a published plugin. Default = "main"'
         required: false
         type: string
         default: 'main'
 
 jobs:
+  pre-setup:
+    name: Pre-setup
+    runs-on: ubuntu-latest
+    outputs:
+      # These outputs mimic the inputs for the workflow.
+      # Their only purpose is to be able to test this workflow if you make
+      # changes that you won't want to commit to main yet.
+      # You can set these values manually, to test how the CI behaves with
+      # certain inputs.
+      use-published-plugins: ${{ inputs.use-published-plugins }}
+      greenlight-sdk-plugin-version: ${{ inputs.greenlight-sdk-plugin-version }}
+      greenlight-sdk-ref: ${{ inputs.greenlight-sdk-ref }}
+    steps:
+      - name: Checkout repository
+        if:  ${{ inputs.use-published-plugins == true && inputs.greenlight-sdk-plugin-version == ''}}
+        uses: actions/checkout@v4
+        with:
+          repository: 'breez/breez-sdk-flutter'
+
+      - name: Get the latest tag and set 'greenlight-sdk-plugin-version'
+        if:  ${{ inputs.use-published-plugins == true && inputs.greenlight-sdk-plugin-version == ''}}
+        run: |
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo "::set-output name=greenlight-sdk-plugin-version::$latest_tag"
+
+      - run: echo "set pre-setup output variables"
+
+      - name: Disk Cleanup
+        run: |
+          echo "::group::Free space before cleanup"
+          df -h --total
+          echo "::endgroup::"
+          echo "::group::Cleaned Files"
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/lib/android/sdk/ndk
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo apt-get clean
+          echo "::endgroup::"
+          echo "::group::Free space after cleanup"
+          df -h --total
+          echo "::endgroup::"
+
+  setup:
+    name: Setup
+    needs: pre-setup
+    runs-on: ubuntu-latest
+    outputs:
+      # Careful, a boolean input is not a boolean output. A boolean input is
+      # actually a boolean, but these outputs are strings. All the boolean
+      # checks in this file have the format `boolean == 'true'`. So feel free
+      # to set these variables here to `true` or `false`
+      # (e.g. bindings-windows: true) if you want to test something.
+      use-published-plugins: ${{ needs.pre-setup.outputs.use-published-plugins }}
+      greenlight-sdk-plugin-version: ${{ needs.pre-setup.outputs.greenlight-sdk-plugin-version }}
+      greenlight-sdk-ref: ${{ needs.pre-setup.outputs.greenlight-sdk-ref }}
+    steps:
+      - run: echo "set setup output variables"
+
   build-android:
+    needs: setup
     name: Build Android
     runs-on: macOS-latest
     steps:
@@ -17,6 +89,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: 'cbreez'
+
+      - name: Set Breez SDK - Native (Greenlight Implementation) plugin version
+        if: ${{ needs.setup.outputs.use-published-plugins == 'true' }}
+        working-directory: cbreez
+        run: |
+          mv pubspec_overrides.yaml.workflow pubspec_overrides.yaml
+          sed -i.bak -e 's/ref:.*/ref: ${{ needs.setup.outputs.greenlight-sdk-plugin-version }}/' pubspec_overrides.yaml
+          rm pubspec_overrides.yaml.bak
 
       - name: Decode Keystore
         env:
@@ -31,6 +111,7 @@ jobs:
             echo "${TMP_KEYSTORE_FILE_PATH}/cbreez-release.keystore"
 
       - name: Install rust
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         run: |
           rustup set auto-self-update disable
           rustup toolchain install stable --profile minimal
@@ -62,20 +143,23 @@ jobs:
         run: echo "$GOOGLE_SERVICES" > android/app/google-services.json
 
       - name: 🏗️ Setup breez-sdk-greenlight repository
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         uses: actions/checkout@v4
         with:
           repository: 'breez/breez-sdk-greenlight'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
-          ref: ${{ inputs.ref }}
           path: 'breez-sdk-greenlight'
+          greenlight-sdk-ref: ${{ needs.setup.outputs.greenlight-sdk-ref }}
 
       - name: 🏗️ Rust cache
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: breez-sdk-greenlight/libs
           cache-all-crates: true
 
       - name: 📦 Install Breez SDK - Native (Greenlight Implementation) dependencies
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         working-directory: breez-sdk-greenlight/libs/
         run: |
           cargo install cargo-ndk
@@ -86,6 +170,7 @@ jobs:
           make init
 
       - name: 🔒 Install SSH Key
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         env:
           SSH_PRIVATE_KEY: ${{secrets.REPO_SSH_KEY}}
         run: |
@@ -95,6 +180,7 @@ jobs:
           ssh-add ~/.ssh/id_rsa
 
       - name: 🔨 Build Breez SDK - Native (Greenlight Implementation)
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         working-directory: breez-sdk-greenlight/libs/sdk-flutter
         run: |
           rm -rf ../target

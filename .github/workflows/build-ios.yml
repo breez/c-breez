@@ -191,11 +191,10 @@ jobs:
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         working-directory: breez-sdk-greenlight/libs/
         run: |
-          cargo install cargo-ndk
           brew install protobuf
           cd sdk-flutter
           make init
-          cd ../sdk-core
+          cd ../sdk-bindings
           make init
 
       - name: 🔒 Install SSH Key

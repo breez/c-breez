@@ -116,4 +116,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
       return false;
     }
   }
+
+  @override
+  String get storagePrefix => "NetworkSettingsBloc";
 }

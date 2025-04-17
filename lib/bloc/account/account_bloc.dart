@@ -402,4 +402,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
     return filteredPayments;
   }
+
+  @override
+  String get storagePrefix => "AccountBloc";
 }

@@ -82,8 +82,8 @@ jobs:
 
   build-ios:
     name: Build iOS
-    runs-on: macOS-13
     needs: setup
+    runs-on: macOS-15
     env:
       SCHEME: Runner
       BUILD_CONFIGURATION: Release
@@ -95,7 +95,23 @@ jobs:
       P12_PASSWORD: ${{secrets.P12_PASSWORD}}
       GOOGLE_SERVICES_IOS: ${{secrets.GOOGLE_SERVICES_IOS}}
     steps:
-      - name: 🏗️ Setup c-breez repository
+      - name: Disk Cleanup
+        run: |
+          echo "::group::Free space before cleanup"
+          df -hI
+          echo "::endgroup::"
+          echo "::group::Cleaned Files"
+          sudo rm -rf /Users/runner/Library/Android/sdk
+          sudo rm -rf /Applications/Xcode_15.4.app
+          sudo rm -rf /Applications/Xcode_16.1.app
+          sudo rm -rf /Applications/Xcode_16.2.app
+          sudo rm -rf /Applications/Xcode_16.3_Release_Candidate_2.app
+          echo "::endgroup::"
+          echo "::group::Free space after cleanup"
+          df -hI
+          echo "::endgroup::"
+
+      - name: 🏗️ Check-out c-breez repository
         uses: actions/checkout@v4
         with:
           path: 'cbreez'

@@ -106,7 +106,7 @@ packages:
   breez_sdk:
     dependency: "direct main"
     description:
-      path: "../breez-sdk/libs/sdk-flutter"
+      path: "../breez-sdk-greenlight/libs/sdk-flutter"
       relative: true
     source: path
     version: "0.6.7"

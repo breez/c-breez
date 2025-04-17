@@ -25,7 +25,7 @@ class BreezLogger {
                 System.setProperty("tinylog.timestamp", System.currentTimeMillis().toString())
 
                 if (isInit == false) {
-                    Logger.tag(TAG).debug { "Starting ${BuildConfig.APPLICATION_ID}..." }
+                    Logger.tag(TAG).debug { "Starting ${applicationContext.packageName}..." }
                     Logger.tag(TAG).debug { "Logs directory: '$loggingDir'" }
                     isInit = true
                 }

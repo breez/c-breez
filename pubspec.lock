@@ -1582,10 +1582,10 @@ packages:
     dependency: "direct overridden"
     description:
       name: test_api
-      sha256: "9955ae474176f7ac8ee4e989dadfb411a58c30415bcfb648fa04b2b8a03afa7f"
+      sha256: fb31f383e2ee25fbbfe06b40fe21e1e458d14080e3c67e7ba0acfde4df4e0bbd
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.4"
   test_core:
     dependency: transitive
     description:

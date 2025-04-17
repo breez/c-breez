@@ -238,26 +238,62 @@ jobs:
           --split-per-abi \
           --dart-define-from-file=config.json
 
-      - name: 🗃️ Compress build folder (APK)
+      - name: 🚀 Build Release App Bundle
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        working-directory: cbreez
+        run: |
+          flutter build appbundle \
+          --release \
+          --no-pub \
+          --dart-define-from-file="config.json"
+
+      - name: 🗃️ Compress APK build folder
         if: github.event_name == 'release'
         uses: TheDoctor0/zip-release@master
         with:
-          filename: build.zip
+          filename: apk-build.zip
           directory: cbreez/build/app/outputs/flutter-apk
           type: zip
 
-      - name: 📤 Upload asset (APK)
+      - name: 🗃️ Compress Bundle build folder
+        if: github.event_name == 'release'
+        uses: TheDoctor0/zip-release@master
+        with:
+          filename: bundle-build.zip
+          directory: cbreez/build/app/outputs/bundle/release
+          type: zip
+
+      - name: 📤 Upload APK asset
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
           asset_name: Android-APK.zip
-          file: cbreez/build/app/outputs/flutter-apk/build.zip
+          file: cbreez/build/app/outputs/flutter-apk/apk-build.zip
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📤 Upload artifact (APK)
+      - name: 📤 Upload Bundle asset
+        if: github.event_name == 'release'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          asset_name: Android-Bundle.zip
+          file: cbreez/build/app/outputs/bundle/release/bundle-build.zip
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📤 Upload APK artifact
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
           name: Android-APK
           path: cbreez/build/app/outputs/flutter-apk/app-*.apk
+      
+      - name: 📤 Upload Bundle artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-Bundle
+          path: cbreez/build/app/outputs/bundle/release/app-release.aab

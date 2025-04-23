@@ -35,9 +35,7 @@ class FeeBreakdown extends StatelessWidget {
       child: Column(
         children: [
           SenderAmount(
-            amountSat: (feeOption is ReverseSwapFeeOption)
-                ? feeOption.pairInfo.senderAmountSat
-                : amountSat + feeOption.txFeeSat,
+            amountSat: (feeOption is ReverseSwapFeeOption) ? feeOption.pairInfo.senderAmountSat : amountSat,
           ),
           if (boltzServiceFeeSat != null) ...[
             BoltzServiceFee(boltzServiceFeeSat: boltzServiceFeeSat),

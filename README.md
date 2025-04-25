@@ -2,13 +2,15 @@
 ![Build iOS workflow](https://github.com/breez/c-breez/actions/workflows/build-ios.yml/badge.svg)
 ![CI workflow](https://github.com/breez/c-breez/actions/workflows/CI.yml/badge.svg)
 
-# c-Breez (Breez powered by Greenlight)
+# C-Breez
 
 <img align="right" width="112" height="42" title="Breez logo"
      src="./src/images/logo-color.svg">
 
-c-Breez is a migration of [Breez mobile app](https://github.com/breez/breezmobile) to
-the [Greenlight](https://blockstream.com/lightning/greenlight/) infrastructure.
+C-Breez is the simplest self-custodial app for sending and receiving Lightning payments. It's a Flutter mobile app that serves as a reference implementation for the [Breez SDK - Native](https://sdk-doc-greenlight.breez.technology/) to:
+* Demonstrate the full capabilities of building with the SDK
+* Showcase best practices for designing an intuitive UI and UX for self-custodial Lightning payments
+* Offer a ready-made solution that can be white-labeled for partners looking to build a new app
 
 📖 [Read the introduction post](https://medium.com/breez-technology/get-ready-for-a-fresh-breez-multiple-apps-one-node-optimal-ux-519c4daf2536)
 
@@ -17,109 +19,10 @@ the [Greenlight](https://blockstream.com/lightning/greenlight/) infrastructure.
   <img src="./src/images/drawer_footer.png" alt="Powered by Breez SDK & Greenlight" width="396" height="60"></a>
 </p>
 
-## Build
+## For Developers
 
-### Build the lightning_toolkit plugin
+Please refer to [Setting up your Environment](.github/docs/DEVENV_SETUP.md) for detailed instructions on configuring your local development environment.
 
-c-Breez depends on Breez [sdk-flutter](https://github.com/breez/breez-sdk-greenlight/tree/main/libs/sdk-flutter) plugin,
-so be sure to follow those instructions first.
+### How do I contribute?
 
-After successfully having build the sdk-flutter make sure that [breez-sdk-greenlight](https://github.com/breez/breez-sdk-greenlight)
-and c-breez are side by side like so:
-
-```
-breez-sdk-greenlight/
-├─ libs/
-│  ├─ sdk-flutter/
-├─ tools/
-├─ LICENSE
-├─ README.md
-c-breez/
-├─ android/
-├─ ios/
-
-```
-
-### Add firebase config files
-c-breez depends on google services and requires a configured firebase app.
-
-To create your firebase app follow the following link
-[create-firebase-project](https://firebase.google.com/docs/android/setup#create-firebase-project).
-
-After creating the app follow the instructions to create the specific 
-configuration file for your platform:
-* For android - place the google-services.json in the android/app folder
-* For iOS - place the GoogleService-info.plist under ios/Runner folder
-
-### Android
-
-```
-flutter build apk
-```
-
-### iOS
-
-```
-flutter build ios
-```
-
-## Run
-
-```
-flutter run
-```
-
-## Test
-
-A testing framework for this project is being developed [here](https://github.com/breez/lntest).
-
-## Integration tests
-
- ```
- flutter test integration_test -d <<device id>>
- ```
-
-___
-
-## Contributors
-
-### Pre-commit `dart format` with Lefthook
-
-[Lefthook](https://github.com/evilmartians/lefthook) is a Git hooks manager that allows custom logic to be
-executed prior to Git commit or push. c-Breez comes with Lefthook configuration (`lefthook.yml`), but it must
-be installed first.
-
-### Installation
-
-- Install Lefthook.
-  See [installation guide](https://github.com/evilmartians/lefthook/blob/master/docs/install.md).
-- Run the following command from project root folder to install hooks:
-
-```sh
-$ lefthook install
-```
-
-Before you commit your changes, Lefthook will automatically run `dart format`.
-
-### Skipping hooks
-
-Should the need arise to skip `pre-commit` hook, CLI users can use the standard Git option `--no-verify` to skip `pre-commit` hook:
-
-```sh
-$ git commit -m "..." --no-verify
-```
-
-There currently is no Github Desktop support to skip git-hooks. However, you can run:
-```sh
-$ lefthook uninstall
-```
-to clear hooks related to `lefthook.yml` configuration before committing your changes.
-
-Do no forget to run `lefthook install` to re-activate `pre-commit` hook.
-
-```sh
-$ lefthook install
-```
-
-### Troubleshooting
-For troubleshooting, please check the [troubleshooting.md](troubleshooting.md) file
+For guidance on contributing to the project, please refer to the [Contribution Guidelines](.github/docs/CONTRIBUTING.md).

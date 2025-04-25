@@ -164,7 +164,7 @@ jobs:
           repository: 'breez/breez-sdk-greenlight'
           ssh-key: ${{secrets.REPO_SSH_KEY}}
           path: 'breez-sdk-greenlight'
-          greenlight-sdk-ref: ${{ needs.setup.outputs.greenlight-sdk-ref }}
+          ref: ${{ needs.setup.outputs.greenlight-sdk-ref }}
 
       - name: 🏗️ Rust cache
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}

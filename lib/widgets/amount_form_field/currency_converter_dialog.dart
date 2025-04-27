@@ -59,8 +59,8 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
     });
 
     widget._currencyBloc.fetchExchangeRates().catchError((value) {
-      final texts = context.texts();
       if (mounted) {
+        final texts = context.texts();
         setState(() {
           Navigator.pop(context);
           showFlushbar(

@@ -51,7 +51,7 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
           if (inProgressSwapState.isLoading) {
             return Center(
               child: Loader(
-                color: themeData.primaryColor.withOpacity(0.5),
+                color: themeData.primaryColor.withValues(alpha: 0.5),
               ),
             );
           }

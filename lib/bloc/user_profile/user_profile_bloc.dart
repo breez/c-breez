@@ -107,4 +107,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
         )
         .then((file) => file.path);
   }
+
+  @override
+  String get storagePrefix => "UserProfileBloc";
 }

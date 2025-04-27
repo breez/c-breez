@@ -54,8 +54,13 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     _doneAction = KeyboardDoneAction(focusNodes: <FocusNode>[_amountFocusNode]);
     Future.delayed(
       const Duration(milliseconds: 200),
-      () => FocusScope.of(context).requestFocus(_amountFocusNode),
+      () {
+        if (mounted) {
+          FocusScope.of(context).requestFocus(_amountFocusNode);
+        }
+      },
     );
+
     super.initState();
   }
 
@@ -198,7 +203,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
       cancelText: texts.spontaneous_payment_action_cancel,
     ).then(
       (ok) async {
-        if (ok == true) {
+        if (ok == true && mounted) {
           Future sendFuture = Future.value(null);
           showDialog(
             useRootNavigator: false,

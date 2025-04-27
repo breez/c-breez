@@ -44,7 +44,6 @@ final ThemeData breezLightTheme = ThemeData(
       borderRadius: BorderRadius.all(Radius.circular(12.0)),
     ),
   ),
-  dialogBackgroundColor: Colors.transparent,
   dividerColor: const Color(0x33ffffff),
   cardColor: BreezColors.blue[500], // will be replaced with CardTheme.color
   cardTheme: CardTheme(color: BreezColors.blue[500]),
@@ -114,7 +113,7 @@ final ThemeData breezLightTheme = ThemeData(
 );
 
 final DatePickerThemeData calendarLightTheme = DatePickerThemeData(
-  weekdayStyle: TextStyle(color: Colors.black.withOpacity(0.6)),
+  weekdayStyle: TextStyle(color: Colors.black.withValues(alpha: 0.6)),
   yearBackgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
     if (states.contains(WidgetState.selected)) {
       return const Color.fromRGBO(5, 93, 235, 1.0);

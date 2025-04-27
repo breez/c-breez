@@ -42,7 +42,7 @@ def envVariables = [
 
 android {
     namespace 'com.cBreez.client'
-    compileSdkVersion 34
+    compileSdkVersion 35
     ndkVersion flutter.ndkVersion
 
     compileOptions {

@@ -139,6 +139,9 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   Map<String, dynamic>? toJson(SecurityState state) {
     return state.toJson();
   }
+
+  @override
+  String get storagePrefix => "SecurityBloc";
 }
 
 class SecurityStorageException implements Exception {}

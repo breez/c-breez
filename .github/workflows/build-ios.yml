@@ -368,7 +368,7 @@ jobs:
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
-          asset_name: release-iOS.zip
+          asset_name: release-iOS-${{ github.run_number }}.zip
           file: cbreez/build/ios/iphoneos/build.zip
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -377,7 +377,7 @@ jobs:
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
-          name: release-iOS
+          name: release-iOS-${{ github.run_number }}
           path: cbreez/build/ios/iphoneos
 
       - name: 📱 Publish to TestFlight

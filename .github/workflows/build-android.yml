@@ -285,7 +285,7 @@ jobs:
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
-          asset_name: Android-APK.zip
+          asset_name: Android-APK-${{ github.run_number }}.zip
           file: cbreez/build/app/outputs/flutter-apk/apk-build.zip
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -294,7 +294,7 @@ jobs:
         if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@v2
         with:
-          asset_name: Android-Bundle.zip
+          asset_name: Android-Bundle-${{ github.run_number }}.zip
           file: cbreez/build/app/outputs/bundle/release/bundle-build.zip
           overwrite: true
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -303,12 +303,12 @@ jobs:
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
-          name: Android-APK
+          name: Android-APK-${{ github.run_number }}
           path: cbreez/build/app/outputs/flutter-apk/app-*.apk
       
       - name: 📤 Upload Bundle artifact
         if: github.event_name != 'release'
         uses: actions/upload-artifact@v4
         with:
-          name: Android-Bundle
+          name: Android-Bundle-${{ github.run_number }}
           path: cbreez/build/app/outputs/bundle/release/app-release.aab

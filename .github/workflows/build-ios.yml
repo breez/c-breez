@@ -42,7 +42,7 @@ jobs:
         if:  ${{ inputs.use-published-plugins == true && inputs.greenlight-sdk-plugin-version == ''}}
         run: |
           latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "::set-output name=greenlight-sdk-plugin-version::$latest_tag"
+          echo "greenlight-sdk-plugin-version=$latest_tag" >> "$GITHUB_OUTPUT"
 
       - run: echo "set pre-setup output variables"
 

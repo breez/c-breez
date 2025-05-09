@@ -83,7 +83,7 @@ jobs:
   build-android:
     needs: setup
     name: Build Android
-    runs-on: macOS-15
+    runs-on: macOS-latest
     steps:
       - name: Disk Cleanup
         run: |

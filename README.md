@@ -21,7 +21,7 @@ C-Breez is the simplest self-custodial app for sending and receiving Lightning p
 
 ## For Developers
 
-Please refer to [Setting up your Environment](.github/docs/DEVENV_SETUP.md) for detailed instructions on configuring your local development environment.
+Please refer to [Setting up your Environment](.github/docs/DEVELOPMENT.md) for detailed instructions on configuring your local development environment.
 
 ### How do I contribute?
 

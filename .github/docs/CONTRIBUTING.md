@@ -8,8 +8,6 @@ We welcome contributions from everyone and appreciate your help in making C-Bree
 
 ### Communication First
 
-**Always communicate before coding!**
-
 Notify the issue author that you're interested in picking up the issue and wait to be assigned.
 - This prevents multiple people working on the same issue and speeds up the review process.
 
@@ -21,7 +19,7 @@ All changes for the next release are made on the `main` branch.
 
 ### Pull Requests
 
-We prefer pull requests that:
+Pull requests should:
 - Include a brief explanation of changes in the PR description
 - Have links to relevant issues or related PRs
 - Focuses on a single change (_avoid large refactors or unrelated style fixes_)

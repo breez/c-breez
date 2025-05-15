@@ -17,7 +17,7 @@ class EnterMnemonicsPage extends StatefulWidget {
 
 class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
   late int _currentPage = 1;
-  final int _lastPage = 2;
+  final int _lastPage = 4;
 
   @override
   Widget build(BuildContext context) {

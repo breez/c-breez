@@ -28,7 +28,7 @@ class RestoreFormPageState extends State<RestoreFormPage> {
   final _formKey = GlobalKey<FormState>();
 
   List<TextEditingController> textEditingControllers =
-      List<TextEditingController>.generate(12, (_) => TextEditingController());
+      List<TextEditingController>.generate(24, (_) => TextEditingController());
 
   late AutovalidateMode _autoValidateMode;
   late bool _hasError;

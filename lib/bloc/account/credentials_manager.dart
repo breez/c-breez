@@ -56,11 +56,12 @@ class CredentialsManager {
   Future<List<File>> exportCredentials() async {
     try {
       final Directory tempDir = await getTemporaryDirectory();
-      var keysDir = tempDir.createTempSync("keys");
-      final File mnemonicFile = await File('${keysDir.path}/phrase').create(recursive: true);
-      String mnemonic = await restoreMnemonic();
+      final Directory keysDir = tempDir.createTempSync('keys');
+      final String fileName = 'c-breez.backup-phrase.txt';
+      final File mnemonicFile = await File('${keysDir.path}/$fileName').create(recursive: true);
+      final String mnemonic = await restoreMnemonic();
       mnemonicFile.writeAsString(mnemonic);
-      return [mnemonicFile];
+      return <File>[mnemonicFile];
     } catch (e) {
       throw e.toString();
     }

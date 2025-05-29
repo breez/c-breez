@@ -170,28 +170,6 @@ class _DevelopersViewState extends State<DevelopersView> {
     }
   }
 
-  /// Share application logs
-  Future<void> _shareLogs(BuildContext context) async {
-    _overlayManager.showLoadingOverlay(context);
-
-    try {
-      final String zipPath = await WalletArchiveService.createLogsArchive();
-      final ShareParams shareParams = ShareParams(
-        title: 'Logs',
-        files: <XFile>[XFile(zipPath)],
-      );
-      SharePlus.instance.share(shareParams);
-    } catch (e) {
-      _logger.severe('Failed to share logs: $e');
-
-      if (context.mounted) {
-        showFlushbar(context, message: 'Failed to share logs: ${e.toString()}');
-      }
-    } finally {
-      _overlayManager.removeLoadingOverlay();
-    }
-  }
-
   void _exportStaticBackup(BuildContext context) async {
     _overlayManager.showLoadingOverlay(context);
 
@@ -243,6 +221,28 @@ class _DevelopersViewState extends State<DevelopersView> {
     } catch (error) {
       if (!context.mounted) return;
       showFlushbar(context, title: extractExceptionMessage(error, texts));
+    } finally {
+      _overlayManager.removeLoadingOverlay();
+    }
+  }
+
+  /// Share application logs
+  Future<void> _shareLogs(BuildContext context) async {
+    _overlayManager.showLoadingOverlay(context);
+
+    try {
+      final String zipPath = await WalletArchiveService.createLogsArchive();
+      final ShareParams shareParams = ShareParams(
+        title: 'Logs',
+        files: <XFile>[XFile(zipPath)],
+      );
+      SharePlus.instance.share(shareParams);
+    } catch (e) {
+      _logger.severe('Failed to share logs: $e');
+
+      if (context.mounted) {
+        showFlushbar(context, message: 'Failed to share logs: ${e.toString()}');
+      }
     } finally {
       _overlayManager.removeLoadingOverlay();
     }

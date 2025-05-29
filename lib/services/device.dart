@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final _log = Logger("Device");
@@ -38,11 +37,6 @@ class Device extends ClipboardListener {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(LAST_FROM_APP_CLIPPING_PREFERENCES_KEY, text);
     await Clipboard.setData(ClipboardData(text: text));
-  }
-
-  Future shareText(String text) {
-    _log.info("Sharing text: $text");
-    return Share.share(text);
   }
 
   void fetchClipboard(SharedPreferences preferences) {

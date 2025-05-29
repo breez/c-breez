@@ -88,7 +88,7 @@ dependencies:
   plugin_platform_interface: ^2.1.8
   qr_flutter: ^4.1.0
   rxdart: ^0.28.0
-  share_plus: ^10.1.4
+  share_plus: ^11.0.0
   shared_preferences: ^2.5.3
   shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
   simple_animations: ^5.1.0

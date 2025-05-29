@@ -110,7 +110,13 @@ class ShareablePaymentRow extends StatelessWidget {
                         iconSize: 16.0,
                         color: color,
                         icon: const Icon(Icons.share),
-                        onPressed: () => Share.share(sharedValue),
+                        onPressed: () {
+                          final ShareParams shareParams = ShareParams(
+                            title: title,
+                            text: sharedValue,
+                          );
+                          SharePlus.instance.share(shareParams);
+                        },
                       ),
                     ],
                   ),

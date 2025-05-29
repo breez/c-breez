@@ -61,7 +61,7 @@ class AddressHeaderWidget extends StatelessWidget {
           ),
           Row(
             children: [
-              _ShareIcon(address: address),
+              _ShareIcon(title: title, address: address),
               _CopyIcon(address: address),
             ],
           ),
@@ -72,9 +72,11 @@ class AddressHeaderWidget extends StatelessWidget {
 }
 
 class _ShareIcon extends StatelessWidget {
+  final String? title;
   final String address;
 
   const _ShareIcon({
+    required this.title,
     required this.address,
   });
 
@@ -89,10 +91,12 @@ class _ShareIcon extends StatelessWidget {
           offset.topLeft,
           offset.bottomRight,
         );
-        Share.share(
-          address,
+        final ShareParams shareParams = ShareParams(
+          title: title,
+          text: address,
           sharePositionOrigin: rect,
         );
+        SharePlus.instance.share(shareParams);
       },
     );
   }

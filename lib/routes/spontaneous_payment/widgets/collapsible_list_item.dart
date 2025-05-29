@@ -91,7 +91,11 @@ class CollapsibleListItem extends StatelessWidget {
                           icon: const Icon(Icons.share),
                           onPressed: () {
                             if (sharedValue != null) {
-                              Share.share(sharedValue!);
+                              final ShareParams shareParams = ShareParams(
+                                title: title,
+                                text: sharedValue,
+                              );
+                              SharePlus.instance.share(shareParams);
                             }
                           },
                         ),

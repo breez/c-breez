@@ -165,8 +165,11 @@ class _DevelopersViewState extends State<DevelopersView> {
       String filePath = '$workingDir/$name';
       File file = File(filePath);
       await file.writeAsString(emergencyList, flush: true);
-      final storageFile = XFile(filePath);
-      Share.shareXFiles([storageFile]);
+      final ShareParams shareParams = ShareParams(
+        title: 'Static Backup',
+        files: <XFile>[XFile(filePath)],
+      );
+      SharePlus.instance.share(shareParams);
     } else {
       if (!context.mounted) return;
       showFlushbar(context, title: texts.backup_export_static_error_data_missing);

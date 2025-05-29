@@ -34,10 +34,11 @@ class SwapDialog extends StatelessWidget {
                     offset.topLeft,
                     offset.bottomRight,
                   );
-                  Share.share(
-                    backupJson,
+                  final ShareParams shareParams = ShareParams(
+                    text: backupJson,
                     sharePositionOrigin: rect,
                   );
+                  SharePlus.instance.share(shareParams);
                 },
             ),
             TextSpan(text: texts.invoice_btc_address_on_chain_end),

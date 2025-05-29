@@ -18,7 +18,7 @@ dependencies:
     git:
       url: https://github.com/breez/app_group_directory
       ref: flutter-3.29
-  archive: ^4.0.5
+  archive: ^4.0.7
   auto_size_text: ^3.0.0
   bip39: ^1.0.6
   breez_sdk:

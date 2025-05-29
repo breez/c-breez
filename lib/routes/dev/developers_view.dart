@@ -1,14 +1,16 @@
 import 'dart:io';
 
-import 'package:archive/archive_io.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
+import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/config.dart';
-import 'package:c_breez/logger.dart';
 import 'package:c_breez/models/bug_report_behavior.dart';
 import 'package:c_breez/routes/dev/command_line_interface.dart';
+import 'package:c_breez/services/injector.dart';
+import 'package:c_breez/services/wallet_archive_service.dart';
 import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/overlay_manager.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/flushbar.dart';
@@ -16,11 +18,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-final _log = Logger("DevelopersView");
+final Logger _logger = Logger("DevelopersView");
 
 bool allowRebroadcastRefunds = false;
 
@@ -46,6 +46,8 @@ class DevelopersView extends StatefulWidget {
 }
 
 class _DevelopersViewState extends State<DevelopersView> {
+  final OverlayManager _overlayManager = OverlayManager();
+
   final _preferences = const Preferences();
   var bugReportBehavior = BugReportBehavior.PROMPT;
 
@@ -54,7 +56,13 @@ class _DevelopersViewState extends State<DevelopersView> {
     super.initState();
     _preferences
         .getBugReportBehavior()
-        .then((value) => bugReportBehavior = value, onError: (e) => _log.warning(e));
+        .then((value) => bugReportBehavior = value, onError: (e) => _logger.warning(e));
+  }
+
+  @override
+  void dispose() {
+    _overlayManager.removeLoadingOverlay();
+    super.dispose();
   }
 
   @override
@@ -88,7 +96,7 @@ class _DevelopersViewState extends State<DevelopersView> {
               Choice(
                 title: "Share Logs",
                 icon: Icons.share,
-                function: (_) => shareLog(),
+                function: _shareLogs,
               ),
               Choice(
                 title: "Export static backup",
@@ -109,7 +117,7 @@ class _DevelopersViewState extends State<DevelopersView> {
                         (value) => setState(() {
                               bugReportBehavior = BugReportBehavior.PROMPT;
                             }),
-                        onError: (e) => _log.warning(e));
+                        onError: (e) => _logger.warning(e));
                   },
                 ),
             ]
@@ -128,25 +136,60 @@ class _DevelopersViewState extends State<DevelopersView> {
     );
   }
 
-  void _exportKeys(BuildContext context) async {
-    final accBloc = context.read<AccountBloc>();
-    final appDir = await getApplicationDocumentsDirectory();
-    final encoder = ZipFileEncoder();
-    final zipFilePath = "${appDir.path}/c-breez-keys.zip";
-    encoder.create(zipFilePath);
-    final List<File> credentialFiles = await accBloc.exportCredentialFiles();
-    for (var credentialFile in credentialFiles) {
-      final bytes = await credentialFile.readAsBytes();
-      encoder.addArchiveFile(
-        ArchiveFile(basename(credentialFile.path), bytes.length, bytes),
-      );
+  /// Exports wallet keys and credentials to a zip file
+  Future<void> _exportKeys(BuildContext context) async {
+    _overlayManager.showLoadingOverlay(context);
+
+    try {
+      if (kDebugMode) {
+        final String keysZipPath = await WalletArchiveService.createKeysArchive();
+
+        final ShareParams shareParams = ShareParams(
+          title: 'Keys',
+          files: <XFile>[XFile(keysZipPath)],
+        );
+        SharePlus.instance.share(shareParams);
+      } else {
+        final CredentialsManager credentialsManager = ServiceInjector().credentialsManager;
+        final List<File> credentialFile = await credentialsManager.exportCredentials();
+
+        final ShareParams shareParams = ShareParams(
+          title: 'Keys',
+          files: <XFile>[XFile(credentialFile.first.path)],
+        );
+        SharePlus.instance.share(shareParams);
+      }
+    } catch (e) {
+      _logger.severe('Failed to export keys: $e');
+
+      if (context.mounted) {
+        showFlushbar(context, message: 'Failed to export keys: ${e.toString()}');
+      }
+    } finally {
+      _overlayManager.removeLoadingOverlay();
     }
-    final storageFilePath = "${appDir.path}/storage.sql";
-    final storageFile = File(storageFilePath);
-    encoder.addFile(storageFile);
-    encoder.close();
-    final zipFile = XFile(zipFilePath);
-    Share.shareXFiles([zipFile]);
+  }
+
+  /// Share application logs
+  Future<void> _shareLogs(BuildContext context) async {
+    _overlayManager.showLoadingOverlay(context);
+
+    try {
+      final String zipPath = await WalletArchiveService.createLogsArchive();
+      final ShareParams shareParams = ShareParams(
+        title: 'Logs',
+        files: <XFile>[XFile(zipPath)],
+      );
+      SharePlus.instance.share(shareParams);
+    } catch (e) {
+      _logger.severe('Failed to share logs: $e');
+
+      if (context.mounted) {
+        showFlushbar(context, message: 'Failed to share logs: ${e.toString()}');
+      }
+    } finally {
+      _overlayManager.removeLoadingOverlay();
+    }
   }
 
   void _exportStaticBackup(BuildContext context) async {

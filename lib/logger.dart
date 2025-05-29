@@ -2,29 +2,15 @@ library;
 
 import 'dart:io';
 
-import 'package:archive/archive_io.dart';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:c_breez/config.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:git_info/git_info.dart';
 import 'package:logging/logging.dart';
-import 'package:share_plus/share_plus.dart';
 
 final _log = Logger("Logger");
 final _sdkLog = Logger("BreezSdk");
-
-void shareLog() async {
-  var config = await Config.instance();
-  final appDir = config.sdkConfig.workingDir;
-  final encoder = ZipFileEncoder();
-  final zipFilePath = "$appDir/c-breez.logs.zip";
-  encoder.create(zipFilePath);
-  encoder.addDirectory(Directory("$appDir/logs/"));
-  encoder.close();
-  final zipFile = XFile(zipFilePath);
-  Share.shareXFiles([zipFile]);
-}
 
 void printWrapped(Logger log, String text) {
   final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk

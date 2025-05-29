@@ -193,33 +193,48 @@ class _DevelopersViewState extends State<DevelopersView> {
   }
 
   void _exportStaticBackup(BuildContext context) async {
+    _overlayManager.showLoadingOverlay(context);
+
     final texts = getSystemAppLocalizations();
     final accBloc = context.read<AccountBloc>();
-    const name = "scb.recover";
-    final staticBackup = await accBloc.exportStaticChannelBackup();
 
-    if (staticBackup.backup != null) {
-      final backup = staticBackup.backup;
+    try {
+      const name = "scb.recover";
+      final staticBackup = await accBloc.exportStaticChannelBackup();
 
-      final emergencyList = backup!.toString();
+      if (staticBackup.backup != null) {
+        final backup = staticBackup.backup;
 
-      Config config = await Config.instance();
-      String workingDir = config.sdkConfig.workingDir;
-      String filePath = '$workingDir/$name';
-      File file = File(filePath);
-      await file.writeAsString(emergencyList, flush: true);
-      final ShareParams shareParams = ShareParams(
-        title: 'Static Backup',
-        files: <XFile>[XFile(filePath)],
-      );
-      SharePlus.instance.share(shareParams);
-    } else {
-      if (!context.mounted) return;
-      showFlushbar(context, title: texts.backup_export_static_error_data_missing);
+        final emergencyList = backup!.toString();
+
+        Config config = await Config.instance();
+        String workingDir = config.sdkConfig.workingDir;
+        String filePath = '$workingDir/$name';
+        File file = File(filePath);
+        await file.writeAsString(emergencyList, flush: true);
+        final ShareParams shareParams = ShareParams(
+          title: 'Static Backup',
+          files: <XFile>[XFile(filePath)],
+        );
+        SharePlus.instance.share(shareParams);
+      } else {
+        if (!context.mounted) return;
+        showFlushbar(context, title: texts.backup_export_static_error_data_missing);
+      }
+    } catch (e) {
+      _logger.severe('Failed to export static backup: $e');
+
+      if (context.mounted) {
+        showFlushbar(context, message: 'Failed to export static backup: ${e.toString()}');
+      }
+    } finally {
+      _overlayManager.removeLoadingOverlay();
     }
   }
 
   Future<void> _rescanSwaps(BuildContext context) async {
+    _overlayManager.showLoadingOverlay(context);
+
     final texts = getSystemAppLocalizations();
     final revSwapBloc = context.read<ReverseSwapBloc>();
 
@@ -228,6 +243,8 @@ class _DevelopersViewState extends State<DevelopersView> {
     } catch (error) {
       if (!context.mounted) return;
       showFlushbar(context, title: extractExceptionMessage(error, texts));
+    } finally {
+      _overlayManager.removeLoadingOverlay();
     }
   }
 }

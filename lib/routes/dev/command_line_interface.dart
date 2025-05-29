@@ -212,7 +212,10 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
     String filePath = '${tempDir.path}/$command.json';
     File file = File(filePath);
     await file.writeAsString(text, flush: true);
-    final xFile = XFile(filePath);
-    Share.shareXFiles([xFile]);
+    final ShareParams shareParams = ShareParams(
+      title: command,
+      files: <XFile>[XFile(filePath)],
+    );
+    SharePlus.instance.share(shareParams);
   }
 }

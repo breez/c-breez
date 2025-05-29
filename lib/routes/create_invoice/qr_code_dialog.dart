@@ -104,7 +104,11 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         icon: const Icon(IconData(0xe917, fontFamily: 'icomoon')),
                         color: themeData.primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
-                          Share.share("lightning:${widget.receivePaymentResponse!.lnInvoice.bolt11}");
+                          final ShareParams shareParams = ShareParams(
+                            title: texts.qr_code_dialog_invoice,
+                            text: "lightning:${widget.receivePaymentResponse!.lnInvoice.bolt11}",
+                          );
+                          SharePlus.instance.share(shareParams);
                         },
                       ),
                     ),

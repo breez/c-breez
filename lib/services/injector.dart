@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/logger.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:c_breez/services/deep_links.dart';
@@ -30,6 +31,7 @@ class ServiceInjector {
   Future<SharedPreferences>? _sharedPreferences = SharedPreferences.getInstance();
   BackgroundTaskService? _backgroundTaskService;
   KeyChain? _keychain;
+  CredentialsManager? _credentialsManager;
   Client? _client;
   Preferences? _preferences;
   BreezLogger? _breezLogger;
@@ -74,6 +76,10 @@ class ServiceInjector {
 
   KeyChain get keychain {
     return _keychain ??= KeyChain();
+  }
+
+  CredentialsManager get credentialsManager {
+    return _credentialsManager ??= CredentialsManager(keyChain: keychain);
   }
 
   Preferences get preferences {

@@ -210,6 +210,7 @@ class _DevelopersViewState extends State<DevelopersView> {
     }
   }
 
+  /// Rescans on-chain swaps for the user
   Future<void> _rescanSwaps(BuildContext context) async {
     _overlayManager.showLoadingOverlay(context);
 
@@ -217,10 +218,17 @@ class _DevelopersViewState extends State<DevelopersView> {
     final revSwapBloc = context.read<ReverseSwapBloc>();
 
     try {
-      return await revSwapBloc.rescanSwaps();
-    } catch (error) {
-      if (!context.mounted) return;
-      showFlushbar(context, title: extractExceptionMessage(error, texts));
+      await revSwapBloc.rescanSwaps();
+
+      if (context.mounted) {
+        showFlushbar(context, message: 'Rescanned on-chain swaps successfully.');
+      }
+    } catch (e) {
+      _logger.warning('Failed to rescan on-chain swaps: $e');
+
+      if (context.mounted) {
+        showFlushbar(context, message: extractExceptionMessage(e, texts));
+      }
     } finally {
       _overlayManager.removeLoadingOverlay();
     }

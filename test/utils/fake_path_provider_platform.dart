@@ -19,10 +19,7 @@ class FakePathProviderPlatform extends Fake with MockPlatformInterfaceMixin impl
     ]) {
       Directory(path).createSync(recursive: true);
     }
-    for (var paths in [
-      await getExternalCachePaths(),
-      await getExternalStoragePaths(),
-    ]) {
+    for (var paths in [await getExternalCachePaths(), await getExternalStoragePaths()]) {
       for (var path in paths) {
         Directory(path).createSync(recursive: true);
       }
@@ -53,8 +50,8 @@ class FakePathProviderPlatform extends Fake with MockPlatformInterfaceMixin impl
 
   @override
   Future<List<String>> getExternalStoragePaths({StorageDirectory? type}) async => [
-        "$basePath/externalStoragePath",
-      ];
+    "$basePath/externalStoragePath",
+  ];
 
   @override
   Future<String> getDownloadsPath() async => "$basePath/downloadsPath";

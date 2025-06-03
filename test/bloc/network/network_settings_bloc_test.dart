@@ -21,7 +21,7 @@ String get _recomendedMockFeesResponse {
     "halfHourFee": 1,
     "hourFee": 1,
     "economyFee": 1,
-    "minimumFee": 1
+    "minimumFee": 1,
   };
   return jsonEncode(recomendedFees);
 }
@@ -51,34 +51,21 @@ void main() {
       await hydratedBlocStorage.tearDownHydratedBloc();
     });
 
-    NetworkSettingsBloc make() => NetworkSettingsBloc(
-          injector.preferences,
-          libConfig,
-          httpClient: httpClient,
-        );
+    NetworkSettingsBloc make() =>
+        NetworkSettingsBloc(injector.preferences, libConfig, httpClient: httpClient);
 
     test('initial setup should emit url from preferences', () async {
       const url = "a mempool url";
       injector.preferencesMock.mempoolSpaceUrl = url;
       final bloc = make();
-      expectLater(
-        bloc.stream,
-        emitsInOrder([
-          NetworkSettingsState(mempoolUrl: url),
-        ]),
-      );
+      expectLater(bloc.stream, emitsInOrder([NetworkSettingsState(mempoolUrl: url)]));
     });
 
     test('initial setup should emit fallback url if no url in preferences', () async {
       const url = "https://mempool.space";
       injector.preferencesMock.mempoolSpaceUrl = null;
       final bloc = make();
-      expectLater(
-        bloc.stream,
-        emitsInOrder([
-          NetworkSettingsState(mempoolUrl: url),
-        ]),
-      );
+      expectLater(bloc.stream, emitsInOrder([NetworkSettingsState(mempoolUrl: url)]));
     });
 
     test('reset mempool space settings should clean preferences', () async {
@@ -104,8 +91,8 @@ void main() {
       const url = "mempool.space";
 
       final bloc = make();
-      httpClient.getAnswer[
-              "https://${BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)}"] =
+      httpClient
+              .getAnswer["https://${BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)}"] =
           http.Response(_recomendedMockFeesResponse, 200);
       final result = await bloc.setMempoolUrl(url);
       expect(result, true);
@@ -143,8 +130,8 @@ void main() {
     test('set mempool space url with an ip missing scheme should should set on the preferences', () async {
       const url = "192.168.15.2";
       final bloc = make();
-      httpClient.getAnswer[
-              "https://${BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)}"] =
+      httpClient
+              .getAnswer["https://${BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: url)}"] =
           http.Response(_recomendedMockFeesResponse, 200);
       final result = await bloc.setMempoolUrl(url);
       expect(result, true);

@@ -24,12 +24,7 @@ void main() {
     );
 
     final bloc = _bloc(breezSDK);
-    expectLater(
-      bloc.stream.whereNotNull(),
-      emitsInOrder([
-        HealthCheckStatus.Maintenance,
-      ]),
-    );
+    expectLater(bloc.stream.whereNotNull(), emitsInOrder([HealthCheckStatus.Maintenance]));
     breezSDK.nodeInfo();
     bloc.checkStatus(retryInterval: const Duration(seconds: 1));
   });
@@ -41,12 +36,7 @@ void main() {
     );
 
     final bloc = _bloc(breezSDK);
-    expectLater(
-      bloc.stream.whereNotNull(),
-      emitsInOrder([
-        HealthCheckStatus.ServiceDisruption,
-      ]),
-    );
+    expectLater(bloc.stream.whereNotNull(), emitsInOrder([HealthCheckStatus.ServiceDisruption]));
     breezSDK.nodeInfo();
     bloc.checkStatus(retryInterval: const Duration(seconds: 1));
   });

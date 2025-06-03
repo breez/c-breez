@@ -106,9 +106,7 @@ void main() {
       const successActionMessage = "successActionMessage";
       final extracted = makeLnPayment(
         successActionProcessed: const SuccessActionProcessed.message(
-          data: MessageSuccessActionData(
-            message: successActionMessage,
-          ),
+          data: MessageSuccessActionData(message: successActionMessage),
         ),
       ).successActionMessage;
       expect(extracted, successActionMessage);
@@ -117,9 +115,7 @@ void main() {
     test("url when payment is a ln payment and action is a message should return null", () {
       final successActionUrl = makeLnPayment(
         successActionProcessed: const SuccessActionProcessed.message(
-          data: MessageSuccessActionData(
-            message: "message",
-          ),
+          data: MessageSuccessActionData(message: "message"),
         ),
       ).successActionUrl;
       expect(successActionUrl, isNull);
@@ -129,10 +125,7 @@ void main() {
       const successActionDescription = "successActionDescription";
       final extracted = makeLnPayment(
         successActionProcessed: const SuccessActionProcessed.url(
-          data: UrlSuccessActionData(
-            description: successActionDescription,
-            url: "",
-          ),
+          data: UrlSuccessActionData(description: successActionDescription, url: ""),
         ),
       ).successActionMessage;
       expect(extracted, successActionDescription);
@@ -142,10 +135,7 @@ void main() {
       const successActionUrl = "successActionUrl";
       final extracted = makeLnPayment(
         successActionProcessed: const SuccessActionProcessed.url(
-          data: UrlSuccessActionData(
-            description: "",
-            url: successActionUrl,
-          ),
+          data: UrlSuccessActionData(description: "", url: successActionUrl),
         ),
       ).successActionUrl;
       expect(extracted, successActionUrl);
@@ -171,10 +161,7 @@ void main() {
       final successActionUrl = makeLnPayment(
         successActionProcessed: const SuccessActionProcessed.aes(
           result: AesSuccessActionDataResult_Decrypted(
-            data: AesSuccessActionDataDecrypted(
-              description: "",
-              plaintext: "",
-            ),
+            data: AesSuccessActionDataDecrypted(description: "", plaintext: ""),
           ),
         ),
       ).successActionUrl;
@@ -291,26 +278,25 @@ PaymentMinutiae make({
   int paymentTime = 3,
   int feeMilliSat = 1,
   int amountMilliSat = 2,
-}) =>
-    PaymentMinutiae.fromPayment(
-      Payment(
-        id: "id",
-        paymentType: PaymentType.Received,
-        paymentTime: paymentTime,
-        amountMsat: amountMilliSat,
-        feeMsat: feeMilliSat,
-        status: PaymentStatus.Complete,
-        description: description,
-        details: const PaymentDetails.closedChannel(
-          data: ClosedChannelPaymentDetails(
-            shortChannelId: "shortChannelId",
-            state: ChannelState.Opened,
-            fundingTxid: "fundingTxid",
-          ),
-        ),
+}) => PaymentMinutiae.fromPayment(
+  Payment(
+    id: "id",
+    paymentType: PaymentType.Received,
+    paymentTime: paymentTime,
+    amountMsat: amountMilliSat,
+    feeMsat: feeMilliSat,
+    status: PaymentStatus.Complete,
+    description: description,
+    details: const PaymentDetails.closedChannel(
+      data: ClosedChannelPaymentDetails(
+        shortChannelId: "shortChannelId",
+        state: ChannelState.Opened,
+        fundingTxid: "fundingTxid",
       ),
-      texts(),
-    );
+    ),
+  ),
+  texts(),
+);
 
 PaymentMinutiae makeLnPayment({
   String? metadata,
@@ -319,56 +305,57 @@ PaymentMinutiae makeLnPayment({
   lnAddress = "a ln address",
   paymentPreimage = "a payment preimage",
   SuccessActionProcessed? successActionProcessed,
-}) =>
-    PaymentMinutiae.fromPayment(
-      Payment(
-        id: "id",
-        paymentType: PaymentType.Received,
-        paymentTime: 3,
-        amountMsat: 2,
-        feeMsat: 1,
-        status: PaymentStatus.Complete,
-        description: "description",
-        details: PaymentDetails.ln(
-          data: LnPaymentDetails(
-            paymentHash: "a payment hash",
-            label: "a label",
-            destinationPubkey: destinationPubkey,
-            paymentPreimage: paymentPreimage,
-            keysend: keysend,
-            bolt11: "a bolt11",
-            lnurlSuccessAction: successActionProcessed,
-            lnAddress: lnAddress,
-            lnurlMetadata: metadata,
-          ),
-        ),
+}) => PaymentMinutiae.fromPayment(
+  Payment(
+    id: "id",
+    paymentType: PaymentType.Received,
+    paymentTime: 3,
+    amountMsat: 2,
+    feeMsat: 1,
+    status: PaymentStatus.Complete,
+    description: "description",
+    details: PaymentDetails.ln(
+      data: LnPaymentDetails(
+        paymentHash: "a payment hash",
+        label: "a label",
+        destinationPubkey: destinationPubkey,
+        paymentPreimage: paymentPreimage,
+        keysend: keysend,
+        bolt11: "a bolt11",
+        lnurlSuccessAction: successActionProcessed,
+        lnAddress: lnAddress,
+        lnurlMetadata: metadata,
       ),
-      texts(),
-    );
+    ),
+  ),
+  texts(),
+);
 
 PaymentMinutiae makePendingLnPayment({int expiryBlock = 800000}) => PaymentMinutiae.fromPayment(
-      Payment(
-        id: "id",
-        paymentType: PaymentType.Sent,
-        paymentTime: 3,
-        amountMsat: 2,
-        feeMsat: 1,
-        status: PaymentStatus.Pending,
-        details: PaymentDetails.ln(
-          data: LnPaymentDetails(
-              bolt11: "a bolt 11",
-              paymentHash: "a payment hash",
-              label: "a label",
-              destinationPubkey: '',
-              paymentPreimage: '',
-              keysend: false,
-              pendingExpirationBlock: expiryBlock),
-        ),
+  Payment(
+    id: "id",
+    paymentType: PaymentType.Sent,
+    paymentTime: 3,
+    amountMsat: 2,
+    feeMsat: 1,
+    status: PaymentStatus.Pending,
+    details: PaymentDetails.ln(
+      data: LnPaymentDetails(
+        bolt11: "a bolt 11",
+        paymentHash: "a payment hash",
+        label: "a label",
+        destinationPubkey: '',
+        paymentPreimage: '',
+        keysend: false,
+        pendingExpirationBlock: expiryBlock,
       ),
-      texts(),
-    );
+    ),
+  ),
+  texts(),
+);
 
-const posDescription = '|\nJoão Linus | https://storage.googleapis.com/download/storage/v1/b/breez-technology'
+const posDescription =
+    '|\nJoão Linus | https://storage.googleapis.com/download/storage/v1/b/breez-technology'
     '.appspot.com/o/1216%2F7aaf%2F20901c3890fe729e7c6ca30007d770d3760a4829ae9662e60fa97a0b.png?generation=165'
     '8427826135832&alt=media  {"payment_hash":"610c5daf49d3ed922260b04d8f8a2857852b19c2de7d1499b14f80d3b3e7c4'
     '33","label":"","destination_pubkey":"036af19a240070280278d0a613e7b717bd33dd0f848dc326dfaea2881565bb9d0b"'
@@ -381,7 +368,8 @@ const posDescription = '|\nJoão Linus | https://storage.googleapis.com/download
     '9TL9NA50V2V5D222YXUK8NJD347G0ZP6LQSL3G98ZZVXLVDGUXFASAXJXMCGHFY3YSFLE30HTGQHT0SKLAEA7TYS5TRFDP2U6FPAQPEE'
     'RJ3V"}';
 
-const imageBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAABsCAQAAAAlb59GAAACw0lEQVR4Ae3BTYiUBR"
+const imageBase64 =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAABsCAQAAAAlb59GAAACw0lEQVR4Ae3BTYiUBR"
     "gA4Hd0y581cyX/ZlVEx4sRREFUhy79QCJiFGKIkhmmoSYdIjoUezPo51RkUEkm1Cn31kHoEBgUwqalaLqrQpGQRWku6s48QZ+zieuuep"
     "tvep8nUkoppZRSSimllFJKKaWUUkrppqiYYHy0Hx87rV8t2otlCnuiXajo0OFlhd91Rfl5UJ8hVzvvqB4LjYuycsLoLtkdZeW0sR3SFW"
     "Vkh4ax9ZseZWS++z1sqeWe8KRVnrFZj17nNL0W7cRMvyo0zIiyMM5tpunS5XZTTTFJR1zFQ5rWRRmoeMNZIzVc8Ic3VeIy3ypsjzLQ6b"

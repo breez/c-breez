@@ -123,19 +123,15 @@ void main() {
 }
 
 sdk.Config _defaultConf() => const sdk.Config(
-      maxfeePercent: 7.8,
-      breezserver: "a breez server",
-      chainnotifierUrl: "a chain notifier url",
-      mempoolspaceUrl: "a mempool space url",
-      workingDir: "a working dir",
-      network: sdk.Network.Bitcoin,
-      paymentTimeoutSec: 123,
-      defaultLspId: "a default lsp id",
-      apiKey: "an api key",
-      exemptfeeMsat: 20000,
-      nodeConfig: sdk.NodeConfig_Greenlight(
-        config: sdk.GreenlightNodeConfig(
-          partnerCredentials: null,
-        ),
-      ),
-    );
+  maxfeePercent: 7.8,
+  breezserver: "a breez server",
+  chainnotifierUrl: "a chain notifier url",
+  mempoolspaceUrl: "a mempool space url",
+  workingDir: "a working dir",
+  network: sdk.Network.Bitcoin,
+  paymentTimeoutSec: 123,
+  defaultLspId: "a default lsp id",
+  apiKey: "an api key",
+  exemptfeeMsat: 20000,
+  nodeConfig: sdk.NodeConfig_Greenlight(config: sdk.GreenlightNodeConfig(partnerCredentials: null)),
+);

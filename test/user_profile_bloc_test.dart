@@ -24,9 +24,7 @@ void main() {
       await platform.setUp();
       PathProviderPlatform.instance = platform;
       await hydratedBlocStorage.setUpHydratedBloc();
-      userProfileBloc = UserProfileBloc(
-        injector.breezServer,
-      );
+      userProfileBloc = UserProfileBloc(injector.breezServer);
     });
 
     tearDown(() async {
@@ -35,15 +33,11 @@ void main() {
     });
 
     test("should return registered user", () async {
-      userProfileBloc.updateProfile(
-        name: "A name",
-      );
+      userProfileBloc.updateProfile(name: "A name");
       // wait for the hydration to complete
       await Future.delayed(const Duration(milliseconds: 100));
 
-      userProfileBloc = UserProfileBloc(
-        injector.breezServer,
-      );
+      userProfileBloc = UserProfileBloc(injector.breezServer);
 
       final user = userProfileBloc.state;
       expect(user.profileSettings.name, "A name");

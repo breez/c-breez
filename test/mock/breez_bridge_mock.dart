@@ -13,9 +13,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
   );
 
   @override
-  Future connect({
-    required ConnectRequest req,
-  }) async {
+  Future connect({required ConnectRequest req}) async {
     await nodeInfo();
   }
 
@@ -82,7 +80,7 @@ class BreezSDKMock extends Mock implements BreezSDK {
           maxIdleTime: 1,
           maxClientToSelfDelay: 1,
           promise: "",
-        )
+        ),
       ],
     ),
   );

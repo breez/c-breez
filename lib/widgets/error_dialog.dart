@@ -28,9 +28,7 @@ Future<void> promptError(
         child: AlertDialog(
           contentPadding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
           title: title == null ? null : Text(title),
-          content: SingleChildScrollView(
-            child: body,
-          ),
+          content: SingleChildScrollView(child: body),
           actions: [
             optionText != null
                 ? TextButton(
@@ -83,10 +81,7 @@ Future<bool?> promptAreYouSure(
 
   Widget? titleWidget = title == null ? null : Text(title);
   if (wideTitle) {
-    titleWidget = SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: titleWidget,
-    );
+    titleWidget = SizedBox(width: MediaQuery.of(context).size.width, child: titleWidget);
   }
   return showDialog<bool>(
     useRootNavigator: false,
@@ -95,9 +90,7 @@ Future<bool?> promptAreYouSure(
       return AlertDialog(
         contentPadding: contentPadding,
         title: titleWidget,
-        content: SingleChildScrollView(
-          child: body,
-        ),
+        content: SingleChildScrollView(child: body),
         actions: [
           TextButton(
             child: Text(
@@ -133,17 +126,9 @@ Future<bool?> promptMessage(
   final texts = context.texts();
   final themeData = Theme.of(context);
 
-  Widget? titleWidget = title == null
-      ? null
-      : Text(
-          title,
-          style: themeData.dialogTheme.titleTextStyle,
-        );
+  Widget? titleWidget = title == null ? null : Text(title, style: themeData.dialogTheme.titleTextStyle);
   if (wideTitle) {
-    titleWidget = SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: titleWidget,
-    );
+    titleWidget = SizedBox(width: MediaQuery.of(context).size.width, child: titleWidget);
   }
   return showDialog<bool>(
     useRootNavigator: false,
@@ -152,9 +137,7 @@ Future<bool?> promptMessage(
       return AlertDialog(
         contentPadding: contentPadding,
         title: titleWidget,
-        content: SingleChildScrollView(
-          child: body,
-        ),
+        content: SingleChildScrollView(child: body),
         actions: [
           TextButton(
             child: Text(

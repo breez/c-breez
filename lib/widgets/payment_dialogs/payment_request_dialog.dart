@@ -11,18 +11,14 @@ enum PaymentRequestState {
   WAITING_FOR_CONFIRMATION,
   PROCESSING_PAYMENT,
   USER_CANCELLED,
-  PAYMENT_COMPLETED
+  PAYMENT_COMPLETED,
 }
 
 class PaymentRequestDialog extends StatefulWidget {
   final Invoice invoice;
   final GlobalKey firstPaymentItemKey;
 
-  const PaymentRequestDialog(
-    this.invoice,
-    this.firstPaymentItemKey, {
-    super.key,
-  });
+  const PaymentRequestDialog(this.invoice, this.firstPaymentItemKey, {super.key});
 
   @override
   State<StatefulWidget> createState() {

@@ -44,12 +44,7 @@ class _PaymentsFilterSliverState extends State<PaymentsFilterSliver> {
     return SliverPersistentHeader(
       pinned: true,
       delegate: FixedSliverDelegate(
-        widget.hasFilter
-            ? widget.maxSize
-            : scrollOffset.clamp(
-                0,
-                widget.maxSize,
-              ),
+        widget.hasFilter ? widget.maxSize : scrollOffset.clamp(0, widget.maxSize),
         builder: (context, height, overlapContent) {
           return Container(
             color: themeData.isLightTheme ? themeData.colorScheme.surface : themeData.canvasColor,

@@ -65,7 +65,7 @@ class QRScanState extends State<QRScan> {
                       }
                     },
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -73,11 +73,7 @@ class QRScanState extends State<QRScan> {
           SafeArea(
             child: Stack(
               children: [
-                Positioned(
-                  right: 10,
-                  top: 5,
-                  child: ImagePickerButton(cameraController),
-                ),
+                Positioned(right: 10, top: 5, child: ImagePickerButton(cameraController)),
                 Positioned(
                   bottom: 30.0,
                   right: 0,
@@ -88,7 +84,7 @@ class QRScanState extends State<QRScan> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -98,10 +94,7 @@ class QRScanState extends State<QRScan> {
 class ImagePickerButton extends StatelessWidget {
   final MobileScannerController cameraController;
 
-  const ImagePickerButton(
-    this.cameraController, {
-    super.key,
-  });
+  const ImagePickerButton(this.cameraController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -112,10 +105,7 @@ class ImagePickerButton extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0, 32, 24, 0),
       icon: SvgPicture.asset(
         "src/icon/image.svg",
-        colorFilter: const ColorFilter.mode(
-          Colors.white,
-          BlendMode.srcATop,
-        ),
+        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
         width: 32,
         height: 32,
       ),
@@ -146,11 +136,7 @@ class ImagePickerButton extends StatelessWidget {
           }
 
           _log.info("No QR code found in image");
-          scaffoldMessenger.showSnackBar(
-            SnackBar(
-              content: Text(texts.qr_scan_gallery_failed),
-            ),
-          );
+          scaffoldMessenger.showSnackBar(SnackBar(content: Text(texts.qr_scan_gallery_failed)));
         }
       },
     );
@@ -158,9 +144,7 @@ class ImagePickerButton extends StatelessWidget {
 }
 
 class QRScanCancelButton extends StatelessWidget {
-  const QRScanCancelButton({
-    super.key,
-  });
+  const QRScanCancelButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -169,27 +153,13 @@ class QRScanCancelButton extends StatelessWidget {
     return Center(
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(12.0),
-          ),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.8),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.8)),
         ),
         child: TextButton(
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.only(
-              right: 35,
-              left: 35,
-            ),
-          ),
+          style: TextButton.styleFrom(padding: const EdgeInsets.only(right: 35, left: 35)),
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            texts.qr_scan_action_cancel,
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
+          child: Text(texts.qr_scan_action_cancel, style: const TextStyle(color: Colors.white)),
         ),
       ),
     );

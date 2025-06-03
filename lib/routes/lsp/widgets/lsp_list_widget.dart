@@ -78,12 +78,7 @@ class _LspErrorText extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            texts.account_page_activation_error,
-            textAlign: TextAlign.center,
-          ),
-        ],
+        children: [Text(texts.account_page_activation_error, textAlign: TextAlign.center)],
       ),
     );
   }

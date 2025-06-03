@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 class PaymentDetailsDialogSuccessAction extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  const PaymentDetailsDialogSuccessAction({
-    super.key,
-    required this.paymentMinutiae,
-  });
+  const PaymentDetailsDialogSuccessAction({super.key, required this.paymentMinutiae});
 
   @override
   Widget build(BuildContext context) {

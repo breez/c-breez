@@ -14,11 +14,7 @@ class ReceivableBTCBox extends StatefulWidget {
   final String? receiveLabel;
   final void Function()? onTap;
 
-  const ReceivableBTCBox({
-    super.key,
-    this.receiveLabel,
-    this.onTap,
-  });
+  const ReceivableBTCBox({super.key, this.receiveLabel, this.onTap});
 
   @override
   State<StatefulWidget> createState() {
@@ -49,17 +45,16 @@ class ReceivableBTCBoxState extends State<ReceivableBTCBox> {
             (!isChannelOpeningAvailable && accountState.maxInboundLiquiditySat <= 0)
                 ? WarningBox(
                     boxPadding: const EdgeInsets.only(top: 8),
-                    child: AutoSizeText(
-                      texts.lsp_error_cannot_open_channel,
-                      textAlign: TextAlign.center,
-                    ),
+                    child: AutoSizeText(texts.lsp_error_cannot_open_channel, textAlign: TextAlign.center),
                   )
                 : AutoSizeText(
                     widget.receiveLabel ??
                         texts.invoice_receive_label(
-                          currencyState.bitcoinCurrency.format((isChannelOpeningAvailable)
-                              ? accountState.maxAllowedToReceiveSat
-                              : accountState.maxInboundLiquiditySat),
+                          currencyState.bitcoinCurrency.format(
+                            (isChannelOpeningAvailable)
+                                ? accountState.maxAllowedToReceiveSat
+                                : accountState.maxInboundLiquiditySat,
+                          ),
                         ),
                     style: theme.textStyle,
                     maxLines: 1,

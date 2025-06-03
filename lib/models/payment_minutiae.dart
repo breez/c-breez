@@ -275,12 +275,7 @@ class _PaymentMinutiaeFactory {
       if (bytes.isNotEmpty) {
         // same value as in breezmobile
         const imageSize = 20 * 0.6 * 2;
-        return Image.memory(
-          bytes,
-          width: imageSize,
-          height: imageSize,
-          fit: BoxFit.fitHeight,
-        );
+        return Image.memory(bytes, width: imageSize, height: imageSize, fit: BoxFit.fitHeight);
       }
     }
     return null;

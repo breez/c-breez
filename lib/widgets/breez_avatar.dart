@@ -53,10 +53,7 @@ class _UnknownAvatar extends StatelessWidget {
       radius: radius,
       child: SvgPicture.asset(
         "src/icon/alien.svg",
-        colorFilter: const ColorFilter.mode(
-          Color.fromARGB(255, 0, 166, 68),
-          BlendMode.srcATop,
-        ),
+        colorFilter: const ColorFilter.mode(Color.fromARGB(255, 0, 166, 68), BlendMode.srcATop),
         width: 0.70 * radius * 2,
         height: 0.70 * radius * 2,
       ),
@@ -100,11 +97,7 @@ class _FileImageAvatar extends StatelessWidget {
       backgroundColor: Colors.yellow,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius),
-        child: Image(
-          image: FileImage(
-            File(filePath),
-          ),
-        ),
+        child: Image(image: FileImage(File(filePath))),
       ),
     );
   }
@@ -120,10 +113,7 @@ class _NetworkImageAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: radius,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: ExtendedImage.network(avatarURL),
-      ),
+      child: ClipRRect(borderRadius: BorderRadius.circular(radius), child: ExtendedImage.network(avatarURL)),
     );
   }
 }
@@ -141,9 +131,7 @@ class _DataImageAvatar extends StatelessWidget {
     return CircleAvatar(
       backgroundColor: theme.sessionAvatarBackgroundColor,
       radius: radius,
-      child: ClipOval(
-        child: Image.memory(bytes),
-      ),
+      child: ClipOval(child: Image.memory(bytes)),
     );
   }
 }

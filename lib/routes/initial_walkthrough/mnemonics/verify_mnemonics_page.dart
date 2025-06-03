@@ -13,9 +13,7 @@ import 'widgets/verify_form.dart';
 class VerifyMnemonicsPage extends StatefulWidget {
   final String _mnemonics;
 
-  const VerifyMnemonicsPage(
-    this._mnemonics,
-  );
+  const VerifyMnemonicsPage(this._mnemonics);
 
   @override
   VerifyMnemonicsPageState createState() => VerifyMnemonicsPageState();
@@ -35,7 +33,7 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
     super.initState();
   }
 
-  _selectIndexes() {
+  void _selectIndexes() {
     // Select at least one index from each page(0-6,6-11) randomly
     var firstIndex = Random().nextInt(6);
     var secondIndex = Random().nextInt(6) + 6;
@@ -78,9 +76,7 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                 errorText: _hasError
                     ? Text(
                         texts.backup_phrase_generation_verification_failed,
-                        style: themeData.textTheme.headlineMedium?.copyWith(
-                          fontSize: 12,
-                        ),
+                        style: themeData.textTheme.headlineMedium?.copyWith(fontSize: 12),
                       )
                     : const SizedBox(),
               ),
@@ -90,9 +86,7 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                   _randomlySelectedIndexes[1] + 1,
                   _randomlySelectedIndexes[2] + 1,
                 ),
-                style: theme.mnemonicSeedInformationTextStyle.copyWith(
-                  color: theme.BreezColors.white[300],
-                ),
+                style: theme.mnemonicSeedInformationTextStyle.copyWith(color: theme.BreezColors.white[300]),
                 textAlign: TextAlign.center,
               ),
               SingleButtonBottomBar(

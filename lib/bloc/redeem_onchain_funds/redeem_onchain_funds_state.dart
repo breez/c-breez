@@ -14,10 +14,9 @@ class RedeemOnchainFundsState {
     List<RedeemOnchainFeeOption>? feeOptions,
     Uint8List? txId,
     String? error,
-  }) =>
-      RedeemOnchainFundsState(
-        feeOptions: feeOptions ?? this.feeOptions,
-        txId: txId ?? this.txId,
-        error: error ?? this.error,
-      );
+  }) => RedeemOnchainFundsState(
+    feeOptions: feeOptions ?? this.feeOptions,
+    txId: txId ?? this.txId,
+    error: error ?? this.error,
+  );
 }

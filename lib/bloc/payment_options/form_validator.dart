@@ -1,8 +1,6 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 
-String? exemptFeeValidator(
-  String? value,
-) {
+String? exemptFeeValidator(String? value) {
   final texts = getSystemAppLocalizations();
   if (value == null) {
     return texts.payment_options_exemptfee_label;
@@ -21,9 +19,7 @@ String? exemptFeeValidator(
   return null;
 }
 
-String? proportionalFeeValidator(
-  String? value,
-) {
+String? proportionalFeeValidator(String? value) {
   final texts = getSystemAppLocalizations();
   if (value == null) {
     return texts.payment_options_proportional_fee_label;
@@ -42,9 +38,7 @@ String? proportionalFeeValidator(
   return null;
 }
 
-String? channelSetupFeeLimitValidator(
-  String? value,
-) {
+String? channelSetupFeeLimitValidator(String? value) {
   final texts = getSystemAppLocalizations();
   if (value == null) {
     return texts.payment_options_auto_setup_fee_label;

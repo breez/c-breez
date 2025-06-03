@@ -36,11 +36,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
   }
 
   List<Widget> _buildConfirmationDialog(BuildContext context) {
-    return [
-      _buildTitle(context),
-      _buildContent(context),
-      _buildActions(context),
-    ];
+    return [_buildTitle(context), _buildContent(context), _buildActions(context)];
   }
 
   Container _buildTitle(BuildContext context) {
@@ -86,9 +82,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  TextSpan(
-                    text: texts.payment_confirmation_dialog_confirmation_end,
-                  )
+                  TextSpan(text: texts.payment_confirmation_dialog_confirmation_end),
                 ],
               ),
               maxLines: 2,
@@ -137,10 +131,7 @@ class PaymentConfirmationDialog extends StatelessWidget {
           style: themeData.primaryTextTheme.labelLarge,
         ),
         onPressed: () {
-          _onPaymentApproved(
-            bolt11,
-            _amountToPaySat,
-          );
+          _onPaymentApproved(bolt11, _amountToPaySat);
         },
       ),
     ];

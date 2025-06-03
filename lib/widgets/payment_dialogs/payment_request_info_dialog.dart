@@ -89,32 +89,31 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         ? null
         : Padding(
             padding: const EdgeInsets.only(top: 48, bottom: 8),
-            child: BreezAvatar(
-              widget.invoice.payeeImageURL,
-              radius: 32.0,
-            ),
+            child: BreezAvatar(widget.invoice.payeeImageURL, radius: 32.0),
           );
   }
 
   Widget _buildPaymentRequestContent() {
-    return BlocBuilder<CurrencyBloc, CurrencyState>(builder: (c, currencyState) {
-      return BlocBuilder<AccountBloc, AccountState>(
-        builder: (context, account) {
-          List<Widget> children = [];
-          _addIfNotNull(children, _buildPayeeNameWidget());
-          _addIfNotNull(children, _buildRequestPayTextWidget());
-          _addIfNotNull(children, _buildAmountWidget(account, currencyState));
-          _addIfNotNull(children, _buildDescriptionWidget());
-          _addIfNotNull(children, _buildErrorMessage(currencyState));
-          _addIfNotNull(children, _buildActions(currencyState, account));
+    return BlocBuilder<CurrencyBloc, CurrencyState>(
+      builder: (c, currencyState) {
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, account) {
+            List<Widget> children = [];
+            _addIfNotNull(children, _buildPayeeNameWidget());
+            _addIfNotNull(children, _buildRequestPayTextWidget());
+            _addIfNotNull(children, _buildAmountWidget(account, currencyState));
+            _addIfNotNull(children, _buildDescriptionWidget());
+            _addIfNotNull(children, _buildErrorMessage(currencyState));
+            _addIfNotNull(children, _buildActions(currencyState, account));
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(children: children),
-          );
-        },
-      );
-    });
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(children: children),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _addIfNotNull(List<Widget> widgets, Widget? w) {
@@ -153,9 +152,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       return Theme(
         data: themeData.copyWith(
           inputDecorationTheme: InputDecorationTheme(
-            enabledBorder: UnderlineInputBorder(
-              borderSide: theme.greyBorderSide,
-            ),
+            enabledBorder: UnderlineInputBorder(borderSide: theme.greyBorderSide),
           ),
           hintColor: themeData.dialogTheme.contentTextStyle!.color,
           colorScheme: ColorScheme.dark(
@@ -209,14 +206,13 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         });
       },
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: double.infinity,
-        ),
+        constraints: const BoxConstraints(minWidth: double.infinity),
         child: Text(
           _showFiatCurrency && fiatConversion != null
               ? fiatConversion.formatSat(widget.invoice.amountMsat ~/ 1000)
-              : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                  .format(widget.invoice.amountMsat ~/ 1000),
+              : BitcoinCurrency.fromTickerSymbol(
+                  currencyState.bitcoinTicker,
+                ).format(widget.invoice.amountMsat ~/ 1000),
           style: themeData.primaryTextTheme.headlineSmall,
           textAlign: TextAlign.center,
         ),
@@ -233,10 +229,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         : Padding(
             padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
             child: Container(
-              constraints: const BoxConstraints(
-                maxHeight: 200,
-                minWidth: double.infinity,
-              ),
+              constraints: const BoxConstraints(maxHeight: 200, minWidth: double.infinity),
               child: Scrollbar(
                 child: SingleChildScrollView(
                   child: AutoSizeText(
@@ -258,9 +251,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       currency: currencyState.bitcoinCurrency,
       channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
       texts: context.texts(),
-    ).validateOutgoing(
-      _amountToPaySat(currencyState),
-    );
+    ).validateOutgoing(_amountToPaySat(currencyState));
     if (widget.invoice.amountMsat == 0 || validationError == null || validationError.isEmpty) {
       return null;
     }
@@ -288,11 +279,8 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
     List<Widget> actions = [
       SimpleDialogOption(
         onPressed: () => widget._onCancel(),
-        child: Text(
-          texts.payment_request_dialog_action_cancel,
-          style: themeData.primaryTextTheme.labelLarge,
-        ),
-      )
+        child: Text(texts.payment_request_dialog_action_cancel, style: themeData.primaryTextTheme.labelLarge),
+      ),
     ];
 
     int toPaySat = _amountToPaySat(currency);
@@ -303,15 +291,13 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
             if (widget.invoice.amountMsat > 0 || _formKey.currentState!.validate()) {
               if (widget.invoice.amountMsat == 0) {
                 _amountToPayMap["_amountToPaySat"] = toPaySat;
-                _amountToPayMap["_amountToPayStr"] = BitcoinCurrency.fromTickerSymbol(currency.bitcoinTicker)
-                    .format(_amountToPaySat(currency));
+                _amountToPayMap["_amountToPayStr"] = BitcoinCurrency.fromTickerSymbol(
+                  currency.bitcoinTicker,
+                ).format(_amountToPaySat(currency));
                 widget._setAmountToPay(_amountToPayMap);
                 widget._onWaitingConfirmation();
               } else {
-                widget._onPaymentApproved(
-                  widget.invoice.bolt11,
-                  _amountToPaySat(currency),
-                );
+                widget._onPaymentApproved(widget.invoice.bolt11, _amountToPaySat(currency));
               }
             }
           }),
@@ -323,10 +309,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
       );
     }
     return Theme(
-      data: themeData.copyWith(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-      ),
+      data: themeData.copyWith(splashColor: Colors.transparent, highlightColor: Colors.transparent),
       child: Padding(
         padding: const EdgeInsets.only(top: 24.0),
         child: Row(

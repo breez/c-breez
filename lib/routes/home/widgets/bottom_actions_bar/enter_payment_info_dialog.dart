@@ -60,9 +60,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     return Theme(
       data: themeData.copyWith(
         inputDecorationTheme: InputDecorationTheme(
-          enabledBorder: UnderlineInputBorder(
-            borderSide: theme.greyBorderSide,
-          ),
+          enabledBorder: UnderlineInputBorder(borderSide: theme.greyBorderSide),
         ),
         hintColor: themeData.dialogTheme.contentTextStyle!.color!,
         primaryColor: themeData.textTheme.labelLarge!.color,
@@ -97,9 +95,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
                 ),
                 focusNode: _paymentInfoFocusNode,
                 controller: _paymentInfoController,
-                style: TextStyle(
-                  color: themeData.primaryTextTheme.headlineMedium!.color,
-                ),
+                style: TextStyle(color: themeData.primaryTextTheme.headlineMedium!.color),
                 validator: (value) {
                   if (_validatorErrorMessage.isNotEmpty) {
                     return _validatorErrorMessage;
@@ -110,10 +106,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
               _scannerErrorMessage.isNotEmpty
                   ? Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        _scannerErrorMessage,
-                        style: theme.validatorStyle,
-                      ),
+                      child: Text(_scannerErrorMessage, style: theme.validatorStyle),
                     )
                   : const SizedBox(),
               Padding(
@@ -122,8 +115,9 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
                   texts.payment_info_dialog_hint_expanded,
                   style: theme.FieldTextStyle.labelStyle.copyWith(
                     fontSize: 13.0,
-                    color:
-                        themeData.isLightTheme ? theme.BreezColors.grey[500] : theme.BreezColors.white[200],
+                    color: themeData.isLightTheme
+                        ? theme.BreezColors.grey[500]
+                        : theme.BreezColors.white[200],
                   ),
                 ),
               ),
@@ -141,11 +135,8 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     List<Widget> actions = [
       SimpleDialogOption(
         onPressed: () => Navigator.pop(context),
-        child: Text(
-          texts.payment_info_dialog_action_cancel,
-          style: themeData.primaryTextTheme.labelLarge,
-        ),
-      )
+        child: Text(texts.payment_info_dialog_action_cancel, style: themeData.primaryTextTheme.labelLarge),
+      ),
     ];
 
     if (_paymentInfoController.text.isNotEmpty) {
@@ -171,10 +162,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
               _setLoading(false);
             }
           }),
-          child: Text(
-            texts.payment_info_dialog_action_approve,
-            style: themeData.primaryTextTheme.labelLarge,
-          ),
+          child: Text(texts.payment_info_dialog_action_approve, style: themeData.primaryTextTheme.labelLarge),
         ),
       );
     }
@@ -191,10 +179,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     }
     if (barcode.isEmpty) {
       if (!context.mounted) return;
-      showFlushbar(
-        context,
-        message: texts.payment_info_dialog_error_qrcode,
-      );
+      showFlushbar(context, message: texts.payment_info_dialog_error_qrcode);
       return;
     }
     setState(() {
@@ -224,7 +209,7 @@ class EnterPaymentInfoDialogState extends State<EnterPaymentInfoDialog> {
     }
   }
 
-  _setValidatorErrorMessage(String errorMessage) {
+  void _setValidatorErrorMessage(String errorMessage) {
     setState(() {
       _validatorErrorMessage = errorMessage;
     });

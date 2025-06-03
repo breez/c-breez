@@ -84,11 +84,7 @@ class ConnectivityHandler extends Handler {
     return Flushbar<dynamic>(
       isDismissible: false,
       flushbarPosition: FlushbarPosition.TOP,
-      icon: Icon(
-        Icons.warning_amber_outlined,
-        size: 28.0,
-        color: themeData.colorScheme.error,
-      ),
+      icon: Icon(Icons.warning_amber_outlined, size: 28.0, color: themeData.colorScheme.error),
       messageText: Text(
         context.texts().no_connection_flushbar_title,
         style: snackBarStyle,
@@ -104,9 +100,7 @@ class ConnectivityHandler extends Handler {
                 child: SizedBox(
                   height: 24.0,
                   width: 24.0,
-                  child: CircularProgressIndicator(
-                    color: themeData.colorScheme.error,
-                  ),
+                  child: CircularProgressIndicator(color: themeData.colorScheme.error),
                 ),
               );
             }
@@ -120,16 +114,14 @@ class ConnectivityHandler extends Handler {
                       .checkConnectivity()
                       .whenComplete(() => connectivityBloc.setIsConnecting(false))
                       .onError((error, stackTrace) {
-                    connectivityBloc.setIsConnecting(false);
-                    throw error.toString();
-                  }),
+                        connectivityBloc.setIsConnecting(false);
+                        throw error.toString();
+                      }),
                 );
               },
               child: Text(
                 context.texts().no_connection_flushbar_action_retry,
-                style: snackBarStyle.copyWith(
-                  color: themeData.colorScheme.error,
-                ),
+                style: snackBarStyle.copyWith(color: themeData.colorScheme.error),
               ),
             );
           },

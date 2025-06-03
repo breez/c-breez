@@ -17,10 +17,7 @@ import 'package:path_provider/path_provider.dart';
 class PaymentItemAmount extends StatelessWidget {
   final PaymentMinutiae _paymentMinutiae;
 
-  const PaymentItemAmount(
-    this._paymentMinutiae, {
-    super.key,
-  });
+  const PaymentItemAmount(this._paymentMinutiae, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,48 +26,47 @@ class PaymentItemAmount extends StatelessWidget {
 
     return SizedBox(
       height: 44,
-      child: BlocBuilder<UserProfileBloc, UserProfileState>(builder: (context, userModel) {
-        final bool hideBalance = userModel.profileSettings.hideBalance;
-        return BlocBuilder<CurrencyBloc, CurrencyState>(
-          builder: (context, currencyState) {
-            final feeSat = _paymentMinutiae.feeSat;
-            final amountSat = currencyState.bitcoinCurrency.format(
-              _paymentMinutiae.amountSat,
-              includeDisplayName: false,
-            );
-            final feeFormatted = currencyState.bitcoinCurrency.format(
-              feeSat,
-              includeDisplayName: false,
-            );
+      child: BlocBuilder<UserProfileBloc, UserProfileState>(
+        builder: (context, userModel) {
+          final bool hideBalance = userModel.profileSettings.hideBalance;
+          return BlocBuilder<CurrencyBloc, CurrencyState>(
+            builder: (context, currencyState) {
+              final feeSat = _paymentMinutiae.feeSat;
+              final amountSat = currencyState.bitcoinCurrency.format(
+                _paymentMinutiae.amountSat,
+                includeDisplayName: false,
+              );
+              final feeFormatted = currencyState.bitcoinCurrency.format(feeSat, includeDisplayName: false);
 
-            return Column(
-              mainAxisAlignment:
-                  _paymentMinutiae.feeMilliSat == 0 || _paymentMinutiae.status == PaymentStatus.Pending
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  hideBalance
-                      ? texts.wallet_dashboard_payment_item_balance_hide
-                      : _paymentMinutiae.paymentType == PaymentType.Received
-                          ? texts.wallet_dashboard_payment_item_balance_positive(amountSat)
-                          : texts.wallet_dashboard_payment_item_balance_negative(amountSat),
-                  style: themeData.paymentItemAmountTextStyle,
-                ),
-                (feeSat == 0 || _paymentMinutiae.status == PaymentStatus.Pending)
-                    ? const SizedBox()
-                    : Text(
-                        hideBalance
-                            ? texts.wallet_dashboard_payment_item_balance_hide
-                            : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
-                        style: themeData.paymentItemFeeTextStyle,
-                      ),
-              ],
-            );
-          },
-        );
-      }),
+              return Column(
+                mainAxisAlignment:
+                    _paymentMinutiae.feeMilliSat == 0 || _paymentMinutiae.status == PaymentStatus.Pending
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    hideBalance
+                        ? texts.wallet_dashboard_payment_item_balance_hide
+                        : _paymentMinutiae.paymentType == PaymentType.Received
+                        ? texts.wallet_dashboard_payment_item_balance_positive(amountSat)
+                        : texts.wallet_dashboard_payment_item_balance_negative(amountSat),
+                    style: themeData.paymentItemAmountTextStyle,
+                  ),
+                  (feeSat == 0 || _paymentMinutiae.status == PaymentStatus.Pending)
+                      ? const SizedBox()
+                      : Text(
+                          hideBalance
+                              ? texts.wallet_dashboard_payment_item_balance_hide
+                              : texts.wallet_dashboard_payment_item_balance_fee(feeFormatted),
+                          style: themeData.paymentItemFeeTextStyle,
+                        ),
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

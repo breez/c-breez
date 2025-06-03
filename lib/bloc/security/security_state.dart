@@ -6,20 +6,15 @@ class SecurityState {
   final LocalAuthenticationOption localAuthenticationOption;
   final LockState lockState;
 
-  const SecurityState(
-    this.pinStatus,
-    this.lockInterval,
-    this.localAuthenticationOption,
-    this.lockState,
-  );
+  const SecurityState(this.pinStatus, this.lockInterval, this.localAuthenticationOption, this.lockState);
 
   const SecurityState.initial()
-      : this(
-          PinStatus.initial,
-          const Duration(seconds: _kDefaultLockInterval),
-          LocalAuthenticationOption.none,
-          LockState.initial,
-        );
+    : this(
+        PinStatus.initial,
+        const Duration(seconds: _kDefaultLockInterval),
+        LocalAuthenticationOption.none,
+        LockState.initial,
+      );
 
   SecurityState copyWith({
     PinStatus? pinStatus,
@@ -36,18 +31,19 @@ class SecurityState {
   }
 
   SecurityState.fromJson(Map<String, dynamic> json)
-      : pinStatus = PinStatus.values.byName(json["pinStatus"] ?? PinStatus.initial.name),
-        lockInterval = Duration(seconds: json["lockInterval"] ?? _kDefaultLockInterval),
-        localAuthenticationOption = LocalAuthenticationOption.values
-            .byName(json["localAuthenticationOption"] ?? LocalAuthenticationOption.none.name),
-        lockState = LockState.values.byName(json["lockState"] ?? LockState.unlocked.name);
+    : pinStatus = PinStatus.values.byName(json["pinStatus"] ?? PinStatus.initial.name),
+      lockInterval = Duration(seconds: json["lockInterval"] ?? _kDefaultLockInterval),
+      localAuthenticationOption = LocalAuthenticationOption.values.byName(
+        json["localAuthenticationOption"] ?? LocalAuthenticationOption.none.name,
+      ),
+      lockState = LockState.values.byName(json["lockState"] ?? LockState.unlocked.name);
 
   Map<String, dynamic> toJson() => {
-        "pinStatus": pinStatus.name,
-        "lockInterval": lockInterval.inSeconds,
-        "localAuthenticationOption": localAuthenticationOption.name,
-        "lockState": lockState.name,
-      };
+    "pinStatus": pinStatus.name,
+    "lockInterval": lockInterval.inSeconds,
+    "localAuthenticationOption": localAuthenticationOption.name,
+    "lockState": lockState.name,
+  };
 
   @override
   String toString() {
@@ -56,20 +52,9 @@ class SecurityState {
   }
 }
 
-enum PinStatus {
-  initial,
-  enabled,
-  disabled,
-}
+enum PinStatus { initial, enabled, disabled }
 
-enum LocalAuthenticationOption {
-  face,
-  faceId,
-  fingerprint,
-  touchId,
-  other,
-  none,
-}
+enum LocalAuthenticationOption { face, faceId, fingerprint, touchId, other, none }
 
 extension LocalAuthenticationOptionExtension on LocalAuthenticationOption {
   bool get isFacial => this == LocalAuthenticationOption.face || this == LocalAuthenticationOption.faceId;
@@ -80,8 +65,4 @@ extension LocalAuthenticationOptionExtension on LocalAuthenticationOption {
   bool get isOtherBiometric => this == LocalAuthenticationOption.other;
 }
 
-enum LockState {
-  initial,
-  locked,
-  unlocked,
-}
+enum LockState { initial, locked, unlocked }

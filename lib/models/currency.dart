@@ -11,9 +11,7 @@ class BitcoinCurrency extends Object {
   const BitcoinCurrency._internal(this.tickerSymbol);
 
   factory BitcoinCurrency.fromTickerSymbol(String tickerSymbol) {
-    return currencies.firstWhere(
-      (c) => c.tickerSymbol.toUpperCase() == tickerSymbol.toUpperCase(),
-    );
+    return currencies.firstWhere((c) => c.tickerSymbol.toUpperCase() == tickerSymbol.toUpperCase());
   }
 
   String format(
@@ -22,22 +20,18 @@ class BitcoinCurrency extends Object {
     includeDisplayName = true,
     removeTrailingZeros = false,
     userInput = false,
-  }) =>
-      BitcoinCurrencyFormatter().format(
-        amountSat,
-        this,
-        addCurrencySymbol: includeCurrencySymbol,
-        addCurrencySuffix: includeDisplayName,
-        removeTrailingZeros: removeTrailingZeros,
-        userInput: userInput,
-      );
+  }) => BitcoinCurrencyFormatter().format(
+    amountSat,
+    this,
+    addCurrencySymbol: includeCurrencySymbol,
+    addCurrencySuffix: includeDisplayName,
+    removeTrailingZeros: removeTrailingZeros,
+    userInput: userInput,
+  );
 
   int parse(String amountStr) => BitcoinCurrencyFormatter().parse(amountStr, this);
 
-  int parseToInt(
-    String amountStr, {
-    int def = 0,
-  }) {
+  int parseToInt(String amountStr, {int def = 0}) {
     int value;
     try {
       value = parse(amountStr).toInt();

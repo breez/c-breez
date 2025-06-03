@@ -1,6 +1,6 @@
 import 'package:c_breez/routes/security/widget/digit_button_widget.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Preview;
 
 class NumPadWidget extends StatelessWidget {
   final ActionKey lhsActionKey;
@@ -47,10 +47,7 @@ class NumPadWidget extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: DigitButtonWidget(
-                  digit: "0",
-                  onPressed: (digit) => onDigitPressed(digit!),
-                ),
+                child: DigitButtonWidget(digit: "0", onPressed: (digit) => onDigitPressed(digit!)),
               ),
               Expanded(
                 child: DigitButtonWidget(
@@ -66,12 +63,7 @@ class NumPadWidget extends StatelessWidget {
   }
 }
 
-enum ActionKey {
-  Fingerprint,
-  FaceId,
-  Backspace,
-  Clear,
-}
+enum ActionKey { Fingerprint, FaceId, Backspace, Clear }
 
 extension _ActionKeyIconExtension on ActionKey {
   IconData get icon {
@@ -93,44 +85,33 @@ void main() {
   actionKeyFun(actionKey) => debugPrint("Action key pressed: $actionKey");
 
   runApp(
-    Preview(
-      [
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text("Small space, default action key (backspace):"),
+    Preview([
+      const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text("Small space, default action key (backspace):"),
+      ),
+      SizedBox(
+        height: 200,
+        child: NumPadWidget(onDigitPressed: digitFun, onActionKeyPressed: actionKeyFun),
+      ),
+      const Padding(padding: EdgeInsets.all(8.0), child: Text("Medium space, FaceId action key:")),
+      SizedBox(
+        height: 400,
+        child: NumPadWidget(
+          rhsActionKey: ActionKey.FaceId,
+          onDigitPressed: digitFun,
+          onActionKeyPressed: actionKeyFun,
         ),
-        SizedBox(
-          height: 200,
-          child: NumPadWidget(
-            onDigitPressed: digitFun,
-            onActionKeyPressed: actionKeyFun,
-          ),
+      ),
+      const Padding(padding: EdgeInsets.all(8.0), child: Text("Large space, Fingerprint action key:")),
+      SizedBox(
+        height: 600,
+        child: NumPadWidget(
+          rhsActionKey: ActionKey.Fingerprint,
+          onDigitPressed: digitFun,
+          onActionKeyPressed: actionKeyFun,
         ),
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text("Medium space, FaceId action key:"),
-        ),
-        SizedBox(
-          height: 400,
-          child: NumPadWidget(
-            rhsActionKey: ActionKey.FaceId,
-            onDigitPressed: digitFun,
-            onActionKeyPressed: actionKeyFun,
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text("Large space, Fingerprint action key:"),
-        ),
-        SizedBox(
-          height: 600,
-          child: NumPadWidget(
-            rhsActionKey: ActionKey.Fingerprint,
-            onDigitPressed: digitFun,
-            onActionKeyPressed: actionKeyFun,
-          ),
-        ),
-      ],
-    ),
+      ),
+    ]),
   );
 }

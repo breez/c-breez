@@ -11,10 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  const ClosedChannelPaymentDetailsWidget({
-    super.key,
-    required this.paymentMinutiae,
-  });
+  const ClosedChannelPaymentDetailsWidget({super.key, required this.paymentMinutiae});
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +58,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             RichText(
-              text: TextSpan(
-                style: themeData.dialogTheme.contentTextStyle,
-                text: estimation,
-              ),
+              text: TextSpan(style: themeData.dialogTheme.contentTextStyle, text: estimation),
             ),
             if (paymentMinutiae.fundingTxid != null) ...[
               TxWidget(
@@ -83,7 +77,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
                 ),
                 txID: paymentMinutiae.closingTxid!,
               ),
-            ]
+            ],
           ],
         );
       },

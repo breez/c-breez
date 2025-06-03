@@ -2,9 +2,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:flutter/material.dart';
 
 class NoLSPWidget extends StatelessWidget {
-  const NoLSPWidget({
-    super.key,
-  });
+  const NoLSPWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +19,7 @@ class NoLSPWidget extends StatelessWidget {
           child: Text(
             texts.no_lsp_widget_message,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              color: foregroundColor,
-            ),
+            style: TextStyle(fontSize: 16, color: foregroundColor),
           ),
         ),
         const SizedBox(height: 24),
@@ -36,26 +31,18 @@ class NoLSPWidget extends StatelessWidget {
               height: 24.0,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  side: BorderSide(
-                    color: foregroundColor,
-                    style: BorderStyle.solid,
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6.0)),
+                  side: BorderSide(color: foregroundColor, style: BorderStyle.solid),
                 ),
                 child: Text(
                   texts.no_lsp_widget_action_select,
-                  style: TextStyle(
-                    fontSize: 12.3,
-                    color: foregroundColor,
-                  ),
+                  style: TextStyle(fontSize: 12.3, color: foregroundColor),
                 ),
                 onPressed: () => Navigator.of(context).pushNamed("/select_lsp"),
               ),
-            )
+            ),
           ],
-        )
+        ),
       ],
     );
   }

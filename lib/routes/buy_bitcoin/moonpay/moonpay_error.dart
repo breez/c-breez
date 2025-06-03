@@ -7,10 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class MoonpayError extends StatelessWidget {
   final String error;
 
-  const MoonpayError({
-    super.key,
-    required this.error,
-  });
+  const MoonpayError({super.key, required this.error});
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +19,7 @@ class MoonpayError extends StatelessWidget {
         Expanded(child: Container()),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-          child: Text(
-            error,
-            textAlign: TextAlign.center,
-          ),
+          child: Text(error, textAlign: TextAlign.center),
         ),
         Expanded(child: Container()),
         Padding(

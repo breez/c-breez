@@ -14,10 +14,9 @@ class ReverseSwapState {
     List<ReverseSwapFeeOption>? feeOptions,
     ReverseSwapInfo? reverseSwapInfo,
     String? error,
-  }) =>
-      ReverseSwapState(
-        feeOptions: feeOptions ?? this.feeOptions,
-        reverseSwapInfo: reverseSwapInfo ?? this.reverseSwapInfo,
-        error: error ?? this.error,
-      );
+  }) => ReverseSwapState(
+    feeOptions: feeOptions ?? this.feeOptions,
+    reverseSwapInfo: reverseSwapInfo ?? this.reverseSwapInfo,
+    error: error ?? this.error,
+  );
 }

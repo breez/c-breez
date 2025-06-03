@@ -16,27 +16,26 @@ class WithdrawFundsAvailableBtc extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: 36.0),
-      child: BlocBuilder<AccountBloc, AccountState>(builder: (context, account) {
-        return Row(
-          children: [
-            Text(
-              texts.withdraw_funds_balance,
-              style: theme.textStyle,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 3.0),
-              child: BlocBuilder<CurrencyBloc, CurrencyState>(
-                builder: (context, currencyState) {
-                  return Text(
-                    currencyState.bitcoinCurrency.format(account.balanceSat),
-                    style: theme.textStyle,
-                  );
-                },
+      child: BlocBuilder<AccountBloc, AccountState>(
+        builder: (context, account) {
+          return Row(
+            children: [
+              Text(texts.withdraw_funds_balance, style: theme.textStyle),
+              Padding(
+                padding: const EdgeInsets.only(left: 3.0),
+                child: BlocBuilder<CurrencyBloc, CurrencyState>(
+                  builder: (context, currencyState) {
+                    return Text(
+                      currencyState.bitcoinCurrency.format(account.balanceSat),
+                      style: theme.textStyle,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        },
+      ),
     );
   }
 }

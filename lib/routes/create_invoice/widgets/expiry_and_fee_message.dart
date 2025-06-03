@@ -12,10 +12,7 @@ final log = Logger("ExpiryAndFeeMessage");
 class ExpiryAndFeeMessage extends StatelessWidget {
   final int? lspFees;
 
-  const ExpiryAndFeeMessage({
-    super.key,
-    required this.lspFees,
-  });
+  const ExpiryAndFeeMessage({super.key, required this.lspFees});
 
   @override
   Widget build(BuildContext context) {

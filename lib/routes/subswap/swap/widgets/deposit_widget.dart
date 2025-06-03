@@ -91,16 +91,10 @@ class _DepositWidgetState extends State<DepositWidget> {
     final minFeeAboveZero = minFees > 0;
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFees);
     final minSat = currencyState.bitcoinCurrency.format(
-      _minAllowedDeposit(
-        lspInfo,
-        minAllowedDeposit,
-      ),
+      _minAllowedDeposit(lspInfo, minAllowedDeposit),
       includeDisplayName: true,
     );
-    final maxSat = currencyState.bitcoinCurrency.format(
-      maxAllowedDeposit,
-      includeDisplayName: true,
-    );
+    final maxSat = currencyState.bitcoinCurrency.format(maxAllowedDeposit, includeDisplayName: true);
     final setUpFee = (openingFeeParams.proportional / 10000).toString();
     final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquiditySat);
     final liquidityAboveZero = accountState.maxInboundLiquiditySat > 0;
@@ -148,10 +142,7 @@ class _DepositWidgetState extends State<DepositWidget> {
     }
   }
 
-  int _minAllowedDeposit(
-    LspInformation? lspInfo,
-    int? minAllowedDeposit,
-  ) {
+  int _minAllowedDeposit(LspInformation? lspInfo, int? minAllowedDeposit) {
     final minFees = (lspInfo != null) ? lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000 : 0;
     if (minAllowedDeposit == null) return minFees;
     if (minFees > minAllowedDeposit) return minFees;

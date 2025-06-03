@@ -9,9 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PaymentsFilters extends StatefulWidget {
-  const PaymentsFilters({
-    super.key,
-  });
+  const PaymentsFilters({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -41,30 +39,24 @@ class PaymentsFilterState extends State<PaymentsFilters> {
             texts.payments_filter_option_sent: [PaymentTypeFilter.Sent, PaymentTypeFilter.ClosedChannel],
             texts.payments_filter_option_received: [PaymentTypeFilter.Received],
           };
-          _filter = _getFilterTypeString(
-            context,
-            account.paymentFilters.filters,
-          );
+          _filter = _getFilterTypeString(context, account.paymentFilters.filters);
         }
 
         return Row(
           children: [
             PaymentmentFilterExporter(_getFilterType()),
             PaymentsFilterCalendar(_getFilterType()),
-            PaymentsFilterDropdown(
-              _filter!,
-              (value) {
-                setState(() {
-                  _filter = value?.toString();
-                });
-                final accountBloc = context.read<AccountBloc>();
-                accountBloc.changePaymentFilter(
-                  filters: _getFilterType(),
-                  fromTimestamp: accountBloc.state.paymentFilters.fromTimestamp,
-                  toTimestamp: accountBloc.state.paymentFilters.toTimestamp,
-                );
-              },
-            ),
+            PaymentsFilterDropdown(_filter!, (value) {
+              setState(() {
+                _filter = value?.toString();
+              });
+              final accountBloc = context.read<AccountBloc>();
+              accountBloc.changePaymentFilter(
+                filters: _getFilterType(),
+                fromTimestamp: accountBloc.state.paymentFilters.fromTimestamp,
+                toTimestamp: accountBloc.state.paymentFilters.toTimestamp,
+              );
+            }),
           ],
         );
       },
@@ -75,10 +67,7 @@ class PaymentsFilterState extends State<PaymentsFilters> {
     return _filterMap[_filter] ?? PaymentTypeFilter.values;
   }
 
-  String _getFilterTypeString(
-    BuildContext context,
-    List<PaymentTypeFilter>? filterType,
-  ) {
+  String _getFilterTypeString(BuildContext context, List<PaymentTypeFilter>? filterType) {
     for (var entry in _filterMap.entries) {
       if (entry.value == filterType) {
         return entry.key;

@@ -9,10 +9,7 @@ class Particles extends StatefulWidget {
   final int numberOfParticles;
   final Color color;
 
-  const Particles(
-    this.numberOfParticles, {
-    this.color = Colors.white,
-  });
+  const Particles(this.numberOfParticles, {this.color = Colors.white});
 
   @override
   ParticlesState createState() => ParticlesState();
@@ -39,9 +36,7 @@ class ParticlesState extends State<Particles> {
       builder: (context, animation, child) {
         final time = DateTime.now().difference(startTime);
         _simulateParticles(time);
-        return CustomPaint(
-          painter: ParticlePainter(particles, time, widget.color),
-        );
+        return CustomPaint(painter: ParticlePainter(particles, time, widget.color));
       },
     );
   }

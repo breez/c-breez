@@ -88,10 +88,7 @@ class LnAddressFeeMessage extends StatelessWidget {
     final isFeeApplicable = maxSendableSat > liquiditySat;
     if (!isFeeApplicable) {
       // Send more than {minSendableSat} and up to {maxSendableSat} to this address.
-      return texts.invoice_ln_address_channel_not_needed(
-        minSendableFormatted,
-        maxSendableFormatted,
-      );
+      return texts.invoice_ln_address_channel_not_needed(minSendableFormatted, maxSendableFormatted);
     } else if (liquidityAboveMin) {
       // Send more than {minSendableSat} and up to {maxSendableSat} to this address. A setup fee of {proportionalPercent}% with a minimum of {minFeeFormatted}
       // will be applied for sending more than {liquiditySat}.
@@ -114,11 +111,7 @@ class LnAddressFeeMessage extends StatelessWidget {
     }
   }
 
-  int maxReceivableSat(
-    AccountState account,
-    int channelFeeLimitSat,
-    OpeningFeeParams openingFeeParams,
-  ) {
+  int maxReceivableSat(AccountState account, int channelFeeLimitSat, OpeningFeeParams openingFeeParams) {
     // Treat fee limit feature as disabled when it's set to 0
     if (channelFeeLimitSat != 0) {
       int maxAllowedToReceiveSat = account.maxAllowedToReceiveSat;

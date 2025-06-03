@@ -33,45 +33,45 @@ class HealthCheckHandler extends Handler {
     final bloc = context.read<HealthCheckBloc>();
 
     _listener?.cancel();
-    _listener = bloc.stream.whereNotNull().listen((event) {
-      if (event == HealthCheckStatus.Maintenance || event == HealthCheckStatus.ServiceDisruption) {
-        if (_flushbar != null) {
-          _log.info("Flushbar already shown");
-          return;
-        }
-        if (context.mounted) {
-          _log.info("Showing flushbar for: $event");
-          _flushbar = showFlushbar(
-            context,
-            isDismissible: false,
-            showMainButton: true,
-            position: FlushbarPosition.TOP,
-            duration: Duration.zero,
-            message: event == HealthCheckStatus.Maintenance
-                ? texts.handler_check_version_error_upgrading_servers
-                : texts.handler_health_check_service_disruption,
-            buttonText: texts.handler_health_check_action_retry,
-            onDismiss: () {
-              _flushbar = null;
-              bloc.checkStatus();
-              return true;
-            },
-            icon: SvgPicture.asset(
-              "src/icon/warning.svg",
-              colorFilter: ColorFilter.mode(
-                themeData.colorScheme.error,
-                BlendMode.srcATop,
+    _listener = bloc.stream.whereNotNull().listen(
+      (event) {
+        if (event == HealthCheckStatus.Maintenance || event == HealthCheckStatus.ServiceDisruption) {
+          if (_flushbar != null) {
+            _log.info("Flushbar already shown");
+            return;
+          }
+          if (context.mounted) {
+            _log.info("Showing flushbar for: $event");
+            _flushbar = showFlushbar(
+              context,
+              isDismissible: false,
+              showMainButton: true,
+              position: FlushbarPosition.TOP,
+              duration: Duration.zero,
+              message: event == HealthCheckStatus.Maintenance
+                  ? texts.handler_check_version_error_upgrading_servers
+                  : texts.handler_health_check_service_disruption,
+              buttonText: texts.handler_health_check_action_retry,
+              onDismiss: () {
+                _flushbar = null;
+                bloc.checkStatus();
+                return true;
+              },
+              icon: SvgPicture.asset(
+                "src/icon/warning.svg",
+                colorFilter: ColorFilter.mode(themeData.colorScheme.error, BlendMode.srcATop),
               ),
-            ),
-          );
+            );
+          }
+        } else {
+          _flushbar?.dismiss();
+          _flushbar = null;
         }
-      } else {
-        _flushbar?.dismiss();
-        _flushbar = null;
-      }
-    }, onError: (error) {
-      _log.info("HealthCheckStatus error: $error");
-    });
+      },
+      onError: (error) {
+        _log.info("HealthCheckStatus error: $error");
+      },
+    );
     bloc.checkStatus();
   }
 

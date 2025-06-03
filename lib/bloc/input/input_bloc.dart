@@ -21,11 +21,7 @@ class InputBloc extends Cubit<InputState> {
 
   final _decodeInvoiceController = StreamController<InputData>();
 
-  InputBloc(
-    this._breezSDK,
-    this._lightningLinks,
-    this._device,
-  ) : super(const InputState.empty()) {
+  InputBloc(this._breezSDK, this._lightningLinks, this._device) : super(const InputState.empty()) {
     _initializeInputBloc();
   }
 
@@ -42,8 +38,10 @@ class InputBloc extends Cubit<InputState> {
   Future trackPayment(String? paymentHash) async {
     _log.info("trackPayment: $paymentHash");
     await _breezSDK.invoicePaidStream.firstWhere((invoice) {
-      _log.info("invoice paid: ${invoice.paymentHash} we are waiting for "
-          "$paymentHash, same: ${invoice.paymentHash == paymentHash}");
+      _log.info(
+        "invoice paid: ${invoice.paymentHash} we are waiting for "
+        "$paymentHash, same: ${invoice.paymentHash == paymentHash}",
+      );
       return paymentHash == null || invoice.paymentHash == paymentHash;
     });
   }

@@ -31,10 +31,8 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2720),
-    )..forward(from: 0.0);
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 2720))
+      ..forward(from: 0.0);
     _animation = IntTween(begin: 0, end: 67).animate(_controller!);
     if (_controller!.isCompleted) {
       _controller!.stop();
@@ -65,10 +63,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
               children: [
                 Column(
                   children: [
-                    Expanded(
-                      flex: 200,
-                      child: Container(),
-                    ),
+                    Expanded(flex: 200, child: Container()),
                     Expanded(
                       flex: 171,
                       child: AnimatedBuilder(
@@ -83,10 +78,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
                         },
                       ),
                     ),
-                    Expanded(
-                      flex: 200,
-                      child: Container(),
-                    ),
+                    Expanded(flex: 200, child: Container()),
                     Expanded(
                       flex: 48,
                       child: Padding(
@@ -98,10 +90,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
                         ),
                       ),
                     ),
-                    Expanded(
-                      flex: 60,
-                      child: Container(),
-                    ),
+                    Expanded(flex: 60, child: Container()),
                     SizedBox(
                       height: 48.0,
                       width: 168.0,
@@ -132,10 +121,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
                         ),
                       ),
                     ),
-                    Expanded(
-                      flex: 120,
-                      child: Container(),
-                    ),
+                    Expanded(flex: 120, child: Container()),
                   ],
                 ),
               ],
@@ -189,9 +175,7 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     }
   }
 
-  void _restoreNodeFromMnemonicSeed({
-    List<String>? initialWords,
-  }) async {
+  void _restoreNodeFromMnemonicSeed({List<String>? initialWords}) async {
     _log.info("Restore node from mnemonic seed");
     String? mnemonic = await _getMnemonic(initialWords: initialWords);
     if (mnemonic != null) {
@@ -199,13 +183,8 @@ class InitialWalkthroughPageState extends State<InitialWalkthroughPage>
     }
   }
 
-  Future<String?> _getMnemonic({
-    List<String>? initialWords,
-  }) async {
+  Future<String?> _getMnemonic({List<String>? initialWords}) async {
     _log.info("Get mnemonic, initialWords: ${initialWords?.length}");
-    return await Navigator.of(context).pushNamed<String>(
-      "/enter_mnemonics",
-      arguments: initialWords,
-    );
+    return await Navigator.of(context).pushNamed<String>("/enter_mnemonics", arguments: initialWords);
   }
 }

@@ -27,8 +27,10 @@ class RestoreFormPage extends StatefulWidget {
 class RestoreFormPageState extends State<RestoreFormPage> {
   final _formKey = GlobalKey<FormState>();
 
-  List<TextEditingController> textEditingControllers =
-      List<TextEditingController>.generate(12, (_) => TextEditingController());
+  List<TextEditingController> textEditingControllers = List<TextEditingController>.generate(
+    12,
+    (_) => TextEditingController(),
+  );
 
   late AutovalidateMode _autoValidateMode;
   late bool _hasError;
@@ -62,11 +64,9 @@ class RestoreFormPageState extends State<RestoreFormPage> {
             padding: const EdgeInsets.only(left: 16, right: 16),
             child: Text(
               texts.enter_backup_phrase_error,
-              style: themeData.textTheme.headlineMedium?.copyWith(
-                fontSize: 12,
-              ),
+              style: themeData.textTheme.headlineMedium?.copyWith(fontSize: 12),
             ),
-          )
+          ),
         ],
         SingleButtonBottomBar(
           text: widget.currentPage + 1 == (widget.lastPage + 1)
@@ -94,8 +94,10 @@ class RestoreFormPageState extends State<RestoreFormPage> {
 
   Future _validateMnemonics() async {
     final texts = context.texts();
-    final mnemonic =
-        textEditingControllers.map((controller) => controller.text.toLowerCase().trim()).toList().join(" ");
+    final mnemonic = textEditingControllers
+        .map((controller) => controller.text.toLowerCase().trim())
+        .toList()
+        .join(" ");
     try {
       Navigator.pop(context, mnemonic);
     } catch (e) {

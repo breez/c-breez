@@ -23,9 +23,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Home extends StatefulWidget {
-  const Home({
-    super.key,
-  });
+  const Home({super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -45,10 +43,7 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
       handlers.addAll([
-        InputHandler(
-          firstPaymentItemKey,
-          _scaffoldKey,
-        ),
+        InputHandler(firstPaymentItemKey, _scaffoldKey),
         ConnectivityHandler(),
         NodeConnectivityHandler(),
         PaymentResultHandler(),
@@ -106,10 +101,7 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             key: _scaffoldKey,
-            appBar: HomeAppBar(
-              themeData: themeData,
-              scaffoldKey: _scaffoldKey,
-            ),
+            appBar: HomeAppBar(themeData: themeData, scaffoldKey: _scaffoldKey),
             drawerEnableOpenDragGesture: true,
             drawerDragStartBehavior: DragStartBehavior.down,
             drawerEdgeDragWidth: mediaSize.width,

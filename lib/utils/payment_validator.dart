@@ -9,12 +9,8 @@ final _log = Logger("PaymentValidator");
 class PaymentValidator {
   final BreezTranslations texts;
   final BitcoinCurrency currency;
-  final void Function(
-    int amountSat,
-    bool outgoing,
-    bool channelCreationPossible, {
-    int? channelMinimumFeeSat,
-  }) validatePayment;
+  final void Function(int amountSat, bool outgoing, bool channelCreationPossible, {int? channelMinimumFeeSat})
+  validatePayment;
   final bool channelCreationPossible;
   final int? channelMinimumFeeSat;
 
@@ -45,19 +41,13 @@ class PaymentValidator {
       );
     } on PaymentExceededLimitError catch (e) {
       _log.info("Got PaymentExceededLimitError", e);
-      return texts.invoice_payment_validator_error_payment_exceeded_limit(
-        currency.format(e.limitSat),
-      );
+      return texts.invoice_payment_validator_error_payment_exceeded_limit(currency.format(e.limitSat));
     } on PaymentBelowLimitError catch (e) {
       _log.info("Got PaymentBelowLimitError", e);
-      return texts.invoice_payment_validator_error_payment_below_invoice_limit(
-        currency.format(e.limitSat),
-      );
+      return texts.invoice_payment_validator_error_payment_below_invoice_limit(currency.format(e.limitSat));
     } on PaymentBelowReserveError catch (e) {
       _log.info("Got PaymentBelowReserveError", e);
-      return texts.invoice_payment_validator_error_payment_below_limit(
-        currency.format(e.reserveAmountSat),
-      );
+      return texts.invoice_payment_validator_error_payment_below_limit(currency.format(e.reserveAmountSat));
     } on PaymentExceededLiquidityError catch (e) {
       return "Insufficient inbound liquidity (${currency.format(e.limitSat)})";
     } on InsufficientLocalBalanceError {
@@ -73,9 +63,7 @@ class PaymentValidator {
       return texts.lsp_error_cannot_open_channel;
     } catch (e) {
       _log.info("Got Generic error", e);
-      return texts.invoice_payment_validator_error_unknown(
-        extractExceptionMessage(e, texts),
-      );
+      return texts.invoice_payment_validator_error_unknown(extractExceptionMessage(e, texts));
     }
 
     return null;

@@ -18,18 +18,13 @@ class CsvExporter {
   final DateTime? startDate;
   final DateTime? endDate;
 
-  CsvExporter(
-    this.fiatCurrency,
-    this.accountBloc, {
-    this.usesUtcTime = false,
-    this.startDate,
-    this.endDate,
-  });
+  CsvExporter(this.fiatCurrency, this.accountBloc, {this.usesUtcTime = false, this.startDate, this.endDate});
 
   Future<String> export() async {
     _log.info("export payments started");
-    String tmpFilePath =
-        await _saveCsvFile(const ListToCsvConverter().convert(_generateList() as List<List>));
+    String tmpFilePath = await _saveCsvFile(
+      const ListToCsvConverter().convert(_generateList() as List<List>),
+    );
     _log.info("export payments finished");
     return tmpFilePath;
   }
@@ -43,11 +38,7 @@ class CsvExporter {
       List<String> paymentItem = [];
       final data = filteredPayments.elementAt(index);
       final paymentInfo = data;
-      paymentItem.add(
-        BreezDateUtils.formatYearMonthDayHourMinute(
-          paymentInfo.paymentTime,
-        ),
-      );
+      paymentItem.add(BreezDateUtils.formatYearMonthDayHourMinute(paymentInfo.paymentTime));
       paymentItem.add(paymentInfo.title);
       paymentItem.add(paymentInfo.description);
       paymentItem.add(paymentInfo.destinationPubkey);

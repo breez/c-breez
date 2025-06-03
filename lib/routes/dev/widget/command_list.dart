@@ -25,59 +25,26 @@ class CommandList extends StatelessWidget {
     final themeData = Theme.of(context);
 
     if (loading) {
-      return const Center(
-        child: Loader(
-          color: Colors.white,
-        ),
-      );
+      return const Center(child: Loader(color: Colors.white));
     }
 
     if (defaults) {
       return Theme(
-        data: themeData.copyWith(
-          dividerColor: Colors.transparent,
-        ),
+        data: themeData.copyWith(dividerColor: Colors.transparent),
         child: ListView(
           children: [
             ExpansionTile(
               title: const Text("General"),
               children: [
-                Command(
-                  "generateDiagnosticData",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "getInfo",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "listPeers",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "listPeerChannels",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "listFunds",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "listPayments",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "listInvoices",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "closeAllChannels",
-                  (c) => _onCommand(context, c),
-                ),
-                Command(
-                  "stop",
-                  (c) => _onCommand(context, c),
-                ),
+                Command("generateDiagnosticData", (c) => _onCommand(context, c)),
+                Command("getInfo", (c) => _onCommand(context, c)),
+                Command("listPeers", (c) => _onCommand(context, c)),
+                Command("listPeerChannels", (c) => _onCommand(context, c)),
+                Command("listFunds", (c) => _onCommand(context, c)),
+                Command("listPayments", (c) => _onCommand(context, c)),
+                Command("listInvoices", (c) => _onCommand(context, c)),
+                Command("closeAllChannels", (c) => _onCommand(context, c)),
+                Command("stop", (c) => _onCommand(context, c)),
               ],
             ),
           ],
@@ -88,11 +55,8 @@ class CommandList extends StatelessWidget {
     return ListView(
       children: [
         RichText(
-          text: TextSpan(
-            style: fallbackTextStyle,
-            children: fallback,
-          ),
-        )
+          text: TextSpan(style: fallbackTextStyle, children: fallback),
+        ),
       ],
     );
   }

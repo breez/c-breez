@@ -16,12 +16,9 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   final lib.Config _config;
   final _log = Logger("NetworkSettingsBloc");
 
-  NetworkSettingsBloc(
-    this._preferences,
-    this._config, {
-    http.Client? httpClient,
-  })  : _httpClient = httpClient ?? http.Client(),
-        super(NetworkSettingsState.initial()) {
+  NetworkSettingsBloc(this._preferences, this._config, {http.Client? httpClient})
+    : _httpClient = httpClient ?? http.Client(),
+      super(NetworkSettingsState.initial()) {
     hydrate();
     _fetchMempoolSettings().then((_) => _log.info("Initial mempool settings read"));
   }
@@ -84,9 +81,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
     final mempoolUrl = await _preferences.getMempoolSpaceUrl();
     final mempoolDefaultUrl = _config.defaultMempoolUrl;
     _log.info("Mempool url fetched: $mempoolUrl, default: $mempoolDefaultUrl");
-    emit(state.copyWith(
-      mempoolUrl: mempoolUrl ?? mempoolDefaultUrl,
-    ));
+    emit(state.copyWith(mempoolUrl: mempoolUrl ?? mempoolDefaultUrl));
   }
 
   Future<String?> get mempoolInstance async {
@@ -101,8 +96,9 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   Future<bool> _testUriSupportsMempoolApi(Uri uri) async {
     // We need to make sure that the mempool rest api is supported
     // as the sdk depends on it.
-    final mempoolUri =
-        Uri.tryParse(BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: uri.toString()));
+    final mempoolUri = Uri.tryParse(
+      BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: uri.toString()),
+    );
     if (mempoolUri == null) return false;
     try {
       final response = await _httpClient.get(mempoolUri);

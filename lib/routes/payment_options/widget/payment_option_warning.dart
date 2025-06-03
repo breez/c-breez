@@ -3,9 +3,7 @@ import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 
 class PaymentOptionWarning extends StatelessWidget {
-  const PaymentOptionWarning({
-    super.key,
-  });
+  const PaymentOptionWarning({super.key});
 
   @override
   Widget build(BuildContext context) {

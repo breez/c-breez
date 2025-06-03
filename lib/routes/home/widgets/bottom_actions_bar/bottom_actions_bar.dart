@@ -9,10 +9,7 @@ import 'bottom_action_item.dart';
 class BottomActionsBar extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
 
-  const BottomActionsBar(
-    this.firstPaymentItemKey, {
-    super.key,
-  });
+  const BottomActionsBar(this.firstPaymentItemKey, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +22,9 @@ class BottomActionsBar extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SendOptions(
-              firstPaymentItemKey: firstPaymentItemKey,
-              actionsGroup: actionsGroup,
-            ),
+            SendOptions(firstPaymentItemKey: firstPaymentItemKey, actionsGroup: actionsGroup),
             Container(width: 64),
-            ReceiveOptions(
-              firstPaymentItemKey: firstPaymentItemKey,
-              actionsGroup: actionsGroup,
-            )
+            ReceiveOptions(firstPaymentItemKey: firstPaymentItemKey, actionsGroup: actionsGroup),
           ],
         ),
       ),
@@ -45,11 +36,7 @@ class SendOptions extends StatelessWidget {
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
   final AutoSizeGroup actionsGroup;
 
-  const SendOptions({
-    super.key,
-    required this.firstPaymentItemKey,
-    required this.actionsGroup,
-  });
+  const SendOptions({super.key, required this.firstPaymentItemKey, required this.actionsGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -59,11 +46,7 @@ class SendOptions extends StatelessWidget {
       onPress: () => showModalBottomSheet(
         context: context,
         builder: (context) {
-          return SafeArea(
-            child: SendOptionsBottomSheet(
-              firstPaymentItemKey: firstPaymentItemKey,
-            ),
-          );
+          return SafeArea(child: SendOptionsBottomSheet(firstPaymentItemKey: firstPaymentItemKey));
         },
       ),
       group: actionsGroup,
@@ -77,11 +60,7 @@ class ReceiveOptions extends StatelessWidget {
   final GlobalKey<State<StatefulWidget>> firstPaymentItemKey;
   final AutoSizeGroup actionsGroup;
 
-  const ReceiveOptions({
-    super.key,
-    required this.firstPaymentItemKey,
-    required this.actionsGroup,
-  });
+  const ReceiveOptions({super.key, required this.firstPaymentItemKey, required this.actionsGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -90,11 +69,7 @@ class ReceiveOptions extends StatelessWidget {
       onPress: () => showModalBottomSheet(
         context: context,
         builder: (context) {
-          return SafeArea(
-            child: ReceiveOptionsBottomSheet(
-              firstPaymentItemKey: firstPaymentItemKey,
-            ),
-          );
+          return SafeArea(child: ReceiveOptionsBottomSheet(firstPaymentItemKey: firstPaymentItemKey));
         },
       ),
       group: actionsGroup,

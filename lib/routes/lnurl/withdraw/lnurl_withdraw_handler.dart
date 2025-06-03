@@ -49,8 +49,6 @@ void handleLNURLWithdrawPageResult(BuildContext context, LNURLPageResult result)
     throw result.error!;
   } else {
     _log.info("Handle LNURL withdraw page result with success");
-    Navigator.of(context).push(
-      TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
-    );
+    Navigator.of(context).push(TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()));
   }
 }

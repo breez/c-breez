@@ -21,23 +21,14 @@ class PaymentsList extends StatelessWidget {
   final double _itemHeight;
   final GlobalKey firstPaymentItemKey;
 
-  const PaymentsList(
-    this._payments,
-    this._itemHeight,
-    this.firstPaymentItemKey, {
-    super.key,
-  });
+  const PaymentsList(this._payments, this._itemHeight, this.firstPaymentItemKey, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return SliverFixedExtentList(
       itemExtent: _itemHeight + _kBottomPadding,
       delegate: SliverChildBuilderDelegate(
-        (context, index) => PaymentItem(
-          _payments[index],
-          0 == index,
-          firstPaymentItemKey,
-        ),
+        (context, index) => PaymentItem(_payments[index], 0 == index, firstPaymentItemKey),
         childCount: _payments.length,
       ),
     );
@@ -128,13 +119,9 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider<CurrencyBloc>(
-          create: (BuildContext context) => CurrencyBloc(injector.breezSDK),
-        ),
+        BlocProvider<CurrencyBloc>(create: (BuildContext context) => CurrencyBloc(injector.breezSDK)),
         BlocProvider<UserProfileBloc>(
-          create: (BuildContext context) => UserProfileBloc(
-            injector.breezServer,
-          ),
+          create: (BuildContext context) => UserProfileBloc(injector.breezServer),
         ),
       ],
       child: MaterialApp(
@@ -143,13 +130,7 @@ void main() async {
           body: SafeArea(
             child: CustomScrollView(
               controller: ScrollController(),
-              slivers: [
-                PaymentsList(
-                  minutiae,
-                  72,
-                  firstPaymentItemKey,
-                ),
-              ],
+              slivers: [PaymentsList(minutiae, 72, firstPaymentItemKey)],
             ),
           ),
         ),

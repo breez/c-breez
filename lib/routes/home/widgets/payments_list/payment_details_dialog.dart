@@ -24,26 +24,19 @@ final _log = Logger("PaymentDetailsDialog");
 class PaymentDetailsDialog extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  PaymentDetailsDialog({
-    super.key,
-    required this.paymentMinutiae,
-  }) {
+  PaymentDetailsDialog({super.key, required this.paymentMinutiae}) {
     _log.info("PaymentDetailsDialog for payment: ${paymentMinutiae.id}");
   }
 
   @override
   Widget build(BuildContext context) {
     if (paymentMinutiae.paymentType == PaymentType.ClosedChannel) {
-      return PaymentDetailsDialogClosedChannelDialog(
-        paymentMinutiae: paymentMinutiae,
-      );
+      return PaymentDetailsDialogClosedChannelDialog(paymentMinutiae: paymentMinutiae);
     }
 
     return AlertDialog(
       titlePadding: EdgeInsets.zero,
-      title: PaymentDetailsDialogTitle(
-        paymentMinutiae: paymentMinutiae,
-      ),
+      title: PaymentDetailsDialogTitle(paymentMinutiae: paymentMinutiae),
       contentPadding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 16.0),
       content: SingleChildScrollView(
         child: SizedBox(
@@ -52,12 +45,8 @@ class PaymentDetailsDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              PaymentDetailsDialogContentTitle(
-                paymentMinutiae: paymentMinutiae,
-              ),
-              PaymentDetailsDialogDescription(
-                paymentMinutiae: paymentMinutiae,
-              ),
+              PaymentDetailsDialogContentTitle(paymentMinutiae: paymentMinutiae),
+              PaymentDetailsDialogDescription(paymentMinutiae: paymentMinutiae),
               PaymentDetailsDialogAmount(
                 paymentMinutiae: paymentMinutiae,
                 labelAutoSizeGroup: _labelGroup,
@@ -78,28 +67,19 @@ class PaymentDetailsDialog extends StatelessWidget {
                 labelAutoSizeGroup: _labelGroup,
                 valueAutoSizeGroup: _valueGroup,
               ),
-              PaymentDetailsDialogSuccessAction(
-                paymentMinutiae: paymentMinutiae,
-              ),
+              PaymentDetailsDialogSuccessAction(paymentMinutiae: paymentMinutiae),
               PaymentDetailsDialogExpiration(
                 paymentMinutiae: paymentMinutiae,
                 labelAutoSizeGroup: _labelGroup,
               ),
-              PaymentDetailsPreimage(
-                paymentMinutiae: paymentMinutiae,
-              ),
-              PaymentDetailsDestinationPubkey(
-                paymentMinutiae: paymentMinutiae,
-              ),
+              PaymentDetailsPreimage(paymentMinutiae: paymentMinutiae),
+              PaymentDetailsDestinationPubkey(paymentMinutiae: paymentMinutiae),
             ],
           ),
         ),
       ),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(12.0),
-          top: Radius.circular(13.0),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(12.0), top: Radius.circular(13.0)),
       ),
     );
   }

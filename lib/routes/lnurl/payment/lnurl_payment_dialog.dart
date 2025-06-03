@@ -15,10 +15,7 @@ final _log = Logger("LNURLPaymentDialog");
 class LNURLPaymentDialog extends StatefulWidget {
   final sdk.LnUrlPayRequestData data;
 
-  const LNURLPaymentDialog({
-    required this.data,
-    super.key,
-  });
+  const LNURLPaymentDialog({required this.data, super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -39,16 +36,11 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
     final themeData = Theme.of(context);
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
-    final metadataMap = {
-      for (var v in json.decode(widget.data.metadataStr)) v[0] as String: v[1],
-    };
+    final metadataMap = {for (var v in json.decode(widget.data.metadataStr)) v[0] as String: v[1]};
     final description = metadataMap['text/long-desc'] ?? metadataMap['text/plain'];
     FiatConversion? fiatConversion;
     if (currencyState.fiatEnabled) {
-      fiatConversion = FiatConversion(
-        currencyState.fiatCurrency!,
-        currencyState.fiatExchangeRate!,
-      );
+      fiatConversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     }
 
     return AlertDialog(
@@ -79,14 +71,13 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               });
             },
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minWidth: double.infinity,
-              ),
+              constraints: const BoxConstraints(minWidth: double.infinity),
               child: Text(
                 _showFiatCurrency && fiatConversion != null
                     ? fiatConversion.formatSat(widget.data.maxSendable ~/ 1000)
-                    : BitcoinCurrency.fromTickerSymbol(currencyState.bitcoinTicker)
-                        .format(widget.data.maxSendable ~/ 1000),
+                    : BitcoinCurrency.fromTickerSymbol(
+                        currencyState.bitcoinTicker,
+                      ).format(widget.data.maxSendable ~/ 1000),
                 style: themeData.primaryTextTheme.headlineSmall,
                 textAlign: TextAlign.center,
               ),
@@ -95,17 +86,12 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
           Padding(
             padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0),
             child: Container(
-              constraints: const BoxConstraints(
-                maxHeight: 200,
-                minWidth: double.infinity,
-              ),
+              constraints: const BoxConstraints(maxHeight: 200, minWidth: double.infinity),
               child: Scrollbar(
                 child: SingleChildScrollView(
                   child: Text(
                     description,
-                    style: themeData.primaryTextTheme.displaySmall!.copyWith(
-                      fontSize: 16,
-                    ),
+                    style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
                     textAlign: description.length > 40 && !description.contains("\n")
                         ? TextAlign.start
                         : TextAlign.center,
@@ -152,15 +138,9 @@ class LNURLPaymentDialogState extends State<LNURLPaymentDialog> {
               "min is ${widget.data.minSendable} msats "
               "and max is ${widget.data.maxSendable} msats.",
             );
-            Navigator.pop(
-              context,
-              LNURLPaymentInfo(amountSat: amountSat),
-            );
+            Navigator.pop(context, LNURLPaymentInfo(amountSat: amountSat));
           },
-          child: Text(
-            texts.spontaneous_payment_action_pay,
-            style: themeData.primaryTextTheme.labelLarge,
-          ),
+          child: Text(texts.spontaneous_payment_action_pay, style: themeData.primaryTextTheme.labelLarge),
         ),
       ],
     );

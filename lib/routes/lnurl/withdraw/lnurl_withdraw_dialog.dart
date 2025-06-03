@@ -35,17 +35,11 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
   @override
   void initState() {
     super.initState();
-    final controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    );
+    final controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
     _opacityAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.ease,
-    ));
+    ).animate(CurvedAnimation(parent: controller, curve: Curves.ease));
     controller.value = 1.0;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
@@ -113,10 +107,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
                     ? const SizedBox(height: 16.0)
                     : Padding(
                         padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                        child: Image.asset(
-                          themeData.customData.loaderAssetPath,
-                          gaplessPlayback: true,
-                        ),
+                        child: Image.asset(themeData.customData.loaderAssetPath, gaplessPlayback: true),
                       ),
                 TextButton(
                   onPressed: () => _onFinish(null),
@@ -124,7 +115,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
                     texts.lnurl_withdraw_dialog_action_close,
                     style: themeData.primaryTextTheme.labelLarge,
                   ),
-                )
+                ),
               ],
             );
           },
@@ -140,9 +131,11 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
     final description = widget.requestData.defaultDescription;
 
     try {
-      _log.info("LNURL withdraw of ${widget.amountSat} sats where "
-          "min is ${widget.requestData.minWithdrawable} msats "
-          "and max is ${widget.requestData.maxWithdrawable} msats.");
+      _log.info(
+        "LNURL withdraw of ${widget.amountSat} sats where "
+        "min is ${widget.requestData.minWithdrawable} msats "
+        "and max is ${widget.requestData.maxWithdrawable} msats.",
+      );
       final req = sdk.LnUrlWithdrawRequest(
         amountMsat: widget.amountSat * 1000,
         data: widget.requestData,
@@ -156,10 +149,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
       } else if (resp is sdk.LnUrlWithdrawResult_ErrorStatus) {
         final reason = resp.data.reason;
         _log.info("LNURL withdraw failed: $reason");
-        return LNURLPageResult(
-          protocol: LnUrlProtocol.Withdraw,
-          error: reason,
-        );
+        return LNURLPageResult(protocol: LnUrlProtocol.Withdraw, error: reason);
       } else {
         _log.warning("Unknown response from lnurlWithdraw: $resp");
         return LNURLPageResult(

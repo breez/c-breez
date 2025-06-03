@@ -14,10 +14,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
   final BreezSDK _breezSDK;
   final Preferences _preferences;
 
-  MoonPayBloc(
-    this._breezSDK,
-    this._preferences,
-  ) : super(MoonPayState.initial());
+  MoonPayBloc(this._breezSDK, this._preferences) : super(MoonPayState.initial());
 
   Future<void> fetchMoonpayUrl() async {
     try {
@@ -27,10 +24,12 @@ class MoonPayBloc extends Cubit<MoonPayState> {
 
       if (swapInProgress != null) {
         _log.info("fetchMoonpayUrl swapInfo: $swapInProgress");
-        emit(MoonPayState.swapInProgress(
-          swapInProgress.bitcoinAddress,
-          swapInProgress.status == sdk.SwapStatus.Refundable,
-        ));
+        emit(
+          MoonPayState.swapInProgress(
+            swapInProgress.bitcoinAddress,
+            swapInProgress.status == sdk.SwapStatus.Refundable,
+          ),
+        );
         return;
       }
 

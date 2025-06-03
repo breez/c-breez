@@ -54,16 +54,15 @@ class RestoreFormPageState extends State<RestoreForm> {
                 textInputAction: TextInputAction.next,
                 onSubmitted: (text) async {
                   final suggestions = await _getSuggestions(text);
-                  widget.textEditingControllers[itemIndex].text =
-                      suggestions.length == 1 ? suggestions.first : text;
+                  widget.textEditingControllers[itemIndex].text = suggestions.length == 1
+                      ? suggestions.first
+                      : text;
                   if (itemIndex + 1 < focusNodes.length) {
                     focusNodes[itemIndex + 1].requestFocus();
                   }
                 },
                 focusNode: focusNodes[itemIndex],
-                decoration: InputDecoration(
-                  labelText: "${itemIndex + 1}",
-                ),
+                decoration: InputDecoration(labelText: "${itemIndex + 1}"),
                 style: theme.FieldTextStyle.textStyle,
               ),
               autovalidateMode: _autoValidateMode,
@@ -74,28 +73,15 @@ class RestoreFormPageState extends State<RestoreForm> {
               autoFlipDirection: true,
               suggestionsBoxDecoration: const SuggestionsBoxDecoration(
                 color: Colors.white,
-                constraints: BoxConstraints(
-                  minWidth: 180,
-                  maxWidth: 180,
-                  maxHeight: 180,
-                ),
+                constraints: BoxConstraints(minWidth: 180, maxWidth: 180, maxHeight: 180),
               ),
               itemBuilder: <BuildContext, String>(context, suggestion) {
                 return Container(
                   decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        width: 0.5,
-                        color: Color.fromRGBO(5, 93, 235, 1.0),
-                      ),
-                    ),
+                    border: Border(bottom: BorderSide(width: 0.5, color: Color.fromRGBO(5, 93, 235, 1.0))),
                   ),
                   child: ListTile(
-                    title: Text(
-                      suggestion,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.autoCompleteStyle,
-                    ),
+                    title: Text(suggestion, overflow: TextOverflow.ellipsis, style: theme.autoCompleteStyle),
                   ),
                 );
               },
@@ -123,7 +109,7 @@ class RestoreFormPageState extends State<RestoreForm> {
     return null;
   }
 
-  FutureOr<List<String>> _getSuggestions(pattern) {
+  FutureOr<List<String>> _getSuggestions(String pattern) {
     if (pattern.toString().isEmpty) {
       return List.empty();
     } else {

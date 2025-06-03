@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 class SuccessfulPaymentRoute extends StatefulWidget {
   final Function()? onPrint;
 
-  const SuccessfulPaymentRoute({
-    this.onPrint,
-  });
+  const SuccessfulPaymentRoute({this.onPrint});
 
   @override
   State<StatefulWidget> createState() {
@@ -23,16 +21,15 @@ class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute> with Wid
     super.didChangeDependencies();
     if (_showFuture == null) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _showFuture = showDialog(
-          useRootNavigator: false,
-          context: context,
-          barrierDismissible: true,
-          builder: (context) => SuccessfulPaymentDialog(
-            onPrint: widget.onPrint,
-          ),
-        ).whenComplete(() {
-          if (mounted) Navigator.of(context).pop();
-        });
+        _showFuture =
+            showDialog(
+              useRootNavigator: false,
+              context: context,
+              barrierDismissible: true,
+              builder: (context) => SuccessfulPaymentDialog(onPrint: widget.onPrint),
+            ).whenComplete(() {
+              if (mounted) Navigator.of(context).pop();
+            });
       });
     }
   }
@@ -40,14 +37,7 @@ class SuccessfulPaymentRouteState extends State<SuccessfulPaymentRoute> with Wid
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
-        Positioned.fill(
-          child: Particles(
-            50,
-            color: Colors.blue.withAlpha(150),
-          ),
-        ),
-      ],
+      children: [Positioned.fill(child: Particles(50, color: Colors.blue.withAlpha(150)))],
     );
   }
 }

@@ -10,9 +10,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ChangePinPage extends StatefulWidget {
-  const ChangePinPage({
-    super.key,
-  });
+  const ChangePinPage({super.key});
 
   @override
   State<ChangePinPage> createState() => _ChangePinPageState();
@@ -26,10 +24,7 @@ class _ChangePinPageState extends State<ChangePinPage> {
     final texts = context.texts();
 
     return Scaffold(
-      appBar: AppBar(
-        key: GlobalKey<ScaffoldState>(),
-        leading: const back_button.BackButton(),
-      ),
+      appBar: AppBar(key: GlobalKey<ScaffoldState>(), leading: const back_button.BackButton()),
       body: PinCodeWidget(
         label: _moment() == _Moment.typing_pin_first_time
             ? texts.security_and_backup_new_pin
@@ -60,10 +55,7 @@ class _ChangePinPageState extends State<ChangePinPage> {
   _Moment _moment() => _firstPinCode.isEmpty ? _Moment.typing_pin_first_time : _Moment.confirming_pin;
 }
 
-enum _Moment {
-  typing_pin_first_time,
-  confirming_pin,
-}
+enum _Moment { typing_pin_first_time, confirming_pin }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,15 +66,8 @@ void main() async {
   );
   runApp(
     MultiBlocProvider(
-      providers: [
-        BlocProvider<SecurityBloc>(
-          create: (BuildContext context) => SecurityBloc(),
-        ),
-      ],
-      child: MaterialApp(
-        theme: breezLightTheme,
-        home: const ChangePinPage(),
-      ),
+      providers: [BlocProvider<SecurityBloc>(create: (BuildContext context) => SecurityBloc())],
+      child: MaterialApp(theme: breezLightTheme, home: const ChangePinPage()),
     ),
   );
 }

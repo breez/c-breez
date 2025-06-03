@@ -23,15 +23,11 @@ Flushbar showFlushbar(
   flush = Flushbar(
     isDismissible: isDismissible,
     flushbarPosition: position,
-    titleText: title == null
-        ? null
-        : Text(
-            title,
-            style: const TextStyle(height: 0.0),
-          ),
+    titleText: title == null ? null : Text(title, style: const TextStyle(height: 0.0)),
     icon: icon,
     duration: duration == Duration.zero ? null : duration,
-    messageText: messageWidget ??
+    messageText:
+        messageWidget ??
         Text(
           message ?? texts.flushbar_default_message,
           style: theme.snackBarStyle,
@@ -49,9 +45,7 @@ Flushbar showFlushbar(
             },
             child: Text(
               buttonText ?? texts.flushbar_default_action,
-              style: theme.snackBarStyle.copyWith(
-                color: themeData.colorScheme.error,
-              ),
+              style: theme.snackBarStyle.copyWith(color: themeData.colorScheme.error),
             ),
           ),
   )..show(context);

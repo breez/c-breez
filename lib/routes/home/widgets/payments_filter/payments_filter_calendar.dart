@@ -11,10 +11,7 @@ import 'package:flutter_svg/svg.dart';
 class PaymentsFilterCalendar extends StatelessWidget {
   final List<PaymentTypeFilter> filter;
 
-  const PaymentsFilterCalendar(
-    this.filter, {
-    super.key,
-  });
+  const PaymentsFilterCalendar(this.filter, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,9 +55,7 @@ class PaymentsFilterCalendar extends StatelessWidget {
                   })
                 : ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        texts.payments_filter_message_loading_transactions,
-                      ),
+                      content: Text(texts.payments_filter_message_loading_transactions),
                       behavior: SnackBarBehavior.floating,
                     ),
                   ),

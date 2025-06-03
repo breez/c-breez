@@ -2,9 +2,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:flutter/material.dart';
 
 class SuccessfulPaymentMessage extends StatelessWidget {
-  const SuccessfulPaymentMessage({
-    super.key,
-  });
+  const SuccessfulPaymentMessage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +17,7 @@ class SuccessfulPaymentMessage extends StatelessWidget {
         Text(
           texts.successful_payment_received,
           textAlign: TextAlign.center,
-          style: themeData.primaryTextTheme.headlineMedium!.copyWith(
-            fontSize: 16,
-          ),
+          style: themeData.primaryTextTheme.headlineMedium!.copyWith(fontSize: 16),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 40),

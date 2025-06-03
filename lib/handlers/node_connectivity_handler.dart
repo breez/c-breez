@@ -24,9 +24,11 @@ class NodeConnectivityHandler extends Handler {
         .getBuildContext()!
         .read<AccountBloc>()
         .stream
-        .distinct((previous, next) =>
-            previous.connectionStatus == next.connectionStatus ||
-            next.connectionStatus == ConnectionStatus.CONNECTING)
+        .distinct(
+          (previous, next) =>
+              previous.connectionStatus == next.connectionStatus ||
+              next.connectionStatus == ConnectionStatus.CONNECTING,
+        )
         .listen((a) => _listen(a.connectionStatus));
   }
 
@@ -77,11 +79,7 @@ class NodeConnectivityHandler extends Handler {
     return Flushbar(
       isDismissible: false,
       flushbarPosition: FlushbarPosition.TOP,
-      icon: Icon(
-        Icons.warning_amber_outlined,
-        size: 28.0,
-        color: Theme.of(context).colorScheme.error,
-      ),
+      icon: Icon(Icons.warning_amber_outlined, size: 28.0, color: Theme.of(context).colorScheme.error),
       messageText: Text(
         context.texts().handler_channel_connection_message,
         style: theme.snackBarStyle,
@@ -98,9 +96,7 @@ class NodeConnectivityHandler extends Handler {
                 child: SizedBox(
                   height: 24.0,
                   width: 24.0,
-                  child: CircularProgressIndicator(
-                    color: themeData.colorScheme.error,
-                  ),
+                  child: CircularProgressIndicator(color: themeData.colorScheme.error),
                 ),
               );
             }
@@ -118,9 +114,7 @@ class NodeConnectivityHandler extends Handler {
               },
               child: Text(
                 context.texts().no_connection_flushbar_action_retry,
-                style: theme.snackBarStyle.copyWith(
-                  color: themeData.colorScheme.error,
-                ),
+                style: theme.snackBarStyle.copyWith(color: themeData.colorScheme.error),
               ),
             );
           },

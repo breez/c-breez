@@ -6,10 +6,7 @@ import 'package:share_plus/share_plus.dart';
 class SwapDialog extends StatelessWidget {
   final String backupJson;
 
-  const SwapDialog({
-    super.key,
-    required this.backupJson,
-  });
+  const SwapDialog({super.key, required this.backupJson});
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +27,8 @@ class SwapDialog extends StatelessWidget {
                 ..onTap = () {
                   final RenderBox? box = context.findRenderObject() as RenderBox?;
                   final offset = box != null ? box.localToGlobal(Offset.zero) & box.size : Rect.zero;
-                  final rect = Rect.fromPoints(
-                    offset.topLeft,
-                    offset.bottomRight,
-                  );
-                  final ShareParams shareParams = ShareParams(
-                    text: backupJson,
-                    sharePositionOrigin: rect,
-                  );
+                  final rect = Rect.fromPoints(offset.topLeft, offset.bottomRight);
+                  final ShareParams shareParams = ShareParams(text: backupJson, sharePositionOrigin: rect);
                   SharePlus.instance.share(shareParams);
                 },
             ),

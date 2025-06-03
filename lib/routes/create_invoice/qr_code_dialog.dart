@@ -38,8 +38,10 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
   @override
   void initState() {
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _controller!, curve: Curves.ease));
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller!, curve: Curves.ease));
     _controller!.value = 1.0;
     _controller!.addStatusListener((status) async {
       if (status == AnimationStatus.dismissed && mounted) {
@@ -63,18 +65,19 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
           .read<InputBloc>()
           .trackPayment(widget.receivePaymentResponse!.lnInvoice.paymentHash)
           .then((value) {
-        Timer(const Duration(milliseconds: 1000), () {
-          if (mounted) {
-            _controller!.reverse();
-          }
-        });
-      }).catchError((e) {
-        _log.warning("Failed to track payment", e);
-        if (mounted) {
-          showFlushbar(context, message: extractExceptionMessage(e, context.texts()));
-        }
-        onFinish(false);
-      });
+            Timer(const Duration(milliseconds: 1000), () {
+              if (mounted) {
+                _controller!.reverse();
+              }
+            });
+          })
+          .catchError((e) {
+            _log.warning("Failed to track payment", e);
+            if (mounted) {
+              showFlushbar(context, message: extractExceptionMessage(e, context.texts()));
+            }
+            onFinish(false);
+          });
     }
   }
 
@@ -121,9 +124,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
                         color: themeData.primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
-                          ServiceInjector()
-                              .device
-                              .setClipboardText(widget.receivePaymentResponse!.lnInvoice.bolt11);
+                          ServiceInjector().device.setClipboardText(
+                            widget.receivePaymentResponse!.lnInvoice.bolt11,
+                          );
                           showFlushbar(
                             context,
                             message: texts.qr_code_dialog_copied,
@@ -131,9 +134,9 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                           );
                         },
                       ),
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
             titlePadding: const EdgeInsets.fromLTRB(20.0, 22.0, 0.0, 8.0),
@@ -170,10 +173,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                 onPressed: (() {
                   onFinish(false);
                 }),
-                child: Text(
-                  texts.qr_code_dialog_action_close,
-                  style: themeData.primaryTextTheme.labelLarge,
-                ),
+                child: Text(texts.qr_code_dialog_action_close, style: themeData.primaryTextTheme.labelLarge),
               ),
             ],
           ),

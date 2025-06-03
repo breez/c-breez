@@ -65,10 +65,7 @@ class SuccessActionDialogState extends State<SuccessActionDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text(
-            texts.lnurl_withdraw_dialog_action_close,
-            style: themeData.primaryTextTheme.labelLarge,
-          ),
+          child: Text(texts.lnurl_withdraw_dialog_action_close, style: themeData.primaryTextTheme.labelLarge),
         ),
       ],
     );
@@ -86,10 +83,7 @@ class Message extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: Container(
-        constraints: const BoxConstraints(
-          maxHeight: 200,
-          minWidth: double.infinity,
-        ),
+        constraints: const BoxConstraints(maxHeight: 200, minWidth: double.infinity),
         child: Scrollbar(
           child: SingleChildScrollView(
             child: AutoSizeText(

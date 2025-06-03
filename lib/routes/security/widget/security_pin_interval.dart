@@ -4,16 +4,13 @@ import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Preview;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SecurityPinInterval extends StatelessWidget {
   final Duration interval;
 
-  const SecurityPinInterval({
-    super.key,
-    required this.interval,
-  });
+  const SecurityPinInterval({super.key, required this.interval});
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +22,7 @@ class SecurityPinInterval extends StatelessWidget {
     return ListTile(
       title: Text(
         texts.security_and_backup_lock_automatically,
-        style: themeData.primaryTextTheme.titleMedium?.copyWith(
-          color: Colors.white,
-        ),
+        style: themeData.primaryTextTheme.titleMedium?.copyWith(color: Colors.white),
         maxLines: 1,
       ),
       trailing: DropdownButtonHideUnderline(
@@ -45,9 +40,7 @@ class SecurityPinInterval extends StatelessWidget {
               value: seconds,
               child: Text(
                 _formatSeconds(texts, seconds),
-                style: themeData.primaryTextTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                ),
+                style: themeData.primaryTextTheme.titleMedium?.copyWith(color: Colors.white),
                 maxLines: 1,
               ),
             );
@@ -71,11 +64,5 @@ class SecurityPinInterval extends StatelessWidget {
 }
 
 void main() {
-  runApp(
-    const Preview(
-      [
-        SecurityPinInterval(interval: Duration(seconds: 120)),
-      ],
-    ),
-  );
+  runApp(const Preview([SecurityPinInterval(interval: Duration(seconds: 120))]));
 }

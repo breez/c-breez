@@ -20,11 +20,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
   final Preferences _preferences;
   final Notifications _notifications;
 
-  WebhooksBloc(
-    this._breezSDK,
-    this._preferences,
-    this._notifications,
-  ) : super(WebhooksState()) {
+  WebhooksBloc(this._breezSDK, this._preferences, this._notifications) : super(WebhooksState()) {
     _breezSDK.nodeStateStream
         .firstWhere((nodeState) => nodeState != null)
         .then((nodeState) => refreshLnurlPay(nodeState: nodeState!));
@@ -61,10 +57,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     }
   }
 
-  Future<String> _registerLnurlpay(
-    NodeState nodeState,
-    String webhookUrl,
-  ) async {
+  Future<String> _registerLnurlpay(NodeState nodeState, String webhookUrl) async {
     final lastUsedLnurlPay = await _preferences.getLnUrlPayKey();
     if (lastUsedLnurlPay != null && lastUsedLnurlPay != webhookUrl) {
       await _invalidateLnurlPay(nodeState, lastUsedLnurlPay);
@@ -77,11 +70,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     final jsonResponse = await http.post(
       uri,
       body: jsonEncode(
-        AddWebhookRequest(
-          time: currentTime,
-          webhookUrl: webhookUrl,
-          signature: signature.signature,
-        ).toJson(),
+        AddWebhookRequest(time: currentTime, webhookUrl: webhookUrl, signature: signature.signature).toJson(),
       ),
     );
     if (jsonResponse.statusCode == 200) {
@@ -95,10 +84,7 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     }
   }
 
-  Future<void> _invalidateLnurlPay(
-    NodeState nodeState,
-    String toInvalidate,
-  ) async {
+  Future<void> _invalidateLnurlPay(NodeState nodeState, String toInvalidate) async {
     final lnurlWebhookUrl = "$lnurlServiceURL/lnurlpay/${nodeState.id}";
     final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final req = SignMessageRequest(message: "$currentTime-$toInvalidate");
@@ -124,8 +110,8 @@ class WebhooksBloc extends Cubit<WebhooksState> {
     final platform = defaultTargetPlatform == TargetPlatform.iOS
         ? "ios"
         : defaultTargetPlatform == TargetPlatform.android
-            ? "android"
-            : "";
+        ? "android"
+        : "";
     if (platform.isEmpty) {
       throw Exception("Notifications for platform is not supported");
     }

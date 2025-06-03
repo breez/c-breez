@@ -29,11 +29,7 @@ class BreezDateUtils {
     }
   }
 
-  static bool isBetween(
-    DateTime date,
-    DateTime fromDateTime,
-    DateTime toDateTime,
-  ) {
+  static bool isBetween(DateTime date, DateTime fromDateTime, DateTime toDateTime) {
     final isAfter = date.isAfter(fromDateTime);
     final isBefore = date.isBefore(toDateTime);
     return isAfter && isBefore;

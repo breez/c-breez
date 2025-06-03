@@ -6,10 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class SuccessfulPaymentDialog extends StatelessWidget {
   final Function()? onPrint;
 
-  const SuccessfulPaymentDialog({
-    super.key,
-    this.onPrint,
-  });
+  const SuccessfulPaymentDialog({super.key, this.onPrint});
 
   @override
   Widget build(BuildContext context) {

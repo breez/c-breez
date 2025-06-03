@@ -46,9 +46,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
                 child: TextField(
                   focusNode: _cliEntryFocusNode,
                   controller: _cliInputController,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter a command or use the links below',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Enter a command or use the links below'),
                   onSubmitted: (command) {
                     _sendCommand(command);
                   },
@@ -83,12 +81,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
             child: Container(
               padding: _showDefaultCommands ? const EdgeInsets.all(0.0) : const EdgeInsets.all(2.0),
               decoration: BoxDecoration(
-                border: _showDefaultCommands
-                    ? null
-                    : Border.all(
-                        width: 1.0,
-                        color: const Color(0x80FFFFFF),
-                      ),
+                border: _showDefaultCommands ? null : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -107,10 +100,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
                                 ServiceInjector().device.setClipboardText(_cliText);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Text(
-                                      'Copied to clipboard.',
-                                      style: theme.snackBarStyle,
-                                    ),
+                                    content: Text('Copied to clipboard.', style: theme.snackBarStyle),
                                     backgroundColor: theme.snackBarBackgroundColor,
                                     duration: const Duration(seconds: 2),
                                   ),
@@ -122,12 +112,9 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
                               iconSize: 19.0,
                               tooltip: 'Share',
                               onPressed: () {
-                                _shareFile(
-                                  _lastCommand.split(" ")[0],
-                                  _cliText,
-                                );
+                                _shareFile(_lastCommand.split(" ")[0], _cliText);
                               },
-                            )
+                            ),
                           ],
                         ),
                   Expanded(
@@ -212,10 +199,7 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
     String filePath = '${tempDir.path}/$command.json';
     File file = File(filePath);
     await file.writeAsString(text, flush: true);
-    final ShareParams shareParams = ShareParams(
-      title: command,
-      files: <XFile>[XFile(filePath)],
-    );
+    final ShareParams shareParams = ShareParams(title: command, files: <XFile>[XFile(filePath)]);
     SharePlus.instance.share(shareParams);
   }
 }

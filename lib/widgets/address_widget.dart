@@ -6,10 +6,7 @@ import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
-enum AddressWidgetType {
-  bitcoin,
-  lnurl,
-}
+enum AddressWidgetType { bitcoin, lnurl }
 
 class AddressWidget extends StatelessWidget {
   final String address;
@@ -42,11 +39,7 @@ class AddressHeaderWidget extends StatelessWidget {
   final String address;
   final String? title;
 
-  const AddressHeaderWidget({
-    super.key,
-    this.title,
-    required this.address,
-  });
+  const AddressHeaderWidget({super.key, this.title, required this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +48,7 @@ class AddressHeaderWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title ?? "",
-            style: theme.FieldTextStyle.labelStyle,
-          ),
+          Text(title ?? "", style: theme.FieldTextStyle.labelStyle),
           Row(
             children: [
               _ShareIcon(title: title, address: address),
@@ -75,10 +65,7 @@ class _ShareIcon extends StatelessWidget {
   final String? title;
   final String address;
 
-  const _ShareIcon({
-    required this.title,
-    required this.address,
-  });
+  const _ShareIcon({required this.title, required this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -87,15 +74,8 @@ class _ShareIcon extends StatelessWidget {
       onPressed: () {
         final RenderBox? box = context.findRenderObject() as RenderBox?;
         final offset = box != null ? box.localToGlobal(Offset.zero) & box.size : Rect.zero;
-        final rect = Rect.fromPoints(
-          offset.topLeft,
-          offset.bottomRight,
-        );
-        final ShareParams shareParams = ShareParams(
-          title: title,
-          text: address,
-          sharePositionOrigin: rect,
-        );
+        final rect = Rect.fromPoints(offset.topLeft, offset.bottomRight);
+        final ShareParams shareParams = ShareParams(title: title, text: address, sharePositionOrigin: rect);
         SharePlus.instance.share(shareParams);
       },
     );
@@ -105,9 +85,7 @@ class _ShareIcon extends StatelessWidget {
 class _CopyIcon extends StatelessWidget {
   final String address;
 
-  const _CopyIcon({
-    required this.address,
-  });
+  const _CopyIcon({required this.address});
 
   @override
   Widget build(BuildContext context) {
@@ -116,10 +94,7 @@ class _CopyIcon extends StatelessWidget {
       icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
       onPressed: () {
         ServiceInjector().device.setClipboardText(address);
-        showFlushbar(
-          context,
-          message: texts.invoice_btc_address_deposit_address_copied,
-        );
+        showFlushbar(context, message: texts.invoice_btc_address_deposit_address_copied);
       },
     );
   }

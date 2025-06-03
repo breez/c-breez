@@ -23,13 +23,13 @@ class RefundBloc extends Cubit<RefundState> {
 
   void _initializeRefundBloc() {
     late final StreamSubscription streamSubscription;
-    streamSubscription = _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
-      (nodeState) async {
-        _log.info('Initialize RefundBloc');
-        listRefundables();
-        streamSubscription.cancel();
-      },
-    );
+    streamSubscription = _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen((
+      nodeState,
+    ) async {
+      _log.info('Initialize RefundBloc');
+      listRefundables();
+      streamSubscription.cancel();
+    });
   }
 
   // Fetch the refundable swaps list from the sdk.
@@ -46,19 +46,20 @@ class RefundBloc extends Cubit<RefundState> {
     }
   }
 
-  _listenSwapEvents() {
-    _breezSDK.swapEventsStream.listen((event) {
-      printWrapped(_log, 'Got SwapUpdate event: ${swapInfoToString(event.details)}');
-      listRefundables();
-    }, onError: (e) {
-      _log.severe('Failed to listen swapEventsStream: $e');
-    });
+  void _listenSwapEvents() {
+    _breezSDK.swapEventsStream.listen(
+      (event) {
+        printWrapped(_log, 'Got SwapUpdate event: ${swapInfoToString(event.details)}');
+        listRefundables();
+      },
+      onError: (e) {
+        _log.severe('Failed to listen swapEventsStream: $e');
+      },
+    );
   }
 
   /// Broadcast a refund transaction for a failed/expired swap.
-  Future<String> refund({
-    required RefundRequest req,
-  }) async {
+  Future<String> refund({required RefundRequest req}) async {
     _log.info("Refunding swap ${req.swapAddress} to ${req.toAddress} with fee ${req.satPerVbyte}");
     try {
       final refundResponse = await _breezSDK.refund(req: req);

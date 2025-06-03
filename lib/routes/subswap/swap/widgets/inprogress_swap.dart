@@ -12,9 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SwapInprogress extends StatelessWidget {
   final SwapInfo swap;
 
-  const SwapInprogress({
-    required this.swap,
-  });
+  const SwapInprogress({required this.swap});
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +23,10 @@ class SwapInprogress extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _ContentWrapper(
-          content: Text(texts.add_funds_error_deposit, textAlign: TextAlign.center),
-          top: 50.0,
-        ),
-        if (swapTxs.isNotEmpty) ...[
-          _ContentWrapper(
-            content: _TxLink(txid: swapTxs[0]),
-          ),
-        ],
+        _ContentWrapper(content: Text(texts.add_funds_error_deposit, textAlign: TextAlign.center), top: 50.0),
+        if (swapTxs.isNotEmpty) ...[_ContentWrapper(content: _TxLink(txid: swapTxs[0]))],
         if (swap.lastRedeemError != null) ...[
-          _ContentWrapper(
-            content: Text(swap.lastRedeemError!, textAlign: TextAlign.center),
-          ),
+          _ContentWrapper(content: Text(swap.lastRedeemError!, textAlign: TextAlign.center)),
         ],
       ],
     );
@@ -64,8 +53,10 @@ class _TxLink extends StatelessWidget {
 
         return LinkLauncher(
           linkName: txid,
-          linkAddress:
-              BlockChainExplorerUtils().formatTransactionUrl(txid: txid, mempoolInstance: mempoolInstance),
+          linkAddress: BlockChainExplorerUtils().formatTransactionUrl(
+            txid: txid,
+            mempoolInstance: mempoolInstance,
+          ),
           onCopy: () {
             ServiceInjector().device.setClipboardText(txid);
             showFlushbar(
@@ -89,11 +80,7 @@ class _ContentWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        top: top,
-        left: 30.0,
-        right: 30.0,
-      ),
+      padding: EdgeInsets.only(top: top, left: 30.0, right: 30.0),
       child: content,
     );
   }

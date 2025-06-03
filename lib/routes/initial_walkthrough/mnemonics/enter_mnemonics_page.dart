@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 class EnterMnemonicsPage extends StatefulWidget {
   final List<String> initialWords;
 
-  const EnterMnemonicsPage({
-    super.key,
-    required this.initialWords,
-  });
+  const EnterMnemonicsPage({super.key, required this.initialWords});
 
   @override
   EnterMnemonicsPageState createState() => EnterMnemonicsPageState();
@@ -50,12 +47,7 @@ class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
               }
             },
           ),
-          title: Text(
-            texts.enter_backup_phrase(
-              _currentPage.toString(),
-              _lastPage.toString(),
-            ),
-          ),
+          title: Text(texts.enter_backup_phrase(_currentPage.toString(), _lastPage.toString())),
         ),
         body: SingleChildScrollView(
           child: SizedBox(

@@ -29,11 +29,9 @@ Future<LNURLPageResult?> handlePayRequest(
       builder: (_) => LNURLPaymentDialog(data: data),
     );
   } else {
-    paymentInfo = await Navigator.of(context).push<LNURLPaymentInfo>(
-      FadeInRoute(
-        builder: (_) => LNURLPaymentPage(data: data),
-      ),
-    );
+    paymentInfo = await Navigator.of(
+      context,
+    ).push<LNURLPaymentInfo>(FadeInRoute(builder: (_) => LNURLPaymentPage(data: data)));
   }
   if (paymentInfo == null || !context.mounted) {
     return Future.value();
@@ -62,22 +60,13 @@ Future<LNURLPageResult?> handlePayRequest(
     if (result is LnUrlPayResult) {
       if (result is LnUrlPayResult_EndpointSuccess) {
         _log.info("LNURL payment success, action: ${result.data}");
-        return LNURLPageResult(
-          protocol: LnUrlProtocol.Pay,
-          successAction: result.data.successAction,
-        );
+        return LNURLPageResult(protocol: LnUrlProtocol.Pay, successAction: result.data.successAction);
       } else if (result is LnUrlPayResult_PayError) {
         _log.info("LNURL payment for ${result.data.paymentHash} failed: ${result.data.reason}");
-        return LNURLPageResult(
-          protocol: LnUrlProtocol.Pay,
-          error: result.data.reason,
-        );
+        return LNURLPageResult(protocol: LnUrlProtocol.Pay, error: result.data.reason);
       } else if (result is LnUrlPayResult_EndpointError) {
         _log.info("LNURL payment failed: ${result.data.reason}");
-        return LNURLPageResult(
-          protocol: LnUrlProtocol.Pay,
-          error: result.data.reason,
-        );
+        return LNURLPageResult(protocol: LnUrlProtocol.Pay, error: result.data.reason);
       }
     }
     _log.warning("Error sending LNURL payment", result);
@@ -116,9 +105,6 @@ Future _handleSuccessAction(BuildContext context, SuccessActionProcessed success
   return showDialog(
     useRootNavigator: false,
     context: context,
-    builder: (_) => SuccessActionDialog(
-      message: message,
-      url: url,
-    ),
+    builder: (_) => SuccessActionDialog(message: message, url: url),
   );
 }

@@ -19,8 +19,9 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
   }
 
   Stream<List<ConnectivityResult>> _watchConnectivityChanges() {
-    return _connectivity.onConnectivityChanged
-        .asyncMap((status) async => await _updateConnectionStatus(status));
+    return _connectivity.onConnectivityChanged.asyncMap(
+      (status) async => await _updateConnectionStatus(status),
+    );
   }
 
   Future<ConnectivityState> checkConnectivity() async {
@@ -49,8 +50,9 @@ class ConnectivityBloc extends Cubit<ConnectivityState> {
 
   Future<bool> _isConnected() async {
     try {
-      List<InternetAddress> result =
-          await InternetAddress.lookup('scheduler.gl.blckstrm.com').timeout(const Duration(seconds: 5));
+      List<InternetAddress> result = await InternetAddress.lookup(
+        'scheduler.gl.blckstrm.com',
+      ).timeout(const Duration(seconds: 5));
 
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         return true;

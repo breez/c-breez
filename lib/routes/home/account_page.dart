@@ -28,11 +28,7 @@ class AccountPage extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
   final ScrollController scrollController;
 
-  const AccountPage(
-    this.firstPaymentItemKey,
-    this.scrollController, {
-    super.key,
-  });
+  const AccountPage(this.firstPaymentItemKey, this.scrollController, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +39,7 @@ class AccountPage extends StatelessWidget {
             _log.info("AccountPage build with ${accountState.payments.length} payments");
             return Container(
               color: Theme.of(context).customData.dashboardBgColor,
-              child: _build(
-                context,
-                accountState,
-                userModel,
-              ),
+              child: _build(context, accountState, userModel),
             );
           },
         );
@@ -55,11 +47,7 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  Widget _build(
-    BuildContext context,
-    AccountState accountState,
-    UserProfileState userModel,
-  ) {
+  Widget _build(BuildContext context, AccountState accountState, UserProfileState userModel) {
     final nonFilteredPayments = accountState.payments;
     final paymentFilters = accountState.paymentFilters;
     final filteredPayments = context.read<AccountBloc>().filterPaymentList();
@@ -67,11 +55,7 @@ class AccountPage extends StatelessWidget {
     List<Widget> slivers = [];
 
     slivers.add(
-      const SliverPersistentHeader(
-        floating: false,
-        delegate: WalletDashboardHeaderDelegate(),
-        pinned: true,
-      ),
+      const SliverPersistentHeader(floating: false, delegate: WalletDashboardHeaderDelegate(), pinned: true),
     );
 
     final bool showSliver =
@@ -100,13 +84,7 @@ class AccountPage extends StatelessWidget {
     }
 
     if (showSliver) {
-      slivers.add(
-        PaymentsList(
-          filteredPayments,
-          _kPaymentListItemHeight,
-          firstPaymentItemKey,
-        ),
-      );
+      slivers.add(PaymentsList(filteredPayments, _kPaymentListItemHeight, firstPaymentItemKey));
       slivers.add(
         SliverPersistentHeader(
           pinned: true,
@@ -122,19 +100,18 @@ class AccountPage extends StatelessWidget {
           delegate: FixedSliverDelegate(
             250.0,
             builder: (context, shrinkedHeight, overlapContent) {
-              return BlocBuilder<LSPBloc, LspState?>(builder: (context, lspState) {
-                var isConnecting = accountState.connectionStatus == ConnectionStatus.CONNECTING;
-                if (!isConnecting && lspState != null && lspState.selectedLspId == null) {
-                  return const Padding(
-                    padding: EdgeInsets.only(top: 120.0),
-                    child: NoLSPWidget(),
+              return BlocBuilder<LSPBloc, LspState?>(
+                builder: (context, lspState) {
+                  var isConnecting = accountState.connectionStatus == ConnectionStatus.CONNECTING;
+                  if (!isConnecting && lspState != null && lspState.selectedLspId == null) {
+                    return const Padding(padding: EdgeInsets.only(top: 120.0), child: NoLSPWidget());
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
+                    child: StatusText(accountState: accountState, lspState: lspState),
                   );
-                }
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(40.0, 120.0, 40.0, 0.0),
-                  child: StatusText(accountState: accountState, lspState: lspState),
-                );
-              });
+                },
+              );
             },
           ),
         ),
@@ -146,26 +123,22 @@ class AccountPage extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         !showSliver ? CustomPaint(painter: BubblePainter(context)) : const SizedBox(),
-        CustomScrollView(
-          controller: scrollController,
-          slivers: slivers,
-        ),
+        CustomScrollView(controller: scrollController, slivers: slivers),
       ],
     );
   }
 
-  double _bottomPlaceholderSpace(
-    BuildContext context,
-    List<PaymentMinutiae> payments,
-  ) {
+  double _bottomPlaceholderSpace(BuildContext context, List<PaymentMinutiae> payments) {
     if (payments.isEmpty) return 0.0;
     double listHeightSpace =
         MediaQuery.of(context).size.height - kMinExtent - kToolbarHeight - _kFilterMaxSize - 25.0;
     const endDate = null;
     double dateFilterSpace = endDate != null ? 0.65 : 0.0;
     double bottomPlaceholderSpace =
-        (listHeightSpace - (_kPaymentListItemHeight + 8) * (payments.length + 1 + dateFilterSpace))
-            .clamp(0.0, listHeightSpace);
+        (listHeightSpace - (_kPaymentListItemHeight + 8) * (payments.length + 1 + dateFilterSpace)).clamp(
+          0.0,
+          listHeightSpace,
+        );
     return bottomPlaceholderSpace;
   }
 }

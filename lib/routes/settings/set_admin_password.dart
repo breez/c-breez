@@ -9,10 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SetAdminPasswordPage extends StatefulWidget {
   final String submitAction;
 
-  const SetAdminPasswordPage({
-    super.key,
-    required this.submitAction,
-  });
+  const SetAdminPasswordPage({super.key, required this.submitAction});
 
   @override
   State<StatefulWidget> createState() {
@@ -112,7 +109,7 @@ class _SetAdminPasswordState extends State<SetAdminPasswordPage> {
                   }
                   return null;
                 },
-              )
+              ),
             ],
           ),
         ),

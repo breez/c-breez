@@ -4,10 +4,7 @@ class BitcoinAddressInfo {
   final String? address;
   final int? satAmount;
 
-  const BitcoinAddressInfo(
-    this.address,
-    this.satAmount,
-  );
+  const BitcoinAddressInfo(this.address, this.satAmount);
 
   factory BitcoinAddressInfo.fromScannedString(String? scannedString) {
     String? address;

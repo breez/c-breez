@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 class PaymentDetailsDialogContentTitle extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  const PaymentDetailsDialogContentTitle({
-    super.key,
-    required this.paymentMinutiae,
-  });
+  const PaymentDetailsDialogContentTitle({super.key, required this.paymentMinutiae});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +17,7 @@ class PaymentDetailsDialogContentTitle extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 16.0,
-        right: 16.0,
-        bottom: 8,
-      ),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8),
       child: AutoSizeText(
         title,
         style: themeData.primaryTextTheme.titleLarge,

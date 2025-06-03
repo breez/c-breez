@@ -5,19 +5,11 @@ class RefundState {
   final String? refundTxId;
   final String? error;
 
-  RefundState({
-    this.refundables,
-    this.refundTxId,
-    this.error = "",
-  });
+  RefundState({this.refundables, this.refundTxId, this.error = ""});
 
   RefundState.initial() : this();
 
-  RefundState copyWith({
-    List<SwapInfo>? refundables,
-    String? refundTxId,
-    String? error,
-  }) {
+  RefundState copyWith({List<SwapInfo>? refundables, String? refundTxId, String? error}) {
     return RefundState(
       refundables: refundables ?? this.refundables,
       refundTxId: refundTxId ?? this.refundTxId,

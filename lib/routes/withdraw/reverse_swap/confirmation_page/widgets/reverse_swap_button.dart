@@ -48,10 +48,7 @@ class ReverseSwapButton extends StatelessWidget {
       promptError(
         context,
         null,
-        Text(
-          extractExceptionMessage(e, texts),
-          style: themeData.dialogTheme.contentTextStyle,
-        ),
+        Text(extractExceptionMessage(e, texts), style: themeData.dialogTheme.contentTextStyle),
       );
     }
   }

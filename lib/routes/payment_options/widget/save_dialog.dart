@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 class SaveDialog extends StatelessWidget {
   final GlobalKey<FormState> formKey;
 
-  const SaveDialog({
-    required this.formKey,
-    super.key,
-  });
+  const SaveDialog({required this.formKey, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +23,11 @@ class SaveDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          child: Text(
-            texts.payment_options_fee_action_cancel,
-            style: themeData.primaryTextTheme.labelLarge,
-          ),
+          child: Text(texts.payment_options_fee_action_cancel, style: themeData.primaryTextTheme.labelLarge),
           onPressed: () => Navigator.pop(context),
         ),
         TextButton(
-          child: Text(
-            texts.payment_options_fee_action_save,
-            style: themeData.primaryTextTheme.labelLarge,
-          ),
+          child: Text(texts.payment_options_fee_action_save, style: themeData.primaryTextTheme.labelLarge),
           onPressed: () {
             try {
               formKey.currentState!.save();

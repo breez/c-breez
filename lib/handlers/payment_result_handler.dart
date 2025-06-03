@@ -22,9 +22,7 @@ class PaymentResultHandler extends Handler {
   final Preferences preferences;
   StreamSubscription<PaymentResult>? _subscription;
 
-  PaymentResultHandler({
-    this.preferences = const Preferences(),
-  });
+  PaymentResultHandler({this.preferences = const Preferences()});
 
   @override
   void init(HandlerContextProvider contextProvider) {
@@ -69,10 +67,7 @@ class PaymentResultHandler extends Handler {
       );
     } else if (error != null) {
       _log.info("paymentResult error: $error");
-      showFlushbar(
-        context,
-        message: error.message,
-      );
+      showFlushbar(context, message: error.message);
       _reportFlow(error.paymentHash, error.comment);
     } else {
       _log.warning("paymentResult is null and error is null");
@@ -107,7 +102,8 @@ class PaymentResultHandler extends Handler {
           _log.info("Got result from PaymentFailedReportDialog: $result");
           if (result.doNotAskAgain) {
             await preferences.setBugReportBehavior(
-                result.report ? BugReportBehavior.SEND_REPORT : BugReportBehavior.IGNORE);
+              result.report ? BugReportBehavior.SEND_REPORT : BugReportBehavior.IGNORE,
+            );
           }
           if (result.report) {
             _report(paymentHash, comment);

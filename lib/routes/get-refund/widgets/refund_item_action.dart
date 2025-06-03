@@ -13,10 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RefundItemAction extends StatefulWidget {
   final SwapInfo swapInfo;
 
-  const RefundItemAction(
-    this.swapInfo, {
-    super.key,
-  });
+  const RefundItemAction(this.swapInfo, {super.key});
 
   @override
   State<RefundItemAction> createState() => _RefundItemActionState();
@@ -57,19 +54,18 @@ class _RefundItemActionState extends State<RefundItemAction> {
                 height: 36.0,
                 width: 145.0,
                 child: SubmitButton(
-                    widget.swapInfo.refundTxIds.isEmpty
-                        ? texts.get_refund_action_continue
-                        : texts.get_refund_action_broadcasted,
-                    widget.swapInfo.refundTxIds.isEmpty
-                        ? () {
-                            Navigator.of(context).push(
-                              FadeInRoute(
-                                builder: (_) => RefundPage(widget.swapInfo),
-                              ),
-                            );
-                          }
-                        : null,
-                    enabled: widget.swapInfo.refundTxIds.isEmpty),
+                  widget.swapInfo.refundTxIds.isEmpty
+                      ? texts.get_refund_action_continue
+                      : texts.get_refund_action_broadcasted,
+                  widget.swapInfo.refundTxIds.isEmpty
+                      ? () {
+                          Navigator.of(
+                            context,
+                          ).push(FadeInRoute(builder: (_) => RefundPage(widget.swapInfo)));
+                        }
+                      : null,
+                  enabled: widget.swapInfo.refundTxIds.isEmpty,
+                ),
               ),
             ),
           ],

@@ -6,11 +6,7 @@ class SingleButtonBottomBar extends StatelessWidget {
   final String text;
   final bool stickToBottom;
 
-  const SingleButtonBottomBar({
-    required this.text,
-    this.onPressed,
-    this.stickToBottom = false,
-  });
+  const SingleButtonBottomBar({required this.text, this.onPressed, this.stickToBottom = false});
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +18,8 @@ class SingleButtonBottomBar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: 48.0,
-              minWidth: 168.0,
-            ),
-            child: SubmitButton(
-              text,
-              onPressed,
-            ),
+            constraints: const BoxConstraints(minHeight: 48.0, minWidth: 168.0),
+            child: SubmitButton(text, onPressed),
           ),
         ],
       ),
@@ -42,34 +32,21 @@ class SubmitButton extends StatelessWidget {
   final String text;
   final bool enabled;
 
-  const SubmitButton(
-    this.text,
-    this.onPressed, {
-    this.enabled = true,
-  });
+  const SubmitButton(this.text, this.onPressed, {this.enabled = true});
 
   @override
   Widget build(BuildContext context) {
     var themeData = Theme.of(context);
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minHeight: 48.0,
-        minWidth: 168.0,
-      ),
+      constraints: const BoxConstraints(minHeight: 48.0, minWidth: 168.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: enabled ? themeData.primaryColor : themeData.disabledColor,
           elevation: 0.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
         onPressed: onPressed,
-        child: AutoSizeText(
-          text,
-          maxLines: 1,
-          style: themeData.textTheme.labelLarge,
-        ),
+        child: AutoSizeText(text, maxLines: 1, style: themeData.textTheme.labelLarge),
       ),
     );
   }

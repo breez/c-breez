@@ -53,10 +53,7 @@ class LinkLauncher extends StatelessWidget {
                       color: style.color,
                       icon: const Icon(Icons.launch),
                       onPressed: () async {
-                        await launchLinkOnExternalBrowser(
-                          context,
-                          linkAddress: linkAddress,
-                        );
+                        await launchLinkOnExternalBrowser(context, linkAddress: linkAddress);
                       },
                     ),
                   ],

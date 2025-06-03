@@ -4,11 +4,7 @@ class LoadingOrError extends StatelessWidget {
   final Object? error;
   final String displayErrorMessage;
 
-  const LoadingOrError({
-    super.key,
-    this.error,
-    required this.displayErrorMessage,
-  });
+  const LoadingOrError({super.key, this.error, required this.displayErrorMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +29,7 @@ class LoadingOrError extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
       child: Text(
         displayErrorMessage,
-        style: themeData.primaryTextTheme.displaySmall!.copyWith(
-          fontSize: 16,
-        ),
+        style: themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 16),
       ),
     );
   }

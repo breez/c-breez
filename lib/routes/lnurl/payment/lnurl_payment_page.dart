@@ -34,6 +34,7 @@ class LNURLPaymentPage extends StatefulWidget {
 
   const LNURLPaymentPage({
     required this.data,
+
     /*
     required this.domain,
     this.name,
@@ -41,7 +42,6 @@ class LNURLPaymentPage extends StatefulWidget {
     this.email,
     this.identifier,
      */
-
     super.key,
   });
 
@@ -68,26 +68,22 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
   void initState() {
     super.initState();
     isFixedAmount = widget.data.minSendable == widget.data.maxSendable;
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        if (isFixedAmount) {
-          final currencyState = context.read<CurrencyBloc>().state;
-          _amountController.text = currencyState.bitcoinCurrency.format(
-            (widget.data.maxSendable ~/ 1000),
-            includeDisplayName: false,
-          );
-        }
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isFixedAmount) {
+        final currencyState = context.read<CurrencyBloc>().state;
+        _amountController.text = currencyState.bitcoinCurrency.format(
+          (widget.data.maxSendable ~/ 1000),
+          includeDisplayName: false,
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
     final currencyState = context.read<CurrencyBloc>().state;
-    final metadataMap = {
-      for (var v in json.decode(widget.data.metadataStr)) v[0] as String: v[1],
-    };
+    final metadataMap = {for (var v in json.decode(widget.data.metadataStr)) v[0] as String: v[1]};
     String? base64String = metadataMap['image/png;base64'] ?? metadataMap['image/jpeg;base64'];
 
     return Scaffold(
@@ -113,10 +109,8 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                   maxLines: null,
                   maxLength: widget.data.commentAllowed.toInt(),
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                  decoration: InputDecoration(
-                    labelText: texts.lnurl_payment_page_comment,
-                  ),
-                )
+                  decoration: InputDecoration(labelText: texts.lnurl_payment_page_comment),
+                ),
               ],
               AmountFormField(
                 context: context,
@@ -129,44 +123,39 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               ),
               if (!isFixedAmount) ...[
                 Padding(
-                    padding: const EdgeInsets.only(
-                      top: 8,
-                    ),
-                    child: RichText(
-                      text: TextSpan(
-                        style: theme.FieldTextStyle.labelStyle,
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: texts.lnurl_fetch_invoice_min(
-                              currencyState.bitcoinCurrency.format(
-                                (widget.data.minSendable ~/ 1000),
-                              ),
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                _amountController.text = currencyState.bitcoinCurrency.format(
-                                  (widget.data.minSendable ~/ 1000),
-                                  includeDisplayName: false,
-                                );
-                              },
+                  padding: const EdgeInsets.only(top: 8),
+                  child: RichText(
+                    text: TextSpan(
+                      style: theme.FieldTextStyle.labelStyle,
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: texts.lnurl_fetch_invoice_min(
+                            currencyState.bitcoinCurrency.format((widget.data.minSendable ~/ 1000)),
                           ),
-                          TextSpan(
-                            text: texts.lnurl_fetch_invoice_and(
-                              currencyState.bitcoinCurrency.format(
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              _amountController.text = currencyState.bitcoinCurrency.format(
+                                (widget.data.minSendable ~/ 1000),
+                                includeDisplayName: false,
+                              );
+                            },
+                        ),
+                        TextSpan(
+                          text: texts.lnurl_fetch_invoice_and(
+                            currencyState.bitcoinCurrency.format((widget.data.maxSendable ~/ 1000)),
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              _amountController.text = currencyState.bitcoinCurrency.format(
                                 (widget.data.maxSendable ~/ 1000),
-                              ),
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                _amountController.text = currencyState.bitcoinCurrency.format(
-                                  (widget.data.maxSendable ~/ 1000),
-                                  includeDisplayName: false,
-                                );
-                              },
-                          )
-                        ],
-                      ),
-                    )),
+                                includeDisplayName: false,
+                              );
+                            },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
               /*
               if (widget.name?.mandatory == true) ...[
@@ -209,11 +198,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 10, 0, 22),
-                  child: Center(
-                    child: LNURLMetadataImage(
-                      base64String: base64String,
-                    ),
-                  ),
+                  child: Center(child: LNURLMetadataImage(base64String: base64String)),
                 ),
               ),
             ],
@@ -234,13 +219,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
               "and max is ${widget.data.maxSendable} msats."
               "with comment $comment",
             );
-            Navigator.pop(
-              context,
-              LNURLPaymentInfo(
-                amountSat: amountSat,
-                comment: comment,
-              ),
-            );
+            Navigator.pop(context, LNURLPaymentInfo(amountSat: amountSat, comment: comment));
           }
         },
       ),

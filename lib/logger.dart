@@ -3,6 +3,7 @@ library;
 import 'dart:io';
 
 import 'package:breez_sdk/breez_sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart' hide Config;
 import 'package:c_breez/config.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -42,12 +43,15 @@ class BreezLogger {
         return;
       }
       final sync = file.openWrite(mode: FileMode.append);
-      Logger.root.onRecord.listen((record) {
-        sync.writeln(_recordToString(record));
-      }, onDone: () {
-        sync.flush();
-        sync.close();
-      });
+      Logger.root.onRecord.listen(
+        (record) {
+          sync.writeln(_recordToString(record));
+        },
+        onDone: () {
+          sync.flush();
+          sync.close();
+        },
+      );
 
       FlutterError.onError = (FlutterErrorDetails details) async {
         FlutterError.presentError(details);
@@ -56,17 +60,23 @@ class BreezLogger {
         _log.severe("$exception -- $name", details, details.stack);
       };
 
-      GitInfo.get().then((it) {
-        _log.info("Logging initialized, app build on ${it.branch} at commit ${it.hash}");
-        DeviceInfoPlugin().deviceInfo.then((deviceInfo) {
-          _log.info("Device info:");
-          deviceInfo.data.forEach((key, value) => _log.info("$key: $value"));
-        }, onError: (error) {
-          _log.severe("Failed to get device info", error);
-        });
-      }, onError: (error) {
-        _log.severe("Failed to get git info", error);
-      });
+      GitInfo.get().then(
+        (it) {
+          _log.info("Logging initialized, app build on ${it.branch} at commit ${it.hash}");
+          DeviceInfoPlugin().deviceInfo.then(
+            (deviceInfo) {
+              _log.info("Device info:");
+              deviceInfo.data.forEach((key, value) => _log.info("$key: $value"));
+            },
+            onError: (error) {
+              _log.severe("Failed to get device info", error);
+            },
+          );
+        },
+        onError: (error) {
+          _log.severe("Failed to get git info", error);
+        },
+      );
     });
   }
 
@@ -75,7 +85,7 @@ class BreezLogger {
     breezSDK.logStream.listen(_logSdkEntries);
   }
 
-  void _logSdkEntries(log) {
+  void _logSdkEntries(LogEntry log) {
     switch (log.level) {
       case "ERROR":
         _sdkLog.severe(log.line);
@@ -108,17 +118,12 @@ class BreezLogger {
     final loggingFolder = Directory(_logDir(appDir));
     if (loggingFolder.existsSync()) {
       // Get and sort log files by modified date
-      List<FileSystemEntity> filesToBePruned = loggingFolder
-          .listSync(followLinks: false)
-          .where((e) => e.path.endsWith('.log'))
-          .toList()
-        ..sort((l, r) => l.statSync().modified.compareTo(r.statSync().modified));
+      List<FileSystemEntity> filesToBePruned =
+          loggingFolder.listSync(followLinks: false).where((e) => e.path.endsWith('.log')).toList()
+            ..sort((l, r) => l.statSync().modified.compareTo(r.statSync().modified));
       // Delete all except last 10 logs
       if (filesToBePruned.length > 10) {
-        filesToBePruned.removeRange(
-          filesToBePruned.length - 10,
-          filesToBePruned.length,
-        );
+        filesToBePruned.removeRange(filesToBePruned.length - 10, filesToBePruned.length);
         for (var logFile in filesToBePruned) {
           logFile.delete();
         }

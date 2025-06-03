@@ -15,11 +15,7 @@ abstract class FeeOption {
   final ProcessingSpeed processingSpeed;
   final int satPerVbyte;
 
-  FeeOption({
-    required this.txFeeSat,
-    required this.processingSpeed,
-    required this.satPerVbyte,
-  });
+  FeeOption({required this.txFeeSat, required this.processingSpeed, required this.satPerVbyte});
 
   String getDisplayName(BreezTranslations texts) {
     switch (processingSpeed) {
@@ -54,11 +50,7 @@ class ReverseSwapFeeOption extends FeeOption {
 }
 
 class RefundFeeOption extends FeeOption {
-  RefundFeeOption({
-    required super.txFeeSat,
-    required super.processingSpeed,
-    required super.satPerVbyte,
-  });
+  RefundFeeOption({required super.txFeeSat, required super.processingSpeed, required super.satPerVbyte});
 
   @override
   bool isAffordable({int? balanceSat, int? walletBalanceSat, required int amountSat}) {

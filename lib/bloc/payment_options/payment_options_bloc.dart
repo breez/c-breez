@@ -8,9 +8,7 @@ final _log = Logger("PaymentOptionsBloc");
 class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
   final Preferences _preferences;
 
-  PaymentOptionsBloc(
-    this._preferences,
-  ) : super(const PaymentOptionsState.initial()) {
+  PaymentOptionsBloc(this._preferences) : super(const PaymentOptionsState.initial()) {
     _initializePaymentOptions();
   }
 

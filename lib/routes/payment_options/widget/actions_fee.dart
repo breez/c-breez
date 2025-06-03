@@ -9,10 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ActionsFee extends StatelessWidget {
   final GlobalKey<FormState> formKey;
 
-  const ActionsFee({
-    required this.formKey,
-    super.key,
-  });
+  const ActionsFee({required this.formKey, super.key});
 
   @override
   Widget build(BuildContext context) {

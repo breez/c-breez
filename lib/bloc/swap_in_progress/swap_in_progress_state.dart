@@ -10,12 +10,7 @@ class SwapInProgressState {
 
   SwapInProgressState.initial() : this();
 
-  SwapInProgressState copyWith({
-    SwapInfo? inProgress,
-    SwapInfo? unused,
-    bool? isLoading,
-    String? error,
-  }) {
+  SwapInProgressState copyWith({SwapInfo? inProgress, SwapInfo? unused, bool? isLoading, String? error}) {
     return SwapInProgressState(
       inProgress: inProgress ?? this.inProgress,
       unused: unused ?? this.unused,

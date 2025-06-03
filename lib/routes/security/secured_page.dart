@@ -11,10 +11,7 @@ final _log = Logger("SecuredPage");
 class SecuredPage<T> extends StatefulWidget {
   final Widget securedWidget;
 
-  const SecuredPage({
-    super.key,
-    required this.securedWidget,
-  });
+  const SecuredPage({super.key, required this.securedWidget});
 
   @override
   State<SecuredPage<T>> createState() => _SecuredPageState<T>();
@@ -28,10 +25,7 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
       transitionBuilder: (Widget child, Animation<double> animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
+        return FadeTransition(opacity: animation, child: child);
       },
       child: _allowed
           ? widget.securedWidget
@@ -42,9 +36,7 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
                 if (state.pinStatus == PinStatus.enabled && !_allowed) {
                   final texts = context.texts();
                   return Scaffold(
-                    appBar: AppBar(
-                      key: GlobalKey<ScaffoldState>(),
-                    ),
+                    appBar: AppBar(key: GlobalKey<ScaffoldState>()),
                     body: PinCodeWidget(
                       label: texts.lock_screen_enter_pin,
                       testPinCodeFunction: (pin) async {
@@ -54,10 +46,7 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
                           pinMatches = await context.read<SecurityBloc>().testPin(pin);
                         } catch (e) {
                           _log.severe("Pin code test failed", e);
-                          return TestPinResult(
-                            false,
-                            errorMessage: texts.lock_screen_pin_match_exception,
-                          );
+                          return TestPinResult(false, errorMessage: texts.lock_screen_pin_match_exception);
                         }
                         if (pinMatches) {
                           _log.info("Pin matches");
@@ -67,10 +56,7 @@ class _SecuredPageState<T> extends State<SecuredPage<T>> {
                           return const TestPinResult(true);
                         } else {
                           _log.info("Pin didn't match");
-                          return TestPinResult(
-                            false,
-                            errorMessage: texts.lock_screen_pin_incorrect,
-                          );
+                          return TestPinResult(false, errorMessage: texts.lock_screen_pin_incorrect);
                         }
                       },
                     ),

@@ -32,10 +32,7 @@ class InputHandler extends Handler {
   ModalRoute? _loaderRoute;
   bool _handlingRequest = false;
 
-  InputHandler(
-    this.firstPaymentItemKey,
-    this.scaffoldController,
-  );
+  InputHandler(this.firstPaymentItemKey, this.scaffoldController);
 
   @override
   void init(HandlerContextProvider<StatefulWidget> contextProvider) {
@@ -87,7 +84,7 @@ class InputHandler extends Handler {
         });
   }
 
-  void handleResult(result) {
+  void handleResult(Object result) {
     _log.info("Input state handled: $result");
     if (result is LNURLPageResult && result.protocol != null) {
       final context = contextProvider?.getBuildContext();
@@ -130,23 +127,15 @@ class InputHandler extends Handler {
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => PaymentRequestDialog(
-        invoice,
-        firstPaymentItemKey,
-      ),
+      builder: (_) => PaymentRequestDialog(invoice, firstPaymentItemKey),
     );
   }
 
   Future handleNodeID(BuildContext context, String nodeID) async {
     _log.info("handle node id $nodeID");
-    return await Navigator.of(context).push(
-      FadeInRoute(
-        builder: (_) => SpontaneousPaymentPage(
-          nodeID,
-          firstPaymentItemKey,
-        ),
-      ),
-    );
+    return await Navigator.of(
+      context,
+    ).push(FadeInRoute(builder: (_) => SpontaneousPaymentPage(nodeID, firstPaymentItemKey)));
   }
 
   Future handleBitcoinAddress(BuildContext context, BitcoinAddressInputState inputState) async {

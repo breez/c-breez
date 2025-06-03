@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LocalAuthSwitch extends StatelessWidget {
-  const LocalAuthSwitch({
-    super.key,
-  });
+  const LocalAuthSwitch({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,18 +42,20 @@ class LocalAuthSwitch extends StatelessWidget {
     final texts = context.texts();
     final securityBloc = context.read<SecurityBloc>();
     if (switchEnabled) {
-      securityBloc.localAuthentication(texts.security_and_backup_validate_biometrics_reason).then(
-        (authenticated) {
-          if (authenticated) {
-            securityBloc.enableLocalAuthentication();
-          } else {
-            securityBloc.clearLocalAuthentication();
-          }
-        },
-        onError: (error) {
-          securityBloc.clearLocalAuthentication();
-        },
-      );
+      securityBloc
+          .localAuthentication(texts.security_and_backup_validate_biometrics_reason)
+          .then(
+            (authenticated) {
+              if (authenticated) {
+                securityBloc.enableLocalAuthentication();
+              } else {
+                securityBloc.clearLocalAuthentication();
+              }
+            },
+            onError: (error) {
+              securityBloc.clearLocalAuthentication();
+            },
+          );
     } else {
       securityBloc.clearLocalAuthentication();
     }

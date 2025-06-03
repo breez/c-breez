@@ -6,18 +6,10 @@ import 'package:flutter/material.dart';
 class RefundItem extends StatelessWidget {
   final SwapInfo swapInfo;
 
-  const RefundItem(
-    this.swapInfo, {
-    super.key,
-  });
+  const RefundItem(this.swapInfo, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AvailableBTC(swapInfo.confirmedSats),
-        RefundItemAction(swapInfo),
-      ],
-    );
+    return Column(children: [AvailableBTC(swapInfo.confirmedSats), RefundItemAction(swapInfo)]);
   }
 }

@@ -11,11 +11,7 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
   final AutoSizeGroup? labelAutoSizeGroup;
 
-  const PaymentDetailsDialogExpiration({
-    super.key,
-    required this.paymentMinutiae,
-    this.labelAutoSizeGroup,
-  });
+  const PaymentDetailsDialogExpiration({super.key, required this.paymentMinutiae, this.labelAutoSizeGroup});
 
   @override
   Widget build(BuildContext context) {

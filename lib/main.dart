@@ -40,114 +40,82 @@ final _log = Logger("Main");
 
 void main() async {
   // runZonedGuarded wrapper is required to log Dart errors.
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-    );
-    //initializeDateFormatting(Platform.localeName, null);
-    BreezDateUtils.setupLocales();
-    await Firebase.initializeApp();
-    final injector = ServiceInjector();
-    var breezLogger = injector.breezLogger;
-    final breezSDK = injector.breezSDK;
-    if (!await breezSDK.isInitialized()) {
-      breezSDK.initialize();
-      breezLogger.registerBreezSdkLog(breezSDK);
-    }
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      //initializeDateFormatting(Platform.localeName, null);
+      BreezDateUtils.setupLocales();
+      await Firebase.initializeApp();
+      final injector = ServiceInjector();
+      var breezLogger = injector.breezLogger;
+      final breezSDK = injector.breezSDK;
+      if (!await breezSDK.isInitialized()) {
+        breezSDK.initialize();
+        breezLogger.registerBreezSdkLog(breezSDK);
+      }
 
-    final appDir = await getApplicationDocumentsDirectory();
-    final config = await cfg.Config.instance();
+      final appDir = await getApplicationDocumentsDirectory();
+      final config = await cfg.Config.instance();
 
-    // iOS Extension requirement
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      SharedPreferenceAppGroup.setAppGroup(
-        "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client",
+      // iOS Extension requirement
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        SharedPreferenceAppGroup.setAppGroup(
+          "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client",
+        );
+      }
+
+      HydratedBloc.storage = await HydratedStorage.build(
+        storageDirectory: HydratedStorageDirectory(p.join(appDir.path, "bloc_storage")),
       );
-    }
-
-    HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: HydratedStorageDirectory(p.join(appDir.path, "bloc_storage")),
-    );
-    runApp(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider<LSPBloc>(
-            create: (BuildContext context) => LSPBloc(breezSDK),
-          ),
-          BlocProvider<AccountBloc>(
-            create: (BuildContext context) => AccountBloc(
-              breezSDK,
-              CredentialsManager(keyChain: injector.keychain),
+      runApp(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider<LSPBloc>(create: (BuildContext context) => LSPBloc(breezSDK)),
+            BlocProvider<AccountBloc>(
+              create: (BuildContext context) =>
+                  AccountBloc(breezSDK, CredentialsManager(keyChain: injector.keychain)),
             ),
-          ),
-          BlocProvider<InputBloc>(
-            create: (BuildContext context) => InputBloc(
-              breezSDK,
-              injector.lightningLinks,
-              injector.device,
+            BlocProvider<InputBloc>(
+              create: (BuildContext context) => InputBloc(breezSDK, injector.lightningLinks, injector.device),
             ),
-          ),
-          BlocProvider<UserProfileBloc>(
-            create: (BuildContext context) => UserProfileBloc(
-              injector.breezServer,
+            BlocProvider<UserProfileBloc>(
+              create: (BuildContext context) => UserProfileBloc(injector.breezServer),
             ),
-          ),
-          BlocProvider<WebhooksBloc>(
-            lazy: false,
-            create: (BuildContext context) => WebhooksBloc(
-              breezSDK,
-              injector.preferences,
-              injector.notifications,
+            BlocProvider<WebhooksBloc>(
+              lazy: false,
+              create: (BuildContext context) =>
+                  WebhooksBloc(breezSDK, injector.preferences, injector.notifications),
             ),
-          ),
-          BlocProvider<CurrencyBloc>(
-            create: (BuildContext context) => CurrencyBloc(breezSDK),
-          ),
-          BlocProvider<SecurityBloc>(
-            create: (BuildContext context) => SecurityBloc(),
-          ),
-          BlocProvider<RedeemOnchainFundsBloc>(
-            create: (BuildContext context) => RedeemOnchainFundsBloc(breezSDK),
-          ),
-          BlocProvider<ReverseSwapBloc>(
-            create: (BuildContext context) => ReverseSwapBloc(breezSDK),
-          ),
-          BlocProvider<ConnectivityBloc>(
-            create: (BuildContext context) => ConnectivityBloc(),
-          ),
-          BlocProvider<RefundBloc>(
-            create: (BuildContext context) => RefundBloc(breezSDK),
-          ),
-          BlocProvider<NetworkSettingsBloc>(
-            create: (BuildContext context) => NetworkSettingsBloc(
-              injector.preferences,
-              config,
+            BlocProvider<CurrencyBloc>(create: (BuildContext context) => CurrencyBloc(breezSDK)),
+            BlocProvider<SecurityBloc>(create: (BuildContext context) => SecurityBloc()),
+            BlocProvider<RedeemOnchainFundsBloc>(
+              create: (BuildContext context) => RedeemOnchainFundsBloc(breezSDK),
             ),
-          ),
-          BlocProvider<PaymentOptionsBloc>(
-            create: (BuildContext context) => PaymentOptionsBloc(
-              injector.preferences,
+            BlocProvider<ReverseSwapBloc>(create: (BuildContext context) => ReverseSwapBloc(breezSDK)),
+            BlocProvider<ConnectivityBloc>(create: (BuildContext context) => ConnectivityBloc()),
+            BlocProvider<RefundBloc>(create: (BuildContext context) => RefundBloc(breezSDK)),
+            BlocProvider<NetworkSettingsBloc>(
+              create: (BuildContext context) => NetworkSettingsBloc(injector.preferences, config),
             ),
-          ),
-          BlocProvider<MoonPayBloc>(
-            create: (BuildContext context) => MoonPayBloc(
-              breezSDK,
-              injector.preferences,
+            BlocProvider<PaymentOptionsBloc>(
+              create: (BuildContext context) => PaymentOptionsBloc(injector.preferences),
             ),
-          ),
-          BlocProvider<BackupBloc>(create: (BuildContext context) => BackupBloc(breezSDK)),
-          BlocProvider<HealthCheckBloc>(
-            create: (BuildContext context) => HealthCheckBloc(breezSDK),
-          ),
-          BlocProvider<ErrorReportBloc>(create: (BuildContext context) => ErrorReportBloc(breezSDK)),
-        ],
-        child: UserApp(),
-      ),
-    );
-  }, (error, stackTrace) async {
-    if (error is! FlutterErrorDetails) {
-      _log.severe("FlutterError: $error", error, stackTrace);
-    }
-  });
+            BlocProvider<MoonPayBloc>(
+              create: (BuildContext context) => MoonPayBloc(breezSDK, injector.preferences),
+            ),
+            BlocProvider<BackupBloc>(create: (BuildContext context) => BackupBloc(breezSDK)),
+            BlocProvider<HealthCheckBloc>(create: (BuildContext context) => HealthCheckBloc(breezSDK)),
+            BlocProvider<ErrorReportBloc>(create: (BuildContext context) => ErrorReportBloc(breezSDK)),
+          ],
+          child: UserApp(),
+        ),
+      );
+    },
+    (error, stackTrace) async {
+      if (error is! FlutterErrorDetails) {
+        _log.severe("FlutterError: $error", error, stackTrace);
+      }
+    },
+  );
 }

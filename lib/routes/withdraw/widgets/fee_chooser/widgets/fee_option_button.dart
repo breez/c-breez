@@ -43,8 +43,8 @@ class FeeOptionButton extends StatelessWidget {
               color: !isAffordable
                   ? themeData.primaryColor.withValues(alpha: 0.4)
                   : isSelected
-                      ? themeData.canvasColor
-                      : themeData.colorScheme.onSurface,
+                  ? themeData.canvasColor
+                  : themeData.colorScheme.onSurface,
             ),
           ),
         ),

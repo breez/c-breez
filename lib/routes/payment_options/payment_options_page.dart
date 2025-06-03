@@ -7,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'payment_options_form.dart';
 
 class PaymentOptionsPage extends StatefulWidget {
-  const PaymentOptionsPage({
-    super.key,
-  });
+  const PaymentOptionsPage({super.key});
 
   @override
   State<PaymentOptionsPage> createState() => _PaymentOptionsPageState();
@@ -27,10 +25,7 @@ class _PaymentOptionsPageState extends State<PaymentOptionsPage> {
       appBar: AppBar(
         key: GlobalKey<ScaffoldState>(),
         leading: const back_button.BackButton(),
-        title: Text(
-          texts.payment_options_title,
-          style: themeData.appBarTheme.toolbarTextStyle,
-        ),
+        title: Text(texts.payment_options_title, style: themeData.appBarTheme.toolbarTextStyle),
       ),
       body: ListView(
         children: [

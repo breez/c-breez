@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 class PaymentDetailsDialogDescription extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  const PaymentDetailsDialogDescription({
-    super.key,
-    required this.paymentMinutiae,
-  });
+  const PaymentDetailsDialogDescription({super.key, required this.paymentMinutiae});
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +20,15 @@ class PaymentDetailsDialogDescription extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: Container(
-        constraints: const BoxConstraints(
-          maxHeight: 54,
-          minWidth: double.infinity,
-        ),
+        constraints: const BoxConstraints(maxHeight: 54, minWidth: double.infinity),
         child: Scrollbar(
           child: SingleChildScrollView(
             child: AutoSizeText(
               description,
               style: themeData.primaryTextTheme.headlineMedium,
-              textAlign:
-                  description.length > 40 && !description.contains("\n") ? TextAlign.start : TextAlign.center,
+              textAlign: description.length > 40 && !description.contains("\n")
+                  ? TextAlign.start
+                  : TextAlign.center,
             ),
           ),
         ),

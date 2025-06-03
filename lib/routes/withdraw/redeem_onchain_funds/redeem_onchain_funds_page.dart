@@ -21,10 +21,7 @@ final _log = Logger("RedeemFundsPage");
 class RedeemFundsPage extends StatefulWidget {
   final int walletBalanceSat;
 
-  const RedeemFundsPage({
-    required this.walletBalanceSat,
-    super.key,
-  });
+  const RedeemFundsPage({required this.walletBalanceSat, super.key});
 
   @override
   State<RedeemFundsPage> createState() => _RedeemFundsPageState();
@@ -51,19 +48,13 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
     final themeData = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        leading: const back_button.BackButton(),
-        title: Text(texts.unexpected_funds_title),
-      ),
+      appBar: AppBar(leading: const back_button.BackButton(), title: Text(texts.unexpected_funds_title)),
       body: Column(
         children: [
           WarningBox(
             boxPadding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             contentPadding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-            child: Text(
-              texts.unexpected_funds_message,
-              style: themeData.textTheme.titleLarge,
-            ),
+            child: Text(texts.unexpected_funds_message, style: themeData.textTheme.titleLarge),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -122,21 +113,18 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
           Expanded(child: Container()),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-            child: SubmitButton(
-              texts.withdraw_funds_action_next,
-              () {
-                if (_formKey.currentState?.validate() ?? false) {
-                  Navigator.of(context).push(
-                    FadeInRoute(
-                      builder: (_) => RedeemOnchainConfirmationPage(
-                        toAddress: _addressController.text,
-                        amountSat: _getAmountSat(),
-                      ),
+            child: SubmitButton(texts.withdraw_funds_action_next, () {
+              if (_formKey.currentState?.validate() ?? false) {
+                Navigator.of(context).push(
+                  FadeInRoute(
+                    builder: (_) => RedeemOnchainConfirmationPage(
+                      toAddress: _addressController.text,
+                      amountSat: _getAmountSat(),
                     ),
-                  );
-                }
-              },
-            ),
+                  ),
+                );
+              }
+            }),
           ),
         ],
       ),

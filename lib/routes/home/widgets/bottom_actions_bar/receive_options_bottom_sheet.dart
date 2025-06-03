@@ -7,10 +7,7 @@ import 'bottom_action_item_image.dart';
 class ReceiveOptionsBottomSheet extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
 
-  const ReceiveOptionsBottomSheet({
-    super.key,
-    required this.firstPaymentItemKey,
-  });
+  const ReceiveOptionsBottomSheet({super.key, required this.firstPaymentItemKey});
 
   @override
   Widget build(BuildContext context) {
@@ -21,58 +18,26 @@ class ReceiveOptionsBottomSheet extends StatelessWidget {
       children: [
         const SizedBox(height: 8.0),
         ListTile(
-          leading: const BottomActionItemImage(
-            iconAssetPath: "src/icon/ln_address.png",
-          ),
-          title: Text(
-            texts.bottom_action_bar_ln_address,
-            style: theme.bottomSheetTextStyle,
-          ),
+          leading: const BottomActionItemImage(iconAssetPath: "src/icon/ln_address.png"),
+          title: Text(texts.bottom_action_bar_ln_address, style: theme.bottomSheetTextStyle),
           onTap: () => _push(context, "/lnurl_pay"),
         ),
-        Divider(
-          height: 0.0,
-          color: Colors.white.withValues(alpha: 0.2),
-          indent: 72.0,
-        ),
+        Divider(height: 0.0, color: Colors.white.withValues(alpha: 0.2), indent: 72.0),
         ListTile(
-          leading: const BottomActionItemImage(
-            iconAssetPath: "src/icon/paste.png",
-          ),
-          title: Text(
-            texts.bottom_action_bar_receive_invoice,
-            style: theme.bottomSheetTextStyle,
-          ),
+          leading: const BottomActionItemImage(iconAssetPath: "src/icon/paste.png"),
+          title: Text(texts.bottom_action_bar_receive_invoice, style: theme.bottomSheetTextStyle),
           onTap: () => _push(context, "/create_invoice"),
         ),
-        Divider(
-          height: 0.0,
-          color: Colors.white.withValues(alpha: 0.2),
-          indent: 72.0,
-        ),
+        Divider(height: 0.0, color: Colors.white.withValues(alpha: 0.2), indent: 72.0),
         ListTile(
-          leading: const BottomActionItemImage(
-            iconAssetPath: "src/icon/bitcoin.png",
-          ),
-          title: Text(
-            texts.bottom_action_bar_receive_btc_address,
-            style: theme.bottomSheetTextStyle,
-          ),
+          leading: const BottomActionItemImage(iconAssetPath: "src/icon/bitcoin.png"),
+          title: Text(texts.bottom_action_bar_receive_btc_address, style: theme.bottomSheetTextStyle),
           onTap: () => _push(context, '/swap'),
         ),
-        Divider(
-          height: 0.0,
-          color: Colors.white.withValues(alpha: 0.2),
-          indent: 72.0,
-        ),
+        Divider(height: 0.0, color: Colors.white.withValues(alpha: 0.2), indent: 72.0),
         ListTile(
-          leading: const BottomActionItemImage(
-            iconAssetPath: "src/icon/credit_card.png",
-          ),
-          title: Text(
-            texts.bottom_action_bar_buy_bitcoin,
-            style: theme.bottomSheetTextStyle,
-          ),
+          leading: const BottomActionItemImage(iconAssetPath: "src/icon/credit_card.png"),
+          title: Text(texts.bottom_action_bar_buy_bitcoin, style: theme.bottomSheetTextStyle),
           onTap: () => _push(context, "/buy_bitcoin"),
         ),
       ],

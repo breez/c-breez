@@ -11,11 +11,7 @@ class RedeemOnchainFundsButton extends StatelessWidget {
   final String toAddress;
   final int satPerVbyte;
 
-  const RedeemOnchainFundsButton({
-    super.key,
-    required this.toAddress,
-    required this.satPerVbyte,
-  });
+  const RedeemOnchainFundsButton({super.key, required this.toAddress, required this.satPerVbyte});
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +32,7 @@ class RedeemOnchainFundsButton extends StatelessWidget {
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);
     try {
-      await redeemBloc.redeemOnchainFunds(
-        toAddress: toAddress,
-        satPerVbyte: satPerVbyte,
-      );
+      await redeemBloc.redeemOnchainFunds(toAddress: toAddress, satPerVbyte: satPerVbyte);
       navigator.popUntil((route) => route.settings.name == "/");
     } catch (e) {
       navigator.pop(loaderRoute);
@@ -47,10 +40,7 @@ class RedeemOnchainFundsButton extends StatelessWidget {
       promptError(
         context,
         null,
-        Text(
-          extractExceptionMessage(e, texts),
-          style: themeData.dialogTheme.contentTextStyle,
-        ),
+        Text(extractExceptionMessage(e, texts), style: themeData.dialogTheme.contentTextStyle),
       );
     }
   }

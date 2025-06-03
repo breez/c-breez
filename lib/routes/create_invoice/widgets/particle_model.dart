@@ -15,9 +15,7 @@ class ParticleModel {
     restart();
   }
 
-  void restart({
-    Duration time = Duration.zero,
-  }) {
+  void restart({Duration time = Duration.zero}) {
     final startPosition = Offset(-0.2 + 1.4 * random.nextDouble(), 1.2);
     final endPosition = Offset(-0.2 + 1.4 * random.nextDouble(), -0.2);
     final duration = Duration(milliseconds: 3000 + random.nextInt(6000));
@@ -25,26 +23,17 @@ class ParticleModel {
     tween = MovieTween()
       ..tween(
         AnimationProperties.X,
-        Tween(
-          begin: startPosition.dx,
-          end: endPosition.dx,
-        ),
+        Tween(begin: startPosition.dx, end: endPosition.dx),
         duration: duration,
         curve: Curves.easeInOutSine,
       )
       ..tween(
         AnimationProperties.Y,
-        Tween(
-          begin: startPosition.dy,
-          end: endPosition.dy,
-        ),
+        Tween(begin: startPosition.dy, end: endPosition.dy),
         duration: duration,
         curve: Curves.easeIn,
       );
-    animationProgress = AnimationProgress(
-      duration: duration,
-      startTime: time,
-    );
+    animationProgress = AnimationProgress(duration: duration, startTime: time);
     size = 0.2 + random.nextDouble() * 0.4;
   }
 

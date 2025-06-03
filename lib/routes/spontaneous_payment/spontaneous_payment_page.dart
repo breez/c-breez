@@ -27,11 +27,7 @@ class SpontaneousPaymentPage extends StatefulWidget {
   final String? nodeID;
   final GlobalKey firstPaymentItemKey;
 
-  const SpontaneousPaymentPage(
-    this.nodeID,
-    this.firstPaymentItemKey, {
-    super.key,
-  });
+  const SpontaneousPaymentPage(this.nodeID, this.firstPaymentItemKey, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -52,14 +48,11 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
   @override
   void initState() {
     _doneAction = KeyboardDoneAction(focusNodes: <FocusNode>[_amountFocusNode]);
-    Future.delayed(
-      const Duration(milliseconds: 200),
-      () {
-        if (mounted) {
-          FocusScope.of(context).requestFocus(_amountFocusNode);
-        }
-      },
-    );
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(_amountFocusNode);
+      }
+    });
 
     super.initState();
   }
@@ -83,34 +76,30 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
 
     return Scaffold(
-      appBar: AppBar(
-        leading: const back_button.BackButton(),
-        title: Text(texts.spontaneous_payment_title),
-      ),
-      body: BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currencyState) {
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, acc) {
-            AccountBloc accBloc = context.read<AccountBloc>();
-            return Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 40.0),
-                child: ListView(
-                  children: <Widget>[
-                    _buildNodeIdDescription(),
-                    TextFormField(
-                      controller: _descriptionController,
-                      keyboardType: TextInputType.multiline,
-                      textInputAction: TextInputAction.done,
-                      maxLines: null,
-                      maxLength: 90,
-                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                      decoration: InputDecoration(
-                        labelText: texts.spontaneous_payment_tip_message,
+      appBar: AppBar(leading: const back_button.BackButton(), title: Text(texts.spontaneous_payment_title)),
+      body: BlocBuilder<CurrencyBloc, CurrencyState>(
+        builder: (context, currencyState) {
+          return BlocBuilder<AccountBloc, AccountState>(
+            builder: (context, acc) {
+              AccountBloc accBloc = context.read<AccountBloc>();
+              return Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 40.0),
+                  child: ListView(
+                    children: <Widget>[
+                      _buildNodeIdDescription(),
+                      TextFormField(
+                        controller: _descriptionController,
+                        keyboardType: TextInputType.multiline,
+                        textInputAction: TextInputAction.done,
+                        maxLines: null,
+                        maxLength: 90,
+                        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                        decoration: InputDecoration(labelText: texts.spontaneous_payment_tip_message),
+                        style: theme.FieldTextStyle.textStyle,
                       ),
-                      style: theme.FieldTextStyle.textStyle,
-                    ),
-                    AmountFormField(
+                      AmountFormField(
                         context: context,
                         bitcoinCurrency: currencyState.bitcoinCurrency,
                         texts: texts,
@@ -126,20 +115,22 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
                               context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
                           texts: context.texts(),
                         ).validateOutgoing,
-                        style: theme.FieldTextStyle.textStyle),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 48,
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: _buildPayableBTC(currencyState, acc),
-                    ),
-                  ],
+                        style: theme.FieldTextStyle.textStyle,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 48,
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: _buildPayableBTC(currencyState, acc),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      }),
+              );
+            },
+          );
+        },
+      ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(top: 24.0),
         child: SingleButtonBottomBar(
@@ -159,9 +150,7 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     final texts = context.texts();
     return GestureDetector(
       child: AutoSizeText(
-        texts.spontaneous_payment_max_amount(
-          currencyState.bitcoinCurrency.format(acc.maxAllowedToPaySat),
-        ),
+        texts.spontaneous_payment_max_amount(currencyState.bitcoinCurrency.format(acc.maxAllowedToPaySat)),
         style: theme.textStyle,
         maxLines: 1,
         minFontSize: MinFontSize(context).minFontSize,
@@ -193,47 +182,37 @@ class SpontaneousPaymentPageState extends State<SpontaneousPaymentPage> {
     await promptAreYouSure(
       context,
       texts.spontaneous_payment_send_payment_title,
-      Text(
-        texts.spontaneous_payment_send_payment_message(
-          bitcoinCurrency.format(amountSat),
-          widget.nodeID!,
-        ),
-      ),
+      Text(texts.spontaneous_payment_send_payment_message(bitcoinCurrency.format(amountSat), widget.nodeID!)),
       okText: texts.spontaneous_payment_action_pay,
       cancelText: texts.spontaneous_payment_action_cancel,
-    ).then(
-      (ok) async {
-        if (ok == true && mounted) {
-          Future sendFuture = Future.value(null);
-          showDialog(
-            useRootNavigator: false,
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => ProcessingPaymentDialog(
-              firstPaymentItemKey: widget.firstPaymentItemKey,
-              popOnCompletion: true,
-              paymentFunc: () {
-                var sendPayment = Future.delayed(
-                  const Duration(seconds: 1),
-                  () {
-                    sendFuture = accBloc.sendSpontaneousPayment(
-                      nodeId: widget.nodeID!,
-                      description: tipMessage,
-                      amountMsat: amountSat * 1000,
-                    );
-                    return sendFuture;
-                  },
+    ).then((ok) async {
+      if (ok == true && mounted) {
+        Future sendFuture = Future.value(null);
+        showDialog(
+          useRootNavigator: false,
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => ProcessingPaymentDialog(
+            firstPaymentItemKey: widget.firstPaymentItemKey,
+            popOnCompletion: true,
+            paymentFunc: () {
+              var sendPayment = Future.delayed(const Duration(seconds: 1), () {
+                sendFuture = accBloc.sendSpontaneousPayment(
+                  nodeId: widget.nodeID!,
+                  description: tipMessage,
+                  amountMsat: amountSat * 1000,
                 );
+                return sendFuture;
+              });
 
-                return sendPayment;
-              },
-            ),
-          );
-          if (!mounted) return;
-          Navigator.of(context).removeRoute(_currentRoute!);
-          await sendFuture;
-        }
-      },
-    );
+              return sendPayment;
+            },
+          ),
+        );
+        if (!mounted) return;
+        Navigator.of(context).removeRoute(_currentRoute!);
+        await sendFuture;
+      }
+    });
   }
 }

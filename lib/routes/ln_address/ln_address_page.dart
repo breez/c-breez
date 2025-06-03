@@ -47,15 +47,19 @@ class LnAddressPageState extends State<LnAddressPage> {
   }
 
   void _trackPayment() {
-    context.read<InputBloc>().trackPayment(null).then((value) {
-      Timer(const Duration(milliseconds: 1000), () {
-        if (mounted) {
-          _onPaymentFinished();
-        }
-      });
-    }).catchError((e) {
-      _log.warning("Failed to track payment", e);
-    });
+    context
+        .read<InputBloc>()
+        .trackPayment(null)
+        .then((value) {
+          Timer(const Duration(milliseconds: 1000), () {
+            if (mounted) {
+              _onPaymentFinished();
+            }
+          });
+        })
+        .catchError((e) {
+          _log.warning("Failed to track payment", e);
+        });
   }
 
   void _onPaymentFinished() {
@@ -86,7 +90,7 @@ class LnAddressPageState extends State<LnAddressPage> {
                         DepositErrorMessage(
                           errorMessage: extractExceptionMessage(webhookState.lnurlPayError!, texts),
                         ),
-                      ]
+                      ],
                     ],
                   ),
                 ),

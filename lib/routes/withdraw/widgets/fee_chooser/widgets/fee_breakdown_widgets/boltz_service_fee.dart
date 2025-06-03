@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 class BoltzServiceFee extends StatelessWidget {
   final int boltzServiceFeeSat;
 
-  const BoltzServiceFee({
-    required this.boltzServiceFeeSat,
-    super.key,
-  });
+  const BoltzServiceFee({required this.boltzServiceFeeSat, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +24,7 @@ class BoltzServiceFee extends StatelessWidget {
         stepGranularity: 0.1,
       ),
       trailing: AutoSizeText(
-        texts.reverse_swap_confirmation_boltz_fee_value(
-          BitcoinCurrency.SAT.format(boltzServiceFeeSat),
-        ),
+        texts.reverse_swap_confirmation_boltz_fee_value(BitcoinCurrency.SAT.format(boltzServiceFeeSat)),
         style: TextStyle(color: themeData.colorScheme.error.withValues(alpha: 0.4)),
         maxLines: 1,
         minFontSize: minFont.minFontSize,

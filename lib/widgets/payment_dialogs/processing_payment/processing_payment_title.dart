@@ -2,9 +2,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:flutter/material.dart';
 
 class ProcessingPaymentTitle extends StatelessWidget {
-  const ProcessingPaymentTitle({
-    super.key,
-  });
+  const ProcessingPaymentTitle({super.key});
 
   @override
   Widget build(BuildContext context) {

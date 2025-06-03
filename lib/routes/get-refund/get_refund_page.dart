@@ -27,10 +27,7 @@ class _GetRefundPageState extends State<GetRefundPage> {
     final texts = context.texts();
 
     return Scaffold(
-      appBar: AppBar(
-        leading: const back_button.BackButton(),
-        title: Text(texts.get_refund_title),
-      ),
+      appBar: AppBar(leading: const back_button.BackButton(), title: Text(texts.get_refund_title)),
       body: BlocBuilder<RefundBloc, RefundState>(
         builder: (context, refundState) {
           final refundables = refundState.refundables;
@@ -47,10 +44,7 @@ class _GetRefundPageState extends State<GetRefundPage> {
                 child: Column(
                   children: [
                     RefundItem(refundables.elementAt(index)),
-                    const Divider(
-                      height: 0.0,
-                      color: Color.fromRGBO(255, 255, 255, 0.52),
-                    )
+                    const Divider(height: 0.0, color: Color.fromRGBO(255, 255, 255, 0.52)),
                   ],
                 ),
               );

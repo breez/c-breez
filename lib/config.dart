@@ -17,15 +17,9 @@ class Config {
   final sdk.NodeConfig nodeConfig;
   final String? defaultMempoolUrl;
 
-  Config._({
-    required this.sdkConfig,
-    required this.nodeConfig,
-    this.defaultMempoolUrl,
-  });
+  Config._({required this.sdkConfig, required this.nodeConfig, this.defaultMempoolUrl});
 
-  static Future<Config> instance({
-    ServiceInjector? serviceInjector,
-  }) async {
+  static Future<Config> instance({ServiceInjector? serviceInjector}) async {
     _log.info("Getting Config instance");
     if (_instance == null) {
       _log.info("Creating Config instance");
@@ -57,11 +51,7 @@ class Config {
     sdk.EnvironmentType environmentType = sdk.EnvironmentType.Production,
   }) async {
     _log.info("Getting default SDK config for environment: $environmentType");
-    return await breezSDK.defaultConfig(
-      envType: environmentType,
-      apiKey: apiKey,
-      nodeConfig: nodeConfig,
-    );
+    return await breezSDK.defaultConfig(envType: environmentType, apiKey: apiKey, nodeConfig: nodeConfig);
   }
 
   static Future<sdk.Config> getSDKConfig(
@@ -89,20 +79,14 @@ class Config {
     return configuredMaxFeePercent;
   }
 
-  static Future<int> _configuredExempMsatFee(
-    ServiceInjector serviceInjector,
-    sdk.Config defaultConf,
-  ) async {
+  static Future<int> _configuredExempMsatFee(ServiceInjector serviceInjector, sdk.Config defaultConf) async {
     final preferences = serviceInjector.preferences;
     final configuredExemptFee = await preferences.getPaymentOptionsExemptFee();
     _log.info("Using exemptMsatFee from preferences: $configuredExemptFee");
     return configuredExemptFee;
   }
 
-  static Future<String?> _mempoolSpaceUrl(
-    ServiceInjector serviceInjector,
-    sdk.Config defaultConf,
-  ) async {
+  static Future<String?> _mempoolSpaceUrl(ServiceInjector serviceInjector, sdk.Config defaultConf) async {
     final preferences = serviceInjector.preferences;
 
     final url = await preferences.getMempoolSpaceUrl();

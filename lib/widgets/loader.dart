@@ -19,17 +19,20 @@ class Loader extends StatelessWidget {
           value: value,
           semanticsLabel: label,
           strokeWidth: strokeWidth,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            color ?? theme.circularLoaderColor,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(color ?? theme.circularLoaderColor),
         ),
       ],
     );
   }
 }
 
-TransparentPageRoute createLoaderRoute(BuildContext context,
-    {String message = "", double opacity = 0.5, Future? action, Function? onClose}) {
+TransparentPageRoute createLoaderRoute(
+  BuildContext context, {
+  String message = "",
+  double opacity = 0.5,
+  Future? action,
+  Function? onClose,
+}) {
   return TransparentPageRoute((context) {
     return TransparentRouteLoader(message: message, opacity: opacity, action: action, onClose: onClose);
   });
@@ -43,14 +46,15 @@ class FullScreenLoader extends StatelessWidget {
   final Color bgColor;
   final Function? onClose;
 
-  const FullScreenLoader(
-      {super.key,
-      this.message,
-      this.opacity = 0.5,
-      this.value,
-      this.progressColor,
-      this.bgColor = Colors.black,
-      this.onClose});
+  const FullScreenLoader({
+    super.key,
+    this.message,
+    this.opacity = 0.5,
+    this.value,
+    this.progressColor,
+    this.bgColor = Colors.black,
+    this.onClose,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +80,7 @@ class FullScreenLoader extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: message != null ? Text(message!, textAlign: TextAlign.center) : const SizedBox(),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -106,8 +110,13 @@ class TransparentRouteLoader extends StatefulWidget {
   final Future? action;
   final Function? onClose;
 
-  const TransparentRouteLoader(
-      {super.key, required this.message, this.opacity = 0.5, this.action, this.onClose});
+  const TransparentRouteLoader({
+    super.key,
+    required this.message,
+    this.opacity = 0.5,
+    this.action,
+    this.onClose,
+  });
 
   @override
   State<StatefulWidget> createState() {

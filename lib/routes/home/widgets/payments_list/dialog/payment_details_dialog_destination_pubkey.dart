@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 class PaymentDetailsDestinationPubkey extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  const PaymentDetailsDestinationPubkey({
-    super.key,
-    required this.paymentMinutiae,
-  });
+  const PaymentDetailsDestinationPubkey({super.key, required this.paymentMinutiae});
 
   @override
   Widget build(BuildContext context) {

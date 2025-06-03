@@ -10,10 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SenderAmount extends StatelessWidget {
   final int amountSat;
 
-  const SenderAmount({
-    required this.amountSat,
-    super.key,
-  });
+  const SenderAmount({required this.amountSat, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +31,7 @@ class SenderAmount extends StatelessWidget {
 
           return AutoSizeText(
             fiatConversion == null
-                ? texts.sweep_all_coins_amount_no_fiat(
-                    BitcoinCurrency.SAT.format(amountSat),
-                  )
+                ? texts.sweep_all_coins_amount_no_fiat(BitcoinCurrency.SAT.format(amountSat))
                 : texts.sweep_all_coins_amount_with_fiat(
                     BitcoinCurrency.SAT.format(amountSat),
                     fiatConversion.formatSat(amountSat),

@@ -11,11 +11,7 @@ class StatusText extends StatelessWidget {
   final AccountState accountState;
   final LspState? lspState;
 
-  const StatusText({
-    super.key,
-    required this.accountState,
-    required this.lspState,
-  });
+  const StatusText({super.key, required this.accountState, required this.lspState});
 
   @override
   Widget build(BuildContext context) {

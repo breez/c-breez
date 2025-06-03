@@ -17,9 +17,7 @@ final _log = Logger("UserProfileBloc");
 class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
   final BreezServer _breezServer;
 
-  UserProfileBloc(
-    this._breezServer,
-  ) : super(UserProfileState.initial()) {
+  UserProfileBloc(this._breezServer) : super(UserProfileState.initial()) {
     hydrate();
     var profile = state;
     _log.info("State: ${profile.profileSettings.toJson()}");
@@ -31,11 +29,7 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
       final animal = settings.animal ?? defaultProfile.animal;
       final name = settings.name ?? DefaultProfile(color, animal).buildName(getSystemLocale());
       profile = profile.copyWith(
-        profileSettings: settings.copyWith(
-          color: color,
-          animal: animal,
-          name: name,
-        ),
+        profileSettings: settings.copyWith(color: color, animal: animal, name: name),
       );
     }
     emit(profile);
@@ -63,7 +57,8 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
     bool? expandPreferences,
   }) {
     _log.info(
-        "updateProfile $name $color $animal $image $registrationRequested $hideBalance $appMode $expandPreferences");
+      "updateProfile $name $color $animal $image $registrationRequested $hideBalance $appMode $expandPreferences",
+    );
     var profile = state.profileSettings;
     profile = profile.copyWith(
       name: name ?? profile.name,

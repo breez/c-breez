@@ -10,10 +10,7 @@ import 'package:flutter/material.dart';
 class MnemonicsConfirmationPage extends StatefulWidget {
   final String mnemonics;
 
-  const MnemonicsConfirmationPage({
-    super.key,
-    required this.mnemonics,
-  });
+  const MnemonicsConfirmationPage({super.key, required this.mnemonics});
 
   @override
   MnemonicsConfirmationPageState createState() => MnemonicsConfirmationPageState();
@@ -29,10 +26,7 @@ class MnemonicsConfirmationPageState extends State<MnemonicsConfirmationPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: const back_button.BackButton(),
-        title: AutoSizeText(
-          texts.mnemonics_confirmation_title,
-          maxLines: 1,
-        ),
+        title: AutoSizeText(texts.mnemonics_confirmation_title, maxLines: 1),
       ),
       body: Column(
         children: [
@@ -54,19 +48,13 @@ class MnemonicsConfirmationPageState extends State<MnemonicsConfirmationPage> {
 }
 
 class MnemonicsImage extends StatelessWidget {
-  const MnemonicsImage({
-    super.key,
-  });
+  const MnemonicsImage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Expanded(
       flex: 2,
-      child: Image(
-        image: AssetImage("src/images/generate_backup_phrase.png"),
-        height: 100,
-        width: 100,
-      ),
+      child: Image(image: AssetImage("src/images/generate_backup_phrase.png"), height: 100, width: 100),
     );
   }
 }
@@ -76,14 +64,9 @@ class MnemonicsInstructions extends StatelessWidget {
   Widget build(BuildContext context) {
     final texts = context.texts();
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 48,
-        right: 48,
-      ),
+      padding: const EdgeInsets.only(left: 48, right: 48),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minHeight: 96,
-        ),
+        constraints: const BoxConstraints(minHeight: 96),
         child: Text(
           texts.mnemonics_confirmation_instructions,
           style: theme.mnemonicSeedInformationTextStyle,
@@ -98,11 +81,7 @@ class ConfirmationCheckbox extends StatelessWidget {
   final bool isUnderstood;
   final Function(bool value) onPressed;
 
-  const ConfirmationCheckbox({
-    super.key,
-    required this.onPressed,
-    required this.isUnderstood,
-  });
+  const ConfirmationCheckbox({super.key, required this.onPressed, required this.isUnderstood});
 
   @override
   Widget build(BuildContext context) {
@@ -115,19 +94,15 @@ class ConfirmationCheckbox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Theme(
-            data: themeData.copyWith(
-              unselectedWidgetColor: Colors.white,
-            ),
+            data: themeData.copyWith(unselectedWidgetColor: Colors.white),
             child: Checkbox(
-                activeColor: Colors.white,
-                checkColor: themeData.canvasColor,
-                value: isUnderstood,
-                onChanged: (value) => onPressed(value!)),
+              activeColor: Colors.white,
+              checkColor: themeData.canvasColor,
+              value: isUnderstood,
+              onChanged: (value) => onPressed(value!),
+            ),
           ),
-          Text(
-            texts.backup_phrase_action_confirm,
-            style: theme.mnemonicSeedConfirmationTextStyle,
-          ),
+          Text(texts.backup_phrase_action_confirm, style: theme.mnemonicSeedConfirmationTextStyle),
         ],
       ),
     );
@@ -138,11 +113,7 @@ class ConfirmButton extends StatelessWidget {
   final bool isUnderstood;
   final String mnemonics;
 
-  const ConfirmButton({
-    super.key,
-    required this.isUnderstood,
-    required this.mnemonics,
-  });
+  const ConfirmButton({super.key, required this.isUnderstood, required this.mnemonics});
 
   @override
   Widget build(BuildContext context) {
@@ -157,9 +128,7 @@ class ConfirmButton extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    FadeInRoute(
-                      builder: (context) => MnemonicsPage(mnemonics: mnemonics),
-                    ),
+                    FadeInRoute(builder: (context) => MnemonicsPage(mnemonics: mnemonics)),
                   );
                 },
               )

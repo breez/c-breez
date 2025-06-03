@@ -9,9 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SecurityMnemonicsManagement extends StatelessWidget {
-  const SecurityMnemonicsManagement({
-    super.key,
-  });
+  const SecurityMnemonicsManagement({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,40 +25,25 @@ class SecurityMnemonicsManagement extends StatelessWidget {
             isVerified
                 ? texts.mnemonics_confirmation_display_backup_phrase
                 : texts.mnemonics_confirmation_verify_backup_phrase,
-            style: themeData.primaryTextTheme.titleMedium?.copyWith(
-              color: Colors.white,
-            ),
+            style: themeData.primaryTextTheme.titleMedium?.copyWith(color: Colors.white),
             maxLines: 1,
           ),
-          trailing: const Icon(
-            Icons.keyboard_arrow_right,
-            color: Colors.white,
-            size: 30.0,
-          ),
+          trailing: const Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0),
           onTap: () async {
-            await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then(
-              (accountMnemonic) {
-                if (context.mounted) {
-                  if (account.verificationStatus == VerificationStatus.UNVERIFIED) {
-                    Navigator.pushNamed(
-                      context,
-                      '/mnemonics',
-                      arguments: accountMnemonic,
-                    );
-                  } else {
-                    Navigator.push(
-                      context,
-                      FadeInRoute(
-                        builder: (context) => MnemonicsPage(
-                          mnemonics: accountMnemonic!,
-                          viewMode: true,
-                        ),
-                      ),
-                    );
-                  }
+            await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then((accountMnemonic) {
+              if (context.mounted) {
+                if (account.verificationStatus == VerificationStatus.UNVERIFIED) {
+                  Navigator.pushNamed(context, '/mnemonics', arguments: accountMnemonic);
+                } else {
+                  Navigator.push(
+                    context,
+                    FadeInRoute(
+                      builder: (context) => MnemonicsPage(mnemonics: accountMnemonic!, viewMode: true),
+                    ),
+                  );
                 }
-              },
-            );
+              }
+            });
           },
         );
       },

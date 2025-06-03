@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 class Preview extends StatefulWidget {
   final List<Widget> children;
 
-  const Preview(
-    this.children, {
-    super.key,
-  });
+  const Preview(this.children, {super.key});
 
   @override
   State<Preview> createState() => _PreviewState();
@@ -54,26 +51,15 @@ class _PreviewState extends State<Preview> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     const Text("Theme:"),
-                    TextButton(
-                      onPressed: () => _changeTheme(null),
-                      child: const Text("None"),
-                    ),
-                    TextButton(
-                      onPressed: () => _changeTheme(breezLightTheme),
-                      child: const Text("Light"),
-                    ),
-                    TextButton(
-                      onPressed: () => _changeTheme(breezDarkTheme),
-                      child: const Text("Dark"),
-                    ),
+                    TextButton(onPressed: () => _changeTheme(null), child: const Text("None")),
+                    TextButton(onPressed: () => _changeTheme(breezLightTheme), child: const Text("Light")),
+                    TextButton(onPressed: () => _changeTheme(breezDarkTheme), child: const Text("Dark")),
                   ],
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 48.0),
-                child: FillViewPortColumnScrollView(
-                  children: widget.children,
-                ),
+                child: FillViewPortColumnScrollView(children: widget.children),
               ),
             ],
           ),

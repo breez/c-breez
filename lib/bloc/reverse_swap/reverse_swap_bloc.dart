@@ -27,10 +27,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         "w/ pairHash: ${prepareRes.feesHash}",
       );
 
-      final req = PayOnchainRequest(
-        recipientAddress: recipientAddress,
-        prepareRes: prepareRes,
-      );
+      final req = PayOnchainRequest(recipientAddress: recipientAddress, prepareRes: prepareRes);
 
       final revSwapResp = await _breezSDK.payOnchain(req: req);
       final revSwapInfo = revSwapResp.reverseSwapInfo;

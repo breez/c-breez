@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/bridge_generated.dart' hide Config;
 import 'package:breez_sdk/exceptions.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
@@ -44,10 +45,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   final BreezSDK _breezSDK;
   final CredentialsManager _credentialsManager;
 
-  AccountBloc(
-    this._breezSDK,
-    this._credentialsManager,
-  ) : super(AccountState.initial()) {
+  AccountBloc(this._breezSDK, this._credentialsManager) : super(AccountState.initial()) {
     hydrate();
     _watchAccountChanges().listen((acc) {
       _log.info("State changed: $acc");
@@ -74,18 +72,14 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     );
   }
 
-  Future connect({
-    String? mnemonic,
-    bool isRestore = true,
-  }) async {
+  Future connect({String? mnemonic, bool isRestore = true}) async {
     _log.info("connect new mnemonic: ${mnemonic != null}, restored: $isRestore");
     emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
     if (mnemonic != null) {
       await _credentialsManager.storeMnemonic(mnemonic: mnemonic);
-      emit(state.copyWith(
-        initial: false,
-        verificationStatus: isRestore ? VerificationStatus.VERIFIED : null,
-      ));
+      emit(
+        state.copyWith(initial: false, verificationStatus: isRestore ? VerificationStatus.VERIFIED : null),
+      );
     }
     await _startSdkForever(isRestore: isRestore);
   }
@@ -130,16 +124,15 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
       final mnemonic = await _credentialsManager.restoreMnemonic();
       final seed = bip39.mnemonicToSeed(mnemonic);
       _log.info("connecting to breez lib");
-      final req = sdk.ConnectRequest(
-        config: config.sdkConfig,
-        seed: seed,
-        restoreOnly: isRestore,
-      );
+      final req = sdk.ConnectRequest(config: config.sdkConfig, seed: seed, restoreOnly: isRestore);
       await _breezSDK.connect(req: req);
       _log.info("connected to breez lib");
       emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
     } catch (e) {
       _log.warning("failed to connect to breez lib", e);
+      if (!isRestore) {
+        await _credentialsManager.deleteMnemonic();
+      }
       emit(state.copyWith(connectionStatus: ConnectionStatus.DISCONNECTED));
       rethrow;
     }
@@ -157,9 +150,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     });
   }
 
-  Future<sdk.LnUrlWithdrawResult> lnurlWithdraw({
-    required sdk.LnUrlWithdrawRequest req,
-  }) async {
+  Future<sdk.LnUrlWithdrawResult> lnurlWithdraw({required sdk.LnUrlWithdrawRequest req}) async {
     _log.info("lnurlWithdraw req: $req");
     try {
       return await _breezSDK.lnurlWithdraw(req: req);
@@ -169,7 +160,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  Future<sdk.LnUrlPayResult> lnurlPay({required req}) async {
+  Future<sdk.LnUrlPayResult> lnurlPay({required LnUrlPayRequest req}) async {
     _log.info("lnurlPay req: $req");
     try {
       return await _breezSDK.lnurlPay(req: req);
@@ -179,9 +170,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     }
   }
 
-  Future<sdk.LnUrlCallbackStatus> lnurlAuth({
-    required sdk.LnUrlAuthRequestData reqData,
-  }) async {
+  Future<sdk.LnUrlCallbackStatus> lnurlAuth({required sdk.LnUrlAuthRequestData reqData}) async {
     _log.info("lnurlAuth reqData: $reqData");
     try {
       return await _breezSDK.lnurlAuth(reqData: reqData);
@@ -194,11 +183,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future sendPayment(String bolt11, int? amountMsat) async {
     _log.info("sendPayment: $bolt11, $amountMsat");
     try {
-      final req = sdk.SendPaymentRequest(
-        bolt11: bolt11,
-        amountMsat: amountMsat,
-        useTrampoline: true,
-      );
+      final req = sdk.SendPaymentRequest(bolt11: bolt11, amountMsat: amountMsat, useTrampoline: true);
       await _breezSDK.sendPayment(req: req);
     } catch (e) {
       _log.severe("sendPayment error", e);
@@ -219,10 +204,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.info("sendSpontaneousPayment: $nodeId, $description, $amountMsat");
     _log.info("description field is not being used by the SDK yet");
     try {
-      final req = sdk.SendSpontaneousPaymentRequest(
-        nodeId: nodeId,
-        amountMsat: amountMsat,
-      );
+      final req = sdk.SendSpontaneousPaymentRequest(nodeId: nodeId, amountMsat: amountMsat);
       await _breezSDK.sendSpontaneousPayment(req: req);
     } catch (e) {
       _log.severe("sendSpontaneousPayment error", e);
@@ -283,11 +265,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   }) async {
     _log.info("changePaymentFilter: $filters, $fromTimestamp, $toTimestamp");
     _paymentFiltersStreamController.add(
-      state.paymentFilters.copyWith(
-        filters: filters,
-        fromTimestamp: fromTimestamp,
-        toTimestamp: toTimestamp,
-      ),
+      state.paymentFilters.copyWith(filters: filters, fromTimestamp: fromTimestamp, toTimestamp: toTimestamp),
     );
   }
 
@@ -348,22 +326,24 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   void _listenPaymentResultEvents() {
     _log.info("_listenPaymentResultEvents");
-    _breezSDK.paymentResultStream.listen((paymentInfo) {
-      _paymentResultStreamController.add(
-        PaymentResult(paymentInfo: paymentInfo),
-      );
-    }, onError: (error) {
-      _log.info("Error in paymentResultStream", error);
-      var paymentHash = "";
-      if (error is PaymentException) {
-        final invoice = error.data.invoice;
-        if (invoice != null) {
-          paymentHash = invoice.paymentHash;
+    _breezSDK.paymentResultStream.listen(
+      (paymentInfo) {
+        _paymentResultStreamController.add(PaymentResult(paymentInfo: paymentInfo));
+      },
+      onError: (error) {
+        _log.info("Error in paymentResultStream", error);
+        var paymentHash = "";
+        if (error is PaymentException) {
+          final invoice = error.data.invoice;
+          if (invoice != null) {
+            paymentHash = invoice.paymentHash;
+          }
         }
-      }
-      _paymentResultStreamController
-          .add(PaymentResult(error: PaymentResultError.fromException(paymentHash, error)));
-    });
+        _paymentResultStreamController.add(
+          PaymentResult(error: PaymentResultError.fromException(paymentHash, error)),
+        );
+      },
+    );
   }
 
   void mnemonicsValidated() {
@@ -393,11 +373,9 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     final paymentTypeFilters = paymentFilters.filters;
     if (paymentTypeFilters != null && paymentTypeFilters != sdk.PaymentTypeFilter.values) {
       filteredPayments = filteredPayments.where((paymentMinutiae) {
-        return paymentTypeFilters.any(
-          (filter) {
-            return filter.name == paymentMinutiae.paymentType.name;
-          },
-        );
+        return paymentTypeFilters.any((filter) {
+          return filter.name == paymentMinutiae.paymentType.name;
+        });
       }).toList();
     }
     return filteredPayments;

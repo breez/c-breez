@@ -1,5 +1,5 @@
 import 'package:c_breez/widgets/preview/preview.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Preview;
 
 class DigitButtonWidget extends StatelessWidget {
   final String? digit;
@@ -29,16 +29,9 @@ class DigitButtonWidget extends StatelessWidget {
               ? Text(
                   digit!,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: foregroundColor,
-                    fontSize: 20.0,
-                  ),
+                  style: TextStyle(color: foregroundColor, fontSize: 20.0),
                 )
-              : Icon(
-                  icon,
-                  color: foregroundColor,
-                  size: 20.0,
-                ),
+              : Icon(icon, color: foregroundColor, size: 20.0),
         ),
       ),
     );
@@ -50,10 +43,7 @@ void main() {
     Preview(
       List.generate(
         10,
-        (index) => DigitButtonWidget(
-          digit: "$index",
-          onPressed: (digit) => debugPrint("Digit: $digit"),
-        ),
+        (index) => DigitButtonWidget(digit: "$index", onPressed: (digit) => debugPrint("Digit: $digit")),
       ),
     ),
   );

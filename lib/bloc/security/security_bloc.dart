@@ -37,9 +37,7 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
 
   Future setPin(String pin) async {
     await _secureStorage.write(key: "pinCode", value: pin);
-    emit(state.copyWith(
-      pinStatus: PinStatus.enabled,
-    ));
+    emit(state.copyWith(pinStatus: PinStatus.enabled));
   }
 
   Future<bool> testPin(String pin) async {
@@ -53,30 +51,22 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
 
   Future clearPin() async {
     await _secureStorage.delete(key: "pinCode");
-    emit(state.copyWith(
-      pinStatus: PinStatus.disabled,
-    ));
+    emit(state.copyWith(pinStatus: PinStatus.disabled));
     _setLockState(LockState.unlocked);
   }
 
   Future setLockInterval(Duration lockInterval) async {
-    emit(state.copyWith(
-      lockInterval: lockInterval,
-    ));
+    emit(state.copyWith(lockInterval: lockInterval));
     _setLockState(LockState.unlocked);
   }
 
   Future clearLocalAuthentication() async {
-    emit(state.copyWith(
-      localAuthenticationOption: LocalAuthenticationOption.none,
-    ));
+    emit(state.copyWith(localAuthenticationOption: LocalAuthenticationOption.none));
     _setLockState(LockState.unlocked);
   }
 
   Future enableLocalAuthentication() async {
-    emit(state.copyWith(
-      localAuthenticationOption: await localAuthenticationOption(),
-    ));
+    emit(state.copyWith(localAuthenticationOption: await localAuthenticationOption()));
     _setLockState(LockState.unlocked);
   }
 
@@ -99,15 +89,9 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   Future<bool> localAuthentication(String localizedReason) async {
     try {
       final authenticated = await _auth.authenticate(
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          useErrorDialogs: false,
-        ),
+        options: const AuthenticationOptions(biometricOnly: true, useErrorDialogs: false),
         localizedReason: localizedReason,
-        authMessages: const [
-          AndroidAuthMessages(),
-          IOSAuthMessages(),
-        ],
+        authMessages: const [AndroidAuthMessages(), IOSAuthMessages()],
       );
       _setLockState(authenticated ? LockState.unlocked : LockState.locked);
       return authenticated;
@@ -123,9 +107,7 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   }
 
   void _setLockState(LockState lockState) {
-    emit(state.copyWith(
-      lockState: lockState,
-    ));
+    emit(state.copyWith(lockState: lockState));
   }
 
   @override

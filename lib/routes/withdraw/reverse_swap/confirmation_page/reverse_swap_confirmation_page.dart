@@ -44,9 +44,7 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
     final texts = context.texts();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(texts.sweep_all_coins_speed),
-      ),
+      appBar: AppBar(title: Text(texts.sweep_all_coins_speed)),
       body: FutureBuilder(
         future: _fetchFeeOptionsFuture,
         builder: (context, snapshot) {
@@ -73,13 +71,13 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
       ),
       bottomNavigationBar:
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
-              ? SafeArea(
-                  child: ReverseSwapButton(
-                    recipientAddress: widget.onchainRecipientAddress,
-                    prepareOnchainPaymentResponse: affordableFees[selectedFeeIndex].pairInfo,
-                  ),
-                )
-              : null,
+          ? SafeArea(
+              child: ReverseSwapButton(
+                recipientAddress: widget.onchainRecipientAddress,
+                prepareOnchainPaymentResponse: affordableFees[selectedFeeIndex].pairInfo,
+              ),
+            )
+          : null,
     );
   }
 
@@ -106,19 +104,14 @@ class _ReverseSwapConfirmationPageState extends State<ReverseSwapConfirmationPag
 class _ErrorMessage extends StatelessWidget {
   final String message;
 
-  const _ErrorMessage({
-    required this.message,
-  });
+  const _ErrorMessage({required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40.0),
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-        ),
+        child: Text(message, textAlign: TextAlign.center),
       ),
     );
   }

@@ -17,11 +17,12 @@ class BackupInProgressDialogState extends State<BackupInProgressDialog> {
   Widget build(BuildContext context) {
     final texts = context.texts();
     return BlocListener<BackupBloc, BackupState?>(
-        listener: (context, state) {
-          if (state?.status != BackupStatus.INPROGRESS) {
-            Navigator.of(context).pop();
-          }
-        },
-        child: createAnimatedLoaderDialog(context, texts.backup_in_progress));
+      listener: (context, state) {
+        if (state?.status != BackupStatus.INPROGRESS) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: createAnimatedLoaderDialog(context, texts.backup_in_progress),
+    );
   }
 }

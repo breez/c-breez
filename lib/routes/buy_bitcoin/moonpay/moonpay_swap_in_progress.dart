@@ -9,10 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class MoonpaySwapInProgress extends StatelessWidget {
   final MoonPayStateSwapInProgress state;
 
-  const MoonpaySwapInProgress({
-    super.key,
-    required this.state,
-  });
+  const MoonpaySwapInProgress({super.key, required this.state});
 
   @override
   Widget build(BuildContext context) {

@@ -75,10 +75,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
             ),
             titlePadding: const EdgeInsets.all(0.0),
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(12.0),
-                top: Radius.circular(13.0),
-              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(12.0), top: Radius.circular(13.0)),
             ),
             children: <Widget>[
               SingleChildScrollView(
@@ -91,39 +88,38 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
                     enabled: !isUploading,
                     style: themeData.primaryTextTheme.bodyMedium,
                     controller: nameInputController,
-                    decoration: InputDecoration(
-                      hintText: texts.breez_avatar_dialog_your_name,
-                    ),
+                    decoration: InputDecoration(hintText: texts.breez_avatar_dialog_your_name),
                     onSubmitted: (text) {},
                   ),
                 ),
               ),
               Padding(
-                  padding: const EdgeInsets.only(top: 24.0, bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: isUploading ? null : () => navigator.pop(),
-                        child: Text(
-                          texts.breez_avatar_dialog_action_cancel,
-                          style: themeData.primaryTextTheme.labelLarge,
-                        ),
+                padding: const EdgeInsets.only(top: 24.0, bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: isUploading ? null : () => navigator.pop(),
+                      child: Text(
+                        texts.breez_avatar_dialog_action_cancel,
+                        style: themeData.primaryTextTheme.labelLarge,
                       ),
-                      TextButton(
-                        onPressed: isUploading
-                            ? null
-                            : () async {
-                                await saveAvatarChanges();
-                              },
-                        child: Text(
-                          texts.breez_avatar_dialog_action_save,
-                          style: themeData.primaryTextTheme.labelLarge,
-                        ),
+                    ),
+                    TextButton(
+                      onPressed: isUploading
+                          ? null
+                          : () async {
+                              await saveAvatarChanges();
+                            },
+                      child: Text(
+                        texts.breez_avatar_dialog_action_save,
+                        style: themeData.primaryTextTheme.labelLarge,
                       ),
-                    ],
-                  )),
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },
@@ -155,10 +151,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
         pickedImage = null;
       });
       if (!mounted) return;
-      showFlushbar(
-        context,
-        message: texts.breez_avatar_dialog_error_upload,
-      );
+      showFlushbar(context, message: texts.breez_avatar_dialog_error_upload);
     }
   }
 
@@ -174,39 +167,49 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
     FocusScope.of(context).unfocus();
   }
 
-  pickImageFromGallery() async {
+  Future<void> pickImageFromGallery() async {
     _log.fine("pickImageFromGallery");
-    ImagePicker().pickImage(source: ImageSource.gallery).then((pickedFile) {
-      final pickedFilePath = pickedFile?.path;
-      _log.fine("pickedFile $pickedFilePath");
-      if (pickedFilePath != null) {
-        ImageCropper().cropImage(
-          sourcePath: pickedFilePath,
-          uiSettings: [
-            AndroidUiSettings(
-              cropStyle: CropStyle.circle,
-              aspectRatioPresets: [CropAspectRatioPreset.square],
-            ),
-            IOSUiSettings(
-              cropStyle: CropStyle.circle,
-              aspectRatioPresets: [CropAspectRatioPreset.square],
-            )
-          ],
-        ).then((croppedFile) {
-          _log.info("croppedFile ${croppedFile?.path}");
-          if (croppedFile != null) {
-            setState(() {
-              pickedImage = croppedFile;
-              randomAvatarPath = null;
-            });
-          }
-        }, onError: (error) {
-          _log.severe("Failed to crop image", error);
-        });
-      }
-    }, onError: (error) {
-      _log.severe("Failed to pick image", error);
-    });
+    ImagePicker()
+        .pickImage(source: ImageSource.gallery)
+        .then(
+          (pickedFile) {
+            final pickedFilePath = pickedFile?.path;
+            _log.fine("pickedFile $pickedFilePath");
+            if (pickedFilePath != null) {
+              ImageCropper()
+                  .cropImage(
+                    sourcePath: pickedFilePath,
+                    uiSettings: [
+                      AndroidUiSettings(
+                        cropStyle: CropStyle.circle,
+                        aspectRatioPresets: [CropAspectRatioPreset.square],
+                      ),
+                      IOSUiSettings(
+                        cropStyle: CropStyle.circle,
+                        aspectRatioPresets: [CropAspectRatioPreset.square],
+                      ),
+                    ],
+                  )
+                  .then(
+                    (croppedFile) {
+                      _log.info("croppedFile ${croppedFile?.path}");
+                      if (croppedFile != null) {
+                        setState(() {
+                          pickedImage = croppedFile;
+                          randomAvatarPath = null;
+                        });
+                      }
+                    },
+                    onError: (error) {
+                      _log.severe("Failed to crop image", error);
+                    },
+                  );
+            }
+          },
+          onError: (error) {
+            _log.severe("Failed to pick image", error);
+          },
+        );
   }
 
   Future<void> uploadAvatar() async {
@@ -237,9 +240,7 @@ class BreezAvatarDialogState extends State<BreezAvatarDialog> {
 }
 
 class TitleBackground extends StatelessWidget {
-  const TitleBackground({
-    super.key,
-  });
+  const TitleBackground({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -247,11 +248,7 @@ class TitleBackground extends StatelessWidget {
     return Container(
       height: 70.0,
       decoration: ShapeDecoration(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(12.0),
-          ),
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(12.0))),
         color: themeData.isLightTheme ? themeData.primaryColorDark : themeData.canvasColor,
       ),
     );
@@ -271,12 +268,7 @@ class RandomButton extends StatelessWidget {
 
     return Expanded(
       child: TextButton(
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.only(
-            bottom: 20.0,
-            top: 26.0,
-          ),
-        ),
+        style: TextButton.styleFrom(padding: const EdgeInsets.only(bottom: 20.0, top: 26.0)),
         onPressed: onPressed,
         child: AutoSizeText(
           texts.breez_avatar_dialog_random,
@@ -328,9 +320,7 @@ class AvatarPreview extends StatelessWidget {
 }
 
 class AvatarSpinner extends StatelessWidget {
-  const AvatarSpinner({
-    super.key,
-  });
+  const AvatarSpinner({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -340,9 +330,7 @@ class AvatarSpinner extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1,
         child: CircularProgressIndicator(
-          valueColor: const AlwaysStoppedAnimation<Color>(
-            Colors.white,
-          ),
+          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
           backgroundColor: themeData.isLightTheme ? themeData.primaryColorDark : themeData.canvasColor,
         ),
       ),
@@ -363,12 +351,7 @@ class GalleryButton extends StatelessWidget {
 
     return Expanded(
       child: TextButton(
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.only(
-            bottom: 20.0,
-            top: 26.0,
-          ),
-        ),
+        style: TextButton.styleFrom(padding: const EdgeInsets.only(bottom: 20.0, top: 26.0)),
         onPressed: onPressed,
         child: AutoSizeText(
           texts.breez_avatar_dialog_gallery,

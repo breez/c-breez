@@ -32,14 +32,11 @@ class CreateInvoicePage extends StatefulWidget {
   final Function(LNURLPageResult? result)? onFinish;
   final LnUrlWithdrawRequestData? requestData;
 
-  const CreateInvoicePage({
-    super.key,
-    this.requestData,
-    this.onFinish,
-  }) : assert(
-          requestData == null || (onFinish != null),
-          "If you are using LNURL withdraw, you must provide an onFinish callback.",
-        );
+  const CreateInvoicePage({super.key, this.requestData, this.onFinish})
+    : assert(
+        requestData == null || (onFinish != null),
+        "If you are using LNURL withdraw, you must provide an onFinish callback.",
+      );
 
   @override
   State<StatefulWidget> createState() {
@@ -60,19 +57,17 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     super.initState();
     _doneAction = KeyboardDoneAction(focusNodes: [_amountFocusNode]);
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        final data = widget.requestData;
-        if (data != null) {
-          final currencyState = context.read<CurrencyBloc>().state;
-          _amountController.text = currencyState.bitcoinCurrency.format(
-            data.maxWithdrawable ~/ 1000,
-            includeDisplayName: false,
-          );
-          _descriptionController.text = data.defaultDescription;
-        }
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final data = widget.requestData;
+      if (data != null) {
+        final currencyState = context.read<CurrencyBloc>().state;
+        _amountController.text = currencyState.bitcoinCurrency.format(
+          data.maxWithdrawable ~/ 1000,
+          includeDisplayName: false,
+        );
+        _descriptionController.text = data.defaultDescription;
+      }
+    });
   }
 
   @override
@@ -91,10 +86,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        leading: const back_button.BackButton(),
-        title: Text(texts.invoice_title),
-      ),
+      appBar: AppBar(leading: const back_button.BackButton(), title: Text(texts.invoice_title)),
       body: Form(
         key: _formKey,
         child: Padding(
@@ -112,9 +104,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
                     maxLines: null,
                     maxLength: 90,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    decoration: InputDecoration(
-                      labelText: texts.invoice_description_label,
-                    ),
+                    decoration: InputDecoration(labelText: texts.invoice_description_label),
                     style: theme.FieldTextStyle.textStyle,
                   ),
                   BlocBuilder<CurrencyBloc, CurrencyState>(
@@ -176,11 +166,11 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     );
   }
 
-  Future<void> _withdraw(
-    LnUrlWithdrawRequestData data,
-  ) async {
-    _log.info("Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
-        "min=${data.minWithdrawable}, max=${data.maxWithdrawable}");
+  Future<void> _withdraw(LnUrlWithdrawRequestData data) async {
+    _log.info(
+      "Withdraw request: description=${data.defaultDescription}, k1=${data.k1}, "
+      "min=${data.minWithdrawable}, max=${data.maxWithdrawable}",
+    );
     final CurrencyBloc currencyBloc = context.read<CurrencyBloc>();
 
     final navigator = Navigator.of(context);
@@ -192,9 +182,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       barrierDismissible: false,
       builder: (_) => LNURLWithdrawDialog(
         requestData: data,
-        amountSat: currencyBloc.state.bitcoinCurrency.parse(
-          _amountController.text,
-        ),
+        amountSat: currencyBloc.state.bitcoinCurrency.parse(_amountController.text),
         onFinish: widget.onFinish!,
       ),
     );
@@ -208,21 +196,18 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     final currencyBloc = context.read<CurrencyBloc>();
 
     Future<ReceivePaymentResponse> receivePaymentResponse = accountBloc.addInvoice(
-        description: _descriptionController.text,
-        amountMsat: currencyBloc.state.bitcoinCurrency.parse(_amountController.text) * 1000,
-        chosenFeeParams: cheapestFeeParams);
+      description: _descriptionController.text,
+      amountMsat: currencyBloc.state.bitcoinCurrency.parse(_amountController.text) * 1000,
+      chosenFeeParams: cheapestFeeParams,
+    );
     navigator.pop();
     Widget dialog = FutureBuilder(
       future: receivePaymentResponse,
       builder: (BuildContext context, AsyncSnapshot<ReceivePaymentResponse> snapshot) {
         _log.info("Building QrCodeDialog with invoice: ${snapshot.data}, error: ${snapshot.error}");
-        return QrCodeDialog(
-          snapshot.data,
-          snapshot.error,
-          (result) {
-            onPaymentFinished(result, currentRoute, navigator);
-          },
-        );
+        return QrCodeDialog(snapshot.data, snapshot.error, (result) {
+          onPaymentFinished(result, currentRoute, navigator);
+        });
       },
     );
 
@@ -234,17 +219,11 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
     );
   }
 
-  void onPaymentFinished(
-    dynamic result,
-    ModalRoute currentRoute,
-    NavigatorState navigator,
-  ) {
+  void onPaymentFinished(dynamic result, ModalRoute currentRoute, NavigatorState navigator) {
     _log.info("Payment finished: $result");
     if (result == true) {
       if (currentRoute.isCurrent) {
-        navigator.push(
-          TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()),
-        );
+        navigator.push(TransparentPageRoute((ctx) => const SuccessfulPaymentRoute()));
       }
     } else {
       if (result is String) {
@@ -284,10 +263,10 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       }
     }
     return context.read<AccountBloc>().validatePayment(
-          amountSat,
-          outgoing,
-          channelCreationPossible,
-          channelMinimumFeeSat: channelMinimumFeeSat,
-        );
+      amountSat,
+      outgoing,
+      channelCreationPossible,
+      channelMinimumFeeSat: channelMinimumFeeSat,
+    );
   }
 }

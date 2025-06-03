@@ -7,10 +7,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 final _log = Logger("ExternalBrowser");
 
-Future<void> launchLinkOnExternalBrowser(
-  BuildContext context, {
-  required String linkAddress,
-}) async {
+Future<void> launchLinkOnExternalBrowser(BuildContext context, {required String linkAddress}) async {
   final texts = context.texts();
   final themeData = Theme.of(context);
   final navigator = Navigator.of(context);

@@ -10,45 +10,23 @@ class InputState {
 
   const factory InputState.loading() = LoadingInputState;
 
-  const factory InputState.invoice(
-    Invoice invoice,
-    InputSource source,
-  ) = InvoiceInputState;
+  const factory InputState.invoice(Invoice invoice, InputSource source) = InvoiceInputState;
 
-  const factory InputState.lnUrlPay(
-    LnUrlPayRequestData data,
-    InputSource source,
-  ) = LnUrlPayInputState;
+  const factory InputState.lnUrlPay(LnUrlPayRequestData data, InputSource source) = LnUrlPayInputState;
 
-  const factory InputState.lnUrlWithdraw(
-    LnUrlWithdrawRequestData data,
-    InputSource source,
-  ) = LnUrlWithdrawInputState;
+  const factory InputState.lnUrlWithdraw(LnUrlWithdrawRequestData data, InputSource source) =
+      LnUrlWithdrawInputState;
 
-  const factory InputState.lnUrlAuth(
-    LnUrlAuthRequestData data,
-    InputSource source,
-  ) = LnUrlAuthInputState;
+  const factory InputState.lnUrlAuth(LnUrlAuthRequestData data, InputSource source) = LnUrlAuthInputState;
 
-  const factory InputState.lnUrlError(
-    LnUrlErrorData data,
-    InputSource source,
-  ) = LnUrlErrorInputState;
+  const factory InputState.lnUrlError(LnUrlErrorData data, InputSource source) = LnUrlErrorInputState;
 
-  const factory InputState.nodeId(
-    String nodeId,
-    InputSource source,
-  ) = NodeIdInputState;
+  const factory InputState.nodeId(String nodeId, InputSource source) = NodeIdInputState;
 
-  const factory InputState.bitcoinAddress(
-    BitcoinAddressData data,
-    InputSource source,
-  ) = BitcoinAddressInputState;
+  const factory InputState.bitcoinAddress(BitcoinAddressData data, InputSource source) =
+      BitcoinAddressInputState;
 
-  const factory InputState.url(
-    String url,
-    InputSource source,
-  ) = UrlInputState;
+  const factory InputState.url(String url, InputSource source) = UrlInputState;
 }
 
 class EmptyInputState extends InputState {
@@ -84,10 +62,7 @@ class LoadingInputState extends InputState {
 }
 
 class InvoiceInputState extends InputState {
-  const InvoiceInputState(
-    this.invoice,
-    this.source,
-  ) : super._();
+  const InvoiceInputState(this.invoice, this.source) : super._();
 
   final Invoice invoice;
   final InputSource source;
@@ -110,10 +85,7 @@ class InvoiceInputState extends InputState {
 }
 
 class LnUrlPayInputState extends InputState {
-  const LnUrlPayInputState(
-    this.data,
-    this.source,
-  ) : super._();
+  const LnUrlPayInputState(this.data, this.source) : super._();
 
   final LnUrlPayRequestData data;
   final InputSource source;
@@ -136,10 +108,7 @@ class LnUrlPayInputState extends InputState {
 }
 
 class LnUrlWithdrawInputState extends InputState {
-  const LnUrlWithdrawInputState(
-    this.data,
-    this.source,
-  ) : super._();
+  const LnUrlWithdrawInputState(this.data, this.source) : super._();
 
   final LnUrlWithdrawRequestData data;
   final InputSource source;
@@ -162,10 +131,7 @@ class LnUrlWithdrawInputState extends InputState {
 }
 
 class LnUrlAuthInputState extends InputState {
-  const LnUrlAuthInputState(
-    this.data,
-    this.source,
-  ) : super._();
+  const LnUrlAuthInputState(this.data, this.source) : super._();
 
   final LnUrlAuthRequestData data;
   final InputSource source;
@@ -188,10 +154,7 @@ class LnUrlAuthInputState extends InputState {
 }
 
 class LnUrlErrorInputState extends InputState {
-  const LnUrlErrorInputState(
-    this.data,
-    this.source,
-  ) : super._();
+  const LnUrlErrorInputState(this.data, this.source) : super._();
 
   final LnUrlErrorData data;
   final InputSource source;
@@ -214,10 +177,7 @@ class LnUrlErrorInputState extends InputState {
 }
 
 class NodeIdInputState extends InputState {
-  const NodeIdInputState(
-    this.nodeId,
-    this.source,
-  ) : super._();
+  const NodeIdInputState(this.nodeId, this.source) : super._();
 
   final String nodeId;
   final InputSource source;
@@ -240,10 +200,7 @@ class NodeIdInputState extends InputState {
 }
 
 class BitcoinAddressInputState extends InputState {
-  const BitcoinAddressInputState(
-    this.data,
-    this.source,
-  ) : super._();
+  const BitcoinAddressInputState(this.data, this.source) : super._();
 
   final BitcoinAddressData data;
   final InputSource source;
@@ -266,10 +223,7 @@ class BitcoinAddressInputState extends InputState {
 }
 
 class UrlInputState extends InputState {
-  const UrlInputState(
-    this.url,
-    this.source,
-  ) : super._();
+  const UrlInputState(this.url, this.source) : super._();
 
   final String url;
   final InputSource source;

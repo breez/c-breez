@@ -8,11 +8,7 @@ class ParticlePainter extends CustomPainter {
   final Duration time;
   final Color color;
 
-  const ParticlePainter(
-    this.particles,
-    this.time,
-    this.color,
-  );
+  const ParticlePainter(this.particles, this.time, this.color);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -25,11 +21,7 @@ class ParticlePainter extends CustomPainter {
         animation.get(AnimationProperties.X) * size.width,
         animation.get(AnimationProperties.Y) * size.height,
       );
-      canvas.drawCircle(
-        position,
-        size.width * 0.2 * particle.size!,
-        paint,
-      );
+      canvas.drawCircle(position, size.width * 0.2 * particle.size!, paint);
     }
   }
 

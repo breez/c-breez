@@ -16,9 +16,7 @@ class CredentialsManager {
 
   CredentialsManager({required this.keyChain});
 
-  Future storeApiKey({
-    required String apiKey,
-  }) async {
+  Future storeApiKey({required String apiKey}) async {
     try {
       await keyChain.write(accountApiKey, apiKey);
       _log.info("Stored api key successfully");
@@ -27,9 +25,7 @@ class CredentialsManager {
     }
   }
 
-  Future storeMnemonic({
-    required String mnemonic,
-  }) async {
+  Future storeMnemonic({required String mnemonic}) async {
     try {
       await _storeMnemonic(mnemonic);
       _log.info("Stored credentials successfully");
@@ -51,6 +47,10 @@ class CredentialsManager {
   // Helper methods
   Future<void> _storeMnemonic(String mnemonic) async {
     await keyChain.write(accountMnemonic, mnemonic);
+  }
+
+  Future<void> deleteMnemonic() async {
+    await keyChain.delete(accountMnemonic);
   }
 
   Future<List<File>> exportCredentials() async {

@@ -4,9 +4,7 @@ import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';
 
 class NetworkPage extends StatelessWidget {
-  const NetworkPage({
-    super.key,
-  });
+  const NetworkPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +15,9 @@ class NetworkPage extends StatelessWidget {
       appBar: AppBar(
         key: GlobalKey<ScaffoldState>(),
         leading: const back_button.BackButton(),
-        title: Text(
-          texts.network_title,
-          style: themeData.appBarTheme.toolbarTextStyle,
-        ),
+        title: Text(texts.network_title, style: themeData.appBarTheme.toolbarTextStyle),
       ),
-      body: ListView(
-        children: const [
-          MempoolSettingsWidget(),
-        ],
-      ),
+      body: ListView(children: const [MempoolSettingsWidget()]),
     );
   }
 }

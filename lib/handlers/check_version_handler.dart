@@ -7,10 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-void checkVersionDialog(
-  BuildContext context,
-  UserProfileBloc userProfileBloc,
-) {
+void checkVersionDialog(BuildContext context, UserProfileBloc userProfileBloc) {
   final texts = context.texts();
 
   userProfileBloc.checkVersion().catchError((err) {

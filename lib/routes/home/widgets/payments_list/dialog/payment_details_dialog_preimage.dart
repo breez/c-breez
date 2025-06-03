@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 class PaymentDetailsPreimage extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  const PaymentDetailsPreimage({
-    super.key,
-    required this.paymentMinutiae,
-  });
+  const PaymentDetailsPreimage({super.key, required this.paymentMinutiae});
 
   @override
   Widget build(BuildContext context) {

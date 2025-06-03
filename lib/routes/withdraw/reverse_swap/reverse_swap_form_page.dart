@@ -49,17 +49,11 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
       child: BlocBuilder<RevSwapsInProgressBloc, RevSwapsInProgressState>(
         builder: (context, inProgressSwapState) {
           if (inProgressSwapState.isLoading) {
-            return Center(
-              child: Loader(
-                color: themeData.primaryColor.withValues(alpha: 0.5),
-              ),
-            );
+            return Center(child: Loader(color: themeData.primaryColor.withValues(alpha: 0.5)));
           }
 
           if (inProgressSwapState.reverseSwapsInProgress.isNotEmpty) {
-            return ReverseSwapsInProgressPage(
-              reverseSwaps: inProgressSwapState.reverseSwapsInProgress,
-            );
+            return ReverseSwapsInProgressPage(reverseSwaps: inProgressSwapState.reverseSwapsInProgress);
           }
 
           return Padding(
@@ -82,10 +76,7 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
                 ),
                 const WithdrawFundsAvailableBtc(),
                 Expanded(child: Container()),
-                SingleButtonBottomBar(
-                  text: texts.withdraw_funds_action_next,
-                  onPressed: _prepareReverseSwap,
-                ),
+                SingleButtonBottomBar(text: texts.withdraw_funds_action_next, onPressed: _prepareReverseSwap),
               ],
             ),
           );
@@ -133,9 +124,7 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
         if (!context.mounted) return;
         showFlushbar(
           context,
-          message: texts.reverse_swap_upstream_generic_error_message(
-            extractExceptionMessage(error, texts),
-          ),
+          message: texts.reverse_swap_upstream_generic_error_message(extractExceptionMessage(error, texts)),
         );
       } finally {
         if (loaderRoute.isActive) {

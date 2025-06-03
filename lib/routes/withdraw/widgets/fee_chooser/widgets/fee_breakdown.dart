@@ -9,11 +9,7 @@ class FeeBreakdown extends StatelessWidget {
   final int amountSat;
   final FeeOption feeOption;
 
-  const FeeBreakdown(
-    this.amountSat,
-    this.feeOption, {
-    super.key,
-  });
+  const FeeBreakdown(this.amountSat, this.feeOption, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,24 +24,20 @@ class FeeBreakdown extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-        border: Border.all(
-          color: themeData.colorScheme.onSurface.withValues(alpha: 0.4),
-        ),
+        border: Border.all(color: themeData.colorScheme.onSurface.withValues(alpha: 0.4)),
       ),
       child: Column(
         children: [
           SenderAmount(
             amountSat: (feeOption is ReverseSwapFeeOption) ? feeOption.pairInfo.senderAmountSat : amountSat,
           ),
-          if (boltzServiceFeeSat != null) ...[
-            BoltzServiceFee(boltzServiceFeeSat: boltzServiceFeeSat),
-          ],
+          if (boltzServiceFeeSat != null) ...[BoltzServiceFee(boltzServiceFeeSat: boltzServiceFeeSat)],
           TransactionFee(txFeeSat: feeOption.txFeeSat),
           RecipientAmount(
             amountSat: (feeOption is ReverseSwapFeeOption)
                 ? feeOption.pairInfo.recipientAmountSat
                 : amountSat - feeOption.txFeeSat,
-          )
+          ),
         ],
       ),
     );

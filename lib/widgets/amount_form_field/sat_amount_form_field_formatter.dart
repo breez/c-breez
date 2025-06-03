@@ -5,16 +5,10 @@ class SatAmountFormFieldFormatter extends TextInputFormatter {
   final RegExp _pattern = RegExp(r'[^\d*]');
 
   @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     final raw = newValue.text.replaceAll(_pattern, '');
     if (raw.isEmpty) {
-      return newValue.copyWith(
-        text: '',
-        selection: const TextSelection.collapsed(offset: 0),
-      );
+      return newValue.copyWith(text: '', selection: const TextSelection.collapsed(offset: 0));
     }
 
     int value;

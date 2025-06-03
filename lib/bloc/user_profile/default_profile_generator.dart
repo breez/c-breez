@@ -9,10 +9,7 @@ class DefaultProfile {
   final String color;
   final String animal;
 
-  const DefaultProfile(
-    this.color,
-    this.animal,
-  );
+  const DefaultProfile(this.color, this.animal);
 
   String buildName(Locale locale) {
     switch (locale.languageCode) {
@@ -46,8 +43,5 @@ DefaultProfile generateDefaultProfile() {
   final randomColor = colors.elementAt(random.nextInt(colors.length));
   final randomAnimal = animals.elementAt(random.nextInt(animals.length));
 
-  return DefaultProfile(
-    randomColor.name(texts),
-    randomAnimal.name(texts),
-  );
+  return DefaultProfile(randomColor.name(texts), randomAnimal.name(texts));
 }

@@ -10,21 +10,13 @@ class TxWidget extends StatelessWidget {
   final String? txLabel;
   final EdgeInsets? padding;
 
-  const TxWidget({
-    super.key,
-    required this.txURL,
-    required this.txID,
-    this.txLabel,
-    this.padding,
-  });
+  const TxWidget({super.key, required this.txURL, required this.txID, this.txLabel, this.padding});
 
   @override
   Widget build(BuildContext context) {
     final texts = context.texts();
     var textStyle = DefaultTextStyle.of(context).style;
-    textStyle = textStyle.copyWith(
-      fontSize: textStyle.fontSize! * 0.8,
-    );
+    textStyle = textStyle.copyWith(fontSize: textStyle.fontSize! * 0.8);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

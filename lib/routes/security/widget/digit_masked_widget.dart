@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:c_breez/widgets/preview/preview.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Preview;
 
 class DigitMaskedWidget extends StatelessWidget {
   final double size;
@@ -32,10 +32,7 @@ class DigitMaskedWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: unfilledColor,
             shape: BoxShape.circle,
-            border: Border.all(
-              color: filledColor,
-              width: 2.0,
-            ),
+            border: Border.all(color: filledColor, width: 2.0),
           ),
         ),
         AnimatedContainer(
@@ -49,10 +46,7 @@ class DigitMaskedWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: filledColor,
             shape: BoxShape.circle,
-            border: Border.all(
-              color: filled ? filledColor : unfilledColor,
-              width: 2.0,
-            ),
+            border: Border.all(color: filled ? filledColor : unfilledColor, width: 2.0),
           ),
         ),
       ],
@@ -63,9 +57,7 @@ class DigitMaskedWidget extends StatelessWidget {
 // Preview
 
 class DigitMaskedWidgetPreview extends StatefulWidget {
-  const DigitMaskedWidgetPreview({
-    super.key,
-  });
+  const DigitMaskedWidgetPreview({super.key});
 
   @override
   State<DigitMaskedWidgetPreview> createState() => _DigitMaskedWidgetPreviewState();
@@ -76,58 +68,54 @@ class _DigitMaskedWidgetPreviewState extends State<DigitMaskedWidgetPreview> {
 
   @override
   Widget build(BuildContext context) {
-    return Preview(
-      [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            6,
-            (index) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DigitMaskedWidget(
-                filled: count > index,
-              ),
+    return Preview([
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(
+          6,
+          (index) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DigitMaskedWidget(filled: count > index),
+          ),
+        ),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(
+          6,
+          (index) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DigitMaskedWidget(
+              filled: count > index,
+              filledColor: Colors.red,
+              unfilledColor: Colors.blue,
             ),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            6,
-            (index) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DigitMaskedWidget(
-                filled: count > index,
-                filledColor: Colors.red,
-                unfilledColor: Colors.blue,
-              ),
-            ),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                count = min(count + 1, 6);
+              });
+            },
+            child: const Text("Fill"),
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  count = min(count + 1, 6);
-                });
-              },
-              child: const Text("Fill"),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  count = max(0, count - 1);
-                });
-              },
-              child: const Text("Clear"),
-            ),
-          ],
-        ),
-      ],
-    );
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                count = max(0, count - 1);
+              });
+            },
+            child: const Text("Clear"),
+          ),
+        ],
+      ),
+    ]);
   }
 }
 

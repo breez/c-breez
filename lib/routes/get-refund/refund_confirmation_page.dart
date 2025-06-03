@@ -47,23 +47,15 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
     final texts = context.texts();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(texts.sweep_all_coins_speed),
-      ),
+      appBar: AppBar(title: Text(texts.sweep_all_coins_speed)),
       body: FutureBuilder(
         future: _fetchFeeOptionsFuture,
         builder: (context, snapshot) {
           if (snapshot.error != null) {
-            return _ErrorMessage(
-              message: texts.sweep_all_coins_error_retrieve_fees,
-            );
+            return _ErrorMessage(message: texts.sweep_all_coins_error_retrieve_fees);
           }
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(
-              child: Loader(
-                color: Colors.white,
-              ),
-            );
+            return const Center(child: Loader(color: Colors.white));
           }
 
           if (affordableFees.isNotEmpty) {
@@ -76,26 +68,24 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
               }),
             );
           } else {
-            return _ErrorMessage(
-              message: texts.sweep_all_coins_error_amount_small,
-            );
+            return _ErrorMessage(message: texts.sweep_all_coins_error_amount_small);
           }
         },
       ),
       bottomNavigationBar:
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
-              ? RefundButton(
-                  req: RefundRequest(
-                    satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
-                    toAddress: widget.toAddress,
-                    swapAddress: widget.swapAddress,
-                  ),
-                )
-              : SingleButtonBottomBar(
-                  text: texts.sweep_all_coins_action_retry,
-                  onPressed: () => _fetchRefundFeeOptions,
-                  stickToBottom: true,
-                ),
+          ? RefundButton(
+              req: RefundRequest(
+                satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
+                toAddress: widget.toAddress,
+                swapAddress: widget.swapAddress,
+              ),
+            )
+          : SingleButtonBottomBar(
+              text: texts.sweep_all_coins_action_retry,
+              onPressed: () => _fetchRefundFeeOptions,
+              stickToBottom: true,
+            ),
     );
   }
 
@@ -117,19 +107,14 @@ class RefundConfirmationState extends State<RefundConfirmationPage> {
 class _ErrorMessage extends StatelessWidget {
   final String message;
 
-  const _ErrorMessage({
-    required this.message,
-  });
+  const _ErrorMessage({required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40.0),
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-        ),
+        child: Text(message, textAlign: TextAlign.center),
       ),
     );
   }

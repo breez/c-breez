@@ -23,10 +23,6 @@ class AppConfig {
   }
 
   NodeConfig get nodeConfig {
-    return NodeConfig_Greenlight(
-      config: GreenlightNodeConfig(
-        partnerCredentials: partnerCredentials,
-      ),
-    );
+    return NodeConfig_Greenlight(config: GreenlightNodeConfig(partnerCredentials: partnerCredentials));
   }
 }

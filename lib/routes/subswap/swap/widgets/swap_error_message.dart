@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 class DepositErrorMessage extends StatelessWidget {
   final String errorMessage;
 
-  const DepositErrorMessage({
-    super.key,
-    required this.errorMessage,
-  });
+  const DepositErrorMessage({super.key, required this.errorMessage});
 
   @override
   Widget build(BuildContext context) {

@@ -16,10 +16,7 @@ final _log = Logger("PaymentOptionsForm");
 class PaymentOptionsForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
 
-  const PaymentOptionsForm({
-    required this.formKey,
-    super.key,
-  });
+  const PaymentOptionsForm({required this.formKey, super.key});
 
   @override
   State<PaymentOptionsForm> createState() => _PaymentOptionsFormState();
@@ -101,12 +98,8 @@ class _PaymentOptionsFormState extends State<PaymentOptionsForm> {
                         },
                       ),
                       TextFormField(
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                        ],
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
                         controller: _proportionalFeeController,
                         decoration: InputDecoration(
                           labelText: texts.payment_options_proportional_fee_label,

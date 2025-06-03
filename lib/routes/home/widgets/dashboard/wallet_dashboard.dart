@@ -18,11 +18,7 @@ class WalletDashboard extends StatefulWidget {
   final double height;
   final double offsetFactor;
 
-  const WalletDashboard({
-    super.key,
-    required this.height,
-    required this.offsetFactor,
-  });
+  const WalletDashboard({super.key, required this.height, required this.offsetFactor});
 
   @override
   State<WalletDashboard> createState() => _WalletDashboardState();
@@ -51,9 +47,7 @@ class _WalletDashboardState extends State<WalletDashboard> {
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: widget.height,
-                        decoration: BoxDecoration(
-                          color: themeData.customData.dashboardBgColor,
-                        ),
+                        decoration: BoxDecoration(color: themeData.customData.dashboardBgColor),
                       ),
                       Positioned(
                         top: 60 - _kBalanceOffsetTransition * widget.offsetFactor,

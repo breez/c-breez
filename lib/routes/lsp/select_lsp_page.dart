@@ -12,9 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SelectLSPPage extends StatelessWidget {
   final selectedLspController = StreamController<LspInformation?>();
 
-  SelectLSPPage({
-    super.key,
-  });
+  SelectLSPPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +32,8 @@ class SelectLSPPage extends StatelessWidget {
               IconButton(
                 onPressed: () => Navigator.pop(context),
                 // Color needs to be changed
-                icon: Icon(
-                  Icons.close,
-                  color: Theme.of(context).appBarTheme.iconTheme?.color,
-                ),
-              )
+                icon: Icon(Icons.close, color: Theme.of(context).appBarTheme.iconTheme?.color),
+              ),
             ],
           ),
           body: LspListWidget(
@@ -66,11 +61,7 @@ class _LspActionButton extends StatelessWidget {
   final Object? error;
   final void Function() resetLsp;
 
-  const _LspActionButton({
-    this.selectedLsp,
-    required this.error,
-    required this.resetLsp,
-  });
+  const _LspActionButton({this.selectedLsp, required this.error, required this.resetLsp});
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +70,7 @@ class _LspActionButton extends StatelessWidget {
     late final void Function() onPressed;
 
     if (error == null && selectedLsp == null) {
-      return const SizedBox(
-        height: 88,
-      );
+      return const SizedBox(height: 88);
     }
 
     if (error != null) {
@@ -95,16 +84,10 @@ class _LspActionButton extends StatelessWidget {
       };
     }
 
-    return SingleButtonBottomBar(
-      text: message,
-      onPressed: onPressed,
-    );
+    return SingleButtonBottomBar(text: message, onPressed: onPressed);
   }
 
-  Future<void> _connectToLSP(
-    LspInformation lspInformation,
-    BuildContext context,
-  ) async {
+  Future<void> _connectToLSP(LspInformation lspInformation, BuildContext context) async {
     final navigator = Navigator.of(context);
     var loaderRoute = createLoaderRoute(context);
     navigator.push(loaderRoute);

@@ -12,13 +12,9 @@ class HealthCheckBloc extends Cubit<HealthCheckStatus?> {
   final BreezSDK _breezSDK;
   Timer? _retryTimer;
 
-  HealthCheckBloc(
-    this._breezSDK,
-  ) : super(null);
+  HealthCheckBloc(this._breezSDK) : super(null);
 
-  void checkStatus({
-    retryInterval = const Duration(seconds: 60),
-  }) async {
+  void checkStatus({Duration retryInterval = const Duration(seconds: 60)}) async {
     _log.info("Performing health check");
     _onNewHealthCheckStatus(null);
     _retryTimer?.cancel();

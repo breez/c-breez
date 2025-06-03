@@ -6,17 +6,14 @@ import 'package:c_breez/routes/withdraw/widgets/bitcoin_address_text_form_field.
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/utils/validator_holder.dart';
 import 'package:c_breez/widgets/available_btc.dart';
+import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:c_breez/widgets/back_button.dart' as back_button;
 
 class RefundPage extends StatefulWidget {
   final SwapInfo swapInfo;
-  const RefundPage(
-    this.swapInfo, {
-    super.key,
-  });
+  const RefundPage(this.swapInfo, {super.key});
 
   @override
   State<StatefulWidget> createState() {

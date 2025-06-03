@@ -8,11 +8,7 @@ class ProcessingPaymentContent extends StatelessWidget {
   final GlobalKey? dialogKey;
   final Color color;
 
-  const ProcessingPaymentContent({
-    super.key,
-    this.dialogKey,
-    this.color = Colors.transparent,
-  });
+  const ProcessingPaymentContent({super.key, this.dialogKey, this.color = Colors.transparent});
 
   @override
   Widget build(BuildContext context) {

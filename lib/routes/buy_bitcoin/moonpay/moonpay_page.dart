@@ -9,9 +9,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MoonPayPage extends StatefulWidget {
-  const MoonPayPage({
-    super.key,
-  });
+  const MoonPayPage({super.key});
 
   @override
   State<MoonPayPage> createState() => _MoonPayPageState();
@@ -61,11 +59,11 @@ class _MoonPayPageState extends State<MoonPayPage> {
                 setState(() {
                   isLoading = false;
                 });
-                await promptLSPFeeAndNavigate(context, state.buyBitcoinResponse.openingFeeParams!).then(
-                  (isApproved) {
-                    _launchMoonPayUrl(state.buyBitcoinResponse.url, isApproved);
-                  },
-                );
+                await promptLSPFeeAndNavigate(context, state.buyBitcoinResponse.openingFeeParams!).then((
+                  isApproved,
+                ) {
+                  _launchMoonPayUrl(state.buyBitcoinResponse.url, isApproved);
+                });
               }
             }
           },
@@ -82,10 +80,7 @@ class _MoonPayPageState extends State<MoonPayPage> {
       context.read<MoonPayBloc>().dispose();
       Navigator.of(context).pop();
       if (launchBrowser != null && launchBrowser) {
-        launchLinkOnExternalBrowser(
-          context,
-          linkAddress: url,
-        );
+        launchLinkOnExternalBrowser(context, linkAddress: url);
       }
     });
   }

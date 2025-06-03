@@ -36,23 +36,20 @@ class _FeeChooserHeaderState extends State<FeeChooserHeader> {
       children: [
         Row(
           mainAxisSize: MainAxisSize.max,
-          children: List<FeeOptionButton>.generate(
-            widget.feeOptions.length,
-            (index) {
-              var feeOption = widget.feeOptions.elementAt(index);
-              return FeeOptionButton(
-                index: index,
-                text: feeOption.getDisplayName(texts),
-                isAffordable: feeOption.isAffordable(
-                  balanceSat: account.balanceSat,
-                  walletBalanceSat: account.walletBalanceSat,
-                  amountSat: widget.amountSat,
-                ),
-                isSelected: widget.selectedFeeIndex == index,
-                onSelect: () => widget.onSelect(index),
-              );
-            },
-          ),
+          children: List<FeeOptionButton>.generate(widget.feeOptions.length, (index) {
+            var feeOption = widget.feeOptions.elementAt(index);
+            return FeeOptionButton(
+              index: index,
+              text: feeOption.getDisplayName(texts),
+              isAffordable: feeOption.isAffordable(
+                balanceSat: account.balanceSat,
+                walletBalanceSat: account.walletBalanceSat,
+                amountSat: widget.amountSat,
+              ),
+              isSelected: widget.selectedFeeIndex == index,
+              onSelect: () => widget.onSelect(index),
+            );
+          }),
         ),
       ],
     );

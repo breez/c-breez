@@ -18,7 +18,7 @@ class SwapInProgressBloc extends Cubit<SwapInProgressState> {
     pollSwapInAddress();
   }
 
-  pollSwapInAddress() async {
+  Future<void> pollSwapInAddress() async {
     _log.info("Started polling for swap in address.");
     await _refreshAddresses(showLoader: true).whenComplete(() => _startPolling());
   }

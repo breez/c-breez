@@ -13,11 +13,7 @@ class PaymentOptionsState {
 
   const PaymentOptionsState.initial() : this();
 
-  PaymentOptionsState copyWith({
-    double? proportionalFee,
-    int? exemptFeeMsat,
-    int? channelFeeLimitMsat,
-  }) {
+  PaymentOptionsState copyWith({double? proportionalFee, int? exemptFeeMsat, int? channelFeeLimitMsat}) {
     return PaymentOptionsState(
       proportionalFee: proportionalFee ?? this.proportionalFee,
       exemptFeeMsat: exemptFeeMsat ?? this.exemptFeeMsat,

@@ -11,10 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RefundButton extends StatelessWidget {
   final RefundRequest req;
 
-  const RefundButton({
-    super.key,
-    required this.req,
-  });
+  const RefundButton({super.key, required this.req});
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +40,7 @@ class RefundButton extends StatelessWidget {
       promptError(
         context,
         null,
-        Text(
-          extractExceptionMessage(e, texts),
-          style: themeData.dialogTheme.contentTextStyle,
-        ),
+        Text(extractExceptionMessage(e, texts), style: themeData.dialogTheme.contentTextStyle),
       );
     }
   }

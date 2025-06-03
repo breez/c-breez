@@ -50,10 +50,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
     final themeData = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        leading: const back_button.BackButton(),
-        title: Text(texts.reverse_swap_title),
-      ),
+      appBar: AppBar(leading: const back_button.BackButton(), title: Text(texts.reverse_swap_title)),
       body: FutureBuilder<OnchainPaymentLimitsResponse>(
         future: _onchainPaymentLimitsFuture,
         builder: (BuildContext context, AsyncSnapshot<OnchainPaymentLimitsResponse> snapshot) {
@@ -71,11 +68,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
             );
           }
           if (snapshot.connectionState != ConnectionState.done && !snapshot.hasData) {
-            return Center(
-              child: Loader(
-                color: themeData.primaryColor.withValues(alpha: 0.5),
-              ),
-            );
+            return Center(child: Loader(color: themeData.primaryColor.withValues(alpha: 0.5)));
           }
 
           return ReverseSwapFormPage(

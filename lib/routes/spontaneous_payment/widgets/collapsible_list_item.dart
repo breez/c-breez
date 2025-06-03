@@ -71,9 +71,7 @@ class CollapsibleListItem extends StatelessWidget {
                           tooltip: texts.collapsible_list_action_copy(title),
                           iconSize: 16.0,
                           color: userStyle.color ?? textTheme.labelLarge!.color!,
-                          icon: const Icon(
-                            IconData(0xe90b, fontFamily: 'icomoon'),
-                          ),
+                          icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
                           onPressed: () {
                             ServiceInjector().device.setClipboardText(sharedValue!);
                             Navigator.pop(context);
@@ -91,10 +89,7 @@ class CollapsibleListItem extends StatelessWidget {
                           icon: const Icon(Icons.share),
                           onPressed: () {
                             if (sharedValue != null) {
-                              final ShareParams shareParams = ShareParams(
-                                title: title,
-                                text: sharedValue,
-                              );
+                              final ShareParams shareParams = ShareParams(title: title, text: sharedValue);
                               SharePlus.instance.share(shareParams);
                             }
                           },

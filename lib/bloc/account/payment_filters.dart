@@ -5,19 +5,11 @@ class PaymentFilters implements Exception {
   final int? fromTimestamp;
   final int? toTimestamp;
 
-  PaymentFilters({
-    this.filters = PaymentTypeFilter.values,
-    this.fromTimestamp,
-    this.toTimestamp,
-  });
+  PaymentFilters({this.filters = PaymentTypeFilter.values, this.fromTimestamp, this.toTimestamp});
 
   PaymentFilters.initial() : this();
 
-  PaymentFilters copyWith({
-    List<PaymentTypeFilter>? filters,
-    int? fromTimestamp,
-    int? toTimestamp,
-  }) {
+  PaymentFilters copyWith({List<PaymentTypeFilter>? filters, int? fromTimestamp, int? toTimestamp}) {
     return PaymentFilters(
       filters: filters ?? this.filters,
       fromTimestamp: fromTimestamp,
@@ -34,10 +26,6 @@ class PaymentFilters implements Exception {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      "filters": filters.toString(),
-      "fromTimestamp": fromTimestamp,
-      "toTimestamp": toTimestamp,
-    };
+    return {"filters": filters.toString(), "fromTimestamp": fromTimestamp, "toTimestamp": toTimestamp};
   }
 }

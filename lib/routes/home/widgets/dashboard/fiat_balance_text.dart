@@ -42,14 +42,9 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
         }),
       ),
       onPressed: () {
-        final newFiatConversion = nextValidFiatConversion(
-          widget.currencyState,
-          widget.accountState,
-        );
+        final newFiatConversion = nextValidFiatConversion(widget.currencyState, widget.accountState);
         if (newFiatConversion != null) {
-          context.read<CurrencyBloc>().setFiatId(
-                newFiatConversion.currencyData.id,
-              );
+          context.read<CurrencyBloc>().setFiatId(newFiatConversion.currencyData.id);
         }
       },
       child: widget.accountState.balanceSat > 0
@@ -65,10 +60,7 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
     );
   }
 
-  FiatConversion? nextValidFiatConversion(
-    CurrencyState currencyState,
-    AccountState accountState,
-  ) {
+  FiatConversion? nextValidFiatConversion(CurrencyState currencyState, AccountState accountState) {
     final currencies = currencyState.preferredCurrencies;
     final currentIndex = currencies.indexOf(currencyState.fiatId);
     for (var i = 1; i < currencies.length; i++) {
@@ -84,10 +76,7 @@ class _FiatBalanceTextState extends State<FiatBalanceText> {
     return null;
   }
 
-  bool isAboveMinAmount(
-    CurrencyState currencyState,
-    AccountState accountState,
-  ) {
+  bool isAboveMinAmount(CurrencyState currencyState, AccountState accountState) {
     final fiatConversion = currencyState.fiatConversion();
     if (fiatConversion == null) return false;
 

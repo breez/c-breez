@@ -13,10 +13,7 @@ import 'package:path_provider/path_provider.dart';
 class LockScreen extends StatelessWidget {
   final AuthorizedAction authorizedAction;
 
-  const LockScreen({
-    super.key,
-    required this.authorizedAction,
-  });
+  const LockScreen({super.key, required this.authorizedAction});
 
   @override
   Widget build(BuildContext context) {
@@ -36,33 +33,24 @@ class LockScreen extends StatelessWidget {
                 try {
                   pinMatches = await context.read<SecurityBloc>().testPin(pin);
                 } catch (e) {
-                  return TestPinResult(
-                    false,
-                    errorMessage: texts.lock_screen_pin_match_exception,
-                  );
+                  return TestPinResult(false, errorMessage: texts.lock_screen_pin_match_exception);
                 }
                 if (pinMatches) {
                   _authorized(navigator);
                   return const TestPinResult(true);
                 } else {
-                  return TestPinResult(
-                    false,
-                    errorMessage: texts.lock_screen_pin_incorrect,
-                  );
+                  return TestPinResult(false, errorMessage: texts.lock_screen_pin_incorrect);
                 }
               },
               testBiometricsFunction: () async {
                 bool pinMatches = await context.read<SecurityBloc>().localAuthentication(
-                      texts.security_and_backup_validate_biometrics_reason,
-                    );
+                  texts.security_and_backup_validate_biometrics_reason,
+                );
                 if (pinMatches) {
                   _authorized(navigator);
                   return const TestPinResult(true);
                 } else {
-                  return TestPinResult(
-                    false,
-                    errorMessage: texts.lock_screen_pin_incorrect,
-                  );
+                  return TestPinResult(false, errorMessage: texts.lock_screen_pin_incorrect);
                 }
               },
             );
@@ -84,10 +72,7 @@ class LockScreen extends StatelessWidget {
   }
 }
 
-enum AuthorizedAction {
-  launchHome,
-  popPage,
-}
+enum AuthorizedAction { launchHome, popPage }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -98,11 +83,7 @@ void main() async {
   );
   runApp(
     MultiBlocProvider(
-      providers: [
-        BlocProvider<SecurityBloc>(
-          create: (BuildContext context) => SecurityBloc(),
-        ),
-      ],
+      providers: [BlocProvider<SecurityBloc>(create: (BuildContext context) => SecurityBloc())],
       child: MaterialApp(
         theme: breezLightTheme,
         home: LayoutBuilder(
@@ -110,11 +91,7 @@ void main() async {
             child: TextButton(
               child: const Text("Launch lock screen"),
               onPressed: () => Navigator.of(context).push(
-                FadeInRoute(
-                  builder: (_) => const LockScreen(
-                    authorizedAction: AuthorizedAction.popPage,
-                  ),
-                ),
+                FadeInRoute(builder: (_) => const LockScreen(authorizedAction: AuthorizedAction.popPage)),
               ),
             ),
           ),

@@ -11,9 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FiatCurrencySettings extends StatefulWidget {
-  const FiatCurrencySettings({
-    super.key,
-  });
+  const FiatCurrencySettings({super.key});
 
   @override
   FiatCurrencySettingsState createState() {
@@ -29,10 +27,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     final texts = context.texts();
 
     return Scaffold(
-      appBar: AppBar(
-        leading: const back_button.BackButton(),
-        title: Text(texts.fiat_currencies_title),
-      ),
+      appBar: AppBar(leading: const back_button.BackButton(), title: Text(texts.fiat_currencies_title)),
       body: BlocBuilder<CurrencyBloc, CurrencyState>(
         buildWhen: (s1, s2) => !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
         builder: (context, currencyState) {
@@ -49,42 +44,32 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
                   DragAndDropList(
                     header: const SizedBox(),
                     canDrag: false,
-                    children: List.generate(
-                      currencyState.fiatCurrenciesData.length,
-                      (index) {
-                        return DragAndDropItem(
-                          child: FiatCurrencyListTile(
-                            index: index,
-                            currencyState: currencyState,
-                            scrollController: _scrollController,
-                            onChanged: (preferredFiatCurrencies) {
-                              _updatePreferredCurrencies(preferredFiatCurrencies);
-                            },
-                          ),
-                          canDrag: currencyState.preferredCurrencies.contains(
-                            currencyState.fiatCurrenciesData[index].id,
-                          ),
-                        );
-                      },
-                    ),
+                    children: List.generate(currencyState.fiatCurrenciesData.length, (index) {
+                      return DragAndDropItem(
+                        child: FiatCurrencyListTile(
+                          index: index,
+                          currencyState: currencyState,
+                          scrollController: _scrollController,
+                          onChanged: (preferredFiatCurrencies) {
+                            _updatePreferredCurrencies(preferredFiatCurrencies);
+                          },
+                        ),
+                        canDrag: currencyState.preferredCurrencies.contains(
+                          currencyState.fiatCurrenciesData[index].id,
+                        ),
+                      );
+                    }),
                   ),
                 ],
                 lastListTargetSize: 0,
                 lastItemTargetHeight: 8,
                 scrollController: _scrollController,
                 onListReorder: (oldListIndex, newListIndex) => {},
-                onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(
-                  currencyState,
-                  from,
-                  to,
-                ),
+                onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(currencyState, from, to),
                 itemDragHandle: DragHandle(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Icon(
-                      Icons.drag_handle,
-                      color: theme.BreezColors.white[200],
-                    ),
+                    child: Icon(Icons.drag_handle, color: theme.BreezColors.white[200]),
                   ),
                 ),
               );
@@ -95,14 +80,8 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     );
   }
 
-  void _onReorder(
-    CurrencyState currencyState,
-    int oldIndex,
-    int newIndex,
-  ) {
-    final preferredFiatCurrencies = List<String>.from(
-      currencyState.preferredCurrencies,
-    );
+  void _onReorder(CurrencyState currencyState, int oldIndex, int newIndex) {
+    final preferredFiatCurrencies = List<String>.from(currencyState.preferredCurrencies);
     if (newIndex >= preferredFiatCurrencies.length) {
       newIndex = preferredFiatCurrencies.length - 1;
     }
@@ -111,9 +90,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
     _updatePreferredCurrencies(preferredFiatCurrencies);
   }
 
-  void _updatePreferredCurrencies(
-    List<String> preferredFiatCurrencies,
-  ) {
+  void _updatePreferredCurrencies(List<String> preferredFiatCurrencies) {
     context.read<CurrencyBloc>().setPreferredCurrencies(preferredFiatCurrencies);
   }
 

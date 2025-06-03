@@ -16,10 +16,7 @@ class PaymentmentFilterExporter extends StatelessWidget {
   final _log = Logger("PaymentmentFilterExporter");
   final List<PaymentTypeFilter>? filter;
 
-  PaymentmentFilterExporter(
-    this.filter, {
-    super.key,
-  });
+  PaymentmentFilterExporter(this.filter, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,27 +26,22 @@ class PaymentmentFilterExporter extends StatelessWidget {
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, account) {
         return Padding(
-            padding: const EdgeInsets.only(right: 0.0),
-            child: PopupMenuButton(
-              color: themeData.colorScheme.surface,
-              icon: Icon(
-                Icons.more_vert,
-                color: themeData.paymentItemTitleTextStyle.color,
+          padding: const EdgeInsets.only(right: 0.0),
+          child: PopupMenuButton(
+            color: themeData.colorScheme.surface,
+            icon: Icon(Icons.more_vert, color: themeData.paymentItemTitleTextStyle.color),
+            padding: EdgeInsets.zero,
+            offset: const Offset(12, 24),
+            onSelected: _select,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                height: 36,
+                value: Choice(() => _exportPayments(context)),
+                child: Text(texts.payments_filter_action_export, style: themeData.textTheme.labelLarge),
               ),
-              padding: EdgeInsets.zero,
-              offset: const Offset(12, 24),
-              onSelected: _select,
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  height: 36,
-                  value: Choice(() => _exportPayments(context)),
-                  child: Text(
-                    texts.payments_filter_action_export,
-                    style: themeData.textTheme.labelLarge,
-                  ),
-                ),
-              ],
-            ));
+            ],
+          ),
+        );
       },
     );
   }
@@ -73,19 +65,19 @@ class PaymentmentFilterExporter extends StatelessWidget {
           accountState.paymentFilters.toTimestamp != null) {
         final startDate = DateTime.fromMillisecondsSinceEpoch(accountState.paymentFilters.fromTimestamp!);
         final endDate = DateTime.fromMillisecondsSinceEpoch(accountState.paymentFilters.toTimestamp!);
-        filePath =
-            await CsvExporter(currencyState.fiatId, accountBloc, startDate: startDate, endDate: endDate)
-                .export();
+        filePath = await CsvExporter(
+          currencyState.fiatId,
+          accountBloc,
+          startDate: startDate,
+          endDate: endDate,
+        ).export();
       } else {
         filePath = await CsvExporter(currencyState.fiatId, accountBloc).export();
       }
       if (loaderRoute.isActive) {
         navigator.removeRoute(loaderRoute);
       }
-      final ShareParams shareParams = ShareParams(
-        title: 'Payments',
-        files: <XFile>[XFile(filePath)],
-      );
+      final ShareParams shareParams = ShareParams(title: 'Payments', files: <XFile>[XFile(filePath)]);
       SharePlus.instance.share(shareParams);
     } catch (error) {
       {
@@ -94,10 +86,7 @@ class PaymentmentFilterExporter extends StatelessWidget {
         }
         _log.severe("Received error: $error");
         if (!context.mounted) return;
-        showFlushbar(
-          context,
-          message: texts.payments_filter_action_export_failed,
-        );
+        showFlushbar(context, message: texts.payments_filter_action_export_failed);
       }
     } finally {
       if (loaderRoute.isActive) {

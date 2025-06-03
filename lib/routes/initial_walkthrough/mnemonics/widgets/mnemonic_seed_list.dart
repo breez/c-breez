@@ -6,12 +6,9 @@ import 'mnemonic_item.dart';
 class MnemonicSeedList extends StatelessWidget {
   final List<String> mnemonicsList;
 
-  const MnemonicSeedList({
-    super.key,
-    required this.mnemonicsList,
-  });
+  const MnemonicSeedList({super.key, required this.mnemonicsList});
 
-  get autoSizeGroup => AutoSizeGroup();
+  AutoSizeGroup get autoSizeGroup => AutoSizeGroup();
 
   @override
   Widget build(BuildContext context) {

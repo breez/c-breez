@@ -99,10 +99,7 @@ class WalletArchiveService {
     try {
       encoder.create(zipFilePath);
 
-      await Future.wait(<Future<void>>[
-        _addCredentialsToZip(encoder),
-        _addStorageFileToZip(encoder),
-      ]);
+      await Future.wait(<Future<void>>[_addCredentialsToZip(encoder), _addStorageFileToZip(encoder)]);
 
       await encoder.close();
       _logger.info('Keys archive created at: $zipFilePath');

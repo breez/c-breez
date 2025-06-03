@@ -1,11 +1,11 @@
 name: c_breez
 description: Flutter app showcasing Breez SDK - Native (Greenlight Implementation).
 publish_to: "none"
-version: 1.1.0
+version: 1.2.0
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=3.27.0"
+  sdk: '>=3.8.0 <4.0.0'
+  flutter: ">=3.32.0"
 
 dependencies:
   flutter:
@@ -24,31 +24,31 @@ dependencies:
   breez_sdk:
     git:
       url: https://github.com/breez/breez-sdk-flutter
-      ref: v0.5.1-rc3
+      ref: v0.8.0
   breez_translations:
     git:
       url: https://github.com/breez/Breez-Translations
-      ref: a564088448149e9c28b4a2eb82fa0a3536698d24
+      ref: 86d0d7e1c871a4ede69d867313d796089c956385
   clipboard_watcher: ^0.3.0
   csv: ^6.0.0
-  connectivity_plus: ^6.1.3
-  device_info_plus: ^11.3.3
+  connectivity_plus: ^6.1.4
+  device_info_plus: ^11.4.0
   drag_and_drop_lists:
     git:
       url: https://github.com/breez/DragAndDropLists
       ref: 38cc3155a6161730b4ec476d781873afb7ec4846
   duration: ^4.0.3
   #email_validator: ^3.0.0
-  extended_image: ^10.0.0
+  extended_image: ^10.0.1
   ffi: ^2.1.4
   # Downgraded firebase plugins to a version compatible with mobile_scanner <6.0.0 to avoid bumping minimum deployment target to 15.5 on iOS
   # Doesn't support: Linux Windows
-  firebase_core: ^3.13.0
+  firebase_core: ^3.13.1
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^6.1.5
+  firebase_dynamic_links: ^6.1.6
   # Doesn't support: Linux Windows
-  firebase_messaging: ^15.2.5
-  flutter_bloc: ^9.1.0
+  firebase_messaging: ^15.2.6
+  flutter_bloc: ^9.1.1
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
     git:
@@ -57,30 +57,30 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   flutter_rust_bridge: ^1.82.6
   flutter_secure_storage: ^9.2.4
-  flutter_svg: ^2.0.17
+  flutter_svg: ^2.1.0
   flutter_typeahead:
     git:
       url: https://github.com/breez/flutter_typeahead.git
       ref: 4a494322762af9f30820f3c63aba784d46b86b69
   git_info: ^1.1.2
   hex: ^0.2.0
-  http: ^1.3.0
+  http: ^1.4.0
   hydrated_bloc: ^10.0.0
   image: ^4.5.4
   # Doesn't support: Linux Mac Windows
-  image_cropper: ^8.0.2 # flutter_rust_bridge 1.82.6 depends on js ^0.6.4 and no versions of flutter_rust_bridge match >1.82.6 <2.0.0
+  image_cropper: ^9.1.0 # flutter_rust_bridge 1.82.6 depends on js ^0.6.4 and no versions of flutter_rust_bridge match >1.82.6 <2.0.0
   # Doesn't support: Linux Mac Windows
   image_picker: ^1.1.2
   ini: ^2.1.0
-  intl: <0.20.0 # timeago ^3.7.0 requires intl >=0.18.0 <0.20.0.
+  intl: ^0.20.2
   # Doesn't support: Linux Mac
   local_auth: ^2.3.0
-  local_auth_android: ^1.0.48
+  local_auth_android: ^1.0.49
   local_auth_darwin: ^1.4.3
   logging: ^1.3.0
   mockito: ^5.4.5
   # Doesn't support: Linux Windows
-  mobile_scanner: ^6.0.7
+  mobile_scanner: ^7.0.0
   package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5
@@ -91,10 +91,10 @@ dependencies:
   share_plus: ^11.0.0
   shared_preferences: ^2.5.3
   shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
-  simple_animations: ^5.1.0
+  simple_animations: ^5.2.0
   synchronized: ^3.3.1
   theme_provider: ^0.6.0
-  timeago: ^3.7.0
+  timeago: ^3.7.1
   # Doesn't support: Linux Mac Windows
   uni_links:
     git:
@@ -109,11 +109,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.15
-  flutter_lints: ^5.0.0
-  test: ^1.25.15
+  flutter_lints: ^6.0.0
+  test: ^1.26.2
 
 dependency_overrides:
-  test_api: ^0.7.4
+  test_api: ^0.7.6
   # Comment-out to work with breez-sdk from git repository
   breez_sdk:
     path: ../breez-sdk-greenlight/libs/sdk-flutter

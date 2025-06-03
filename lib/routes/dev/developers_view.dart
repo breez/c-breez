@@ -25,11 +25,7 @@ final Logger _logger = Logger("DevelopersView");
 bool allowRebroadcastRefunds = false;
 
 class Choice {
-  const Choice({
-    required this.title,
-    required this.icon,
-    required this.function,
-  });
+  const Choice({required this.title, required this.icon, required this.function});
 
   final String title;
   final IconData icon;
@@ -37,9 +33,7 @@ class Choice {
 }
 
 class DevelopersView extends StatefulWidget {
-  const DevelopersView({
-    super.key,
-  });
+  const DevelopersView({super.key});
 
   @override
   State<DevelopersView> createState() => _DevelopersViewState();
@@ -54,9 +48,10 @@ class _DevelopersViewState extends State<DevelopersView> {
   @override
   void initState() {
     super.initState();
-    _preferences
-        .getBugReportBehavior()
-        .then((value) => bugReportBehavior = value, onError: (e) => _logger.warning(e));
+    _preferences.getBugReportBehavior().then(
+      (value) => bugReportBehavior = value,
+      onError: (e) => _logger.warning(e),
+    );
   }
 
   @override
@@ -82,53 +77,41 @@ class _DevelopersViewState extends State<DevelopersView> {
           PopupMenuButton<Choice>(
             onSelected: (c) => c.function(context),
             color: themeData.colorScheme.surface,
-            icon: Icon(
-              Icons.more_vert,
-              color: themeData.iconTheme.color,
-            ),
-            itemBuilder: (context) => [
-              if (kDebugMode)
-                Choice(
-                  title: "Export Keys",
-                  icon: Icons.phone_android,
-                  function: _exportKeys,
-                ),
-              Choice(
-                title: "Share Logs",
-                icon: Icons.share,
-                function: _shareLogs,
-              ),
-              Choice(
-                title: "Export static backup",
-                icon: Icons.charging_station,
-                function: _exportStaticBackup,
-              ),
-              Choice(
-                title: "Rescan Swaps",
-                icon: Icons.radar,
-                function: _rescanSwaps,
-              ),
-              if (bugReportBehavior != BugReportBehavior.PROMPT)
-                Choice(
-                  title: "Enable Failure Prompt",
-                  icon: Icons.bug_report,
-                  function: (_) {
-                    _preferences.setBugReportBehavior(BugReportBehavior.PROMPT).then(
-                        (value) => setState(() {
-                              bugReportBehavior = BugReportBehavior.PROMPT;
-                            }),
-                        onError: (e) => _logger.warning(e));
-                  },
-                ),
-            ]
-                .map((choice) => PopupMenuItem<Choice>(
-                      value: choice,
-                      child: Text(
-                        choice.title,
-                        style: themeData.textTheme.labelLarge,
+            icon: Icon(Icons.more_vert, color: themeData.iconTheme.color),
+            itemBuilder: (context) =>
+                [
+                      if (kDebugMode)
+                        Choice(title: "Export Keys", icon: Icons.phone_android, function: _exportKeys),
+                      Choice(title: "Share Logs", icon: Icons.share, function: _shareLogs),
+                      Choice(
+                        title: "Export static backup",
+                        icon: Icons.charging_station,
+                        function: _exportStaticBackup,
                       ),
-                    ))
-                .toList(),
+                      Choice(title: "Rescan Swaps", icon: Icons.radar, function: _rescanSwaps),
+                      if (bugReportBehavior != BugReportBehavior.PROMPT)
+                        Choice(
+                          title: "Enable Failure Prompt",
+                          icon: Icons.bug_report,
+                          function: (_) {
+                            _preferences
+                                .setBugReportBehavior(BugReportBehavior.PROMPT)
+                                .then(
+                                  (value) => setState(() {
+                                    bugReportBehavior = BugReportBehavior.PROMPT;
+                                  }),
+                                  onError: (e) => _logger.warning(e),
+                                );
+                          },
+                        ),
+                    ]
+                    .map(
+                      (choice) => PopupMenuItem<Choice>(
+                        value: choice,
+                        child: Text(choice.title, style: themeData.textTheme.labelLarge),
+                      ),
+                    )
+                    .toList(),
           ),
         ],
       ),
@@ -144,10 +127,7 @@ class _DevelopersViewState extends State<DevelopersView> {
       if (kDebugMode) {
         final String keysZipPath = await WalletArchiveService.createKeysArchive();
 
-        final ShareParams shareParams = ShareParams(
-          title: 'Keys',
-          files: <XFile>[XFile(keysZipPath)],
-        );
+        final ShareParams shareParams = ShareParams(title: 'Keys', files: <XFile>[XFile(keysZipPath)]);
         SharePlus.instance.share(shareParams);
       } else {
         final CredentialsManager credentialsManager = ServiceInjector().credentialsManager;
@@ -190,10 +170,7 @@ class _DevelopersViewState extends State<DevelopersView> {
         String filePath = '$workingDir/$name';
         File file = File(filePath);
         await file.writeAsString(emergencyList, flush: true);
-        final ShareParams shareParams = ShareParams(
-          title: 'Static Backup',
-          files: <XFile>[XFile(filePath)],
-        );
+        final ShareParams shareParams = ShareParams(title: 'Static Backup', files: <XFile>[XFile(filePath)]);
         SharePlus.instance.share(shareParams);
       } else {
         if (!context.mounted) return;
@@ -240,10 +217,7 @@ class _DevelopersViewState extends State<DevelopersView> {
 
     try {
       final String zipPath = await WalletArchiveService.createLogsArchive();
-      final ShareParams shareParams = ShareParams(
-        title: 'Logs',
-        files: <XFile>[XFile(zipPath)],
-      );
+      final ShareParams shareParams = ShareParams(title: 'Logs', files: <XFile>[XFile(zipPath)]);
       SharePlus.instance.share(shareParams);
     } catch (e) {
       _logger.severe('Failed to share logs: $e');

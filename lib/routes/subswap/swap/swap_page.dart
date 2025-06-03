@@ -49,13 +49,15 @@ class SwapPageState extends State<SwapPage> {
                         if (swapState.inProgress != null)
                           SwapInprogress(swap: swapState.inProgress!)
                         else if (swapState.unused != null)
-                          DepositWidget(swapState.unused!)
+                          DepositWidget(swapState.unused!),
                       ],
                       if (swapState.error != null) ...[
                         DepositErrorMessage(
-                            errorMessage: "${texts.invoice_btc_address_network_error}\n"
-                                "${texts.invoice_receive_fail_message(extractExceptionMessage(swapState.error!, texts))}"),
-                      ]
+                          errorMessage:
+                              "${texts.invoice_btc_address_network_error}\n"
+                              "${texts.invoice_receive_fail_message(extractExceptionMessage(swapState.error!, texts))}",
+                        ),
+                      ],
                     ],
                   ),
                 ),

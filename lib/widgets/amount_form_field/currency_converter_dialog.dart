@@ -17,11 +17,7 @@ class CurrencyConverterDialog extends StatefulWidget {
   final String? Function(int amountSat) validatorFn;
   final CurrencyBloc _currencyBloc;
 
-  const CurrencyConverterDialog(
-    this._currencyBloc,
-    this._onConvert,
-    this.validatorFn,
-  );
+  const CurrencyConverterDialog(this._currencyBloc, this._onConvert, this.validatorFn);
 
   @override
   CurrencyConverterDialogState createState() {
@@ -45,10 +41,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   void initState() {
     super.initState();
     _fiatAmountController.addListener(() => setState(() {}));
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
     // Loop back to start and stop
     _controller!.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -63,10 +56,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
         final texts = context.texts();
         setState(() {
           Navigator.pop(context);
-          showFlushbar(
-            context,
-            message: texts.currency_converter_dialog_error_exchange_rate,
-          );
+          showFlushbar(context, message: texts.currency_converter_dialog_error_exchange_rate);
         });
       }
       return <String, Rate>{};
@@ -146,9 +136,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             ),
           ),
           Theme(
-            data: themeData.copyWith(
-              canvasColor: themeData.colorScheme.surface,
-            ),
+            data: themeData.copyWith(canvasColor: themeData.colorScheme.surface),
             child: DropdownButtonHideUnderline(
               child: ButtonTheme(
                 alignedDropdown: true,
@@ -185,39 +173,21 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
           key: _formKey,
           child: TextFormField(
             decoration: InputDecoration(
-              enabledBorder: UnderlineInputBorder(
-                borderSide: theme.greyBorderSide,
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: theme.greyBorderSide,
-              ),
-              errorBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: borderColor,
-                ),
-              ),
-              focusedErrorBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                  color: borderColor,
-                ),
-              ),
+              enabledBorder: UnderlineInputBorder(borderSide: theme.greyBorderSide),
+              focusedBorder: UnderlineInputBorder(borderSide: theme.greyBorderSide),
+              errorBorder: UnderlineInputBorder(borderSide: BorderSide(color: borderColor)),
+              focusedErrorBorder: UnderlineInputBorder(borderSide: BorderSide(color: borderColor)),
               errorMaxLines: 2,
-              errorStyle: themeData.primaryTextTheme.bodySmall!.copyWith(
-                color: borderColor,
-              ),
+              errorStyle: themeData.primaryTextTheme.bodySmall!.copyWith(color: borderColor),
               prefix: Text(
                 fiatCurrency.info.symbol?.grapheme ?? "",
                 style: themeData.dialogTheme.contentTextStyle,
               ),
             ),
             inputFormatters: [
-              FilteringTextInputFormatter.allow(
-                fiatConversion.whitelistedPattern,
-              ),
+              FilteringTextInputFormatter.allow(fiatConversion.whitelistedPattern),
               TextInputFormatter.withFunction(
-                (_, newValue) => newValue.copyWith(
-                  text: newValue.text.replaceAll(',', '.'),
-                ),
+                (_, newValue) => newValue.copyWith(text: newValue.text.replaceAll(',', '.')),
               ),
             ],
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -237,9 +207,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
             children: [
               Text(
                 _contentMessage(currencyState),
-                style: themeData.textTheme.headlineSmall!.copyWith(
-                  fontSize: 16.0,
-                ),
+                style: themeData.textTheme.headlineSmall!.copyWith(fontSize: 16.0),
               ),
               _buildExchangeRateLabel(fiatConversion),
             ],
@@ -291,10 +259,7 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
 
   String _contentMessage(CurrencyState currencyState) {
     final btcAmount = _fiatAmountController.text.isNotEmpty
-        ? currencyState.bitcoinCurrency.format(
-            _convertedSatoshies(currencyState),
-            includeDisplayName: false,
-          )
+        ? currencyState.bitcoinCurrency.format(_convertedSatoshies(currencyState), includeDisplayName: false)
         : 0;
     final symbol = currencyState.bitcoinCurrency.tickerSymbol;
     return "$btcAmount $symbol";
@@ -313,30 +278,20 @@ class CurrencyConverterDialogState extends State<CurrencyConverterDialog>
   int _convertedSatoshies(CurrencyState currencyState) {
     var fiatConversion = FiatConversion(currencyState.fiatCurrency!, currencyState.fiatExchangeRate!);
     return _fiatAmountController.text.isNotEmpty
-        ? fiatConversion.fiatToSat(
-            double.parse(_fiatAmountController.text),
-          )
+        ? fiatConversion.fiatToSat(double.parse(_fiatAmountController.text))
         : 0;
   }
 
-  Widget _buildExchangeRateLabel(
-    FiatConversion fiatConversion,
-  ) {
+  Widget _buildExchangeRateLabel(FiatConversion fiatConversion) {
     final themeData = Theme.of(context);
     final texts = context.texts();
 
     // Empty string widget is returned so that the dialogs height is not changed when the exchange rate is shown
     return _exchangeRate == null
-        ? Text(
-            "",
-            style: themeData.primaryTextTheme.titleSmall,
-          )
+        ? Text("", style: themeData.primaryTextTheme.titleSmall)
         : Text(
             texts.currency_converter_dialog_rate(
-              fiatConversion.formatFiat(
-                _exchangeRate!,
-                removeTrailingZeros: true,
-              ),
+              fiatConversion.formatFiat(_exchangeRate!, removeTrailingZeros: true),
               fiatConversion.currencyData.id,
             ),
             style: themeData.primaryTextTheme.titleSmall!,

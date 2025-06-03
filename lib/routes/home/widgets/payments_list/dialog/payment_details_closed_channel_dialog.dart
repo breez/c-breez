@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 class PaymentDetailsDialogClosedChannelDialog extends StatelessWidget {
   final PaymentMinutiae paymentMinutiae;
 
-  const PaymentDetailsDialogClosedChannelDialog({
-    super.key,
-    required this.paymentMinutiae,
-  });
+  const PaymentDetailsDialogClosedChannelDialog({super.key, required this.paymentMinutiae});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +23,7 @@ class PaymentDetailsDialogClosedChannelDialog extends StatelessWidget {
         style: themeData.dialogTheme.titleTextStyle,
       ),
       contentPadding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-      content: ClosedChannelPaymentDetailsWidget(
-        paymentMinutiae: paymentMinutiae,
-      ),
+      content: ClosedChannelPaymentDetailsWidget(paymentMinutiae: paymentMinutiae),
       actions: [
         SimpleDialogOption(
           onPressed: () => Navigator.pop(context),

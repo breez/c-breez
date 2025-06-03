@@ -20,9 +20,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("AccountRequiredActionsIndicator");
 
 class AccountRequiredActionsIndicator extends StatelessWidget {
-  const AccountRequiredActionsIndicator({
-    super.key,
-  });
+  const AccountRequiredActionsIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,40 +37,27 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
 
         if (walletBalanceSat > 0) {
           warnings.add(
-            WarningAction(
-              () => navigatorState.pushNamed(
-                "/unexpected_funds",
-                arguments: walletBalanceSat,
-              ),
-            ),
+            WarningAction(() => navigatorState.pushNamed("/unexpected_funds", arguments: walletBalanceSat)),
           );
         }
 
         if (accState.connectionStatus != ConnectionStatus.CONNECTING &&
             lspState != null &&
             lspState.selectedLspId == null) {
-          warnings.add(
-            WarningAction(() => navigatorState.pushNamed("/select_lsp")),
-          );
+          warnings.add(WarningAction(() => navigatorState.pushNamed("/select_lsp")));
         }
 
         if (accState.verificationStatus == VerificationStatus.UNVERIFIED) {
           warnings.add(
-            WarningAction(
-              () async {
-                await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then(
-                  (accountMnemonic) {
-                    if (context.mounted) {
-                      return Navigator.pushNamed(
-                        context,
-                        '/mnemonics',
-                        arguments: accountMnemonic,
-                      );
-                    }
-                  },
-                );
-              },
-            ),
+            WarningAction(() async {
+              await ServiceInjector().keychain.read(CredentialsManager.accountMnemonic).then((
+                accountMnemonic,
+              ) {
+                if (context.mounted) {
+                  return Navigator.pushNamed(context, '/mnemonics', arguments: accountMnemonic);
+                }
+              });
+            }),
           );
         }
 
@@ -99,32 +84,22 @@ class AccountRequiredActionsIndicator extends StatelessWidget {
 
         if (backupState?.status == BackupStatus.FAILED) {
           warnings.add(
-            WarningAction(
-              () {
-                showDialog(
-                  useRootNavigator: false,
-                  useSafeArea: false,
-                  context: context,
-                  builder: (_) => const EnableBackupDialog(),
-                );
-              },
-            ),
+            WarningAction(() {
+              showDialog(
+                useRootNavigator: false,
+                useSafeArea: false,
+                context: context,
+                builder: (_) => const EnableBackupDialog(),
+              );
+            }),
           );
         }
 
         if (refundState.refundables != null && refundState.refundables!.isNotEmpty) {
           warnings.add(
-            WarningAction(
-              () {
-                navigatorState.push(
-                  MaterialPageRoute(
-                    builder: (_) => GetRefundPage(
-                      refundBloc: refundBloc,
-                    ),
-                  ),
-                );
-              },
-            ),
+            WarningAction(() {
+              navigatorState.push(MaterialPageRoute(builder: (_) => GetRefundPage(refundBloc: refundBloc)));
+            }),
           );
         }
 

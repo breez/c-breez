@@ -15,22 +15,22 @@ class CurrencyBloc extends Cubit<CurrencyState> with HydratedMixin {
 
   void _initializeCurrencyBloc() {
     late final StreamSubscription streamSubscription;
-    streamSubscription = _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen(
-      (nodeState) {
-        listFiatCurrencies();
-        fetchExchangeRates();
-        streamSubscription.cancel();
-      },
-    );
+    streamSubscription = _breezSDK.nodeStateStream.where((nodeState) => nodeState != null).listen((
+      nodeState,
+    ) {
+      listFiatCurrencies();
+      fetchExchangeRates();
+      streamSubscription.cancel();
+    });
   }
 
   void listFiatCurrencies() {
     _breezSDK.listFiatCurrencies().then((fiatCurrencies) {
-      emit(state.copyWith(
-          fiatCurrenciesData: _sortedFiatCurrenciesList(
-        fiatCurrencies,
-        state.preferredCurrencies,
-      )));
+      emit(
+        state.copyWith(
+          fiatCurrenciesData: _sortedFiatCurrenciesList(fiatCurrencies, state.preferredCurrencies),
+        ),
+      );
     });
   }
 

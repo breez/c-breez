@@ -45,21 +45,21 @@ class UserProfileSettings {
       image ?? (animal != null && color != null ? 'breez://profile_image?animal=$animal&color=$color' : null);
 
   UserProfileSettings.fromJson(Map<String, dynamic> json)
-      : name = json['name'],
-        color = json['color'],
-        animal = json['animal'],
-        image = json['image'],
-        hideBalance = json['hideBalance'] ?? false,
-        appMode = AppMode.values[json["appMode"] ?? 0],
-        expandPreferences = json['expandPreferences'] ?? true;
+    : name = json['name'],
+      color = json['color'],
+      animal = json['animal'],
+      image = json['image'],
+      hideBalance = json['hideBalance'] ?? false,
+      appMode = AppMode.values[json["appMode"] ?? 0],
+      expandPreferences = json['expandPreferences'] ?? true;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'color': color,
-        'animal': animal,
-        'image': image,
-        'hideBalance': hideBalance,
-        'appMode': appMode.index,
-        'expandPreferences': expandPreferences,
-      };
+    'name': name,
+    'color': color,
+    'animal': animal,
+    'image': image,
+    'hideBalance': hideBalance,
+    'appMode': appMode.index,
+    'expandPreferences': expandPreferences,
+  };
 }

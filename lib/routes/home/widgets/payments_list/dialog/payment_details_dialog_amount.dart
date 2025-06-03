@@ -45,20 +45,22 @@ class PaymentDetailsDialogAmount extends StatelessWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               reverse: true,
-              child: BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, state) {
-                final amountSat = BitcoinCurrency.fromTickerSymbol(
-                  state.bitcoinTicker,
-                ).format(paymentMinutiae.amountSat);
-                return AutoSizeText(
-                  paymentMinutiae.paymentType == PaymentType.Received
-                      ? texts.payment_details_dialog_amount_positive(amountSat)
-                      : texts.payment_details_dialog_amount_negative(amountSat),
-                  style: themeData.primaryTextTheme.displaySmall,
-                  textAlign: TextAlign.right,
-                  maxLines: 1,
-                  group: valueAutoSizeGroup,
-                );
-              }),
+              child: BlocBuilder<CurrencyBloc, CurrencyState>(
+                builder: (context, state) {
+                  final amountSat = BitcoinCurrency.fromTickerSymbol(
+                    state.bitcoinTicker,
+                  ).format(paymentMinutiae.amountSat);
+                  return AutoSizeText(
+                    paymentMinutiae.paymentType == PaymentType.Received
+                        ? texts.payment_details_dialog_amount_positive(amountSat)
+                        : texts.payment_details_dialog_amount_negative(amountSat),
+                    style: themeData.primaryTextTheme.displaySmall,
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    group: valueAutoSizeGroup,
+                  );
+                },
+              ),
             ),
           ),
         ],

@@ -26,15 +26,17 @@ class DeepLinksService {
       publishLink(data);
     }
 
-    _dynamicLinks!.onLink.listen((data) {
-      publishLink(data);
-    }).onError((err) {
-      _log.severe("Failed to fetch dynamic link $err", err);
-      return Future.value(null);
-    });
+    _dynamicLinks!.onLink
+        .listen((data) {
+          publishLink(data);
+        })
+        .onError((err) {
+          _log.severe("Failed to fetch dynamic link $err", err);
+          return Future.value(null);
+        });
   }
 
-  publishLink(PendingDynamicLinkData data) async {
+  Future<void> publishLink(PendingDynamicLinkData data) async {
     final Uri uri = data.link;
     _linksNotificationsController.add(uri.toString());
   }

@@ -15,10 +15,7 @@ final _log = Logger("QrActionButton");
 class QrActionButton extends StatelessWidget {
   final GlobalKey firstPaymentItemKey;
 
-  const QrActionButton(
-    this.firstPaymentItemKey, {
-    super.key,
-  });
+  const QrActionButton(this.firstPaymentItemKey, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +27,7 @@ class QrActionButton extends StatelessWidget {
             onPressed: () => _scanBarcode(context),
             child: SvgPicture.asset(
               "src/icon/qr_scan.svg",
-              colorFilter: ColorFilter.mode(
-                theme.BreezColors.white[500]!,
-                BlendMode.srcATop,
-              ),
+              colorFilter: ColorFilter.mode(theme.BreezColors.white[500]!, BlendMode.srcATop),
               fit: BoxFit.contain,
               width: 24.0,
               height: 24.0,
@@ -49,19 +43,14 @@ class QrActionButton extends StatelessWidget {
     InputBloc inputBloc = context.read<InputBloc>();
 
     _log.info("Start qr code scan");
-    Navigator.pushNamed<String>(context, "/qr_scan").then(
-      (barcode) {
-        _log.info("Scanned string: '$barcode'");
-        if (barcode == null) return;
-        if (barcode.isEmpty && context.mounted) {
-          showFlushbar(
-            context,
-            message: texts.qr_action_button_error_code_not_detected,
-          );
-          return;
-        }
-        inputBloc.addIncomingInput(barcode, InputSource.qrcode_reader);
-      },
-    );
+    Navigator.pushNamed<String>(context, "/qr_scan").then((barcode) {
+      _log.info("Scanned string: '$barcode'");
+      if (barcode == null) return;
+      if (barcode.isEmpty && context.mounted) {
+        showFlushbar(context, message: texts.qr_action_button_error_code_not_detected);
+        return;
+      }
+      inputBloc.addIncomingInput(barcode, InputSource.qrcode_reader);
+    });
   }
 }

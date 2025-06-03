@@ -45,23 +45,23 @@ class AccountState {
   });
 
   AccountState.initial()
-      : this(
-          id: null,
-          initial: true,
-          blockheight: 0,
-          maxAllowedToPaySat: 0,
-          maxAllowedToReceiveSat: 0,
-          maxPaymentAmountSat: 0,
-          maxChanReserveSat: 0,
-          connectedPeers: List.empty(),
-          maxInboundLiquiditySat: 0,
-          balanceSat: 0,
-          walletBalanceSat: 0,
-          payments: [],
-          paymentFilters: PaymentFilters.initial(),
-          connectionStatus: null,
-          verificationStatus: VerificationStatus.UNVERIFIED,
-        );
+    : this(
+        id: null,
+        initial: true,
+        blockheight: 0,
+        maxAllowedToPaySat: 0,
+        maxAllowedToReceiveSat: 0,
+        maxPaymentAmountSat: 0,
+        maxChanReserveSat: 0,
+        connectedPeers: List.empty(),
+        maxInboundLiquiditySat: 0,
+        balanceSat: 0,
+        walletBalanceSat: 0,
+        payments: [],
+        paymentFilters: PaymentFilters.initial(),
+        connectionStatus: null,
+        verificationStatus: VerificationStatus.UNVERIFIED,
+      );
 
   AccountState copyWith({
     String? id,

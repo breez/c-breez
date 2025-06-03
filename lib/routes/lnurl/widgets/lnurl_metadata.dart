@@ -6,10 +6,7 @@ import 'package:c_breez/utils/min_font_size.dart';
 import 'package:flutter/material.dart';
 
 class LNURLMetadataText extends StatelessWidget {
-  const LNURLMetadataText({
-    super.key,
-    required this.metadataMap,
-  });
+  const LNURLMetadataText({super.key, required this.metadataMap});
 
   final Map<String, dynamic> metadataMap;
 
@@ -27,10 +24,7 @@ class LNURLMetadataText extends StatelessWidget {
 class LNURLMetadataImage extends StatelessWidget {
   final String? base64String;
 
-  const LNURLMetadataImage({
-    super.key,
-    this.base64String,
-  });
+  const LNURLMetadataImage({super.key, this.base64String});
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +33,8 @@ class LNURLMetadataImage extends StatelessWidget {
       if (bytes.isNotEmpty) {
         const imageSize = 128.0;
         return ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: imageSize,
-            maxHeight: imageSize,
-          ),
-          child: Image.memory(
-            bytes,
-            width: imageSize,
-            fit: BoxFit.fitWidth,
-          ),
+          constraints: const BoxConstraints(maxWidth: imageSize, maxHeight: imageSize),
+          child: Image.memory(bytes, width: imageSize, fit: BoxFit.fitWidth),
         );
       }
     }

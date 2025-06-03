@@ -18,7 +18,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
     pollReverseSwapsInProgress();
   }
 
-  pollReverseSwapsInProgress() async {
+  Future<void> pollReverseSwapsInProgress() async {
     _log.info("Started polling for reverse swaps in progress.");
     await _refreshInProgressReverseSwaps(showLoader: true).whenComplete(() => _startPolling());
   }
@@ -35,10 +35,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
       _emitState(state.copyWith(isLoading: showLoader));
       final reverseSwapsInProgress = await _breezSDK.inProgressOnchainPayments();
       _logReverseSwapsInProgress(reverseSwapsInProgress);
-      _emitState(state.copyWith(
-        reverseSwapsInProgress: reverseSwapsInProgress,
-        error: null,
-      ));
+      _emitState(state.copyWith(reverseSwapsInProgress: reverseSwapsInProgress, error: null));
     } catch (e) {
       final texts = getSystemAppLocalizations();
       final errorMessage = extractExceptionMessage(e, texts);

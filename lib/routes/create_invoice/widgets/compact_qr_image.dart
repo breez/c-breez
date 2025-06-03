@@ -41,7 +41,7 @@ var _versionsToMaxCharacters = [
   2563,
   2699,
   2809,
-  2953
+  2953,
 ];
 
 class CompactQRImage extends StatelessWidget {

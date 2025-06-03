@@ -11,10 +11,7 @@ final _log = Logger("MoonpayWebView");
 class MoonpayWebView extends StatelessWidget {
   final String url;
 
-  const MoonpayWebView({
-    super.key,
-    required this.url,
-  });
+  const MoonpayWebView({super.key, required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +25,7 @@ class MoonpayWebView extends StatelessWidget {
             sharedCookiesEnabled: true,
             applePayAPIEnabled: true,
           ),
-          initialUrlRequest: URLRequest(
-            url: WebUri(url),
-          ),
+          initialUrlRequest: URLRequest(url: WebUri(url)),
           onLoadStart: (controller, url) {
             _log.info("onLoadStart url: $url");
             context.read<MoonPayBloc>().updateWebViewStatus(WebViewStatus.loading);

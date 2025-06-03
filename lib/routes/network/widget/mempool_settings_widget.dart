@@ -8,9 +8,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("MempoolSettingsWidget");
 
 class MempoolSettingsWidget extends StatefulWidget {
-  const MempoolSettingsWidget({
-    super.key,
-  });
+  const MempoolSettingsWidget({super.key});
 
   @override
   State<MempoolSettingsWidget> createState() => _MempoolSettingsWidgetState();
@@ -29,7 +27,8 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
     return BlocBuilder<NetworkSettingsBloc, NetworkSettingsState>(
       builder: (context, state) {
         _log.info(
-            "Building: $state, userChanged: $_userChanged, saving: $_saving, errorOnSave: $_errorOnSave");
+          "Building: $state, userChanged: $_userChanged, saving: $_saving, errorOnSave: $_errorOnSave",
+        );
         if (_mempoolUrlController.text.isEmpty && !_userChanged) {
           _mempoolUrlController.text = state.mempoolUrl;
         }
@@ -57,17 +56,13 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
                           child: SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 1,
-                            ),
+                            child: CircularProgressIndicator(strokeWidth: 1),
                           ),
                         ),
                       ]
                     : [
                         OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.white),
-                          ),
+                          style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.white)),
                           onPressed: () async {
                             _mempoolUrlController.text = "";
                             await context.read<NetworkSettingsBloc>().resetMempoolSpaceSettings();
@@ -80,17 +75,15 @@ class _MempoolSettingsWidgetState extends State<MempoolSettingsWidget> {
                         ),
                         const SizedBox(width: 12.0),
                         OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.white),
-                          ),
+                          style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.white)),
                           onPressed: () async {
                             setState(() {
                               _saving = true;
                               _userChanged = true;
                             });
-                            final success = await context
-                                .read<NetworkSettingsBloc>()
-                                .setMempoolUrl(_mempoolUrlController.text);
+                            final success = await context.read<NetworkSettingsBloc>().setMempoolUrl(
+                              _mempoolUrlController.text,
+                            );
                             setState(() {
                               _errorOnSave = !success;
                               _saving = false;

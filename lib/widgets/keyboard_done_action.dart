@@ -35,42 +35,41 @@ class KeyboardDoneAction {
 
   void _showOverlay() {
     OverlayState os = Overlay.of(focusNodes[0].context!);
-    _overlayEntry = OverlayEntry(builder: (context) {
-      final texts = context.texts();
-      final queryData = MediaQuery.of(context);
-      // Update and build footer, if any
-      return Positioned(
-        bottom: queryData.viewInsets.bottom,
-        left: 0,
-        right: 0,
-        child: Material(
-          color: Colors.grey[200],
-          child: SizedBox(
-            height: _kBarSize,
-            width: queryData.size.width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      texts.keyboard_done_action,
-                      style: TextStyle(
-                        color: theme.BreezColors.blue[500],
-                        fontWeight: FontWeight.bold,
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        final texts = context.texts();
+        final queryData = MediaQuery.of(context);
+        // Update and build footer, if any
+        return Positioned(
+          bottom: queryData.viewInsets.bottom,
+          left: 0,
+          right: 0,
+          child: Material(
+            color: Colors.grey[200],
+            child: SizedBox(
+              height: _kBarSize,
+              width: queryData.size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        texts.keyboard_done_action,
+                        style: TextStyle(color: theme.BreezColors.blue[500], fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
     os.insert(_overlayEntry!);
   }
 

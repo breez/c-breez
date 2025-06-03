@@ -19,18 +19,20 @@ class CurrencyState {
 
   CurrencyState.initial() : this();
 
-  CurrencyState copyWith(
-      {List<FiatCurrency>? fiatCurrenciesData,
-      Map<String, Rate>? exchangeRates,
-      String? fiatId,
-      String? bitcoinTicker,
-      List<String>? preferredCurrencies}) {
+  CurrencyState copyWith({
+    List<FiatCurrency>? fiatCurrenciesData,
+    Map<String, Rate>? exchangeRates,
+    String? fiatId,
+    String? bitcoinTicker,
+    List<String>? preferredCurrencies,
+  }) {
     return CurrencyState(
-        fiatCurrenciesData: fiatCurrenciesData ?? this.fiatCurrenciesData,
-        exchangeRates: exchangeRates ?? this.exchangeRates,
-        preferredCurrencies: preferredCurrencies ?? this.preferredCurrencies,
-        fiatId: fiatId ?? this.fiatId,
-        bitcoinTicker: bitcoinTicker ?? this.bitcoinTicker);
+      fiatCurrenciesData: fiatCurrenciesData ?? this.fiatCurrenciesData,
+      exchangeRates: exchangeRates ?? this.exchangeRates,
+      preferredCurrencies: preferredCurrencies ?? this.preferredCurrencies,
+      fiatId: fiatId ?? this.fiatId,
+      bitcoinTicker: bitcoinTicker ?? this.bitcoinTicker,
+    );
   }
 
   BitcoinCurrency get bitcoinCurrency => BitcoinCurrency.fromTickerSymbol(bitcoinTicker);
@@ -61,12 +63,15 @@ class CurrencyState {
   }
 
   CurrencyState.fromJson(Map<String, dynamic> json)
-      : preferredCurrencies = (json['preferredCurrencies'] as List<dynamic>).cast<String>(),
-        exchangeRates = {},
-        fiatCurrenciesData = [],
-        fiatId = json['fiatId'],
-        bitcoinTicker = json['bitcoinTicker'];
+    : preferredCurrencies = (json['preferredCurrencies'] as List<dynamic>).cast<String>(),
+      exchangeRates = {},
+      fiatCurrenciesData = [],
+      fiatId = json['fiatId'],
+      bitcoinTicker = json['bitcoinTicker'];
 
-  Map<String, dynamic> toJson() =>
-      {'preferredCurrencies': preferredCurrencies, 'fiatId': fiatId, 'bitcoinTicker': bitcoinTicker};
+  Map<String, dynamic> toJson() => {
+    'preferredCurrencies': preferredCurrencies,
+    'fiatId': fiatId,
+    'bitcoinTicker': bitcoinTicker,
+  };
 }

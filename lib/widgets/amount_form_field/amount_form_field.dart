@@ -39,60 +39,52 @@ class AmountFormField extends TextFormField {
     super.onChanged,
     bool? readOnly,
   }) : super(
-          keyboardType: TextInputType.numberWithOptions(
-            decimal: bitcoinCurrency != BitcoinCurrency.SAT,
-          ),
-          decoration: InputDecoration(
-            labelText: texts.amount_form_denomination(
-              bitcoinCurrency.displayName,
-            ),
-            suffixIcon: (readOnly ?? false)
-                ? null
-                : IconButton(
-                    icon: Image.asset(
-                      (fiatConversion?.currencyData != null)
-                          ? fiatConversion!.logoPath
-                          : "src/icon/btc_convert.png",
-                      color: iconColor ?? theme.BreezColors.white[500],
-                    ),
-                    padding: const EdgeInsets.only(top: 21.0),
-                    alignment: Alignment.bottomRight,
-                    onPressed: () => showDialog(
-                      useRootNavigator: false,
-                      context: context,
-                      builder: (_) => CurrencyConverterDialog(
-                        context.read<CurrencyBloc>(),
-                        returnFN ??
-                            (value) => controller!.text = bitcoinCurrency.format(
-                                  bitcoinCurrency.parse(value),
-                                  includeCurrencySymbol: false,
-                                  includeDisplayName: false,
-                                ),
-                        validatorFn,
-                      ),
-                    ),
-                  ),
-          ),
-          inputFormatters: bitcoinCurrency != BitcoinCurrency.SAT
-              ? [
-                  FilteringTextInputFormatter.allow(bitcoinCurrency.whitelistedPattern),
-                  TextInputFormatter.withFunction(
-                    (_, newValue) => newValue.copyWith(
-                      text: newValue.text.replaceAll(',', '.'),
-                    ),
-                  ),
-                ]
-              : [SatAmountFormFieldFormatter()],
-          readOnly: readOnly ?? false,
-        );
+         keyboardType: TextInputType.numberWithOptions(decimal: bitcoinCurrency != BitcoinCurrency.SAT),
+         decoration: InputDecoration(
+           labelText: texts.amount_form_denomination(bitcoinCurrency.displayName),
+           suffixIcon: (readOnly ?? false)
+               ? null
+               : IconButton(
+                   icon: Image.asset(
+                     (fiatConversion?.currencyData != null)
+                         ? fiatConversion!.logoPath
+                         : "src/icon/btc_convert.png",
+                     color: iconColor ?? theme.BreezColors.white[500],
+                   ),
+                   padding: const EdgeInsets.only(top: 21.0),
+                   alignment: Alignment.bottomRight,
+                   onPressed: () => showDialog(
+                     useRootNavigator: false,
+                     context: context,
+                     builder: (_) => CurrencyConverterDialog(
+                       context.read<CurrencyBloc>(),
+                       returnFN ??
+                           (value) => controller!.text = bitcoinCurrency.format(
+                             bitcoinCurrency.parse(value),
+                             includeCurrencySymbol: false,
+                             includeDisplayName: false,
+                           ),
+                       validatorFn,
+                     ),
+                   ),
+                 ),
+         ),
+         inputFormatters: bitcoinCurrency != BitcoinCurrency.SAT
+             ? [
+                 FilteringTextInputFormatter.allow(bitcoinCurrency.whitelistedPattern),
+                 TextInputFormatter.withFunction(
+                   (_, newValue) => newValue.copyWith(text: newValue.text.replaceAll(',', '.')),
+                 ),
+               ]
+             : [SatAmountFormFieldFormatter()],
+         readOnly: readOnly ?? false,
+       );
 
   @override
   FormFieldValidator<String?> get validator {
     return (value) {
       if (value!.isEmpty) {
-        return texts.amount_form_insert_hint(
-          bitcoinCurrency.displayName,
-        );
+        return texts.amount_form_insert_hint(bitcoinCurrency.displayName);
       }
       try {
         int intAmount = bitcoinCurrency.parse(value);

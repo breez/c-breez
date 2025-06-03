@@ -1,11 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 
-enum WebViewStatus {
-  initial,
-  loading,
-  success,
-  error,
-}
+enum WebViewStatus { initial, loading, success, error }
 
 abstract class MoonPayState {
   const MoonPayState();
@@ -14,20 +9,12 @@ abstract class MoonPayState {
 
   factory MoonPayState.loading() => const MoonPayStateLoading();
 
-  factory MoonPayState.error(
-    String error,
-  ) =>
-      MoonPayStateError(error);
+  factory MoonPayState.error(String error) => MoonPayStateError(error);
 
-  factory MoonPayState.urlReady(
-    BuyBitcoinResponse buyBitcoinResponse,
-  ) =>
+  factory MoonPayState.urlReady(BuyBitcoinResponse buyBitcoinResponse) =>
       MoonPayStateUrlReady(buyBitcoinResponse);
 
-  factory MoonPayState.swapInProgress(
-    String address,
-    bool expired,
-  ) =>
+  factory MoonPayState.swapInProgress(String address, bool expired) =>
       MoonPayStateSwapInProgress(address, expired);
 }
 
@@ -42,24 +29,16 @@ class MoonPayStateLoading extends MoonPayState {
 class MoonPayStateError extends MoonPayState {
   final String error;
 
-  const MoonPayStateError(
-    this.error,
-  );
+  const MoonPayStateError(this.error);
 }
 
 class MoonPayStateUrlReady extends MoonPayState {
   final BuyBitcoinResponse buyBitcoinResponse;
   final WebViewStatus webViewStatus;
 
-  const MoonPayStateUrlReady(
-    this.buyBitcoinResponse, {
-    this.webViewStatus = WebViewStatus.initial,
-  });
+  const MoonPayStateUrlReady(this.buyBitcoinResponse, {this.webViewStatus = WebViewStatus.initial});
 
-  MoonPayStateUrlReady copyWith({
-    BuyBitcoinResponse? buyBitcoinResponse,
-    WebViewStatus? webViewStatus,
-  }) {
+  MoonPayStateUrlReady copyWith({BuyBitcoinResponse? buyBitcoinResponse, WebViewStatus? webViewStatus}) {
     return MoonPayStateUrlReady(
       buyBitcoinResponse ?? this.buyBitcoinResponse,
       webViewStatus: webViewStatus ?? this.webViewStatus,
@@ -71,8 +50,5 @@ class MoonPayStateSwapInProgress extends MoonPayState {
   final String address;
   final bool expired;
 
-  const MoonPayStateSwapInProgress(
-    this.address,
-    this.expired,
-  );
+  const MoonPayStateSwapInProgress(this.address, this.expired);
 }

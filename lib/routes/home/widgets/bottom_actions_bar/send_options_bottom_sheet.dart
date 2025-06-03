@@ -10,10 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SendOptionsBottomSheet extends StatefulWidget {
   final GlobalKey firstPaymentItemKey;
 
-  const SendOptionsBottomSheet({
-    super.key,
-    required this.firstPaymentItemKey,
-  });
+  const SendOptionsBottomSheet({super.key, required this.firstPaymentItemKey});
 
   @override
   State<SendOptionsBottomSheet> createState() => _SendOptionsBottomSheetState();
@@ -33,32 +30,18 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
             const SizedBox(height: 8.0),
             ListTile(
               enabled: hasBalance,
-              leading: const BottomActionItemImage(
-                iconAssetPath: "src/icon/paste.png",
-              ),
-              title: Text(
-                texts.bottom_action_bar_paste_invoice,
-                style: theme.bottomSheetTextStyle,
-              ),
+              leading: const BottomActionItemImage(iconAssetPath: "src/icon/paste.png"),
+              title: Text(texts.bottom_action_bar_paste_invoice, style: theme.bottomSheetTextStyle),
               onTap: () => _showEnterPaymentInfoDialog(context, widget.firstPaymentItemKey),
             ),
-            Divider(
-              height: 0.0,
-              color: Colors.white.withValues(alpha: 0.2),
-              indent: 72.0,
-            ),
+            Divider(height: 0.0, color: Colors.white.withValues(alpha: 0.2), indent: 72.0),
             ListTile(
               enabled: hasBalance,
-              leading: const BottomActionItemImage(
-                iconAssetPath: "src/icon/bitcoin.png",
-              ),
-              title: Text(
-                texts.bottom_action_bar_send_btc_address,
-                style: theme.bottomSheetTextStyle,
-              ),
+              leading: const BottomActionItemImage(iconAssetPath: "src/icon/bitcoin.png"),
+              title: Text(texts.bottom_action_bar_send_btc_address, style: theme.bottomSheetTextStyle),
               onTap: () => _sendToBTCAddress(),
             ),
-            const SizedBox(height: 8.0)
+            const SizedBox(height: 8.0),
           ],
         );
       },
@@ -73,9 +56,7 @@ class _SendOptionsBottomSheetState extends State<SendOptionsBottomSheet> {
       useRootNavigator: false,
       context: context,
       barrierDismissible: false,
-      builder: (_) => EnterPaymentInfoDialog(
-        paymentItemKey: firstPaymentItemKey,
-      ),
+      builder: (_) => EnterPaymentInfoDialog(paymentItemKey: firstPaymentItemKey),
     );
   }
 

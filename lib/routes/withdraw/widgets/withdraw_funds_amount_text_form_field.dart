@@ -20,27 +20,27 @@ class WithdrawFundsAmountTextFormField extends AmountFormField {
     required WithdrawFundsPolicy policy,
     required int maxPayableSat,
   }) : super(
-          texts: context.texts(),
-          readOnly: policy.withdrawKind == WithdrawKind.unexpected_funds || withdrawMaxValue,
-          validatorFn: (paymentAmountSat) {
-            _log.info("Validator called for $paymentAmountSat");
-            return PaymentValidator(
-              currency: bitcoinCurrency,
-              texts: context.texts(),
-              channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
-              validatePayment: (amountSat, outgoing, channelCreationPossible, {channelMinimumFeeSat}) {
-                _log.info("Validating $amountSat $policy");
-                if (amountSat < policy.minValue) {
-                  throw PaymentBelowLimitError(policy.minValue);
-                }
-                if (amountSat > policy.maxValue) {
-                  throw PaymentExceededLimitError(policy.maxValue);
-                }
-                if (amountSat > maxPayableSat) {
-                  throw const InsufficientLocalBalanceError();
-                }
-              },
-            ).validateOutgoing(paymentAmountSat);
-          },
-        );
+         texts: context.texts(),
+         readOnly: policy.withdrawKind == WithdrawKind.unexpected_funds || withdrawMaxValue,
+         validatorFn: (paymentAmountSat) {
+           _log.info("Validator called for $paymentAmountSat");
+           return PaymentValidator(
+             currency: bitcoinCurrency,
+             texts: context.texts(),
+             channelCreationPossible: context.read<LSPBloc>().state?.isChannelOpeningAvailable ?? false,
+             validatePayment: (amountSat, outgoing, channelCreationPossible, {channelMinimumFeeSat}) {
+               _log.info("Validating $amountSat $policy");
+               if (amountSat < policy.minValue) {
+                 throw PaymentBelowLimitError(policy.minValue);
+               }
+               if (amountSat > policy.maxValue) {
+                 throw PaymentExceededLimitError(policy.maxValue);
+               }
+               if (amountSat > maxPayableSat) {
+                 throw const InsufficientLocalBalanceError();
+               }
+             },
+           ).validateOutgoing(paymentAmountSat);
+         },
+       );
 }

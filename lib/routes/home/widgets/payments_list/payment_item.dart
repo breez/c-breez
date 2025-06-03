@@ -14,12 +14,7 @@ class PaymentItem extends StatefulWidget {
   final bool _firstItem;
   final GlobalKey firstPaymentItemKey;
 
-  const PaymentItem(
-    this._paymentMinutiae,
-    this._firstItem,
-    this.firstPaymentItemKey, {
-    super.key,
-  });
+  const PaymentItem(this._paymentMinutiae, this._firstItem, this.firstPaymentItemKey, {super.key});
 
   @override
   State<PaymentItem> createState() => _PaymentItemState();
@@ -63,10 +58,7 @@ class _PaymentItemState extends State<PaymentItem> {
                         ),
                   child: isPaymentItemNew
                       ? FlipTransition(
-                          PaymentItemAvatar(
-                            widget._paymentMinutiae,
-                            radius: 16,
-                          ),
+                          PaymentItemAvatar(widget._paymentMinutiae, radius: 16),
                           const SuccessAvatar(radius: 16),
                           radius: 16,
                           onComplete: () {
@@ -91,9 +83,7 @@ class _PaymentItemState extends State<PaymentItem> {
                   showDialog<void>(
                     useRootNavigator: false,
                     context: context,
-                    builder: (_) => PaymentDetailsDialog(
-                      paymentMinutiae: widget._paymentMinutiae,
-                    ),
+                    builder: (_) => PaymentDetailsDialog(paymentMinutiae: widget._paymentMinutiae),
                   );
                 },
               ),
@@ -106,9 +96,7 @@ class _PaymentItemState extends State<PaymentItem> {
 
   bool _createdWithin(Duration duration) {
     final diff = widget._paymentMinutiae.paymentTime.difference(
-      DateTime.fromMillisecondsSinceEpoch(
-        DateTime.now().millisecondsSinceEpoch,
-      ),
+      DateTime.fromMillisecondsSinceEpoch(DateTime.now().millisecondsSinceEpoch),
     );
     return diff > -duration;
   }

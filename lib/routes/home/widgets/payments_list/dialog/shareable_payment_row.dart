@@ -41,9 +41,7 @@ class ShareablePaymentRow extends StatelessWidget {
     final color = themeData.primaryTextTheme.labelLarge!.color!;
 
     return Theme(
-      data: themeData.copyWith(
-        dividerColor: themeData.colorScheme.surface,
-      ),
+      data: themeData.copyWith(dividerColor: themeData.colorScheme.surface),
       child: ExpansionTile(
         iconColor: isExpanded ? Colors.transparent : color,
         collapsedIconColor: color,
@@ -64,14 +62,16 @@ class ShareablePaymentRow extends StatelessWidget {
                 child: Padding(
                   padding: childrenPadding ?? const EdgeInsets.only(left: 16.0, right: 0.0),
                   child: GestureDetector(
-                    onTap:
-                        isURL ? () => launchLinkOnExternalBrowser(context, linkAddress: sharedValue) : null,
+                    onTap: isURL
+                        ? () => launchLinkOnExternalBrowser(context, linkAddress: sharedValue)
+                        : null,
                     child: Text(
                       sharedValue,
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.clip,
                       maxLines: 4,
-                      style: childrenTextStyle ??
+                      style:
+                          childrenTextStyle ??
                           themeData.primaryTextTheme.displaySmall!.copyWith(fontSize: 10),
                     ),
                   ),
@@ -91,9 +91,7 @@ class ShareablePaymentRow extends StatelessWidget {
                         tooltip: texts.payment_details_dialog_copy_action(title),
                         iconSize: 16.0,
                         color: color,
-                        icon: const Icon(
-                          IconData(0xe90b, fontFamily: 'icomoon'),
-                        ),
+                        icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
                         onPressed: () {
                           ServiceInjector().device.setClipboardText(sharedValue);
                           Navigator.pop(context);
@@ -111,10 +109,7 @@ class ShareablePaymentRow extends StatelessWidget {
                         color: color,
                         icon: const Icon(Icons.share),
                         onPressed: () {
-                          final ShareParams shareParams = ShareParams(
-                            title: title,
-                            text: sharedValue,
-                          );
+                          final ShareParams shareParams = ShareParams(title: title, text: sharedValue);
                           SharePlus.instance.share(shareParams);
                         },
                       ),

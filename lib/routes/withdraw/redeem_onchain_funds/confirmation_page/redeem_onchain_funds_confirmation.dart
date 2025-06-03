@@ -12,11 +12,7 @@ class RedeemOnchainConfirmationPage extends StatefulWidget {
   final String toAddress;
   final int amountSat;
 
-  const RedeemOnchainConfirmationPage({
-    super.key,
-    required this.toAddress,
-    required this.amountSat,
-  });
+  const RedeemOnchainConfirmationPage({super.key, required this.toAddress, required this.amountSat});
 
   @override
   State<RedeemOnchainConfirmationPage> createState() => _RedeemOnchainConfirmationPageState();
@@ -39,23 +35,15 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
     final texts = context.texts();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(texts.sweep_all_coins_speed),
-      ),
+      appBar: AppBar(title: Text(texts.sweep_all_coins_speed)),
       body: FutureBuilder(
         future: _fetchFeeOptionsFuture,
         builder: (context, snapshot) {
           if (snapshot.error != null) {
-            return _ErrorMessage(
-              message: texts.sweep_all_coins_error_retrieve_fees,
-            );
+            return _ErrorMessage(message: texts.sweep_all_coins_error_retrieve_fees);
           }
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(
-              child: Loader(
-                color: Colors.white,
-              ),
-            );
+            return const Center(child: Loader(color: Colors.white));
           }
 
           if (affordableFees.isNotEmpty) {
@@ -68,19 +56,17 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
               }),
             );
           } else {
-            return _ErrorMessage(
-              message: texts.sweep_all_coins_error_amount_small,
-            );
+            return _ErrorMessage(message: texts.sweep_all_coins_error_amount_small);
           }
         },
       ),
       bottomNavigationBar:
           (affordableFees.isNotEmpty && selectedFeeIndex >= 0 && selectedFeeIndex < affordableFees.length)
-              ? RedeemOnchainFundsButton(
-                  toAddress: widget.toAddress,
-                  satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
-                )
-              : null,
+          ? RedeemOnchainFundsButton(
+              toAddress: widget.toAddress,
+              satPerVbyte: affordableFees[selectedFeeIndex].satPerVbyte,
+            )
+          : null,
     );
   }
 
@@ -92,8 +78,10 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
         final account = context.read<AccountBloc>().state;
         setState(() {
           affordableFees = feeOptions
-              .where((f) =>
-                  f.isAffordable(walletBalanceSat: account.walletBalanceSat, amountSat: widget.amountSat))
+              .where(
+                (f) =>
+                    f.isAffordable(walletBalanceSat: account.walletBalanceSat, amountSat: widget.amountSat),
+              )
               .toList();
           selectedFeeIndex = (affordableFees.length / 2).floor();
         });
@@ -105,19 +93,14 @@ class _RedeemOnchainConfirmationPageState extends State<RedeemOnchainConfirmatio
 class _ErrorMessage extends StatelessWidget {
   final String message;
 
-  const _ErrorMessage({
-    required this.message,
-  });
+  const _ErrorMessage({required this.message});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40.0),
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-        ),
+        child: Text(message, textAlign: TextAlign.center),
       ),
     );
   }

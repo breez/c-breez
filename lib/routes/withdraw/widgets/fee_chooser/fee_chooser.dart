@@ -39,14 +39,9 @@ class _FeeChooserState extends State<FeeChooser> {
             onSelect: (index) => widget.onSelect(index),
           ),
           const SizedBox(height: 12.0),
-          ProcessingSpeedWaitTime(
-            selectedFeeOption.processingSpeed.waitingTime,
-          ),
+          ProcessingSpeedWaitTime(selectedFeeOption.processingSpeed.waitingTime),
           const SizedBox(height: 36.0),
-          FeeBreakdown(
-            widget.amountSat,
-            selectedFeeOption,
-          )
+          FeeBreakdown(widget.amountSat, selectedFeeOption),
         ],
       ),
     );

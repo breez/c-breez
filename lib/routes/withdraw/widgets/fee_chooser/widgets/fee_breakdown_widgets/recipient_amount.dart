@@ -10,10 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RecipientAmount extends StatelessWidget {
   final int amountSat;
 
-  const RecipientAmount({
-    super.key,
-    required this.amountSat,
-  });
+  const RecipientAmount({super.key, required this.amountSat});
 
   @override
   Widget build(BuildContext context) {
@@ -29,24 +26,24 @@ class RecipientAmount extends StatelessWidget {
         minFontSize: minFont.minFontSize,
         stepGranularity: 0.1,
       ),
-      trailing: BlocBuilder<CurrencyBloc, CurrencyState>(builder: (context, currency) {
-        final fiatConversion = currency.fiatConversion();
+      trailing: BlocBuilder<CurrencyBloc, CurrencyState>(
+        builder: (context, currency) {
+          final fiatConversion = currency.fiatConversion();
 
-        return AutoSizeText(
-          fiatConversion == null
-              ? texts.sweep_all_coins_amount_no_fiat(
-                  BitcoinCurrency.SAT.format(amountSat),
-                )
-              : texts.sweep_all_coins_amount_with_fiat(
-                  BitcoinCurrency.SAT.format(amountSat),
-                  fiatConversion.formatSat(amountSat),
-                ),
-          style: TextStyle(color: themeData.colorScheme.error),
-          maxLines: 1,
-          minFontSize: minFont.minFontSize,
-          stepGranularity: 0.1,
-        );
-      }),
+          return AutoSizeText(
+            fiatConversion == null
+                ? texts.sweep_all_coins_amount_no_fiat(BitcoinCurrency.SAT.format(amountSat))
+                : texts.sweep_all_coins_amount_with_fiat(
+                    BitcoinCurrency.SAT.format(amountSat),
+                    fiatConversion.formatSat(amountSat),
+                  ),
+            style: TextStyle(color: themeData.colorScheme.error),
+            maxLines: 1,
+            minFontSize: minFont.minFontSize,
+            stepGranularity: 0.1,
+          );
+        },
+      ),
     );
   }
 }

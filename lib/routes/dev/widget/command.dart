@@ -4,11 +4,7 @@ class Command extends StatelessWidget {
   final String command;
   final Function(String command) onTap;
 
-  const Command(
-    this.command,
-    this.onTap, {
-    super.key,
-  });
+  const Command(this.command, this.onTap, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +13,7 @@ class Command extends StatelessWidget {
       child: Container(
         alignment: Alignment.centerLeft,
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-        child: Text(
-          command,
-          textAlign: TextAlign.left,
-        ),
+        child: Text(command, textAlign: TextAlign.left),
       ),
     );
   }

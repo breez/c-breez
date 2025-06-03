@@ -4,11 +4,7 @@ import 'package:logging/logging.dart';
 
 final _log = Logger("Exceptions");
 
-String extractExceptionMessage(
-  Object exception,
-  BreezTranslations texts, {
-  String? defaultErrorMsg,
-}) {
+String extractExceptionMessage(Object exception, BreezTranslations texts, {String? defaultErrorMsg}) {
   _log.info("extractExceptionMessage: $exception");
   if (exception is FfiException) {
     if (exception.message.isNotEmpty) {
@@ -41,10 +37,7 @@ String? _extractInnerErrorMessage(String content) {
       reasonRegex.stringMatch(content);
 }
 
-String _localizedExceptionMessage(
-  BreezTranslations texts,
-  String originalMessage,
-) {
+String _localizedExceptionMessage(BreezTranslations texts, String originalMessage) {
   _log.info("localizedExceptionMessage: $originalMessage");
   final messageToLower = originalMessage.toLowerCase();
   if (messageToLower.contains("transport error")) {

@@ -39,9 +39,7 @@ class FeeMessage extends StatelessWidget {
     final minFeeFormatted = currencyState.bitcoinCurrency.format(minFeeSat);
     final minFeeAboveZero = minFeeSat > 0;
     final setUpFee = (openingFeeParams.proportional / 10000).toString();
-    final liquidity = currencyState.bitcoinCurrency.format(
-      accountState.maxInboundLiquiditySat,
-    );
+    final liquidity = currencyState.bitcoinCurrency.format(accountState.maxInboundLiquiditySat);
     final liquidityAboveZero = accountState.maxInboundLiquiditySat > 0;
 
     if (minFeeAboveZero && liquidityAboveZero) {
@@ -53,21 +51,13 @@ class FeeMessage extends StatelessWidget {
       );
     } else if (!minFeeAboveZero && liquidityAboveZero) {
       // A setup fee of {setUpFee}% will be applied for receiving more than {liquidity}.
-      return texts.invoice_lightning_warning_without_min_fee_account_connected(
-        setUpFee,
-        liquidity,
-      );
+      return texts.invoice_lightning_warning_without_min_fee_account_connected(setUpFee, liquidity);
     } else if (minFeeAboveZero && !liquidityAboveZero) {
       // A setup fee of {setUpFee}% with a minimum of {minFeeSat} will be applied on the received amount.
-      return texts.invoice_lightning_warning_with_min_fee_account_not_connected(
-        setUpFee,
-        minFeeFormatted,
-      );
+      return texts.invoice_lightning_warning_with_min_fee_account_not_connected(setUpFee, minFeeFormatted);
     } else {
       // A setup fee of {setUpFee}% will be applied on the received amount.
-      return texts.invoice_lightning_warning_without_min_fee_account_not_connected(
-        setUpFee,
-      );
+      return texts.invoice_lightning_warning_without_min_fee_account_not_connected(setUpFee);
     }
   }
 }

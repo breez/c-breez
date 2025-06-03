@@ -96,8 +96,6 @@ PODS:
     - TOCropViewController (~> 2.7.4)
   - image_picker_ios (0.0.1):
     - Flutter
-  - integration_test (0.0.1):
-    - Flutter
   - KeychainAccess (4.2.2)
   - local_auth_darwin (0.0.1):
     - Flutter
@@ -153,7 +151,6 @@ DEPENDENCIES:
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
-  - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - KeychainAccess
   - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
   - mobile_scanner (from `.symlinks/plugins/mobile_scanner/darwin`)
@@ -215,8 +212,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_cropper/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
-  integration_test:
-    :path: ".symlinks/plugins/integration_test/ios"
   local_auth_darwin:
     :path: ".symlinks/plugins/local_auth_darwin/darwin"
   mobile_scanner:
@@ -260,7 +255,6 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   image_cropper: e0bb0042e4404ff2ef134e5cf0492cbd892156cd
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   local_auth_darwin: 66e40372f1c29f383a314c738c7446e2f7fdadc3
   mobile_scanner: 77265f3dc8d580810e91849d4a0811a90467ed5e

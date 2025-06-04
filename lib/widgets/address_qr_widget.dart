@@ -42,7 +42,7 @@ class AddressQRWidget extends StatelessWidget {
             padding: const EdgeInsets.only(top: 16.0, left: 24, right: 24),
             child: GestureDetector(
               onTap: () {
-                ServiceInjector().device.setClipboardText(address);
+                ServiceInjector().deviceClient.setClipboardText(address);
                 showFlushbar(context, message: texts.invoice_btc_address_deposit_address_copied);
               },
               child: Text(footer!, style: themeData.primaryTextTheme.titleSmall),

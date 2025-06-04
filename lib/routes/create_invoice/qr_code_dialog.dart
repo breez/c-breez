@@ -8,7 +8,7 @@ import 'package:c_breez/routes/create_invoice/widgets/expiry_and_fee_message.dar
 import 'package:c_breez/routes/create_invoice/widgets/invoice_qr.dart';
 import 'package:c_breez/routes/create_invoice/widgets/loading_or_error.dart';
 import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,7 +74,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
           .catchError((e) {
             _log.warning("Failed to track payment", e);
             if (mounted) {
-              showFlushbar(context, message: extractExceptionMessage(e, context.texts()));
+              showFlushbar(context, message: ExceptionHandler.extractMessage(e, context.texts()));
             }
             onFinish(false);
           });
@@ -124,7 +124,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                         icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
                         color: themeData.primaryTextTheme.labelLarge!.color!,
                         onPressed: () {
-                          ServiceInjector().device.setClipboardText(
+                          ServiceInjector().deviceClient.setClipboardText(
                             widget.receivePaymentResponse!.lnInvoice.bolt11,
                           );
                           showFlushbar(
@@ -146,7 +146,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                 firstChild: LoadingOrError(
                   error: error,
                   displayErrorMessage: error != null
-                      ? extractExceptionMessage(error, texts)
+                      ? ExceptionHandler.extractMessage(error, texts)
                       : texts.qr_code_dialog_warning_message_error,
                 ),
                 secondChild: widget.receivePaymentResponse == null

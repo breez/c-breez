@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
 
   another_flushbar: ^1.12.30
+  app_links: ^6.4.0
   app_group_directory:
     git:
       url: https://github.com/breez/app_group_directory
@@ -78,6 +79,7 @@ dependencies:
   local_auth_android: ^1.0.49
   local_auth_darwin: ^1.4.3
   logging: ^1.3.0
+  lottie: ^3.3.1
   mockito: ^5.4.5
   # Doesn't support: Linux Windows
   mobile_scanner: ^7.0.0
@@ -86,22 +88,20 @@ dependencies:
   path_provider: ^2.1.5
   path_provider_platform_interface: ^2.1.2
   plugin_platform_interface: ^2.1.8
+  provider: ^6.1.5
   qr_flutter: ^4.1.0
   rxdart: ^0.28.0
   share_plus: ^11.0.0
   shared_preferences: ^2.5.3
   shared_preference_app_group: ^1.1.1 # iOS Notification Service extension requirement to access shared preferences
   simple_animations: ^5.2.0
+  shimmer: ^3.0.0
   synchronized: ^3.3.1
   theme_provider: ^0.6.0
   timeago: ^3.7.1
-  # Doesn't support: Linux Mac Windows
-  uni_links:
-    git:
-      url: https://github.com/azackmatoff/uni_links.git
-      path: uni_links
   url_launcher: ^6.3.1
   vector_math: ^2.1.4
+  yaml: ^3.1.3
 
 dev_dependencies:
   flutter_test:
@@ -128,6 +128,7 @@ flutter:
     - src/animations/welcome/
     - assets/images/
     - assets/icons/
+    - assets/animations/lottie/
     - .git/
     - .git/refs/heads/
   fonts:

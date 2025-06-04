@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:archive/archive_io.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
-import 'package:c_breez/config.dart';
+import 'package:c_breez/configs/config.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -157,6 +157,29 @@ class WalletArchiveService {
     } else {
       _logger.warning('Storage file not found: $storageFilePath');
       // We don't throw here, as the credentials might still be useful
+    }
+  }
+
+  /// Deletes all contents inside sdkConfig.workingDir without deleting the directory itself
+  static Future<void> clearWorkingDirContents() async {
+    final Config config = await _getAppConfig();
+    final String workingDirPath = config.sdkConfig.workingDir;
+    final Directory workingDir = Directory(workingDirPath);
+
+    try {
+      if (await workingDir.exists()) {
+        _logger.info('Clearing contents of workingDir at: $workingDirPath');
+        final List<FileSystemEntity> contents = workingDir.listSync();
+        for (final entity in contents) {
+          await entity.delete(recursive: true);
+        }
+        _logger.info('Contents of workingDir cleared successfully');
+      } else {
+        _logger.warning('workingDir not found: $workingDirPath');
+      }
+    } catch (e) {
+      _logger.severe('Failed to clear workingDir contents: $e');
+      rethrow;
     }
   }
 }

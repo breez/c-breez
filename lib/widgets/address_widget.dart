@@ -93,7 +93,7 @@ class _CopyIcon extends StatelessWidget {
     return IconButton(
       icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
       onPressed: () {
-        ServiceInjector().device.setClipboardText(address);
+        ServiceInjector().deviceClient.setClipboardText(address);
         showFlushbar(context, message: texts.invoice_btc_address_deposit_address_copied);
       },
     );

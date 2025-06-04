@@ -9,7 +9,7 @@ import 'package:c_breez/routes/create_invoice/widgets/successful_payment.dart';
 import 'package:c_breez/routes/ln_address/ln_address_widget.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/address_widget_placeholder.dart';
 import 'package:c_breez/routes/subswap/swap/widgets/swap_error_message.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:c_breez/widgets/transparent_page_route.dart';
@@ -88,7 +88,7 @@ class LnAddressPageState extends State<LnAddressPage> {
                       if (webhookState.lnurlPayUrl != null) LnAddressWidget(webhookState.lnurlPayUrl!),
                       if (webhookState.lnurlPayError != null) ...[
                         DepositErrorMessage(
-                          errorMessage: extractExceptionMessage(webhookState.lnurlPayError!, texts),
+                          errorMessage: ExceptionHandler.extractMessage(webhookState.lnurlPayError!, texts),
                         ),
                       ],
                     ],

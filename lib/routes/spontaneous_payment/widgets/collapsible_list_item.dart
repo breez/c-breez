@@ -73,7 +73,7 @@ class CollapsibleListItem extends StatelessWidget {
                           color: userStyle.color ?? textTheme.labelLarge!.color!,
                           icon: const Icon(IconData(0xe90b, fontFamily: 'icomoon')),
                           onPressed: () {
-                            ServiceInjector().device.setClipboardText(sharedValue!);
+                            ServiceInjector().deviceClient.setClipboardText(sharedValue!);
                             Navigator.pop(context);
                             showFlushbar(
                               context,

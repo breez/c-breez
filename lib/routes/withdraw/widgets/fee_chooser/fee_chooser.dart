@@ -1,4 +1,4 @@
-import 'package:c_breez/models/fee_options/fee_option.dart';
+import 'package:c_breez/models/models.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_breakdown.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_chooser_header.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/processing_speed_wait_time.dart';

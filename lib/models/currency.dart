@@ -1,4 +1,4 @@
-import 'package:c_breez/utils/currency_formatter.dart';
+import 'package:c_breez/utils/utils.dart';
 
 enum CurrencyID { BTC, SAT }
 
@@ -66,6 +66,4 @@ class BitcoinCurrency extends Object {
         return RegExp("^\\d+[.,]?\\d{0,8}");
     }
   }
-
-  double get satConversionRate => this == SAT ? 1.0 : 100000000;
 }

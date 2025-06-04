@@ -4,10 +4,9 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
-import 'package:c_breez/logger.dart';
-import 'package:c_breez/models/fee_options/fee_option.dart';
-import 'package:c_breez/utils/exceptions.dart';
-import 'package:c_breez/utils/sdk_fields/serializer_helper.dart';
+import 'package:c_breez/models/models.dart';
+import 'package:c_breez/services/services.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -68,7 +67,7 @@ class RefundBloc extends Cubit<RefundState> {
       return refundResponse.refundTxId;
     } catch (e) {
       _log.severe("Failed to refund swap", e);
-      emit(state.copyWith(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(state.copyWith(error: ExceptionHandler.extractMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }
@@ -92,7 +91,7 @@ class RefundBloc extends Cubit<RefundState> {
       );
     } catch (e) {
       _log.severe("fetchRefundFeeOptions error", e);
-      emit(state.copyWith(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(state.copyWith(error: ExceptionHandler.extractMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }

@@ -6,7 +6,7 @@ import 'package:logging/logging.dart';
 final _log = Logger("PaymentOptionsBloc");
 
 class PaymentOptionsBloc extends Cubit<PaymentOptionsState> {
-  final Preferences _preferences;
+  final BreezPreferences _preferences;
 
   PaymentOptionsBloc(this._preferences) : super(const PaymentOptionsState.initial()) {
     _initializePaymentOptions();

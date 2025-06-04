@@ -4,8 +4,8 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_state.dart';
-import 'package:c_breez/models/fee_options/fee_option.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/models/models.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -39,7 +39,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
       return revSwapInfo;
     } catch (e) {
       _log.severe("payOnchain error", e);
-      emit(ReverseSwapState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(ReverseSwapState(error: ExceptionHandler.extractMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }
@@ -63,7 +63,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
       );
     } catch (e) {
       _log.severe("fetchReverseSwapFeeOptions error", e);
-      emit(ReverseSwapState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(ReverseSwapState(error: ExceptionHandler.extractMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }

@@ -3,7 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/routes/get-refund/refund_page.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/tx_widget.dart';
-import 'package:c_breez/utils/blockchain_explorer_utils.dart';
+import 'package:c_breez/services/services.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -42,7 +42,7 @@ class _RefundItemActionState extends State<RefundItemAction> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TxWidget(
-              txURL: BlockChainExplorerUtils().formatTransactionUrl(
+              txURL: BlockchainExplorerService.formatTransactionUrl(
                 mempoolInstance: mempoolInstance,
                 txid: txID,
               ),

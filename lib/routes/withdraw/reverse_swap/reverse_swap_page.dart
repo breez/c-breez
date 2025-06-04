@@ -3,7 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_form_page.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +60,7 @@ class _ReverseSwapPageState extends State<ReverseSwapPage> {
                 padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
                 child: Text(
                   texts.reverse_swap_upstream_generic_error_message(
-                    extractExceptionMessage(snapshot.error!, texts),
+                    ExceptionHandler.extractMessage(snapshot.error!, texts),
                   ),
                   textAlign: TextAlign.center,
                 ),

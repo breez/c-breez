@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/utils/date.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';

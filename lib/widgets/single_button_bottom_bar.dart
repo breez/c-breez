@@ -5,8 +5,14 @@ class SingleButtonBottomBar extends StatelessWidget {
   final VoidCallback? onPressed;
   final String text;
   final bool stickToBottom;
+  final bool enabled;
 
-  const SingleButtonBottomBar({required this.text, this.onPressed, this.stickToBottom = false});
+  const SingleButtonBottomBar({
+    required this.text,
+    this.onPressed,
+    this.stickToBottom = false,
+    this.enabled = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +25,7 @@ class SingleButtonBottomBar extends StatelessWidget {
         children: [
           ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 48.0, minWidth: 168.0),
-            child: SubmitButton(text, onPressed),
+            child: SubmitButton(text, onPressed, enabled: enabled),
           ),
         ],
       ),
@@ -45,7 +51,7 @@ class SubmitButton extends StatelessWidget {
           elevation: 0.0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
-        onPressed: onPressed,
+        onPressed: enabled ? onPressed : null,
         child: AutoSizeText(text, maxLines: 1, style: themeData.textTheme.labelLarge),
       ),
     );

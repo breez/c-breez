@@ -30,7 +30,7 @@ class TxWidget extends StatelessWidget {
             linkName: txID,
             linkAddress: txURL,
             onCopy: () {
-              ServiceInjector().device.setClipboardText(txID);
+              ServiceInjector().deviceClient.setClipboardText(txID);
               showFlushbar(
                 context,
                 message: texts.payment_details_dialog_transaction_id_copied,

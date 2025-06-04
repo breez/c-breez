@@ -8,7 +8,7 @@ import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_metadata.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/payment_validator.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';

@@ -12,7 +12,7 @@ import 'package:flutter_svg/svg.dart';
 class PinCodeWidget extends StatefulWidget {
   final int pinLength;
   final String label;
-  final LocalAuthenticationOption localAuthenticationOption;
+  final BiometricType localAuthenticationOption;
   final Future<TestPinResult> Function(String pin) testPinCodeFunction;
   final Future<TestPinResult> Function()? testBiometricsFunction;
 
@@ -22,7 +22,7 @@ class PinCodeWidget extends StatefulWidget {
     required this.label,
     required this.testPinCodeFunction,
     this.testBiometricsFunction,
-    this.localAuthenticationOption = LocalAuthenticationOption.none,
+    this.localAuthenticationOption = BiometricType.none,
   });
 
   @override
@@ -168,7 +168,7 @@ void main() {
         height: 280, // anything smaller than this will overflow some pixels
         child: PinCodeWidget(
           label: "First example",
-          localAuthenticationOption: LocalAuthenticationOption.faceId,
+          localAuthenticationOption: BiometricType.faceId,
           testPinCodeFunction: (pin) =>
               SynchronousFuture(const TestPinResult(false, errorMessage: "Wrong pin code")),
           testBiometricsFunction: () =>
@@ -183,7 +183,7 @@ void main() {
         height: 400,
         child: PinCodeWidget(
           label: "Second example",
-          localAuthenticationOption: LocalAuthenticationOption.fingerprint,
+          localAuthenticationOption: BiometricType.fingerprint,
           testPinCodeFunction: (pin) => SynchronousFuture(const TestPinResult(true)),
           testBiometricsFunction: () => SynchronousFuture(const TestPinResult(true)),
         ),
@@ -196,7 +196,7 @@ void main() {
         height: 600,
         child: PinCodeWidget(
           label: "Third example",
-          localAuthenticationOption: LocalAuthenticationOption.none,
+          localAuthenticationOption: BiometricType.none,
           testPinCodeFunction: (pin) async {
             return TestPinResult(Random().nextBool(), errorMessage: "A random error");
           },

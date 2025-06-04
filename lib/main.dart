@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/bloc/account/credentials_manager.dart';
+import 'package:c_breez/bloc/account/onboarding_preferences.dart';
 import 'package:c_breez/bloc/backup/backup_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/connectivity/connectivity_bloc.dart';
@@ -17,13 +17,14 @@ import 'package:c_breez/bloc/payment_options/payment_options_bloc.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_bloc.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_bloc.dart';
+import 'package:c_breez/bloc/sdk_connectivity/sdk_connectivity_cubit.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/webhooks/webhooks_bloc.dart';
-import 'package:c_breez/config.dart' as cfg;
+import 'package:c_breez/configs/config.dart' as cfg;
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/user_app.dart';
-import 'package:c_breez/utils/date.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -68,16 +69,27 @@ void main() async {
       HydratedBloc.storage = await HydratedStorage.build(
         storageDirectory: HydratedStorageDirectory(p.join(appDir.path, "bloc_storage")),
       );
+
+      final SdkConnectivityCubit sdkConnectivityCubit = SdkConnectivityCubit(
+        breezSDK: injector.breezSDK,
+        credentialsManager: injector.credentialsManager,
+      );
+      final bool isOnboardingComplete = await OnboardingPreferences.isOnboardingComplete();
+      if (isOnboardingComplete) {
+        _log.info('Reconnect if secure storage has mnemonic.');
+        final String? mnemonic = await injector.credentialsManager.restoreMnemonic();
+        if (mnemonic != null) {
+          await sdkConnectivityCubit.reconnect(mnemonic: mnemonic);
+        }
+      }
       runApp(
         MultiBlocProvider(
           providers: [
             BlocProvider<LSPBloc>(create: (BuildContext context) => LSPBloc(breezSDK)),
-            BlocProvider<AccountBloc>(
-              create: (BuildContext context) =>
-                  AccountBloc(breezSDK, CredentialsManager(keyChain: injector.keychain)),
-            ),
+            BlocProvider<AccountBloc>(create: (BuildContext context) => AccountBloc(breezSDK)),
             BlocProvider<InputBloc>(
-              create: (BuildContext context) => InputBloc(breezSDK, injector.lightningLinks, injector.device),
+              create: (BuildContext context) =>
+                  InputBloc(breezSDK, injector.lightningLinks, injector.deviceClient),
             ),
             BlocProvider<UserProfileBloc>(
               create: (BuildContext context) => UserProfileBloc(injector.breezServer),
@@ -85,7 +97,7 @@ void main() async {
             BlocProvider<WebhooksBloc>(
               lazy: false,
               create: (BuildContext context) =>
-                  WebhooksBloc(breezSDK, injector.preferences, injector.notifications),
+                  WebhooksBloc(breezSDK, injector.breezPreferences, injector.notifications),
             ),
             BlocProvider<CurrencyBloc>(create: (BuildContext context) => CurrencyBloc(breezSDK)),
             BlocProvider<SecurityBloc>(create: (BuildContext context) => SecurityBloc()),
@@ -96,17 +108,18 @@ void main() async {
             BlocProvider<ConnectivityBloc>(create: (BuildContext context) => ConnectivityBloc()),
             BlocProvider<RefundBloc>(create: (BuildContext context) => RefundBloc(breezSDK)),
             BlocProvider<NetworkSettingsBloc>(
-              create: (BuildContext context) => NetworkSettingsBloc(injector.preferences, config),
+              create: (BuildContext context) => NetworkSettingsBloc(injector.breezPreferences, config),
             ),
             BlocProvider<PaymentOptionsBloc>(
-              create: (BuildContext context) => PaymentOptionsBloc(injector.preferences),
+              create: (BuildContext context) => PaymentOptionsBloc(injector.breezPreferences),
             ),
             BlocProvider<MoonPayBloc>(
-              create: (BuildContext context) => MoonPayBloc(breezSDK, injector.preferences),
+              create: (BuildContext context) => MoonPayBloc(breezSDK, injector.breezPreferences),
             ),
             BlocProvider<BackupBloc>(create: (BuildContext context) => BackupBloc(breezSDK)),
             BlocProvider<HealthCheckBloc>(create: (BuildContext context) => HealthCheckBloc(breezSDK)),
             BlocProvider<ErrorReportBloc>(create: (BuildContext context) => ErrorReportBloc(breezSDK)),
+            BlocProvider<SdkConnectivityCubit>(create: (BuildContext context) => sdkConnectivityCubit),
           ],
           child: UserApp(),
         ),

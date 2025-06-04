@@ -1,6 +1,6 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/utils/fiat_conversion.dart';
+import 'package:c_breez/utils/utils.dart';
 
 class CurrencyState {
   final List<String> preferredCurrencies;

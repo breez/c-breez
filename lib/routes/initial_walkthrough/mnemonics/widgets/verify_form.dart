@@ -1,11 +1,12 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:breez_translations/generated/breez_translations.dart';
+import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 class VerifyForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final List<String> mnemonicsList;
-  final List randomlySelectedIndexes;
+  final List<int> randomlySelectedIndexes;
   final VoidCallback onError;
   final Widget errorText;
 
@@ -15,6 +16,7 @@ class VerifyForm extends StatefulWidget {
     required this.randomlySelectedIndexes,
     required this.onError,
     required this.errorText,
+    super.key,
   });
 
   @override
@@ -24,16 +26,15 @@ class VerifyForm extends StatefulWidget {
 class VerifyFormPageState extends State<VerifyForm> {
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();
+    final BreezTranslations texts = context.texts();
     return Form(
       key: widget.formKey,
       onChanged: () => widget.formKey.currentState?.save(),
       child: Padding(
         padding: const EdgeInsets.only(top: 24.0, bottom: 40.0),
         child: Column(
-          mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: List.generate(widget.randomlySelectedIndexes.length, (index) {
+          children: List<Widget>.generate(widget.randomlySelectedIndexes.length, (int index) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: TextFormField(
@@ -42,8 +43,8 @@ class VerifyFormPageState extends State<VerifyForm> {
                     widget.randomlySelectedIndexes[index] + 1,
                   ),
                 ),
-                style: theme.FieldTextStyle.textStyle,
-                validator: (text) {
+                style: FieldTextStyle.textStyle,
+                validator: (String? text) {
                   if (text!.isEmpty ||
                       text.toLowerCase().trim() !=
                           widget.mnemonicsList[widget.randomlySelectedIndexes[index]]) {

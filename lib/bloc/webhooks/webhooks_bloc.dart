@@ -17,8 +17,8 @@ class WebhooksBloc extends Cubit<WebhooksState> {
   final _log = Logger("WebhooksBloc");
 
   final BreezSDK _breezSDK;
-  final Preferences _preferences;
-  final Notifications _notifications;
+  final BreezPreferences _preferences;
+  final NotificationsClient _notifications;
 
   WebhooksBloc(this._breezSDK, this._preferences, this._notifications) : super(WebhooksState()) {
     _breezSDK.nodeStateStream

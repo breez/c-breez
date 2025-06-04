@@ -4,8 +4,8 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/redeem_onchain_funds/redeem_onchain_funds_state.dart';
-import 'package:c_breez/models/fee_options/fee_option.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/models/models.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -28,7 +28,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
       return redeemOnchainRes;
     } catch (e) {
       _log.severe("redeem onchain funds error", e);
-      emit(RedeemOnchainFundsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(RedeemOnchainFundsState(error: ExceptionHandler.extractMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }
@@ -45,7 +45,7 @@ class RedeemOnchainFundsBloc extends Cubit<RedeemOnchainFundsState> {
       return await _constructFeeOptionList(toAddress: toAddress, recommendedFees: recommendedFees);
     } catch (e) {
       _log.severe("fetchRedeemOnchainFeeOptions error", e);
-      emit(RedeemOnchainFundsState(error: extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(RedeemOnchainFundsState(error: ExceptionHandler.extractMessage(e, getSystemAppLocalizations())));
       rethrow;
     }
   }

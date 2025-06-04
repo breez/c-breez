@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/restore_form.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/theme/theme_extensions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
+import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 
 class RestoreFormPage extends StatefulWidget {
@@ -11,13 +14,17 @@ class RestoreFormPage extends StatefulWidget {
   final int lastPage;
   final VoidCallback changePage;
   final List<String> initialWords;
+  final String lastErrorMessage;
+  final List<TextEditingController> textEditingControllers;
 
   const RestoreFormPage({
-    super.key,
     required this.currentPage,
     required this.lastPage,
     required this.changePage,
-    this.initialWords = const [],
+    required this.textEditingControllers,
+    this.lastErrorMessage = '',
+    super.key,
+    this.initialWords = const <String>[],
   });
 
   @override
@@ -25,12 +32,7 @@ class RestoreFormPage extends StatefulWidget {
 }
 
 class RestoreFormPageState extends State<RestoreFormPage> {
-  final _formKey = GlobalKey<FormState>();
-
-  List<TextEditingController> textEditingControllers = List<TextEditingController>.generate(
-    12,
-    (_) => TextEditingController(),
-  );
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late AutovalidateMode _autoValidateMode;
   late bool _hasError;
@@ -40,31 +42,32 @@ class RestoreFormPageState extends State<RestoreFormPage> {
     super.initState();
     _autoValidateMode = AutovalidateMode.disabled;
     _hasError = false;
-    for (var i = 0; i < textEditingControllers.length && i < widget.initialWords.length; i++) {
-      textEditingControllers[i].text = widget.initialWords[i];
-    }
+    MnemonicUtils.tryPopulateTextFieldsFromText(widget.initialWords.join(' '), widget.textEditingControllers);
   }
 
   @override
   Widget build(BuildContext context) {
-    var themeData = Theme.of(context);
-    final texts = context.texts();
+    final BreezTranslations texts = context.texts();
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
+      children: <Widget>[
         RestoreForm(
           formKey: _formKey,
           currentPage: widget.currentPage,
           lastPage: widget.lastPage,
-          textEditingControllers: textEditingControllers,
+          textEditingControllers: widget.textEditingControllers,
           autoValidateMode: _autoValidateMode,
         ),
-        if (_hasError) ...[
+        if ((_hasError || widget.lastErrorMessage.isNotEmpty) && widget.currentPage == 2) ...<Widget>[
+          // TODO(erdemyerebasmaz): Display the error message itself & add an option to share logs
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
-            child: Text(
-              texts.enter_backup_phrase_error,
-              style: themeData.textTheme.headlineMedium?.copyWith(fontSize: 12),
+            child: WarningBox(
+              boxPadding: EdgeInsets.zero,
+              contentPadding: const EdgeInsets.all(16),
+              backgroundColor: warningBoxColor,
+              borderColor: warningStyle.color,
+              child: Text(texts.enter_backup_phrase_error, style: warningStyle, textAlign: TextAlign.center),
             ),
           ),
         ],
@@ -92,19 +95,19 @@ class RestoreFormPageState extends State<RestoreFormPage> {
     );
   }
 
-  Future _validateMnemonics() async {
-    final texts = context.texts();
-    final mnemonic = textEditingControllers
-        .map((controller) => controller.text.toLowerCase().trim())
+  Future<void> _validateMnemonics() async {
+    final BreezTranslations texts = context.texts();
+    final String mnemonic = widget.textEditingControllers
+        .map((TextEditingController controller) => controller.text.toLowerCase().trim())
         .toList()
-        .join(" ");
+        .join(' ');
     try {
       Navigator.pop(context, mnemonic);
     } catch (e) {
       setState(() {
         _hasError = true;
       });
-      throw Exception(extractExceptionMessage(e, texts));
+      throw Exception(ExceptionHandler.extractMessage(e, texts));
     }
   }
 }

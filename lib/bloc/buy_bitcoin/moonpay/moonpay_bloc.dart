@@ -2,9 +2,8 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
-import 'package:c_breez/config.dart';
-import 'package:c_breez/utils/exceptions.dart';
-import 'package:c_breez/utils/preferences.dart';
+import 'package:c_breez/configs/config.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -12,7 +11,7 @@ final _log = Logger("MoonPayBloc");
 
 class MoonPayBloc extends Cubit<MoonPayState> {
   final BreezSDK _breezSDK;
-  final Preferences _preferences;
+  final BreezPreferences _preferences;
 
   MoonPayBloc(this._breezSDK, this._preferences) : super(MoonPayState.initial());
 
@@ -44,7 +43,7 @@ class MoonPayBloc extends Cubit<MoonPayState> {
       emit(MoonPayState.error(getSystemAppLocalizations().add_funds_moonpay_error_address));
     } catch (e) {
       _log.severe("fetchMoonpayUrl error: $e");
-      emit(MoonPayState.error(extractExceptionMessage(e, getSystemAppLocalizations())));
+      emit(MoonPayState.error(ExceptionHandler.extractMessage(e, getSystemAppLocalizations())));
     }
   }
 

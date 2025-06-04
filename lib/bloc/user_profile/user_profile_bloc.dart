@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_settings.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/services/breez_server.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
@@ -74,10 +74,6 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
 
   Future checkVersion() async {
     return _breezServer.checkVersion();
-  }
-
-  Future setAdminPassword(String password) async {
-    throw Exception("not implemented");
   }
 
   @override

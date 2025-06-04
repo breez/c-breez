@@ -1,28 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_sdk/bridge_generated.dart' hide Config;
 import 'package:breez_sdk/exceptions.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
-import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/bloc/account/payment_result.dart';
-import 'package:c_breez/config.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:rxdart/rxdart.dart';
-
-const maxPaymentAmountSat = 4294967;
-const nodeSyncInterval = 60;
 
 final _log = Logger("AccountBloc");
 
@@ -43,9 +35,8 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Stream<PaymentFilters> get paymentFiltersStream => _paymentFiltersStreamController.stream;
 
   final BreezSDK _breezSDK;
-  final CredentialsManager _credentialsManager;
 
-  AccountBloc(this._breezSDK, this._credentialsManager) : super(AccountState.initial()) {
+  AccountBloc(this._breezSDK) : super(AccountState.initial()) {
     hydrate();
     _watchAccountChanges().listen((acc) {
       _log.info("State changed: $acc");
@@ -53,8 +44,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     });
 
     _paymentFiltersStreamController.add(state.paymentFilters);
-
-    if (!state.initial) connect();
 
     _listenPaymentResultEvents();
   }
@@ -70,84 +59,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
         return assembleAccountState(payments, paymentFilters, nodeState, state) ?? state;
       },
     );
-  }
-
-  Future connect({String? mnemonic, bool isRestore = true}) async {
-    _log.info("connect new mnemonic: ${mnemonic != null}, restored: $isRestore");
-    emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
-    if (mnemonic != null) {
-      await _credentialsManager.storeMnemonic(mnemonic: mnemonic);
-      emit(
-        state.copyWith(initial: false, verificationStatus: isRestore ? VerificationStatus.VERIFIED : null),
-      );
-    }
-    await _startSdkForever(isRestore: isRestore);
-  }
-
-  Future _startSdkForever({bool isRestore = true}) async {
-    _log.info("starting sdk forever");
-    await _startSdkOnce(isRestore: isRestore);
-
-    // in case we failed to start (lack of inet connection probably)
-    if (state.connectionStatus == ConnectionStatus.DISCONNECTED) {
-      StreamSubscription<List<ConnectivityResult>>? subscription;
-      subscription = Connectivity().onConnectivityChanged.listen((event) async {
-        // we should try fetch the selected lsp information when internet is back.
-        if (event.contains(ConnectivityResult.none) &&
-            state.connectionStatus == ConnectionStatus.DISCONNECTED) {
-          await _startSdkOnce();
-          if (state.connectionStatus == ConnectionStatus.CONNECTED) {
-            subscription!.cancel();
-            _onConnected();
-          }
-        }
-      });
-    } else {
-      _onConnected();
-    }
-  }
-
-  Future _startSdkOnce({bool isRestore = true}) async {
-    _log.info("starting sdk once");
-    var config = await Config.instance();
-    if (config.sdkConfig.apiKey != null) {
-      await _credentialsManager.storeApiKey(apiKey: config.sdkConfig.apiKey!);
-    }
-    if (await _breezSDK.isInitialized()) {
-      _log.info("sdk already initialized");
-      await _breezSDK.fetchNodeData();
-      emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
-      return;
-    }
-    try {
-      emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTING));
-      final mnemonic = await _credentialsManager.restoreMnemonic();
-      final seed = bip39.mnemonicToSeed(mnemonic);
-      _log.info("connecting to breez lib");
-      final req = sdk.ConnectRequest(config: config.sdkConfig, seed: seed, restoreOnly: isRestore);
-      await _breezSDK.connect(req: req);
-      _log.info("connected to breez lib");
-      emit(state.copyWith(connectionStatus: ConnectionStatus.CONNECTED));
-    } catch (e) {
-      _log.warning("failed to connect to breez lib", e);
-      if (!isRestore) {
-        await _credentialsManager.deleteMnemonic();
-      }
-      emit(state.copyWith(connectionStatus: ConnectionStatus.DISCONNECTED));
-      rethrow;
-    }
-  }
-
-  // Once connected sync sdk periodically on foreground events.
-  void _onConnected() {
-    _log.info("on connected");
-    var lastSync = DateTime.fromMillisecondsSinceEpoch(0);
-    FGBGEvents.stream.listen((event) async {
-      if (event == FGBGType.foreground && DateTime.now().difference(lastSync).inSeconds > nodeSyncInterval) {
-        await _breezSDK.sync();
-        lastSync = DateTime.now();
-      }
-    });
   }
 
   Future<sdk.LnUrlWithdrawResult> lnurlWithdraw({required sdk.LnUrlWithdrawRequest req}) async {
@@ -292,16 +203,6 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   @override
   Map<String, dynamic>? toJson(AccountState state) {
     return state.toJson();
-  }
-
-  Future<List<File>> exportCredentialFiles() async {
-    _log.info("exportCredentialFiles");
-    return _credentialsManager.exportCredentials();
-  }
-
-  Future<sdk.StaticBackupResponse> exportStaticChannelBackup() async {
-    _log.fine("exportStaticChannelBackup");
-    return _credentialsManager.exportStaticChannelBackup();
   }
 
   void recursiveFolderCopySync(String path1, String path2) {

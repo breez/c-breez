@@ -2,23 +2,30 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/lsp/lsp_state.dart';
+import 'package:c_breez/bloc/sdk_connectivity/sdk_connectivity_state.dart';
 import 'package:c_breez/theme/theme_provider.dart';
-import 'package:c_breez/utils/min_font_size.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/loading_animated_text.dart';
 import 'package:flutter/material.dart';
 
 class StatusText extends StatelessWidget {
+  final SdkConnectivityState sdkConnectivityState;
   final AccountState accountState;
   final LspState? lspState;
 
-  const StatusText({super.key, required this.accountState, required this.lspState});
+  const StatusText({
+    super.key,
+    required this.sdkConnectivityState,
+    required this.accountState,
+    required this.lspState,
+  });
 
   @override
   Widget build(BuildContext context) {
-    switch (accountState.connectionStatus) {
-      case ConnectionStatus.CONNECTING:
+    switch (sdkConnectivityState) {
+      case SdkConnectivityState.connecting:
         return const LoadingAnimatedText();
-      case ConnectionStatus.CONNECTED:
+      case SdkConnectivityState.connected:
         final texts = context.texts();
         final themeData = Theme.of(context);
 

@@ -6,9 +6,8 @@ import 'package:c_breez/bloc/input/input_data.dart';
 import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
-import 'package:c_breez/models/invoice.dart';
-import 'package:c_breez/services/device.dart';
-import 'package:c_breez/services/lightning_links.dart';
+import 'package:c_breez/models/models.dart';
+import 'package:c_breez/services/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
@@ -17,7 +16,7 @@ class InputBloc extends Cubit<InputState> {
   final _log = Logger("InputBloc");
   final BreezSDK _breezSDK;
   final LightningLinksService _lightningLinks;
-  final Device _device;
+  final DeviceClient _device;
 
   final _decodeInvoiceController = StreamController<InputData>();
 

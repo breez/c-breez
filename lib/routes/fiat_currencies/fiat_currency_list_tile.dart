@@ -1,6 +1,8 @@
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
-import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
 const double itemHeight = 72.0;
@@ -12,25 +14,25 @@ class FiatCurrencyListTile extends StatelessWidget {
   final Function(List<String> prefCurrencies) onChanged;
 
   const FiatCurrencyListTile({
-    super.key,
     required this.index,
     required this.currencyState,
     required this.scrollController,
     required this.onChanged,
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();
-    final themeData = Theme.of(context);
+    final BreezTranslations texts = context.texts();
+    final ThemeData themeData = Theme.of(context);
 
-    final currencyData = currencyState.fiatCurrenciesData[index];
-    final prefCurrencies = currencyState.preferredCurrencies.toList();
+    final FiatCurrency currencyData = currencyState.fiatCurrenciesData[index];
+    final List<String> prefCurrencies = currencyState.preferredCurrencies.toList();
 
     String subtitle = currencyData.info.name;
-    final localizedName = currencyData.info.localizedName;
+    final List<LocalizedName> localizedName = currencyData.info.localizedName;
     if (localizedName.isNotEmpty) {
-      for (var localizedName in localizedName) {
+      for (LocalizedName localizedName in localizedName) {
         if (localizedName.locale == texts.locale) {
           subtitle = localizedName.name;
         }
@@ -38,7 +40,7 @@ class FiatCurrencyListTile extends StatelessWidget {
     }
 
     return CheckboxListTile(
-      key: Key("tile-index-$index"),
+      key: Key('tile-index-$index'),
       controlAffinity: ListTileControlAffinity.leading,
       activeColor: Colors.white,
       checkColor: themeData.canvasColor,
@@ -60,15 +62,15 @@ class FiatCurrencyListTile extends StatelessWidget {
         }
         onChanged(prefCurrencies);
       },
-      subtitle: Text(subtitle, style: theme.fiatConversionDescriptionStyle),
+      subtitle: Text(subtitle, style: fiatConversionDescriptionStyle),
       title: RichText(
         text: TextSpan(
           text: currencyData.id,
-          style: theme.fiatConversionTitleStyle,
-          children: [
+          style: fiatConversionTitleStyle,
+          children: <InlineSpan>[
             TextSpan(
               text: " (${currencyData.info.symbol?.grapheme ?? ""})",
-              style: theme.fiatConversionDescriptionStyle,
+              style: fiatConversionDescriptionStyle,
             ),
           ],
         ),

@@ -3,7 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/tx_widget.dart';
-import 'package:c_breez/utils/blockchain_explorer_utils.dart';
+import 'package:c_breez/services/services.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +40,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
               if (paymentMinutiae.paymentType == sdk.PaymentType.ClosedChannel &&
                   paymentMinutiae.closingTxid != null) ...[
                 TxWidget(
-                  txURL: BlockChainExplorerUtils().formatTransactionUrl(
+                  txURL: BlockchainExplorerService.formatTransactionUrl(
                     txid: paymentMinutiae.closingTxid!,
                     mempoolInstance: mempoolInstance,
                   ),
@@ -62,7 +62,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
             ),
             if (paymentMinutiae.fundingTxid != null) ...[
               TxWidget(
-                txURL: BlockChainExplorerUtils().formatTransactionUrl(
+                txURL: BlockchainExplorerService.formatTransactionUrl(
                   txid: paymentMinutiae.fundingTxid!,
                   mempoolInstance: mempoolInstance,
                 ),
@@ -71,7 +71,7 @@ class ClosedChannelPaymentDetailsWidget extends StatelessWidget {
             ],
             if (paymentMinutiae.closingTxid != null) ...[
               TxWidget(
-                txURL: BlockChainExplorerUtils().formatTransactionUrl(
+                txURL: BlockchainExplorerService.formatTransactionUrl(
                   txid: paymentMinutiae.closingTxid!,
                   mempoolInstance: mempoolInstance,
                 ),

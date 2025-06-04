@@ -7,7 +7,7 @@ import 'package:c_breez/routes/withdraw/reverse_swap/confirmation_page/reverse_s
 import 'package:c_breez/routes/withdraw/reverse_swap/in_progress/reverse_swaps_in_progress_page.dart';
 import 'package:c_breez/routes/withdraw/reverse_swap/reverse_swap_form.dart';
 import 'package:c_breez/routes/withdraw/widgets/withdraw_funds_available_btc.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/route.dart';
@@ -53,7 +53,9 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
           }
 
           if (inProgressSwapState.reverseSwapsInProgress.isNotEmpty) {
-            return ReverseSwapsInProgressPage(reverseSwaps: inProgressSwapState.reverseSwapsInProgress);
+            return SingleChildScrollView(
+              child: ReverseSwapsInProgressPage(reverseSwaps: inProgressSwapState.reverseSwapsInProgress),
+            );
           }
 
           return Padding(
@@ -124,7 +126,9 @@ class _ReverseSwapFormPageState extends State<ReverseSwapFormPage> {
         if (!context.mounted) return;
         showFlushbar(
           context,
-          message: texts.reverse_swap_upstream_generic_error_message(extractExceptionMessage(error, texts)),
+          message: texts.reverse_swap_upstream_generic_error_message(
+            ExceptionHandler.extractMessage(error, texts),
+          ),
         );
       } finally {
         if (loaderRoute.isActive) {

@@ -17,8 +17,8 @@ const _kLnUrlPayKey = "lnurlpay_key";
 
 final _log = Logger("Preferences");
 
-class Preferences {
-  const Preferences();
+class BreezPreferences {
+  const BreezPreferences();
 
   Future<bool> hasPaymentOptions() async {
     final prefs = await SharedPreferences.getInstance();

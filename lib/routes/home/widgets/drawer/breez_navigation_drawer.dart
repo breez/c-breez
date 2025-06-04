@@ -2,16 +2,17 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_settings.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/models/user_profile.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_avatar_dialog.dart';
 import 'package:c_breez/routes/home/widgets/drawer/breez_drawer_header.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:theme_provider/theme_provider.dart';
 
 const double _kBreezBottomSheetHeight = 60.0;
 
@@ -81,20 +82,25 @@ class BreezNavigationDrawer extends StatelessWidget {
           );
         }
 
-        return Theme(
-          data: themeData.copyWith(canvasColor: themeData.customData.navigationDrawerBgColor),
-          child: Drawer(
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(0.0),
-                    children: children,
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: Theme.of(context).appBarTheme.systemOverlayStyle!.copyWith(
+            systemNavigationBarColor: themeData.customData.surfaceBgColor,
+          ),
+          child: Theme(
+            data: themeData.copyWith(canvasColor: themeData.customData.surfaceBgColor),
+            child: Drawer(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(0.0),
+                      children: children,
+                    ),
                   ),
-                ),
-                const NavigationDrawerFooter(),
-              ],
+                  const NavigationDrawerFooter(),
+                ],
+              ),
             ),
           ),
         );
@@ -145,11 +151,25 @@ class BreezNavigationDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerHeaderContent(UserProfileSettings user, BuildContext context) {
+    final BreezTranslations texts = context.texts();
     List<Widget> drawerHeaderContent = [];
-    drawerHeaderContent.add(_buildThemeSwitch(context, user));
     drawerHeaderContent
-      ..add(_buildAvatarButton(user))
-      ..add(_buildBottomRow(user, context));
+      ..add(const SizedBox(height: 42.0))
+      ..add(Row(children: [BreezAvatar(user.avatarURL, radius: 24.0)]))
+      ..add(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: AutoSizeText(
+                user.name ?? texts.home_drawer_error_no_name,
+                style: theme.navigationDrawerHandleStyle,
+              ),
+            ),
+          ],
+        ),
+      );
     return GestureDetector(
       onTap: () {
         showDialog<bool>(
@@ -179,7 +199,7 @@ class NavigationDrawerFooter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset("src/images/drawer_footer.png", height: 39, width: 183, fit: BoxFit.fitHeight),
+              Image.asset("src/images/drawer_footer.png", height: 39, width: 183, fit: BoxFit.scaleDown),
             ],
           ),
         ],
@@ -193,62 +213,6 @@ class _ListDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(padding: EdgeInsets.only(left: 8.0, right: 8.0), child: Divider());
   }
-}
-
-GestureDetector _buildThemeSwitch(BuildContext context, UserProfileSettings user) {
-  final themeData = Theme.of(context);
-  return GestureDetector(
-    onTap: () => ThemeProvider.controllerOf(context).nextTheme(),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 10, right: 16.0),
-          child: Container(
-            width: 64,
-            padding: const EdgeInsets.all(4),
-            decoration: const ShapeDecoration(shape: StadiumBorder(), color: theme.themeSwitchBgColor),
-            child: Row(
-              children: [
-                Image.asset(
-                  "src/icon/ic_lightmode.png",
-                  height: 24,
-                  width: 24,
-                  color: themeData.lightThemeSwitchIconColor,
-                ),
-                const SizedBox(height: 20, width: 8, child: VerticalDivider(color: Colors.white30)),
-                ImageIcon(
-                  const AssetImage("src/icon/ic_darkmode.png"),
-                  color: themeData.darkThemeSwitchIconColor,
-                  size: 24.0,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Row _buildAvatarButton(UserProfileSettings user) {
-  return Row(children: [BreezAvatar(user.avatarURL, radius: 24.0)]);
-}
-
-Row _buildBottomRow(UserProfileSettings user, BuildContext context) {
-  return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [_buildUsername(context, user)]);
-}
-
-Padding _buildUsername(BuildContext context, UserProfileSettings user) {
-  final texts = context.texts();
-
-  return Padding(
-    padding: const EdgeInsets.only(top: 8.0),
-    child: AutoSizeText(
-      user.name ?? texts.home_drawer_error_no_name,
-      style: theme.navigationDrawerHandleStyle,
-    ),
-  );
 }
 
 Widget _actionTile(DrawerItemConfig action, BuildContext context, Function onItemSelected, {bool? subTile}) {

@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final _log = Logger("Device");
 
-class Device extends ClipboardListener {
+class DeviceClient extends ClipboardListener {
   final _clipboardController = BehaviorSubject<String>();
   Stream<String> get clipboardStream => _clipboardController.stream.where((e) => e != _lastFromAppClip);
 
@@ -18,7 +18,7 @@ class Device extends ClipboardListener {
 
   String? _lastFromAppClip;
 
-  Device() {
+  DeviceClient() {
     _log.info("Initing Device");
     var sharedPreferences = SharedPreferences.getInstance();
     sharedPreferences.then((preferences) {
@@ -54,6 +54,26 @@ class Device extends ClipboardListener {
   Future<String> appVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     return "${packageInfo.version}.${packageInfo.buildNumber}";
+  }
+
+  /// Retrieves text from the device clipboard.
+  ///
+  /// Returns the clipboard text as a [String] or null if the clipboard is empty.
+  Future<String?> fetchClipboardData() async {
+    _log.info('Fetching clipboard data');
+    try {
+      final ClipboardData? clipboardData = await Clipboard.getData('text/plain');
+      final String? text = clipboardData?.text;
+      if (text != null) {
+        _clipboardController.add(text);
+        _log.fine('Updated clipboard stream with text');
+      }
+      _log.fine('Retrieved clipboard text: $text');
+      return text;
+    } catch (e) {
+      _log.severe('Failed to fetch clipboard data', e);
+      return null;
+    }
   }
 
   @override

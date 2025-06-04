@@ -1,6 +1,8 @@
 PODS:
   - app_group_directory (1.0.0):
     - Flutter
+  - app_links (0.0.2):
+    - Flutter
   - breez_sdk (0.7.1):
     - Flutter
   - clipboard_watcher (0.0.1):
@@ -126,8 +128,6 @@ PODS:
     - Flutter
     - FlutterMacOS
   - TOCropViewController (2.7.4)
-  - uni_links (0.0.1):
-    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
   - XCGLogger (7.1.5):
@@ -137,6 +137,7 @@ PODS:
 
 DEPENDENCIES:
   - app_group_directory (from `.symlinks/plugins/app_group_directory/ios`)
+  - app_links (from `.symlinks/plugins/app_links/ios`)
   - breez_sdk (from `.symlinks/plugins/breez_sdk/ios`)
   - clipboard_watcher (from `.symlinks/plugins/clipboard_watcher/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
@@ -159,7 +160,6 @@ DEPENDENCIES:
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preference_app_group (from `.symlinks/plugins/shared_preference_app_group/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
-  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - XCGLogger
 
@@ -184,6 +184,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   app_group_directory:
     :path: ".symlinks/plugins/app_group_directory/ios"
+  app_links:
+    :path: ".symlinks/plugins/app_links/ios"
   breez_sdk:
     :path: ".symlinks/plugins/breez_sdk/ios"
   clipboard_watcher:
@@ -226,13 +228,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preference_app_group/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
-  uni_links:
-    :path: ".symlinks/plugins/uni_links/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
+  app_links: f3e17e4ee5e357b39d8b95290a9b2c299fca71c6
   breez_sdk: 837808591dc8484936c1891ce9097ed88da60dd6
   clipboard_watcher: 86fb70421aca6f4944e0591a8292605da7784666
   connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
@@ -268,7 +269,6 @@ SPEC CHECKSUMS:
   shared_preference_app_group: 46aee3873e1da581d4904bece9876596d7f66725
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
-  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   XCGLogger: 399c5885210b4e2ad79d9f7a29b105d672ef724f
 

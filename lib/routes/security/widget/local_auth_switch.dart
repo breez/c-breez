@@ -12,17 +12,17 @@ class LocalAuthSwitch extends StatelessWidget {
   Widget build(BuildContext context) {
     final securityBloc = context.read<SecurityBloc>();
 
-    return FutureBuilder<LocalAuthenticationOption>(
+    return FutureBuilder<BiometricType>(
       future: securityBloc.localAuthenticationOption(),
-      initialData: LocalAuthenticationOption.none,
+      initialData: BiometricType.none,
       builder: (context, snapshot) {
-        final availableOption = snapshot.data ?? LocalAuthenticationOption.none;
-        if (availableOption == LocalAuthenticationOption.none) {
+        final availableOption = snapshot.data ?? BiometricType.none;
+        if (availableOption == BiometricType.none) {
           return Container();
         } else {
           return BlocBuilder<SecurityBloc, SecurityState>(
             builder: (context, state) {
-              final localAuthEnabled = state.localAuthenticationOption != LocalAuthenticationOption.none;
+              final localAuthEnabled = state.localAuthenticationOption != BiometricType.none;
               return SimpleSwitch(
                 text: _localAuthenticationOptionLabel(
                   context,
@@ -61,23 +61,20 @@ class LocalAuthSwitch extends StatelessWidget {
     }
   }
 
-  String _localAuthenticationOptionLabel(
-    BuildContext context,
-    LocalAuthenticationOption authenticationOption,
-  ) {
+  String _localAuthenticationOptionLabel(BuildContext context, BiometricType authenticationOption) {
     final texts = context.texts();
     switch (authenticationOption) {
-      case LocalAuthenticationOption.face:
+      case BiometricType.face:
         return texts.security_and_backup_enable_biometric_option_face;
-      case LocalAuthenticationOption.faceId:
+      case BiometricType.faceId:
         return texts.security_and_backup_enable_biometric_option_face_id;
-      case LocalAuthenticationOption.fingerprint:
+      case BiometricType.fingerprint:
         return texts.security_and_backup_enable_biometric_option_fingerprint;
-      case LocalAuthenticationOption.touchId:
+      case BiometricType.touchId:
         return texts.security_and_backup_enable_biometric_option_touch_id;
-      case LocalAuthenticationOption.other:
+      case BiometricType.other:
         return texts.security_and_backup_enable_biometric_option_other;
-      case LocalAuthenticationOption.none:
+      case BiometricType.none:
         return texts.security_and_backup_enable_biometric_option_none;
     }
   }

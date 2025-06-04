@@ -1,33 +1,35 @@
 import 'dart:math';
 
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:breez_translations/generated/breez_translations.dart';
+import 'package:c_breez/bloc/security/security_bloc.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/verify_form.dart';
+import 'package:c_breez/theme/breez_colors.dart';
+import 'package:c_breez/theme/theme_extensions.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
+import 'package:c_breez/widgets/warning_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'widgets/verify_form.dart';
 
 class VerifyMnemonicsPage extends StatefulWidget {
   final String _mnemonics;
 
-  const VerifyMnemonicsPage(this._mnemonics);
+  const VerifyMnemonicsPage(this._mnemonics, {super.key});
 
   @override
   VerifyMnemonicsPageState createState() => VerifyMnemonicsPageState();
 }
 
 class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
-  final _formKey = GlobalKey<FormState>();
-  final List _randomlySelectedIndexes = [];
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final List<int> _randomlySelectedIndexes = <int>[];
   late List<String> _mnemonicsList;
   late bool _hasError;
 
   @override
   void initState() {
-    _mnemonicsList = widget._mnemonics.split(" ");
+    _mnemonicsList = widget._mnemonics.split(' ');
     _hasError = false;
     _selectIndexes();
     super.initState();
@@ -35,21 +37,25 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
 
   void _selectIndexes() {
     // Select at least one index from each page(0-6,6-11) randomly
-    var firstIndex = Random().nextInt(6);
-    var secondIndex = Random().nextInt(6) + 6;
+    final int firstIndex = Random().nextInt(6);
+    final int secondIndex = Random().nextInt(6) + 6;
     // Select last index randomly from any page, ensure that there are no duplicates and each option has an ~equally likely chance of being selected
-    var thirdIndex = Random().nextInt(10);
-    if (thirdIndex >= firstIndex) thirdIndex++;
-    if (thirdIndex >= secondIndex) thirdIndex++;
-    _randomlySelectedIndexes.addAll([firstIndex, secondIndex, thirdIndex]);
+    int thirdIndex = Random().nextInt(10);
+    if (thirdIndex >= firstIndex) {
+      thirdIndex++;
+    }
+    if (thirdIndex >= secondIndex) {
+      thirdIndex++;
+    }
+    _randomlySelectedIndexes.addAll(<int>[firstIndex, secondIndex, thirdIndex]);
     _randomlySelectedIndexes.sort();
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-    final query = MediaQuery.of(context);
-    final texts = context.texts();
+    final ThemeData themeData = Theme.of(context);
+    final MediaQueryData query = MediaQuery.of(context);
+    final BreezTranslations texts = context.texts();
 
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +69,7 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
           height: query.size.height - kToolbarHeight - query.padding.top,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+            children: <Widget>[
               VerifyForm(
                 formKey: _formKey,
                 mnemonicsList: _mnemonicsList,
@@ -78,36 +84,41 @@ class VerifyMnemonicsPageState extends State<VerifyMnemonicsPage> {
                         texts.backup_phrase_generation_verification_failed,
                         style: themeData.textTheme.headlineMedium?.copyWith(fontSize: 12),
                       )
-                    : const SizedBox(),
+                    : const SizedBox.shrink(),
               ),
-              Text(
-                texts.backup_phrase_generation_type_words(
-                  _randomlySelectedIndexes[0] + 1,
-                  _randomlySelectedIndexes[1] + 1,
-                  _randomlySelectedIndexes[2] + 1,
+              WarningBox(
+                boxPadding: EdgeInsets.zero,
+                child: Text(
+                  texts.backup_phrase_generation_type_words(
+                    _randomlySelectedIndexes[0] + 1,
+                    _randomlySelectedIndexes[1] + 1,
+                    _randomlySelectedIndexes[2] + 1,
+                  ),
+                  style: mnemonicSeedInformationTextStyle.copyWith(color: BreezColors.white[300]),
+                  textAlign: TextAlign.center,
                 ),
-                style: theme.mnemonicSeedInformationTextStyle.copyWith(color: theme.BreezColors.white[300]),
-                textAlign: TextAlign.center,
               ),
               SingleButtonBottomBar(
                 text: texts.mnemonics_confirmation_action_verify,
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     _hasError = false;
                   });
                   if (_formKey.currentState!.validate() && !_hasError) {
-                    final AccountBloc accountBloc = context.read();
-                    accountBloc.mnemonicsValidated();
-                    Navigator.of(context).popUntil((route) {
-                      bool shouldPop = false;
-                      // Pop to where the verification flow has started from,
-                      // which is either from "Verify Backup Phrase" option on Security page
-                      // or through WarningAction on Home page.
-                      if (route.settings.name == "/security" || route.settings.name == "/") {
-                        shouldPop = true;
-                      }
-                      return shouldPop;
-                    });
+                    final SecurityBloc securityCubit = context.read<SecurityBloc>();
+                    await securityCubit.completeMnemonicVerification();
+                    if (context.mounted) {
+                      Navigator.of(context).popUntil((Route<dynamic> route) {
+                        bool shouldPop = false;
+                        // Pop to where the verification flow has started from,
+                        // which is either from "Verify Backup Phrase" option on Security page
+                        // or through WarningAction on Home page.
+                        if (route.settings.name == '/security' || route.settings.name == '/') {
+                          shouldPop = true;
+                        }
+                        return shouldPop;
+                      });
+                    }
                   }
                 },
               ),

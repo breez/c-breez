@@ -1,4 +1,4 @@
-import 'package:c_breez/models/fee_options/fee_option.dart';
+import 'package:c_breez/models/models.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_breakdown_widgets/boltz_service_fee.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_breakdown_widgets/recipient_amount.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_breakdown_widgets/sender_amount.dart';

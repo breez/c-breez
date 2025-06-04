@@ -1,5 +1,5 @@
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/utils/external_browser.dart';
+import 'package:c_breez/services/external_browser_service.dart';
 import 'package:flutter/material.dart';
 
 class LinkLauncher extends StatelessWidget {
@@ -53,7 +53,7 @@ class LinkLauncher extends StatelessWidget {
                       color: style.color,
                       icon: const Icon(Icons.launch),
                       onPressed: () async {
-                        await launchLinkOnExternalBrowser(context, linkAddress: linkAddress);
+                        await ExternalBrowserService.launchLink(context, linkAddress: linkAddress);
                       },
                     ),
                   ],

@@ -3,7 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/loading_animated_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -94,7 +94,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
               children: [
                 error != null
                     ? Text(
-                        texts.lnurl_withdraw_dialog_error(extractExceptionMessage(error, texts)),
+                        texts.lnurl_withdraw_dialog_error(ExceptionHandler.extractMessage(error, texts)),
                         style: themeData.dialogTheme.contentTextStyle,
                         textAlign: TextAlign.center,
                       )

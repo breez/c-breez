@@ -1,4 +1,4 @@
-import 'package:c_breez/models/fee_options/fee_option.dart';
+import 'package:c_breez/models/models.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 class RedeemOnchainFundsState {

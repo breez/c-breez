@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/payment_dialogs/payment_request_dialog.dart';
 import 'package:c_breez/widgets/payment_dialogs/processing_payment/processing_payment_animated_content.dart';
@@ -110,7 +110,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
               navigator.removeRoute(_currentRoute!);
             }
             if (mounted) {
-              showFlushbar(context, message: extractExceptionMessage(err, texts));
+              showFlushbar(context, message: ExceptionHandler.extractMessage(err, texts));
             }
           }
         });

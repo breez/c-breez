@@ -34,105 +34,110 @@ class _CommandLineInterfaceState extends State<CommandLineInterface> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 10.0),
-          child: Row(
-            children: <Widget>[
-              Flexible(
-                child: TextField(
-                  focusNode: _cliEntryFocusNode,
-                  controller: _cliInputController,
-                  decoration: const InputDecoration(hintText: 'Enter a command or use the links below'),
-                  onSubmitted: (command) {
-                    _sendCommand(command);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  child: TextField(
+                    focusNode: _cliEntryFocusNode,
+                    controller: _cliInputController,
+                    decoration: const InputDecoration(hintText: 'Enter a command or use the links below'),
+                    onSubmitted: (command) {
+                      _sendCommand(command);
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.play_arrow),
+                  tooltip: 'Run',
+                  onPressed: () {
+                    _sendCommand(_cliInputController.text);
                   },
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.play_arrow),
-                tooltip: 'Run',
-                onPressed: () {
-                  _sendCommand(_cliInputController.text);
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.clear),
-                tooltip: 'Clear',
-                onPressed: () {
-                  setState(() {
-                    _cliInputController.clear();
-                    _showDefaultCommands = true;
-                    _lastCommand = '';
-                    _cliText = "";
-                  });
-                },
-              ),
-            ],
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  tooltip: 'Clear',
+                  onPressed: () {
+                    setState(() {
+                      _cliInputController.clear();
+                      _showDefaultCommands = true;
+                      _lastCommand = '';
+                      _cliText = "";
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+          Expanded(
+            flex: 1,
             child: Container(
-              padding: _showDefaultCommands ? const EdgeInsets.all(0.0) : const EdgeInsets.all(2.0),
-              decoration: BoxDecoration(
-                border: _showDefaultCommands ? null : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _showDefaultCommands
-                      ? Container()
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            IconButton(
-                              icon: const Icon(Icons.content_copy),
-                              tooltip: 'Copy to Clipboard',
-                              iconSize: 19.0,
-                              onPressed: () {
-                                ServiceInjector().device.setClipboardText(_cliText);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Copied to clipboard.', style: theme.snackBarStyle),
-                                    backgroundColor: theme.snackBarBackgroundColor,
-                                    duration: const Duration(seconds: 2),
-                                  ),
-                                );
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.share),
-                              iconSize: 19.0,
-                              tooltip: 'Share',
-                              onPressed: () {
-                                _shareFile(_lastCommand.split(" ")[0], _cliText);
-                              },
-                            ),
-                          ],
-                        ),
-                  Expanded(
-                    child: CommandList(
-                      loading: isLoading,
-                      defaults: _showDefaultCommands,
-                      fallback: _richCliText,
-                      fallbackTextStyle: _cliTextStyle,
-                      inputController: _cliInputController,
-                      focusNode: _cliEntryFocusNode,
+              padding: const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
+              child: Container(
+                padding: _showDefaultCommands ? const EdgeInsets.all(0.0) : const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  border: _showDefaultCommands
+                      ? null
+                      : Border.all(width: 1.0, color: const Color(0x80FFFFFF)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _showDefaultCommands
+                        ? Container()
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              IconButton(
+                                icon: const Icon(Icons.content_copy),
+                                tooltip: 'Copy to Clipboard',
+                                iconSize: 19.0,
+                                onPressed: () {
+                                  ServiceInjector().deviceClient.setClipboardText(_cliText);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Copied to clipboard.', style: theme.snackBarStyle),
+                                      backgroundColor: theme.snackBarBackgroundColor,
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.share),
+                                iconSize: 19.0,
+                                tooltip: 'Share',
+                                onPressed: () {
+                                  _shareFile(_lastCommand.split(" ")[0], _cliText);
+                                },
+                              ),
+                            ],
+                          ),
+                    Expanded(
+                      child: CommandList(
+                        loading: isLoading,
+                        defaults: _showDefaultCommands,
+                        fallback: _richCliText,
+                        fallbackTextStyle: _cliTextStyle,
+                        inputController: _cliInputController,
+                        focusNode: _cliEntryFocusNode,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

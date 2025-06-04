@@ -6,7 +6,7 @@ import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/min_font_size.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';

@@ -3,10 +3,6 @@ import 'dart:convert';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 
-const initialInboundCapacity = 4000000;
-
-enum ConnectionStatus { CONNECTING, CONNECTED, DISCONNECTED }
-
 enum VerificationStatus { UNVERIFIED, VERIFIED }
 
 class AccountState {
@@ -23,7 +19,6 @@ class AccountState {
   final int maxInboundLiquiditySat;
   final List<PaymentMinutiae> payments;
   final PaymentFilters paymentFilters;
-  final ConnectionStatus? connectionStatus;
   final VerificationStatus? verificationStatus;
 
   const AccountState({
@@ -40,7 +35,6 @@ class AccountState {
     required this.maxInboundLiquiditySat,
     required this.payments,
     required this.paymentFilters,
-    required this.connectionStatus,
     this.verificationStatus = VerificationStatus.UNVERIFIED,
   });
 
@@ -59,7 +53,6 @@ class AccountState {
         walletBalanceSat: 0,
         payments: [],
         paymentFilters: PaymentFilters.initial(),
-        connectionStatus: null,
         verificationStatus: VerificationStatus.UNVERIFIED,
       );
 
@@ -77,7 +70,6 @@ class AccountState {
     int? maxInboundLiquiditySat,
     List<PaymentMinutiae>? payments,
     PaymentFilters? paymentFilters,
-    ConnectionStatus? connectionStatus,
     VerificationStatus? verificationStatus,
   }) {
     return AccountState(
@@ -94,7 +86,6 @@ class AccountState {
       maxInboundLiquiditySat: maxInboundLiquiditySat ?? this.maxInboundLiquiditySat,
       payments: payments ?? this.payments,
       paymentFilters: paymentFilters ?? this.paymentFilters,
-      connectionStatus: connectionStatus ?? this.connectionStatus,
       verificationStatus: verificationStatus ?? this.verificationStatus,
     );
   }
@@ -117,7 +108,6 @@ class AccountState {
       "maxChanReserveSat": maxChanReserveSat,
       "maxInboundLiquiditySat": maxInboundLiquiditySat,
       "paymentFilters": paymentFilters.toJson(),
-      "connectionStatus": connectionStatus?.index,
       "verificationStatus": verificationStatus?.index,
     };
   }
@@ -138,9 +128,6 @@ class AccountState {
       maxInboundLiquiditySat: json["maxInboundLiquiditySat"] ?? 0,
       payments: [],
       paymentFilters: PaymentFilters.fromJson(json["paymentFilters"]),
-      connectionStatus: json["connectionStatus"] != null
-          ? ConnectionStatus.values[json["connectionStatus"]]
-          : ConnectionStatus.CONNECTING,
       verificationStatus: json["verificationStatus"] != null
           ? VerificationStatus.values[json["verificationStatus"]]
           : VerificationStatus.UNVERIFIED,

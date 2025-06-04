@@ -1,4 +1,4 @@
-import 'package:c_breez/models/user_profile.dart';
+import 'package:c_breez/bloc/user_profile/user_profile_settings.dart';
 
 class UserProfileState {
   final UserProfileSettings profileSettings;

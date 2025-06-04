@@ -1,7 +1,6 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
-import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/utils/blockchain_explorer_utils.dart';
+import 'package:c_breez/services/services.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -25,7 +24,7 @@ class ReverseSwapInProgress extends StatelessWidget {
           return const Loader();
         }
 
-        final transactionUrl = BlockChainExplorerUtils().formatTransactionUrl(
+        final transactionUrl = BlockchainExplorerService.formatTransactionUrl(
           mempoolInstance: snapshot.data!,
           txid: lockupTxid,
         );
@@ -34,7 +33,7 @@ class ReverseSwapInProgress extends StatelessWidget {
           linkName: lockupTxid,
           linkAddress: transactionUrl,
           onCopy: () {
-            ServiceInjector().device.setClipboardText(lockupTxid);
+            ServiceInjector().deviceClient.setClipboardText(lockupTxid);
             showFlushbar(
               context,
               message: text.add_funds_transaction_id_copied,

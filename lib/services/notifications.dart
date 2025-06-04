@@ -5,66 +5,61 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
 
-abstract class Notifications {
+final Logger _logger = Logger('FirebaseNotifications');
+
+abstract class NotificationsClient {
   Future<String?> getToken();
   Stream<Map<dynamic, dynamic>> get notifications;
 }
 
-class FirebaseNotifications implements Notifications {
-  final _log = Logger("FirebaseNotifications");
-
-  FirebaseMessaging get _firebaseMessaging {
-    return FirebaseMessaging.instance;
-  }
-
-  final StreamController<Map<dynamic, dynamic>> _notificationController =
+class FirebaseNotificationsClient implements NotificationsClient {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final BehaviorSubject<Map<dynamic, dynamic>> _notificationController =
       BehaviorSubject<Map<dynamic, dynamic>>();
+
   @override
   Stream<Map<dynamic, dynamic>> get notifications => _notificationController.stream;
 
-  FirebaseNotifications() {
+  FirebaseNotificationsClient() {
     FirebaseMessaging.onMessage.listen(_onMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(_onResume);
   }
 
-  Future _onMessage(RemoteMessage message) {
-    _log.info("_onMessage = ${message.data}");
-    var data = message.data["data"] ?? message.data["aps"] ?? message.data;
+  Future<void> _onMessage(RemoteMessage message) async {
+    _logger.info('_onMessage = ${message.data}');
+    final Map<dynamic, dynamic>? data = _extractData(message.data);
     if (data != null) {
-      if (data is String) data = json.decode(data);
       _notificationController.add(data);
     }
-    return Future.value(null);
   }
 
-  Future _onResume(RemoteMessage message) {
-    _log.info("_onResume = ${message.data}");
-    var data = message.data["data"] ?? message.data;
+  Future<void> _onResume(RemoteMessage message) async {
+    _logger.info('_onResume = ${message.data}');
+    final Map<dynamic, dynamic>? data = _extractData(message.data);
     if (data != null) {
-      if (data is String) data = json.decode(data);
       _notificationController.add(data);
     }
-    return Future.value(null);
+  }
+
+  Map<dynamic, dynamic>? _extractData(Map<String, dynamic> data) {
+    dynamic extractedData = data['data'] ?? data['aps'] ?? data;
+    if (extractedData is String) {
+      extractedData = json.decode(extractedData);
+    }
+    return extractedData;
   }
 
   @override
   Future<String?> getToken() async {
-    _log.info("getToken");
-    NotificationSettings firebaseNotificationSettings = await _firebaseMessaging.requestPermission(
-      sound: true,
-      badge: true,
-      alert: true,
-      announcement: false,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-    );
-    _log.config('User granted permission: ${firebaseNotificationSettings.authorizationStatus}');
+    _logger.info('getToken');
+    final NotificationSettings firebaseNotificationSettings = await _firebaseMessaging.requestPermission();
+
+    _logger.config('User granted permission: ${firebaseNotificationSettings.authorizationStatus}');
     if (firebaseNotificationSettings.authorizationStatus == AuthorizationStatus.authorized) {
-      _log.info("Authorized to get token");
+      _logger.info('Authorized to get token');
       return _firebaseMessaging.getToken();
     } else {
-      _log.warning("Unauthorized to get token");
+      _logger.warning('Unauthorized to get token');
       return null;
     }
   }

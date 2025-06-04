@@ -3,7 +3,7 @@ import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
-import 'package:c_breez/utils/date.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -49,10 +49,10 @@ class PaymentDetailsDialogExpiration extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0),
                 child: AutoSizeText(
                   BreezDateUtils.formatYearMonthDayHourMinute(
-                    BreezDateUtils.blockDiffToDate(
+                    BreezDateUtils.bitcoinBlockDiffToDate(
                       blockHeight: currentBlockHeight,
                       expiryBlock: pendingExpirationBlock,
-                    ),
+                    )!,
                   ),
                   style: themeData.primaryTextTheme.displaySmall,
                   textAlign: TextAlign.right,

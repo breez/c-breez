@@ -1,18 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/verify_mnemonics_page.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/mnemonic_seed_list.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:c_breez/widgets/route.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
-import 'verify_mnemonics_page.dart';
-
 class MnemonicsPage extends StatefulWidget {
   final String mnemonics;
   final bool viewMode;
 
-  const MnemonicsPage({super.key, required this.mnemonics, this.viewMode = false});
+  const MnemonicsPage({required this.mnemonics, super.key, this.viewMode = false});
 
   @override
   MnemonicsPageState createState() => MnemonicsPageState();
@@ -23,13 +23,13 @@ class MnemonicsPageState extends State<MnemonicsPage> {
 
   @override
   void initState() {
-    _mnemonicsList = widget.mnemonics.split(" ");
+    _mnemonicsList = widget.mnemonics.split(' ');
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();
+    final BreezTranslations texts = context.texts();
     return Scaffold(
       appBar: AppBar(
         leading: const back_button.BackButton(),
@@ -46,7 +46,7 @@ class MnemonicsPageState extends State<MnemonicsPage> {
           if (widget.viewMode) {
             Navigator.pop(context);
           } else {
-            Navigator.push(context, FadeInRoute(builder: (_) => VerifyMnemonicsPage(widget.mnemonics)));
+            Navigator.push(context, FadeInRoute<void>(builder: (_) => VerifyMnemonicsPage(widget.mnemonics)));
           }
         },
       ),

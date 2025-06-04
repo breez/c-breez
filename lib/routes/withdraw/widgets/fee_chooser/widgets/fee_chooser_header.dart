@@ -1,6 +1,6 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
-import 'package:c_breez/models/fee_options/fee_option.dart';
+import 'package:c_breez/models/models.dart';
 import 'package:c_breez/routes/withdraw/widgets/fee_chooser/widgets/fee_option_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

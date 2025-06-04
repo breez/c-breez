@@ -1,8 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/network/network_settings_bloc.dart';
-import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/utils/blockchain_explorer_utils.dart';
+import 'package:c_breez/services/services.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/link_launcher.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -53,12 +52,12 @@ class _TxLink extends StatelessWidget {
 
         return LinkLauncher(
           linkName: txid,
-          linkAddress: BlockChainExplorerUtils().formatTransactionUrl(
+          linkAddress: BlockchainExplorerService.formatTransactionUrl(
             txid: txid,
             mempoolInstance: mempoolInstance,
           ),
           onCopy: () {
-            ServiceInjector().device.setClipboardText(txid);
+            ServiceInjector().deviceClient.setClipboardText(txid);
             showFlushbar(
               context,
               message: text.add_funds_transaction_id_copied,

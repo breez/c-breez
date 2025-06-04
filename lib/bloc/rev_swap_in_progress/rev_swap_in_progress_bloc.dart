@@ -4,7 +4,7 @@ import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/rev_swap_in_progress/rev_swap_in_progress_state.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
@@ -38,7 +38,7 @@ class RevSwapsInProgressBloc extends Cubit<RevSwapsInProgressState> {
       _emitState(state.copyWith(reverseSwapsInProgress: reverseSwapsInProgress, error: null));
     } catch (e) {
       final texts = getSystemAppLocalizations();
-      final errorMessage = extractExceptionMessage(e, texts);
+      final errorMessage = ExceptionHandler.extractMessage(e, texts);
       _log.info("Failed to fetch reverse swaps in progress. $errorMessage");
       _stopPolling();
       _emitState(state.copyWith(error: errorMessage));

@@ -30,7 +30,7 @@ class ExpiryAndFeeMessage extends StatelessWidget {
             (lspFees != null)
                 ? texts.qr_code_dialog_warning_message_with_lsp(
                     currencyState.bitcoinCurrency.format(lspFees! ~/ 1000),
-                    currencyState.fiatConversion()?.formatSat(lspFees! ~/ 1000) ?? "",
+                    currencyState.fiatConversion()?.format(lspFees! ~/ 1000) ?? "",
                   )
                 : texts.qr_code_dialog_warning_message,
             textAlign: TextAlign.center,

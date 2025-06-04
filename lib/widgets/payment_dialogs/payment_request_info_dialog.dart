@@ -8,8 +8,7 @@ import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/models/invoice.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
-import 'package:c_breez/utils/fiat_conversion.dart';
-import 'package:c_breez/utils/payment_validator.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:c_breez/widgets/keyboard_done_action.dart';
@@ -209,7 +208,7 @@ class PaymentRequestInfoDialogState extends State<PaymentRequestInfoDialog> {
         constraints: const BoxConstraints(minWidth: double.infinity),
         child: Text(
           _showFiatCurrency && fiatConversion != null
-              ? fiatConversion.formatSat(widget.invoice.amountMsat ~/ 1000)
+              ? fiatConversion.format(widget.invoice.amountMsat ~/ 1000)
               : BitcoinCurrency.fromTickerSymbol(
                   currencyState.bitcoinTicker,
                 ).format(widget.invoice.amountMsat ~/ 1000),

@@ -2,91 +2,50 @@ import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
-import 'package:c_breez/logger.dart';
-import 'package:c_breez/services/breez_server.dart';
-import 'package:c_breez/services/deep_links.dart';
-import 'package:c_breez/services/device.dart';
-import 'package:c_breez/services/keychain.dart';
-import 'package:c_breez/services/lightning_links.dart';
-import 'package:c_breez/services/notifications.dart';
-import 'package:c_breez/utils/preferences.dart';
-import 'package:http/http.dart';
+import 'package:c_breez/services/services.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'background_task.dart';
 
 class ServiceInjector {
   static final _singleton = ServiceInjector._internal();
   static ServiceInjector? _injector;
 
   BreezServer? _breezServer;
-  FirebaseNotifications? _notifications;
-  DeepLinksService? _deepLinksService;
+  FirebaseNotificationsClient? _notifications;
 
-  // breez sdk
   BreezSDK? _breezSDK;
   LightningLinksService? _lightningLinksService;
 
-  Device? _device;
+  DeviceClient? _deviceClient;
   Future<SharedPreferences>? _sharedPreferences = SharedPreferences.getInstance();
-  BackgroundTaskService? _backgroundTaskService;
   KeyChain? _keychain;
   CredentialsManager? _credentialsManager;
-  Client? _client;
-  Preferences? _preferences;
+  BreezPreferences? _breezPreferences;
   BreezLogger? _breezLogger;
 
-  factory ServiceInjector() {
-    return _injector ?? _singleton;
-  }
+  factory ServiceInjector() => _injector ?? _singleton;
 
   ServiceInjector._internal();
 
-  static void configure(ServiceInjector injector) {
-    _injector = injector;
-  }
+  static void configure(ServiceInjector injector) => _injector = injector;
 
-  Notifications get notifications {
-    return _notifications ??= FirebaseNotifications();
-  }
+  BreezServer get breezServer => _breezServer ??= BreezServer();
 
-  BreezServer get breezServer {
-    return _breezServer ??= BreezServer();
-  }
+  NotificationsClient get notifications => _notifications ??= FirebaseNotificationsClient();
 
-  BreezSDK get breezSDK => _breezSDK ??= BreezSDK();
-
-  Device get device {
-    return _device ??= Device();
-  }
-
-  DeepLinksService get deepLinks => _deepLinksService ??= DeepLinksService();
+  DeviceClient get deviceClient => _deviceClient ??= DeviceClient();
 
   LightningLinksService get lightningLinks => _lightningLinksService ??= LightningLinksService();
 
   Future<SharedPreferences> get sharedPreferences => _sharedPreferences ??= SharedPreferences.getInstance();
 
-  BackgroundTaskService get backgroundTaskService {
-    return _backgroundTaskService ??= BackgroundTaskService();
-  }
+  KeyChain get keychain => _keychain ??= KeyChain();
 
-  Client get client {
-    return _client ??= Client();
-  }
+  CredentialsManager get credentialsManager => _credentialsManager ??= CredentialsManager(keyChain: keychain);
 
-  KeyChain get keychain {
-    return _keychain ??= KeyChain();
-  }
+  BreezPreferences get breezPreferences => _breezPreferences ??= const BreezPreferences();
 
-  CredentialsManager get credentialsManager {
-    return _credentialsManager ??= CredentialsManager(keyChain: keychain);
-  }
+  BreezLogger get breezLogger => _breezLogger ??= BreezLogger();
 
-  Preferences get preferences {
-    return _preferences ??= const Preferences();
-  }
-
-  BreezLogger get breezLogger {
-    return _breezLogger ??= BreezLogger();
-  }
+  BreezSDK get breezSDK => _breezSDK ??= BreezSDK();
 }

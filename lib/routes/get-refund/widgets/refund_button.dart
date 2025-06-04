@@ -1,7 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_bloc.dart';
-import 'package:c_breez/utils/exceptions.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:c_breez/widgets/loader.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
@@ -40,7 +40,7 @@ class RefundButton extends StatelessWidget {
       promptError(
         context,
         null,
-        Text(extractExceptionMessage(e, texts), style: themeData.dialogTheme.contentTextStyle),
+        Text(ExceptionHandler.extractMessage(e, texts), style: themeData.dialogTheme.contentTextStyle),
       );
     }
   }

@@ -3,7 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/models/currency.dart';
-import 'package:c_breez/utils/min_font_size.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -34,7 +34,7 @@ class SenderAmount extends StatelessWidget {
                 ? texts.sweep_all_coins_amount_no_fiat(BitcoinCurrency.SAT.format(amountSat))
                 : texts.sweep_all_coins_amount_with_fiat(
                     BitcoinCurrency.SAT.format(amountSat),
-                    fiatConversion.formatSat(amountSat),
+                    fiatConversion.format(amountSat),
                   ),
             style: TextStyle(color: themeData.colorScheme.error),
             maxLines: 1,

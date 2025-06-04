@@ -1,17 +1,16 @@
 import 'dart:convert';
 
 import 'package:c_breez/bloc/network/network_settings_state.dart';
-import 'package:c_breez/config.dart' as lib;
-import 'package:c_breez/config.dart';
-import 'package:c_breez/services/injector.dart';
-import 'package:c_breez/utils/blockchain_explorer_utils.dart';
+import 'package:c_breez/configs/config.dart' as lib;
+import 'package:c_breez/configs/config.dart';
+import 'package:c_breez/services/services.dart';
 import 'package:c_breez/utils/preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 
 class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin {
-  final Preferences _preferences;
+  final BreezPreferences _preferences;
   final http.Client _httpClient;
   final lib.Config _config;
   final _log = Logger("NetworkSettingsBloc");
@@ -85,7 +84,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
   }
 
   Future<String?> get mempoolInstance async {
-    String? mempoolInstance = await ServiceInjector().preferences.getMempoolSpaceUrl();
+    String? mempoolInstance = await ServiceInjector().breezPreferences.getMempoolSpaceUrl();
     if (mempoolInstance == null) {
       final config = await Config.instance();
       mempoolInstance = config.defaultMempoolUrl;
@@ -97,7 +96,7 @@ class NetworkSettingsBloc extends Cubit<NetworkSettingsState> with HydratedMixin
     // We need to make sure that the mempool rest api is supported
     // as the sdk depends on it.
     final mempoolUri = Uri.tryParse(
-      BlockChainExplorerUtils().formatRecommendedFeesUrl(mempoolInstance: uri.toString()),
+      BlockchainExplorerService.formatRecommendedFeesUrl(mempoolInstance: uri.toString()),
     );
     if (mempoolUri == null) return false;
     try {

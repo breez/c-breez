@@ -1,25 +1,47 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
+import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/paste_backup_phrase_button.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/widgets/restore_form_page.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
 import 'package:flutter/material.dart';
 
-class EnterMnemonicsPage extends StatefulWidget {
+class EnterMnemonicsPageArguments {
   final List<String> initialWords;
+  final String errorMessage;
 
-  const EnterMnemonicsPage({super.key, required this.initialWords});
+  EnterMnemonicsPageArguments({required this.initialWords, this.errorMessage = ''});
+}
+
+class EnterMnemonicsPage extends StatefulWidget {
+  final EnterMnemonicsPageArguments arguments;
+
+  static const String routeName = '/enter_mnemonics';
+
+  const EnterMnemonicsPage({required this.arguments, super.key});
 
   @override
   EnterMnemonicsPageState createState() => EnterMnemonicsPageState();
 }
 
 class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
-  late int _currentPage = 1;
+  int _currentPage = 1;
   final int _lastPage = 2;
+
+  List<TextEditingController> textEditingControllers = List<TextEditingController>.generate(
+    12,
+    (_) => TextEditingController(),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = widget.arguments.errorMessage.isNotEmpty ? 2 : 1;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();
-    final query = MediaQuery.of(context);
+    final BreezTranslations texts = context.texts();
+    final MediaQueryData query = MediaQuery.of(context);
 
     return PopScope(
       canPop: _currentPage == 1,
@@ -47,6 +69,7 @@ class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
               }
             },
           ),
+          actions: <Widget>[PasteBackupPhraseButton(textEditingControllers: textEditingControllers)],
           title: Text(texts.enter_backup_phrase(_currentPage.toString(), _lastPage.toString())),
         ),
         body: SingleChildScrollView(
@@ -55,7 +78,9 @@ class EnterMnemonicsPageState extends State<EnterMnemonicsPage> {
             child: RestoreFormPage(
               currentPage: _currentPage,
               lastPage: _lastPage,
-              initialWords: widget.initialWords,
+              initialWords: widget.arguments.initialWords,
+              lastErrorMessage: widget.arguments.errorMessage,
+              textEditingControllers: textEditingControllers,
               changePage: () {
                 setState(() {
                   _currentPage++;

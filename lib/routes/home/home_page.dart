@@ -1,14 +1,7 @@
 import 'dart:io';
 
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/handlers/check_version_handler.dart';
-import 'package:c_breez/handlers/connectivity_handler.dart';
-import 'package:c_breez/handlers/handler.dart';
-import 'package:c_breez/handlers/handler_context_provider.dart';
-import 'package:c_breez/handlers/health_check_handler.dart';
-import 'package:c_breez/handlers/input_handler.dart';
-import 'package:c_breez/handlers/node_connectivity_handler.dart';
-import 'package:c_breez/handlers/payment_result_handler.dart';
+import 'package:c_breez/handlers/handlers.dart';
 import 'package:c_breez/routes/home/account_page.dart';
 import 'package:c_breez/routes/home/widgets/app_bar/home_app_bar.dart';
 import 'package:c_breez/routes/home/widgets/bottom_actions_bar/bottom_actions_bar.dart';
@@ -23,6 +16,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Home extends StatefulWidget {
+  static const String routeName = '/';
+
   const Home({super.key});
 
   @override
@@ -44,7 +39,7 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       handlers.addAll([
         InputHandler(firstPaymentItemKey, _scaffoldKey),
-        ConnectivityHandler(),
+        NetworkConnectivityHandler(),
         NodeConnectivityHandler(),
         PaymentResultHandler(),
         HealthCheckHandler(),

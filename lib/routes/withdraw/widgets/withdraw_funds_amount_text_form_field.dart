@@ -2,7 +2,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
 import 'package:c_breez/bloc/lsp/lsp_bloc.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
-import 'package:c_breez/utils/payment_validator.dart';
+import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/amount_form_field/amount_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

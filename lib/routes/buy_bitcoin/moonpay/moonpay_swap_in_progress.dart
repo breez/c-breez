@@ -1,7 +1,7 @@
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
-import 'package:c_breez/utils/external_browser.dart';
+import 'package:c_breez/services/external_browser_service.dart';
 import 'package:c_breez/widgets/single_button_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +39,7 @@ class MoonpaySwapInProgress extends StatelessWidget {
               } else {
                 context.read<MoonPayBloc>().makeExplorerUrl(state.address).then((url) {
                   if (context.mounted) {
-                    launchLinkOnExternalBrowser(context, linkAddress: url);
+                    ExternalBrowserService.launchLink(context, linkAddress: url);
                   }
                 });
               }

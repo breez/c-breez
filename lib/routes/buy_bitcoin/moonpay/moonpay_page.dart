@@ -2,7 +2,7 @@ import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_bloc.dart';
 import 'package:c_breez/bloc/buy_bitcoin/moonpay/moonpay_state.dart';
 import 'package:c_breez/routes/buy_bitcoin/moonpay/moonpay_loading.dart';
 import 'package:c_breez/routes/buy_bitcoin/widgets/lsp_fee_dialog.dart';
-import 'package:c_breez/utils/external_browser.dart';
+import 'package:c_breez/services/external_browser_service.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -80,7 +80,7 @@ class _MoonPayPageState extends State<MoonPayPage> {
       context.read<MoonPayBloc>().dispose();
       Navigator.of(context).pop();
       if (launchBrowser != null && launchBrowser) {
-        launchLinkOnExternalBrowser(context, linkAddress: url);
+        ExternalBrowserService.launchLink(context, linkAddress: url);
       }
     });
   }

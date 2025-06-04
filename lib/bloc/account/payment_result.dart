@@ -1,7 +1,7 @@
 import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
-import 'package:c_breez/utils/exceptions.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:c_breez/utils/utils.dart';
+import 'package:flutter/material.dart';
 
 class PaymentResult {
   final Payment? paymentInfo;
@@ -35,7 +35,7 @@ class PaymentResultError {
 
   factory PaymentResultError.fromException(String paymentHash, Object? error, {BuildContext? context}) {
     final texts = context?.texts() ?? getSystemAppLocalizations();
-    String? displayMessage = error != null ? extractExceptionMessage(error, texts) : null;
+    String? displayMessage = error != null ? ExceptionHandler.extractMessage(error, texts) : null;
     return PaymentResultError(
       message: displayMessage != null
           ? texts.payment_error_to_send(displayMessage)

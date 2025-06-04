@@ -1,56 +1,61 @@
 import 'package:breez_translations/breez_translations_locales.dart';
+import 'package:breez_translations/generated/breez_translations.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
 import 'package:c_breez/routes/fiat_currencies/fiat_currency_list_tile.dart';
-import 'package:c_breez/theme/theme_provider.dart' as theme;
+import 'package:c_breez/theme/breez_colors.dart';
 import 'package:c_breez/widgets/back_button.dart' as back_button;
-import 'package:c_breez/widgets/loader.dart';
+import 'package:c_breez/widgets/centered_loader.dart';
+import 'package:drag_and_drop_lists/drag_and_drop_list_interface.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FiatCurrencySettings extends StatefulWidget {
+  static const String routeName = '/fiat_currency';
+
   const FiatCurrencySettings({super.key});
 
   @override
-  FiatCurrencySettingsState createState() {
-    return FiatCurrencySettingsState();
-  }
+  FiatCurrencySettingsState createState() => FiatCurrencySettingsState();
 }
 
 class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
-  final _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    final texts = context.texts();
+    final BreezTranslations texts = context.texts();
 
     return Scaffold(
       appBar: AppBar(leading: const back_button.BackButton(), title: Text(texts.fiat_currencies_title)),
       body: BlocBuilder<CurrencyBloc, CurrencyState>(
-        buildWhen: (s1, s2) => !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
-        builder: (context, currencyState) {
-          return FutureBuilder(
+        buildWhen: (CurrencyState s1, CurrencyState s2) =>
+            !listEquals(s1.preferredCurrencies, s2.preferredCurrencies),
+        builder: (BuildContext context, CurrencyState currencyState) {
+          return FutureBuilder<void>(
             future: artificialWait(),
-            builder: (context, snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: Loader(color: Colors.white));
+                return const CenteredLoader(color: Colors.white);
               }
 
               return DragAndDropLists(
                 listPadding: EdgeInsets.zero,
-                children: [
+                children: <DragAndDropListInterface>[
                   DragAndDropList(
-                    header: const SizedBox(),
+                    header: const SizedBox.shrink(),
                     canDrag: false,
-                    children: List.generate(currencyState.fiatCurrenciesData.length, (index) {
+                    children: List<DragAndDropItem>.generate(currencyState.fiatCurrenciesData.length, (
+                      int index,
+                    ) {
                       return DragAndDropItem(
                         child: FiatCurrencyListTile(
                           index: index,
                           currencyState: currencyState,
                           scrollController: _scrollController,
-                          onChanged: (preferredFiatCurrencies) {
+                          onChanged: (List<String> preferredFiatCurrencies) {
                             _updatePreferredCurrencies(preferredFiatCurrencies);
                           },
                         ),
@@ -64,12 +69,13 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
                 lastListTargetSize: 0,
                 lastItemTargetHeight: 8,
                 scrollController: _scrollController,
-                onListReorder: (oldListIndex, newListIndex) => {},
-                onItemReorder: (from, oldListIndex, to, newListIndex) => _onReorder(currencyState, from, to),
+                onListReorder: (int oldListIndex, int newListIndex) => <dynamic, dynamic>{},
+                onItemReorder: (int from, int oldListIndex, int to, int newListIndex) =>
+                    _onReorder(currencyState, from, to),
                 itemDragHandle: DragHandle(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Icon(Icons.drag_handle, color: theme.BreezColors.white[200]),
+                    child: Icon(Icons.drag_handle, color: BreezColors.white[200]),
                   ),
                 ),
               );
@@ -81,11 +87,11 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   }
 
   void _onReorder(CurrencyState currencyState, int oldIndex, int newIndex) {
-    final preferredFiatCurrencies = List<String>.from(currencyState.preferredCurrencies);
+    final List<String> preferredFiatCurrencies = List<String>.from(currencyState.preferredCurrencies);
     if (newIndex >= preferredFiatCurrencies.length) {
       newIndex = preferredFiatCurrencies.length - 1;
     }
-    String item = preferredFiatCurrencies.removeAt(oldIndex);
+    final String item = preferredFiatCurrencies.removeAt(oldIndex);
     preferredFiatCurrencies.insert(newIndex, item);
     _updatePreferredCurrencies(preferredFiatCurrencies);
   }
@@ -100,7 +106,7 @@ class FiatCurrencySettingsState extends State<FiatCurrencySettings> {
   /// Before the underlying performance issues are fixed on the library.
   /// We've added an artificial wait to display the page route animation and spinning
   /// loader before UI thread is blocked to convey a better UX as a workaround.
-  Future artificialWait() async {
-    return await Future.delayed(const Duration(milliseconds: 450));
+  Future<void> artificialWait() async {
+    return await Future<void>.delayed(const Duration(milliseconds: 450));
   }
 }

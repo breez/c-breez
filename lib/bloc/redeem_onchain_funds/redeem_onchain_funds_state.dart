@@ -1,5 +1,6 @@
+import 'dart:typed_data';
+
 import 'package:c_breez/models/models.dart';
-import 'package:flutter_rust_bridge/flutter_rust_bridge.dart';
 
 class RedeemOnchainFundsState {
   final List<RedeemOnchainFeeOption> feeOptions;

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/reverse_swap/reverse_swap_state.dart';
 import 'package:c_breez/models/models.dart';
@@ -84,13 +84,13 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         final swapOption = await prepareOnchainPayment(
           amountSat: amountSat,
           amountType: amountType,
-          claimTxFeerate: recommendedFee,
+          claimTxFeerate: recommendedFee.toInt(),
         );
 
         return ReverseSwapFeeOption(
-          txFeeSat: swapOption.feesClaim,
+          txFeeSat: swapOption.feesClaim.toInt(),
           processingSpeed: ProcessingSpeed.values.elementAt(index),
-          satPerVbyte: recommendedFee,
+          satPerVbyte: recommendedFee.toInt(),
           pairInfo: swapOption,
         );
       }),
@@ -111,7 +111,7 @@ class ReverseSwapBloc extends Cubit<ReverseSwapState> {
         "Estimate reverse swap fees for $amountSat sats to be ${amountType == SwapAmountType.Receive ? "received on the" : "sent to the"} destination address w/ $claimTxFeerate sat/Vbyte fee rate.",
       );
       final req = PrepareOnchainPaymentRequest(
-        amountSat: amountSat,
+        amountSat: BigInt.from(amountSat),
         amountType: amountType,
         claimTxFeerate: claimTxFeerate,
       );

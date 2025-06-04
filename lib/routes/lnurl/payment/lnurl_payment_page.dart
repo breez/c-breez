@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
@@ -72,7 +72,7 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
       if (isFixedAmount) {
         final currencyState = context.read<CurrencyBloc>().state;
         _amountController.text = currencyState.bitcoinCurrency.format(
-          (widget.data.maxSendable ~/ 1000),
+          (widget.data.maxSendable.toInt() ~/ 1000),
           includeDisplayName: false,
         );
       }
@@ -130,24 +130,24 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
                       children: <TextSpan>[
                         TextSpan(
                           text: texts.lnurl_fetch_invoice_min(
-                            currencyState.bitcoinCurrency.format((widget.data.minSendable ~/ 1000)),
+                            currencyState.bitcoinCurrency.format((widget.data.minSendable.toInt() ~/ 1000)),
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               _amountController.text = currencyState.bitcoinCurrency.format(
-                                (widget.data.minSendable ~/ 1000),
+                                (widget.data.minSendable.toInt() ~/ 1000),
                                 includeDisplayName: false,
                               );
                             },
                         ),
                         TextSpan(
                           text: texts.lnurl_fetch_invoice_and(
-                            currencyState.bitcoinCurrency.format((widget.data.maxSendable ~/ 1000)),
+                            currencyState.bitcoinCurrency.format((widget.data.maxSendable.toInt() ~/ 1000)),
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               _amountController.text = currencyState.bitcoinCurrency.format(
-                                (widget.data.maxSendable ~/ 1000),
+                                (widget.data.maxSendable.toInt() ~/ 1000),
                                 includeDisplayName: false,
                               );
                             },
@@ -232,19 +232,19 @@ class LNURLPaymentPageState extends State<LNURLPaymentPage> {
     final lspState = context.read<LSPBloc>().state;
     final currencyState = context.read<CurrencyBloc>().state;
 
-    final maxSendableSat = widget.data.maxSendable ~/ 1000;
+    final maxSendableSat = widget.data.maxSendable.toInt() ~/ 1000;
     if (amountSat > maxSendableSat) {
       return texts.lnurl_payment_page_error_exceeds_limit(maxSendableSat);
     }
 
-    final minSendableSat = widget.data.minSendable ~/ 1000;
+    final minSendableSat = widget.data.minSendable.toInt() ~/ 1000;
     if (amountSat < minSendableSat) {
       return texts.lnurl_payment_page_error_below_limit(minSendableSat);
     }
 
     int? channelMinimumFeeSat;
     if (lspState != null && lspState.lspInfo != null) {
-      channelMinimumFeeSat = lspState.lspInfo!.openingFeeParamsList.values.first.minMsat ~/ 1000;
+      channelMinimumFeeSat = lspState.lspInfo!.openingFeeParamsList.values.first.minMsat.toInt() ~/ 1000;
     }
 
     return PaymentValidator(

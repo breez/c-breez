@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/currency.dart';
 import 'package:c_breez/routes/withdraw/model/withdraw_funds_model.dart';
@@ -52,7 +52,7 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
     _log.info("Filling BTC Address data for ${addressData.address}");
     widget.addressController.text = addressData.address;
     if (addressData.amountSat != null) {
-      _setAmount(addressData.amountSat!);
+      _setAmount(addressData.amountSat!.toInt());
     }
   }
 
@@ -84,11 +84,11 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
               bitcoinCurrency: widget.bitcoinCurrency,
               controller: widget.amountController,
               withdrawMaxValue: widget.withdrawMaxValue,
-              maxPayableSat: widget.paymentLimits.maxPayableSat,
+              maxPayableSat: widget.paymentLimits.maxPayableSat.toInt(),
               policy: WithdrawFundsPolicy(
                 WithdrawKind.withdraw_funds,
-                widget.paymentLimits.minSat,
-                widget.paymentLimits.maxSat,
+                widget.paymentLimits.minSat.toInt(),
+                widget.paymentLimits.maxSat.toInt(),
               ),
             ),
             ListTile(
@@ -105,7 +105,7 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
                   setState(() {
                     widget.onChanged(value);
                     if (widget.withdrawMaxValue) {
-                      _setAmount(widget.paymentLimits.maxPayableSat);
+                      _setAmount(widget.paymentLimits.maxPayableSat.toInt());
                     } else {
                       widget.amountController.text = "";
                     }

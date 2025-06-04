@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/bloc/sdk_connectivity/sdk_connectivity_state.dart';
 import 'package:c_breez/bloc/sdk_connectivity/sync_manager.dart';

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/input/input_bloc.dart';
 import 'package:c_breez/bloc/input/input_state.dart';
@@ -158,7 +158,7 @@ class QrCodeDialogState extends State<QrCodeDialog> with SingleTickerProviderSta
                           SizedBox(
                             width: MediaQuery.of(context).size.width,
                             child: ExpiryAndFeeMessage(
-                              lspFees: widget.receivePaymentResponse!.openingFeeMsat,
+                              lspFees: widget.receivePaymentResponse!.openingFeeMsat?.toInt(),
                             ),
                           ),
                           const Padding(padding: EdgeInsets.only(top: 16.0)),

@@ -1,4 +1,4 @@
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
@@ -26,12 +26,12 @@ void main() {
       // No title
       PaymentItemTitle(
         PaymentMinutiae.fromPayment(
-          const Payment(
+          Payment(
             paymentType: PaymentType.Received,
             id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-            feeMsat: 0,
+            feeMsat: BigInt.zero,
             paymentTime: 1661791810,
-            amountMsat: 4321000,
+            amountMsat: BigInt.from(4321000),
             status: PaymentStatus.Complete,
             description: "",
             details: PaymentDetails.ln(
@@ -52,12 +52,12 @@ void main() {
       // Long title
       PaymentItemTitle(
         PaymentMinutiae.fromPayment(
-          const Payment(
+          Payment(
             paymentType: PaymentType.Received,
             id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-            feeMsat: 0,
+            feeMsat: BigInt.zero,
             paymentTime: 1661791810,
-            amountMsat: 4321000,
+            amountMsat: BigInt.from(4321000),
             status: PaymentStatus.Complete,
             description: "A long title\nwith a new line",
             details: PaymentDetails.ln(
@@ -78,12 +78,12 @@ void main() {
       // Short title
       PaymentItemTitle(
         PaymentMinutiae.fromPayment(
-          const Payment(
+          Payment(
             paymentType: PaymentType.Received,
             id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-            feeMsat: 0,
+            feeMsat: BigInt.zero,
             paymentTime: 1661791810,
-            amountMsat: 4321000,
+            amountMsat: BigInt.from(4321000),
             status: PaymentStatus.Complete,
             description: "A short title",
             details: PaymentDetails.ln(

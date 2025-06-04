@@ -1,5 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_closed_channel_dialog.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/payment_details_dialog_amount.dart';

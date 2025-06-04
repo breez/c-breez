@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart';
+import 'package:breez_sdk/sdk.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/refund/refund_state.dart';
 import 'package:c_breez/models/models.dart';
@@ -108,7 +108,7 @@ class RefundBloc extends Cubit<RefundState> {
     ];
     final feeOptions = await Future.wait(
       List.generate(3, (index) async {
-        final recommendedFee = recommendedFeeList.elementAt(index);
+        final recommendedFee = recommendedFeeList.elementAt(index).toInt();
         final req = PrepareRefundRequest(
           swapAddress: swapAddress,
           toAddress: toAddress,
@@ -132,7 +132,7 @@ class RefundBloc extends Cubit<RefundState> {
     try {
       final resp = await _breezSDK.prepareRefund(req: req);
       _log.info("Refund txId: ${resp.refundTxWeight}, ${resp.refundTxFeeSat}");
-      return resp.refundTxFeeSat;
+      return resp.refundTxFeeSat.toInt();
     } catch (e) {
       _log.severe("Failed to refund swap", e);
       rethrow;

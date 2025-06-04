@@ -3,7 +3,7 @@ library;
 import 'dart:io';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/bridge_generated.dart' hide Config;
+import 'package:breez_sdk/sdk.dart' hide Config;
 import 'package:c_breez/configs/config.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';

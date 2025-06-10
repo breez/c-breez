@@ -44,11 +44,11 @@ dependencies:
   ffi: ^2.1.4
   # Downgraded firebase plugins to a version compatible with mobile_scanner <6.0.0 to avoid bumping minimum deployment target to 15.5 on iOS
   # Doesn't support: Linux Windows
-  firebase_core: ^3.13.1
+  firebase_core: ^3.14.0
   # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^6.1.6
+  firebase_dynamic_links: ^6.1.7
   # Doesn't support: Linux Windows
-  firebase_messaging: ^15.2.6
+  firebase_messaging: ^15.2.7
   flutter_bloc: ^9.1.1
   # Doesn't support: Linux Mac Windows
   flutter_fgbg:
@@ -56,7 +56,7 @@ dependencies:
       url: https://github.com/breez/flutter_fgbg.git
       ref: 976b28ff3c299836f215b6deb2003838c49a8001
   flutter_inappwebview: ^6.1.5
-  flutter_rust_bridge: ^2.10.0
+  flutter_rust_bridge: ">2.8.0 <=2.9.0"
   flutter_secure_storage: ^9.2.4
   flutter_svg: ^2.1.0
   flutter_typeahead:

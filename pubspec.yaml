@@ -30,7 +30,6 @@ dependencies:
     git:
       url: https://github.com/breez/Breez-Translations
       ref: 86d0d7e1c871a4ede69d867313d796089c956385
-  clipboard_watcher: ^0.3.0
   csv: ^6.0.0
   connectivity_plus: ^6.1.4
   device_info_plus: ^11.4.0

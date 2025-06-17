@@ -1,54 +1,60 @@
 import 'dart:async';
 
-import 'package:clipboard_watcher/clipboard_watcher.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-final _log = Logger("Device");
+/// Logger for the DeviceClient class.
+final Logger _logger = Logger('DeviceClient');
 
-class DeviceClient extends ClipboardListener {
-  final _clipboardController = BehaviorSubject<String>();
-  Stream<String> get clipboardStream => _clipboardController.stream.where((e) => e != _lastFromAppClip);
+/// A client that provides device-specific functionality.
+///
+/// Handles clipboard operations, sharing capabilities, and device information.
+class DeviceClient {
+  /// Controller for listening to clipboard changes.
+  final BehaviorSubject<String> _clipboardController = BehaviorSubject<String>();
 
-  static const String LAST_CLIPPING_PREFERENCES_KEY = "lastClipping";
-  static const String LAST_FROM_APP_CLIPPING_PREFERENCES_KEY = "lastFromAppClipping";
+  /// Stream of clipboard text updates.
+  Stream<String> get clipboardStream => _clipboardController.stream;
 
-  String? _lastFromAppClip;
-
+  /// Creates a new DeviceClient instance.
   DeviceClient() {
-    _log.info("Initing Device");
-    var sharedPreferences = SharedPreferences.getInstance();
-    sharedPreferences.then((preferences) {
-      _lastFromAppClip = preferences.getString(LAST_FROM_APP_CLIPPING_PREFERENCES_KEY);
-      _clipboardController.add(preferences.getString(LAST_CLIPPING_PREFERENCES_KEY) ?? "");
-      _log.info("Last clipping: $_lastFromAppClip");
-      fetchClipboard(preferences);
-    });
-    clipboardWatcher.addListener(this);
-    clipboardWatcher.start();
+    _logger.info('Initializing DeviceClient');
   }
 
-  Future setClipboardText(String text) async {
-    _log.info("Setting clipboard text: $text");
-    _lastFromAppClip = text;
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(LAST_FROM_APP_CLIPPING_PREFERENCES_KEY, text);
-    await Clipboard.setData(ClipboardData(text: text));
+  /// Sets the provided [text] to the device clipboard.
+  ///
+  /// Returns a [Future] that completes when the operation is done.
+  Future<void> setClipboardText(String text) async {
+    _logger.info('Setting clipboard text: $text');
+    try {
+      await Clipboard.setData(ClipboardData(text: text));
+      _logger.fine('Successfully set clipboard text');
+    } catch (e) {
+      _logger.severe('Failed to set clipboard text', e);
+      rethrow;
+    }
   }
 
-  void fetchClipboard(SharedPreferences preferences) {
-    _log.info("Fetching clipboard");
-    Clipboard.getData("text/plain").then((clipboardData) {
-      final text = clipboardData?.text;
-      _log.info("Clipboard text: $text");
+  /// Retrieves text from the device clipboard.
+  ///
+  /// Returns the clipboard text as a [String] or null if the clipboard is empty.
+  Future<String?> fetchClipboardData() async {
+    _logger.info('Fetching clipboard data');
+    try {
+      final ClipboardData? clipboardData = await Clipboard.getData('text/plain');
+      final String? text = clipboardData?.text;
       if (text != null) {
         _clipboardController.add(text);
-        preferences.setString(LAST_CLIPPING_PREFERENCES_KEY, text);
+        _logger.fine('Updated clipboard stream with text');
       }
-    });
+      _logger.fine('Retrieved clipboard text: $text');
+      return text;
+    } catch (e) {
+      _logger.severe('Failed to fetch clipboard data', e);
+      return null;
+    }
   }
 
   Future<String> appVersion() async {
@@ -56,31 +62,9 @@ class DeviceClient extends ClipboardListener {
     return "${packageInfo.version}.${packageInfo.buildNumber}";
   }
 
-  /// Retrieves text from the device clipboard.
-  ///
-  /// Returns the clipboard text as a [String] or null if the clipboard is empty.
-  Future<String?> fetchClipboardData() async {
-    _log.info('Fetching clipboard data');
-    try {
-      final ClipboardData? clipboardData = await Clipboard.getData('text/plain');
-      final String? text = clipboardData?.text;
-      if (text != null) {
-        _clipboardController.add(text);
-        _log.fine('Updated clipboard stream with text');
-      }
-      _log.fine('Retrieved clipboard text: $text');
-      return text;
-    } catch (e) {
-      _log.severe('Failed to fetch clipboard data', e);
-      return null;
-    }
-  }
-
-  @override
-  void onClipboardChanged() {
-    _log.info("Clipboard changed");
-    SharedPreferences.getInstance().then((preferences) {
-      fetchClipboard(preferences);
-    });
+  /// Disposes of resources used by this client.
+  void dispose() {
+    _logger.info('Disposing DeviceClient');
+    _clipboardController.close();
   }
 }

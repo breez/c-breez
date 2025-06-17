@@ -43,21 +43,25 @@ class DevelopersView extends StatefulWidget {
   State<DevelopersView> createState() => _DevelopersViewState();
 }
 
-class _DevelopersViewState extends State<DevelopersView> {
+class _DevelopersViewState extends State<DevelopersView> with SingleTickerProviderStateMixin {
   final BreezPreferences _preferences = const BreezPreferences();
   final OverlayManager _overlayManager = OverlayManager();
 
   BugReportBehavior _bugReportBehavior = BugReportBehavior.PROMPT;
   String _sdkVersion = '';
 
+  late TabController _tabController;
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     _initializeViewData();
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _overlayManager.removeLoadingOverlay();
     super.dispose();
   }
@@ -109,6 +113,7 @@ class _DevelopersViewState extends State<DevelopersView> {
           leading: const back_button.BackButton(),
           title: Text(texts.home_drawer_item_title_developers),
           bottom: TabBar(
+            controller: _tabController,
             tabs: [
               Tab(text: 'CLI'),
               Tab(text: 'Info'),
@@ -117,6 +122,7 @@ class _DevelopersViewState extends State<DevelopersView> {
         ),
 
         body: TabBarView(
+          controller: _tabController,
           children: [
             CommandLineInterface(scaffoldKey: scaffoldKey),
             _buildInfoCard(),
@@ -129,62 +135,71 @@ class _DevelopersViewState extends State<DevelopersView> {
   /// Builds the information card showing wallet and SDK details
   Widget _buildInfoCard() {
     final ThemeData themeData = Theme.of(context);
-    final AccountState accountState = context.select<AccountBloc, AccountState>(
-      (AccountBloc bloc) => bloc.state,
-    );
-
-    return Card(
-      color: themeData.customData.surfaceBgColor,
-      margin: const EdgeInsets.all(16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children:
-              <Widget>[
-                  StatusItem(label: 'SDK Version', value: _sdkVersion),
-                  if (accountState.id != null) ...<Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: ShareablePaymentRow(
-                        tilePadding: EdgeInsets.zero,
-                        dividerColor: Colors.transparent,
-                        title: 'Node ID',
-                        titleTextStyle: themeData.primaryTextTheme.headlineMedium?.copyWith(
-                          fontSize: 18.0,
-                          color: Colors.white,
+    return BlocBuilder<AccountBloc, AccountState>(
+      buildWhen: (AccountState previous, AccountState current) {
+        return previous.id != current.id ||
+            previous.balanceSat != current.balanceSat ||
+            previous.maxInboundLiquiditySat != current.maxInboundLiquiditySat ||
+            previous.blockheight != current.blockheight;
+      },
+      builder: (BuildContext context, AccountState accountState) {
+        return Card(
+          color: themeData.customData.surfaceBgColor,
+          margin: const EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children:
+                  <Widget>[
+                      StatusItem(label: 'SDK Version', value: _sdkVersion),
+                      if (accountState.id != null) ...<Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: ShareablePaymentRow(
+                            tilePadding: EdgeInsets.zero,
+                            dividerColor: Colors.transparent,
+                            title: 'Node ID',
+                            titleTextStyle: themeData.primaryTextTheme.headlineMedium?.copyWith(
+                              fontSize: 18.0,
+                              color: Colors.white,
+                            ),
+                            labelAutoSizeGroup: labelAutoSizeGroup,
+                            valueAutoSizeGroup: labelAutoSizeGroup,
+                            sharedValue: accountState.id!,
+                            shouldPop: false,
+                            trimTitle: false,
+                          ),
                         ),
-                        labelAutoSizeGroup: labelAutoSizeGroup,
-                        valueAutoSizeGroup: labelAutoSizeGroup,
-                        sharedValue: accountState.id!,
-                        shouldPop: false,
-                        trimTitle: false,
-                      ),
-                    ),
-                  ],
-                  if (accountState.balanceSat > 0) ...<Widget>[
-                    StatusItem(label: 'Balance', value: '${accountState.balanceSat}'),
-                  ],
-                  if (accountState.maxInboundLiquiditySat > 0) ...<Widget>[
-                    StatusItem(label: 'Inbound Liquidity', value: '${accountState.maxInboundLiquiditySat}'),
-                  ],
-                  if (accountState.blockheight > 0) ...<Widget>[
-                    StatusItem(label: 'Node Blockheight', value: '${accountState.blockheight}'),
-                  ],
+                      ],
+                      if (accountState.balanceSat > 0) ...<Widget>[
+                        StatusItem(label: 'Balance', value: '${accountState.balanceSat}'),
+                      ],
+                      if (accountState.maxInboundLiquiditySat > 0) ...<Widget>[
+                        StatusItem(
+                          label: 'Inbound Liquidity',
+                          value: '${accountState.maxInboundLiquiditySat}',
+                        ),
+                      ],
+                      if (accountState.blockheight > 0) ...<Widget>[
+                        StatusItem(label: 'Node Blockheight', value: '${accountState.blockheight}'),
+                      ],
 
-                  _buildActionButtons(),
-                ].expand((Widget widget) sync* {
-                  yield widget;
-                  yield const Divider(
-                    height: 8.0,
-                    color: Color.fromRGBO(40, 59, 74, 0.5),
-                    indent: 0.0,
-                    endIndent: 0.0,
-                  );
-                }).toList()
-                ..removeLast(),
-        ),
-      ),
+                      _buildActionButtons(),
+                    ].expand((Widget widget) sync* {
+                      yield widget;
+                      yield const Divider(
+                        height: 8.0,
+                        color: Color.fromRGBO(40, 59, 74, 0.5),
+                        indent: 0.0,
+                        endIndent: 0.0,
+                      );
+                    }).toList()
+                    ..removeLast(),
+            ),
+          ),
+        );
+      },
     );
   }
 

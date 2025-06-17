@@ -130,6 +130,7 @@ flutter:
     - assets/animations/lottie/
     - .git/
     - .git/refs/heads/
+    - pubspec.lock
   fonts:
     - family: IBMPlexSans
       fonts:

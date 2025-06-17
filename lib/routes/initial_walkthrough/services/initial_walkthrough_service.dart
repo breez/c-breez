@@ -3,7 +3,6 @@ import 'package:c_breez/bloc/account/onboarding_preferences.dart';
 import 'package:c_breez/bloc/sdk_connectivity/sdk_connectivity_cubit.dart';
 import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/routes/initial_walkthrough/mnemonics/enter_mnemonics_page.dart';
-import 'package:c_breez/routes/initial_walkthrough/widgets/beta_warning_dialog.dart';
 import 'package:c_breez/utils/utils.dart';
 import 'package:c_breez/widgets/flushbar.dart';
 import 'package:c_breez/widgets/loader.dart';
@@ -35,10 +34,6 @@ class InitialWalkthroughService {
   /// Starts the wallet registration process after confirming with user.
   Future<void> registerWallet() async {
     _logger.info("Let's Breez!");
-    if (!await _confirmBetaDisclaimer()) {
-      return;
-    }
-
     await _connect();
   }
 
@@ -51,17 +46,6 @@ class InitialWalkthroughService {
     }
 
     await _connect(mnemonic: mnemonic);
-  }
-
-  /// Prompts the user with a beta disclaimer and requests confirmation.
-  Future<bool> _confirmBetaDisclaimer() async {
-    return await showDialog<bool>(
-          useRootNavigator: false,
-          context: _context,
-          barrierDismissible: false,
-          builder: (_) => const BetaWarningDialog(),
-        ) ??
-        false;
   }
 
   /// Gets the mnemonic seed from user input.

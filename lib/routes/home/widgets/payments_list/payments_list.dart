@@ -120,9 +120,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<CurrencyBloc>(create: (BuildContext context) => CurrencyBloc(injector.breezSDK)),
-        BlocProvider<UserProfileBloc>(
-          create: (BuildContext context) => UserProfileBloc(injector.breezServer),
-        ),
+        BlocProvider<UserProfileBloc>(create: (BuildContext context) => UserProfileBloc()),
       ],
       child: MaterialApp(
         theme: breezLightTheme,

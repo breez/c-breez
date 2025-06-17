@@ -1,5 +1,4 @@
 export 'breez_logger.dart';
-export 'breez_server.dart';
 export 'device.dart';
 export 'external_browser_service.dart';
 export 'injector.dart';

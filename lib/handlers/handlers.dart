@@ -1,4 +1,3 @@
-export 'check_version_handler/check_version_handler.dart';
 export 'handler/handler.dart';
 export 'health_check_handler/health_check_handler.dart';
 export 'input_handler/input_handler.dart';

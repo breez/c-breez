@@ -91,9 +91,7 @@ void main() async {
               create: (BuildContext context) =>
                   InputBloc(breezSDK, injector.lightningLinks, injector.deviceClient),
             ),
-            BlocProvider<UserProfileBloc>(
-              create: (BuildContext context) => UserProfileBloc(injector.breezServer),
-            ),
+            BlocProvider<UserProfileBloc>(create: (BuildContext context) => UserProfileBloc()),
             BlocProvider<WebhooksBloc>(
               lazy: false,
               create: (BuildContext context) =>

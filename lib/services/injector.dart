@@ -10,7 +10,6 @@ class ServiceInjector {
   static final _singleton = ServiceInjector._internal();
   static ServiceInjector? _injector;
 
-  BreezServer? _breezServer;
   FirebaseNotificationsClient? _notifications;
 
   BreezSDK? _breezSDK;
@@ -28,8 +27,6 @@ class ServiceInjector {
   ServiceInjector._internal();
 
   static void configure(ServiceInjector injector) => _injector = injector;
-
-  BreezServer get breezServer => _breezServer ??= BreezServer();
 
   NotificationsClient get notifications => _notifications ??= FirebaseNotificationsClient();
 

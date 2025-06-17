@@ -13,7 +13,6 @@ import 'package:c_breez/widgets/error_dialog.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Home extends StatefulWidget {
   static const String routeName = '/';
@@ -47,7 +46,6 @@ class HomeState extends State<Home> with AutoLockMixin, HandlerContextProvider {
       for (var handler in handlers) {
         handler.init(this);
       }
-      checkVersionDialog(context, context.read());
     });
   }
 

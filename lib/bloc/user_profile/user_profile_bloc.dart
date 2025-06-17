@@ -5,7 +5,6 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/user_profile/default_profile_generator.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_settings.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_state.dart';
-import 'package:c_breez/services/breez_server.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,9 +14,7 @@ const PROFILE_DATA_FOLDER_PATH = "profile";
 final _log = Logger("UserProfileBloc");
 
 class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
-  final BreezServer _breezServer;
-
-  UserProfileBloc(this._breezServer) : super(UserProfileState.initial()) {
+  UserProfileBloc() : super(UserProfileState.initial()) {
     hydrate();
     var profile = state;
     _log.info("State: ${profile.profileSettings.toJson()}");
@@ -70,10 +67,6 @@ class UserProfileBloc extends Cubit<UserProfileState> with HydratedMixin {
       expandPreferences: expandPreferences ?? profile.expandPreferences,
     );
     emit(state.copyWith(profileSettings: profile));
-  }
-
-  Future checkVersion() async {
-    return _breezServer.checkVersion();
   }
 
   @override

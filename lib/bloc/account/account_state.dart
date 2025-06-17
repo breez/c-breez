@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
+import 'package:flutter/foundation.dart';
 
 enum VerificationStatus { UNVERIFIED, VERIFIED }
 
@@ -93,6 +94,49 @@ class AccountState {
   int get reserveAmountSat => balanceSat - maxAllowedToPaySat;
 
   bool get isFeesApplicable => maxAllowedToReceiveSat > maxInboundLiquiditySat;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+
+    final AccountState otherState = other as AccountState;
+
+    return id == otherState.id &&
+        initial == otherState.initial &&
+        blockheight == otherState.blockheight &&
+        balanceSat == otherState.balanceSat &&
+        walletBalanceSat == otherState.walletBalanceSat &&
+        maxAllowedToPaySat == otherState.maxAllowedToPaySat &&
+        maxAllowedToReceiveSat == otherState.maxAllowedToReceiveSat &&
+        maxPaymentAmountSat == otherState.maxPaymentAmountSat &&
+        maxChanReserveSat == otherState.maxChanReserveSat &&
+        listEquals(connectedPeers, otherState.connectedPeers) &&
+        maxInboundLiquiditySat == otherState.maxInboundLiquiditySat &&
+        listEquals(payments, otherState.payments) &&
+        paymentFilters == otherState.paymentFilters &&
+        verificationStatus == otherState.verificationStatus;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      id,
+      initial,
+      blockheight,
+      balanceSat,
+      walletBalanceSat,
+      maxAllowedToPaySat,
+      maxAllowedToReceiveSat,
+      maxPaymentAmountSat,
+      maxChanReserveSat,
+      Object.hashAll(connectedPeers),
+      maxInboundLiquiditySat,
+      Object.hashAll(payments),
+      paymentFilters,
+      verificationStatus,
+    );
+  }
 
   // TODO: Add payments toJson
   Map<String, dynamic>? toJson() {

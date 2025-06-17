@@ -3,6 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/payment_filters.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/utils/constants/app_constants.dart';
+import 'package:flutter/foundation.dart';
 
 import 'account_state.dart';
 
@@ -18,20 +19,55 @@ AccountState? assembleAccountState(
   }
 
   final texts = getSystemAppLocalizations();
-  // return the new account state
+
+  // Convert payments to PaymentMinutiae
+  final newPayments = payments.map((e) => PaymentMinutiae.fromPayment(e, texts)).toList();
+
+  // Calculate all the new values
+  final newId = nodeState.id;
+  final newBlockheight = nodeState.blockHeight;
+  final newBalanceSat = nodeState.channelsBalanceMsat.toInt() ~/ 1000;
+  final newWalletBalanceSat = nodeState.onchainBalanceMsat.toInt() ~/ 1000;
+  final newMaxAllowedToPaySat = nodeState.maxPayableMsat.toInt() ~/ 1000;
+  final newMaxAllowedToReceiveSat = nodeState.maxReceivableMsat.toInt() ~/ 1000;
+  final newMaxPaymentAmountSat = PaymentConstants.maxPaymentAmountSat;
+  final newMaxChanReserveSat =
+      (nodeState.channelsBalanceMsat.toInt() - nodeState.maxPayableMsat.toInt()) ~/ 1000;
+  final newConnectedPeers = nodeState.connectedPeers;
+  final newMaxInboundLiquiditySat = nodeState.totalInboundLiquidityMsats.toInt() ~/ 1000;
+
+  // Check if anything actually changed before creating a new state
+  if (state.id == newId &&
+      state.blockheight == newBlockheight &&
+      state.balanceSat == newBalanceSat &&
+      state.walletBalanceSat == newWalletBalanceSat &&
+      state.maxAllowedToPaySat == newMaxAllowedToPaySat &&
+      state.maxAllowedToReceiveSat == newMaxAllowedToReceiveSat &&
+      state.maxPaymentAmountSat == newMaxPaymentAmountSat &&
+      state.maxChanReserveSat == newMaxChanReserveSat &&
+      listEquals(state.connectedPeers, newConnectedPeers) &&
+      state.maxInboundLiquiditySat == newMaxInboundLiquiditySat &&
+      listEquals(state.payments, newPayments) &&
+      state.paymentFilters == paymentFilters &&
+      !state.initial) {
+    // Nothing changed, return the existing state
+    return state;
+  }
+
+  // Something changed, create a new state
   return state.copyWith(
-    id: nodeState.id,
+    id: newId,
     initial: false,
-    blockheight: nodeState.blockHeight,
-    balanceSat: nodeState.channelsBalanceMsat.toInt() ~/ 1000,
-    walletBalanceSat: nodeState.onchainBalanceMsat.toInt() ~/ 1000,
-    maxAllowedToPaySat: nodeState.maxPayableMsat.toInt() ~/ 1000,
-    maxAllowedToReceiveSat: nodeState.maxReceivableMsat.toInt() ~/ 1000,
-    maxPaymentAmountSat: PaymentConstants.maxPaymentAmountSat,
-    maxChanReserveSat: (nodeState.channelsBalanceMsat.toInt() - nodeState.maxPayableMsat.toInt()) ~/ 1000,
-    connectedPeers: nodeState.connectedPeers,
-    maxInboundLiquiditySat: nodeState.totalInboundLiquidityMsats.toInt() ~/ 1000,
-    payments: payments.map((e) => PaymentMinutiae.fromPayment(e, texts)).toList(),
+    blockheight: newBlockheight,
+    balanceSat: newBalanceSat,
+    walletBalanceSat: newWalletBalanceSat,
+    maxAllowedToPaySat: newMaxAllowedToPaySat,
+    maxAllowedToReceiveSat: newMaxAllowedToReceiveSat,
+    maxPaymentAmountSat: newMaxPaymentAmountSat,
+    maxChanReserveSat: newMaxChanReserveSat,
+    connectedPeers: newConnectedPeers,
+    maxInboundLiquiditySat: newMaxInboundLiquiditySat,
+    payments: newPayments,
     paymentFilters: paymentFilters,
     verificationStatus: state.verificationStatus,
   );

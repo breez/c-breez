@@ -60,6 +60,83 @@ class PaymentMinutiae {
     required this.pendingExpirationBlock,
   });
 
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+
+    final PaymentMinutiae otherPayment = other as PaymentMinutiae;
+
+    return id == otherPayment.id &&
+        title == otherPayment.title &&
+        hasDescription == otherPayment.hasDescription &&
+        description == otherPayment.description &&
+        destinationPubkey == otherPayment.destinationPubkey &&
+        lnAddress == otherPayment.lnAddress &&
+        lnurlPayDomain == otherPayment.lnurlPayDomain &&
+        paymentPreimage == otherPayment.paymentPreimage &&
+        successActionMessage == otherPayment.successActionMessage &&
+        successActionUrl == otherPayment.successActionUrl &&
+        paymentType == otherPayment.paymentType &&
+        paymentTime == otherPayment.paymentTime &&
+        _imageEquals(image, otherPayment.image) &&
+        feeSat == otherPayment.feeSat &&
+        feeMilliSat == otherPayment.feeMilliSat &&
+        amountSat == otherPayment.amountSat &&
+        hasMetadata == otherPayment.hasMetadata &&
+        isKeySend == otherPayment.isKeySend &&
+        status == otherPayment.status &&
+        fundingTxid == otherPayment.fundingTxid &&
+        closingTxid == otherPayment.closingTxid &&
+        pendingExpirationBlock == otherPayment.pendingExpirationBlock;
+  }
+
+  @override
+  int get hashCode {
+    // Split into two groups since Object.hash only accepts up to 20 arguments
+    final hash1 = Object.hash(
+      id,
+      title,
+      hasDescription,
+      description,
+      destinationPubkey,
+      lnAddress,
+      lnurlPayDomain,
+      paymentPreimage,
+      successActionMessage,
+      successActionUrl,
+      paymentType,
+      paymentTime,
+      _imageHashCode(image),
+      feeSat,
+      feeMilliSat,
+      amountSat,
+      hasMetadata,
+      isKeySend,
+      status,
+      fundingTxid,
+    );
+
+    final hash2 = Object.hash(closingTxid, pendingExpirationBlock);
+
+    return Object.hash(hash1, hash2);
+  }
+
+  // Helper methods for Image comparison
+  bool _imageEquals(Image? a, Image? b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+
+    // For simplicity, compare by width, height, and fit
+    // In practice, you might want to compare the actual image data
+    return a.width == b.width && a.height == b.height && a.fit == b.fit;
+  }
+
+  int _imageHashCode(Image? image) {
+    if (image == null) return 0;
+    return Object.hash(image.width, image.height, image.fit);
+  }
+
   factory PaymentMinutiae.fromPayment(Payment payment, BreezTranslations texts) {
     final factory = _PaymentMinutiaeFactory(payment, texts);
     return PaymentMinutiae(

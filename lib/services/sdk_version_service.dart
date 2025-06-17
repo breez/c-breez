@@ -11,7 +11,7 @@ class SdkVersionService {
   SdkVersionService._();
 
   /// Package name for the Breez SDK
-  static const String _packageName = 'flutter_breez_liquid';
+  static const String _packageName = 'breez_sdk';
 
   /// Default version string when version cannot be retrieved
   static const String _defaultVersion = 'Unknown';

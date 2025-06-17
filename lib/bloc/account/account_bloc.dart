@@ -37,7 +37,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
 
   AccountBloc(this._breezSDK) : super(AccountState.initial()) {
     hydrate();
-    _watchAccountChanges().listen((acc) {
+    _watchAccountChanges().distinct().listen((acc) {
       _log.info("State changed: $acc");
       emit(acc);
     });

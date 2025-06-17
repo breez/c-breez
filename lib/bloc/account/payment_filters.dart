@@ -1,4 +1,5 @@
 import 'package:breez_sdk/sdk.dart';
+import 'package:flutter/foundation.dart';
 
 class PaymentFilters implements Exception {
   final List<PaymentTypeFilter>? filters;
@@ -15,6 +16,23 @@ class PaymentFilters implements Exception {
       fromTimestamp: fromTimestamp,
       toTimestamp: toTimestamp,
     );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+
+    final PaymentFilters otherFilters = other as PaymentFilters;
+
+    return listEquals(filters, otherFilters.filters) &&
+        fromTimestamp == otherFilters.fromTimestamp &&
+        toTimestamp == otherFilters.toTimestamp;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(Object.hashAll(filters ?? []), fromTimestamp, toTimestamp);
   }
 
   factory PaymentFilters.fromJson(Map<String, dynamic> json) {

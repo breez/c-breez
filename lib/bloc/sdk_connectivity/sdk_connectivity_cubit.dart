@@ -37,7 +37,7 @@ class SdkConnectivityCubit extends Cubit<SdkConnectivityState> {
     try {
       final String? restoredMnemonic = mnemonic ?? await credentialsManager.restoreMnemonic();
       if (restoredMnemonic != null) {
-        await _connect(restoredMnemonic);
+        await _connect(restoredMnemonic, restoreOnly: true);
       } else {
         _logger.warning('Failed to restore mnemonics.');
         throw Exception('Failed to restore mnemonics.');

@@ -66,14 +66,14 @@ class WalletArchiveService {
       if (await logsDir.exists()) {
         _logger.info('Adding logs from: ${logsDir.path}');
         await encoder.addDirectory(logsDir);
-        await encoder.close();
-        _logger.info('Logs archive created at: $zipFilePath');
-        return zipFilePath;
       } else {
         _logger.warning('Logs directory not found: ${logsDir.path}');
-        await encoder.close();
-        throw FileSystemException('Logs directory not found', logsDir.path);
+        _logger.info('Creating logs directory: ${logsDir.path}');
+        await logsDir.create(recursive: true);
       }
+      await encoder.close();
+      _logger.info('Logs archive created at: $zipFilePath');
+      return zipFilePath;
     } catch (e) {
       _logger.severe('Failed to create logs archive: $e');
       // Ensure encoder is closed even on error

@@ -5,6 +5,7 @@ import 'package:archive/archive_io.dart';
 import 'package:c_breez/bloc/account/credentials_manager.dart';
 import 'package:c_breez/configs/config.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -160,17 +161,19 @@ class WalletArchiveService {
     }
   }
 
-  /// Deletes all contents inside sdkConfig.workingDir without deleting the directory itself
+  /// Deletes all contents inside sdkConfig.workingDir without deleting the logs & directory itself
   static Future<void> clearWorkingDirContents() async {
     final Config config = await _getAppConfig();
     final String workingDirPath = config.sdkConfig.workingDir;
     final Directory workingDir = Directory(workingDirPath);
+    final String logsDirPath = path.join(workingDirPath, 'logs');
 
     try {
       if (await workingDir.exists()) {
         _logger.info('Clearing contents of workingDir at: $workingDirPath');
         final List<FileSystemEntity> contents = workingDir.listSync();
         for (final entity in contents) {
+          if (path.equals(entity.path, logsDirPath)) continue;
           await entity.delete(recursive: true);
         }
         _logger.info('Contents of workingDir cleared successfully');

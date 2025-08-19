@@ -191,7 +191,7 @@ jobs:
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         run: |
           echo 'Setting macOS deployment target environment variables'
-          echo 'MACOSX_DEPLOYMENT_TARGET=15.0' >> $GITHUB_ENV
+          echo 'MACOSX_DEPLOYMENT_TARGET=11.0' >> $GITHUB_ENV
 
       - name: 📦 Install Breez SDK - Native (Greenlight Implementation) dependencies
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}

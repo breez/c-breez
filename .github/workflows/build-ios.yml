@@ -181,11 +181,18 @@ jobs:
           workspaces: breez-sdk-greenlight/libs
           cache-all-crates: true
 
-      - name: Set iOS deployment target
+      - name: Set iOS/macOS deployment targets
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         run: |
-          echo 'Setting iOS deployment target environment variables'
-          echo 'IPHONEOS_DEPLOYMENT_TARGET=12.0' >> $GITHUB_ENV
+          echo "::group::Setting iOS/macOS deployment targets"
+
+          # iOS
+          echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+
+          # macOS
+          echo "MACOSX_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+
+          echo "::endgroup::"
 
       - name: 📦 Install Breez SDK - Native (Greenlight Implementation) dependencies
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}

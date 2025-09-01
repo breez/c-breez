@@ -173,8 +173,19 @@ class WalletArchiveService {
         _logger.info('Clearing contents of workingDir at: $workingDirPath');
         final List<FileSystemEntity> contents = workingDir.listSync();
         for (final entity in contents) {
+          // Skip logs directory
           if (path.equals(entity.path, logsDirPath)) continue;
-          await entity.delete(recursive: true);
+          // Skip iOS system files as Apple generates metadata files for App Group directories the app has no permission to delete
+          final fileName = path.basename(entity.path);
+          if (_isSystemFile(fileName)) {
+            _logger.info('Skipping system file: $fileName');
+            continue;
+          }
+          try {
+            await entity.delete(recursive: true);
+          } catch (e) {
+            _logger.warning('Failed to delete ${entity.path}: $e');
+          }
         }
         _logger.info('Contents of workingDir cleared successfully');
       } else {
@@ -184,5 +195,15 @@ class WalletArchiveService {
       _logger.severe('Failed to clear workingDir contents: $e');
       rethrow;
     }
+  }
+
+  /// Check if a file is a system-managed file that shouldn't be deleted
+  static bool _isSystemFile(String fileName) {
+    final systemFiles = [
+      '.com.apple.mobile_container_manager.metadata.plist',
+      '.com.apple.mobile_container_manager',
+    ];
+
+    return systemFiles.any((sysFile) => fileName.contains(sysFile));
   }
 }

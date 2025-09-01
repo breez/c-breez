@@ -186,11 +186,13 @@ jobs:
         run: |
           echo "::group::Setting iOS/macOS deployment targets"
 
-          # iOS
-          echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
-
-          # macOS
-          echo "MACOSX_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+          if [[ "${{ matrix.target }}" == "aarch64-apple-ios" ]]; then
+            echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+            echo "RUSTFLAGS=-C link-arg=-miphoneos-version-min=13.0" >> $GITHUB_ENV
+          elif [[ "${{ matrix.target }}" == "x86_64-apple-darwin" ]]; then
+            echo "MACOSX_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+            echo "RUSTFLAGS=-C link-arg=-mmacosx-version-min=13.0" >> $GITHUB_ENV
+          fi
 
           echo "::endgroup::"
 

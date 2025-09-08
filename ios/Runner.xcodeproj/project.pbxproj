@@ -7,48 +7,48 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		083EBBA2314D0AFEFC757F60 /* BreezSDKConnector.swift in Resources */ = {isa = PBXBuildFile; fileRef = 78D2653361624FF7E309DB0B /* BreezSDKConnector.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		0EE173F45E293A4B794AD5E9 /* ReceivePayment.swift in Resources */ = {isa = PBXBuildFile; fileRef = 50FA4CF9869EE48C06423B3A /* ReceivePayment.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		19E767DEF22D28DA52FBDF91 /* Pods_Breez_Notification_Service_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F031F666FD8178657A82F925 /* Pods_Breez_Notification_Service_Extension.framework */; };
+		26CFA6466B827F66E6BD3C19 /* LnurlPay.swift in Resources */ = {isa = PBXBuildFile; fileRef = C5C9E6C4FE1A494B676CF4CE /* LnurlPay.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		471BD08794B25AEB467D71E2 /* ServiceLogger.swift in Resources */ = {isa = PBXBuildFile; fileRef = D286333E921AC62959994969 /* ServiceLogger.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		47823E5A886B2EFABFF574C0 /* LnurlPayInvoice.swift in Resources */ = {isa = PBXBuildFile; fileRef = 5E22148B11CE746901578188 /* LnurlPayInvoice.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		4A40DF477E3F59A90F8A7368 /* ServiceConfig.swift in Resources */ = {isa = PBXBuildFile; fileRef = 5A42FB09667F7A54AAE7FE8F /* ServiceConfig.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		563A67142BC36D2BF2E8BDAB /* Constants.swift in Resources */ = {isa = PBXBuildFile; fileRef = 168D1A41D49D1E2C3F664DEC /* Constants.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		6EC520DC7A5BA323463BE89D /* BreezSDK.swift in Resources */ = {isa = PBXBuildFile; fileRef = F325E3EF5346576896013B72 /* BreezSDK.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */; };
 		736E5FB82BB2CA240036C720 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 736E5FB72BB2CA240036C720 /* PrivacyInfo.xcprivacy */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
+		7F19CCA13B2738DC3AD89E97 /* LnurlPayInfo.swift in Resources */ = {isa = PBXBuildFile; fileRef = 0CDCF9B75ED304A5ABCD12D9 /* LnurlPayInfo.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		9BB9A3A12DD25D44710F6F27 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 940666ACF5FD6ECE29F48DEA /* Pods_Runner.framework */; };
+		D57089442113D9EE9B77261D /* TaskProtocol.swift in Resources */ = {isa = PBXBuildFile; fileRef = 9D02030ADC899228F2289833 /* TaskProtocol.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		E021F4DF63F86F728D41E316 /* SDKNotificationService.swift in Resources */ = {isa = PBXBuildFile; fileRef = 715643B72FEDDD5F863F8DA9 /* SDKNotificationService.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		E59E1D781B39E392F74C97E4 /* ResourceHelper.swift in Resources */ = {isa = PBXBuildFile; fileRef = F7626290A8943CBB946BC9E0 /* ResourceHelper.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
+		E81881CC2E6F675800236458 /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F325E3EF5346576896013B72 /* BreezSDK.swift */; };
+		E81881CD2E6F675800236458 /* BreezSDKConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D2653361624FF7E309DB0B /* BreezSDKConnector.swift */; };
+		E81881CE2E6F675800236458 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 168D1A41D49D1E2C3F664DEC /* Constants.swift */; };
+		E81881CF2E6F675800236458 /* ResourceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7626290A8943CBB946BC9E0 /* ResourceHelper.swift */; };
+		E81881D02E6F675800236458 /* SDKNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 715643B72FEDDD5F863F8DA9 /* SDKNotificationService.swift */; };
+		E81881D12E6F675800236458 /* ServiceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A42FB09667F7A54AAE7FE8F /* ServiceConfig.swift */; };
+		E81881D22E6F675800236458 /* ServiceLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D286333E921AC62959994969 /* ServiceLogger.swift */; };
+		E81881D32E6F675800236458 /* TaskProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D02030ADC899228F2289833 /* TaskProtocol.swift */; };
+		E81881D42E6F675800236458 /* ConfirmTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7C28E759B119EFBA9C6DF0 /* ConfirmTransaction.swift */; };
+		E81881D52E6F675800236458 /* LnurlPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C9E6C4FE1A494B676CF4CE /* LnurlPay.swift */; };
+		E81881D62E6F675800236458 /* LnurlPayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDCF9B75ED304A5ABCD12D9 /* LnurlPayInfo.swift */; };
+		E81881D72E6F675800236458 /* LnurlPayInvoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E22148B11CE746901578188 /* LnurlPayInvoice.swift */; };
+		E81881D82E6F675800236458 /* ReceivePayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50FA4CF9869EE48C06423B3A /* ReceivePayment.swift */; };
 		E84A6BFD2B98E2A700C58F51 /* SdkLogListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84A6BFC2B98E2A700C58F51 /* SdkLogListener.swift */; };
 		E84C89A62B98D96700347527 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E84C89A52B98D96700347527 /* KeychainHelper.swift */; };
 		E84F35832B19599500D8302B /* breez_sdkFFI.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E84F35822B19599500D8302B /* breez_sdkFFI.xcframework */; };
 		E87F5EBD2B0E24D7007FB1DF /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E87F5EBC2B0E24D7007FB1DF /* NotificationService.swift */; };
 		E87F5EC12B0E24D7007FB1DF /* Breez Notification Service Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E87F5EBA2B0E24D7007FB1DF /* Breez Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		E88F3A292DEF226800DB8212 /* BreezSDK.swift in Resources */ = {isa = PBXBuildFile; fileRef = 45A76C552C593E6ED7743C1B /* BreezSDK.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A2A2DEF226800DB8212 /* BreezSDKConnector.swift in Resources */ = {isa = PBXBuildFile; fileRef = B95A1688E4D53BAC0EA3CCA0 /* BreezSDKConnector.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A2B2DEF226800DB8212 /* Constants.swift in Resources */ = {isa = PBXBuildFile; fileRef = D6190F357146E5999983D562 /* Constants.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A2C2DEF226800DB8212 /* ResourceHelper.swift in Resources */ = {isa = PBXBuildFile; fileRef = 2978BB1E72658D7EC5C252B7 /* ResourceHelper.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A2D2DEF226800DB8212 /* SDKNotificationService.swift in Resources */ = {isa = PBXBuildFile; fileRef = 5D7C30D5DAF04294F5156F49 /* SDKNotificationService.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A2E2DEF226800DB8212 /* ServiceConfig.swift in Resources */ = {isa = PBXBuildFile; fileRef = 8807689417469A7A6ABAD8D7 /* ServiceConfig.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A2F2DEF226800DB8212 /* ServiceLogger.swift in Resources */ = {isa = PBXBuildFile; fileRef = 10FB63AFDE5E232D959DF9B9 /* ServiceLogger.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A302DEF226800DB8212 /* TaskProtocol.swift in Resources */ = {isa = PBXBuildFile; fileRef = C1236B7292C77E95CFD492EE /* TaskProtocol.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A312DEF226800DB8212 /* ConfirmTransaction.swift in Resources */ = {isa = PBXBuildFile; fileRef = 1F141EFEC9FF2B2E52C589BC /* ConfirmTransaction.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A322DEF226800DB8212 /* LnurlPay.swift in Resources */ = {isa = PBXBuildFile; fileRef = 8109546B43E838A635BDE88B /* LnurlPay.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A332DEF226800DB8212 /* LnurlPayInfo.swift in Resources */ = {isa = PBXBuildFile; fileRef = 739B9E9904765C713D082796 /* LnurlPayInfo.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A342DEF226800DB8212 /* LnurlPayInvoice.swift in Resources */ = {isa = PBXBuildFile; fileRef = 71ECCBFA71A60A2657A280A3 /* LnurlPayInvoice.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A352DEF226800DB8212 /* ReceivePayment.swift in Resources */ = {isa = PBXBuildFile; fileRef = D0B070F98B558C4536DE1F72 /* ReceivePayment.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
-		E88F3A362DEF227800DB8212 /* BreezSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A76C552C593E6ED7743C1B /* BreezSDK.swift */; };
-		E88F3A372DEF227800DB8212 /* BreezSDKConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A1688E4D53BAC0EA3CCA0 /* BreezSDKConnector.swift */; };
-		E88F3A382DEF227800DB8212 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6190F357146E5999983D562 /* Constants.swift */; };
-		E88F3A392DEF227800DB8212 /* ResourceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2978BB1E72658D7EC5C252B7 /* ResourceHelper.swift */; };
-		E88F3A3A2DEF227800DB8212 /* SDKNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7C30D5DAF04294F5156F49 /* SDKNotificationService.swift */; };
-		E88F3A3B2DEF227800DB8212 /* ServiceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8807689417469A7A6ABAD8D7 /* ServiceConfig.swift */; };
-		E88F3A3C2DEF227800DB8212 /* ServiceLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10FB63AFDE5E232D959DF9B9 /* ServiceLogger.swift */; };
-		E88F3A3D2DEF227800DB8212 /* TaskProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1236B7292C77E95CFD492EE /* TaskProtocol.swift */; };
-		E88F3A3E2DEF227800DB8212 /* ConfirmTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F141EFEC9FF2B2E52C589BC /* ConfirmTransaction.swift */; };
-		E88F3A3F2DEF227800DB8212 /* LnurlPay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8109546B43E838A635BDE88B /* LnurlPay.swift */; };
-		E88F3A402DEF227800DB8212 /* LnurlPayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 739B9E9904765C713D082796 /* LnurlPayInfo.swift */; };
-		E88F3A412DEF227800DB8212 /* LnurlPayInvoice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71ECCBFA71A60A2657A280A3 /* LnurlPayInvoice.swift */; };
-		E88F3A422DEF227800DB8212 /* ReceivePayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B070F98B558C4536DE1F72 /* ReceivePayment.swift */; };
 		E89362262BF22745009FADDB /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 736E5FB72BB2CA240036C720 /* PrivacyInfo.xcprivacy */; };
+		F24EACCF4185E6A47627C65F /* Pods_Breez_Notification_Service_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17047BE27BE03CFB062EE353 /* Pods_Breez_Notification_Service_Extension.framework */; };
+		F64C6D8D2D37806E87C6FCD6 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04CA4CDCAD3356AFC079EAAB /* Pods_Runner.framework */; };
+		FD561D3B4D7BDA7C4740C107 /* ConfirmTransaction.swift in Resources */ = {isa = PBXBuildFile; fileRef = 9F7C28E759B119EFBA9C6DF0 /* ConfirmTransaction.swift */; settings = {ASSET_TAGS = (BreezSDK, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,29 +86,25 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1035A9EDBB20C3DE4D06061A /* Pods-Breez Notification Service Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.debug.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.debug.xcconfig"; sourceTree = "<group>"; };
-		10FB63AFDE5E232D959DF9B9 /* ServiceLogger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServiceLogger.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/ServiceLogger.swift"; sourceTree = "<group>"; };
-		147D1F0ADDBE0FD7C54E57AB /* Pods-Breez Notification Service Extension.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.profile.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.profile.xcconfig"; sourceTree = "<group>"; };
+		04CA4CDCAD3356AFC079EAAB /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0CDCF9B75ED304A5ABCD12D9 /* LnurlPayInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPayInfo.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPayInfo.swift"; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
-		1F141EFEC9FF2B2E52C589BC /* ConfirmTransaction.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConfirmTransaction.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/ConfirmTransaction.swift"; sourceTree = "<group>"; };
-		2978BB1E72658D7EC5C252B7 /* ResourceHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ResourceHelper.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/ResourceHelper.swift"; sourceTree = "<group>"; };
+		168D1A41D49D1E2C3F664DEC /* Constants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Constants.swift"; sourceTree = "<group>"; };
+		17047BE27BE03CFB062EE353 /* Pods_Breez_Notification_Service_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Breez_Notification_Service_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
-		45A76C552C593E6ED7743C1B /* BreezSDK.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BreezSDK.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/BreezSDK.swift"; sourceTree = "<group>"; };
-		51A4D2378F8C5EC152EA61BC /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
-		55C398CCC02F53FF08B0DF3D /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
-		5D7C30D5DAF04294F5156F49 /* SDKNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SDKNotificationService.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/SDKNotificationService.swift"; sourceTree = "<group>"; };
+		50FA4CF9869EE48C06423B3A /* ReceivePayment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReceivePayment.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/ReceivePayment.swift"; sourceTree = "<group>"; };
+		5A42FB09667F7A54AAE7FE8F /* ServiceConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServiceConfig.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/ServiceConfig.swift"; sourceTree = "<group>"; };
+		5E22148B11CE746901578188 /* LnurlPayInvoice.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPayInvoice.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPayInvoice.swift"; sourceTree = "<group>"; };
+		6834AD16CC10804F5AA3ECCA /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		6F2FC2C52978272800DC3B60 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6F2FC2C729783D6900DC3B60 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
-		71ECCBFA71A60A2657A280A3 /* LnurlPayInvoice.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPayInvoice.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPayInvoice.swift"; sourceTree = "<group>"; };
+		715643B72FEDDD5F863F8DA9 /* SDKNotificationService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SDKNotificationService.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/SDKNotificationService.swift"; sourceTree = "<group>"; };
 		736E5FB72BB2CA240036C720 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		739B9E9904765C713D082796 /* LnurlPayInfo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPayInfo.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPayInfo.swift"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		78D2653361624FF7E309DB0B /* BreezSDKConnector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BreezSDKConnector.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/BreezSDKConnector.swift"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
-		8109546B43E838A635BDE88B /* LnurlPay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPay.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPay.swift"; sourceTree = "<group>"; };
-		8807689417469A7A6ABAD8D7 /* ServiceConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServiceConfig.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/ServiceConfig.swift"; sourceTree = "<group>"; };
-		940666ACF5FD6ECE29F48DEA /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,10 +112,13 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B95A1688E4D53BAC0EA3CCA0 /* BreezSDKConnector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BreezSDKConnector.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/BreezSDKConnector.swift"; sourceTree = "<group>"; };
-		C1236B7292C77E95CFD492EE /* TaskProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TaskProtocol.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/TaskProtocol.swift"; sourceTree = "<group>"; };
-		D0B070F98B558C4536DE1F72 /* ReceivePayment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ReceivePayment.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/ReceivePayment.swift"; sourceTree = "<group>"; };
-		D6190F357146E5999983D562 /* Constants.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Constants.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Constants.swift"; sourceTree = "<group>"; };
+		9D02030ADC899228F2289833 /* TaskProtocol.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TaskProtocol.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/TaskProtocol.swift"; sourceTree = "<group>"; };
+		9F7C28E759B119EFBA9C6DF0 /* ConfirmTransaction.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConfirmTransaction.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/ConfirmTransaction.swift"; sourceTree = "<group>"; };
+		B11C26FA6B098E40BD42876B /* Pods-Breez Notification Service Extension.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.profile.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.profile.xcconfig"; sourceTree = "<group>"; };
+		C5C9E6C4FE1A494B676CF4CE /* LnurlPay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LnurlPay.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/Task/LnurlPay.swift"; sourceTree = "<group>"; };
+		D1377B2C67EAF369CC95C5C1 /* Pods-Breez Notification Service Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.debug.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.debug.xcconfig"; sourceTree = "<group>"; };
+		D286333E921AC62959994969 /* ServiceLogger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ServiceLogger.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/ServiceLogger.swift"; sourceTree = "<group>"; };
+		DD95AAB5E40C9D20B5E4AB9A /* Pods-Breez Notification Service Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.release.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.release.xcconfig"; sourceTree = "<group>"; };
 		E84A6BFC2B98E2A700C58F51 /* SdkLogListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SdkLogListener.swift; sourceTree = "<group>"; };
 		E84C89A52B98D96700347527 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
 		E84F35822B19599500D8302B /* breez_sdkFFI.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = breez_sdkFFI.xcframework; path = ".symlinks/plugins/breez_sdk/ios/bindings-swift/breez_sdkFFI.xcframework"; sourceTree = "<group>"; };
@@ -127,9 +126,10 @@
 		E87F5EBC2B0E24D7007FB1DF /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		E87F5EBE2B0E24D7007FB1DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E87F5EC62B0E2510007FB1DF /* Breez Notification Service Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Breez Notification Service Extension.entitlements"; sourceTree = "<group>"; };
-		F031F666FD8178657A82F925 /* Pods_Breez_Notification_Service_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Breez_Notification_Service_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA10E98C9EAE86B976875CF5 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
-		FEF4D94418830919A05576B1 /* Pods-Breez Notification Service Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Breez Notification Service Extension.release.xcconfig"; path = "Target Support Files/Pods-Breez Notification Service Extension/Pods-Breez Notification Service Extension.release.xcconfig"; sourceTree = "<group>"; };
+		F325E3EF5346576896013B72 /* BreezSDK.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BreezSDK.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/BreezSDK.swift"; sourceTree = "<group>"; };
+		F7626290A8943CBB946BC9E0 /* ResourceHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ResourceHelper.swift; path = "../.symlinks/plugins/breez_sdk/ios/bindings-swift/Sources/BreezSDK/ResourceHelper.swift"; sourceTree = "<group>"; };
+		FD35461382601031922943C4 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
+		FDAB18FE686F72133975BAF3 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,7 +137,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9BB9A3A12DD25D44710F6F27 /* Pods_Runner.framework in Frameworks */,
+				F64C6D8D2D37806E87C6FCD6 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,7 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E84F35832B19599500D8302B /* breez_sdkFFI.xcframework in Frameworks */,
-				19E767DEF22D28DA52FBDF91 /* Pods_Breez_Notification_Service_Extension.framework in Frameworks */,
+				F24EACCF4185E6A47627C65F /* Pods_Breez_Notification_Service_Extension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,12 +157,12 @@
 			isa = PBXGroup;
 			children = (
 				2E02D5AEFED7D5941A3041D4 /* breez_sdk-OnDemandResources */,
-				1035A9EDBB20C3DE4D06061A /* Pods-Breez Notification Service Extension.debug.xcconfig */,
-				FEF4D94418830919A05576B1 /* Pods-Breez Notification Service Extension.release.xcconfig */,
-				147D1F0ADDBE0FD7C54E57AB /* Pods-Breez Notification Service Extension.profile.xcconfig */,
-				55C398CCC02F53FF08B0DF3D /* Pods-Runner.debug.xcconfig */,
-				51A4D2378F8C5EC152EA61BC /* Pods-Runner.release.xcconfig */,
-				FA10E98C9EAE86B976875CF5 /* Pods-Runner.profile.xcconfig */,
+				D1377B2C67EAF369CC95C5C1 /* Pods-Breez Notification Service Extension.debug.xcconfig */,
+				DD95AAB5E40C9D20B5E4AB9A /* Pods-Breez Notification Service Extension.release.xcconfig */,
+				B11C26FA6B098E40BD42876B /* Pods-Breez Notification Service Extension.profile.xcconfig */,
+				FD35461382601031922943C4 /* Pods-Runner.debug.xcconfig */,
+				FDAB18FE686F72133975BAF3 /* Pods-Runner.release.xcconfig */,
+				6834AD16CC10804F5AA3ECCA /* Pods-Runner.profile.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -170,37 +170,17 @@
 		2E02D5AEFED7D5941A3041D4 /* breez_sdk-OnDemandResources */ = {
 			isa = PBXGroup;
 			children = (
-				3FE3B0758BBEB23CF4E84479 /* BreezSDK */,
+				E82A95343E8E701145D85B74 /* BreezSDK */,
 			);
 			name = "breez_sdk-OnDemandResources";
-			sourceTree = "<group>";
-		};
-		3FE3B0758BBEB23CF4E84479 /* BreezSDK */ = {
-			isa = PBXGroup;
-			children = (
-				45A76C552C593E6ED7743C1B /* BreezSDK.swift */,
-				B95A1688E4D53BAC0EA3CCA0 /* BreezSDKConnector.swift */,
-				D6190F357146E5999983D562 /* Constants.swift */,
-				2978BB1E72658D7EC5C252B7 /* ResourceHelper.swift */,
-				5D7C30D5DAF04294F5156F49 /* SDKNotificationService.swift */,
-				8807689417469A7A6ABAD8D7 /* ServiceConfig.swift */,
-				10FB63AFDE5E232D959DF9B9 /* ServiceLogger.swift */,
-				C1236B7292C77E95CFD492EE /* TaskProtocol.swift */,
-				1F141EFEC9FF2B2E52C589BC /* ConfirmTransaction.swift */,
-				8109546B43E838A635BDE88B /* LnurlPay.swift */,
-				739B9E9904765C713D082796 /* LnurlPayInfo.swift */,
-				71ECCBFA71A60A2657A280A3 /* LnurlPayInvoice.swift */,
-				D0B070F98B558C4536DE1F72 /* ReceivePayment.swift */,
-			);
-			name = BreezSDK;
 			sourceTree = "<group>";
 		};
 		7A11EF0BD5CDD8E6E8CD56CA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				E84F35822B19599500D8302B /* breez_sdkFFI.xcframework */,
-				F031F666FD8178657A82F925 /* Pods_Breez_Notification_Service_Extension.framework */,
-				940666ACF5FD6ECE29F48DEA /* Pods_Runner.framework */,
+				17047BE27BE03CFB062EE353 /* Pods_Breez_Notification_Service_Extension.framework */,
+				04CA4CDCAD3356AFC079EAAB /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -255,6 +235,26 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
+		E82A95343E8E701145D85B74 /* BreezSDK */ = {
+			isa = PBXGroup;
+			children = (
+				F325E3EF5346576896013B72 /* BreezSDK.swift */,
+				78D2653361624FF7E309DB0B /* BreezSDKConnector.swift */,
+				168D1A41D49D1E2C3F664DEC /* Constants.swift */,
+				F7626290A8943CBB946BC9E0 /* ResourceHelper.swift */,
+				715643B72FEDDD5F863F8DA9 /* SDKNotificationService.swift */,
+				5A42FB09667F7A54AAE7FE8F /* ServiceConfig.swift */,
+				D286333E921AC62959994969 /* ServiceLogger.swift */,
+				9D02030ADC899228F2289833 /* TaskProtocol.swift */,
+				9F7C28E759B119EFBA9C6DF0 /* ConfirmTransaction.swift */,
+				C5C9E6C4FE1A494B676CF4CE /* LnurlPay.swift */,
+				0CDCF9B75ED304A5ABCD12D9 /* LnurlPayInfo.swift */,
+				5E22148B11CE746901578188 /* LnurlPayInvoice.swift */,
+				50FA4CF9869EE48C06423B3A /* ReceivePayment.swift */,
+			);
+			name = BreezSDK;
+			sourceTree = "<group>";
+		};
 		E87F5EBB2B0E24D7007FB1DF /* Breez Notification Service Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -274,7 +274,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
-				6FF4EBE964F79F66FA2A2F90 /* [CP] Check Pods Manifest.lock */,
+				D3F51BC3E02BB6EF67BF4EC3 /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
@@ -282,8 +282,8 @@
 				E8B459272B0CB66C00697D09 /* Embed Foundation Extensions */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
-				081C71186812F5B4BC347359 /* [CP] Embed Pods Frameworks */,
-				9A7CB22E742E9D03F84D07C9 /* [CP] Copy Pods Resources */,
+				B35FBBF9D7B59F0EE3804310 /* [CP] Embed Pods Frameworks */,
+				926A60D8BCE8E92631A8081D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -299,7 +299,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E87F5EC22B0E24D7007FB1DF /* Build configuration list for PBXNativeTarget "Breez Notification Service Extension" */;
 			buildPhases = (
-				AD30521838E483D77BD24B9A /* [CP] Check Pods Manifest.lock */,
+				94BC251DC2C2A88147951706 /* [CP] Check Pods Manifest.lock */,
 				E87F5EB62B0E24D7007FB1DF /* Sources */,
 				E87F5EB72B0E24D7007FB1DF /* Frameworks */,
 				E87F5EB82B0E24D7007FB1DF /* Resources */,
@@ -370,25 +370,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E88F3A292DEF226800DB8212 /* BreezSDK.swift in Resources */,
-				E88F3A2A2DEF226800DB8212 /* BreezSDKConnector.swift in Resources */,
-				E88F3A2B2DEF226800DB8212 /* Constants.swift in Resources */,
-				E88F3A2C2DEF226800DB8212 /* ResourceHelper.swift in Resources */,
-				E88F3A2D2DEF226800DB8212 /* SDKNotificationService.swift in Resources */,
-				E88F3A2E2DEF226800DB8212 /* ServiceConfig.swift in Resources */,
-				E88F3A2F2DEF226800DB8212 /* ServiceLogger.swift in Resources */,
-				E88F3A302DEF226800DB8212 /* TaskProtocol.swift in Resources */,
-				E88F3A312DEF226800DB8212 /* ConfirmTransaction.swift in Resources */,
-				E88F3A322DEF226800DB8212 /* LnurlPay.swift in Resources */,
-				E88F3A332DEF226800DB8212 /* LnurlPayInfo.swift in Resources */,
-				E88F3A342DEF226800DB8212 /* LnurlPayInvoice.swift in Resources */,
-				E88F3A352DEF226800DB8212 /* ReceivePayment.swift in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				6F2FC2C62978272800DC3B60 /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				736E5FB82BB2CA240036C720 /* PrivacyInfo.xcprivacy in Resources */,
+				6EC520DC7A5BA323463BE89D /* BreezSDK.swift in Resources */,
+				083EBBA2314D0AFEFC757F60 /* BreezSDKConnector.swift in Resources */,
+				563A67142BC36D2BF2E8BDAB /* Constants.swift in Resources */,
+				E59E1D781B39E392F74C97E4 /* ResourceHelper.swift in Resources */,
+				E021F4DF63F86F728D41E316 /* SDKNotificationService.swift in Resources */,
+				4A40DF477E3F59A90F8A7368 /* ServiceConfig.swift in Resources */,
+				471BD08794B25AEB467D71E2 /* ServiceLogger.swift in Resources */,
+				D57089442113D9EE9B77261D /* TaskProtocol.swift in Resources */,
+				FD561D3B4D7BDA7C4740C107 /* ConfirmTransaction.swift in Resources */,
+				26CFA6466B827F66E6BD3C19 /* LnurlPay.swift in Resources */,
+				7F19CCA13B2738DC3AD89E97 /* LnurlPayInfo.swift in Resources */,
+				47823E5A886B2EFABFF574C0 /* LnurlPayInvoice.swift in Resources */,
+				0EE173F45E293A4B794AD5E9 /* ReceivePayment.swift in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -403,23 +403,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		081C71186812F5B4BC347359 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -436,7 +419,28 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
 		};
-		6FF4EBE964F79F66FA2A2F90 /* [CP] Check Pods Manifest.lock */ = {
+		926A60D8BCE8E92631A8081D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		94BC251DC2C2A88147951706 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -451,7 +455,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Breez Notification Service Extension-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -475,24 +479,28 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
-		9A7CB22E742E9D03F84D07C9 /* [CP] Copy Pods Resources */ = {
+		B35FBBF9D7B59F0EE3804310 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Copy Pods Resources";
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		AD30521838E483D77BD24B9A /* [CP] Check Pods Manifest.lock */ = {
+		D3F51BC3E02BB6EF67BF4EC3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -507,7 +515,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Breez Notification Service Extension-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -530,19 +538,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E88F3A362DEF227800DB8212 /* BreezSDK.swift in Sources */,
-				E88F3A372DEF227800DB8212 /* BreezSDKConnector.swift in Sources */,
-				E88F3A382DEF227800DB8212 /* Constants.swift in Sources */,
-				E88F3A392DEF227800DB8212 /* ResourceHelper.swift in Sources */,
-				E88F3A3A2DEF227800DB8212 /* SDKNotificationService.swift in Sources */,
-				E88F3A3B2DEF227800DB8212 /* ServiceConfig.swift in Sources */,
-				E88F3A3C2DEF227800DB8212 /* ServiceLogger.swift in Sources */,
-				E88F3A3D2DEF227800DB8212 /* TaskProtocol.swift in Sources */,
-				E88F3A3E2DEF227800DB8212 /* ConfirmTransaction.swift in Sources */,
-				E88F3A3F2DEF227800DB8212 /* LnurlPay.swift in Sources */,
-				E88F3A402DEF227800DB8212 /* LnurlPayInfo.swift in Sources */,
-				E88F3A412DEF227800DB8212 /* LnurlPayInvoice.swift in Sources */,
-				E88F3A422DEF227800DB8212 /* ReceivePayment.swift in Sources */,
+				E81881CC2E6F675800236458 /* BreezSDK.swift in Sources */,
+				E81881CD2E6F675800236458 /* BreezSDKConnector.swift in Sources */,
+				E81881CE2E6F675800236458 /* Constants.swift in Sources */,
+				E81881CF2E6F675800236458 /* ResourceHelper.swift in Sources */,
+				E81881D02E6F675800236458 /* SDKNotificationService.swift in Sources */,
+				E81881D12E6F675800236458 /* ServiceConfig.swift in Sources */,
+				E81881D22E6F675800236458 /* ServiceLogger.swift in Sources */,
+				E81881D32E6F675800236458 /* TaskProtocol.swift in Sources */,
+				E81881D42E6F675800236458 /* ConfirmTransaction.swift in Sources */,
+				E81881D52E6F675800236458 /* LnurlPay.swift in Sources */,
+				E81881D62E6F675800236458 /* LnurlPayInfo.swift in Sources */,
+				E81881D72E6F675800236458 /* LnurlPayInvoice.swift in Sources */,
+				E81881D82E6F675800236458 /* ReceivePayment.swift in Sources */,
 				E84A6BFD2B98E2A700C58F51 /* SdkLogListener.swift in Sources */,
 				E84C89A62B98D96700347527 /* KeychainHelper.swift in Sources */,
 				E87F5EBD2B0E24D7007FB1DF /* NotificationService.swift in Sources */,
@@ -834,7 +842,7 @@
 		};
 		E87F5EC32B0E24D7007FB1DF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1035A9EDBB20C3DE4D06061A /* Pods-Breez Notification Service Extension.debug.xcconfig */;
+			baseConfigurationReference = D1377B2C67EAF369CC95C5C1 /* Pods-Breez Notification Service Extension.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -877,7 +885,7 @@
 		};
 		E87F5EC42B0E24D7007FB1DF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FEF4D94418830919A05576B1 /* Pods-Breez Notification Service Extension.release.xcconfig */;
+			baseConfigurationReference = DD95AAB5E40C9D20B5E4AB9A /* Pods-Breez Notification Service Extension.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -920,7 +928,7 @@
 		};
 		E87F5EC52B0E24D7007FB1DF /* Profile */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 147D1F0ADDBE0FD7C54E57AB /* Pods-Breez Notification Service Extension.profile.xcconfig */;
+			baseConfigurationReference = B11C26FA6B098E40BD42876B /* Pods-Breez Notification Service Extension.profile.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;

@@ -7,7 +7,7 @@ import 'package:c_breez/routes/security/widget/security_pin_interval.dart';
 import 'package:c_breez/widgets/designsystem/switch/simple_switch.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:c_breez/widgets/route.dart';
-import 'package:flutter/material.dart' hide Preview;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path/path.dart';

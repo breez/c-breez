@@ -100,7 +100,7 @@ class _ReverseSwapFormState extends State<ReverseSwapForm> {
               ),
               trailing: Switch(
                 value: widget.withdrawMaxValue,
-                activeColor: Colors.white,
+                activeThumbColor: Colors.white,
                 onChanged: (bool value) async {
                   setState(() {
                     widget.onChanged(value);

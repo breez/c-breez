@@ -3,7 +3,7 @@ import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/theme/theme_provider.dart' as theme;
 import 'package:c_breez/widgets/preview/preview.dart';
-import 'package:flutter/material.dart' hide Preview;
+import 'package:flutter/material.dart';
 
 class PaymentItemTitle extends StatelessWidget {
   final PaymentMinutiae _paymentMinutiae;

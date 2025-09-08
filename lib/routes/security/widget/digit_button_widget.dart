@@ -1,5 +1,5 @@
 import 'package:c_breez/widgets/preview/preview.dart';
-import 'package:flutter/material.dart' hide Preview;
+import 'package:flutter/material.dart';
 
 class DigitButtonWidget extends StatelessWidget {
   final String? digit;

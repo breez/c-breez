@@ -1,6 +1,6 @@
 import 'package:c_breez/routes/security/widget/digit_button_widget.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
-import 'package:flutter/material.dart' hide Preview;
+import 'package:flutter/material.dart';
 
 class NumPadWidget extends StatelessWidget {
   final ActionKey lhsActionKey;

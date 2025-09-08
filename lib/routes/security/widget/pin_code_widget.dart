@@ -6,7 +6,7 @@ import 'package:c_breez/routes/security/widget/num_pad_widget.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:c_breez/widgets/shake_widget.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' hide Preview;
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class PinCodeWidget extends StatefulWidget {

@@ -44,8 +44,6 @@ dependencies:
   # Downgraded firebase plugins to a version compatible with mobile_scanner <6.0.0 to avoid bumping minimum deployment target to 15.5 on iOS
   # Doesn't support: Linux Windows
   firebase_core: ^3.14.0
-  # Doesn't support: Linux Mac Windows
-  firebase_dynamic_links: ^6.1.7
   # Doesn't support: Linux Windows
   firebase_messaging: ^15.2.7
   flutter_bloc: ^9.1.1

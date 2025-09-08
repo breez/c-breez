@@ -92,7 +92,7 @@ class _RedeemFundsPageState extends State<RedeemFundsPage> {
                     ),
                     trailing: Switch(
                       value: _withdrawMaxValue,
-                      activeColor: Colors.white,
+                      activeThumbColor: Colors.white,
                       onChanged: (bool value) async {
                         setState(() {
                           _withdrawMaxValue = value;

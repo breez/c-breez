@@ -4,7 +4,7 @@ import 'package:c_breez/bloc/security/security_bloc.dart';
 import 'package:c_breez/widgets/preview/preview.dart';
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
-import 'package:flutter/material.dart' hide Preview;
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SecurityPinInterval extends StatelessWidget {

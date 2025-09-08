@@ -61,3 +61,4 @@ config.json
 # Direnv
 .envrc
 .env
+/assets/gl-certs

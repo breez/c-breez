@@ -1,9 +1,9 @@
-import 'package:app_group_directory/app_group_directory.dart';
 import 'package:breez_sdk/breez_sdk.dart';
 import 'package:breez_sdk/sdk.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/utils.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_app_group_directory/flutter_app_group_directory.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -110,9 +110,8 @@ class Config {
       final workingDir = await getApplicationDocumentsDirectory();
       path = workingDir.path;
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final sharedDirectory = await AppGroupDirectory().getAppGroupDirectory(
-        "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client",
-      );
+      final String appGroupDirectory =  "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client";
+      final sharedDirectory = await FlutterAppGroupDirectory.getAppGroupDirectory(appGroupDirectory);
       if (sharedDirectory == null) {
         throw Exception("Could not get shared directory");
       }

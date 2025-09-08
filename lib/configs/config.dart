@@ -27,13 +27,13 @@ class Config {
       final injector = serviceInjector ?? ServiceInjector();
       final breezSDK = injector.breezSDK;
       final breezConfig = await _getBundledConfig();
-      final defaultConf = await _getDefaultConf(breezSDK, breezConfig.apiKey, breezConfig.nodeConfig);
+      final defaultConf = await _getDefaultConf(breezSDK, breezConfig.apiKey, await breezConfig.nodeConfig);
       final defaultMempoolUrl = defaultConf.mempoolspaceUrl ?? NetworkConstants.defaultBitcoinMempoolInstance;
       final sdkConfig = await getSDKConfig(injector, defaultConf, breezConfig);
 
       _instance = Config._(
         sdkConfig: sdkConfig,
-        nodeConfig: breezConfig.nodeConfig,
+        nodeConfig: await breezConfig.nodeConfig,
         defaultMempoolUrl: defaultMempoolUrl,
       );
     }
@@ -110,7 +110,8 @@ class Config {
       final workingDir = await getApplicationDocumentsDirectory();
       path = workingDir.path;
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      final String appGroupDirectory =  "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client";
+      final String appGroupDirectory =
+          "group.${const String.fromEnvironment("APP_ID_PREFIX")}.com.cBreez.client";
       final sharedDirectory = await FlutterAppGroupDirectory.getAppGroupDirectory(appGroupDirectory);
       if (sharedDirectory == null) {
         throw Exception("Could not get shared directory");

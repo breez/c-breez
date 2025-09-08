@@ -119,8 +119,9 @@ flutter:
     - src/icon/animals/
     - src/icon/vendors/
     - src/animations/welcome/
-    - assets/images/
+    - assets/gl-certs/
     - assets/icons/
+    - assets/images/
     - .git/
     - .git/refs/heads/
     - pubspec.lock

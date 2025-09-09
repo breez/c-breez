@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 
 class RevSwapsInProgressState {
   final List<ReverseSwapInfo> reverseSwapsInProgress;

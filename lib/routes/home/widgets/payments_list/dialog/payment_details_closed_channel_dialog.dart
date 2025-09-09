@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/routes/home/widgets/payments_list/dialog/closed_channel_payment_details.dart';

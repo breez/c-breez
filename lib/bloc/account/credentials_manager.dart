@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:breez_sdk/sdk.dart' as sdk;
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/configs/config.dart';
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/services/keychain.dart';

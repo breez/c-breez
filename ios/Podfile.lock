@@ -3,7 +3,7 @@ PODS:
     - Flutter
   - app_links (6.4.1):
     - Flutter
-  - breez_sdk (0.7.1):
+  - breez_sdk (0.8.1-rc3):
     - Flutter
   - connectivity_plus (0.0.1):
     - Flutter
@@ -216,7 +216,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   app_group_directory: 7bf9f8f9819ead554de29da7c25fb7a680d6a9a0
   app_links: 585674be3c6661708e6cd794ab4f39fb9d8356f9
-  breez_sdk: 837808591dc8484936c1891ce9097ed88da60dd6
+  breez_sdk: e83f608e5c343f5728a904057eddc3064013ff34
   connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
   device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e

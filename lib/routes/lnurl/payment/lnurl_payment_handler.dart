@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_dialog.dart';
 import 'package:c_breez/routes/lnurl/payment/lnurl_payment_info.dart';
@@ -47,7 +47,7 @@ Future<LNURLPageResult?> handlePayRequest(
       paymentFunc: () {
         final accBloc = context.read<AccountBloc>();
         final req = LnUrlPayRequest(
-          amountMsat: BigInt.from(paymentInfo!.amountSat * 1000),
+          amountMsat: paymentInfo!.amountSat * 1000,
           comment: paymentInfo.comment,
           data: data,
           validateSuccessActionUrl: false,

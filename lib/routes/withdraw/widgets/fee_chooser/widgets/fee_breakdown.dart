@@ -18,7 +18,7 @@ class FeeBreakdown extends StatelessWidget {
     var feeOption = this.feeOption;
     int? boltzServiceFeeSat;
     if (feeOption is ReverseSwapFeeOption) {
-      boltzServiceFeeSat = feeOption.pairInfo.totalFees.toInt() - feeOption.txFeeSat;
+      boltzServiceFeeSat = feeOption.pairInfo.totalFees - feeOption.txFeeSat;
     }
 
     return Container(
@@ -29,15 +29,13 @@ class FeeBreakdown extends StatelessWidget {
       child: Column(
         children: [
           SenderAmount(
-            amountSat: (feeOption is ReverseSwapFeeOption)
-                ? feeOption.pairInfo.senderAmountSat.toInt()
-                : amountSat,
+            amountSat: (feeOption is ReverseSwapFeeOption) ? feeOption.pairInfo.senderAmountSat : amountSat,
           ),
           if (boltzServiceFeeSat != null) ...[BoltzServiceFee(boltzServiceFeeSat: boltzServiceFeeSat)],
           TransactionFee(txFeeSat: feeOption.txFeeSat),
           RecipientAmount(
             amountSat: (feeOption is ReverseSwapFeeOption)
-                ? feeOption.pairInfo.recipientAmountSat.toInt()
+                ? feeOption.pairInfo.recipientAmountSat
                 : amountSat - feeOption.txFeeSat,
           ),
         ],

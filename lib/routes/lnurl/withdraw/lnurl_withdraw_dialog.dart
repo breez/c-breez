@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart' as sdk;
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/routes/lnurl/widgets/lnurl_page_result.dart';
@@ -137,7 +137,7 @@ class _LNURLWithdrawDialogState extends State<LNURLWithdrawDialog> with SingleTi
         "and max is ${widget.requestData.maxWithdrawable} msats.",
       );
       final req = sdk.LnUrlWithdrawRequest(
-        amountMsat: BigInt.from(widget.amountSat * 1000),
+        amountMsat: widget.amountSat * 1000,
         data: widget.requestData,
         description: description,
       );

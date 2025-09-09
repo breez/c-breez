@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/user_profile/user_profile_bloc.dart';
@@ -49,12 +49,34 @@ void main() async {
 
   final minutiae = [
     PaymentMinutiae.fromPayment(
-      Payment(
+      const Payment(
         paymentType: PaymentType.Received,
         id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-        feeMsat: BigInt.zero,
+        feeMsat: 0,
         paymentTime: 1661791810,
-        amountMsat: BigInt.from(4321000),
+        amountMsat: 4321000,
+        status: PaymentStatus.Complete,
+        description: "A title",
+        details: PaymentDetails.ln(
+          data: LnPaymentDetails(
+            paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+            label: "",
+            destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
+            paymentPreimage: "",
+            keysend: false,
+            bolt11: "",
+          ),
+        ),
+      ),
+      getSystemAppLocalizations(),
+    ),
+    PaymentMinutiae.fromPayment(
+      const Payment(
+        paymentType: PaymentType.Received,
+        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
+        feeMsat: 12,
+        paymentTime: 1661791810,
+        amountMsat: 4321000,
         status: PaymentStatus.Complete,
         description: "A title",
         details: PaymentDetails.ln(
@@ -74,31 +96,9 @@ void main() async {
       Payment(
         paymentType: PaymentType.Received,
         id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-        feeMsat: BigInt.from(12),
-        paymentTime: 1661791810,
-        amountMsat: BigInt.from(4321000),
-        status: PaymentStatus.Complete,
-        description: "A title",
-        details: PaymentDetails.ln(
-          data: LnPaymentDetails(
-            paymentHash: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-            label: "",
-            destinationPubkey: "0264a67069b7cbd4ea3db0709d9f605e11643a66fe434d77eaf9bf960a323dda5d",
-            paymentPreimage: "",
-            keysend: false,
-            bolt11: "",
-          ),
-        ),
-      ),
-      getSystemAppLocalizations(),
-    ),
-    PaymentMinutiae.fromPayment(
-      Payment(
-        paymentType: PaymentType.Received,
-        id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-        feeMsat: BigInt.from(3456),
+        feeMsat: 3456,
         paymentTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        amountMsat: BigInt.from(4321000),
+        amountMsat: 4321000,
         status: PaymentStatus.Complete,
         description: "A title",
         details: const PaymentDetails.ln(

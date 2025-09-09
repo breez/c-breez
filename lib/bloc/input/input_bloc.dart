@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/bloc/input/input_data.dart';
 import 'package:c_breez/bloc/input/input_printer.dart';
 import 'package:c_breez/bloc/input/input_source.dart';
@@ -85,8 +85,8 @@ class InputBloc extends Cubit<InputState> {
       bolt11: lnInvoice.bolt11,
       paymentHash: lnInvoice.paymentHash,
       description: lnInvoice.description ?? "",
-      amountMsat: lnInvoice.amountMsat?.toInt() ?? 0,
-      expiry: lnInvoice.expiry.toInt(),
+      amountMsat: lnInvoice.amountMsat ?? 0,
+      expiry: lnInvoice.expiry,
     );
     return InputState.invoice(invoice, source);
   }

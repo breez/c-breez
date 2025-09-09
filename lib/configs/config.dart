@@ -1,6 +1,6 @@
 import 'package:app_group_directory/app_group_directory.dart';
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/sdk.dart' as sdk;
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
 import 'package:c_breez/services/injector.dart';
 import 'package:c_breez/utils/utils.dart';
 import 'package:flutter/foundation.dart';
@@ -80,14 +80,11 @@ class Config {
     return configuredMaxFeePercent;
   }
 
-  static Future<BigInt> _configuredExempMsatFee(
-    ServiceInjector serviceInjector,
-    sdk.Config defaultConf,
-  ) async {
+  static Future<int> _configuredExempMsatFee(ServiceInjector serviceInjector, sdk.Config defaultConf) async {
     final BreezPreferences breezPreferences = serviceInjector.breezPreferences;
     final configuredExemptFee = await breezPreferences.getPaymentOptionsExemptFee();
     _logger.info("Using exemptMsatFee from preferences: $configuredExemptFee");
-    return BigInt.from(configuredExemptFee);
+    return configuredExemptFee;
   }
 
   static Future<String?> _mempoolSpaceUrl(ServiceInjector serviceInjector, sdk.Config defaultConf) async {

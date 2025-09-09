@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/currency/currency_bloc.dart';
 import 'package:c_breez/bloc/currency/currency_state.dart';
@@ -91,12 +91,12 @@ void main() async {
           children: [
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "",
-                  feeMsat: BigInt.zero,
+                  feeMsat: 0,
                   paymentTime: 1661791810,
-                  amountMsat: BigInt.from(4321000),
+                  amountMsat: 4321000,
                   status: PaymentStatus.Complete,
                   description: "",
                   details: PaymentDetails.ln(
@@ -117,12 +117,12 @@ void main() async {
             // Pending
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                  feeMsat: BigInt.from(1234),
+                  feeMsat: 1234,
                   paymentTime: 1661791810,
-                  amountMsat: BigInt.from(4321000),
+                  amountMsat: 4321000,
                   status: PaymentStatus.Pending,
                   description: "",
                   details: PaymentDetails.ln(
@@ -143,12 +143,12 @@ void main() async {
             // Show all
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                  feeMsat: BigInt.from(1234),
+                  feeMsat: 1234,
                   paymentTime: 1661791810,
-                  amountMsat: BigInt.from(4321000),
+                  amountMsat: 4321000,
                   status: PaymentStatus.Complete,
                   description: "",
                   details: PaymentDetails.ln(
@@ -169,12 +169,12 @@ void main() async {
             // Hide all
             PaymentItemAmount(
               PaymentMinutiae.fromPayment(
-                Payment(
+                const Payment(
                   paymentType: PaymentType.Received,
                   id: "7afeee37f0bb1578e94f2e406973118c4dcec0e0755aa873af4a9a24473c02de",
-                  feeMsat: BigInt.from(1234),
+                  feeMsat: 1234,
                   paymentTime: 1661791810,
-                  amountMsat: BigInt.from(4321000),
+                  amountMsat: 4321000,
                   status: PaymentStatus.Complete,
                   description: "",
                   details: PaymentDetails.ln(

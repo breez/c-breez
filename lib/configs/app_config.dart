@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:logging/logging.dart';
 
 final _log = Logger("AppConfig");

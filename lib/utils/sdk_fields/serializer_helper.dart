@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 
 /// Temporary toString implementations for SDK fields
 String swapInfoToString(SwapInfo? swapInfo) {

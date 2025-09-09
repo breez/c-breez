@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:c_breez/models/payment_minutiae.dart';
 import 'package:c_breez/widgets/breez_avatar.dart';
 import 'package:flutter/material.dart';

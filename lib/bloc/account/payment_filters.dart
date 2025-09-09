@@ -1,5 +1,5 @@
-import 'package:breez_sdk/sdk.dart';
 import 'package:flutter/foundation.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 
 class PaymentFilters implements Exception {
   final List<PaymentTypeFilter>? filters;

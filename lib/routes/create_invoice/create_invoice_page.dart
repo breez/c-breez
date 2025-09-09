@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/bloc/account/account_bloc.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
@@ -62,7 +62,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
       if (data != null) {
         final currencyState = context.read<CurrencyBloc>().state;
         _amountController.text = currencyState.bitcoinCurrency.format(
-          data.maxWithdrawable.toInt() ~/ 1000,
+          data.maxWithdrawable ~/ 1000,
           includeDisplayName: false,
         );
         _descriptionController.text = data.defaultDescription;
@@ -235,7 +235,7 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   String? validatePayment(int amountSat) {
     final lspInfo = context.read<LSPBloc>().state?.lspInfo;
     int? channelMinimumFeeSat = lspInfo != null && lspInfo.openingFeeParamsList.values.isNotEmpty
-        ? lspInfo.openingFeeParamsList.values.first.minMsat.toInt() ~/ 1000
+        ? lspInfo.openingFeeParamsList.values.first.minMsat ~/ 1000
         : null;
 
     return PaymentValidator(
@@ -255,11 +255,11 @@ class CreateInvoicePageState extends State<CreateInvoicePage> {
   }) {
     final data = widget.requestData;
     if (data != null) {
-      if (amountSat > data.maxWithdrawable.toInt() ~/ 1000) {
-        throw PaymentExceededLimitError(data.maxWithdrawable.toInt() ~/ 1000);
+      if (amountSat > data.maxWithdrawable ~/ 1000) {
+        throw PaymentExceededLimitError(data.maxWithdrawable ~/ 1000);
       }
-      if (amountSat < data.minWithdrawable.toInt() ~/ 1000) {
-        throw PaymentBelowLimitError(data.minWithdrawable.toInt() ~/ 1000);
+      if (amountSat < data.minWithdrawable ~/ 1000) {
+        throw PaymentBelowLimitError(data.minWithdrawable ~/ 1000);
       }
     }
     return context.read<AccountBloc>().validatePayment(

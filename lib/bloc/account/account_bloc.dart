@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:breez_sdk/breez_sdk.dart';
-import 'package:breez_sdk/sdk.dart' as sdk;
-import 'package:breez_sdk/sdk.dart' hide Config;
+import 'package:breez_sdk/bridge_generated.dart' as sdk;
+import 'package:breez_sdk/bridge_generated.dart' hide Config;
+import 'package:breez_sdk/exceptions.dart';
 import 'package:c_breez/bloc/account/account_state.dart';
 import 'package:c_breez/bloc/account/account_state_assembler.dart';
 import 'package:c_breez/bloc/account/payment_error.dart';
@@ -93,11 +94,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
   Future sendPayment(String bolt11, int? amountMsat) async {
     _log.info("sendPayment: $bolt11, $amountMsat");
     try {
-      final req = sdk.SendPaymentRequest(
-        bolt11: bolt11,
-        amountMsat: amountMsat != null ? BigInt.from(amountMsat) : null,
-        useTrampoline: true,
-      );
+      final req = sdk.SendPaymentRequest(bolt11: bolt11, amountMsat: amountMsat, useTrampoline: true);
       await _breezSDK.sendPayment(req: req);
     } catch (e) {
       _log.severe("sendPayment error", e);
@@ -118,7 +115,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.info("sendSpontaneousPayment: $nodeId, $description, $amountMsat");
     _log.info("description field is not being used by the SDK yet");
     try {
-      final req = sdk.SendSpontaneousPaymentRequest(nodeId: nodeId, amountMsat: BigInt.from(amountMsat));
+      final req = sdk.SendSpontaneousPaymentRequest(nodeId: nodeId, amountMsat: amountMsat);
       await _breezSDK.sendSpontaneousPayment(req: req);
     } catch (e) {
       _log.severe("sendSpontaneousPayment error", e);
@@ -191,7 +188,7 @@ class AccountBloc extends Cubit<AccountState> with HydratedMixin {
     _log.info("addInvoice: $description, $amountMsat");
 
     final req = sdk.ReceivePaymentRequest(
-      amountMsat: BigInt.from(amountMsat),
+      amountMsat: amountMsat,
       description: description,
       openingFeeParams: chosenFeeParams,
     );

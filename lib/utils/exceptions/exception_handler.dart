@@ -18,9 +18,18 @@ class ExceptionHandler {
   static String extractMessage(Object exception, BreezTranslations texts, {String? defaultErrorMsg}) {
     _logger.info('Extracting exception message: $exception');
 
-    if (exception is AnyhowException) {
+    if (exception is FfiException) {
       if (exception.message.isNotEmpty) {
         String message = exception.message.replaceAll('\n', ' ').trim();
+        message = _extractInnerErrorMessage(message)?.trim() ?? message;
+        message = _localizedExceptionMessage(texts, message);
+        return message;
+      }
+    }
+
+    if (exception is FrbAnyhowException) {
+      if (exception.anyhow.isNotEmpty) {
+        String message = exception.anyhow.replaceAll('\n', ' ').trim();
         message = _extractInnerErrorMessage(message)?.trim() ?? message;
         message = _localizedExceptionMessage(texts, message);
         return message;

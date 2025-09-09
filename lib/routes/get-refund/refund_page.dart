@@ -1,4 +1,4 @@
-import 'package:breez_sdk/sdk.dart';
+import 'package:breez_sdk/bridge_generated.dart';
 import 'package:breez_translations/breez_translations_locales.dart';
 import 'package:c_breez/routes/get-refund/refund_confirmation_page.dart';
 import 'package:c_breez/routes/spontaneous_payment/widgets/collapsible_list_item.dart';
@@ -54,7 +54,7 @@ class RefundPageState extends State<RefundPage> {
                     ),
                     Container(
                       padding: const EdgeInsets.only(top: 12.0),
-                      child: AvailableBTC(widget.swapInfo.confirmedSats.toInt()),
+                      child: AvailableBTC(widget.swapInfo.confirmedSats),
                     ),
                     CollapsibleListItem(
                       title: texts.send_on_chain_original_transaction,
@@ -75,7 +75,7 @@ class RefundPageState extends State<RefundPage> {
             Navigator.of(context).push(
               FadeInRoute(
                 builder: (_) => RefundConfirmationPage(
-                  amountSat: widget.swapInfo.confirmedSats.toInt(),
+                  amountSat: widget.swapInfo.confirmedSats,
                   toAddress: _addressController.text,
                   swapAddress: widget.swapInfo.bitcoinAddress,
                 ),

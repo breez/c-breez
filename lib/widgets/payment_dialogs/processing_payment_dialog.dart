@@ -105,7 +105,7 @@ class ProcessingPaymentDialogState extends State<ProcessingPaymentDialog>
           if (widget.isLnurlPayment) {
             navigator.pop(err);
           }
-          if (err is AnyhowException) {
+          if (err is FfiException) {
             if (_currentRoute != null && _currentRoute!.isActive) {
               navigator.removeRoute(_currentRoute!);
             }

@@ -236,7 +236,7 @@ SPEC CHECKSUMS:
   image_cropper: e0bb0042e4404ff2ef134e5cf0492cbd892156cd
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
-  local_auth_darwin: fa4b06454df7df8e97c18d7ee55151c57e7af0de
+  local_auth_darwin: 63c73d6d28cc3e239be2b6aa460ea6e317cd5100
   mobile_scanner: 77265f3dc8d580810e91849d4a0811a90467ed5e
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   ObjcExceptionBridging: d3d37d62981bb7f252ecb31b62d7e23a96bbfb8a

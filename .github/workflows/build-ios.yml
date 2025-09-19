@@ -99,10 +99,6 @@ jobs:
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
         run: echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
 
-      - name: Set MACOSX_DEPLOYMENT_TARGET
-        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
-        run: echo "MACOSX_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
-
       - name: Disk Cleanup
         run: |
           echo "::group::Free space before cleanup"

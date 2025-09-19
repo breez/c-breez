@@ -95,6 +95,14 @@ jobs:
       P12_PASSWORD: ${{secrets.P12_PASSWORD}}
       GOOGLE_SERVICES_IOS: ${{secrets.GOOGLE_SERVICES_IOS}}
     steps:
+      - name: Set IPHONEOS_DEPLOYMENT_TARGET
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        run: echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+
+      - name: Set MACOSX_DEPLOYMENT_TARGET
+        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
+        run: echo "MACOSX_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+
       - name: Disk Cleanup
         run: |
           echo "::group::Free space before cleanup"
@@ -180,21 +188,6 @@ jobs:
         with:
           workspaces: breez-sdk-greenlight/libs
           cache-all-crates: true
-
-      - name: Set iOS/macOS deployment targets
-        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
-        run: |
-          echo "::group::Setting iOS/macOS deployment targets"
-
-          if [[ "${{ matrix.target }}" == "aarch64-apple-ios" ]]; then
-            echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
-            echo "RUSTFLAGS=-C link-arg=-miphoneos-version-min=13.0" >> $GITHUB_ENV
-          elif [[ "${{ matrix.target }}" == "x86_64-apple-darwin" ]]; then
-            echo "MACOSX_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
-            echo "RUSTFLAGS=-C link-arg=-mmacosx-version-min=13.0" >> $GITHUB_ENV
-          fi
-
-          echo "::endgroup::"
 
       - name: 📦 Install Breez SDK - Native (Greenlight Implementation) dependencies
         if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}

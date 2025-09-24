@@ -110,7 +110,7 @@ class ImagePickerButton extends StatelessWidget {
     return IconButton(
       padding: const EdgeInsets.fromLTRB(0, 32, 24, 0),
       icon: SvgPicture.asset(
-        'assets/icons/image.svg',
+        'src/icon/image.svg',
         colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcATop),
         width: 32,
         height: 32,

@@ -84,7 +84,7 @@ PODS:
     - GoogleUtilities/Privacy
   - image_cropper (0.0.4):
     - Flutter
-    - TOCropViewController (~> 2.7.4)
+    - TOCropViewController (~> 2.8.0)
   - image_picker_ios (0.0.1):
     - Flutter
   - KeychainAccess (4.2.2)
@@ -116,7 +116,7 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - TOCropViewController (2.7.4)
+  - TOCropViewController (2.8.0)
   - url_launcher_ios (0.0.1):
     - Flutter
   - XCGLogger (7.1.5):
@@ -233,7 +233,7 @@ SPEC CHECKSUMS:
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  image_cropper: e0bb0042e4404ff2ef134e5cf0492cbd892156cd
+  image_cropper: b8ef14d3fcff4040b0f9da2ca28d98219a5cba0e
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   local_auth_darwin: 63c73d6d28cc3e239be2b6aa460ea6e317cd5100
@@ -247,7 +247,7 @@ SPEC CHECKSUMS:
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preference_app_group: 46aee3873e1da581d4904bece9876596d7f66725
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
-  TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
+  TOCropViewController: 797deaf39c90e6e9ddd848d88817f6b9a8a09888
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
   XCGLogger: 399c5885210b4e2ad79d9f7a29b105d672ef724f
 

@@ -63,7 +63,7 @@ dependencies:
   hydrated_bloc: ^10.1.1
   image: ^4.5.4
   # Doesn't support: Linux Mac Windows
-  image_cropper: ^10.0.0+1
+  image_cropper: ^11.0.0
   # Doesn't support: Linux Mac Windows
   image_picker: ^1.2.0
   ini: ^2.1.0

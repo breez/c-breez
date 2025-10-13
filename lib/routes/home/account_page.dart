@@ -71,7 +71,8 @@ class AccountPage extends StatelessWidget {
     );
 
     final bool showSliver =
-        nonFilteredPayments.isNotEmpty || paymentFilters.filters != PaymentTypeFilter.values;
+        !accountState.initial &&
+        (nonFilteredPayments.isNotEmpty || paymentFilters.filters != PaymentTypeFilter.values);
     int? startDate = paymentFilters.fromTimestamp;
     int? endDate = paymentFilters.toTimestamp;
     bool hasDateFilter = startDate != null && endDate != null;
@@ -110,7 +111,7 @@ class AccountPage extends StatelessWidget {
           ),
         ),
       );
-    } else if (!accountState.initial && nonFilteredPayments.isEmpty) {
+    } else if (accountState.initial && nonFilteredPayments.isEmpty) {
       slivers.add(
         SliverFixedExtentList(
           itemExtent: _kPaymentListItemHeight + 8.0,
@@ -167,7 +168,7 @@ class AccountPage extends StatelessWidget {
         key: const Key('account_sliver'),
         fit: StackFit.expand,
         children: <Widget>[
-          if (!showSliver && !(accountState.initial && nonFilteredPayments.isEmpty)) ...<Widget>[
+          if (!showSliver && !(!accountState.initial && nonFilteredPayments.isEmpty)) ...<Widget>[
             CustomPaint(painter: BubblePainter(context)),
           ],
           CustomScrollView(controller: scrollController, slivers: slivers),

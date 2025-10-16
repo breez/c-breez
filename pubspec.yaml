@@ -21,7 +21,7 @@ dependencies:
   breez_sdk:
     git:
       url: https://github.com/breez/breez-sdk-flutter
-      ref: v0.8.4-dev1
+      ref: v0.8.4-dev2
   breez_translations:
     git:
       url: https://github.com/breez/Breez-Translations

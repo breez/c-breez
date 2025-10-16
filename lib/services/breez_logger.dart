@@ -20,7 +20,7 @@ void printWrapped(Logger log, String text) {
 
 class BreezLogger {
   BreezLogger() {
-    Logger.root.level = Level.CONFIG;
+    Logger.root.level = Level.ALL;
 
     if (kDebugMode) {
       Logger.root.onRecord.listen((record) {

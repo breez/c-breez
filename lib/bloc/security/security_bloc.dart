@@ -98,7 +98,7 @@ class SecurityBloc extends Cubit<SecurityState> with HydratedMixin {
   Future<bool> localAuthentication(String localizedReason) async {
     try {
       final authenticated = await _auth.authenticate(
-        options: const AuthenticationOptions(biometricOnly: true, useErrorDialogs: false),
+        biometricOnly: true,
         localizedReason: localizedReason,
         authMessages: const [AndroidAuthMessages(), IOSAuthMessages()],
       );

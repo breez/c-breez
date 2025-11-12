@@ -53,7 +53,7 @@ void main() async {
       var breezLogger = injector.breezLogger;
       final breezSDK = injector.breezSDK;
       if (!await breezSDK.isInitialized()) {
-        breezSDK.initialize(filterLevel: LevelFilter.Trace);
+        breezSDK.initialize(filterLevel: LevelFilter.Debug);
         breezLogger.registerBreezSdkLog(breezSDK);
       }
 

@@ -34,7 +34,7 @@ class BreezForegroundService : ForegroundService() {
         super.onCreate()
         Logger.tag(TAG).debug { "Creating Breez foreground service..." }
         registerNotificationChannels(applicationContext, DEFAULT_CLICK_ACTION)
-        val sdkLogListener = SdkLogInitializer.initializeNodeLogStream(LevelFilter.TRACE)
+        val sdkLogListener = SdkLogInitializer.initializeNodeLogStream(LevelFilter.DEBUG)
         sdkLogListener.subscribe(serviceScope) { l: LogEntry ->
             when (l.level) {
                 "ERROR" -> Logger.tag(TAG).error { l.line }

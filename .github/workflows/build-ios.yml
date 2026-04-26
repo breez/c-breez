@@ -3,12 +3,12 @@ on:
   workflow_dispatch:
     inputs:
       use-published-plugins:
-        description: 'Boolean indicating whether to use a published plugin for the Breez SDK - Native (Greenlight Implementation). Default = false.'
+        description: 'Use a published Breez SDK plugin (faster). Set false to build SDK from source. Default = true.'
         required: false
         type: boolean
-        default: false
+        default: true
       greenlight-sdk-plugin-version:
-        description: 'Version for the published Breez SDK - Native (Greenlight Implementation) plugin "v(MAJOR.MINOR.BUILD)". Defaults to latest published version on "breez/breez-sdk-flutter"'
+        description: 'Version for the published Breez SDK - Native (Greenlight Implementation) plugin "v(MAJOR.MINOR.BUILD)". Defaults to the ref pinned in pubspec.yaml.'
         required: false
         type: string
         default: ''
@@ -17,34 +17,56 @@ on:
         required: false
         type: string
         default: 'main'
+  schedule:
+    # ~60-day cadence (1st of every other month at 09:00 UTC), well under the
+    # 90-day TestFlight expiration. Schedule triggers only fire from the default
+    # branch (main); the build job always checks out v0.8.4.-dev3 for the actual
+    # build content (see build-ios job's checkout step).
+    - cron: '0 9 1 */2 *'
+
+concurrency:
+  group: build-ios
+  cancel-in-progress: false
 
 jobs:
   pre-setup:
     name: Pre-setup
     runs-on: ubuntu-latest
     outputs:
-      # These outputs mimic the inputs for the workflow.
-      # Their only purpose is to be able to test this workflow if you make
-      # changes that you won't want to commit to main yet.
-      # You can set these values manually, to test how the CI behaves with
-      # certain inputs.
-      use-published-plugins: ${{ inputs.use-published-plugins }}
-      greenlight-sdk-plugin-version: ${{ inputs.greenlight-sdk-plugin-version }}
-      greenlight-sdk-ref: ${{ inputs.greenlight-sdk-ref }}
+      use-published-plugins: ${{ steps.resolve.outputs.use-published }}
+      greenlight-sdk-plugin-version: ${{ steps.resolve.outputs.version }}
+      greenlight-sdk-ref: ${{ steps.resolve.outputs.sdk-ref }}
     steps:
-      - name: Checkout repository
-        if:  ${{ inputs.use-published-plugins == true && inputs.greenlight-sdk-plugin-version == ''}}
+      - name: Check out c-breez (sparse, for pubspec.yaml)
         uses: actions/checkout@v4
         with:
-          repository: 'breez/breez-sdk-flutter'
+          ref: ${{ github.event_name == 'schedule' && 'v0.8.4.-dev3' || github.ref }}
+          sparse-checkout: pubspec.yaml
+          sparse-checkout-cone-mode: false
 
-      - name: Get the latest tag and set 'greenlight-sdk-plugin-version'
-        if:  ${{ inputs.use-published-plugins == true && inputs.greenlight-sdk-plugin-version == ''}}
+      - name: Resolve workflow inputs
+        id: resolve
         run: |
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo "greenlight-sdk-plugin-version=$latest_tag" >> "$GITHUB_OUTPUT"
+          # Schedule events don't populate inputs.* — apply publish defaults manually.
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            USE_PUBLISHED="true"
+            PLUGIN_VERSION=""
+            SDK_REF="main"
+          else
+            USE_PUBLISHED="${{ inputs.use-published-plugins }}"
+            PLUGIN_VERSION="${{ inputs.greenlight-sdk-plugin-version }}"
+            SDK_REF="${{ inputs.greenlight-sdk-ref }}"
+          fi
 
-      - run: echo "set pre-setup output variables"
+          # Auto-detect plugin version from pubspec.yaml when publishing and no version was provided.
+          if [ -z "$PLUGIN_VERSION" ] && [ "$USE_PUBLISHED" = "true" ]; then
+            PLUGIN_VERSION=$(yq '.dependencies.breez_sdk.git.ref' pubspec.yaml)
+            echo "Auto-detected SDK plugin version from pubspec.yaml: $PLUGIN_VERSION"
+          fi
+
+          echo "use-published=$USE_PUBLISHED" >> "$GITHUB_OUTPUT"
+          echo "version=$PLUGIN_VERSION" >> "$GITHUB_OUTPUT"
+          echo "sdk-ref=$SDK_REF" >> "$GITHUB_OUTPUT"
 
       - name: Disk Cleanup
         run: |
@@ -83,7 +105,7 @@ jobs:
   build-ios:
     name: Build iOS
     needs: setup
-    runs-on: macOS-15
+    runs-on: macos-26
     env:
       SCHEME: Runner
       BUILD_CONFIGURATION: Release
@@ -96,28 +118,38 @@ jobs:
       GOOGLE_SERVICES_IOS: ${{secrets.GOOGLE_SERVICES_IOS}}
     steps:
       - name: Set IPHONEOS_DEPLOYMENT_TARGET
-        if: ${{ needs.setup.outputs.use-published-plugins == 'false' }}
-        run: echo "IPHONEOS_DEPLOYMENT_TARGET=13.0" >> $GITHUB_ENV
+        run: echo "IPHONEOS_DEPLOYMENT_TARGET=15.6" >> $GITHUB_ENV
 
       - name: Disk Cleanup
         run: |
           echo "::group::Free space before cleanup"
           df -hI
           echo "::endgroup::"
+          echo "::group::Installed Xcode versions"
+          ls /Applications/Xcode_*.app 2>/dev/null || true
+          echo "::endgroup::"
           echo "::group::Cleaned Files"
           sudo rm -rf /Users/runner/Library/Android/sdk
-          sudo rm -rf /Applications/Xcode_15.4.app
-          sudo rm -rf /Applications/Xcode_16.1.app
-          sudo rm -rf /Applications/Xcode_16.2.app
-          sudo rm -rf /Applications/Xcode_16.3_Release_Candidate_2.app
+          sudo rm -rf /Applications/Xcode_26.0.1.app
+          sudo rm -rf /Applications/Xcode_26.1.1.app
+          sudo rm -rf /Applications/Xcode_26.3.app
+          sudo rm -rf /Applications/Xcode_26.4.1.app
+          sudo rm -rf /Applications/Xcode_26.5_beta_2.app
           echo "::endgroup::"
           echo "::group::Free space after cleanup"
           df -hI
           echo "::endgroup::"
 
+      - name: 🛠️ Select Xcode 26.2
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.2.app
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+
       - name: 🏗️ Check-out c-breez repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event_name == 'schedule' && 'v0.8.4.-dev3' || github.ref }}
           path: 'cbreez'
 
       - name: Set Breez SDK - Native (Greenlight Implementation) plugin version
